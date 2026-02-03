@@ -1,0 +1,306 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Maximalist Component Template</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Mono:wght@400;700&display=swap"
+    />
+    <style>
+      :root {
+        --primary-gradient: linear-gradient(45deg, #ff006e, #8338ec, #3a86ff);
+        --secondary-color: #ffbe0b;
+        --text-light: #ffffff;
+        --text-dark: #1a1a1a;
+        --font-display: 'Bebas Neue', cursive;
+        --font-body: 'Space Mono', monospace;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: var(--font-body);
+        background: #0a0a0a;
+        min-height: 100vh;
+        overflow-x: hidden;
+      }
+
+      .container {
+        position: relative;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        padding: 2rem;
+      }
+
+      .background {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: -1;
+      }
+
+      .gradient {
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: var(--primary-gradient);
+        animation: rotate 20s linear infinite;
+      }
+
+      .noise {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMDAiIGhlaWdodD0iMzAwIj48ZmlsdGVyIGlkPSJhIj48ZmVUdXJidWxlbmNlIHR5cGU9ImZyYWN0YWxOb2lzZSIgYmFzZUZyZXF1ZW5jeT0iLjc1IiBzdGl0Y2hUaWxlcz0ic3RpdGNoIi8+PGZlQ29sb3JNYXRyaXggdHlwZT0ic2F0dXJhdGUiIHZhbHVlcz0iMCIvPjwvZmlsdGVyPjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMzAwIiBmaWx0ZXI9InVybCgjYSkiIG9wYWNpdHk9Ii4wNSIvPjwvc3ZnPg==');
+        opacity: 0.4;
+      }
+
+      .particles {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+      }
+
+      .particle {
+        position: absolute;
+        background: var(--secondary-color);
+        border-radius: 50%;
+        animation: float 6s infinite ease-in-out;
+      }
+
+      .particle:nth-child(1) {
+        width: 4px;
+        height: 4px;
+        left: 10%;
+        animation-delay: 0s;
+      }
+      .particle:nth-child(2) {
+        width: 6px;
+        height: 6px;
+        left: 20%;
+        animation-delay: 1s;
+      }
+      .particle:nth-child(3) {
+        width: 3px;
+        height: 3px;
+        left: 30%;
+        animation-delay: 2s;
+      }
+      .particle:nth-child(4) {
+        width: 5px;
+        height: 5px;
+        left: 40%;
+        animation-delay: 3s;
+      }
+      .particle:nth-child(5) {
+        width: 4px;
+        height: 4px;
+        left: 50%;
+        animation-delay: 4s;
+      }
+      .particle:nth-child(6) {
+        width: 7px;
+        height: 7px;
+        left: 60%;
+        animation-delay: 5s;
+      }
+      .particle:nth-child(7) {
+        width: 3px;
+        height: 3px;
+        left: 70%;
+        animation-delay: 1.5s;
+      }
+      .particle:nth-child(8) {
+        width: 5px;
+        height: 5px;
+        left: 80%;
+        animation-delay: 2.5s;
+      }
+      .particle:nth-child(9) {
+        width: 4px;
+        height: 4px;
+        left: 90%;
+        animation-delay: 3.5s;
+      }
+
+      .content {
+        position: relative;
+        z-index: 1;
+      }
+
+      .title {
+        font-family: var(--font-display);
+        font-size: clamp(4rem, 12vw, 12rem);
+        font-weight: 400;
+        margin-bottom: 1rem;
+        color: var(--text-light);
+        text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+        animation: glitch 2s infinite;
+        line-height: 0.9;
+      }
+
+      .description {
+        font-size: 1.3rem;
+        line-height: 1.6;
+        color: var(--secondary-color);
+        max-width: 600px;
+        margin: 0 auto 2rem;
+        animation: slideIn 1s ease-out 0.5s both;
+        text-shadow: 0 0 10px rgba(255, 190, 11, 0.5);
+      }
+
+      .cta-button {
+        display: inline-block;
+        padding: 1.2rem 3rem;
+        background: transparent;
+        color: var(--text-light);
+        text-decoration: none;
+        border: 3px solid var(--text-light);
+        font-family: var(--font-body);
+        font-weight: 700;
+        font-size: 1.1rem;
+        border-radius: 0;
+        transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        animation: slideIn 1s ease-out 1s both;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .cta-button::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: var(--text-light);
+        transition: left 0.3s ease;
+        z-index: -1;
+      }
+
+      .cta-button:hover::before {
+        left: 0;
+      }
+
+      .cta-button:hover {
+        color: var(--text-dark);
+        transform: scale(1.05);
+        box-shadow: 0 0 30px rgba(255, 255, 255, 0.5);
+      }
+
+      @keyframes rotate {
+        from {
+          transform: rotate(0deg);
+        }
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      @keyframes glitch {
+        0%,
+        100% {
+          text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+        }
+        25% {
+          text-shadow:
+            -2px 0 #ff006e,
+            2px 0 #3a86ff;
+        }
+        50% {
+          text-shadow:
+            2px 0 #8338ec,
+            -2px 0 #ffbe0b;
+        }
+        75% {
+          text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+        }
+      }
+
+      @keyframes slideIn {
+        from {
+          opacity: 0;
+          transform: translateY(50px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @keyframes float {
+        0%,
+        100% {
+          transform: translateY(0px);
+        }
+        50% {
+          transform: translateY(-20px);
+        }
+      }
+
+      @media (max-width: 768px) {
+        .title {
+          font-size: clamp(3rem, 15vw, 6rem);
+        }
+
+        .description {
+          font-size: 1.1rem;
+          padding: 0 1rem;
+        }
+
+        .cta-button {
+          padding: 1rem 2rem;
+          font-size: 1rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="background">
+        <div class="gradient"></div>
+        <div class="noise"></div>
+        <div class="particles">
+          <div class="particle"></div>
+          <div class="particle"></div>
+          <div class="particle"></div>
+          <div class="particle"></div>
+          <div class="particle"></div>
+          <div class="particle"></div>
+          <div class="particle"></div>
+          <div class="particle"></div>
+          <div class="particle"></div>
+        </div>
+      </div>
+
+      <div class="content">
+        <h1 class="title">BOLD MAXIMALIST</h1>
+        <p class="description">
+          Explosive visual design with glitch effects, animated gradients, and maximalist
+          typography. Unforgettable digital experiences that break all the rules.
+        </p>
+        <a href="#" class="cta-button">Enter Chaos</a>
+      </div>
+    </div>
+  </body>
+</html>
