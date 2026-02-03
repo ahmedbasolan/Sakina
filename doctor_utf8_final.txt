@@ -1,0 +1,4 @@
+﻿env: load .env
+env: export QURAN_API_TEST_CLIENT_ID QURAN_API_TEST_CLIENT_SECRET QURAN_API_TEST_ENDPOINT QURAN_API_CLIENT_ID QURAN_API_CLIENT_SECRET QURAN_API_ENDPOINT QURAN_API_ENV
+Running 17 checks on your project...
+17/17 checks passed. No issues detected!

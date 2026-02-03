@@ -1,0 +1,197 @@
+export type Mood =
+  | 'Anxious'
+  | 'Calm'
+  | 'Sad'
+  | 'Content'
+  | 'Angry'
+  | 'Grateful'
+  | 'Tired'
+  | 'Energized'
+  | 'Stressed'
+  | 'Hopeful'
+  | 'Happy';
+export type Intensity = 'Low' | 'Medium' | 'High';
+export type Duration = 'Just now' | 'All day' | 'Long time';
+export type SubscriptionTier = 'free' | 'premium';
+export type SubscriptionType = 'monthly' | 'yearly' | 'trial';
+
+export type ContentType = 'Quran' | 'Hadith' | 'Dua' | 'Sunnah Practice' | 'Dhikr';
+
+export interface Content {
+  id: string;
+  type: ContentType;
+  primaryText: string;
+  arabicText?: string;
+  transliteration?: string;
+  englishTranslation: string; // Detailed context/instruction
+  translation?: string; // Literal translation of Arabic text
+  source: string;
+  whyThis: string;
+  propheticPractice?: {
+    description: string;
+    source: string;
+    grading?: string; // e.g., 'Sahih', 'Hasan'
+  };
+  optionalAction?: string;
+  optionalReflection?: string;
+  audioKey?: string; // Explicit key for audio playback (e.g., '2:255')
+  repeatCount?: number; // Target repetitions for Dhikr/Practices
+  difficulty?: 1 | 2 | 3; // 1: Quick, 2: Medium, 3: Deep
+  whyThisWorks?: string; // Scholar/Hadith explanation for why the practice is effective
+  moods: Mood[];
+  moodScores?: Record<string, number>; // Optional custom relevance scores: { 'Anxious': 15, 'Calm': 20 }
+}
+
+export interface ContentAngle {
+  id: string;
+  contentId: string;
+  mood: Mood;
+  angle: string; // Maps to "Prophetic Context"
+  angleArabicText?: string;
+  angleTransliteration?: string;
+  angleSource?: string;
+  action?: string;
+  actionArabicText?: string;
+  actionTransliteration?: string;
+  actionTranslation?: string;
+  actionSource?: string;
+  actionHowTo?: string;
+  actionReward?: string;
+  actionAudioKey?: string;
+  actionRepeatCount?: number; // Target repetitions for the specific action
+  actionDifficulty?: 1 | 2 | 3;
+  actionWhyThisWorks?: string;
+  reflection?: string; // Maps to "Reflection Prompt"
+  contentType?: ContentType;
+}
+
+export interface GuidanceExperience {
+  content: Content;
+  angle: ContentAngle;
+}
+
+export interface UserHistory {
+  id: string;
+  contentId: string;
+  angleId: string;
+  mood: Mood;
+  timestamp: number;
+}
+
+export interface SavedReflection {
+  id: string;
+  contentId: string;
+  angleId: string;
+  mood: Mood;
+  reflection: string;
+  timestamp: number;
+  isFavorite?: boolean; // Premium feature
+  collectionId?: string; // Premium feature
+}
+
+export interface Collection {
+  id: string;
+  name: string;
+  description?: string;
+  itemCount: number;
+  createdAt: number;
+  updatedAt: number;
+}
+
+export interface UserSession {
+  id: string;
+  date: string; // YYYY-MM-DD format
+  guidanceSessionsUsed: number;
+  nextRefreshesRemaining: number;
+  lastResetTime: number;
+}
+
+export interface FreemiumLimits {
+  dailyGuidanceSessions: number;
+  nextRefreshesPerSession: number;
+  maxSavedItems: number;
+  rotationHistoryDays: number;
+}
+
+export interface PaywallType {
+  type: 'daily_limit' | 'refresh_limit' | 'saved_limit' | 'conversion_trigger';
+  trigger?: 'after_next_refreshes' | 'after_daily_limit' | 'after_saved_limit' | 'after_7_days';
+  remainingTime?: number; // hours until reset
+  context?: string; // Additional context for the paywall
+}
+
+export interface SubscriptionState {
+  tier: SubscriptionTier;
+  type?: SubscriptionType;
+  trialEndDate?: number;
+  subscriptionEndDate?: number;
+  isActive: boolean;
+  willRenew: boolean;
+  unlockedBundleIds?: string[]; // IDs of purchased Special Edition bundles
+}
+
+export interface SpecialEditionBundle {
+  id: string;
+  name: string;
+  description: string;
+  priceUSD: number;
+  priceAED: number;
+  availableStart?: number; // timestamp
+  availableEnd?: number; // timestamp
+  includesPremiumTrial: boolean;
+  includesPDF: boolean;
+  includesAudio: boolean;
+  isNiche?: boolean; // e.g. Hajj
+}
+
+export interface SpiritualPath {
+  id: string;
+  title: string;
+  description: string;
+  duration: number; // days
+  theme: Mood; // Starting mood
+  target: string; // Target spiritual state
+  dailySteps: PathStep[];
+  isPremium?: boolean; // Included in subscription
+  isSpecialEdition?: boolean; // Part of a one-time purchase bundle
+  bundleId?: string; // Reference to SpecialEditionBundle
+}
+
+export interface PathStep {
+  id: string;
+  pathId: string;
+  day: number;
+  title: string;
+  focus: string;
+  contentId: string;
+  angleId: string;
+  isCompleted: boolean;
+  completedAt?: number;
+}
+
+export interface UserPathProgress {
+  pathId: string;
+  currentDay: number;
+  startDate: number;
+  completedDays: number[];
+  isCompleted: boolean;
+  completedAt?: number;
+}
+
+export interface AudioContent {
+  id: string;
+  type: 'quran' | 'dua';
+  contentId: string;
+  audioUrl: string;
+  reciter: string;
+  duration: number;
+  arabicText: string;
+  translation?: string;
+}
+
+export type LanguagePreference = 'english' | 'arabic';
+
+export interface UserPreferences {
+  primaryLanguage: LanguagePreference;
+  showTransliteration: boolean;
+}
