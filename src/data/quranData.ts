@@ -1243,10 +1243,14 @@ const quranContentData: Content[] = [
   {
     id: 'quran_65_2',
     type: 'Quran',
-    primaryText: "Wa man yattaqillaha yaj'al lahu makhraja",
-    arabicText: 'وَمَن يَتَّقِ ٱللَّهَ يَجۡعَل لَّهُۥ مَخۡرَجٗا ﴿٢﴾',
-    transliteration: "Wa man yattaqillaha yaj'al lahu makhraja",
-    englishTranslation: 'And whoever fears Allah - He will make for him a way out.',
+    primaryText:
+      "Fa-idhā balaghna ajalahunna fa-amsikūhunna bima'rūfin aw fāriqūhunna bima'rūf; wa ashhidū dhaway 'adlim-minkum wa aqīmush-shahādata lillāh. Dhālikum yū'aẓu bihī man kāna yu'minu billāhi wal-yawmil-ākhiri; wa man yattaqillāha yaj'al-lahū makhrajā",
+    arabicText:
+      'فَإِذَا بَلَغْنَ أَجَلَهُنَّ فَأَمْسِكُوهُنَّ بِمَعْرُوفٍ أَوْ فَارِقُوهُنَّ بِمَعْرُوفٍ وَأَشْهِدُوا ذَوَيْ عَدْلٍ مِّنكُمْ وَأَقِيمُوا الشَّهَادَةَ لِلَّهِ ۚ ذَٰلِكُمْ يُوعَظُ بِهِ مَنْ كَانَ يُؤْمِنُ بِاللَّهِ وَالْيَوْمِ الْآخِرِ ۚ وَمَنْ يَتَّقِ اللَّهَ يَجْعَل لَّهُ مَخْرَجًا ﴿٢﴾',
+    transliteration:
+      "Fa-idhā balaghna ajalahunna fa-amsikūhunna bima'rūfin aw fāriqūhunna bima'rūf; wa ashhidū dhaway 'adlim-minkum wa aqīmush-shahādata lillāh. Dhālikum yū'aẓu bihī man kāna yu'minu billāhi wal-yawmil-ākhiri; wa man yattaqillāha yaj'al-lahū makhrajā",
+    englishTranslation:
+      'And when they have [nearly] fulfilled their term, either retain them according to acceptable terms or part with them according to acceptable terms. And bring to witness two just men from among you and establish the testimony for [the acceptance of] Allah. That is instructed to whoever should believe in Allah and the Last day. And whoever fears Allah - He will make for him a way out.',
     source: 'Surah At-Talaq 65:2',
     audioKey: '65:2',
     whyThis: 'Allah promises a way out for those who are mindful of Him.',
@@ -1332,12 +1336,14 @@ const quranContentData: Content[] = [
   {
     id: 'quran_21_90',
     type: 'Quran',
-    primaryText: "Innahum kanu yusari'una fil-khayrati wa yad'unana raghaban wa rahaba",
+    primaryText:
+      "Fastajabnā lahū wa wahabnā lahū Yaḥyā wa aṣlaḥnā lahū zawjah; innahum kānū yusāri'ūna fīl-khayrāti wa yad'ūnanā raghaban wa rahabā; wa kānū lanā khāshi'īn",
     arabicText:
-      'إِنَّهُمْ كَانُوا يُسَارِعُونَ فِي الْخَيْرَاتِ وَيَدْعُونَنَا رَغَبًا وَرَهَبًا ﴿٩٠﴾',
-    transliteration: "Innahum kanu yusari'una fil-khayrati wa yad'unana raghaban wa rahaba",
+      'فَاسْتَجَبْنَا لَهُ وَوَهَبْنَا لَهُ يَحْيَىٰ وَأَصْلَحْنَا لَهُ زَوْجَهُ ۚ إِنَّهُمْ كَانُوا يُسَارِعُونَ فِي الْخَيْرَاتِ وَيَدْعُونَنَا رَغَبًا وَرَهَبًا ۖ وَكَانُوا لَنَا خَاشِعِينَ ﴿٩٠﴾',
+    transliteration:
+      "Fastajabnā lahū wa wahabnā lahū Yaḥyā wa aṣlaḥnā lahū zawjah; innahum kānū yusāri'ūna fīl-khayrāti wa yad'ūnanā raghaban wa rahabā; wa kānū lanā khāshi'īn",
     englishTranslation:
-      'Indeed, they used to hasten to good deeds and supplicate Us in hope and fear.',
+      'So We responded to him, and We gave to him John, and amended for him his wife. Indeed, they used to hasten to good deeds and supplicate Us in hope and fear, and they were to Us humbly submissive.',
     source: 'Surah Al-Anbiya 21:90',
     audioKey: '21:90',
     whyThis: 'The prophets combined hope with action - hasten in good while calling upon Allah.',
@@ -1346,10 +1352,13 @@ const quranContentData: Content[] = [
   {
     id: 'quran_32_16',
     type: 'Quran',
-    primaryText: "Yad'una rabbahum khawfan wa tama'an",
-    arabicText: 'يَدْعُونَ رَبَّهُمْ خَوْفًا وَطَمَعًا ﴿١٦﴾',
-    transliteration: "Yad'una rabbahum khawfan wa tama'an",
-    englishTranslation: 'They call upon their Lord in fear and aspiration.',
+    primaryText:
+      "Tatajāfā junūbuhum 'anil-maḍāji'i yad'ūna rabbahum khawfan waṭama'ā; wa mimmā razaqnāhum yunfiqūn",
+    arabicText: 'تَتَجَافَىٰ جُنُوبُهُمْ عَنِ ٱلۡمَضَاجِعِ يَدۡعُونَ رَبَّهُمۡ خَوۡفࣰا وَطَمَعࣰا وَمِمَّا رَزَقۡنَـٰهُمۡ يُنفِقُونَ ﴿١٦﴾',
+    transliteration:
+      "Tatajāfā junūbuhum 'anil-maḍāji'i yad'ūna rabbahum khawfan waṭama'ā; wa mimmā razaqnāhum yunfiqūn",
+    englishTranslation:
+      'They arise from [their] beds; they supplicate their Lord in fear and aspiration, and from what We have provided them, they spend.',
     source: 'Surah As-Sajdah 32:16',
     audioKey: '32:16',
     whyThis: 'Balance hope with reverence - call upon Allah with both aspiration and awe.',
@@ -1767,12 +1776,14 @@ const quranContentData: Content[] = [
   {
     id: 'quran_41_30',
     type: 'Quran',
-    primaryText: 'Alladhīna qālū rabbunallāhu thummastaqāmū',
+    primaryText:
+      "Innalladhīna qālū rabbunallāhu thummas-taqāmū tatanazzalu 'alayhimul-malā'ikatu allā takhāfū wa lā taḥzanū wa abshirū bil-jannatillatī kuntum tū'adūn",
     arabicText:
-      'إِنَّ الَّذِينَ قَالُوا رَبُّنَا اللَّهُ ثُمَّ اسْتَقَامُوا تَتَنَزَّلُ عَلَيْهِمُ الْمَلَائِكَةُ أَلَّا تَخَافُوا وَلَا تَحْزَنُوا ﴿٣٠﴾',
-    transliteration: 'Alladhīna qālū rabbunallāhu thummastaqāmū',
+      'إِنَّ الَّذِينَ قَالُوا رَبُّنَا اللَّهُ ثُمَّ اسْتَقَامُوا تَتَنَزَّلُ عَلَيْهِمُ الْمَلَائِكَةُ أَلَّا تَخَافُوا وَلَا تَحْزَنُوا وَأَبْشِرُوا بِالْجَنَّةِ الَّتِي كُنتُمْ تُوعَدُونَ ﴿٣٠﴾',
+    transliteration:
+      "Innalladhīna qālū rabbunallāhu thummas-taqāmū tatanazzalu 'alayhimul-malā'ikatu allā takhāfū wa lā taḥzanū wa abshirū bil-jannatillatī kuntum tū'adūn",
     englishTranslation:
-      'Indeed, those who have said, "Our Lord is Allah " and then remained on a right course - the angels will descend upon them, [saying], "Do not fear and do not grieve."',
+      'Indeed, those who have said, "Our Lord is Allah" and then remained on a right course - the angels will descend upon them, [saying], "Do not fear and do not grieve but receive good tidings of Paradise, which you were promised."',
     source: 'Surah Fussilat 41:30',
     audioKey: '41:30',
     whyThis:
@@ -1948,7 +1959,8 @@ const quranContentData: Content[] = [
       "Wa minal-layli fatahajjad bihi nafilatal-laka 'asa an yab'athaka rabbuka maqaman mahmuda",
     arabicText:
       'وَمِنَ اللَّيْلِ فَتَهَجَّدْ بِهِ نَافِلَةً لَّكَ عَسَىٰ أَن يَبْعَثَكَ رَبُّكَ مَقَامًا مَّحْمُودًا ﴿٧٩﴾',
-    transliteration: 'Wa minal-layli fatahajjad bihi nafilatal-laka',
+    transliteration:
+      "Wa minal-layli fatahajjad bihī nāfilatal-laka 'asā an yab'athaka rabbuka maqāman maḥmūdā",
     englishTranslation:
       'And from [part of] the night, pray with it as additional [worship] for you; it is expected that your Lord will resurrect you to a praised station.',
     source: 'Surah Al-Isra 17:79',
