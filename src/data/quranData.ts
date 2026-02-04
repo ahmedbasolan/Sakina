@@ -748,10 +748,14 @@ const quranContentData: Content[] = [
   {
     id: 'quran_14_7',
     type: 'Quran',
-    primaryText: 'La-in shakartum la-azidannakum',
-    arabicText: 'لَئِن شَكَرْتُمْ لَأَزِيدَنَّكُمْ ﴿٧﴾',
-    transliteration: 'La-in shakartum la-azidannakum',
-    englishTranslation: 'If you are grateful, I will surely increase you [in favor].',
+    primaryText:
+      "Wa idh ta'adhdhana rabbukum la-in shakartum la-azīdannakum wa la-in kafartum inna 'adhābī lashadīd",
+    arabicText:
+      'وَإِذْ تَأَذَّنَ رَبُّكُمْ لَئِن شَكَرْتُمْ لَأَزِيدَنَّكُمْ ۖ وَلَئِن كَفَرْتُمْ إِنَّ عَذَابِي لَشَدِيدٌ ﴿٧﴾',
+    transliteration:
+      "Wa idh ta'adhdhana rabbukum la-in shakartum la-azīdannakum wa la-in kafartum inna 'adhābī lashadīd",
+    englishTranslation:
+      'And [remember] when your Lord proclaimed, "If you are grateful, I will surely increase you [in favor]; but if you deny, indeed, My punishment is severe."',
     source: 'Surah Ibrahim 14:7',
     audioKey: '14:7',
     whyThis:
@@ -761,11 +765,13 @@ const quranContentData: Content[] = [
   {
     id: 'quran_16_18',
     type: 'Quran',
-    primaryText: "Wa in ta'uddu ni'matallahi la tuhsuha",
-    arabicText: 'وَإِن تَعُدُّوا نِعْمَةَ اللَّهِ لَا تُحْصُوهَا ﴿١٨﴾',
-    transliteration: "Wa in ta'uddu ni'matallahi la tuhsuha",
+    primaryText:
+      "Wa in ta'uddū ni'matallāhi lā tuḥṣūhā; innallāha la-Ghafūrur-Raḥīm",
+    arabicText: 'وَإِن تَعُدُّوا نِعْمَةَ اللَّهِ لَا تُحْصُوهَا ۗ إِنَّ اللَّهَ لَغَفُورٌ رَّحِيمٌ ﴿١٨﴾',
+    transliteration:
+      "Wa in ta'uddū ni'matallāhi lā tuḥṣūhā; innallāha la-Ghafūrur-Raḥīm",
     englishTranslation:
-      'And if you should count the favors of Allah, you could not enumerate them.',
+      'And if you should count the favors of Allah, you could not enumerate them. Indeed, Allah is Forgiving and Merciful.',
     source: 'Surah An-Nahl 16:18',
     audioKey: '16:18',
     whyThis:
@@ -1263,12 +1269,13 @@ const quranContentData: Content[] = [
     id: 'quran_3_26',
     type: 'Quran',
     primaryText:
-      "Qulillahumma malikal-mulki tu'til-mulka man tasha'u wa tanzi'ul-mulka mimman tasha'",
+      "Qulillāhumma Mālikal-mulki tu'til-mulka man tashā'u wa tanzi'ul-mulka mimman tashā'u wa tu'izzu man tashā'u wa tudhillu man tashā'u; biyadikal-khayr; innaka 'alā kulli shay'in qadīr",
     arabicText:
-      'قُلِ اللَّهُمَّ مَالِكَ الْمُلْكِ تُؤْتِي الْمُلْكَ مَن تَشَاءُ وَتَنزِعُ الْمُلْكَ مِمَّن تَشَاءُ ﴿٢٦﴾',
-    transliteration: "Qulillahumma malikal-mulki tu'til-mulka man tasha'",
+      'قُلِ اللَّهُمَّ مَالِكَ الْمُلْكِ تُؤْتِي الْمُلْكَ مَن تَشَاءُ وَتَنزِعُ الْمُلْكَ مِمَّن تَشَاءُ وَتُعِزُّ مَن تَشَاءُ وَتُذِلُّ مَن تَشَاءُ ۖ بِيَدِكَ الْخَيْرُ ۖ إِنَّكَ عَلَىٰ كُلِّ شَيْءٍ قَدِيرٌ ﴿٢٦﴾',
+    transliteration:
+      "Qulillāhumma Mālikal-mulki tu'til-mulka man tashā'u wa tanzi'ul-mulka mimman tashā'u wa tu'izzu man tashā'u wa tudhillu man tashā'u; biyadikal-khayr; innaka 'alā kulli shay'in qadīr",
     englishTranslation:
-      'Say, "O Allah, Owner of Sovereignty, You give sovereignty to whom You will and You take sovereignty away from whom You will."',
+      'Say, "O Allah, Owner of Sovereignty, You give sovereignty to whom You will and You take sovereignty away from whom You will. You honor whom You will and You humble whom You will. In Your hand is [all] good. Indeed, You are over all things competent."',
     source: 'Surah Ali Imran 3:26',
     audioKey: '3:26',
     whyThis: 'Allah is the Owner of all - He can change your situation in an instant.',
@@ -1293,10 +1300,13 @@ const quranContentData: Content[] = [
   {
     id: 'quran_17_11',
     type: 'Quran',
-    primaryText: "Wa kanal-insanu 'ajula",
-    arabicText: 'وَكَانَ الْإِنسَانُ عَجُولًا ﴿١١﴾',
-    transliteration: "Wa kanal-insanu 'ajula",
-    englishTranslation: 'And man is ever hasty.',
+    primaryText:
+      "Wa yad'ul-insānu bish-sharri du'ā'ahū bil-khayr; wa kānal-insānu 'ajūlā",
+    arabicText: 'وَيَدْعُ الْإِنسَانُ بِالشَّرِّ دُعَاءَهُ بِالْخَيْرِ ۖ وَكَانَ الْإِنسَانُ عَجُولًا ﴿١١﴾',
+    transliteration:
+      "Wa yad'ul-insānu bish-sharri du'ā'ahū bil-khayr; wa kānal-insānu 'ajūlā",
+    englishTranslation:
+      'And man supplicates for evil as he supplicates for good, and man is ever hasty.',
     source: 'Surah Al-Isra 17:11',
     audioKey: '17:11',
     whyThis: "Be patient - don't rush. Allah's timing is perfect even when we want results now.",
