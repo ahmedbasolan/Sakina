@@ -1406,10 +1406,11 @@ const quranContentData: Content[] = [
     id: 'quran_6_17',
     type: 'Quran',
     primaryText:
-      "Wa in yamsaskallahu bidurrin fala kashifa lahu illa hu; wa in yamsaska bikhayrin fahuwa 'ala kulli shay'in qadir",
+      "Wa in yamsaskallāhu biḍurrin falā kāshifa lahū illā hū; wa in yamsaska bikhayrin fahuwa 'alā kulli shay'in qadīr",
     arabicText:
       'وَإِن يَمْسَسْكَ اللَّهُ بِضُرٍّ فَلَا كَاشِفَ لَهُ إِلَّا هُوَ ۖ وَإِن يَمْسَسْكَ بِخَيْرٍ فَهُوَ عَلَىٰ كُلِّ شَيْءٍ قَدِيرٌ ﴿١٧﴾',
-    transliteration: 'Wa in yamsaskallahu bidurrin fala kashifa lahu illa hu',
+    transliteration:
+      "Wa in yamsaskallāhu biḍurrin falā kāshifa lahū illā hū; wa in yamsaska bikhayrin fahuwa 'alā kulli shay'in qadīr",
     englishTranslation:
       'And if Allah should touch you with adversity, there is no remover of it except Him. And if He touches you with good - then He is over all things competent.',
     source: "Surah Al-An'am 6:17",
@@ -1420,11 +1421,14 @@ const quranContentData: Content[] = [
   {
     id: 'quran_7_188',
     type: 'Quran',
-    primaryText: "La amliku linafsi naf'an wa la darran illa ma sha'allah",
-    arabicText: 'لَّا أَمْلِكُ لِنَفْسِي نَفْعًا وَلَا ضَرًّا إِلَّا مَا شَاءَ اللَّهُ ﴿١٨٨﴾',
-    transliteration: "La amliku linafsi naf'an wa la darran illa ma sha'allah",
+    primaryText:
+      "Qul lā amliku linafsī naf'an wa lā darran illā mā shā'allāh; walaw kuntu a'lamul-ghayba lastakthartu minal-khayri wa mā massaniyassū'; in ana illā nadhīrun wa bashīrul-liqawmin yu'minūn",
+    arabicText:
+      'قُل لَّا أَمْلِكُ لِنَفْسِي نَفْعًا وَلَا ضَرًّا إِلَّا مَا شَاءَ اللَّهُ ۚ وَلَوْ كُنتُ أَعْلَمُ الْغَيْبَ لَاسْتَكْثَرْتُ مِنَ الْخَيْرِ وَمَا مَسَّنِيَ السُّوءُ ۚ إِنْ أَنَا إِلَّا نَذِيرٌ وَبَشِيرٌ لِّقَوْمٍ يُؤْمِنُونَ ﴿١٨٨﴾',
+    transliteration:
+      "Qul lā amliku linafsī naf'an wa lā darran illā mā shā'allāh; walaw kuntu a'lamul-ghayba lastakthartu minal-khayri wa mā massaniyassū'; in ana illā nadhīrun wa bashīrul-liqawmin yu'minūn",
     englishTranslation:
-      'I hold not for myself [the power of] benefit or harm, except what Allah has willed.',
+      'Say, "I hold not for myself [the power of] benefit or harm, except what Allah has willed. And if I knew the unseen, I could have acquired much wealth, and no harm would have touched me. I am not except a warner and a bringer of good tidings to a people who believe."',
     source: "Surah Al-A'raf 7:188",
     audioKey: '7:188',
     whyThis: 'Let go of the illusion of control - only what Allah wills happens.',
@@ -1448,11 +1452,14 @@ const quranContentData: Content[] = [
   {
     id: 'quran_27_62',
     type: 'Quran',
-    primaryText: "Amman yujibul-mudtarra idha da'ahu wa yakshifus-su'a",
-    arabicText: 'أَمَّن يُجِيبُ الْمُضْطَرَّ إِذَا دَعَاهُ وَيَكْشِفُ السُّوءَ ﴿٦٢﴾',
-    transliteration: "Amman yujibul-mudtarra idha da'ahu wa yakshifus-su'a",
+    primaryText:
+      "Amman yujībul-muḍṭarra idhā da'āhu wa yakshifus-sū'a wa yaj'alukum khulafā'al-arḍ; a-ilāhun ma'allāh; qalīlam-mā tadhakkarūn",
+    arabicText:
+      'أَمَّن يُجِيبُ الْمُضْطَرَّ إِذَا دَعَاهُ وَيَكْشِفُ السُّوءَ وَيَجْعَلُكُمْ خُلَفَاءَ الْأَرْضِ ۗ أَإِلَٰهٌ مَّعَ اللَّهِ ۚ قَلِيلًا مَّا تَذَكَّرُونَ ﴿٦٢﴾',
+    transliteration:
+      "Amman yujībul-muḍṭarra idhā da'āhu wa yakshifus-sū'a wa yaj'alukum khulafā'al-arḍ; a-ilāhun ma'allāh; qalīlam-mā tadhakkarūn",
     englishTranslation:
-      'Is He [not best] who responds to the desperate one when he calls upon Him and removes evil?',
+      'Is He [not best] who responds to the desperate one when he calls upon Him and removes evil and makes you inheritors of the earth? Is there a deity with Allah? Little do you remember.',
     source: 'Surah An-Naml 27:62',
     audioKey: '27:62',
     whyThis:
@@ -1462,11 +1469,12 @@ const quranContentData: Content[] = [
   {
     id: 'quran_21_83',
     type: 'Quran',
-    primaryText: 'Anni massaniyad-durru wa anta arhamur-rahimin',
-    arabicText: 'أَنِّي مَسَّنِيَ الضُّرُّ وَأَنتَ أَرْحَمُ الرَّاحِمِينَ ﴿٨٣﴾',
-    transliteration: 'Anni massaniyad-durru wa anta arhamur-rahimin',
+    primaryText:
+      "Wa Ayyūba idh nādā rabbahū annī massaniyad-ḍurru wa anta Arḥamur-rāḥimīn",
+    arabicText: 'وَأَيُّوبَ إِذْ نَادَىٰ رَبَّهُ أَنِّي مَسَّنِيَ الضُّرُّ وَأَنتَ أَرْحَمُ الرَّاحِمِينَ ﴿٨٣﴾',
+    transliteration: "Wa Ayyūba idh nādā rabbahū annī massaniyad-ḍurru wa anta Arḥamur-rāḥimīn",
     englishTranslation:
-      'Indeed, adversity has touched me, and You are the Most Merciful of the merciful.',
+      'And [mention] Job, when he called to his Lord, "Indeed, adversity has touched me, and You are the Most Merciful of the merciful."',
     source: 'Surah Al-Anbiya 21:83',
     audioKey: '21:83',
     whyThis: "The du'a of Ayyub (AS) - acknowledge the hardship, then turn to the Most Merciful.",
@@ -1476,10 +1484,11 @@ const quranContentData: Content[] = [
     id: 'quran_9_51',
     type: 'Quran',
     primaryText:
-      "Qul lan yusibana illa ma kataballahu lana huwa mawlana; wa 'alallahi falyatawakkalil-mu'minun",
+      "Qul lan yuṣībana illā mā kataballāhu lanā huwa mawlānā; wa 'alallāhi falyatawakkalil-mu'minūn",
     arabicText:
       'قُل لَّن يُصِيبَنَا إِلَّا مَا كَتَبَ اللَّهُ لَنَا هُوَ مَوْلَانَا ۚ وَعَلَى اللَّهِ فَلْيَتَوَكَّلِ الْمُؤْمِنُونَ ﴿٥١﴾',
-    transliteration: 'Qul lan yusibana illa ma kataballahu lana huwa mawlana',
+    transliteration:
+      "Qul lan yuṣībana illā mā kataballāhu lanā huwa mawlānā; wa 'alallāhi falyatawakkalil-mu'minūn",
     englishTranslation:
       'Say, "Never will we be struck except by what Allah has decreed for us; He is our protector." And upon Allah let the believers rely.',
     source: 'Surah At-Tawbah 9:51',
