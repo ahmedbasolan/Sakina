@@ -1825,11 +1825,13 @@ const quranContentData: Content[] = [
   {
     id: 'quran_25_47',
     type: 'Quran',
-    primaryText: "Wa huwalladhi ja'ala lakumul-layla libasan wan-nawma subata",
-    arabicText: 'وَهُوَ الَّذِي جَعَلَ لَكُمُ اللَّيْلَ لِبَاسًا وَالنَّوْمَ سُبَاتًا ﴿٤٧﴾',
-    transliteration: "Wa huwalladhi ja'ala lakumul-layla libasan wan-nawma subata",
+    primaryText:
+      "Wa huwalladhī ja'ala lakumul-layla libāsan wan-nawma subātan wa ja'alan-nahāra nushūrā",
+    arabicText: 'وَهُوَ الَّذِي جَعَلَ لَكُمُ اللَّيْلَ لِبَاسًا وَالنَّوْمَ سُبَاتًا وَجَعَلَ النَّهَارَ نُشُورًا ﴿٤٧﴾',
+    transliteration:
+      "Wa huwalladhī ja'ala lakumul-layla libāsan wan-nawma subātan wa ja'alan-nahāra nushūrā",
     englishTranslation:
-      'And it is He who has made the night for you as clothing and sleep [a means for] rest.',
+      'And it is He who has made the night for you as clothing and sleep [a means for] rest and has made the day a resurrection.',
     source: 'Surah Al-Furqan 25:47',
     audioKey: '25:47',
     whyThis: 'Allah designed sleep as a mercy - rest is a divine gift, not weakness.',
@@ -1866,10 +1868,13 @@ const quranContentData: Content[] = [
   {
     id: 'quran_6_13',
     type: 'Quran',
-    primaryText: 'Wa lahu ma sakana fil-layli wan-nahar',
-    arabicText: 'وَلَهُ مَا سَكَنَ فِي اللَّيْلِ وَالنَّهَارِ ﴿١٣﴾',
-    transliteration: 'Wa lahu ma sakana fil-layli wan-nahar',
-    englishTranslation: 'And to Him belongs that which reposes by night and by day.',
+    primaryText:
+      "Wa lahū mā sakana fil-layli wan-nahār; wa Huwas-Samī'ul-'Alīm",
+    arabicText: 'وَلَهُ مَا سَكَنَ فِي اللَّيْلِ وَالنَّهَارِ ۚ وَهُوَ السَّمِيعُ الْعَلِيمُ ﴿١٣﴾',
+    transliteration:
+      "Wa lahū mā sakana fil-layli wan-nahār; wa Huwas-Samī'ul-'Alīm",
+    englishTranslation:
+      'And to His belongs that which reposes by night and by day, and He is the Hearing, the Knowing.',
     source: "Surah Al-An'am 6:13",
     audioKey: '6:13',
     whyThis:
@@ -1880,10 +1885,11 @@ const quranContentData: Content[] = [
     id: 'quran_73_1_4',
     type: 'Quran',
     primaryText:
-      "Ya ayyuhal-muzzammil. Qumil-layla illa qalila. Nisfahu awinqus minhu qalila. Aw zid 'alayhi wa rattilil-qur'ana tartila",
+      "Yā ayyuhal-muzzammil. Qumil-layla illā qalīlā. Niṣfahū awin-quṣ minhu qalīlā. Aw zid 'alayhi wa rattilil-Qur'āna tartīlā",
     arabicText:
       'يَا أَيُّهَا الْمُزَّمِّلُ ﴿١﴾ قُمِ اللَّيْلَ إِلَّا قَلِيلًا ﴿٢﴾ نِّصْفَهُ أَوِ انقُصْ مِنْهُ قَلِيلًا ﴿٣﴾ أَوْ زِدْ عَلَيْهِ وَرَتِّلِ الْقُرْآنَ تَرْتِيلًا ﴿٤﴾',
-    transliteration: 'Ya ayyuhal-muzzammil. Qumil-layla illa qalila',
+    transliteration:
+      "Yā ayyuhal-muzzammil. Qumil-layla illā qalīlā. Niṣfahū awin-quṣ minhu qalīlā. Aw zid 'alayhi wa rattilil-Qur'āna tartīlā",
     englishTranslation:
       'O you who wraps himself [in clothing], arise [to pray] the night, except for a little - half of it - or subtract from it a little. Or add to it, and recite the Quran with measured recitation.',
     source: 'Surah Al-Muzzammil 73:1-4',
@@ -1894,10 +1900,14 @@ const quranContentData: Content[] = [
   {
     id: 'quran_2_177',
     type: 'Quran',
-    primaryText: "Was-sabirina fid-darra'i wal-ba'sa'i wa hinal-ba's",
-    arabicText: 'وَالصَّابِرِينَ فِي الْبَأْسَاءِ وَالضَّرَّاءِ وَحِينَ الْبَأْسِ ﴿١٧٧﴾',
-    transliteration: "Was-sabirina fid-darra'i wal-ba'sa'i wa hinal-ba's",
-    englishTranslation: 'And those who are patient in poverty and hardship and during battle.',
+    primaryText:
+      "Laysal-birra an tuwallū wujūhakum qibalal-mashriqi wal-maghribi wa lakinnal-birra man āmana billāhi wal-yawmil-ākhiri wal-malā'ikati wal-kitābi wan-nabiyyīna wa ātal-māla 'alā ḥubbihī dhawil-qurbā wal-yatāmā wal-masākīna wabnas-sabīli was-sā'ilīna wa fir-riqābi wa aqāmaṣ-ṣalāta wa ātaz-zakāta wal-mūfūna bi-'ahdihim idhā 'āhadū waṣ-ṣābirīna fil-ba'sā'i waḍ-ḍarrā'i wa ḥīnal-ba's; ulā'ikalladhīna ṣadaqū wa ulā'ika humul-muttaqūn",
+    arabicText:
+      '۞ لَّيْسَ الْبِرَّ أَن تُوَلُّوا وُجُوهَكُمْ قِبَلَ الْمَشْرِقِ وَالْمَغْرِبِ وَلَٰكِنَّ الْبِرَّ مَنْ آمَنَ بِاللَّهِ وَالْيَوْمِ الْآخِرِ وَالْمَلَائِكَةِ وَالْكِتَابِ وَالنَّبِيِّينَ وَآتَى الْمَالَ عَلَىٰ حُبِّهِ ذَوِي الْقُرْبَىٰ وَالْيَتَامَىٰ وَالْمَسَاكِينَ وَابْنَ السَّبِيلِ وَالسَّائِلِينَ وَفِي الرِّقَابِ وَأَقَامَ الصَّلَاةَ وَآتَى الزَّكَاةَ وَالْمُوفُونَ بِعَهْدِهِمْ إِذَا عَاهَدُوا ۖ وَالصَّابِرِينَ فِي الْبَأْسَاءِ وَالضَّرَّاءِ وَحِينَ الْبَأْسِ ۗ أُولَٰئِكَ الَّذِينَ صَدَقُوا ۖ وَأُولَٰئِكَ هُمُ الْمُتَّقُونَ ﴿١٧٧﴾',
+    transliteration:
+      "Laysal-birra an tuwallū wujūhakum qibalal-mashriqi wal-maghribi wa lakinnal-birra man āmana billāhi wal-yawmil-ākhiri wal-malā'ikati wal-kitābi wan-nabiyyīna wa ātal-māla 'alā ḥubbihī dhawil-qurbā wal-yatāmā wal-masākīna wabnas-sabīli was-sā'ilīna wa fir-riqābi wa aqāmaṣ-ṣalāta wa ātaz-zakāta wal-mūfūna bi-'ahdihim idhā 'āhadū waṣ-ṣābirīna fil-ba'sā'i waḍ-ḍarrā'i wa ḥīnal-ba's; ulā'ikalladhīna ṣadaqū wa ulā'ika humul-muttaqūn",
+    englishTranslation:
+      'Righteousness is not that you turn your faces toward the east or the west, but [true] righteousness is [in] one who believes in Allah, the Last Day, the angels, the Book, and the prophets and gives wealth, in spite of love for it, to relatives, orphans, the needy, the traveler, those who ask [for help], and for freeing slaves; [and who] establishes prayer and gives zakah; [those who] fulfill their promise when they promise; and [those who] are patient in poverty and hardship and during battle. Those are the ones who have been true, and it is those who are the righteous.',
     source: 'Surah Al-Baqarah 2:177',
     audioKey: '2:177',
     whyThis: 'Patience through exhaustion is praiseworthy - your struggle is seen.',
@@ -1907,12 +1917,13 @@ const quranContentData: Content[] = [
     id: 'quran_20_130',
     type: 'Quran',
     primaryText:
-      "Wa sabbih bihamdi rabbika qabla tulu'ish-shamsi wa qabla ghurubiba wa min ana'il-layli fasabbih wa atrafa-n-nahari la'allaka tarda",
+      "Faṣbir 'alā mā yaqūlūna wa sabbiḥ bi-ḥamdi rabbika qabla ṭulū'ish-shamsi wa qabla ghurūbihā wa min ānā'il-layli fasabbiḥ wa aṭrāfan-nahāri la'allaka tarḍā",
     arabicText:
-      'وَسَبِّحْ بِحَمْدِ رَبِّكَ قَبْلَ طُلُوعِ الشَّمْسِ وَقَبْلَ غُرُوبِهَا ۖ وَمِنْ آنَاءِ اللَّيْلِ فَسَبِّحْ وَأَطْرَافَ النَّهَارِ لَعَلَّكَ تَرْضَىٰ ﴿١٣٠﴾',
-    transliteration: "Wa sabbih bihamdi rabbika qabla tulu'ish-shamsi wa qabla ghurubiha",
+      'فَاصْبِرْ عَلَىٰ مَا يَقُولُونَ وَسَبِّحْ بِحَمْدِ رَبِّكَ قَبْلَ طُلُوعِ الشَّمْسِ وَقَبْلَ غُرُوبِهَا ۖ وَمِنْ آنَاءِ اللَّيْلِ فَسَبِّحْ وَأَطْرَافَ النَّهَارِ لَعَلَّكَ تَرْضَىٰ ﴿١٣٠﴾',
+    transliteration:
+      "Faṣbir 'alā mā yaqūlūna wa sabbiḥ bi-ḥamdi rabbika qabla ṭulū'ish-shamsi wa qabla ghurūbihā wa min ānā'il-layli fasabbiḥ wa aṭrāfan-nahāri la'allaka tarḍā",
     englishTranslation:
-      'And exalt [Allah] with praise of your Lord before the rising of the sun and before its setting; and during periods of the night exalt [Him]... that you may be satisfied.',
+      'So be patient over what they say and exalt [Allah] with praise of your Lord before the rising of the sun and before its setting; and during periods of the night [exalt Him] and at the ends of the day, that you may be satisfied.',
     source: 'Surah Ta-Ha 20:130',
     audioKey: '20:130',
     whyThis: 'Dhikr at key times brings satisfaction - structure your rest around remembrance.',
