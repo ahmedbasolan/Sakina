@@ -229,16 +229,29 @@ export default function PathsScreen({
               </>
             )}
 
-            <Text style={styles.sectionTitle}>EXPLORE PATHS</Text>
-            {explorPaths.map((path) => (
+            <Text style={styles.sectionTitle}>FREE TIER</Text>
+            {explorPaths.filter(p => !p.isPremium).map((path) => (
               <PathCard
                 key={path.id}
                 title={path.title}
                 duration={`${path.duration}-Day Journey`}
                 description={path.description}
                 icon={getPathIcon(path.theme)}
-                isPremium={path.isPremium}
-                isLocked={path.isPremium && !isPremium}
+                isPremium={false}
+                onPress={() => onPathSelected(path.id)}
+              />
+            ))}
+
+            <Text style={[styles.sectionTitle, { marginTop: 24 }]}>PREMIUM JOURNEYS</Text>
+            {explorPaths.filter(p => p.isPremium).map((path) => (
+              <PathCard
+                key={path.id}
+                title={path.title}
+                duration={`${path.duration}-Day Journey`}
+                description={path.description}
+                icon={getPathIcon(path.theme)}
+                isPremium={true}
+                isLocked={!isPremium}
                 onPress={() => onPathSelected(path.id)}
               />
             ))}

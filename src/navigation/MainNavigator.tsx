@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, Alert, TouchableOpacity, Text } from 'react-native';
+import { View, StyleSheet, Alert, TouchableOpacity, Text, Dimensions, Animated } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import HomeScreen from '../screens/HomeScreen';
@@ -10,6 +10,7 @@ import PremiumPaywallScreen from '../screens/PremiumPaywallScreen';
 import PathsScreen from '../screens/PathsScreen';
 import SavedScreen from '../screens/SavedScreen';
 import SettingsScreen from '../screens/SettingsScreen';
+import { Ionicons } from '@expo/vector-icons';
 import { PathDetailScreen } from '../screens/PathDetailScreen';
 import { PathStepScreen } from '../screens/PathStepScreen';
 import { RotationEngine } from '../services/rotationEngine';
@@ -350,6 +351,7 @@ export default function MainNavigator({ rotationEngine, freemiumService }: MainN
         />
       ) : currentScreen === 'path_step' && selectedPath && currentPathStep && currentExperience ? (
         <PathStepScreen
+          key={`${selectedPath.id}-${currentPathStep.day}`}
           path={selectedPath}
           step={currentPathStep}
           userProgress={userPathProgress!}
@@ -361,36 +363,24 @@ export default function MainNavigator({ rotationEngine, freemiumService }: MainN
       ) : currentScreen === 'main' ? (
         <View style={styles.mainContainer}>
           {renderTabContent()}
-          <View
-            style={[
-              styles.bottomTabBar,
-              {
-                paddingBottom: Math.max(bottomInset, 16),
-                height: 56 + Math.max(bottomInset, 16),
-              },
-            ]}
-          >
+          <View style={styles.bottomTabBar}>
             <TabButton
-              label="Home"
-              icon="🏠"
+              icon={activeTab === 'home' ? 'home' : 'home-outline'}
               isActive={activeTab === 'home'}
               onPress={() => setActiveTab('home')}
             />
             <TabButton
-              label="Paths"
-              icon="🌱"
+              icon={activeTab === 'paths' ? 'compass' : 'compass-outline'}
               isActive={activeTab === 'paths'}
               onPress={() => setActiveTab('paths')}
             />
             <TabButton
-              label="Saved"
-              icon="💾"
+              icon={activeTab === 'saved' ? 'bookmark' : 'bookmark-outline'}
               isActive={activeTab === 'saved'}
               onPress={() => setActiveTab('saved')}
             />
             <TabButton
-              label="Settings"
-              icon="⚙️"
+              icon={activeTab === 'settings' ? 'settings' : 'settings-outline'}
               isActive={activeTab === 'settings'}
               onPress={() => setActiveTab('settings')}
             />
@@ -424,24 +414,52 @@ export default function MainNavigator({ rotationEngine, freemiumService }: MainN
 }
 
 interface TabButtonProps {
-  label: string;
-  icon: string;
+  icon: keyof typeof Ionicons.glyphMap;
   isActive: boolean;
   onPress: () => void;
 }
 
-const TabButton = ({ label, icon, isActive, onPress }: TabButtonProps) => {
+const TabButton = ({ icon, isActive, onPress }: TabButtonProps) => {
+  const animatedValue = React.useRef(new Animated.Value(isActive ? 1 : 0)).current;
+
+  useEffect(() => {
+    Animated.spring(animatedValue, {
+      toValue: isActive ? 1 : 0,
+      useNativeDriver: true,
+      friction: 8,
+      tension: 40,
+    }).start();
+  }, [isActive]);
+
   const handlePress = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     onPress();
   };
 
+  const translateY = animatedValue.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0, -4],
+  });
+
   return (
     <TouchableOpacity style={styles.tabButton} onPress={handlePress} activeOpacity={0.7}>
       <View style={styles.tabContent}>
-        <Text style={[styles.tabIcon, isActive && styles.tabIconActive]}>{icon}</Text>
-        <Text style={[styles.tabLabel, isActive && styles.tabLabelActive]}>{label}</Text>
-        {isActive && <View style={styles.tabUnderline} />}
+        <Animated.View style={{ transform: [{ translateY }] }}>
+          <Ionicons
+            name={icon}
+            size={24}
+            color={isActive ? '#2ED3C6' : 'rgba(255, 255, 255, 0.4)'}
+          />
+        </Animated.View>
+        <Animated.View
+          style={[
+            styles.activeDot,
+            {
+              opacity: animatedValue,
+              transform: [{ scale: animatedValue }]
+            }
+          ]}
+        />
       </View>
     </TouchableOpacity>
   );
@@ -456,13 +474,24 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   bottomTabBar: {
+    position: 'absolute',
+    bottom: 30,
+    left: 24,
+    right: 24,
     flexDirection: 'row',
-    backgroundColor: '#121A1F',
-    borderTopWidth: 1,
-    borderTopColor: 'rgba(255, 255, 255, 0.08)',
+    backgroundColor: 'rgba(18, 26, 31, 0.95)',
+    borderRadius: 32,
+    height: 64,
     alignItems: 'center',
     justifyContent: 'space-around',
-    height: 72,
+    paddingHorizontal: 12,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.08)',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.4,
+    shadowRadius: 12,
+    elevation: 8,
   },
   tabButton: {
     flex: 1,
@@ -473,32 +502,14 @@ const styles = StyleSheet.create({
   tabContent: {
     alignItems: 'center',
     justifyContent: 'center',
-    paddingTop: 8,
   },
-  tabUnderline: {
-    width: 24,
-    height: 2,
+  activeDot: {
+    position: 'absolute',
+    bottom: -6,
+    width: 4,
+    height: 4,
+    borderRadius: 2,
     backgroundColor: '#2ED3C6',
-    borderRadius: 1,
-    marginTop: 4,
-  },
-  tabIcon: {
-    fontSize: 22,
-    marginBottom: 2,
-    opacity: 0.6,
-  },
-  tabIconActive: {
-    opacity: 1,
-  },
-  tabLabel: {
-    fontSize: 11,
-    color: 'rgba(255, 255, 255, 0.6)',
-    fontWeight: '500',
-    marginTop: 2,
-  },
-  tabLabelActive: {
-    color: '#2ED3C6',
-    fontWeight: '600',
   },
   placeholderContainer: {
     flex: 1,
