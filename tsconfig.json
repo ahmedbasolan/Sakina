@@ -9,7 +9,7 @@
       "DOM"
     ],
     "jsx": "react-native",
-    "moduleResolution": "Node",
+    "moduleResolution": "bundler",
     "skipLibCheck": true,
     "esModuleInterop": true
   }

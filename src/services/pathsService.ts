@@ -12,17 +12,22 @@ export class PathsService {
   }
 
   getAllPaths(isPremium: boolean = false, unlockedBundleIds: string[] = []): SpiritualPath[] {
-    // Phase 1 Launch: Show only first 5 premium paths
-    const phase1PremiumIds = [
-      'path_anxiety_tawakkul',
-      'path_guilt_tawbah',
-      'path_grateful_heart',
+    const premiumIds = [
       'path_marriage_seeker',
-      'path_rizq_revolution',
       'path_wrong_marriage',
-      'path_depression_iman',
       'path_forced_marriage',
+      'path_parent_healing',
       'path_two_worlds',
+      'path_hope_after_crisis',
+      'path_addiction_recovery',
+      'path_grief_loss',
+      'path_screen_detox',
+      'path_death_awareness',
+      'path_tawbah_intensive',
+      'path_quran_connection',
+      'path_prayer_leadership',
+      'path_leaving_haram_job',
+      'path_career_choice',
     ];
 
     return STATIC_SPIRITUAL_PATHS.filter((path) => {
@@ -31,14 +36,9 @@ export class PathsService {
         return path.bundleId && unlockedBundleIds.includes(path.bundleId);
       }
 
-      // If it's a Premium path, show if in Phase 1 launch set
-      // (Full 14 paths will roll out over the year)
-      if (path.isPremium) {
-        return phase1PremiumIds.includes(path.id);
-      }
-
-      // Default: show everything else (should be none in final state, but legacy support)
-      return true;
+      // Show if it's a free path or one of the premium paths we're exposing
+      if (!path.isPremium) return true;
+      return premiumIds.includes(path.id);
     });
   }
 
@@ -100,7 +100,8 @@ export class PathsService {
     const path = this.getPathById(userProgress.pathId);
     if (!path) return 0;
 
-    return (userProgress.completedDays.length / path.duration) * 100;
+    // Use currentDay for progress as requested (e.g. Day 2 of 7 = 28%)
+    return (userProgress.currentDay / path.duration) * 100;
   }
 
   isPathCompleted(userProgress: UserPathProgress): boolean {
@@ -113,29 +114,38 @@ export class PathsService {
   // Helper method to get a motivational quote for the current step
   getStepMotivation(step: PathStep): string {
     const motivations: Record<string, string> = {
-      'Recognizing Anxiety': 'Your feelings are valid. Allah understands your heart.',
-      'Turning to Allah': 'Every moment of anxiety is an opportunity to turn to Him.',
-      "Allah's Presence": 'You are never alone in your struggles.',
-      'The Promise of Ease': 'After every difficulty, Allah promises relief.',
-      'Letting Go of Control': 'True peace comes from surrendering to His will.',
-      'Patience in Trust': 'Trust His timing, for He knows what is best.',
-      'Living with Tawakkul': 'Let trust in Allah become your way of life.',
+      'Recognizing Anxiety': '"No fatigue, nor sorrow, nor sadness... but that Allah expiates some of his sins for that." [Bukhari]',
+      'Turning to Allah': '"When anything distressed the Prophet ﷺ, he would pray." [Abu Dawud]',
+      "Allah's Presence": '"He is with you wherever you are." [Quran 57:4]',
+      'The Promise of Ease': '"Verily, with hardship comes ease." [Quran 94:6]',
+      'Letting Go of Control': '"If you depend on Allah with true reliance, He would give you provision as He gives it to birds." [Tirmidhi]',
+      'Patience in Trust': '"Trust in Allah, for He knows what is best for His servants."',
+      'Living with Tawakkul': '"Whoever relies upon Allah - then He is sufficient for him." [Quran 65:3]',
 
-      'Acknowledging Guilt': "Guilt is the heart's call to return to Allah.",
-      'The Door of Repentance': "Allah's mercy is greater than your mistakes.",
-      'Sincere Remorse': 'True repentance begins with genuine regret.',
-      'Taking Responsibility': 'Change begins with accepting responsibility.',
-      'Seeking Forgiveness': 'Allah loves to forgive, so seek His forgiveness.',
-      'Making Amends': 'Right your wrongs and purify your heart.',
-      'Renewed Purity': 'In sincere repentance, find spiritual renewal.',
+      'Acknowledging Guilt': '"Every son of Adam commits sin, and the best of those who sin are those who repent." [Tirmidhi]',
+      'The Door of Repentance': '"My Mercy encompasses all things." [Quran 7:156]',
+      'Sincere Remorse': '"Regret is repentance." [Ibn Majah]',
+      'Taking Responsibility': '"O my Lord, I have indeed wronged my soul, so forgive me." [Quran 28:16]',
+      'Seeking Forgiveness': '"Allah loves to forgive, so seek His forgiveness." [Prophetic Tradition]',
+      'Making Amends': '"Follow a bad deed with a good deed and it will wipe it out." [Tirmidhi]',
+      'Renewed Purity': '"The one who repents from sin is like one who has no sin." [Ibn Majah]',
 
-      'Understanding Anger': 'Anger is a test of your spiritual strength.',
-      "The Prophet's Example": 'Follow the best example of patience.',
-      'The Power of Silence': 'Silence in anger is a sign of strength.',
-      'Transforming Energy': 'Channel your emotions into righteous action.',
-      'The Strength of Patience': 'True strength lies in patient restraint.',
-      'Forgiveness as Freedom': 'Free yourself through forgiving others.',
-      'Inner Tranquility': 'Find peace in the patience of the righteous.',
+      'Understanding Anger': '"The strong man is the one who controls himself in a fit of rage." [Bukhari]',
+      "The Prophet's Example": '"He ﷺ never struck anyone with his hand, neither a woman nor a servant." [Muslim]',
+      'The Power of Silence': '"If any of you becomes angry, let him keep silent." [Ahmad]',
+      'Transforming Energy': '"Do not be angry, and for you is Paradise." [At-Tabarani]',
+      'The Strength of Patience': '"Whoever remains patient, Allah will bestow patience upon him." [Bukhari]',
+      'Forgiveness as Freedom': '"Forgive and overlook; do you not wish that Allah should forgive you?" [Quran 24:22]',
+      'Inner Tranquility': '"Tranquility (Sakina) is a gift from the Most Merciful into the heart of the believer."',
+
+      // Salah Transformation Journey
+      'What Steals Your Focus?': '"When a servant stands to pray, Allah turns His Face towards him, as long as he does not look away." [Bukhari]',
+      'Prepare Your Space, Prepare Your Heart': '"The whole earth has been made a place of prayer and a means of purification for me." [Sahih Muslim]',
+      'The First Takbir That Changes Everything': '"The key to prayer is purification; its beginning is the Takbir." [Abu Dawud]',
+      "Understand What You're Saying": '"Allah has divided the prayer between Himself and His servant into two halves." [Hadith Qudsi]',
+      'Let Your Body Speak': '"The closest a servant is to his Lord is when he is in prostration." [Sahih Muslim]',
+      'The Forgotten Moments': '"The Prophet ﷺ used to be as still in his transitions as his positions." [Bukhari]',
+      'Complete the Circle': '"Whoever recites Ayat al-Kursi after every prayer, nothing prevents him from entering Paradise except death." [An-Nasa\'i]',
     };
 
     return motivations[step.title] || 'Take this step with sincerity and trust in Allah.';

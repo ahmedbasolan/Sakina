@@ -130,22 +130,33 @@ export const PathDetailScreen: React.FC<PathDetailScreenProps> = ({
             <Text style={styles.sectionTitle}>Your Progress</Text>
             <View style={styles.progressCard}>
               <View style={styles.progressHeader}>
-                <Text style={styles.progressText}>
-                  Day {userProgress.currentDay} of {path.duration}
-                </Text>
+                <View>
+                  <Text style={styles.progressText}>
+                    Day {userProgress.currentDay} of {path.duration}
+                  </Text>
+                  {getCurrentStep() && (
+                    <Text style={styles.currentStepTitleSmall}>
+                      🎯 Progress: {getCurrentStep()!.title}
+                    </Text>
+                  )}
+                </View>
                 <Text style={styles.progressPercentage}>
-                  {Math.round(getProgressPercentage())}%
+                  {Math.round((userProgress.currentDay / path.duration) * 100)}%
                 </Text>
               </View>
               <View style={styles.progressBar}>
-                <View style={[styles.progressFill, { width: `${getProgressPercentage()}%` }]} />
+                <View
+                  style={[
+                    styles.progressFill,
+                    { width: `${(userProgress.currentDay / path.duration) * 100}%` },
+                  ]}
+                />
               </View>
 
               {getCurrentStep() && (
-                <View style={styles.currentStepCard}>
-                  <Text style={styles.currentStepLabel}>Current Step</Text>
-                  <Text style={styles.currentStepTitle}>{getCurrentStep()!.title}</Text>
-                  <Text style={styles.currentStepFocus}>{getCurrentStep()!.focus}</Text>
+                <View style={styles.focusContainer}>
+                  <Text style={styles.focusLabel}>Today's Focus</Text>
+                  <Text style={styles.focusText}>{getCurrentStep()!.focus}</Text>
                 </View>
               )}
             </View>
@@ -204,6 +215,12 @@ export const PathDetailScreen: React.FC<PathDetailScreenProps> = ({
                     <Text style={[styles.stepFocus, isCompleted && styles.completedStepFocus]}>
                       {step.focus}
                     </Text>
+
+                    {/* Step Preview - Quick highlights */}
+                    <View style={styles.stepPreview}>
+                      <Text style={styles.previewItem}>📖 Verse: {step.contentId.replace('quran_', '').replace('_', ':')}</Text>
+                      <Text style={styles.previewItem}>🕌 Action: {step.title.split(' ').slice(0, 3).join(' ')}...</Text>
+                    </View>
                   </View>
                 </View>
               );
@@ -232,13 +249,13 @@ export const PathDetailScreen: React.FC<PathDetailScreenProps> = ({
             >
               {path.isSpecialEdition && !isUnlocked
                 ? (() => {
-                    const bundle = SPECIAL_EDITION_BUNDLES.find((b) => b.id === path.bundleId);
-                    const basePrice = bundle?.priceAED || 47.99;
-                    const finalPrice = isPremium
-                      ? (basePrice / 2).toFixed(2)
-                      : basePrice.toFixed(2);
-                    return `Unlock Collection • AED ${finalPrice}`;
-                  })()
+                  const bundle = SPECIAL_EDITION_BUNDLES.find((b) => b.id === path.bundleId);
+                  const basePrice = bundle?.priceAED || 47.99;
+                  const finalPrice = isPremium
+                    ? (basePrice / 2).toFixed(2)
+                    : basePrice.toFixed(2);
+                  return `Unlock Collection • AED ${finalPrice}`;
+                })()
                 : !isPremium && path.isPremium
                   ? '👑 Upgrade to Premium'
                   : userProgress
@@ -395,29 +412,34 @@ const styles = StyleSheet.create({
     backgroundColor: '#2ED3C6',
     borderRadius: 4,
   },
-  currentStepCard: {
-    backgroundColor: 'rgba(46,211,198,0.10)',
-    borderRadius: 12,
-    padding: 16,
-    borderWidth: 1,
-    borderColor: 'rgba(46,211,198,0.30)',
+  currentStepTitleSmall: {
+    fontSize: 13,
+    color: 'rgba(255,255,255,0.5)',
+    marginTop: 2,
   },
-  currentStepLabel: {
-    fontSize: 12,
+  focusContainer: {
+    backgroundColor: 'rgba(46,211,198,0.05)',
+    borderRadius: 12,
+    padding: 12,
+    borderLeftWidth: 3,
+    borderLeftColor: '#2ED3C6',
+  },
+  focusLabel: {
+    fontSize: 11,
     color: '#2ED3C6',
-    fontWeight: '600',
+    fontWeight: '700',
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
     marginBottom: 4,
+  },
+  focusText: {
+    fontSize: 14,
+    color: 'rgba(255,255,255,0.9)',
+    lineHeight: 20,
   },
   currentStepTitle: {
-    fontSize: 16,
-    fontWeight: '600',
     color: '#2ED3C6',
-    marginBottom: 4,
-  },
-  currentStepFocus: {
-    fontSize: 14,
-    color: 'rgba(255,255,255,0.70)',
-    lineHeight: 20,
+    fontWeight: '700',
   },
 
   // Curriculum Section
@@ -494,9 +516,23 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: 'rgba(255,255,255,0.60)',
     lineHeight: 16,
+    marginBottom: 8,
   },
   completedStepFocus: {
     color: 'rgba(255,255,255,0.40)',
+  },
+  stepPreview: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 12,
+  },
+  previewItem: {
+    fontSize: 11,
+    color: 'rgba(255,255,255,0.4)',
+    backgroundColor: 'rgba(255,255,255,0.05)',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 8,
   },
 
   // Action Section
