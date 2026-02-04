@@ -1135,12 +1135,14 @@ const quranContentData: Content[] = [
   {
     id: 'quran_8_10',
     type: 'Quran',
-    primaryText: "Wa litatma'inna bihi qulubukum; wa man-nasru illa min 'indillah",
+    primaryText:
+      "Wa mā ja'alahullāhu illā bushrā wa li-taṭma'inna bihī qulūbukum; wa man-naṣru illā min 'indillāh; innallāha 'Azīzun Ḥakīm",
     arabicText:
-      'وَمَا جَعَلَهُ اللَّهُ إِلَّا بُشْرَىٰ وَلِتَطْمَئِنَّ بِهِ قُلُوبُكُمْ ۚ وَمَا النَّصْرُ إِلَّا مِنْ عِندِ اللَّهِ ﴿١٠﴾',
-    transliteration: "Wa litatma'inna bihi qulubukum; wa man-nasru illa min 'indillah",
+      'وَمَا جَعَلَهُ ٱللَّهُ إِلَّا بُشْرَىٰ وَلِتَطْمَئِنَّ بِهِۦ قُلُوبُكُمْ ۚ وَمَا ٱلنَّصْرُ إِلَّا مِنْ عِندِ ٱللَّهِ ۚ إِنَّ ٱللَّهَ عَزِيزٌ حَكِيمٌ ﴿١٠﴾',
+    transliteration:
+      "Wa mā ja'alahullāhu illā bushrā wa li-taṭma'inna bihī qulūbukum; wa man-naṣru illā min 'indillāh; innallāha 'Azīzun Ḥakīm",
     englishTranslation:
-      'And Allah made it not but good tidings and so that your hearts would be assured thereby. And victory is not but from Allah.',
+      'And Allah made it not but good tidings and so that your hearts would be assured thereby. And victory is not but from Allah. Indeed, Allah is Exalted in Might and Wise.',
     source: 'Surah Al-Anfal 8:10',
     audioKey: '8:10',
     whyThis:
@@ -1150,11 +1152,14 @@ const quranContentData: Content[] = [
   {
     id: 'quran_9_26',
     type: 'Quran',
-    primaryText: "Summa anzalallahu sakeenatahu 'ala rasulihi wa 'alal-mu'minin",
-    arabicText: 'ثُمَّ أَنزَلَ اللَّهُ سَكِينَتَهُ عَلَىٰ رَسُولِهِ وَعَلَى الْمُؤْمِنِينَ ﴿٢٦﴾',
-    transliteration: "Summa anzalallahu sakeenatahu 'ala rasulihi wa 'alal-mu'minin",
+    primaryText:
+      "Thumma anzalallāhu sakīnatahū 'alā rasūlihī wa 'alal-mu'minīna wa anzala junūdan lam tarawhā wa 'adhdhaballadhīna kafarū; wa dhālika jazā'ul-kāfirīn",
+    arabicText:
+      'ثُمَّ أَنزَلَ اللَّهُ سَكِينَتَهُ عَلَىٰ رَسُولِهِ وَعَلَى الْمُؤْمِنِينَ وَأَنزَلَ جُنُودًا لَّمْ تَرَوْهَا وَعَذَّبَ الَّذِينَ كَفَرُوا ۚ وَذَٰلِكَ جَزَاءُ الْكَافِرِينَ ﴿٢٦﴾',
+    transliteration:
+      "Thumma anzalallāhu sakīnatahū 'alā rasūlihī wa 'alal-mu'minīna wa anzala junūdan lam tarawhā wa 'adhdhaballadhīna kafarū; wa dhālika jazā'ul-kāfirīn",
     englishTranslation:
-      'Then Allah sent down His tranquillity upon His Messenger and upon the believers.',
+      'Then Allah sent down His tranquillity upon His Messenger and upon the believers and sent down soldiers angels whom you did not see and punished those who disbelieved. And that is the recompense of the disbelievers.',
     source: 'Surah At-Tawbah 9:26',
     audioKey: '9:26',
     whyThis:
@@ -1164,11 +1169,14 @@ const quranContentData: Content[] = [
   {
     id: 'quran_9_40',
     type: 'Quran',
-    primaryText: "La tahzan innallaha ma'ana; fa anzalallahu sakeenatahu 'alayh",
-    arabicText: 'لَا تَحْزَنْ إِنَّ اللَّهَ مَعَنَا ۖ فَأَنزَلَ اللَّهُ سَكِينَتَهُ عَلَيْهِ ﴿٤٠﴾',
-    transliteration: "La tahzan innallaha ma'ana; fa anzalallahu sakeenatahu 'alayh",
+    primaryText:
+      "Illā tanṣurūhu faqad naṣarahullāhu idh akhrajahulladhīna kafarū thāniyath-nayni idh humā fil-ghāri idh yaqūlu li-ṣāḥibihī lā taḥzan innallāha ma'anā; fa-anzalallāhu sakīnatahū 'alayhi wa ayyadahū bi-junūdin lam tarawhā wa ja'ala kalimatal-ladhīna kafar us-suflā; wa kalimatullāhi hiyal-'ulyā; wallāhu 'Azīzun Ḥakīm",
+    arabicText:
+      'إِلَّا تَنصُرُوهُ فَقَدْ نَصَرَهُ اللَّهُ إِذْ أَخْرَجَهُ الَّذِينَ كَفَرُوا ثَانِيَ اثْنَيْنِ إِذْ هُمَا فِي الْغَارِ إِذْ يَقُولُ لِصَاحِبِهِ لَا تَحْزَنْ إِنَّ اللَّهَ مَعَنَا ۖ فَأَنزَلَ اللَّهُ سَكِينَتَهُ عَلَيْهِ وَأَيَّدَهُ بِجُنُودٍ لَّمْ تَرَوْهَا وَجَعَلَ كَلِمَةَ الَّذِينَ كَفَرُوا السُّفْلَىٰ ۗ وَكَلِمَةُ اللَّهِ هِيَ الْعُلْيَا ۗ وَاللَّهُ عَزِيزٌ حَكِيمٌ ﴿٤٠﴾',
+    transliteration:
+      "Illā tanṣurūhu faqad naṣarahullāhu idh akhrajahulladhīna kafarū thāniyath-nayni idh humā fil-ghāri idh yaqūlu li-ṣāḥibihī lā taḥzan innallāha ma'anā; fa-anzalallāhu sakīnatahū 'alayhi wa ayyadahū bi-junūdin lam tarawhā wa ja'ala kalimatal-ladhīna kafar us-suflā; wa kalimatullāhi hiyal-'ulyā; wallāhu 'Azīzun Ḥakīm",
     englishTranslation:
-      '"Do not grieve; indeed Allah is with us." And Allah sent down his tranquillity upon him.',
+      'If you do not aid the Prophet - Allah has already aided him when those who disbelieved had driven him out [of Makkah] as one of two, when they were in the cave and he said to his companion, "Do not grieve; indeed Allah is with us." And Allah sent down his tranquility upon him and supported him with angels you did not see and made the word of those who disbelieved the lowest, while the word of Allah - that is the highest. And Allah is Exalted in Might and Wise.',
     source: 'Surah At-Tawbah 9:40',
     audioKey: '9:40',
     whyThis:
@@ -1487,13 +1495,13 @@ const quranContentData: Content[] = [
     id: 'quran_48_18',
     type: 'Quran',
     primaryText:
-      "Laqad radiyallahu 'anil-mu'minina idh yubay'unaka tahtas-shajarati fa'alima ma fi qulubihim fa-anzalas-sakinata 'alayhim",
+      "Laqad raḍiyallāhu 'anil-mu'minīna idh yubāyi'ūnaka taḥtash-shajarati fa'alima mā fī qulūbihim fa-anzalas-sakīnata 'alayhim wa athābahum fatḥan qarībā",
     arabicText:
-      'لَّقَدْ رَضِيَ اللَّهُ عَنِ الْمُؤْمِنِينَ إِذْ يُبَايِعُونَكَ تَحْتَ الشَّجَرَةِ فَعَلِمَ مَا فِي قُلُوبِهِمْ فَأَنزَلَ السَّكِينَةَ عَلَيْهِمْ ﴿١٨﴾',
+      'لَّقَدْ رَضِيَ اللَّهُ عَنِ الْمُؤْمِنِينَ إِذْ يُبَايِعُونَكَ تَحْتَ الشَّجَرَةِ فَعَلِمَ مَا فِي قُلُوبِهِمْ فَأَنزَلَ السَّكِينَةَ عَلَيْهِمْ وَأَثَابَهُمْ فَتْحًا قَرِيبًا ﴿١٨﴾',
     transliteration:
-      "Laqad radiyallahu 'anil-mu'minina idh yubay'unaka tahtas-shajarati fa'alima ma fi qulubihim fa-anzalas-sakinata 'alayhim",
+      "Laqad raḍiyallāhu 'anil-mu'minīna idh yubāyi'ūnaka taḥtash-shajarati fa'alima mā fī qulūbihim fa-anzalas-sakīnata 'alayhim wa athābahum fatḥan qarībā",
     englishTranslation:
-      'Certainly was Allah pleased with the believers when they pledged allegiance to you under the tree, and He knew what was in their hearts, so He sent down tranquility upon them.',
+      'Certainly was Allah pleased with the believers when they pledged allegiance to you, [O Muhammad], under the tree, and He knew what was in their hearts, so He sent down tranquillity upon them and rewarded them with an imminent conquest.',
     source: 'Surah Al-Fath 48:18',
     audioKey: '48:18',
     whyThis:
@@ -1503,10 +1511,14 @@ const quranContentData: Content[] = [
   {
     id: 'quran_2_208',
     type: 'Quran',
-    primaryText: 'Ya ayyuhalladhina amanu-dkhulu fis-silmi kaffah',
-    arabicText: 'يَا أَيُّهَا الَّذِينَ آمَنُوا ادْخُلُوا فِي السِّلْمِ كَافَّةً ﴿٢٠٨﴾',
-    transliteration: 'Ya ayyuhalladhina amanu-dkhulu fis-silmi kaffah',
-    englishTranslation: 'O you who have believed, enter into Islam completely [and perfectly].',
+    primaryText:
+      "Yā ayyuhalladhīna āmanud-khulū fis-silmi kāffatan wa lā tattabi'ū khuṭuwātish-shayṭān; innahū lakum 'aduwwun mubīn",
+    arabicText:
+      'يَا أَيُّهَا الَّذِينَ آمَنُوا ادْخُلُوا فِي السِّلْمِ كَافَّةً وَلَا تَتَّبِعُوا خُطُوَاتِ الشَّيْطَانِ ۚ إِنَّهُ لَكُمْ عَدُوٌّ مُّبِينٌ ﴿٢٠٨﴾',
+    transliteration:
+      "Yā ayyuhalladhīna āmanud-khulū fis-silmi kāffatan wa lā tattabi'ū khuṭuwātish-shayṭān; innahū lakum 'aduwwun mubīn",
+    englishTranslation:
+      'O you who have believed, enter into Islam completely [and perfectly] and do not follow the footsteps of Satan. Indeed, he is to you a clear enemy.',
     source: 'Surah Al-Baqarah 2:208',
     audioKey: '2:208',
     whyThis:
@@ -1516,10 +1528,14 @@ const quranContentData: Content[] = [
   {
     id: 'quran_6_54',
     type: 'Quran',
-    primaryText: "Salamun 'alaykum kataba rabbukum 'ala nafsihi-r-rahmah",
-    arabicText: 'سَلَامٌ عَلَيْكُمْ ۖ كَتَبَ رَبُّكُمْ عَلَىٰ نَفْسِهِ الرَّحْمَةَ ﴿٥٤﴾',
-    transliteration: "Salamun 'alaykum kataba rabbukum 'ala nafsihi-r-rahmah",
-    englishTranslation: 'Peace be upon you. Your Lord has decreed upon Himself mercy.',
+    primaryText:
+      "Wa idhā jā'akal-ladhīna yu'minūna bi-āyātinā fa-qul salāmun 'alaykum; kataba rabbukum 'alā nafsihir-raḥmata annahū man 'amila minkum sū'an bi-jahālatin thumma tāba min ba'dihī wa aṣlaḥa fa-annahū Ghafūrur-Raḥīm",
+    arabicText:
+      'وَإِذَا جَاءَكَ الَّذِينَ يُؤْمِنُونَ بِآيَاتِنَا فَقُلْ سَلَامٌ عَلَيْكُمْ ۖ كَتَبَ رَبُّكُمْ عَلَىٰ نَفْسِهِ الرَّحْمَةَ ۖ أَنَّهُ مَنْ عَمِلَ مِنكُمْ سُوءًا بِجَهَالَةٍ ثُمَّ تَابَ مِن بَعْدِهِ وَأَصْلَحَ فَأَنَّهُ غَفُورٌ رَّحِيمٌ ﴿٥٤﴾',
+    transliteration:
+      "Wa idhā jā'akal-ladhīna yu'minūna bi-āyātinā fa-qul salāmun 'alaykum; kataba rabbukum 'alā nafsihir-raḥmata annahū man 'amila minkum sū'an bi-jahālatin thumma tāba min ba'dihī wa aṣlaḥa fa-annahū Ghafūrur-Raḥīm",
+    englishTranslation:
+      'And when those come to you who believe in Our verses, say, "Peace be upon you. Your Lord has decreed upon Himself mercy: that any of you who does wrong out of ignorance and then repents after that and corrects himself - indeed, He is Forgiving and Merciful."',
     source: "Surah Al-An'am 6:54",
     audioKey: '6:54',
     whyThis: 'Allah greets the believers with peace and has obligated mercy upon Himself.',
@@ -1529,13 +1545,13 @@ const quranContentData: Content[] = [
     id: 'quran_16_32',
     type: 'Quran',
     primaryText:
-      "Alladhina tatawaffahumul-mala'ikatu tayyibina yaquluna salamun 'alaykumu-dkhulul-jannata",
+      "Alladhīna tatawaffāhumul-malā'ikatu ṭayyibīna yaqūlūna salāmun 'alaykumud-khulul-jannata bimā kuntum ta'malūn",
     arabicText:
-      'الَّذِينَ تَتَوَفَّاهُمُ الْمَلَائِكَةُ طَيِّبِينَ ۙ يَقُولُونَ سَلَامٌ عَلَيْكُمُ ادْخُلُوا الْجَنَّةَ ﴿٣٢﴾',
+      'الَّذِينَ تَتَوَفَّاهُمُ الْمَلَائِكَةُ طَيِّبِينَ ۙ يَقُولُونَ سَلَامٌ عَلَيْكُمُ ادْخُلُوا الْجَنَّةَ بِمَا كُنتُمْ تَعْمَلُونَ ﴿٣٢﴾',
     transliteration:
-      "Alladhina tatawaffahumul-mala'ikatu tayyibina yaquluna salamun 'alaykumu-dkhulul-jannata",
+      "Alladhīna tatawaffāhumul-malā'ikatu ṭayyibīna yaqūlūna salāmun 'alaykumud-khulul-jannata bimā kuntum ta'malūn",
     englishTranslation:
-      'The ones whom the angels take in death, being good and pure; [the angels] will say, "Peace be upon you. Enter Paradise."',
+      'The ones whom the angels take in death, [being] good and pure; [the angels] will say, "Peace be upon you. Enter Paradise for what you used to do."',
     source: 'Surah An-Nahl 16:32',
     audioKey: '16:32',
     whyThis:
