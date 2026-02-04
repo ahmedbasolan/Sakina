@@ -113,7 +113,10 @@ const GuidanceCardFace: React.FC<GuidanceCardFaceProps> = (props) => {
                                 <View style={styles.verseSection}>
                                     <ArabicText
                                         text={arabicText}
-                                        style={[isLongArabic && !isExpanded && styles.arabicTextTruncated]}
+                                        style={[
+                                            styles.arabicSecondaryText,
+                                            isLongArabic && !isExpanded && styles.arabicTextTruncated
+                                        ].filter(Boolean) as any}
                                         numberOfLines={isExpanded ? undefined : (isLongArabic ? 6 : undefined)}
                                     />
                                 </View>
@@ -129,7 +132,7 @@ const GuidanceCardFace: React.FC<GuidanceCardFaceProps> = (props) => {
                                             styles.arabicPrimaryText,
                                             isLongArabic && !isExpanded && styles.arabicTextTruncated,
                                             arabicText.length > 200 && styles.arabicPrimaryTextCompact,
-                                        ]}
+                                        ].filter(Boolean) as any}
                                         numberOfLines={isExpanded ? undefined : (isLongArabic ? 8 : undefined)}
                                     />
                                     <Text
@@ -137,7 +140,7 @@ const GuidanceCardFace: React.FC<GuidanceCardFaceProps> = (props) => {
                                             styles.primaryText,
                                             styles.translationSecondaryText,
                                             primaryText.length > 300 && styles.primaryTextCompact,
-                                        ]}
+                                        ].filter(Boolean) as any}
                                         numberOfLines={isExpanded ? undefined : (isLongEnglish ? 8 : undefined)}
                                     >
                                         {primaryText}
@@ -228,7 +231,7 @@ const GuidanceCardFace: React.FC<GuidanceCardFaceProps> = (props) => {
                             isVerse={isVerse}
                             isAction={isAction}
                             isBack={isBack}
-                            isLocked={isLocked}
+                            isLocked={isLocked || false}
                         />
                     </View>
                 </View>
@@ -319,10 +322,13 @@ const styles = StyleSheet.create({
         fontSize: 34,
         lineHeight: 56,
         marginBottom: Grid.space20,
+        color: Colors.white,
+    },
+    arabicSecondaryText: {
         color: Colors.teal,
-        textShadowColor: 'rgba(46, 211, 198, 0.5)',
+        textShadowColor: 'rgba(46, 211, 198, 0.4)',
         textShadowOffset: { width: 0, height: 0 },
-        textShadowRadius: 15,
+        textShadowRadius: 10,
     },
     arabicPrimaryTextCompact: {
         fontSize: 28,
@@ -331,7 +337,7 @@ const styles = StyleSheet.create({
     translationSecondaryText: {
         fontSize: Typography.sizeSmall + 2,
         lineHeight: 24,
-        color: Colors.whiteDim,
+        color: Colors.teal,
         fontStyle: 'italic',
         textAlign: 'center',
         marginBottom: Grid.space16,
@@ -344,7 +350,7 @@ const styles = StyleSheet.create({
     },
     transliteration: {
         fontSize: Typography.sizeBody,
-        color: Colors.white,
+        color: Colors.teal,
         fontStyle: 'italic',
         textAlign: 'center',
         marginBottom: Grid.space16,
