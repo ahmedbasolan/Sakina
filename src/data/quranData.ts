@@ -570,13 +570,13 @@ const quranContentData: Content[] = [
     id: 'quran_3_159',
     type: 'Quran',
     primaryText:
-      "Fa'fu 'anhum wastaghfir lahum wa shawirhum fil-amr; fa-idha 'azamta fatawakkal 'alallah",
+      "Fabimā raḥmatin minallāhi linta lahum. Wa law kunta faẓẓan ghalīẓal-qalbi lanfaḍḍū min ḥawlik. Fa'fu 'anhum wastaghfir lahum wa shāwirhum fil-amr; fa-idhā 'azamta fatawakkal 'alallāh",
     arabicText:
-      'فَاعْفُ عَنْهُمْ وَاسْتَغْفِرْ لَهُمْ وَشَاوِرْهُمْ فِي الْأَمْرِ ۖ فَإِذَا عَزَمْتَ فَتَوَكَّلْ عَلَى اللَّهِ ﴿١٥٩﴾',
+      'فَبِمَا رَحْمَةٍ مِّنَ اللَّهِ لِنتَ لَهُمْ ۖ وَلَوْ كُنتَ فَظًّا غَلِيظَ الْقَلْبِ لَانفَضُّوا مِنْ حَوْلِكَ ۖ فَاعْفُ عَنْهُمْ وَاسْتَغْفِرْ لَهُمْ وَشَاوِرْهُمْ فِي الْأَمْرِ ۖ فَإِذَا عَزَمْتَ فَتَوَكَّلْ عَلَى اللَّهِ ۚ إِنَّ اللَّهَ يُحِبُّ الْمُتَوَكِّلِينَ ﴿١٥٩﴾',
     transliteration:
-      "Fa'fu 'anhum wastaghfir lahum wa shawirhum fil-amr; fa-idha 'azamta fatawakkal 'alallah",
+      "Fabimā raḥmatin minallāhi linta lahum. Wa law kunta faẓẓan ghalīẓal-qalbi lanfaḍḍū min ḥawlik. Fa'fu 'anhum wastaghfir lahum wa shāwirhum fil-amr; fa-idhā 'azamta fatawakkal 'alallāh",
     englishTranslation:
-      'Pardon them and ask forgiveness for them and consult them in the matter. And when you have decided, then rely upon Allah.',
+      'So by mercy from Allah, [O Muhammad], you were lenient with them. And if you had been rude [in speech] and harsh in heart, they would have disbanded from about you. So pardon them and ask forgiveness for them and consult them in the matter. And when you have decided, then rely upon Allah.',
     source: 'Surah Ali Imran 3:159',
     audioKey: '3:159',
     whyThis:
@@ -586,11 +586,14 @@ const quranContentData: Content[] = [
   {
     id: 'quran_24_22',
     type: 'Quran',
-    primaryText: "Wal-ya'fu wal-yasfahu; ala tuhibbuna an yaghfirallahu lakum",
-    arabicText: 'وَلْيَعْفُوا وَلْيَصْفَحُوا ۗ أَلَا تُحِبُّونَ أَن يَغْفِرَ اللَّهُ لَكُمْ ﴿٢٢﴾',
-    transliteration: "Wal-ya'fu wal-yasfahu; ala tuhibbuna an yaghfirallahu lakum",
+    primaryText:
+      "Wa lā ya'tali ulul-faḍli minkum was-sa'ati an yu'tū ulil-qurbā wal-masākīna wal-muhājirīna fī sabīlillāh; wal-ya'fū wal-yaṣfaḥū; alā tuḥibbūna an yaghfirallāhu lakum. Wallāhu Ghafūrur-Raḥīm.",
+    arabicText:
+      'وَلَا يَأْتَلِ أُولُو الْفَضْلِ مِنكُمْ وَالسَّعَةِ أَن يُؤْتُوا أُولِي الْقُرْبَىٰ وَالْمَسَاكِينَ وَالْمُهَاجِرِينَ فِي سَبِيلِ اللَّهِ ۖ وَلْيَعْفُوا وَلْيَصْفَحُوا ۗ أَلَا تُحِبُّونَ أَن يَغْفِرَ اللَّهُ لَكُمْ ۗ وَاللَّهُ غَفُورٌ رَّحِيمٌ ﴿٢٢﴾',
+    transliteration:
+      "Wa lā ya'tali ulul-faḍli minkum was-sa'ati an yu'tū ulil-qurbā wal-masākīna wal-muhājirīna fī sabīlillāh; wal-ya'fū wal-yaṣfaḥū; alā tuḥibbūna an yaghfirallāhu lakum. Wallāhu Ghafūrur-Raḥīm.",
     englishTranslation:
-      'Let them pardon and overlook. Would you not like that Allah should forgive you?',
+      'And let not those of virtue among you and wealth swear not to give [aid] to their relatives and the needy and the emigrants for the cause of Allah, and let them pardon and overlook. Would you not like that Allah should forgive you? And Allah is Forgiving and Merciful.',
     source: 'Surah An-Nur 24:22',
     audioKey: '24:22',
     whyThis:
@@ -600,10 +603,14 @@ const quranContentData: Content[] = [
   {
     id: 'quran_16_126',
     type: 'Quran',
-    primaryText: 'Wa la-in sabartum lahuwa khayrul-lis-sabirin',
-    arabicText: 'وَلَئِن صَبَرْتُمْ لَهُوَ خَيْرٌ لِّلصَّابِرِينَ ﴿١٢٦﴾',
-    transliteration: 'Wa la-in sabartum lahuwa khayrul-lis-sabirin',
-    englishTranslation: 'But if you are patient - it is better for those who are patient.',
+    primaryText:
+      "Wa in 'āqabtum fa'āqibū bimithli mā 'ūqibtum bih; wa la-in ṣabartum lahuwa khayrul-liṣ-ṣābirīn",
+    arabicText:
+      'وَإِنْ عَاقَبْتُمْ فَعَاقِبُوا بِمِثْلِ مَا عُوقِبْتُم بِهِ ۖ وَلَئِن صَبَرْتُمْ لَهُوَ خَيْرٌ لِّلصَّابِرِينَ ﴿١٢٦﴾',
+    transliteration:
+      "Wa in 'āqabtum fa'āqibū bimithli mā 'ūqibtum bih; wa la-in ṣabartum lahuwa khayrul-liṣ-ṣābirīn",
+    englishTranslation:
+      'And if you punish [an enemy, O believers], punish with an equivalent of that with which you were harmed. But if you are patient - it is better for those who are patient.',
     source: 'Surah An-Nahl 16:126',
     audioKey: '16:126',
     whyThis: 'Patience is always the better choice for those who can practice it.',
@@ -612,11 +619,14 @@ const quranContentData: Content[] = [
   {
     id: 'quran_5_13',
     type: 'Quran',
-    primaryText: "Fa'fu 'anhum wasfah; innallaha yuhibbul-muhsinin",
-    arabicText: 'فَاعْفُ عَنْهُمْ وَاصْفَحْ ۚ إِنَّ اللَّهَ يُحِبُّ الْمُحْسِنِينَ ﴿١٣﴾',
-    transliteration: "Fa'fu 'anhum wasfah; innallaha yuhibbul-muhsinin",
+    primaryText:
+      "Fa-bima naqḍihim mīthāqahum la'annāhum wa ja'alnā qulūbahum qāsiyah. Yuḥarrifūnal-kalima 'an mawāḍi'ihi wa nasū ḥaẓẓan mimmā dhukkirū bih. Wa lā tazālu taṭṭali'u 'alā khā'inatin minhum illā qalīlan minhum. Fa'fu 'anhum waṣfaḥ; innallāha yuḥibbul-muḥsinīn.",
+    arabicText:
+      'فَبِمَا نَقْضِهِم مِّيثَاقَهُمْ لَعَنَّاهُمْ وَجَعَلْنَا قُلُوبَهُمْ قَاسِيَةً ۖ يُحَرِّفُونَ الْكَلِمَ عَن مَّوَاضِعِهِ ۙ وَنَسُوا حَظًّا مِّمَّا ذُكِّرُوا بِهِ ۚ وَلَا تَزَالُ تَطَّلِعُ عَلَىٰ خَائِنَةٍ مِّنْهُمْ إِلَّا قَلِيلًا مِّنْهُمْ ۖ فَاعْفُ عَنْهُمْ وَاصْفَحْ ۚ إِنَّ اللَّهَ يُحِبُّ الْمُحْسِنِينَ ﴿١٣﴾',
+    transliteration:
+      "Fa-bima naqḍihim mīthāqahum la'annāhum wa ja'alnā qulūbahum qāsiyah. Yuḥarrifūnal-kalima 'an mawāḍi'ihi wa nasū ḥaẓẓan mimmā dhukkirū bih. Wa lā tazālu taṭṭali'u 'alā khā'inatin minhum illā qalīlan minhum. Fa'fu 'anhum waṣfaḥ; innallāha yuḥibbul-muḥsinīn.",
     englishTranslation:
-      'But pardon them and overlook [their misdeeds]. Indeed, Allah loves the doers of good.',
+      'So for their breaking of the covenant We cursed them and made their hearts hard. They distort words from their [proper] usages and have forgotten a portion of that of which they were reminded. And you will still observe deceit among them, except a few of them. But pardon them and overlook [their misdeeds]. Indeed, Allah loves the doers of good.',
     source: 'Surah Al-Maidah 5:13',
     audioKey: '5:13',
     whyThis: 'Pardoning and overlooking makes you among those Allah loves.',
@@ -625,11 +635,14 @@ const quranContentData: Content[] = [
   {
     id: 'quran_64_14',
     type: 'Quran',
-    primaryText: "Wa in ta'fu wa tasfahū wa taghfirū fa innallaha ghafurur-rahim",
-    arabicText: 'وَإِن تَعْفُوا وَتَصْفَحُوا وَتَغْفِرُوا فَإِنَّ اللَّهَ غَفُورٌ رَّحِيمٌ ﴿١٤﴾',
-    transliteration: "Wa in ta'fu wa tasfahū wa taghfirū fa innallaha ghafurur-rahim",
+    primaryText:
+      "Yā ayyuhalladhīna āmanū inna min azwājikum wa awlādikum 'aduwwan lakum faḥdharūhum; wa in ta'fū wa taṣfaḥū wa taghfirū fa-innallāha Ghafūrur-Raḥīm",
+    arabicText:
+      'يَا أَيُّهَا الَّذِينَ آمَنُوا إِنَّ مِنْ أَزْوَاجِكُمْ وَأَوْلَادِكُمْ عَدُوًّا لَّكُمْ فَاحْذَرُوهُمْ ۚ وَإِن تَعْفُوا وَتَصْفَحُوا وَتَغْفِرُوا فَإِنَّ اللَّهَ غَفُورٌ رَّحِيمٌ ﴿١٤﴾',
+    transliteration:
+      "Yā ayyuhalladhīna āmanū inna min azwājikum wa awlādikum 'aduwwan lakum faḥdharūhum; wa in ta'fū wa taṣfaḥū wa taghfirū fa-innallāha Ghafūrur-Raḥīm",
     englishTranslation:
-      'But if you pardon and overlook and forgive - then indeed, Allah is Forgiving and Merciful.',
+      'O you who have believed, indeed, among your wives and your children are enemies to you, so beware of them. But if you pardon and overlook and forgive - then indeed, Allah is Forgiving and Merciful.',
     source: 'Surah At-Taghabun 64:14',
     audioKey: '64:14',
     whyThis:
