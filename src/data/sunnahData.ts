@@ -153,12 +153,12 @@ export const sunnahContentData: Content[] = [
         source: 'Sahih al-Bukhari 5641 / Sahih Muslim 2573',
         whyThis: 'Prophetic reassurance that your current pain is not in vain—it is actually purifying your soul.',
         difficulty: 2,
-        moods: ['Sad', 'Tired'],
+        moods: ['Sad', 'Stressed'],
     },
 
-    // === TIRED ===
+    // === VITALITY & ENERGIZED ===
     {
-        id: 'dua_88_tired',
+        id: 'dua_88_vitality',
         type: 'Dua',
         primaryText: 'Ya Hayyu Ya Qayyum: O Ever-Living, O Sustainer...',
         arabicText: 'يَا حَيُّ يَا قَيُّومُ بِرَحْمَتِكَ أَسْتَغيثُ أَصْلِحْ لِي شَأْنِيَ كُلَّهُ وَلاَ تَكِلْنِي إِلَى نَفْسِي طَرْفَةَ عَيْنٍ',
@@ -168,7 +168,7 @@ export const sunnahContentData: Content[] = [
         source: 'Hisn al-Muslim 88 / Sunan al-Nasa\'i 603',
         whyThis: 'The Prophet (pbuh) recommended this to Fatimah (ra) for vitality.',
         difficulty: 1,
-        moods: ['Tired'],
+        moods: ['Energized', 'Anxious'],
     },
     {
         id: 'practice_qaylulah',
@@ -178,7 +178,7 @@ export const sunnahContentData: Content[] = [
         source: 'Sahih al-Bukhari 6248 / Al-Mujam al-Awsat 769',
         whyThis: 'The Prophet (pbuh) used these brief periods of rest to sustain himself for night prayers.',
         difficulty: 2,
-        moods: ['Tired'],
+        moods: ['Energized', 'Stressed'],
     },
     {
         id: 'practice_morning_dhikr_lite',
@@ -188,7 +188,7 @@ export const sunnahContentData: Content[] = [
         source: 'Hisn al-Muslim 75-80',
         whyThis: 'Prophetic shield against spiritual and physical harm during the day.',
         difficulty: 2,
-        moods: ['Tired', 'Hopeful'],
+        moods: ['Energized', 'Hopeful'],
     },
 
     // === CALM ===
@@ -215,7 +215,7 @@ export const sunnahContentData: Content[] = [
         whyThis: 'The Prophet (pbuh) taught this to Fatimah (ra) as a gift better than a servant.',
         repeatCount: 100,
         difficulty: 2,
-        moods: ['Calm', 'Tired'],
+        moods: ['Calm', 'Content'],
     },
 
     // === GRATEFUL ===
@@ -302,6 +302,6 @@ export const sunnahContentData: Content[] = [
         whyThis: '"If anyone constantly seeks pardon, Allah will appoint for him a way out of every distress."',
         repeatCount: 100,
         difficulty: 3,
-        moods: ['Anxious', 'Stressed', 'Sad', 'Angry', 'Tired', 'Hopeful', 'Calm', 'Content', 'Grateful', 'Happy', 'Energized'],
+        moods: ['Anxious', 'Stressed', 'Sad', 'Angry', 'Hopeful', 'Calm', 'Content', 'Grateful', 'Happy', 'Energized'],
     },
 ];

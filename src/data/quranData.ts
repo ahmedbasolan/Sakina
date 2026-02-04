@@ -696,7 +696,7 @@ const quranContentData: Content[] = [
     source: 'Surah An-Nisa 4:110',
     audioKey: '4:110',
     whyThis: 'Seeking forgiveness guarantees finding it.',
-    moods: ['Sad'],
+    moods: ['Guilty'],
   },
   {
     id: 'quran_25_70',
@@ -708,40 +708,44 @@ const quranContentData: Content[] = [
     transliteration:
       "Illā man tāba wa āmana wa 'amila 'amalan sālihan fa'ūlā'ika yubad-dilullāhu say-yi'ātihim hasanāt",
     englishTranslation:
-      'Except for those who repent, believe and do righteous work. For them Allah will replace their evil deeds with good.',
+      'Except for those who repent, believe and do righteous work. For them Allah will replace their evil deeds with good. And ever is Allah Forgiving and Merciful.',
     source: 'Surah Al-Furqan 25:70',
     audioKey: '25:70',
     whyThis: "True repentance doesn't just erase sins - it transforms them into good deeds.",
-    moods: ['Sad'],
+    moods: ['Guilty'],
   },
   {
     id: 'quran_3_135',
     type: 'Quran',
     primaryText:
-      "Walladhīna idhā fa'alū fāhishatan aw żalamū anfusahum dhakarullāha fas-tagh-farū lidhunūbihim; wa man yagh-firudh-dhunūba illallāh",
+      "Walladhīna idhā fa'alū fāhishatan aw żalamū anfusahum dhakarullāha fas-tagh-farū lidhunūbihim; wa man yagh-firudh-dhunūba illallāh; wa lam yuṣirrū 'alā mā fa'alū wa hum ya'lamūn",
     arabicText:
-      'وَالَّذِينَ إِذَا فَعَلُوا فَاحِشَةً أَوْ ظَلَمُوا أَنفُسَهُمْ ذَكَرُوا اللَّهَ فَاسْتَغْفَرُوا لِذُنُوبِهِمْ وَمَن يَغْفِرُ الذُّنُوبَ إِلَّا اللَّهُ ﴿١٣٥﴾',
+      'وَالَّذِينَ إِذَا فَعَلُوا فَاحِشَةً أَوْ ظَلَمُوا أَنفُسَهُمْ ذَكَرُوا اللَّهَ فَاسْتَغْفَرُوا لِذُنُوبِهِمْ وَمَن يَغْفِرُ الذُّنُوبَ إِلَّا اللَّهُ وَلَمْ يُصِرُّوا عَلَىٰ مَا فَعَلُوا وَهُمْ يَعْلَمُونَ ﴿١٣٥﴾',
     transliteration:
-      "Walladhīna idhā fa'alū fāhishatan aw żalamū anfusahum dhakarullāha fas-tagh-farū lidhunūbihim; wa man yagh-firudh-dhunūba illallāh",
+      "Walladhīna idhā fa'alū fāhishatan aw żalamū anfusahum dhakarullāha fas-tagh-farū lidhunūbihim; wa man yagh-firudh-dhunūba illallāh; wa lam yuṣirrū 'alā mā fa'alū wa hum ya'lamūn",
     englishTranslation:
-      'And those who, when they commit an immorality or wrong themselves, remember Allah and seek forgiveness for their sins - and who can forgive sins except Allah?',
+      'And those who, when they commit an immorality or wrong themselves, remember Allah and seek forgiveness for their sins - and who can forgive sins except Allah? - and [who] do not persist in what they have done while they know.',
     source: 'Surah Ali Imran 3:135',
     audioKey: '3:135',
     whyThis:
       "The righteous aren't those who never sin, but those who immediately turn back to Allah.",
-    moods: ['Sad'],
+    moods: ['Guilty'],
   },
   {
     id: 'quran_66_8',
     type: 'Quran',
-    primaryText: 'Yā ay-yuhalladhīna āmanū tūbū ilallāhi tawbatan nasūhā',
-    arabicText: 'يَا أَيُّهَا الَّذِينَ آمَنُوا تُوبُوا إِلَى اللَّهِ تَوْبَةً نَّصُوحًا ﴿٨﴾',
-    transliteration: 'Yā ay-yuhalladhīna āmanū tūbū ilallāhi tawbatan nasūhā',
-    englishTranslation: 'O you who have believed, repent to Allah with sincere repentance.',
+    primaryText:
+      "Yā ayyuhalladhīna āmanū tūbū ilallāhi tawbatan nasūḥā; 'asā rabbukum an yukaffira 'ankum sayyi'ātikum wa yudkhilakum jannātin tajrī min taḥtihāl-anhār",
+    arabicText:
+      'يَا أَيُّهَا الَّذِينَ آمَنُوا تُوبُوا إِلَى اللَّهِ تَوْبَةً نَّصُوحًا عَسَىٰ رَبُّكُمْ أَن يُكَفِّرَ عَنكُمْ سَيِّئَاتِكُمْ وَيُدْخِلَكُمْ جَنَّاتٍ تَجْرِي مِن تَحْتِهَا الْأَنْهَارُ ﴿٨﴾',
+    transliteration:
+      "Yā ayyuhalladhīna āmanū tūbū ilallāhi tawbatan nasūḥā; 'asā rabbukum an yukaffira 'ankum sayyi'ātikum wa yudkhilakum jannātin tajrī min taḥtihāl-anhār",
+    englishTranslation:
+      'O you who have believed, repent to Allah with sincere repentance. Perhaps your Lord will remove from you your misdeeds and admit you into gardens beneath which rivers flow.',
     source: 'Surah At-Tahrim 66:8',
     audioKey: '66:8',
     whyThis: 'Allah calls believers to sincere repentance as a path to success.',
-    moods: ['Sad'],
+    moods: ['Guilty'],
   },
 
   // === GRATEFUL / SHUKR ===
@@ -1771,7 +1775,7 @@ const quranContentData: Content[] = [
     audioKey: '2:153',
     whyThis:
       "When anxiety strikes, seeking help through the stability of prayer and the endurance of patience draws Allah's special presence.",
-    moods: ['Anxious', 'Tired', 'Stressed'],
+    moods: ['Anxious', 'Stressed'],
   },
   {
     id: 'quran_41_30',
@@ -1843,7 +1847,7 @@ const quranContentData: Content[] = [
     audioKey: '35:35',
     whyThis:
       'A reminder that current fatigue is earthly and temporary - a state of perfection awaits.',
-    moods: ['Tired', 'Stressed'],
+    moods: ['Stressed'],
   },
   {
     id: 'quran_25_47',
@@ -1858,7 +1862,7 @@ const quranContentData: Content[] = [
     source: 'Surah Al-Furqan 25:47',
     audioKey: '25:47',
     whyThis: 'Allah designed sleep as a mercy - rest is a divine gift, not weakness.',
-    moods: ['Tired'],
+    moods: ['Calm'],
   },
   {
     id: 'quran_78_9',
@@ -1870,7 +1874,7 @@ const quranContentData: Content[] = [
     source: 'Surah An-Naba 78:9',
     audioKey: '78:9',
     whyThis: 'Sleep is not a waste of time but a deliberate creation for your renewal.',
-    moods: ['Tired'],
+    moods: ['Calm'],
   },
   {
     id: 'quran_30_23',
@@ -1886,7 +1890,7 @@ const quranContentData: Content[] = [
     source: 'Surah Ar-Rum 30:23',
     audioKey: '30:23',
     whyThis: 'Sleep is one of the signs of Allah - a miracle we experience daily.',
-    moods: ['Tired'],
+    moods: ['Calm'],
   },
   {
     id: 'quran_6_13',
@@ -1902,7 +1906,7 @@ const quranContentData: Content[] = [
     audioKey: '6:13',
     whyThis:
       'When you rest, you rest in what belongs to Allah - He owns the stillness of the night.',
-    moods: ['Tired'],
+    moods: ['Calm'],
   },
   {
     id: 'quran_73_1_4',
@@ -1918,7 +1922,7 @@ const quranContentData: Content[] = [
     source: 'Surah Al-Muzzammil 73:1-4',
     audioKey: '73:1-4',
     whyThis: 'Even in fatigue, a portion of night prayer revives the soul. Start small.',
-    moods: ['Tired'],
+    moods: ['Hopeful'],
   },
   {
     id: 'quran_2_177',
@@ -1934,7 +1938,7 @@ const quranContentData: Content[] = [
     source: 'Surah Al-Baqarah 2:177',
     audioKey: '2:177',
     whyThis: 'Patience through exhaustion is praiseworthy - your struggle is seen.',
-    moods: ['Tired'],
+    moods: ['Sad', 'Stressed'],
   },
   {
     id: 'quran_20_130',
@@ -1950,7 +1954,7 @@ const quranContentData: Content[] = [
     source: 'Surah Ta-Ha 20:130',
     audioKey: '20:130',
     whyThis: 'Dhikr at key times brings satisfaction - structure your rest around remembrance.',
-    moods: ['Tired'],
+    moods: ['Calm', 'Content'],
   },
   {
     id: 'quran_17_79',
@@ -1966,7 +1970,7 @@ const quranContentData: Content[] = [
     source: 'Surah Al-Isra 17:79',
     audioKey: '17:79',
     whyThis: 'Night prayer, even when tired, elevates you to a praised station.',
-    moods: ['Tired'],
+    moods: ['Hopeful'],
   },
   {
     id: 'quran_94_7',
@@ -2055,7 +2059,7 @@ const quranContentData: Content[] = [
     audioKey: '94:1',
     whyThis:
       'The complete Surah Al-Inshirah is a concise yet profound message: Allah has already lightened your load, ease is guaranteed, and the solution to fatigue is turning to Him.',
-    moods: ['Stressed', 'Tired', 'Anxious'],
+    moods: ['Stressed', 'Anxious'],
     moodScores: { Stressed: 25 },
   },
   {
@@ -2508,7 +2512,7 @@ const quranContentAnglesData: ContentAngle[] = [
   {
     id: 'q_angle_4_110_guilty',
     contentId: 'quran_4_110',
-    mood: 'Sad',
+    mood: 'Guilty',
     angle: 'The door to forgiveness is always open',
     action: 'Make a sincere intention to leave the sin and ask Allah for help',
     reflection: "When have you experienced Allah's forgiveness after a mistake?",
@@ -2516,7 +2520,7 @@ const quranContentAnglesData: ContentAngle[] = [
   {
     id: 'q_angle_25_70_guilty',
     contentId: 'quran_25_70',
-    mood: 'Sad',
+    mood: 'Guilty',
     angle: 'Turning past mistakes into future strengths',
     action: 'Do a good deed specifically to "replace" a recent mistake',
     reflection: "How does Allah's ability to change bad to good give you hope?",
@@ -2910,27 +2914,6 @@ const quranContentAnglesData: ContentAngle[] = [
     reflection: 'What changes in your calm state when you truly feel "at home" in your faith?',
   },
 
-  // === TIRED / OVERWHELMED ANGLES ===
-  {
-    id: 'q_angle_35_35_tired',
-    contentId: 'quran_35_35',
-    mood: 'Tired',
-    angle: 'This verse describes the believers entering Paradise, saying "Fatigue will not touch us therein." Scholars explain this as a reminder that earthly tiredness is temporary and its reward is eternal rest. [Tafsir Ibn Kathir]',
-    action: 'Renew your intention for your hard work by dedicating it to Allah and requesting His help.',
-    actionHowTo: 'Close your eyes and say: "O Allah, I seek Your help in my fatigue and Your reward in my rest."',
-    actionReward: 'The Prophet ﷺ said: "The best of actions is the one that is most constant, even if it is small." [Sahih Bukhari]',
-    reflection: 'How does the promise of Paradise change your relationship with earthly fatigue today?',
-  },
-  {
-    id: 'q_angle_2_153_tired',
-    contentId: 'quran_2_153',
-    mood: 'Tired',
-    angle: 'The Prophet ﷺ taught that seeking help through prayer is not an additional burden, but a source of power. He would say to Bilal: "O Bilal, give us rest through prayer!" [Abu Dawud 4985]',
-    action: 'Perform two Rak’ats of prayer slowly, focusing on the physical release of tension.',
-    actionHowTo: 'Take your time in Ruku and Sujud, allowing your heart to catch its breath.',
-    actionReward: 'Allah says: "Indeed, Allah is with the patient." [Quran 2:153]',
-    reflection: 'How can seeking help through a slow, focused prayer specifically aid your fatigue?',
-  },
   {
     id: 'q_angle_2_208_calm',
     contentId: 'quran_2_208',
@@ -3044,7 +3027,7 @@ const quranContentAnglesData: ContentAngle[] = [
   {
     id: 'q_angle_3_17_tired_angle',
     contentId: 'quran_2_177',
-    mood: 'Tired',
+    mood: 'Stressed',
     angle: 'Patience in the face of exhaustion',
     action: 'Be gentle with yourself today, acknowledging your effort is worship',
     reflection: 'How is physical exhaustion a path to spiritual refinement?',
@@ -3193,88 +3176,6 @@ const quranContentAnglesData: ContentAngle[] = [
     angle: 'Return to the serenity of your Lord',
     action: 'Breathe in the tranquility of the reassurred soul',
     reflection: 'How can I maintain a state of "well-pleasing and pleasing" throughout my day?',
-  },
-  {
-    id: 'q_angle_3_17_tired_angle_final',
-    contentId: 'quran_2_177',
-    mood: 'Tired',
-    angle: 'The Praised Patient ones in the morning light',
-    action: 'Choose small, steady acts of worship even when your energy is low',
-    reflection: 'How is my current tiredness an opportunity to demonstrate true constancy?',
-  },
-
-  {
-    id: 'q_angle_25_47_tired',
-    contentId: 'quran_25_47',
-    mood: 'Tired',
-    angle: 'Sleep as a divine garment of rest',
-    action: 'Turn off your screens and prepare for rest as an act of trust',
-    reflection:
-      'How does it feel to know that Allah designed the night specifically for your renewal?',
-  },
-  {
-    id: 'q_angle_78_9_tired',
-    contentId: 'quran_78_9',
-    mood: 'Tired',
-    angle: 'Your sleep is a miracle of rest',
-    action: 'Close your eyes for one minute and thank Allah for the gift of sleep',
-    reflection: 'Why is something as simple as sleep considered a "sign" of Allah?',
-  },
-  {
-    id: 'q_angle_30_23_tired',
-    contentId: 'quran_30_23',
-    mood: 'Tired',
-    angle: 'Night and day as signs of mercy and provision',
-    action: 'Acknowledge that your need for rest is part of your human design',
-    reflection: 'How does resting in the night prepare you to seek His bounty in the day?',
-  },
-  {
-    id: 'q_angle_6_13_tired',
-    contentId: 'quran_6_13',
-    mood: 'Tired',
-    angle: 'Every moment of repose belongs to Him',
-    action: "Find a moment of stillness and feel yourself resting in Allah's kingdom",
-    reflection: 'If everything that rests belongs to Allah, how safe are you in your stillness?',
-  },
-  {
-    id: 'q_angle_73_1_4_tired',
-    contentId: 'quran_73_1_4',
-    mood: 'Tired',
-    angle: 'Arising for a little portion of the night',
-    action: 'Commit to waking up just 5 minutes before Fajr for a private moment with Allah',
-    reflection: 'How can a small amount of night worship recharge your soul more than sleep?',
-  },
-  {
-    id: 'q_angle_3_17_tired',
-    contentId: 'quran_2_177',
-    mood: 'Tired',
-    angle: 'The patience of those who endure in hardship',
-    action: 'Acknowledge your current exhaustion as a form of patience (Sabr)',
-    reflection: 'What reward awaits those who remain principled even when they are drained?',
-  },
-  {
-    id: 'q_angle_20_130_tired',
-    contentId: 'quran_20_130',
-    mood: 'Tired',
-    angle: 'Finding satisfaction through the rhythm of praise',
-    action: 'Recite "SubhanAllah wa bihamdih" during your next transition',
-    reflection: 'How does aligning your heart with the rising and setting sun bring satisfaction?',
-  },
-  {
-    id: 'q_angle_17_79_tired',
-    contentId: 'quran_17_79',
-    mood: 'Tired',
-    angle: 'The praised station through the sacrifice of rest',
-    action: 'Offer a short prayer now, even if you feel heavy, as a gift to your Lord',
-    reflection: 'What does it say about your love for Allah when you seek Him in your fatigue?',
-  },
-  {
-    id: 'q_angle_94_1_8_tired',
-    contentId: 'quran_94_1_8',
-    mood: 'Tired',
-    angle: 'The complete relief: Hardship, Ease, and Worship',
-    action: 'Read the complete Surah Inshirah slowly and let its promise sink in',
-    reflection: 'If Allah has already expanded your breast, what burden is too heavy?',
   },
 
   // === STRESSED ANGLES ===
@@ -3552,7 +3453,7 @@ const quranContentAnglesData: ContentAngle[] = [
   {
     id: 'q_angle_3_17_tired_final_angle',
     contentId: 'quran_2_177',
-    mood: 'Tired',
+    mood: 'Stressed',
     angle: 'The Praised Patient ones in the morning light',
     action: 'Choose small, steady acts of worship even when your energy is low',
     reflection: 'How is my current tiredness an opportunity to demonstrate true constancy?',

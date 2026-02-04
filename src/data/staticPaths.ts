@@ -314,7 +314,7 @@ export const STATIC_SPIRITUAL_PATHS: SpiritualPath[] = [
     title: 'Screen Detox',
     description: 'Reclaiming your attention for Allah in a digital world.',
     duration: 7,
-    theme: 'Tired',
+    theme: 'Stressed',
     target: 'Presence',
     isPremium: true,
     dailySteps: [],

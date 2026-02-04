@@ -190,8 +190,8 @@ export default function PathsScreen({
         return '🔥';
       case 'Grateful':
         return '🙏';
-      case 'Tired':
-        return '🕯️';
+      case 'Guilty':
+        return '🤲';
       case 'Energized':
         return '⚡';
       case 'Stressed':

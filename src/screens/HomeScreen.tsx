@@ -34,10 +34,10 @@ const MOOD_DATA: MoodCard[] = [
   { mood: 'Content', arabicAxis: 'Rida', icon: 'check-decagram-outline' },
   { mood: 'Angry', arabicAxis: 'Ihsan', icon: 'fire' },
   { mood: 'Grateful', arabicAxis: 'Shukr', icon: 'flower-tulip' },
-  { mood: 'Tired', arabicAxis: 'Nasab', icon: 'battery-alert-variant-outline' },
   { mood: 'Energized', arabicAxis: 'Nashat', icon: 'lightning-bolt' },
   { mood: 'Stressed', arabicAxis: 'Dhiq', icon: 'waves' },
   { mood: 'Hopeful', arabicAxis: 'Raja', icon: 'sprout' },
+  { mood: 'Guilty', arabicAxis: 'Tawbah', icon: 'hands-pray' },
 ];
 
 interface HomeScreenProps {

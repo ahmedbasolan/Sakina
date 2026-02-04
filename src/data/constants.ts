@@ -7,11 +7,11 @@ export const MOOD_ISLAMIC_TERMS: Record<Mood, string> = {
   Content: 'RIDA',
   Angry: 'IHSAN',
   Grateful: 'SHUKR',
-  Tired: 'NASAB',
   Energized: 'NASHAT',
   Stressed: 'DHIQ',
   Hopeful: 'RAJA',
   Happy: 'SURUR',
+  Guilty: 'TAWBAH',
 };
 
 // PRICING & LOCALIZATION
