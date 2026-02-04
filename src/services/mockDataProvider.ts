@@ -74,14 +74,19 @@ export const createMockGuidanceExperience = (mood: Mood): GuidanceExperience => 
       audioKey: '13:28',
       whyThis: 'Your calm state is enhanced through remembrance of Allah.',
     },
-    Tired: {
-      primaryText: "Wa ja'alnā nawmakum subātā",
-      arabicText: 'وَجَعَلْنَا نَوْمَكُمْ سُبَاتًا ﴿٩﴾',
-      transliteration: "Wa ja'alnā nawmakum subātā",
-      englishTranslation: 'And We made your sleep [a means for] rest',
-      source: 'Quran 78:9 (An-Naba)',
-      audioKey: '78:9',
-      whyThis: 'Allah created sleep as a mercy and a means for your body to recover.',
+    Guilty: {
+      primaryText:
+        "Wa man ya'mal sū'an aw yażlim nafsahū thumma yastagh-firillāha yajidillāha ghafūrar rahīmā",
+      arabicText:
+        'وَمَن يَعْمَلْ سُوءًا أَوْ يَظْلِمْ نَفْسَهُ ثُمَّ يَسْتَغْفِرِ اللَّهَ يَجِدِ اللَّهَ غَفُورًا رَّحِيمًا ﴿١١٠﴾',
+      transliteration:
+        "Wa man ya'mal sū'an aw yażlim nafsahū thumma yastagh-firillāha yajidillāha ghafūrar rahīmā",
+      englishTranslation:
+        'And whoever does a wrong or wrongs himself but then seeks forgiveness of Allah will find Allah Forgiving and Merciful.',
+      source: 'Quran 4:110 (An-Nisa)',
+      audioKey: '4:110',
+      whyThis:
+        "Allah's door of forgiveness is always open. Seeking His mercy erases your sins.",
     },
     Stressed: {
       primaryText: "Allahumma inni a'udhu bika minal-hammi wal-hazan",

@@ -98,7 +98,18 @@ export const STATIC_SPIRITUAL_PATHS: SpiritualPath[] = [
     theme: 'Anxious',
     target: "Qana'a (Satisfaction)",
     isPremium: false,
-    dailySteps: [],
+    dailySteps: [
+      {
+        id: 'step_rizq_1',
+        pathId: 'path_rizq_revolution',
+        day: 1,
+        title: 'What Is Rizq?',
+        focus: 'Understanding that provision is more than money.',
+        contentId: 'quran_51_22',
+        angleId: 'q_angle_rizq_day1',
+        isCompleted: false,
+      },
+    ],
   },
   {
     id: 'path_depression_iman',
