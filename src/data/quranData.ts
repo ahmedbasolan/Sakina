@@ -782,13 +782,13 @@ const quranContentData: Content[] = [
     id: 'quran_31_12',
     type: 'Quran',
     primaryText:
-      "Wa laqad ātaynā Luqmānal-hikmata anishkur-lillāh; wa man yashkur fa'innamā yashkuru linafsih",
+      "Wa laqad ātaynā Luqmānal-hikmata anishkur-lillāh; wa man yashkur fa'innamā yashkuru linafsih; wa man kafara fa-innallāha Ghaniyyun Ḥamīd",
     arabicText:
-      'وَلَقَدْ آتَيْنَا لُقْمَانَ الْحِكْمَةَ أَنِ اشْكُرْ لِلَّهِ ۚ وَمَن يَشْكُرْ فَإِنَّمَا يَشْكُرُ لِنَفْسِهِ ﴿١٢﴾',
+      'وَلَقَدْ آتَيْنَا لُقْمَانَ الْحِكْمَةَ أَنِ اشْكُرْ لِلَّهِ ۚ وَمَن يَشْكُرْ فَإِنَّمَا يَشْكُرُ لِنَفْسِهِ ۖ وَمَن كَفَرَ فَإِنَّ اللَّهَ غَنِيٌّ حَمِيدٌ ﴿١٢﴾',
     transliteration:
-      "Wa laqad ātaynā Luqmānal-hikmata anishkur-lillāh; wa man yashkur fa'innamā yashkuru linafsih",
+      "Wa laqad ātaynā Luqmānal-hikmata anishkur-lillāh; wa man yashkur fa'innamā yashkuru linafsih; wa man kafara fa-innallāha Ghaniyyun Ḥamīd",
     englishTranslation:
-      'And We had certainly given Luqman wisdom [and said], "Be grateful to Allah." And whoever is grateful is grateful for [the benefit of] himself.',
+      'And We had certainly given Luqman wisdom [and said], "Be grateful to Allah." And whoever is grateful is grateful for [the benefit of] himself. And whoever denies [His favor] - then indeed, Allah is Free of need and Praiseworthy.',
     source: 'Surah Luqman 31:12',
     audioKey: '31:12',
     whyThis: 'Wisdom and gratitude go hand in hand - gratitude benefits the one who expresses it.',
@@ -798,13 +798,13 @@ const quranContentData: Content[] = [
     id: 'quran_27_40',
     type: 'Quran',
     primaryText:
-      "Hādhā min fadli rabbī liyabluwanī a-ashkuru am akfur; wa man shakara fa'innamā yashkuru linafsih",
+      "Qālalladhī 'indahu 'ilmun-minal-kitābi anā ātīka bihī qabla an yartadda ilayka ṭarfuk; falammā ra'āhu mustaqirran 'indahu qāla hādhā min faḍli rabbī liyabluwanī a-ashkuru am akfur; wa man shakara fa'innamā yashkuru linafsih; wa man kafara fa-inna rabbī Ghaniyyun Karīm",
     arabicText:
-      'هَٰذَا مِن فَضْلِ رَبِّي لِيَبْلُوَنِي أَأَشْكُرُ أَمْ أَكْفُرُ ۖ وَمَن شَكَرَ فَإِنَّمَا يَشْكُرُ لِنَفْسِهِ ﴿٤٠﴾',
+      'قَالَ الَّذِي عِندَهُ عِلْمٌ مِّنَ الْكِتَابِ أَنَا آتِيكَ بِهِ قَبْلَ أَن يَرْتَدَّ إِلَيْكَ طَرْفُكَ ۚ فَلَمَّا رَآهُ مُسْتَقِرًّا عِندَهُ قَالَ هَٰذَا مِن فَضْلِ رَبِّي لِيَبْلُوَنِي أَأَشْكُرُ أَمْ أَكْفُرُ ۖ وَمَن شَكَرَ فَإِنَّمَا يَشْكُرُ لِنَفْسِهِ ۖ وَمَن كَفَرَ فَإِنَّ رَبِّي غَنِيٌّ كَرِيمٌ ﴿٤٠﴾',
     transliteration:
-      "Hādhā min fadli rabbī liyabluwanī a-ashkuru am akfur; wa man shakara fa'innamā yashkuru linafsih",
+      "Qālalladhī 'indahu 'ilmun-minal-kitābi anā ātīka bihī qabla an yartadda ilayka ṭarfuk; falammā ra'āhu mustaqirran 'indahu qāla hādhā min faḍli rabbī liyabluwanī a-ashkuru am akfur; wa man shakara fa'innamā yashkuru linafsih; wa man kafara fa-inna rabbī Ghaniyyun Karīm",
     englishTranslation:
-      'This is from the favor of my Lord to test me whether I will be grateful or ungrateful. And whoever is grateful - his gratitude is only for [the benefit of] himself.',
+      'Said one who had knowledge from the Scripture, "I will bring it to you before your glance returns to you." And when [Solomon] saw it placed before him, he said, "This is from the favor of my Lord to test me whether I will be grateful or ungrateful. And whoever is grateful - his gratitude is only for [the benefit of] himself. And whoever is ungrateful - then indeed, my Lord is Free of need and Generous."',
     source: 'Surah An-Naml 27:40',
     audioKey: '27:40',
     whyThis: 'Sulaiman (AS) recognized that blessings are tests of gratitude.',
@@ -813,11 +813,14 @@ const quranContentData: Content[] = [
   {
     id: 'quran_34_13',
     type: 'Quran',
-    primaryText: "I'malu ala dawuda shukra; wa qalilum-min 'ibadiyas-shakur",
-    arabicText: 'اعْمَلُوا آلَ دَاوُودَ شُكْرًا ۚ وَقَلِيلٌ مِّنْ عِبَادِيَ الشَّكُورُ ﴿١٣﴾',
-    transliteration: "I'malu ala dawuda shukra; wa qalilum-min 'ibadiyas-shakur",
+    primaryText:
+      "Ya'malūna lahū mā yashā'u min maḥārība wa tamāthīla wa jifānin kal-jawābi wa qudūrin rāsi yāt; I'malū āla dāwūda shukrā; wa qalīlum-min 'ibādiyyash-shakūr",
+    arabicText:
+      'يَعْمَلُونَ لَهُ مَا يَشَاءُ مِن مَّحَارِيبَ وَتَمَاثِيلَ وَجِفَانٍ كَالْجَوَابِ وَقُدُورٍ رَّاسِيَاتٍ ۚ اعْمَلُوا آلَ دَاوُودَ شُكْرًا ۚ وَقَلِيلٌ مِّنْ عِبَادِيَ الشَّكُورُ ﴿١٣﴾',
+    transliteration:
+      "Ya'malūna lahū mā yashā'u min maḥārība wa tamāthīla wa jifānin kal-jawābi wa qudūrin rāsi yāt; I'malū āla dāwūda shukrā; wa qalīlum-min 'ibādiyyash-shakūr",
     englishTranslation:
-      'Work, O family of David, in gratitude. And few of My servants are grateful.',
+      'They made for him what he willed of elevated chambers, statues, bowls like reservoirs, and stationary kettles. [We said], "Work, O family of David, in gratitude." And few of My servants are grateful.',
     source: 'Surah Saba 34:13',
     audioKey: '34:13',
     whyThis: 'True gratitude is expressed through action, not just words. Few achieve this level.',
@@ -838,10 +841,13 @@ const quranContentData: Content[] = [
   {
     id: 'quran_54_35',
     type: 'Quran',
-    primaryText: "Ni'matam-min 'indina; kadhalika najzi man shakara",
+    primaryText:
+      "Ni'matan min 'indinā; kadhālika najzī man shakar",
     arabicText: 'نِّعْمَةً مِّنْ عِندِنَا ۚ كَذَٰلِكَ نَجْزِي مَن شَكَرَ ﴿٣٥﴾',
-    transliteration: "Ni'matam-min 'indina; kadhalika najzi man shakara",
-    englishTranslation: 'As favor from Us. Thus do We reward he who is grateful.',
+    transliteration:
+      "Ni'matan min 'indinā; kadhālika najzī man shakar",
+    englishTranslation:
+      'As favor from Us. Thus do We reward he who is grateful.',
     source: 'Surah Al-Qamar 54:35',
     audioKey: '54:35',
     whyThis: "Allah's favors are His reward for the grateful - gratitude attracts more blessings.",
@@ -850,10 +856,14 @@ const quranContentData: Content[] = [
   {
     id: 'quran_7_58',
     type: 'Quran',
-    primaryText: 'Kadhalika nusarrifu-l-ayati li-qawmin yashkurun',
-    arabicText: 'كَذَٰلِكَ نُصَرِّفُ الْآيَاتِ لِقَوْمٍ يَشْكُرُونَ ﴿٥٨﴾',
-    transliteration: 'Kadhalika nusarrifu-l-ayati li-qawmin yashkurun',
-    englishTranslation: 'Thus do We explain the signs for a people who are grateful.',
+    primaryText:
+      "Wal-baladut-ṭayyibu yakhruju nabātuhū bi-idhni rabbih; walladhī khabutha lā yakhruju illā nakidā; kadhālika nuṣarriful-āyāti li-qawmin yashkurūn",
+    arabicText:
+      'وَالْبَلَدُ الطَّيِّبُ يَخْرُجُ نَبَاتُهُ بِإِذْنِ رَبِّهِ ۖ وَالَّذِي خَبُثَ لَا يَخْرُجُ إِلَّا نَكِدًا ۚ كَذَٰلِكَ نُصَرِّفُ الْآيَاتِ لِقَوْمٍ يَشْكُرُونَ ﴿٥٨﴾',
+    transliteration:
+      "Wal-baladut-ṭayyibu yakhruju nabātuhū bi-idhni rabbih; walladhī khabutha lā yakhruju illā nakidā; kadhālika nuṣarriful-āyāti li-qawmin yashkurūn",
+    englishTranslation:
+      'And the good land - its vegetation emerges by permission of its Lord; but that which is bad - nothing emerges except sparsely, with difficulty. Thus do We diversify the signs for a people who are grateful.',
     source: "Surah Al-A'raf 7:58",
     audioKey: '7:58',
     whyThis: 'Gratitude opens the heart to understanding the signs of Allah.',
@@ -862,10 +872,14 @@ const quranContentData: Content[] = [
   {
     id: 'quran_4_147',
     type: 'Quran',
-    primaryText: "Ma yaf'alullahu bi'adhabikum in shakartum wa amantum",
-    arabicText: 'مَّا يَفْعَلُ اللَّهُ بِعَذَابِكُمْ إِن شَكَرْتُمْ وَآمَنتُمْ ﴿١٤٧﴾',
-    transliteration: "Ma yaf'alullahu bi'adhabikum in shakartum wa amantum",
-    englishTranslation: 'What would Allah do with your punishment if you are grateful and believe?',
+    primaryText:
+      "Mā yaf'alullāhu bi-'adhābikum in shakartum wa āmantum; wa kānallāhu Shākiran 'Alīmā",
+    arabicText:
+      'مَّا يَفْعَلُ اللَّهُ بِعَذَابِكُمْ إِن شَكَرْتُمْ وَآمَنتُمْ ۚ وَكَانَ اللَّهُ شَاكِرًا عَلِيمًا ﴿١٤٧﴾',
+    transliteration:
+      "Mā yaf'alullāhu bi-'adhābikum in shakartum wa āmantum; wa kānallāhu Shākiran 'Alīmā",
+    englishTranslation:
+      'What would Allah do with your punishment if you are grateful and believe? And ever is Allah Appreciative and Knowing.',
     source: 'Surah An-Nisa 4:147',
     audioKey: '4:147',
     whyThis:
