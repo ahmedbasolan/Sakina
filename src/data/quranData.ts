@@ -2168,6 +2168,22 @@ const quranContentData: Content[] = [
     whyThis: 'The powerful dua of Ibrahim (AS) for steadfastness in prayer for himself and his family.',
     moods: ['Hopeful', 'Calm'],
   },
+
+  // === RIZQ REVOLUTION PATH ===
+  {
+    id: 'quran_51_22',
+    type: 'Quran',
+    primaryText: "Wa fis-sama'i rizqukum wa ma tu'adun",
+    arabicText: 'وَفِي السَّمَاءِ رِزْقُكُمْ وَمَا تُوعَدُونَ ﴿٢٢﴾',
+    transliteration: "Wa fis-samā'i rizqukum wa mā tū'adūn",
+    englishTranslation:
+      'And in the heaven is your provision and whatever you are promised.',
+    source: 'Surah Adh-Dhariyat 51:22',
+    audioKey: '51:22',
+    whyThis:
+      'Your rizq (provision) is already written in the heavens - recorded and guaranteed by Allah.',
+    moods: ['Anxious', 'Stressed'],
+  },
 ];
 
 const quranContent: Content[] = quranContentData;
@@ -3623,6 +3639,27 @@ const quranContentAnglesData: ContentAngle[] = [
     actionHowTo: 'Stay seated for 2 minutes in reflection after completing the dhikr.',
     actionReward: 'Prayer prevents immorality and wrongdoing when sealed with remembrance.',
     reflection: 'How has your prayer changed over 7 days? What will you maintain?',
+  },
+
+  // === RIZQ REVOLUTION ANGLES ===
+  {
+    id: 'q_angle_rizq_day1',
+    contentId: 'quran_51_22',
+    mood: 'Anxious',
+    angle:
+      "Ibn Kathir's Tafsir: Allah reminds us that our rizq is already written in the heavens—recorded and guaranteed. Worrying about it won't increase it, and relaxing about it won't decrease it.",
+    action: 'Redefine Wealth: Write down 5 things you have that money cannot buy.',
+    actionHowTo:
+      "Examples: 'I can walk, I have clean water, I know people who love me, I have my senses, I have access to knowledge.'",
+    actionReward:
+      "Prophet ﷺ said: 'If you were to rely upon Allah with the reliance He is due, you would be given provision like the birds: they go out hungry in the morning and return full in the evening.' [Tirmidhi 2344]",
+    actionArabicText:
+      'اللَّهُمَّ اغْفِرْ لِي ذَنْبِي، وَوَسِّعْ لِي فِي دَارِي، وَبَارِكْ لِي فِي رِزْقِي',
+    actionTransliteration:
+      "Allahumma ighfir li dhanbi, wa wassi' li fi dari, wa barik li fi rizqi",
+    actionSource: 'Authenticated in collections of morning/evening adhkar',
+    reflection:
+      'What one thing do you already have that you have been taking for granted? How would your life change if it was taken away tomorrow?',
   },
 ];
 

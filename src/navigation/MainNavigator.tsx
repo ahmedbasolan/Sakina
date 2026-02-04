@@ -491,7 +491,8 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.4,
     shadowRadius: 12,
-    elevation: 8,
+    zIndex: 1000,
+    elevation: 20,
   },
   tabButton: {
     flex: 1,
