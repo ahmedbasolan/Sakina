@@ -977,10 +977,11 @@ const quranContentData: Content[] = [
     id: 'quran_103_1_3',
     type: 'Quran',
     primaryText:
-      "Wal-'asr. Innal-insana lafi khusr. Illalladhina amanu wa 'amilus-salihati wa tawasaw bil-haqqi wa tawasaw bis-sabr",
+      "Wal-'asr. Innal-insāna lafī khusr. Illalladhīna āmanu wa 'amiluṣ-ṣāliḥāti wa tawāṣaw bil-ḥaqqi wa tawāṣaw biṣ-ṣabr",
     arabicText:
       'وَالْعَصْرِ ﴿١﴾ إِنَّ الْإِنسَانَ لَفِي خُسْرٍ ﴿٢﴾ إِلَّا الَّذِينَ آمَنُوا وَعَمِلُوا الصَّالِحَاتِ وَتَوَاصَوْا بِالْحَقِّ وَتَوَاصَوْا بِالصَّبْرِ ﴿٣﴾',
-    transliteration: "Wal-'asr. Innal-insana lafi khusr. Illalladhina amanu wa 'amilus-salihati",
+    transliteration:
+      "Wal-'asr. Innal-insāna lafī khusr. Illalladhīna āmanu wa 'amiluṣ-ṣāliḥāti wa tawāṣaw bil-ḥaqqi wa tawāṣaw biṣ-ṣabr",
     englishTranslation:
       'By time. Indeed, mankind is in loss. Except for those who believe and do righteous deeds and advise each other to truth and patience.',
     source: 'Surah Al-Asr 103:1-3',
@@ -993,10 +994,11 @@ const quranContentData: Content[] = [
     id: 'quran_22_77',
     type: 'Quran',
     primaryText:
-      "Ya ayyuhalladhina amanurka'u wasjudu wa'budu rabbakum waf'alul-khayra la'allakum tuflihun",
+      "Yā ayyuhalladhīna āmanur-ka'ū wasjudū wa'budū rabbakum waf'alul-khayra la'allakum tufliḥūn",
     arabicText:
       'يَا أَيُّهَا الَّذِينَ آمَنُوا ارْكَعُوا وَاسْجُدُوا وَاعْبُدُوا رَبَّكُمْ وَافْعَلُوا الْخَيْرَ لَعَلَّكُمْ تُفْلِحُونَ ﴿٧٧﴾',
-    transliteration: "Ya ayyuhalladhina amanurka'u wasjudu wa'budu rabbakum waf'alul-khayra",
+    transliteration:
+      "Yā ayyuhalladhīna āmanur-ka'ū wasjudū wa'budū rabbakum waf'alul-khayra la'allakum tufliḥūn",
     englishTranslation:
       'O you who believe! Bow down and prostrate and worship your Lord and do good that you may succeed.',
     source: 'Surah Al-Hajj 22:77',
@@ -1022,12 +1024,13 @@ const quranContentData: Content[] = [
     id: 'quran_28_77',
     type: 'Quran',
     primaryText:
-      'Wabtaghi fima atakallahud-daral-akhirata wa la tansa nasibaka minad-dunya wa ahsin kama ahsanallahu ilayk',
+      "Wabtaghi fīmā ātākallāhud-dāral-ākhirata wa lā tansa naṣībaka minad-dunyā wa aḥsin kamā aḥsanallāhu ilayk; wa lā tabghil-fasāda fil-arḍ; innallāha lā yuḥibbul-mufsidīn",
     arabicText:
-      'وَابْتَغِ فِيمَا آتَاكَ اللَّهُ الدَّارَ الْآخِرَةَ ۖ وَلَا تَنسَ نَصِيبَكَ مِنَ الدُّنْيَا ۖ وَأَحْسِن كَمَا أَحْسَنَ اللَّهُ إِلَيْكَ ﴿٧٧﴾',
-    transliteration: 'Wabtaghi fima atakallahud-daral-akhirata wa la tansa nasibaka minad-dunya',
+      'وَابْتَغِ فِيمَا آتَاكَ اللَّهُ الدَّارَ الْآخِرَةَ ۖ وَلَا تَنسَ نَصِيبَكَ مِنَ الدُّنْيَا ۖ وَأَحْسِن كَمَا أَحْسَنَ اللَّهُ إِلَيْكَ ۖ وَلَا تَبْغِ الْفَسَادَ فِي الْأَرْضِ ۖ إِنَّ اللَّهَ لَا يُحِبُّ الْمُفْسِدِينَ ﴿٧٧﴾',
+    transliteration:
+      "Wabtaghi fīmā ātākallāhud-dāral-ākhirata wa lā tansa naṣībaka minad-dunyā wa aḥsin kamā aḥsanallāhu ilayk; wa lā tabghil-fasāda fil-arḍ; innallāha lā yuḥibbul-mufsidīn",
     englishTranslation:
-      'But seek, through that which Allah has given you, the home of the Hereafter; and do not forget your share of the world. And do good as Allah has done good to you.',
+      'But seek, through that which Allah has given you, the home of the Hereafter; and do not forget your share of the world. And do good as Allah has done good to you. And desire not corruption in the land. Indeed, Allah does not like corrupters.',
     source: 'Surah Al-Qasas 28:77',
     audioKey: '28:77',
     whyThis: 'Use your energy to seek the Hereafter, but also enjoy the world and do good.',
@@ -1222,13 +1225,13 @@ const quranContentData: Content[] = [
     id: 'quran_2_265',
     type: 'Quran',
     primaryText:
-      'Wa mathalulladhina yunfiquna amwalahum-ubtigha-a mardatillahi wa tathbitan min anfusihim kamathal jannatin',
+      "Wa mathalulladhīna yunfiqūna amwālahumubtighā'a marḍātillāhi wa tathbītan min anfusihim kamathali jannatin birabwatin aṣābahā wābilun fa-ātat ukulahā di'fayn; fa-in lam yuṣibhā wābilun faṭall; wallāhu bimā ta'malūna Baṣīr",
     arabicText:
-      'وَمَثَلُ الَّذِينَ يُنفِقُونَ أَمْوَالَهُمُ ابْتِغَاءَ مَرْضَاتِ اللَّهِ وَتَثْبِيتًا مِّنْ أَنفُسِهِمْ كَمَثَلِ جَنَّةٍ بِرَبْوَةٍ أَصَابَهَا وَابِلٌ فَآتَتْ أُكُلَهَا ضِعْفَيْنِ ﴿٢٦٥﴾',
+      'وَمَثَلُ الَّذِينَ يُنفِقُونَ أَمْوَالَهُمُ ابْتِغَاءَ مَرْضَاتِ اللَّهِ وَتَثْبِيتًا مِّنْ أَنفُسِهِمْ كَمَثَلِ جَنَّةٍ بِرَبْوَةٍ أَصَابَهَا وَابِلٌ فَآتَتْ أُكُلَهَا ضِعْفَيْنِ فَإِن لَّمْ يُصِبْهَا وَابِلٌ فَطَلٌّ ۗ وَاللَّهُ بِمَا تَعْمَلُونَ بَصِيرٌ ﴿٢٦٥﴾',
     transliteration:
-      'Wa mathalulladhina yunfiquna amwalahum-ubtigha-a mardatillahi wa tathbitan min anfusihim kamathal jannatin',
+      "Wa mathalulladhīna yunfiqūna amwālahumubtighā'a marḍātillāhi wa tathbītan min anfusihim kamathali jannatin birabwatin aṣābahā wābilun fa-ātat ukulahā di'fayn; fa-in lam yuṣibhā wābilun faṭall; wallāhu bimā ta'malūna Baṣīr",
     englishTranslation:
-      'And the example of those who spend their wealth seeking means to the approval of Allah and assuring [reward for] themselves is like a garden on high ground which is hit by a downpour - so it yields its fruits in double.',
+      'And the example of those who spend their wealth seeking means to the approval of Allah and assuring [reward for] themselves is like a garden on high ground which is hit by a downpour - so it yields its fruits in double. And [even] if it is not hit by a downpour, then a drizzle [is sufficient]. And Allah, of what you do, is Seeing.',
     source: 'Surah Al-Baqarah 2:265',
     audioKey: '2:265',
     whyThis:
@@ -1960,10 +1963,13 @@ const quranContentData: Content[] = [
   {
     id: 'quran_29_69',
     type: 'Quran',
-    primaryText: 'Walladhīna jāhadū fīnā lanahdiyannahum subulanā',
-    arabicText: 'وَٱلَّذِينَ جَٰهَدُوا۟ فِينَا لَنَهْدِيَنَّهُمْ سُبُلَنَا ﴿٦٩﴾',
-    transliteration: 'Walladhīna jāhadū fīnā lanahdiyannahum subulanā',
-    englishTranslation: 'And those who strive for Us - We will surely guide them to Our ways.',
+    primaryText:
+      "Walladhīna jāhadū fīnā lanahdiyannahum subulanā; wa innallāha lama'al-muḥsinīn",
+    arabicText: 'وَالَّذِينَ جَاهَدُوا فِينَا لَنَهْدِيَنَّهُمْ سُبُلَنَا ۚ وَإِنَّ اللَّهَ لَمَعَ الْمُحْسِنِينَ ﴿٦٩﴾',
+    transliteration:
+      "Walladhīna jāhadū fīnā lanahdiyannahum subulanā; wa innallāha lama'al-muḥsinīn",
+    englishTranslation:
+      'And those who strive for Us - We will surely guide them to Our ways. And indeed, Allah is with the doers of good.',
     source: 'Surah Al-Ankabut 29:69',
     audioKey: '29:69',
     whyThis: 'Guidance is guaranteed for the struggle itself. Your effort is the key to clarity.',
