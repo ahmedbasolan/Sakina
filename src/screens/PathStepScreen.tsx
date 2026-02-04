@@ -1,5 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Alert, TextInput, KeyboardAvoidingView, Platform, Animated } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
 import * as Haptics from 'expo-haptics';
 import { Ionicons } from '@expo/vector-icons';
 import { SpiritualPath, PathStep, UserPathProgress, GuidanceExperience } from '../types';
@@ -25,6 +27,8 @@ export const PathStepScreen: React.FC<PathStepScreenProps> = ({
   onNextStep,
   onBack,
 }) => {
+  const insets = useSafeAreaInsets();
+  const bottomInset = insets?.bottom ?? 0;
   const pathsService = PathsService.getInstance();
   const [showContext, setShowContext] = React.useState(false);
   const [showPractice, setShowPractice] = React.useState(false);
@@ -355,7 +359,7 @@ export const PathStepScreen: React.FC<PathStepScreenProps> = ({
         )}
 
         {/* Action Buttons */}
-        <View style={styles.actionSection}>
+        <View style={[styles.actionSection, { marginBottom: Math.max(40, bottomInset + 20) }]}>
           {!isStepCompleted ? (
             <TouchableOpacity
               style={[styles.completeButton, !canMarkComplete && styles.disabledButton]}

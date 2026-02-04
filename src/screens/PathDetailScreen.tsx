@@ -1,5 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Alert } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
 import { Ionicons } from '@expo/vector-icons';
 import { SpiritualPath, UserPathProgress } from '../types';
 import { PathsService } from '../services/pathsService';
@@ -25,6 +27,7 @@ export const PathDetailScreen: React.FC<PathDetailScreenProps> = ({
   onShowPaywall,
   onPurchaseBundle,
 }) => {
+  const insets = useSafeAreaInsets();
   const pathsService = PathsService.getInstance();
   const freemiumService = FreemiumService.getInstance();
   const isPremium = freemiumService.isPremium();
@@ -73,7 +76,7 @@ export const PathDetailScreen: React.FC<PathDetailScreenProps> = ({
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
+      <View style={[styles.header, { paddingTop: Math.max(insets.top, 20) + 10 }]}>
         <TouchableOpacity onPress={onBack} style={styles.backButton}>
           <Ionicons name="chevron-back" size={24} color="#FFF" />
         </TouchableOpacity>
@@ -229,7 +232,7 @@ export const PathDetailScreen: React.FC<PathDetailScreenProps> = ({
         </View>
 
         {/* Action Button */}
-        <View style={styles.actionSection}>
+        <View style={[styles.actionSection, { marginBottom: Math.max(insets.bottom, 20) + 20 }]}>
           <TouchableOpacity
             style={[
               styles.actionButton,

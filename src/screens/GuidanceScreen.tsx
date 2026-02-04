@@ -64,6 +64,8 @@ const GuidanceScreen: React.FC<GuidanceScreenProps> = ({
     isPremium,
     scrollY,
   } = useGuidanceLogic(experience, onNext, onSaveReflection, onShowPaywall, 2);
+  const insets = useSafeAreaInsets();
+  const bottomInset = insets?.bottom ?? 0;
 
   const [isPrefsModalVisible, setIsPrefsModalVisible] = useState(false);
 
@@ -182,7 +184,7 @@ const GuidanceScreen: React.FC<GuidanceScreenProps> = ({
           />
         ))}
 
-        <View style={styles.listFooter}>
+        <View style={[styles.listFooter, { paddingBottom: Math.max(40, bottomInset + 20) }]}>
           <TouchableOpacity
             style={styles.nextButton}
             onPress={handlePrimaryAction}

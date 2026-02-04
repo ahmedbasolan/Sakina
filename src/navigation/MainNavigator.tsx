@@ -363,7 +363,7 @@ export default function MainNavigator({ rotationEngine, freemiumService }: MainN
       ) : currentScreen === 'main' ? (
         <View style={styles.mainContainer}>
           {renderTabContent()}
-          <View style={styles.bottomTabBar}>
+          <View style={[styles.bottomTabBar, { bottom: Math.max(20, bottomInset + 8) }]}>
             <TabButton
               icon={activeTab === 'home' ? 'home' : 'home-outline'}
               isActive={activeTab === 'home'}
