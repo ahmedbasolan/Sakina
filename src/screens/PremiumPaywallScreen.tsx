@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Alert } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
 import { PaywallType } from '../types';
 import { FreemiumService } from '../services/freemiumService';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -20,6 +22,7 @@ const PremiumPaywallScreen: React.FC<PremiumPaywallScreenProps> = ({
   onMaybeLater,
   onBack,
 }) => {
+  const insets = useSafeAreaInsets();
   const [selectedPlan, setSelectedPlan] = useState<'monthly' | 'yearly'>('monthly');
   const [isStartingTrial, setIsStartingTrial] = useState(false);
 
@@ -62,7 +65,7 @@ const PremiumPaywallScreen: React.FC<PremiumPaywallScreenProps> = ({
       <LinearGradient colors={['#1A2332', '#0B0F12']} style={StyleSheet.absoluteFill} />
 
       {/* TOP APP BAR */}
-      <View style={styles.appBar}>
+      <View style={[styles.appBar, { paddingTop: Math.max(insets.top, 20) + 10 }]}>
         <TouchableOpacity style={styles.backButton} onPress={onBack}>
           <Ionicons name="chevron-back" size={24} color="#FFF" />
         </TouchableOpacity>
@@ -72,7 +75,7 @@ const PremiumPaywallScreen: React.FC<PremiumPaywallScreenProps> = ({
 
       {/* CONTENT */}
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
-        <View style={styles.content}>
+        <View style={[styles.content, { paddingBottom: Math.max(insets.bottom, 20) + 20 }]}>
           {/* HEADER AREA */}
           {/* PREMIUM CARD */}
           <View style={styles.premiumCard}>
