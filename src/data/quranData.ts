@@ -272,11 +272,12 @@ const quranContentData: Content[] = [
   {
     id: 'quran_10_62',
     type: 'Quran',
-    primaryText: "Ala inna awliya'allahi la khawfun 'alayhim wa la hum yahzanun",
+    primaryText:
+      "Alā inna awliyā'allāhi lā khawfun 'alayhim wa lā hum yaḥzanūn",
     arabicText: 'أَلَا إِنَّ أَوْلِيَاءَ اللَّهِ لَا خَوْفٌ عَلَيْهِمْ وَلَا هُمْ يَحْزَنُونَ ﴿٦٢﴾',
-    transliteration: "Ala inna awliya'allahi la khawfun 'alayhim wa la hum yahzanun",
+    transliteration: "Alā inna awliyā'allāhi lā khawfun 'alayhim wa lā hum yaḥzanūn",
     englishTranslation:
-      'Unquestionably, for the allies of Allah there will be no fear upon them, nor will they grieve.',
+      'Unquestionably, for the allies of Allah there will be no fear concerning them, nor will they grieve.',
     source: 'Surah Yunus 10:62',
     audioKey: '10:62',
     whyThis:
@@ -317,7 +318,7 @@ const quranContentData: Content[] = [
     id: 'quran_2_155',
     type: 'Quran',
     primaryText:
-      "Wa-lanabluwannakum bishay'im minal-khawfi wal-jū'i wa naqsim minal-amwāli wal-anfusi wath-thamarāt; wa bash-shiris-sābirīn",
+      "Wa-lanabluwannakum bishay'im minal-khawfi wal-jū'i wa naqsim minal-amwāli wal-anfusi wath-thamarāt; wa bash-shiris-sābirīn. Alladhīna idhā aṣābathum muṣībatun qālū innā lillāhi wa innā ilayhi rāji'ūn.",
     arabicText:
       'وَلَنَبْلُوَنَّكُم بِشَيْءٍ مِّنَ الْخَوْفِ وَالْجُوعِ وَنَقْصٍ مِّنَ الْأَمْوَالِ وَالْأَنفُسِ وَالثَّمَرَاتِ ۗ وَبَشِّرِ الصَّابِرِينَ ﴿١٥٥﴾. ٱلَّذِينَ إِذَآ أَصَٰبَتْهُم مُّصِيبَةٌ قَالُوٓا۟ إِنَّا لِلَّهِ وَإِنَّآ إِلَيْهِ رَٰجِعُونَ ﴿١٥٦﴾',
     transliteration:
@@ -378,10 +379,14 @@ const quranContentData: Content[] = [
   {
     id: 'quran_65_7',
     type: 'Quran',
-    primaryText: "Sa-yaj'alullahu ba'da 'usrin yusra",
-    arabicText: 'سَيَجْعَلُ اللَّهُ بَعْدَ عُسْرٍ يُسْرًا ﴿٧﴾',
-    transliteration: "Sa-yaj'alullahu ba'da 'usrin yusra",
-    englishTranslation: 'Allah will bring about, after hardship, ease.',
+    primaryText:
+      "Liyunfiq dhū sa'atin min sa'atih; wa man qudira 'alayhi rizquhū falyunfiq mimmā ātāhullāh; lā yukallifullāhu nafsan illā mā ātāhā; sa-yaj'alullāhu ba'da 'usrin yusrā",
+    arabicText:
+      'لِيُنفِقْ ذُو سَعَةٍ مِّن سَعَتِهِ ۖ وَمَن قُدِرَ عَلَيْهِ رِزْقُهُ فَلْيُنفِقْ مِمَّا آتَاهُ اللَّهُ ۚ لَا يُكَلِّفُ اللَّهُ نَفْسًا إِلَّا مَا آتَاهَا ۚ سَيَجْعَلُ اللَّهُ بَعْدَ عُسْرٍ يُسْرًا ﴿٧﴾',
+    transliteration:
+      "Liyunfiq dhū sa'atin min sa'atih; wa man qudira 'alayhi rizquhū falyunfiq mimmā ātāhullāh; lā yukallifullāhu nafsan illā mā ātāhā; sa-yaj'alullāhu ba'da 'usrin yusrā",
+    englishTranslation:
+      'Let a man of wealth spend from his wealth, and he whose provision is restricted - let him spend from what Allah has given him. Allah does not charge a soul except [according to] what He has given it. Allah will bring about, after hardship, ease.',
     source: 'Surah At-Talaq 65:7',
     audioKey: '65:7',
     whyThis: 'A divine promise: after every hardship, Allah will certainly bring ease.',
@@ -390,11 +395,14 @@ const quranContentData: Content[] = [
   {
     id: 'quran_21_87',
     type: 'Quran',
-    primaryText: 'La ilaha illa anta subhanaka inni kuntu minaz-zalimin',
-    arabicText: 'لَّا إِلَٰهَ إِلَّا أَنتَ سُبْحَانَكَ إِنِّي كُنتُ مِنَ الظَّالِمِينَ ﴿٨٧﴾',
-    transliteration: 'La ilaha illa anta subhanaka inni kuntu minaz-zalimin',
+    primaryText:
+      "Wa dhan-nūni idh dhahaba mughāḍiban faẓanna an lan naqdira 'alayhi fanādā fiẓ-ẓulumāti an lā ilāha illā anta subḥānaka innī kuntu minaẓ-ẓālimīn",
+    arabicText:
+      'وَذَا النُّونِ إِذ ذَّهَبَ مُغَاضِبًا فَظَنَّ أَن لَّن نَّقْدِرَ عَلَيْهِ فَنَادَىٰ فِي الظُّلُمَاتِ أَن لَّا إِلَٰهَ إِلَّا أَنتَ سُبْحَانَكَ إِنِّي كُنتُ مِنَ الظَّالِمِينَ ﴿٨٧﴾',
+    transliteration:
+      "Wa dhan-nūni idh dhahaba mughāḍiban faẓanna an lan naqdira 'alayhi fanādā fiẓ-ẓulumāti an lā ilāha illā anta subḥānaka innī kuntu minaẓ-ẓālimīn",
     englishTranslation:
-      'There is no deity except You; exalted are You. Indeed, I have been of the wrongdoers.',
+      'And [mention] the man of the fish, when he went off in anger and thought that We would not decree [anything] upon him. And he called out within the darknesses, "There is no deity except You; exalted are You. Indeed, I have been of the wrongdoers."',
     source: 'Surah Al-Anbiya 21:87',
     audioKey: '21:87',
     whyThis:
@@ -420,10 +428,14 @@ const quranContentData: Content[] = [
   {
     id: 'quran_40_60',
     type: 'Quran',
-    primaryText: "Wa qala rabbukum-ud'uni astajib lakum",
-    arabicText: 'وَقَالَ رَبُّكُمُ ادْعُونِي أَسْتَجِبْ لَكُمْ ﴿٦٠﴾',
-    transliteration: "Wa qala rabbukum-ud'uni astajib lakum",
-    englishTranslation: 'And your Lord says, "Call upon Me; I will respond to you."',
+    primaryText:
+      "Wa qāla rabbukumud'ūnī astajib lakum; innal-ladhīna yastakbirūna 'an 'ibādatī sayadkhulūna jahannama dākhirīn",
+    arabicText:
+      'وَقَالَ رَبُّكُمُ ادْعُونِي أَسْتَجِبْ لَكُمْ ۚ إِنَّ الَّذِينَ يَسْتَكْبِرُونَ عَنْ عِبَادَتِي سَيَدْخُلُونَ جَهَنَّمَ دَاخِرِينَ ﴿٦٠﴾',
+    transliteration:
+      "Wa qāla rabbukumud'ūnī astajib lakum; innal-ladhīna yastakbirūna 'an 'ibādatī sayadkhulūna jahannama dākhirīn",
+    englishTranslation:
+      'And your Lord says, "Call upon Me; I will respond to you." Indeed, those who disdain My worship will enter Hell [rendered] contemptible.',
     source: 'Surah Ghafir 40:60',
     audioKey: '40:60',
     whyThis: "Allah Himself invites you to call upon Him - He is waiting to respond to your du'a.",
@@ -432,10 +444,14 @@ const quranContentData: Content[] = [
   {
     id: 'quran_39_10',
     type: 'Quran',
-    primaryText: 'Innama yuwaffas-sabiruna ajrahum bighayri hisab',
-    arabicText: 'إِنَّمَا يُوَفَّى الصَّابِرُونَ أَجْرَهُم بِغَيْرِ حِسَابٍ ﴿١٠﴾',
-    transliteration: 'Innama yuwaffas-sabiruna ajrahum bighayri hisab',
-    englishTranslation: 'Indeed, the patient will be given their reward without account.',
+    primaryText:
+      "Qul yā 'ibādil-ladhīna āmanut-taqū rabbakum; lilladhīna aḥsanū fī hādhihid-dunyā ḥasanah; wa arḍullāhi wāsi'ah; innamā yuwaffaṣ-ṣābirūna ajrahum bighayri ḥisāb",
+    arabicText:
+      'قُلْ يَا عِبَادِ الَّذِينَ آمَنُوا اتَّقُوا رَبَّكُمْ ۚ لِلَّذِينَ أَحْسَنُوا فِي هَٰذِهِ الدُّنْيَا حَسَنَةٌ ۗ وَأَرْضُ اللَّهِ وَاسِعَةٌ ۗ إِنَّمَا يُوَفَّى الصَّابِرُونَ أَجْرَهُم بِغَيْرِ حِسَابٍ ﴿١٠﴾',
+    transliteration:
+      "Qul yā 'ibādil-ladhīna āmanut-taqū rabbakum; lilladhīna aḥsanū fī hādhihid-dunyā ḥasanah; wa arḍullāhi wāsi'ah; innamā yuwaffaṣ-ṣābirūna ajrahum bighayri ḥisāb",
+    englishTranslation:
+      'Say, "O My servants who have believed, fear your Lord. For those who do good in this world is good, and the earth of Allah is spacious. Indeed, the patient will be given their reward without account."',
     source: 'Surah Az-Zumar 39:10',
     audioKey: '39:10',
     whyThis: 'The reward for patience is limitless - beyond any calculation.',
