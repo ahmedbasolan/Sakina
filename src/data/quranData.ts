@@ -91,10 +91,14 @@ const quranContentData: Content[] = [
   {
     id: 'quran_3_173',
     type: 'Quran',
-    primaryText: "Hasbunallāhu wa ni'mal-wakīl",
-    arabicText: 'حَسْبُنَا اللَّهُ وَنِعْمَ الْوَكِيلُ ﴿١٧٣﴾',
-    transliteration: "Hasbunallāhu wa ni'mal-wakīl",
-    englishTranslation: 'Sufficient for us is Allah, and He is the best Disposer of affairs.',
+    primaryText:
+      "Alladhīna qāla lahumun-nāsu innan-nāsa qad jama'ū lakum fakhshawhum fazādahum īmānan wa qālū ḥasbunallāhu wa ni'mal-wakīl",
+    arabicText:
+      'ٱلَّذِينَ قَالَ لَهُمُ ٱلنَّاسُ إِنَّ ٱلنَّاسَ قَدۡ جَمَعُواْ لَكُمۡ فَٱخۡشَوۡهُمۡ فَزَادَهُمۡ إِيمَٰنٗا وَقَالُواْ حَسۡبُنَا ٱللَّهُ وَنِعۡمَ ٱلۡوَكِيلُ ﴿١٧٣﴾',
+    transliteration:
+      "Alladhīna qāla lahumun-nāsu innan-nāsa qad jama'ū lakum fakhshawhum fazādahum īmānan wa qālū ḥasbunallāhu wa ni'mal-wakīl",
+    englishTranslation:
+      'Those to whom hypocrites said, "Indeed, the people have gathered against you, so fear them." But it [merely] increased them in faith, and they said, "Sufficient for us is Allah, and [He is] the best Disposer of affairs."',
     source: 'Surah Ali Imran 3:173',
     audioKey: '3:173',
     whyThis:
@@ -130,12 +134,14 @@ const quranContentData: Content[] = [
   {
     id: 'quran_2_257',
     type: 'Quran',
-    primaryText: 'Allāhu waliyyulladhīna āmanū yukhrijuhum minaẓ-ẓulumāti ilan-nūr',
+    primaryText:
+      "Allāhu waliyyulladhīna āmanū yukhrijuhum minaẓ-ẓulumāti ilan-nūr. Walladhīna kafarū awliyā'uhumuṭ-ṭāghūtu yukhrijūnahum minan-nūri ilaẓ-ẓulumāt. Ulā'ika aṣḥābun-nāri hum fīhā khālidūn.",
     arabicText:
-      'اللَّهُ وَلِيُّ الَّذِينَ آمَنُوا يُخْرِجُهُم مِّنَ الظُّلُمَاتِ إِلَى النُّورِ ﴿٢٥٧﴾',
-    transliteration: 'Allāhu waliyyulladhīna āmanū yukhrijuhum minaẓ-ẓulumāti ilan-nūr',
+      'اللَّهُ وَلِيُّ الَّذِينَ آمَنُوا يُخْرِجُهُم مِّنَ الظُّلُمَاتِ إِلَى النُّورِ ۖ وَالَّذِينَ كَفَرُوا أَوْلِيَاؤُهُمُ الطَّاغُوتُ يُخْرِجُونَهُم مِنَ النُّورِ إِلَى الظُّلُمَاتِ ۗ أُولَٰئِكَ أَصْحَابُ النَّارِ ۖ هُمْ فِيهَا خَالِدُونَ ﴿٢٥٧﴾',
+    transliteration:
+      "Allāhu waliyyulladhīna āmanū yukhrijuhum minaẓ-ẓulumāti ilan-nūr. Walladhīna kafarū awliyā'uhumuṭ-ṭāghūtu yukhrijūnahum minan-nūri ilaẓ-ẓulumāt. Ulā'ika aṣḥābun-nāri hum fīhā khālidūn.",
     englishTranslation:
-      'Allah is the Protector of those who believe. He brings them out from darkness into the light.',
+      'Allah is the ally of those who believe. He brings them out from darknesses into the light. And those who disbelieve - their allies are Taghut. They take them out of the light into darknesses. Those are the companions of the Fire; they will abide eternally therein.',
     source: 'Surah Al-Baqarah 2:257',
     audioKey: '2:257',
     whyThis:
@@ -145,12 +151,14 @@ const quranContentData: Content[] = [
   {
     id: 'quran_8_40',
     type: 'Quran',
-    primaryText: "Fa'lamu annallaha mawlakum; ni'mal-mawla wa ni'man-nasir",
+    primaryText:
+      "Wa in tawallaw fa'lamū annallāha mawlākum; ni'mal-mawlā wa ni'man-naṣīr.",
     arabicText:
-      'وَاعْلَمُوا أَنَّ اللَّهَ مَوْلَاكُمْ ۚ نِعْمَ الْمَوْلَىٰ وَنِعْمَ النَّصِيرُ ﴿٤٠﴾',
-    transliteration: "Fa'lamu annallaha mawlakum; ni'mal-mawla wa ni'man-nasir",
+      'وَإِن تَوَلَّوۡاْ فَٱعۡلَمُوٓاْ أَنَّ ٱللَّهَ مَوۡلَىٰكُمۡۚ نِعۡمَ ٱلۡمَوۡلَىٰ وَنِعۡمَ ٱلنَّصِيرُ ﴿٤٠﴾',
+    transliteration:
+      "Wa in tawallaw fa'lamū annallāha mawlākum; ni'mal-mawlā wa ni'man-naṣīr.",
     englishTranslation:
-      'And know that Allah is your Protector - excellent is the Protector, and excellent is the Helper.',
+      'But if they turn away - then know that Allah is your protector. Excellent is the protector, and Excellent is the helper.',
     source: 'Surah Al-Anfal 8:40',
     audioKey: '8:40',
     whyThis:
@@ -160,10 +168,14 @@ const quranContentData: Content[] = [
   {
     id: 'quran_5_23',
     type: 'Quran',
-    primaryText: "Wa 'alallahi fatawakkalu in kuntum mu'minin",
-    arabicText: 'وَعَلَى اللَّهِ فَتَوَكَّلُوا إِن كُنتُم مُّؤْمِنِينَ ﴿٢٣﴾',
-    transliteration: "Wa 'alallahi fatawakkalu in kuntum mu'minin",
-    englishTranslation: 'And upon Allah rely, if you should be believers.',
+    primaryText:
+      "Qāla rajulāni minalladhīna yakhāfūna an'amallāhu 'alayhimad-khulū 'alayhimul-bāb, fa-idhā dakhaltumūhu fa-innakum ghālibūn; wa 'alallāhi fa-tawakkalū in kuntum mu'minīn.",
+    arabicText:
+      'قَالَ رَجُلَانِ مِنَ ٱلَّذِينَ يَخَافُونَ أَنعَمَ ٱللَّهُ عَلَيۡهِمَا ٱدۡخُلُواْ عَلَيۡهِمُ ٱلۡبَابَ فَإِذَا دَخَلۡتُمُوهُ فَإِنَّكُمۡ غَٰلِبُونَۚ وَعَلَى ٱللَّهِ فَتَوَكَّلُوٓاْ إِن كُنتُم مُّمۡؤۡمِنِينَ ﴿٢٣﴾',
+    transliteration:
+      "Qāla rajulāni minalladhīna yakhāfūna an'amallāhu 'alayhimad-khulū 'alayhimul-bāb, fa-idhā dakhaltumūhu fa-innakum ghālibūn; wa 'alallāhi fa-tawakkalū in kuntum mu'minīn.",
+    englishTranslation:
+      'Said two men from those who feared [to disobey] upon whom Allah had bestowed favor, "Enter upon them through the gate, for when you have entered it, you will be predominant. And upon Allah rely, if you should be believers."',
     source: 'Surah Al-Maidah 5:23',
     audioKey: '5:23',
     whyThis: 'Tawakkul (reliance on Allah) is not just encouraged - it is a sign of true belief.',
