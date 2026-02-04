@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Alert } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { LinearGradient } from 'expo-linear-gradient';
 
 import { Ionicons } from '@expo/vector-icons';
 import { SpiritualPath, UserPathProgress } from '../types';
@@ -83,25 +84,47 @@ export const PathDetailScreen: React.FC<PathDetailScreenProps> = ({
       </View>
 
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
-        {/* Path Overview */}
-        <View style={styles.overviewSection}>
-          <Text style={styles.pathTitle}>{path.title}</Text>
-          <Text style={styles.pathDescription}>{path.description}</Text>
+        {/* Hero Section with Gradient */}
+        <View style={styles.heroSection}>
+          <LinearGradient
+            colors={['rgba(46, 211, 198, 0.12)', 'rgba(46, 211, 198, 0.02)', 'transparent']}
+            style={styles.heroGradient}
+            start={{ x: 0.5, y: 0 }}
+            end={{ x: 0.5, y: 1 }}
+          />
+          <View style={styles.heroContent}>
+            <Text style={styles.pathTitle}>{path.title}</Text>
+            <Text style={styles.pathDescription}>{path.description}</Text>
 
-          <View style={styles.metaContainer}>
-            <View style={styles.metaItem}>
-              <Text style={styles.metaLabel}>Duration</Text>
-              <Text style={styles.metaValue}>{path.duration} days</Text>
-            </View>
-            <View style={styles.metaItem}>
-              <Text style={styles.metaLabel}>Starting Point</Text>
-              <Text style={styles.metaValue}>{path.theme}</Text>
-            </View>
-            <View style={styles.metaItem}>
-              <Text style={styles.metaLabel}>Destination</Text>
-              <Text style={styles.metaValue}>{path.target}</Text>
+            {/* Enhanced Meta Badges */}
+            <View style={styles.metaContainer}>
+              <View style={styles.metaBadge}>
+                <Ionicons name="calendar-outline" size={14} color="#2ED3C6" />
+                <View style={styles.metaBadgeContent}>
+                  <Text style={styles.metaLabel}>Duration</Text>
+                  <Text style={styles.metaValue}>{path.duration} days</Text>
+                </View>
+              </View>
+              <View style={styles.metaBadge}>
+                <Ionicons name="location-outline" size={14} color="#2ED3C6" />
+                <View style={styles.metaBadgeContent}>
+                  <Text style={styles.metaLabel}>Starting Point</Text>
+                  <Text style={styles.metaValue}>{path.theme}</Text>
+                </View>
+              </View>
+              <View style={styles.metaBadge}>
+                <Ionicons name="flag-outline" size={14} color="#D4AF37" />
+                <View style={styles.metaBadgeContent}>
+                  <Text style={styles.metaLabel}>Destination</Text>
+                  <Text style={[styles.metaValue, styles.goldText]}>{path.target}</Text>
+                </View>
+              </View>
             </View>
           </View>
+        </View>
+
+        {/* Path Overview Notices */}
+        <View style={styles.overviewSection}>
 
           {path.isSpecialEdition && !isUnlocked && (
             <View style={[styles.premiumNotice, styles.specialNotice]}>
@@ -294,41 +317,84 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
   },
 
-  // Overview Section
-  overviewSection: {
-    marginBottom: 32,
+  // Hero Section with Gradient
+  heroSection: {
+    marginBottom: 16,
+    borderRadius: 20,
+    overflow: 'hidden',
+    position: 'relative',
+  },
+  heroGradient: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    borderRadius: 20,
+  },
+  heroContent: {
+    padding: 20,
+    paddingTop: 8,
   },
   pathTitle: {
-    fontSize: 28,
-    fontWeight: '700',
+    fontSize: 32,
+    fontWeight: '800',
     color: '#FFFFFF',
     marginBottom: 12,
+    letterSpacing: -0.5,
+    textShadowColor: 'rgba(46, 211, 198, 0.3)',
+    textShadowOffset: { width: 0, height: 2 },
+    textShadowRadius: 8,
   },
   pathDescription: {
     fontSize: 16,
-    color: 'rgba(255,255,255,0.70)',
-    lineHeight: 24,
+    color: 'rgba(255,255,255,0.80)',
+    lineHeight: 26,
     marginBottom: 24,
   },
   metaContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 20,
+    gap: 10,
+  },
+  metaBadge: {
+    flex: 1,
+    backgroundColor: 'rgba(255,255,255,0.06)',
+    borderRadius: 14,
+    padding: 12,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.08)',
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  metaBadgeContent: {
+    flex: 1,
+  },
+  metaLabel: {
+    fontSize: 10,
+    color: 'rgba(255,255,255,0.50)',
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+    marginBottom: 2,
+  },
+  metaValue: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#FFFFFF',
+  },
+  goldText: {
+    color: '#D4AF37',
+  },
+
+  // Overview Section (for notices only)
+  overviewSection: {
+    marginBottom: 24,
   },
   metaItem: {
     flex: 1,
     alignItems: 'center',
     paddingHorizontal: 8,
-  },
-  metaLabel: {
-    fontSize: 12,
-    color: 'rgba(255,255,255,0.60)',
-    marginBottom: 4,
-  },
-  metaValue: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#FFFFFF',
   },
   premiumNotice: {
     backgroundColor: 'rgba(255,215,0,0.20)',
@@ -456,61 +522,73 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   stepsContainer: {
-    backgroundColor: '#1A1F23',
-    borderRadius: 16,
+    backgroundColor: 'rgba(255,255,255,0.04)',
+    borderRadius: 20,
     padding: 20,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.06)',
   },
   stepItem: {
     flexDirection: 'row',
-    marginBottom: 20,
+    marginBottom: 24,
   },
   stepNumberContainer: {
     alignItems: 'center',
     marginRight: 16,
   },
   stepNumber: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: 'rgba(255,255,255,0.10)',
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: 'rgba(255,255,255,0.08)',
     justifyContent: 'center',
     alignItems: 'center',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.12)',
   },
   completedStep: {
-    backgroundColor: '#4CAF50',
+    backgroundColor: 'rgba(76, 175, 80, 0.2)',
+    borderColor: '#4CAF50',
   },
   currentStep: {
-    backgroundColor: '#2ED3C6',
+    backgroundColor: 'rgba(46, 211, 198, 0.2)',
+    borderColor: '#2ED3C6',
+    shadowColor: '#2ED3C6',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.5,
+    shadowRadius: 8,
+    elevation: 4,
   },
   stepNumberText: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: '#FFFFFF',
+    fontSize: 14,
+    fontWeight: '700',
+    color: 'rgba(255,255,255,0.6)',
   },
   completedStepText: {
-    color: '#FFFFFF',
+    color: '#4CAF50',
   },
   currentStepText: {
-    color: '#0B0F12',
+    color: '#2ED3C6',
   },
   stepConnector: {
     width: 2,
     flex: 1,
-    backgroundColor: 'rgba(255,255,255,0.10)',
+    backgroundColor: 'rgba(255,255,255,0.08)',
     marginTop: 4,
+    borderRadius: 1,
   },
   completedConnector: {
     backgroundColor: '#4CAF50',
   },
   stepContent: {
     flex: 1,
-    paddingTop: 4,
+    paddingTop: 6,
   },
   stepTitle: {
-    fontSize: 14,
-    fontWeight: '600',
+    fontSize: 15,
+    fontWeight: '700',
     color: '#FFFFFF',
-    marginBottom: 4,
+    marginBottom: 6,
   },
   completedStepTitle: {
     color: 'rgba(255,255,255,0.80)',
@@ -527,15 +605,18 @@ const styles = StyleSheet.create({
   stepPreview: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 12,
+    gap: 8,
   },
   previewItem: {
     fontSize: 11,
-    color: 'rgba(255,255,255,0.4)',
-    backgroundColor: 'rgba(255,255,255,0.05)',
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 8,
+    color: 'rgba(255,255,255,0.6)',
+    backgroundColor: 'rgba(46,211,198,0.08)',
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: 'rgba(46,211,198,0.15)',
+    overflow: 'hidden',
   },
 
   // Action Section
@@ -544,10 +625,15 @@ const styles = StyleSheet.create({
   },
   actionButton: {
     backgroundColor: '#2ED3C6',
-    borderRadius: 16,
-    paddingVertical: 16,
+    borderRadius: 20,
+    paddingVertical: 18,
     paddingHorizontal: 24,
     alignItems: 'center',
+    shadowColor: '#2ED3C6',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 12,
+    elevation: 8,
   },
   premiumButton: {
     backgroundColor: '#FFD700',
