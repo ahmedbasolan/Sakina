@@ -25,10 +25,10 @@ const moodsToCheck: Mood[] = [
   'Happy',
   'Hopeful',
   'Calm',
-  'Tired',
   'Energized',
   'Content',
   'Stressed',
+  'Guilty',
 ];
 
 moodsToCheck.forEach((mood: Mood) => {

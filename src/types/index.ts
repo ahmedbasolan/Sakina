@@ -5,11 +5,11 @@ export type Mood =
   | 'Content'
   | 'Angry'
   | 'Grateful'
-  | 'Tired'
   | 'Energized'
   | 'Stressed'
   | 'Hopeful'
-  | 'Happy';
+  | 'Happy'
+  | 'Guilty';
 export type Intensity = 'Low' | 'Medium' | 'High';
 export type Duration = 'Just now' | 'All day' | 'Long time';
 export type SubscriptionTier = 'free' | 'premium';
