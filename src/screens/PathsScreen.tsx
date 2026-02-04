@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Dimensions, Animated } from 'react-native';
+
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Mood, UserPathProgress } from '../types';
@@ -135,6 +136,29 @@ export default function PathsScreen({
   unlockedBundleIds = [],
 }: PathsScreenProps) {
   const [activeCategory, setActiveCategory] = useState<'journeys' | 'collections'>('journeys');
+  const fadeAnim = React.useRef(new Animated.Value(0)).current;
+  const slideAnim = React.useRef(new Animated.Value(10)).current;
+
+  useState(() => {
+    // Initial animation call
+  });
+
+  React.useEffect(() => {
+    fadeAnim.setValue(0);
+    slideAnim.setValue(10);
+    Animated.parallel([
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 400,
+        useNativeDriver: true,
+      }),
+      Animated.timing(slideAnim, {
+        toValue: 0,
+        duration: 400,
+        useNativeDriver: true,
+      }),
+    ]).start();
+  }, [activeCategory]);
   const insets = useSafeAreaInsets();
   const pathsService = PathsService.getInstance();
   const allPaths = pathsService.getAllPaths(isPremium, unlockedBundleIds);
@@ -207,8 +231,8 @@ export default function PathsScreen({
         </View>
       </View>
 
-      <ScrollView
-        style={styles.scrollView}
+      <Animated.ScrollView
+        style={[styles.scrollView, { opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}
         contentContainerStyle={[styles.content, { paddingBottom: insets.bottom + 80 }]}
         showsVerticalScrollIndicator={false}
       >
@@ -286,7 +310,7 @@ export default function PathsScreen({
             )}
           </>
         )}
-      </ScrollView>
+      </Animated.ScrollView>
     </View>
   );
 }

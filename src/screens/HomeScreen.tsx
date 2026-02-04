@@ -49,7 +49,18 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ onMoodSelected, selectedMood })
   const insets = useSafeAreaInsets();
   const topInset = insets?.top ?? 0;
   const bottomInset = insets?.bottom ?? 0;
-  const [animatedValues] = useState(MOOD_DATA.map(() => new Animated.Value(1)));
+
+  // Card Animations
+  const cardScaleValues = React.useRef(MOOD_DATA.map(() => new Animated.Value(0.9))).current;
+  const cardOpacityValues = React.useRef(MOOD_DATA.map(() => new Animated.Value(0))).current;
+  const cardTranslateYValues = React.useRef(MOOD_DATA.map(() => new Animated.Value(20))).current;
+
+  // Heart Breathing Animation
+  const heartScale = React.useRef(new Animated.Value(1)).current;
+
+  // Background Rotation
+  const bgRotation = React.useRef(new Animated.Value(0)).current;
+
   const [remainingSessions, setRemainingSessions] = useState(1);
   const [hoursUntilReset, setHoursUntilReset] = useState(0);
   const [freemiumService] = useState(() => FreemiumService.getInstance());
@@ -66,6 +77,56 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ onMoodSelected, selectedMood })
 
     updateSessionInfo();
 
+    // Staggered Entrance Animation
+    const entranceAnimations = MOOD_DATA.map((_, i) => {
+      return Animated.parallel([
+        Animated.timing(cardOpacityValues[i], {
+          toValue: 1,
+          duration: 600,
+          useNativeDriver: true,
+        }),
+        Animated.spring(cardTranslateYValues[i], {
+          toValue: 0,
+          friction: 8,
+          tension: 40,
+          useNativeDriver: true,
+        }),
+        Animated.spring(cardScaleValues[i], {
+          toValue: 1,
+          friction: 8,
+          tension: 40,
+          useNativeDriver: true,
+        }),
+      ]);
+    });
+
+    Animated.stagger(80, entranceAnimations).start();
+
+    // Heart Pulse Animation
+    Animated.loop(
+      Animated.sequence([
+        Animated.timing(heartScale, {
+          toValue: 1.08,
+          duration: 2000,
+          useNativeDriver: true,
+        }),
+        Animated.timing(heartScale, {
+          toValue: 1,
+          duration: 2500,
+          useNativeDriver: true,
+        }),
+      ])
+    ).start();
+
+    // Subtle BG Rotation
+    Animated.loop(
+      Animated.timing(bgRotation, {
+        toValue: 1,
+        duration: 200000,
+        useNativeDriver: true,
+      })
+    ).start();
+
     // Update every minute to show accurate time until reset
     const interval = setInterval(updateSessionInfo, 60000);
 
@@ -76,12 +137,12 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ onMoodSelected, selectedMood })
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     // Add subtle press animation
     Animated.sequence([
-      Animated.timing(animatedValues[index], {
+      Animated.timing(cardScaleValues[index], {
         toValue: 0.95,
         duration: 100,
         useNativeDriver: true,
       }),
-      Animated.timing(animatedValues[index], {
+      Animated.timing(cardScaleValues[index], {
         toValue: 1,
         duration: 100,
         useNativeDriver: true,
@@ -105,6 +166,24 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ onMoodSelected, selectedMood })
   return (
     <View style={styles.container}>
       <StatusBar barStyle="light-content" backgroundColor="#0B0F12" />
+
+      {/* Subtle Background Pattern */}
+      <Animated.View
+        style={[
+          styles.bgPatternContainer,
+          {
+            transform: [{
+              rotate: bgRotation.interpolate({
+                inputRange: [0, 1],
+                outputRange: ['0deg', '360deg']
+              })
+            }]
+          }
+        ]}
+      >
+        <MaterialCommunityIcons name="moon-waning-crescent" size={width * 1.5} color="rgba(46, 211, 198, 0.03)" />
+      </Animated.View>
+
       <ScrollView
         style={styles.scrollView}
         contentContainerStyle={[
@@ -117,7 +196,10 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ onMoodSelected, selectedMood })
         showsVerticalScrollIndicator={false}
       >
         <Text style={styles.header}>
-          How is your <Text style={styles.heartText}>heart</Text>
+          How is your{' '}
+          <Animated.View style={{ transform: [{ scale: heartScale }], display: 'flex', marginBottom: -10 }}>
+            <Text style={styles.heartText}>heart</Text>
+          </Animated.View>
           {'\n'}feeling today?
         </Text>
         <View style={styles.quoteContainer}>
@@ -130,7 +212,13 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ onMoodSelected, selectedMood })
           {MOOD_DATA.map((item, index) => (
             <Animated.View
               key={item.mood}
-              style={{ transform: [{ scale: animatedValues[index] }] }}
+              style={{
+                opacity: cardOpacityValues[index],
+                transform: [
+                  { translateY: cardTranslateYValues[index] },
+                  { scale: cardScaleValues[index] }
+                ]
+              }}
             >
               <TouchableOpacity
                 style={[styles.moodCard, selectedMood === item.mood && styles.selectedCard]}
@@ -198,6 +286,18 @@ const styles = StyleSheet.create({
   },
   scrollView: {
     flex: 1,
+    zIndex: 1,
+  },
+  bgPatternContainer: {
+    position: 'absolute',
+    top: -width * 0.5,
+    left: -width * 0.25,
+    width: width * 1.5,
+    height: width * 1.5,
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 0,
+    pointerEvents: 'none',
   },
   content: {
     paddingHorizontal: Grid.contentPadding,
