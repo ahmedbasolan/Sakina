@@ -2184,6 +2184,20 @@ const quranContentData: Content[] = [
       'Your rizq (provision) is already written in the heavens - recorded and guaranteed by Allah.',
     moods: ['Anxious', 'Stressed'],
   },
+  {
+    id: 'quran_11_6',
+    type: 'Quran',
+    primaryText: "Wa ma min dabbatin fil-ardi illa 'alallahi rizquha",
+    arabicText: 'وَمَا مِن دَآبَّةٍ فِي ٱلْأَرْضِ إِلَّا عَلَى ٱللَّهِ رِزْقُهَا ﴿٦﴾',
+    transliteration: "Wa ma min dabbatin fil-ardi illa 'alallahi rizquha",
+    englishTranslation:
+      'There is no creature on earth whose provision is not guaranteed by Allah.',
+    source: 'Surah Hud 11:6',
+    audioKey: '11:6',
+    whyThis:
+      'Every creature on earth—from the bird to the fish to the baby in the womb—is sustained by Allah alone.',
+    moods: ['Anxious', 'Grateful'],
+  },
 ];
 
 const quranContent: Content[] = quranContentData;
@@ -3660,6 +3674,23 @@ const quranContentAnglesData: ContentAngle[] = [
     actionSource: 'Authenticated in collections of morning/evening adhkar',
     reflection:
       'What one thing do you already have that you have been taking for granted? How would your life change if it was taken away tomorrow?',
+  },
+  {
+    id: 'q_angle_rizq_day2',
+    contentId: 'quran_11_6',
+    mood: 'Anxious',
+    angle:
+      "Imam Al-Ghazali: 'Ar-Razzaq is the One who created sustenance and distributed it to all creation. He provides for the bird in the sky, the fish in the ocean, and the baby in the womb—none of them earned it, yet all are sustained.' Ibn al-Qayyim: 'When you know that your Provider is Ar-Razzaq, you realize that no human can withhold what Allah has written for you. This knowledge liberates the heart from depending on creation.'",
+    action: "Learn the Name: Repeat 'Ya Razzaq' (O Provider) 100 times today.",
+    actionHowTo:
+      'Use a digital tasbih counter. Best times: After Fajr, after any prayer, before sleep.',
+    actionReward:
+      'Prophet ﷺ taught that your rizq was written before you took your first breath—the soul is created 120 days into pregnancy and an angel writes four things including provision. [Bukhari 3208]',
+    actionArabicText: 'اللَّهُمَّ أَنْتَ الرَّزَّاقُ، ارْزُقْنِي مِنْ فَضْلِكَ',
+    actionTransliteration: 'Allahumma anta ar-Razzaq, urzuqni min fadlika',
+    actionSource: 'Dua of the Provider',
+    reflection:
+      'If you truly believed that Allah guarantees your provision, what would you stop worrying about today?',
   },
 ];
 

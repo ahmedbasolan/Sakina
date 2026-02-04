@@ -109,6 +109,16 @@ export const STATIC_SPIRITUAL_PATHS: SpiritualPath[] = [
         angleId: 'q_angle_rizq_day1',
         isCompleted: false,
       },
+      {
+        id: 'step_rizq_2',
+        pathId: 'path_rizq_revolution',
+        day: 2,
+        title: 'The One Who Provides',
+        focus: "Knowing Allah's names Ar-Razzaq (The Provider) and Al-Fattah (The Opener).",
+        contentId: 'quran_11_6',
+        angleId: 'q_angle_rizq_day2',
+        isCompleted: false,
+      },
     ],
   },
   {
