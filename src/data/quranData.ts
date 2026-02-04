@@ -1728,11 +1728,13 @@ const quranContentData: Content[] = [
   {
     id: 'quran_35_35',
     type: 'Quran',
-    primaryText: 'Lā yamassunā fīhā nasabun wa lā yamassunā fīhā lughūb',
-    arabicText: 'لَا يَمَسُّنَا فِيهَا نَصَبٌ وَلَا يَمَسُّنَا فِيهَا لُغُوبٌ ﴿٣٥﴾',
-    transliteration: 'Lā yamassunā fīhā nasabun wa lā yamassunā fīhā lughūb',
+    primaryText:
+      "Alladhī aḥallanā dāra al-muqāmati min faḍlihi lā yamassunā fīhā naṣabun wa lā yamassunā fīhā lughūb",
+    arabicText: 'الَّذِي أَحَلَّنَا دَارَ الْمُقَامَةِ مِن فَضْلِهِ لَا يَمَسُّنَا فِيهَا نَصَبٌ وَلَا يَمَسُّنَا فِيهَا لُغُوبٌ ﴿٣٥﴾',
+    transliteration:
+      "Alladhī aḥallanā dāra al-muqāmati min faḍlihi lā yamassunā fīhā naṣabun wa lā yamassunā fīhā lughūb",
     englishTranslation:
-      'There touches us not in it [Paradise] any fatigue, and there touches us not in it weariness.',
+      'He who has settled us in the Home of Settlement by His bounty. There touches us not in it any fatigue, and there touches us not in it weariness.',
     source: 'Surah Fatir 35:35',
     audioKey: '35:35',
     whyThis:
