@@ -3,7 +3,7 @@ import * as SQLite from 'expo-sqlite';
 let dbInstance: SQLite.SQLiteDatabase | null = null;
 let connectionPromise: Promise<SQLite.SQLiteDatabase> | null = null;
 let executionQueue: Promise<void> = Promise.resolve();
-const CURRENT_DB_VERSION = 7; // Increment this to force a content refresh
+const CURRENT_DB_VERSION = 11; // Increment this to force a content refresh
 
 export const getDatabase = async (): Promise<SQLite.SQLiteDatabase> => {
   if (dbInstance) return dbInstance;
@@ -54,29 +54,31 @@ export const getDatabase = async (): Promise<SQLite.SQLiteDatabase> => {
   return connectionPromise;
 };
 
-let queueActiveId: string | null = null;
-let currentOperationdepth = 0;
+let dbQueryHeld = false;
 
 /**
  * Executes a database operation within a sequential queue to prevent NPEs
  * and "database is locked" errors during heavy initialization/refresh cycles.
- * Now supports re-entrancy to avoid deadlocks in nested service calls.
+ *
+ * IMPORTANT: dbQuery is NOT re-entrant. Never call dbQuery from inside another
+ * dbQuery callback — it will throw. If you need nested DB work, pass the `db`
+ * handle explicitly through function arguments instead.
+ *
+ * Rationale: the previous implementation used a global depth counter to allow
+ * re-entrancy, but the counter raced across async boundaries and caused the
+ * very "database is locked" errors it was meant to prevent. A strict mutex is
+ * safer; nested callers are explicit about passing `db` down.
  */
 export const dbQuery = async <T>(
   operation: (db: SQLite.SQLiteDatabase) => Promise<T>,
 ): Promise<T> => {
-  const db = await getDatabase();
-
-  // If we're already inside a dbQuery on this "stack" (simulated by depth),
-  // we can skip the queue to avoid deadlock.
-  if (currentOperationdepth > 0) {
-    currentOperationdepth++;
-    try {
-      return await operation(db);
-    } finally {
-      currentOperationdepth--;
-    }
+  if (dbQueryHeld) {
+    throw new Error(
+      'dbQuery called re-entrantly. Pass the db handle explicitly to nested operations instead of calling dbQuery again.',
+    );
   }
+
+  const db = await getDatabase();
 
   const currentQueue = executionQueue;
   let resolveQueue: () => void;
@@ -86,10 +88,10 @@ export const dbQuery = async <T>(
 
   try {
     await currentQueue;
-    currentOperationdepth = 1;
+    dbQueryHeld = true;
     return await operation(db);
   } finally {
-    currentOperationdepth = 0;
+    dbQueryHeld = false;
     resolveQueue!();
   }
 };
@@ -123,6 +125,7 @@ export const resetDatabase = async (): Promise<void> => {
         'content_moods',
         'user_history',
         'saved_reflections',
+        'reflections',
         'user_sessions',
         'user_subscription',
         'collections',
@@ -135,7 +138,7 @@ export const resetDatabase = async (): Promise<void> => {
       for (const table of tables) {
         try {
           await db.execAsync(`DROP TABLE IF EXISTS ${table}`);
-        } catch (error) {
+        } catch (_error) {
           console.log(`Table ${table} may not exist or is locked, continuing...`);
         }
       }
@@ -148,6 +151,11 @@ export const resetDatabase = async (): Promise<void> => {
   });
 };
 
+/**
+ * Schema migrations run automatically on every `initializeDatabase()` call
+ * (via `runInitializationSteps`). You do NOT normally need to call this —
+ * it's kept as an explicit trigger for tests / recovery paths.
+ */
 export const migrateDatabase = async (): Promise<void> => {
   await dbQuery(runMigrationSteps);
 };
@@ -163,9 +171,7 @@ const runMigrationSteps = async (db: SQLite.SQLiteDatabase): Promise<void> => {
         `ALTER TABLE saved_reflections ADD COLUMN isFavorite INTEGER NOT NULL DEFAULT 0`,
       );
     }
-    if (!savedReflectionsColumns.some((col) => col.name === 'collectionId')) {
-      await db.execAsync(`ALTER TABLE saved_reflections ADD COLUMN collectionId TEXT`);
-    }
+
 
     // 3. content migrations
     const contentInfo = await db.getAllAsync(`PRAGMA table_info(content)`);
@@ -177,6 +183,10 @@ const runMigrationSteps = async (db: SQLite.SQLiteDatabase): Promise<void> => {
     if (!contentColumns.some((col) => col.name === 'audioKey')) {
       console.log('Adding audioKey to content...');
       await db.execAsync(`ALTER TABLE content ADD COLUMN audioKey TEXT`);
+    }
+    if (!contentColumns.some((col) => col.name === 'prayerContext')) {
+      console.log('Adding prayerContext to content...');
+      await db.execAsync(`ALTER TABLE content ADD COLUMN prayerContext TEXT`);
     }
 
     // 4. user_subscription migrations
@@ -211,6 +221,14 @@ const runMigrationSteps = async (db: SQLite.SQLiteDatabase): Promise<void> => {
       console.log('Adding actionReward to content_angles...');
       await db.execAsync(`ALTER TABLE content_angles ADD COLUMN actionReward TEXT`);
     }
+    if (!contentAnglesColumns.some((col) => col.name === 'angleSource')) {
+      console.log('Adding angleSource to content_angles...');
+      await db.execAsync(`ALTER TABLE content_angles ADD COLUMN angleSource TEXT`);
+    }
+    if (!contentAnglesColumns.some((col) => col.name === 'practiceSteps')) {
+      console.log('Adding practiceSteps to content_angles...');
+      await db.execAsync(`ALTER TABLE content_angles ADD COLUMN practiceSteps TEXT`);
+    }
 
     console.log('Database migration completed successfully');
   } catch (error) {
@@ -221,9 +239,12 @@ const runMigrationSteps = async (db: SQLite.SQLiteDatabase): Promise<void> => {
 
 export const initializeDatabase = async (): Promise<void> => {
   await dbQuery(async (db) => {
+    // Always run init + migrations on startup. Schema migrations are decoupled
+    // from content refreshes and fire on every launch.
     await runInitializationSteps(db);
 
-    // Version-based content refresh
+    // Version-based content refresh: only wipe & recreate content tables when
+    // CURRENT_DB_VERSION has been bumped (e.g. new seed data).
     const versionResult = await db.getFirstAsync<{ user_version: number }>('PRAGMA user_version;');
     const currentVersion = versionResult?.user_version || 0;
 
@@ -232,13 +253,52 @@ export const initializeDatabase = async (): Promise<void> => {
         `Database version mismatch (${currentVersion} < ${CURRENT_DB_VERSION}). Refreshing content...`,
       );
 
-      // We essentially want to do what refreshContentOnly does, but within this same queued operation
       try {
         await db.execAsync('DROP TABLE IF EXISTS content_moods');
         await db.execAsync('DROP TABLE IF EXISTS content_angles');
         await db.execAsync('DROP TABLE IF EXISTS content');
 
-        await runInitializationSteps(db);
+        // Re-create ONLY the dropped tables — all other schema was already
+        // initialized and migrated above, so a full re-run would be wasteful.
+        await db.execAsync(`CREATE TABLE IF NOT EXISTS content (
+          id TEXT PRIMARY KEY,
+          type TEXT NOT NULL,
+          primaryText TEXT NOT NULL,
+          arabicText TEXT,
+          transliteration TEXT,
+          englishTranslation TEXT NOT NULL,
+          source TEXT NOT NULL,
+          audioKey TEXT,
+          whyThis TEXT NOT NULL,
+          propheticPractice TEXT,
+          optionalAction TEXT,
+          optionalReflection TEXT,
+          prayerContext TEXT
+        );`);
+        await db.execAsync(`CREATE TABLE IF NOT EXISTS content_angles (
+          id TEXT PRIMARY KEY,
+          contentId TEXT NOT NULL,
+          mood TEXT NOT NULL,
+          angle TEXT NOT NULL,
+          angleSource TEXT,
+          action TEXT,
+          actionArabicText TEXT,
+          actionTransliteration TEXT,
+          actionSource TEXT,
+          actionHowTo TEXT,
+          actionReward TEXT,
+          practiceSteps TEXT,
+          reflection TEXT,
+          FOREIGN KEY (contentId) REFERENCES content (id)
+        );`);
+        await db.execAsync(`CREATE TABLE IF NOT EXISTS content_moods (
+          contentId TEXT NOT NULL,
+          mood TEXT NOT NULL,
+          relevanceScore INTEGER NOT NULL DEFAULT 10,
+          PRIMARY KEY (contentId, mood),
+          FOREIGN KEY (contentId) REFERENCES content (id)
+        );`);
+
         await db.execAsync(`PRAGMA user_version = ${CURRENT_DB_VERSION};`);
         console.log(`Database updated to version ${CURRENT_DB_VERSION} and content refreshed`);
       } catch (error) {
@@ -267,7 +327,8 @@ const runInitializationSteps = async (db: SQLite.SQLiteDatabase): Promise<void> 
         whyThis TEXT NOT NULL,
         propheticPractice TEXT,
         optionalAction TEXT,
-        optionalReflection TEXT
+        optionalReflection TEXT,
+        prayerContext TEXT
       );`,
     },
     {
@@ -277,12 +338,14 @@ const runInitializationSteps = async (db: SQLite.SQLiteDatabase): Promise<void> 
         contentId TEXT NOT NULL,
         mood TEXT NOT NULL,
         angle TEXT NOT NULL,
+        angleSource TEXT,
         action TEXT,
         actionArabicText TEXT,
         actionTransliteration TEXT,
         actionSource TEXT,
         actionHowTo TEXT,
         actionReward TEXT,
+        practiceSteps TEXT,
         reflection TEXT,
         FOREIGN KEY (contentId) REFERENCES content (id)
       );`,
@@ -319,9 +382,20 @@ const runInitializationSteps = async (db: SQLite.SQLiteDatabase): Promise<void> 
         reflection TEXT NOT NULL,
         timestamp INTEGER NOT NULL,
         isFavorite INTEGER NOT NULL DEFAULT 0,
-        collectionId TEXT,
         FOREIGN KEY (contentId) REFERENCES content (id),
         FOREIGN KEY (angleId) REFERENCES content_angles (id)
+      );`,
+    },
+    {
+      // Free-form journal reflections (no link to content/angles).
+      // Used by ReflectionHistoryScreen's "Write a new reflection" flow.
+      name: 'reflections',
+      sql: `CREATE TABLE IF NOT EXISTS reflections (
+        id TEXT PRIMARY KEY,
+        title TEXT,
+        content TEXT NOT NULL,
+        mood TEXT,
+        createdAt INTEGER NOT NULL
       );`,
     },
     {
@@ -421,6 +495,13 @@ const runInitializationSteps = async (db: SQLite.SQLiteDatabase): Promise<void> 
         showTransliteration INTEGER NOT NULL DEFAULT 1
       );`,
     },
+    {
+      name: 'kv_store',
+      sql: `CREATE TABLE IF NOT EXISTS kv_store (
+        key TEXT PRIMARY KEY,
+        value TEXT NOT NULL
+      );`,
+    },
   ];
 
   for (const table of tables) {
@@ -462,6 +543,10 @@ const runInitializationSteps = async (db: SQLite.SQLiteDatabase): Promise<void> 
       name: 'idx_user_path_progress_pathId',
       sql: `CREATE INDEX IF NOT EXISTS idx_user_path_progress_pathId ON user_path_progress (pathId);`,
     },
+    {
+      name: 'idx_reflections_createdAt',
+      sql: `CREATE INDEX IF NOT EXISTS idx_reflections_createdAt ON reflections (createdAt);`,
+    },
   ];
 
   for (const index of indices) {
@@ -476,28 +561,6 @@ const runInitializationSteps = async (db: SQLite.SQLiteDatabase): Promise<void> 
   // Run migrations to handle schema updates
   await runMigrationSteps(db);
 
-  // Create indices that depend on migrated columns
-  try {
-    await db.execAsync(
-      `CREATE INDEX IF NOT EXISTS idx_saved_reflections_collection ON saved_reflections (collectionId);`,
-    );
-  } catch (error) {
-    console.error('Error creating post-migration index:', error);
-  }
 
-  // Auto-seed database on first run if content table is empty
-  try {
-    const contentCountResult = await db.getFirstAsync<{ count: number }>(
-      'SELECT COUNT(*) as count FROM content',
-    );
-    const contentCount = contentCountResult?.count || 0;
 
-    if (contentCount === 0) {
-      console.log('Database empty, starting auto-seeding...');
-      const { seedDatabase } = await import('./seedData');
-      await seedDatabase(db);
-    }
-  } catch (error) {
-    console.error('Error during auto-seeding check:', error);
-  }
 };

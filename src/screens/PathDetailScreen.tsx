@@ -1,294 +1,368 @@
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Alert } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import React, { useRef, useEffect, useState } from 'react';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  ScrollView,
+  Dimensions,
+  Animated,
+  Platform,
+  Alert,
+  ActivityIndicator,
+} from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-
+import Svg, {
+  Path,
+  Circle,
+  Defs,
+  RadialGradient as SvgRadialGradient,
+  Stop,
+} from 'react-native-svg';
 import { Ionicons } from '@expo/vector-icons';
-import { SpiritualPath, UserPathProgress } from '../types';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useRoute, useNavigation } from '@react-navigation/native';
+
+import { UserPathProgress } from '../types';
 import { PathsService } from '../services/pathsService';
-import { FreemiumService } from '../services/freemiumService';
-import { SPECIAL_EDITION_BUNDLES } from '../data/staticPaths';
+import { useAppContext } from '../context/AppContext';
 
-interface PathDetailScreenProps {
-  path: SpiritualPath;
-  userProgress?: UserPathProgress;
-  onStartPath: (pathId: string) => void;
-  onContinuePath: (pathId: string) => void;
-  onBack: () => void;
-  onShowPaywall: () => void;
-  onPurchaseBundle: (bundleId: string) => void;
-}
+const { width, height } = Dimensions.get('window');
 
-export const PathDetailScreen: React.FC<PathDetailScreenProps> = ({
-  path,
-  userProgress,
-  onStartPath,
-  onContinuePath,
-  onBack,
-  onShowPaywall,
-  onPurchaseBundle,
-}) => {
+import { AnimatedMandala } from '../components/AnimatedMandala';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+
+const PATH_VISUALS: Record<string, { icon: keyof typeof MaterialCommunityIcons.glyphMap; color: string }> = {
+  path_salah_transformation: { icon: 'hands-pray', color: '#10B981' },
+  path_rizq_revolution: { icon: 'barley', color: '#D4AF37' },
+  path_depression_iman: { icon: 'sprout', color: '#818CF8' },
+  path_anxiety_tawakkul: { icon: 'feather', color: '#60A5FA' },
+  path_marriage_seeker: { icon: 'ring', color: '#F87171' },
+  path_guilt_tawbah: { icon: 'heart-plus', color: '#34D399' },
+  path_grateful_heart: { icon: 'star-four-points', color: '#FBBF24' },
+  path_wrong_marriage: { icon: 'handshake', color: '#A78BFA' },
+  path_forced_marriage: { icon: 'shield-alert-outline', color: '#F87171' },
+};
+
+const getVisual = (id: string) => PATH_VISUALS[id] || { icon: 'compass-outline' as any, color: '#D4AF37' };
+
+const LessonCard = ({ step, visual, isCompleted, isCurrent, isLocked, isExpanded, onExpand, onMarkComplete }: any) => {
+  const [experience, setExperience] = React.useState<any>(null);
+  const { rotationEngine } = useAppContext();
+
+  React.useEffect(() => {
+    if (isExpanded && !experience) {
+      rotationEngine.getGuidanceForStep(step.contentId, step.angleId)
+        .then(setExperience)
+        .catch(console.error);
+    }
+  }, [isExpanded, experience, rotationEngine, step]);
+
+  return (
+    <View style={[styles.lessonCardWrap, { borderColor: visual.color }]}>
+      <TouchableOpacity 
+        style={styles.lessonCardHeader} 
+        onPress={onExpand}
+        disabled={isLocked}
+        activeOpacity={0.7}
+      >
+        <View style={[
+          styles.lessonCheck,
+          { 
+            borderColor: isLocked ? 'rgba(255,255,255,0.1)' : visual.color,
+            backgroundColor: isCompleted ? visual.color : 'transparent'
+          }
+        ]}>
+          {isCompleted ? (
+            <Ionicons name="checkmark" size={14} color="#000" />
+          ) : (
+            <Text style={[styles.lessonDayNum, { color: isLocked ? 'rgba(255,255,255,0.2)' : visual.color }]}>{step.day}</Text>
+          )}
+        </View>
+        <View style={styles.lessonInfo}>
+          <Text style={[styles.lessonDay, { color: isLocked ? 'rgba(255,255,255,0.2)' : visual.color }]}>DAY {step.day}</Text>
+          <Text style={[styles.lessonTitle, isLocked && { color: 'rgba(255,255,255,0.3)' }]}>{step.title}</Text>
+          <Text style={styles.lessonSource}>{step.focus}</Text>
+        </View>
+        {isLocked ? (
+          <Ionicons name="lock-closed" size={16} color="rgba(255,255,255,0.1)" />
+        ) : (
+          <Ionicons name={isExpanded ? "chevron-up" : "chevron-down"} size={20} color="rgba(255,255,255,0.3)" />
+        )}
+      </TouchableOpacity>
+
+      {isExpanded && (
+        <View style={styles.lessonExpandedContent}>
+          {experience ? (
+            <>
+              <View style={styles.verseBox}>
+                <Text style={styles.arabicText}>{experience.content.arabicText || experience.angle.angleArabicText}</Text>
+                <Text style={styles.verseSource}>— {experience.content.source || step.focus}</Text>
+              </View>
+              
+              <View style={styles.starDivider}>
+                <View style={styles.dividerLine} />
+                <Ionicons name="star" size={12} color={visual.color} style={styles.dividerStar} />
+                <View style={styles.dividerLine} />
+              </View>
+              
+              <Text style={styles.englishText}>
+                {experience.content.englishTranslation || experience.angle.angle}
+              </Text>
+              
+              {!isCompleted && isCurrent && (
+                <TouchableOpacity style={[styles.markCompleteBtn, { borderColor: visual.color }]} onPress={onMarkComplete}>
+                  <Ionicons name="checkmark" size={16} color={visual.color} />
+                  <Text style={[styles.markCompleteText, { color: visual.color }]}>MARK COMPLETE</Text>
+                </TouchableOpacity>
+              )}
+            </>
+          ) : (
+            <ActivityIndicator size="small" color={visual.color} style={{ marginVertical: 20 }} />
+          )}
+        </View>
+      )}
+    </View>
+  );
+};
+
+export const PathDetailScreen: React.FC = () => {
+  const route = useRoute<any>();
+  const navigation = useNavigation<any>();
   const insets = useSafeAreaInsets();
   const pathsService = PathsService.getInstance();
-  const freemiumService = FreemiumService.getInstance();
-  const isPremium = freemiumService.isPremium();
-  const isUnlocked = path.isSpecialEdition
-    ? path.bundleId && freemiumService.hasUnlockedBundle(path.bundleId)
-    : isPremium;
+  const { rotationEngine, freemiumService } = useAppContext();
 
-  const handleStartPress = () => {
-    if (path.isSpecialEdition && !isUnlocked) {
-      if (path.bundleId) {
-        onPurchaseBundle(path.bundleId);
-      }
-      return;
-    }
+  const { pathId } = route.params;
+  const path = pathsService.getPathById(pathId);
+  const [userProgress, setUserProgress] = useState<UserPathProgress | undefined>();
+  const [expandedDay, setExpandedDay] = useState<number | null>(null);
 
-    if (!isPremium && path.isPremium) {
-      onShowPaywall();
-      return;
-    }
+  const scrollY = useRef(new Animated.Value(0)).current;
 
-    if (userProgress) {
-      onContinuePath(path.id);
-    } else {
-      Alert.alert(
-        path.isSpecialEdition ? 'Start Special Edition' : 'Start Spiritual Path',
-        `Begin your ${path.title} journey?\n\nThis path takes ${path.duration} days to complete.`,
-        [
-          { text: 'Cancel', style: 'cancel' },
-          { text: 'Start Path', onPress: () => onStartPath(path.id) },
-        ],
-      );
-    }
-  };
+  useEffect(() => {
+    const loadProgress = async () => {
+      const progress = await pathsService.loadProgress(pathId);
+      setUserProgress(progress || undefined);
+    };
+    loadProgress();
+  }, [pathId]);
 
-  const getCurrentStep = () => {
-    if (!userProgress) return null;
-    return pathsService.getCurrentStep(path.id, userProgress);
-  };
+  if (!path) return null;
 
-  const getProgressPercentage = () => {
-    if (!userProgress) return 0;
-    return pathsService.getProgressPercentage(userProgress);
-  };
+  const visual = getVisual(path.id);
+  const totalDays = path.duration;
+  const completedDays = userProgress?.completedDays.length || 0;
+  const remainingDays = totalDays - completedDays;
+  const progressPercent = (completedDays / totalDays) * 100;
+  
+  const nextStepDay = userProgress ? Math.min(userProgress.currentDay, totalDays) : 1;
+  const nextStep = path.dailySteps.find(s => s.day === nextStepDay);
+
+  const radius = 24;
+  const circumference = 2 * Math.PI * radius;
+  const strokeDashoffset = circumference - (progressPercent / 100) * circumference;
 
   const completedSteps = userProgress ? pathsService.getCompletedSteps(path.id, userProgress) : [];
 
+  const onStartPath = async () => {
+    const newProgress: UserPathProgress = {
+      pathId: path.id,
+      currentDay: 1,
+      startDate: Date.now(),
+      completedDays: [],
+      isCompleted: false,
+    };
+    await pathsService.saveProgress(newProgress);
+    setUserProgress(newProgress);
+    navigateToPathStep(newProgress);
+  };
+
+  const onMarkLessonComplete = async (day: number) => {
+    // If no progress yet, seed fresh progress starting at this day.
+    const base: UserPathProgress = userProgress || {
+      pathId: path.id,
+      currentDay: 1,
+      startDate: Date.now(),
+      completedDays: [],
+      isCompleted: false,
+    };
+
+    // No-op if already marked complete.
+    if (base.completedDays.includes(day)) return;
+
+    const updatedProgress: UserPathProgress = {
+      ...base,
+      completedDays: [...base.completedDays, day].sort((a, b) => a - b),
+      currentDay: Math.max(base.currentDay, day + 1),
+      isCompleted: day >= path.duration,
+      completedAt: day >= path.duration ? Date.now() : base.completedAt,
+    };
+    await pathsService.saveProgress(updatedProgress);
+    setUserProgress(updatedProgress);
+  };
+
+  const navigateToPathStep = async (progress: UserPathProgress) => {
+    const step = pathsService.getCurrentStep(path.id, progress);
+    if (!step) return;
+
+    const experience = await rotationEngine.getGuidanceForStep(step.contentId, step.angleId);
+    if (!experience) {
+      Alert.alert('Content Not Available', 'Could not load content for this step.');
+      return;
+    }
+
+    navigation.navigate('PathStep', {
+      path: path,
+      step: step,
+      userProgress: progress,
+      guidanceExperience: experience,
+    });
+  };
+
   return (
     <View style={styles.container}>
-      <View style={[styles.header, { paddingTop: Math.max(insets.top, 20) + 10 }]}>
-        <TouchableOpacity onPress={onBack} style={styles.backButton}>
-          <Ionicons name="chevron-back" size={24} color="#FFF" />
+      {/* Background */}
+      <LinearGradient
+        colors={['#0A1321', '#0C1A2E']}
+        style={StyleSheet.absoluteFill}
+      />
+
+      {/* Header */}
+      <View style={[styles.header, { paddingTop: insets.top + 10 }]}>
+        <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
+          <Ionicons name="chevron-back" size={20} color="#7B8FA1" />
+          <Text style={styles.backText}>Journeys</Text>
         </TouchableOpacity>
+        <Text style={styles.topBarText}>★ NOOR</Text>
+        <View style={styles.headerRight} />
       </View>
 
-      <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
-        {/* Hero Section with Gradient */}
-        <View style={styles.heroSection}>
-          <LinearGradient
-            colors={['rgba(46, 211, 198, 0.12)', 'rgba(46, 211, 198, 0.02)', 'transparent']}
-            style={styles.heroGradient}
-            start={{ x: 0.5, y: 0 }}
-            end={{ x: 0.5, y: 1 }}
-          />
-          <View style={styles.heroContent}>
-            <Text style={styles.pathTitle}>{path.title}</Text>
-            <Text style={styles.pathDescription}>{path.description}</Text>
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ paddingBottom: insets.bottom + 100 }}
+      >
+        {/* Hero Section */}
+        <View style={styles.hero}>
+          <View style={styles.heroTop}>
+            <View style={[styles.heroIconWrap, { borderColor: visual.color }]}>
+              <MaterialCommunityIcons name={visual.icon} size={32} color={visual.color} />
+            </View>
+            <View style={styles.heroInfo}>
+              <Text style={[styles.heroPretitle, { color: visual.color }]}>
+                {totalDays}-DAY SACRED JOURNEY
+              </Text>
+              <Text style={[styles.heroTitle, { color: visual.color }]}>
+                {path.title.toUpperCase()}
+              </Text>
+              <Text style={styles.heroSubtitle}>
+                {path.target || path.theme}
+              </Text>
+            </View>
+          </View>
 
-            {/* Enhanced Meta Badges */}
-            <View style={styles.metaContainer}>
-              <View style={styles.metaBadge}>
-                <Ionicons name="calendar-outline" size={14} color="#2ED3C6" />
-                <View style={styles.metaBadgeContent}>
-                  <Text style={styles.metaLabel}>Duration</Text>
-                  <Text style={styles.metaValue}>{path.duration} days</Text>
-                </View>
+          {/* Progress Section */}
+          <View style={styles.progressSection}>
+            <View style={styles.progressCircleContainer}>
+              <Svg width={60} height={60} style={{ transform: [{ rotate: '-90deg' }] }}>
+                <Circle
+                  cx={30}
+                  cy={30}
+                  r={radius}
+                  stroke="rgba(255,255,255,0.1)"
+                  strokeWidth={4}
+                  fill="none"
+                />
+                <Circle
+                  cx={30}
+                  cy={30}
+                  r={radius}
+                  stroke={visual.color}
+                  strokeWidth={4}
+                  fill="none"
+                  strokeDasharray={circumference}
+                  strokeDashoffset={strokeDashoffset}
+                  strokeLinecap="round"
+                />
+              </Svg>
+              <View style={styles.progressCircleTextWrap}>
+                <Text style={styles.progressCircleTextMain}>{completedDays}</Text>
+                <Text style={styles.progressCircleTextSub}>/{totalDays}</Text>
               </View>
-              <View style={styles.metaBadge}>
-                <Ionicons name="location-outline" size={14} color="#2ED3C6" />
-                <View style={styles.metaBadgeContent}>
-                  <Text style={styles.metaLabel}>Starting Point</Text>
-                  <Text style={styles.metaValue}>{path.theme}</Text>
-                </View>
-              </View>
-              <View style={styles.metaBadge}>
-                <Ionicons name="flag-outline" size={14} color="#D4AF37" />
-                <View style={styles.metaBadgeContent}>
-                  <Text style={styles.metaLabel}>Destination</Text>
-                  <Text style={[styles.metaValue, styles.goldText]}>{path.target}</Text>
-                </View>
+            </View>
+            
+            <View style={styles.progressTexts}>
+              <Text style={styles.progressDayComplete}>Day {completedDays} complete</Text>
+              <Text style={styles.progressDaysRem}>{remainingDays} days remaining</Text>
+              <View style={styles.progressDotsContainer}>
+                {Array.from({ length: totalDays }).map((_, i) => {
+                  const done = i < completedDays;
+                  const isCurrent = i === completedDays; // next upcoming day
+                  return (
+                    <View
+                      key={i}
+                      style={[
+                        styles.progressDot,
+                        {
+                          backgroundColor: done
+                            ? visual.color
+                            : isCurrent
+                              ? `${visual.color}55`
+                              : 'rgba(255,255,255,0.1)',
+                        },
+                      ]}
+                    />
+                  );
+                })}
               </View>
             </View>
           </View>
         </View>
 
-        {/* Path Overview Notices */}
-        <View style={styles.overviewSection}>
-
-          {path.isSpecialEdition && !isUnlocked && (
-            <View style={[styles.premiumNotice, styles.specialNotice]}>
-              <Text style={styles.specialNoticeText}>🌙 Special Edition Collection</Text>
-            </View>
-          )}
-
-          {!path.isSpecialEdition && !isPremium && (
-            <View style={styles.premiumNotice}>
-              <Text style={styles.premiumNoticeText}>👑 Premium Path</Text>
-            </View>
-          )}
-
-          {path.id === 'path_forced_marriage' && (
-            <View style={styles.safetyDisclaimer}>
-              <Text style={styles.safetyTitle}>⚠️ Safety First</Text>
-              <Text style={styles.safetyText}>
-                If you are in immediate danger or fear physical harm for refusing a marriage, please
-                contact local authorities or crisis support immediately. This path provides
-                spiritual guidance and communication scripts, but safety is paramount.
-              </Text>
-            </View>
-          )}
-        </View>
-
-        {/* Progress Section */}
-        {userProgress && (
-          <View style={styles.progressSection}>
-            <Text style={styles.sectionTitle}>Your Progress</Text>
-            <View style={styles.progressCard}>
-              <View style={styles.progressHeader}>
-                <View>
-                  <Text style={styles.progressText}>
-                    Day {userProgress.currentDay} of {path.duration}
-                  </Text>
-                  {getCurrentStep() && (
-                    <Text style={styles.currentStepTitleSmall}>
-                      🎯 Progress: {getCurrentStep()!.title}
-                    </Text>
-                  )}
-                </View>
-                <Text style={styles.progressPercentage}>
-                  {Math.round((userProgress.currentDay / path.duration) * 100)}%
+        {/* Today's Lesson */}
+        {nextStep && (
+          <View style={styles.todaySection}>
+            <Text style={styles.sectionHeaderLabel}>TODAY · DAY {nextStepDay}</Text>
+            <TouchableOpacity 
+              style={[styles.todayCard, { borderColor: visual.color }]}
+              onPress={userProgress ? () => navigateToPathStep(userProgress) : onStartPath}
+            >
+              <View style={styles.todayCardLeft}>
+                <Text style={[styles.todayCardTitle, { color: '#F0E6D3' }]}>
+                  {nextStep.title.toUpperCase()}
                 </Text>
               </View>
-              <View style={styles.progressBar}>
-                <View
-                  style={[
-                    styles.progressFill,
-                    { width: `${(userProgress.currentDay / path.duration) * 100}%` },
-                  ]}
-                />
+              <View style={[styles.todayCardArrow, { backgroundColor: visual.color }]}>
+                <Ionicons name="chevron-forward" size={18} color="#000" />
               </View>
-
-              {getCurrentStep() && (
-                <View style={styles.focusContainer}>
-                  <Text style={styles.focusLabel}>Today's Focus</Text>
-                  <Text style={styles.focusText}>{getCurrentStep()!.focus}</Text>
-                </View>
-              )}
-            </View>
+            </TouchableOpacity>
           </View>
         )}
 
-        {/* Curriculum Overview */}
-        <View style={styles.curriculumSection}>
-          <Text style={styles.sectionTitle}>Path Curriculum</Text>
-          <Text style={styles.curriculumDescription}>
-            A structured journey through {path.duration} days of guided spiritual growth.
-          </Text>
-
-          <View style={styles.stepsContainer}>
-            {path.dailySteps.map((step, index) => {
-              const isCompleted = completedSteps.some((cs) => cs.day === step.day);
-              const isCurrent = userProgress?.currentDay === step.day;
-
+        {/* All Lessons */}
+        <View style={styles.lessonsSection}>
+          <Text style={styles.sectionHeaderLabel}>ALL LESSONS</Text>
+          <View style={styles.lessonsList}>
+            {path.dailySteps.map((step) => {
+              const isCompleted = completedSteps.some(cs => cs.day === step.day);
+              const isCurrent = userProgress ? step.day === userProgress.currentDay : step.day === 1;
+              const isLocked = userProgress ? step.day > userProgress.currentDay : step.day > 1;
+              
               return (
-                <View key={step.id} style={styles.stepItem}>
-                  <View style={styles.stepNumberContainer}>
-                    <View
-                      style={[
-                        styles.stepNumber,
-                        isCompleted && styles.completedStep,
-                        isCurrent && styles.currentStep,
-                      ]}
-                    >
-                      <Text
-                        style={[
-                          styles.stepNumberText,
-                          isCompleted && styles.completedStepText,
-                          isCurrent && styles.currentStepText,
-                        ]}
-                      >
-                        {isCompleted ? '✓' : step.day}
-                      </Text>
-                    </View>
-                    {index < path.dailySteps.length - 1 && (
-                      <View
-                        style={[styles.stepConnector, isCompleted && styles.completedConnector]}
-                      />
-                    )}
-                  </View>
-
-                  <View style={styles.stepContent}>
-                    <Text
-                      style={[
-                        styles.stepTitle,
-                        isCompleted && styles.completedStepTitle,
-                        isCurrent && styles.currentStepTitle,
-                      ]}
-                    >
-                      Day {step.day}: {step.title}
-                    </Text>
-                    <Text style={[styles.stepFocus, isCompleted && styles.completedStepFocus]}>
-                      {step.focus}
-                    </Text>
-
-                    {/* Step Preview - Quick highlights */}
-                    <View style={styles.stepPreview}>
-                      <Text style={styles.previewItem}>📖 Verse: {step.contentId.replace('quran_', '').replace('_', ':')}</Text>
-                      <Text style={styles.previewItem}>🕌 Action: {step.title.split(' ').slice(0, 3).join(' ')}...</Text>
-                    </View>
-                  </View>
-                </View>
+                <LessonCard
+                  key={step.id}
+                  step={step}
+                  visual={visual}
+                  isCompleted={isCompleted}
+                  isCurrent={isCurrent}
+                  isLocked={isLocked}
+                  isExpanded={expandedDay === step.day}
+                  onExpand={() => setExpandedDay(expandedDay === step.day ? null : step.day)}
+                  onMarkComplete={() => onMarkLessonComplete(step.day)}
+                />
               );
             })}
           </View>
-        </View>
-
-        {/* Action Button */}
-        <View style={[styles.actionSection, { marginBottom: Math.max(insets.bottom, 20) + 20 }]}>
-          <TouchableOpacity
-            style={[
-              styles.actionButton,
-              path.isSpecialEdition && !isUnlocked && styles.specialButton,
-              !path.isSpecialEdition && !isPremium && styles.premiumButton,
-              userProgress && styles.continueButton,
-            ]}
-            onPress={handleStartPress}
-          >
-            <Text
-              style={[
-                styles.actionButtonText,
-                path.isSpecialEdition && !isUnlocked && styles.specialButtonText,
-                !path.isSpecialEdition && !isPremium && styles.premiumButtonText,
-                userProgress && styles.continueButtonText,
-              ]}
-            >
-              {path.isSpecialEdition && !isUnlocked
-                ? (() => {
-                  const bundle = SPECIAL_EDITION_BUNDLES.find((b) => b.id === path.bundleId);
-                  const basePrice = bundle?.priceAED || 47.99;
-                  const finalPrice = isPremium
-                    ? (basePrice / 2).toFixed(2)
-                    : basePrice.toFixed(2);
-                  return `Unlock Collection • AED ${finalPrice}`;
-                })()
-                : !isPremium && path.isPremium
-                  ? '👑 Upgrade to Premium'
-                  : userProgress
-                    ? 'Continue Path'
-                    : 'Start Path'}
-            </Text>
-          </TouchableOpacity>
         </View>
       </ScrollView>
     </View>
@@ -298,364 +372,277 @@ export const PathDetailScreen: React.FC<PathDetailScreenProps> = ({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0B0F12',
+    backgroundColor: '#07111E',
+  },
+  mandalaWrap: {
+    position: 'absolute',
+    top: -50,
+    right: -100,
+    zIndex: 0,
   },
   header: {
-    paddingHorizontal: 24,
-    paddingTop: 60,
-    paddingBottom: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 20,
+    marginBottom: 20,
+    zIndex: 10,
   },
   backButton: {
-    width: 44,
-    height: 44,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginLeft: -12, // Align with content since it has padding
-  },
-  scrollView: {
-    flex: 1,
-    paddingHorizontal: 24,
-  },
-
-  // Hero Section with Gradient
-  heroSection: {
-    marginBottom: 16,
-    borderRadius: 20,
-    overflow: 'hidden',
-    position: 'relative',
-  },
-  heroGradient: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    borderRadius: 20,
-  },
-  heroContent: {
-    padding: 20,
-    paddingTop: 8,
-  },
-  pathTitle: {
-    fontSize: 32,
-    fontWeight: '800',
-    color: '#FFFFFF',
-    marginBottom: 12,
-    letterSpacing: -0.5,
-    textShadowColor: 'rgba(46, 211, 198, 0.3)',
-    textShadowOffset: { width: 0, height: 2 },
-    textShadowRadius: 8,
-  },
-  pathDescription: {
-    fontSize: 16,
-    color: 'rgba(255,255,255,0.80)',
-    lineHeight: 26,
-    marginBottom: 24,
-  },
-  metaContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    gap: 10,
-  },
-  metaBadge: {
-    flex: 1,
-    backgroundColor: 'rgba(255,255,255,0.06)',
-    borderRadius: 14,
-    padding: 12,
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.08)',
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
+    width: 100,
   },
-  metaBadgeContent: {
-    flex: 1,
-  },
-  metaLabel: {
-    fontSize: 10,
-    color: 'rgba(255,255,255,0.50)',
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
-    marginBottom: 2,
-  },
-  metaValue: {
-    fontSize: 12,
-    fontWeight: '700',
-    color: '#FFFFFF',
-  },
-  goldText: {
-    color: '#D4AF37',
-  },
-
-  // Overview Section (for notices only)
-  overviewSection: {
-    marginBottom: 24,
-  },
-  metaItem: {
-    flex: 1,
-    alignItems: 'center',
-    paddingHorizontal: 8,
-  },
-  premiumNotice: {
-    backgroundColor: 'rgba(255,215,0,0.20)',
-    borderWidth: 1,
-    borderColor: '#FFD700',
-    borderRadius: 12,
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-    alignItems: 'center',
-  },
-  premiumNoticeText: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#FFD700',
-  },
-  specialNotice: {
-    backgroundColor: 'rgba(212, 175, 55, 0.20)',
-    borderColor: '#D4AF37',
-  },
-  specialNoticeText: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#D4AF37',
-  },
-  safetyDisclaimer: {
-    backgroundColor: 'rgba(255, 107, 107, 0.1)',
-    borderWidth: 1,
-    borderColor: '#FF6B6B',
-    borderRadius: 12,
-    padding: 16,
-    marginTop: 16,
-  },
-  safetyTitle: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: '#FF6B6B',
-    marginBottom: 8,
-  },
-  safetyText: {
-    fontSize: 13,
-    color: 'rgba(255, 255, 255, 0.8)',
-    lineHeight: 18,
-  },
-
-  // Progress Section
-  progressSection: {
-    marginBottom: 32,
-  },
-  sectionTitle: {
-    fontSize: 20,
-    fontWeight: '600',
-    color: '#FFFFFF',
-    marginBottom: 16,
-  },
-  progressCard: {
-    backgroundColor: '#1A1F23',
-    borderRadius: 16,
-    padding: 20,
-  },
-  progressHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 12,
-  },
-  progressText: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#FFFFFF',
-  },
-  progressPercentage: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#2ED3C6',
-  },
-  progressBar: {
-    height: 8,
-    backgroundColor: 'rgba(255,255,255,0.10)',
-    borderRadius: 4,
-    marginBottom: 16,
-  },
-  progressFill: {
-    height: '100%',
-    backgroundColor: '#2ED3C6',
-    borderRadius: 4,
-  },
-  currentStepTitleSmall: {
-    fontSize: 13,
-    color: 'rgba(255,255,255,0.5)',
-    marginTop: 2,
-  },
-  focusContainer: {
-    backgroundColor: 'rgba(46,211,198,0.05)',
-    borderRadius: 12,
-    padding: 12,
-    borderLeftWidth: 3,
-    borderLeftColor: '#2ED3C6',
-  },
-  focusLabel: {
-    fontSize: 11,
-    color: '#2ED3C6',
-    fontWeight: '700',
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
-    marginBottom: 4,
-  },
-  focusText: {
-    fontSize: 14,
-    color: 'rgba(255,255,255,0.9)',
-    lineHeight: 20,
-  },
-  currentStepTitle: {
-    color: '#2ED3C6',
-    fontWeight: '700',
-  },
-
-  // Curriculum Section
-  curriculumSection: {
-    marginBottom: 32,
-  },
-  curriculumDescription: {
-    fontSize: 14,
-    color: 'rgba(255,255,255,0.70)',
-    lineHeight: 20,
-    marginBottom: 20,
-  },
-  stepsContainer: {
-    backgroundColor: 'rgba(255,255,255,0.04)',
-    borderRadius: 20,
-    padding: 20,
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.06)',
-  },
-  stepItem: {
-    flexDirection: 'row',
-    marginBottom: 24,
-  },
-  stepNumberContainer: {
-    alignItems: 'center',
-    marginRight: 16,
-  },
-  stepNumber: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: 'rgba(255,255,255,0.08)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.12)',
-  },
-  completedStep: {
-    backgroundColor: 'rgba(76, 175, 80, 0.2)',
-    borderColor: '#4CAF50',
-  },
-  currentStep: {
-    backgroundColor: 'rgba(46, 211, 198, 0.2)',
-    borderColor: '#2ED3C6',
-    shadowColor: '#2ED3C6',
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.5,
-    shadowRadius: 8,
-    elevation: 4,
-  },
-  stepNumberText: {
-    fontSize: 14,
-    fontWeight: '700',
-    color: 'rgba(255,255,255,0.6)',
-  },
-  completedStepText: {
-    color: '#4CAF50',
-  },
-  currentStepText: {
-    color: '#2ED3C6',
-  },
-  stepConnector: {
-    width: 2,
-    flex: 1,
-    backgroundColor: 'rgba(255,255,255,0.08)',
-    marginTop: 4,
-    borderRadius: 1,
-  },
-  completedConnector: {
-    backgroundColor: '#4CAF50',
-  },
-  stepContent: {
-    flex: 1,
-    paddingTop: 6,
-  },
-  stepTitle: {
+  backText: {
+    color: '#7B8FA1',
     fontSize: 15,
+    marginLeft: 2,
+  },
+  topBarText: {
+    fontSize: 12,
+    color: '#D4AF37',
+    letterSpacing: 2,
     fontWeight: '700',
-    color: '#FFFFFF',
+    flex: 1,
+    textAlign: 'center',
+  },
+  headerRight: {
+    width: 100,
+  },
+  hero: {
+    paddingHorizontal: 24,
+    marginBottom: 32,
+  },
+  heroTop: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 16,
+    marginBottom: 32,
+  },
+  heroIconWrap: {
+    width: 60,
+    height: 60,
+    borderRadius: 16,
+    borderWidth: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(255,255,255,0.03)',
+  },
+  heroInfo: {
+    flex: 1,
+    justifyContent: 'center',
+  },
+  heroPretitle: {
+    fontSize: 11,
+    letterSpacing: 1.5,
+    fontWeight: '700',
     marginBottom: 6,
   },
-  completedStepTitle: {
-    color: 'rgba(255,255,255,0.80)',
+  heroTitle: {
+    fontSize: 26,
+    fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
+    fontWeight: '400',
+    marginBottom: 4,
   },
-  stepFocus: {
-    fontSize: 12,
-    color: 'rgba(255,255,255,0.60)',
-    lineHeight: 16,
-    marginBottom: 8,
+  heroSubtitle: {
+    fontSize: 14,
+    color: '#7B8FA1',
   },
-  completedStepFocus: {
-    color: 'rgba(255,255,255,0.40)',
-  },
-  stepPreview: {
+  progressSection: {
     flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 8,
+    alignItems: 'center',
+    gap: 16,
   },
-  previewItem: {
+  progressCircleContainer: {
+    width: 60,
+    height: 60,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  progressCircleTextWrap: {
+    position: 'absolute',
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'column',
+  },
+  progressCircleTextMain: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#FFF',
+    lineHeight: 18,
+  },
+  progressCircleTextSub: {
+    fontSize: 10,
+    color: 'rgba(255,255,255,0.5)',
+    lineHeight: 10,
+  },
+  progressTexts: {
+    flex: 1,
+  },
+  progressDayComplete: {
+    fontSize: 15,
+    fontWeight: '700',
+    color: '#FFF',
+    marginBottom: 2,
+  },
+  progressDaysRem: {
+    fontSize: 13,
+    color: '#7B8FA1',
+    marginBottom: 10,
+  },
+  progressDotsContainer: {
+    flexDirection: 'row',
+    gap: 5,
+    alignItems: 'center',
+    flexWrap: 'wrap',
+  },
+  progressDot: {
+    width: 7,
+    height: 7,
+    borderRadius: 3.5,
+  },
+  sectionHeaderLabel: {
     fontSize: 11,
-    color: 'rgba(255,255,255,0.6)',
-    backgroundColor: 'rgba(46,211,198,0.08)',
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    borderRadius: 10,
+    color: '#7B8FA1',
+    letterSpacing: 2,
+    fontWeight: '700',
+    marginBottom: 12,
+    paddingHorizontal: 24,
+  },
+  todaySection: {
+    marginBottom: 32,
+  },
+  todayCard: {
+    marginHorizontal: 24,
+    borderRadius: 16,
     borderWidth: 1,
-    borderColor: 'rgba(46,211,198,0.15)',
+    backgroundColor: 'rgba(255,255,255,0.03)',
+    padding: 20,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  todayCardLeft: {
+    flex: 1,
+  },
+  todayCardTitle: {
+    fontSize: 18,
+    fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
+    fontWeight: '400',
+    letterSpacing: 0.5,
+  },
+  todayCardArrow: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  lessonsSection: {
+    marginBottom: 32,
+  },
+  lessonsList: {
+    paddingHorizontal: 24,
+    gap: 12,
+  },
+  lessonCardWrap: {
+    borderRadius: 16,
+    borderWidth: 1,
+    backgroundColor: 'rgba(255,255,255,0.02)',
     overflow: 'hidden',
   },
-
-  // Action Section
-  actionSection: {
-    marginBottom: 40,
-  },
-  actionButton: {
-    backgroundColor: '#2ED3C6',
-    borderRadius: 20,
-    paddingVertical: 18,
-    paddingHorizontal: 24,
+  lessonCardHeader: {
+    flexDirection: 'row',
     alignItems: 'center',
-    shadowColor: '#2ED3C6',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 12,
-    elevation: 8,
+    padding: 16,
   },
-  premiumButton: {
-    backgroundColor: '#FFD700',
+  lessonCheck: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    borderWidth: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 16,
   },
-  specialButton: {
-    backgroundColor: '#D4AF37',
+  lessonDayNum: {
+    fontSize: 12,
+    fontWeight: '700',
   },
-  continueButton: {
-    backgroundColor: '#4CAF50',
+  lessonInfo: {
+    flex: 1,
   },
-  actionButtonText: {
+  lessonDay: {
+    fontSize: 10,
+    fontWeight: '700',
+    letterSpacing: 1.5,
+    marginBottom: 4,
+  },
+  lessonTitle: {
     fontSize: 16,
-    fontWeight: '600',
-    color: '#0B0F12',
+    color: '#F0E6D3',
+    marginBottom: 2,
   },
-  premiumButtonText: {
-    color: '#0B0F12',
+  lessonSource: {
+    fontSize: 13,
+    color: '#7B8FA1',
   },
-  specialButtonText: {
-    color: '#0B0F12',
+  lessonExpandedContent: {
+    paddingHorizontal: 20,
+    paddingBottom: 24,
   },
-  continueButtonText: {
-    color: '#FFFFFF',
+  verseBox: {
+    backgroundColor: 'rgba(15,25,40,0.5)',
+    borderRadius: 12,
+    padding: 16,
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  arabicText: {
+    fontFamily: Platform.OS === 'ios' ? 'Amiri-Bold' : 'serif',
+    fontSize: 26,
+    color: '#F0E6D3',
+    lineHeight: 48,
+    textAlign: 'center',
+    marginBottom: 12,
+  },
+  verseSource: {
+    fontSize: 13,
+    color: '#7B8FA1',
+  },
+  starDivider: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  dividerLine: {
+    flex: 1,
+    height: 1,
+    backgroundColor: 'rgba(255,255,255,0.1)',
+  },
+  dividerStar: {
+    marginHorizontal: 16,
+  },
+  englishText: {
+    fontSize: 15,
+    color: '#F0E6D3',
+    lineHeight: 24,
+    textAlign: 'left',
+    marginBottom: 24,
+  },
+  markCompleteBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 14,
+    borderRadius: 12,
+    borderWidth: 1,
+    gap: 8,
+  },
+  markCompleteText: {
+    fontSize: 12,
+    fontWeight: '700',
+    letterSpacing: 1,
   },
 });
+
