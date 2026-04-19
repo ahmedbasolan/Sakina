@@ -1,550 +1,507 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Dimensions, Animated } from 'react-native';
-
+/**
+ * PathsScreen — Sacred Journeys
+ *
+ * Full dark-theme redesign matching the reference image:
+ * Deep navy background (#07111E → #0C1A2E), twinkling stars,
+ * mandala backdrop, stats bar, and elegant dark journey cards.
+ */
+import React, { useState, useEffect, useRef } from 'react';
+import { Colors } from '../theme/DesignSystem';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity,
+  Dimensions,
+  Animated,
+  Platform,
+} from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useNavigation } from '@react-navigation/native';
+import { LinearGradient } from 'expo-linear-gradient';
+import { BlurView } from 'expo-blur';
+import Svg, { Path, Circle } from 'react-native-svg';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { Mood, UserPathProgress } from '../types';
+import { UserPathProgress } from '../types';
 import { PathsService } from '../services/pathsService';
-import { STATIC_SPIRITUAL_PATHS } from '../data/staticPaths';
+import { AnimatedMandala } from '../components/AnimatedMandala';
 
-const { width } = Dimensions.get('window');
+const { width, height } = Dimensions.get('window');
 
-interface PathCardProps {
-  title: string;
-  duration: string;
-  description: string;
-  icon: string;
-  isPremium?: boolean;
-  isLocked?: boolean;
-  progress?: number;
-  onPress: () => void;
-}
 
-const PathCard = ({
-  title,
-  duration,
-  description,
-  icon,
-  isPremium,
-  isLocked,
-  progress,
-  onPress,
-}: PathCardProps) => (
-  <TouchableOpacity
-    style={[styles.card, isLocked && styles.lockedCard]}
-    activeOpacity={0.8}
-    onPress={onPress}
-  >
-    <View style={[styles.cardIconContainer, isLocked && styles.lockedIconContainer]}>
-      {isLocked ? (
-        <MaterialCommunityIcons name="lock" size={24} color="rgba(255, 255, 255, 0.3)" />
-      ) : (
-        <Text style={styles.cardIcon}>{icon}</Text>
-      )}
-    </View>
-    <View style={styles.cardContent}>
-      <View style={styles.cardHeader}>
-        <Text style={[styles.cardTitle, isLocked && styles.lockedText]}>{title}</Text>
-        {isPremium && (
-          <View style={[styles.premiumBadge, isLocked && styles.lockedBadge]}>
-            <Text style={[styles.premiumText, isLocked && styles.lockedBadgeText]}>
-              {isLocked ? 'LOCKED' : 'PREMIUM'}
-            </Text>
-          </View>
-        )}
-      </View>
-      <Text style={[styles.cardDuration, isLocked && styles.lockedText]}>{duration}</Text>
-      <Text style={[styles.cardDescription, isLocked && styles.lockedText]} numberOfLines={2}>
-        {description}
-      </Text>
 
-      {progress !== undefined && !isLocked && (
-        <View style={styles.progressContainer}>
-          <View style={[styles.progressBar, { width: `${progress}%` }]} />
-          <Text style={styles.progressText}>{Math.round(progress)}% complete</Text>
-        </View>
-      )}
-    </View>
-    {isLocked && (
-      <View style={styles.lockedOverlay}>
-        <MaterialCommunityIcons name="crown" size={16} color="#FFD700" style={{ marginRight: 4 }} />
-        <Text style={styles.lockedOverlayText}>Premium</Text>
-      </View>
-    )}
-  </TouchableOpacity>
-);
-
-interface BundleCardProps {
-  title: string;
-  description: string;
-  priceAED: number;
-  isPremiumMember: boolean;
-  onPress: () => void;
-}
-
-const BundleCard = ({
-  title,
-  description,
-  priceAED,
-  isPremiumMember,
-  onPress,
-}: BundleCardProps) => {
-  const finalPrice = isPremiumMember ? (priceAED / 2).toFixed(2) : priceAED.toFixed(2);
-
-  return (
-    <TouchableOpacity
-      style={[styles.card, styles.bundleCard]}
-      activeOpacity={0.8}
-      onPress={onPress}
-    >
-      <View style={[styles.cardIconContainer, styles.bundleIconContainer]}>
-        <Text style={styles.cardIcon}>🌟</Text>
-      </View>
-      <View style={styles.cardContent}>
-        <View style={styles.cardHeader}>
-          <Text style={styles.cardTitle}>{title}</Text>
-          <View style={styles.specialBadge}>
-            <Text style={styles.specialBadgeText}>SPECIAL</Text>
-          </View>
-        </View>
-        <Text style={styles.cardDescription}>{description}</Text>
-        <View style={styles.priceRow}>
-          <Text style={styles.aedLabel}>AED</Text>
-          <Text style={styles.priceValue}>{finalPrice}</Text>
-          {isPremiumMember && (
-            <View style={styles.discountBadge}>
-              <Text style={styles.discountText}>-50% FOR YOU</Text>
-            </View>
-          )}
-        </View>
-      </View>
-    </TouchableOpacity>
-  );
+const PATH_VISUALS: Record<string, { icon: keyof typeof MaterialCommunityIcons.glyphMap; color: string }> = {
+  path_salah_transformation: { icon: 'hands-pray', color: '#10B981' },
+  path_rizq_revolution: { icon: 'barley', color: '#D4AF37' },
+  path_depression_iman: { icon: 'sprout', color: '#818CF8' },
+  path_anxiety_tawakkul: { icon: 'feather', color: '#60A5FA' },
+  path_marriage_seeker: { icon: 'ring', color: '#F87171' },
+  path_guilt_tawbah: { icon: 'heart-plus', color: '#34D399' },
+  path_grateful_heart: { icon: 'star-four-points', color: '#FBBF24' },
+  path_wrong_marriage: { icon: 'handshake', color: '#A78BFA' },
+  path_forced_marriage: { icon: 'shield-alert-outline', color: '#F87171' },
 };
+const getVisual = (id: string) =>
+  PATH_VISUALS[id] || { icon: 'compass-outline' as any, color: Colors.accent.primary };
 
-interface PathsScreenProps {
-  onPathSelected: (pathId: string) => void;
-  userProgress?: UserPathProgress;
-  isPremium?: boolean;
-  unlockedBundleIds?: string[];
-}
+function JourneyCard({ path, index, isActive, onPress }: { path: any; index: number; isActive: boolean; onPress: () => void }) {
+  const visual = getVisual(path.id);
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+  const slideAnim = useRef(new Animated.Value(24)).current;
 
-export default function PathsScreen({
-  onPathSelected,
-  userProgress,
-  isPremium = false,
-  unlockedBundleIds = [],
-}: PathsScreenProps) {
-  const [activeCategory, setActiveCategory] = useState<'journeys' | 'collections'>('journeys');
-  const fadeAnim = React.useRef(new Animated.Value(0)).current;
-  const slideAnim = React.useRef(new Animated.Value(10)).current;
-
-  useState(() => {
-    // Initial animation call
-  });
-
-  React.useEffect(() => {
-    fadeAnim.setValue(0);
-    slideAnim.setValue(10);
+  useEffect(() => {
     Animated.parallel([
       Animated.timing(fadeAnim, {
-        toValue: 1,
-        duration: 400,
-        useNativeDriver: true,
+        toValue: 1, duration: 500, delay: 150 + index * 90, useNativeDriver: true,
       }),
-      Animated.timing(slideAnim, {
-        toValue: 0,
-        duration: 400,
-        useNativeDriver: true,
+      Animated.spring(slideAnim, {
+        toValue: 0, friction: 8, tension: 80, delay: 150 + index * 90, useNativeDriver: true,
       }),
     ]).start();
-  }, [activeCategory]);
+  }, []);
+
+  // Generate fake progress for demo (0–100)
+  const progress = path.currentDay && path.duration
+    ? Math.round((path.currentDay / path.duration) * 100)
+    : 0;
+  const totalDays = path.duration || 14;
+  const completedDays = path.currentDay || 0;
+
+  return (
+    <Animated.View style={{ opacity: fadeAnim, transform: [{ translateY: slideAnim }] }}>
+      <TouchableOpacity activeOpacity={0.88} onPress={onPress}>
+        <BlurView intensity={10} tint="dark" style={[styles.journeyCard, isActive && { borderColor: 'rgba(212,175,55,0.4)' }]}>
+          <View style={styles.journeyCardInner}>
+            {isActive && (
+              <View style={{ position: 'absolute', top: -70, right: -70, zIndex: 0, opacity: 0.12 }}>
+                <AnimatedMandala size={150} color="#D4AF37" opacity={0.6} />
+              </View>
+            )}
+            
+            {/* Top row: icon + info + chevron */}
+            <View style={styles.journeyTop}>
+              <View style={[styles.journeyIcon, { backgroundColor: `${visual.color}18`, borderColor: `${visual.color}30` }]}>
+                <MaterialCommunityIcons name={visual.icon} size={22} color={visual.color} />
+              </View>
+              <View style={styles.journeyInfo}>
+                <View style={styles.pathLabelRow}>
+                  <Text style={[styles.journeyPathLabel, { color: visual.color }]}>
+                    {totalDays}-DAY PATH
+                  </Text>
+                  {path.isPremium && (
+                    <MaterialCommunityIcons name="lock-outline" size={14} color="#4A6480" style={{ marginLeft: 6 }} />
+                  )}
+                </View>
+                <Text style={[styles.journeyTitle, { color: visual.color }]}>{path.title.toUpperCase()}</Text>
+                <Text style={styles.journeyTheme}>{path.target || path.theme}</Text>
+              </View>
+              <View style={styles.chevronWrap}>
+                <MaterialCommunityIcons
+                  name="chevron-right"
+                  size={18}
+                  color="#4A6480"
+                />
+              </View>
+            </View>
+
+            {/* Description */}
+            <Text style={styles.journeyDescription} numberOfLines={3}>
+              {path.description}
+            </Text>
+
+            {/* Progress Section: gradient bar + x/y */}
+            <View style={styles.progressSection}>
+              <View style={styles.progressTrack}>
+                <LinearGradient
+                  colors={[visual.color, `${visual.color}CC`]}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 0 }}
+                  style={[styles.progressFill, { width: `${progress}%` }]}
+                />
+              </View>
+              <Text style={[styles.journeyPct, { color: visual.color }]}>
+                {completedDays}/{totalDays}
+              </Text>
+            </View>
+
+            {/* Premium pill (locked paths only) */}
+            {path.isPremium && (
+              <View style={styles.premiumPill}>
+                <MaterialCommunityIcons name="lock-outline" size={12} color="#C9A84C" />
+                <Text style={styles.premiumPillText}>Premium · $4.99/month</Text>
+                <MaterialCommunityIcons name="star-four-points" size={12} color="#C9A84C" style={{ marginLeft: 'auto' }} />
+              </View>
+            )}
+
+          </View>
+        </BlurView>
+      </TouchableOpacity>
+    </Animated.View>
+  );
+}
+
+type FilterType = 'all' | 'free' | 'premium';
+
+export default function PathsScreen() {
+  const navigation = useNavigation<any>();
   const insets = useSafeAreaInsets();
-  const pathsService = PathsService.getInstance();
-  const allPaths = pathsService.getAllPaths(isPremium, unlockedBundleIds);
-  const availableBundles = pathsService
-    .getAvailableBundles()
-    .filter((b) => !unlockedBundleIds.includes(b.id));
+  const [selectedFilter, setSelectedFilter] = useState<FilterType>('all');
+  const [PATHS, setPaths] = useState<any[]>([]);
+  const [userProgressList, setUserProgressList] = useState<UserPathProgress[]>([]);
+  const headerFade = useRef(new Animated.Value(0)).current;
 
-  const getPathProgress = (pathId: string) => {
-    if (userProgress && userProgress.pathId === pathId) {
-      return pathsService.getProgressPercentage(userProgress);
-    }
-    return undefined;
-  };
+  useEffect(() => {
+    const loadPaths = async () => {
+      const pathsService = PathsService.getInstance();
+      const progress = await pathsService.getAllProgress();
+      setUserProgressList(progress);
+      const allPaths = pathsService.getAllPaths(true, []);
+      setPaths(allPaths);
+    };
+    loadPaths();
+    Animated.timing(headerFade, { toValue: 1, duration: 600, useNativeDriver: true }).start();
+  }, []);
 
-  const activePath = userProgress ? allPaths.find((p) => p.id === userProgress.pathId) : null;
-  const explorPaths = allPaths.filter((p) => !userProgress || p.id !== userProgress.pathId);
+  const onPathSelected = (pathId: string) => navigation.navigate('PathDetail', { pathId });
 
-  const getPathIcon = (theme: Mood) => {
-    switch (theme) {
-      case 'Anxious':
-        return '🌱';
-      case 'Calm':
-        return '🕊️';
-      case 'Sad':
-        return '🕊️';
-      case 'Content':
-        return '✨';
-      case 'Angry':
-        return '🔥';
-      case 'Grateful':
-        return '🙏';
-      case 'Guilty':
-        return '🤲';
-      case 'Energized':
-        return '⚡';
-      case 'Stressed':
-        return '🌊';
-      case 'Hopeful':
-        return '🌙';
-      default:
-        return '✨';
-    }
-  };
+  const stats = [
+    { label: 'Paths', value: PATHS.length.toString() },
+    { label: 'Active', value: userProgressList.filter(p => !p.isCompleted).length.toString() },
+    { label: 'Days left', value: '21' },
+  ];
 
   return (
     <View style={styles.container}>
-      <View style={[styles.header, { paddingTop: Math.max(insets.top, 20) }]}>
-        <Text style={styles.headerTitle}>Guided Journeys</Text>
-        <Text style={styles.headerSubtitle}>Curated paths for deep spiritual growth</Text>
+      <LinearGradient
+        colors={['#0A1321', '#0C1A2E']}
+        style={StyleSheet.absoluteFill}
+      />
 
-        <View style={styles.tabContainer}>
-          <TouchableOpacity
-            style={[styles.tab, activeCategory === 'journeys' && styles.activeTab]}
-            onPress={() => setActiveCategory('journeys')}
-          >
-            <Text style={[styles.tabText, activeCategory === 'journeys' && styles.activeTabText]}>
-              Journeys
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[styles.tab, activeCategory === 'collections' && styles.activeTab]}
-            onPress={() => setActiveCategory('collections')}
-          >
-            <Text
-              style={[styles.tabText, activeCategory === 'collections' && styles.activeTabText]}
-            >
-              Special Editions
-            </Text>
-          </TouchableOpacity>
-        </View>
-      </View>
+      <Animated.View style={[styles.header, { paddingTop: insets.top + 16, opacity: headerFade }]}>
+        <Text style={styles.topBarText}>★ NOOR</Text>
+        <Text style={styles.headerPretitle}>GUIDED PROGRAMS</Text>
+        <Text style={styles.headerTitle}>SACRED JOURNEYS</Text>
+        <Text style={styles.headerSub}>
+          14-day curated paths for lasting spiritual transformation.
+        </Text>
+      </Animated.View>
 
-      <Animated.ScrollView
-        style={[styles.scrollView, { opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}
-        contentContainerStyle={[styles.content, { paddingBottom: insets.bottom + 80 }]}
+      <ScrollView
+        style={styles.scrollView}
+        contentContainerStyle={[styles.content, { paddingBottom: insets.bottom + 100 }]}
         showsVerticalScrollIndicator={false}
       >
-        {activeCategory === 'journeys' ? (
-          <>
-            {activePath && (
-              <>
-                <Text style={styles.sectionTitle}>CURRENTLY ACTIVE</Text>
-                <PathCard
-                  key={activePath.id}
-                  title={activePath.title}
-                  duration={`${activePath.duration}-Day Journey`}
-                  description={activePath.description}
-                  icon={getPathIcon(activePath.theme)}
-                  progress={getPathProgress(activePath.id)}
-                  onPress={() => onPathSelected(activePath.id)}
-                />
-              </>
-            )}
+        {/* Stats bar */}
+        <Animated.View style={[styles.statsRow, { opacity: headerFade }]}>
+          {stats.map((stat, i) => {
+            const colors = ['#D4AF37', '#34D399', '#60A5FA']; // Gold, Teal, Light Blue
+            return (
+              <BlurView key={stat.label} intensity={12} tint="dark" style={styles.statCard}>
+                <Text style={[styles.statValue, { color: colors[i] }]}>{stat.value}</Text>
+                <Text style={styles.statLabel}>{stat.label}</Text>
+              </BlurView>
+            );
+          })}
+        </Animated.View>
 
-            <Text style={styles.sectionTitle}>FREE TIER</Text>
-            {explorPaths.filter(p => !p.isPremium).map((path) => (
-              <PathCard
+        {/* Path cards */}
+        <View style={styles.cardsColumn}>
+          {PATHS.map((path, index) => {
+            const isActive = userProgressList.some(p => p.pathId === path.id && !p.isCompleted);
+            return (
+              <JourneyCard
                 key={path.id}
-                title={path.title}
-                duration={`${path.duration}-Day Journey`}
-                description={path.description}
-                icon={getPathIcon(path.theme)}
-                isPremium={false}
+                path={path}
+                index={index}
+                isActive={isActive}
                 onPress={() => onPathSelected(path.id)}
               />
-            ))}
+            );
+          })}
 
-            <Text style={[styles.sectionTitle, { marginTop: 24 }]}>PREMIUM JOURNEYS</Text>
-            {explorPaths.filter(p => p.isPremium).map((path) => (
-              <PathCard
-                key={path.id}
-                title={path.title}
-                duration={`${path.duration}-Day Journey`}
-                description={path.description}
-                icon={getPathIcon(path.theme)}
-                isPremium={true}
-                isLocked={!isPremium}
-                onPress={() => onPathSelected(path.id)}
-              />
-            ))}
-          </>
-        ) : (
-          <>
-            {availableBundles.length > 0 ? (
-              <>
-                <Text style={[styles.sectionTitle, styles.specialSectionTitle]}>
-                  SPECIAL COLLECTIONS
-                </Text>
-                {availableBundles.map((bundle) => (
-                  <BundleCard
-                    key={bundle.id}
-                    title={bundle.name}
-                    description={bundle.description}
-                    priceAED={bundle.priceAED}
-                    isPremiumMember={isPremium}
-                    onPress={() => {
-                      const path = STATIC_SPIRITUAL_PATHS.find((p) => p.bundleId === bundle.id);
-                      if (path) onPathSelected(path.id);
-                    }}
-                  />
-                ))}
-              </>
-            ) : (
-              <View style={styles.emptyState}>
-                <Text style={styles.emptyStateText}>
-                  You've unlocked all current special editions! ✨
-                </Text>
+          {/* Premium paywall CTA (shown when there are any premium paths) */}
+          {PATHS.some((p: any) => p.isPremium) && (
+            <TouchableOpacity
+              activeOpacity={0.9}
+              onPress={() => navigation.navigate('Paywall' as never)}
+              style={styles.paywallCTA}
+              accessibilityRole="button"
+              accessibilityLabel="Unlock premium paths"
+            >
+              <View style={styles.paywallCTALabelRow}>
+                <MaterialCommunityIcons name="star-four-points" size={12} color="#C9A84C" />
+                <Text style={styles.paywallCTALabel}>PREMIUM</Text>
               </View>
-            )}
-          </>
-        )}
-      </Animated.ScrollView>
+              <Text style={styles.paywallCTATitle}>
+                Unlock All {PATHS.filter((p: any) => p.isPremium).length} Paths
+              </Text>
+              <Text style={styles.paywallCTASub}>
+                Full tafsir · Offline access · Private journal · Smart reminders
+              </Text>
+              <View style={styles.paywallCTAButton}>
+                <Text style={styles.paywallCTAButtonText}>START FREE TRIAL</Text>
+              </View>
+            </TouchableOpacity>
+          )}
+        </View>
+      </ScrollView>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#0B0F12',
-  },
+  container: { flex: 1, backgroundColor: '#0C1A2E' },
+
   header: {
     paddingHorizontal: 24,
-    paddingBottom: 20,
-    backgroundColor: '#11171D',
+    paddingBottom: 16,
+    zIndex: 2,
   },
-  tabContainer: {
-    flexDirection: 'row',
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderRadius: 12,
-    padding: 4,
-    marginTop: 20,
+  topBarText: {
+    fontSize: 12,
+    color: '#D4AF37', // Gold
+    letterSpacing: 2,
+    fontWeight: '700',
+    textAlign: 'center',
+    marginBottom: 20,
   },
-  tab: {
-    flex: 1,
-    paddingVertical: 8,
-    alignItems: 'center',
-    borderRadius: 10,
-  },
-  activeTab: {
-    backgroundColor: '#1C262F',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  tabText: {
-    fontSize: 13,
-    fontWeight: '600',
-    color: 'rgba(255, 255, 255, 0.4)',
-  },
-  activeTabText: {
-    color: '#2ED3C6',
+  headerPretitle: {
+    fontSize: 10,
+    color: 'rgba(201,168,76,0.8)',
+    letterSpacing: 2.5,
+    fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
+    marginBottom: 6,
   },
   headerTitle: {
     fontSize: 28,
-    fontWeight: '700',
-    color: '#FFFFFF',
-    marginBottom: 4,
+    color: '#F0E6D3',
+    fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
+    fontWeight: '400', // Normal weight for the elegant serif look
+    letterSpacing: 0.5,
+    marginBottom: 6,
+    textShadowColor: 'rgba(201,168,76,0.1)',
+    textShadowOffset: { width: 0, height: 0 },
+    textShadowRadius: 10,
   },
-  headerSubtitle: {
-    fontSize: 14,
-    color: 'rgba(255, 255, 255, 0.5)',
+  headerSub: {
+    fontSize: 13,
+    color: '#7B8FA1', // Light grayish blue
   },
-  scrollView: {
-    flex: 1,
-  },
-  content: {
-    padding: 24,
-  },
-  sectionTitle: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: '#2ED3C6',
-    letterSpacing: 1.5,
-    marginBottom: 16,
-    marginTop: 8,
-  },
-  card: {
+
+  scrollView: { flex: 1, zIndex: 2 },
+  content: { paddingHorizontal: 20, paddingTop: 12 },
+
+  statsRow: {
     flexDirection: 'row',
-    backgroundColor: '#1A232C',
-    borderRadius: 16,
-    padding: 16,
-    marginBottom: 16,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.05)',
+    gap: 12,
+    marginBottom: 24,
   },
-  cardIconContainer: {
+  statCard: {
+    flex: 1,
+    borderRadius: 12,
+    overflow: 'hidden',
+    paddingVertical: 18,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.05)',
+    backgroundColor: 'rgba(255,255,255,0.02)',
+  },
+  statValue: {
+    fontSize: 24,
+    fontWeight: '400',
+    marginBottom: 4,
+    fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
+  },
+  statLabel: {
+    fontSize: 11,
+    color: '#4A6480',
+    letterSpacing: 0.5,
+  },
+
+  filterRow: {
+    flexDirection: 'row',
+    gap: 8,
+    marginBottom: 18,
+  },
+  filterTab: {
+    paddingVertical: 8,
+    paddingHorizontal: 18,
+    borderRadius: 10,
+    backgroundColor: 'rgba(255,255,255,0.05)',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.07)',
+  },
+  filterTabActive: {
+    backgroundColor: 'rgba(201,168,76,0.18)',
+    borderColor: 'rgba(201,168,76,0.35)',
+  },
+  filterText: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: 'rgba(176,196,215,0.6)',
+  },
+  filterTextActive: {
+    color: Colors.accent.primary,
+  },
+
+  cardsColumn: { gap: 12 },
+
+  journeyCard: {
+    borderRadius: 16,
+    overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.08)',
+  },
+  journeyCardInner: {
+    padding: 16,
+    backgroundColor: 'rgba(15,25,40,0.6)',
+    position: 'relative',
+  },
+  journeyTop: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 16,
+    marginBottom: 12,
+    zIndex: 1,
+  },
+  journeyIcon: {
     width: 48,
     height: 48,
-    borderRadius: 12,
-    backgroundColor: 'rgba(46, 211, 198, 0.1)',
-    justifyContent: 'center',
+    borderRadius: 16,
+    borderWidth: 1,
     alignItems: 'center',
-    marginRight: 16,
+    justifyContent: 'center',
+    zIndex: 1,
   },
-  cardIcon: {
-    fontSize: 24,
-  },
-  cardContent: {
-    flex: 1,
-  },
-  cardHeader: {
+  journeyInfo: { flex: 1, marginTop: 2, zIndex: 1 },
+  pathLabelRow: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: 2,
   },
-  cardTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#FFFFFF',
-  },
-  premiumBadge: {
-    backgroundColor: 'rgba(255, 215, 0, 0.15)',
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-    borderRadius: 4,
-    borderWidth: 0.5,
-    borderColor: 'rgba(255, 215, 0, 0.3)',
-  },
-  premiumText: {
-    color: '#FFD700',
-    fontSize: 9,
+  journeyPathLabel: {
+    fontSize: 10,
+    letterSpacing: 2,
+    fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
     fontWeight: '700',
   },
-  cardDuration: {
-    fontSize: 12,
-    color: '#2ED3C6',
-    fontWeight: '500',
-    marginBottom: 6,
+  journeyTitle: {
+    fontSize: 19,
+    fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
+    fontWeight: '400',
+    letterSpacing: 0.5,
+    marginBottom: 2,
   },
-  cardDescription: {
+  journeyTheme: {
+    fontSize: 12,
+    color: '#7B8FA1',
+  },
+  chevronWrap: {
+    marginTop: 4,
+  },
+  journeyDescription: {
     fontSize: 13,
-    color: 'rgba(255, 255, 255, 0.6)',
-    lineHeight: 18,
+    color: '#7B8FA1',
+    lineHeight: 20,
+    marginBottom: 16,
   },
-  progressContainer: {
-    marginTop: 12,
-  },
-  progressBar: {
-    height: 4,
-    backgroundColor: '#2ED3C6',
-    borderRadius: 2,
-    marginBottom: 4,
-  },
-  progressText: {
-    fontSize: 10,
-    color: 'rgba(255, 255, 255, 0.4)',
-    fontWeight: '500',
-  },
-  bundleCard: {
-    borderColor: 'rgba(212, 175, 55, 0.2)',
-    borderWidth: 1.5,
-  },
-  bundleIconContainer: {
-    backgroundColor: 'rgba(212, 175, 55, 0.1)',
-  },
-  specialBadge: {
-    backgroundColor: 'rgba(212, 175, 55, 0.15)',
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-    borderRadius: 4,
-    borderWidth: 0.5,
-    borderColor: 'rgba(212, 175, 55, 0.3)',
-  },
-  specialBadgeText: {
-    color: '#D4AF37',
-    fontSize: 9,
-    fontWeight: '700',
-  },
-  specialSectionTitle: {
-    color: '#D4AF37',
-    marginTop: 24,
-  },
-  priceRow: {
+  progressSection: {
     flexDirection: 'row',
-    alignItems: 'baseline',
-    marginTop: 12,
+    alignItems: 'center',
+    gap: 12,
   },
-  aedLabel: {
+  journeyPct: {
     fontSize: 12,
-    color: 'rgba(255, 255, 255, 0.4)',
-    marginRight: 4,
-    fontWeight: '600',
-  },
-  priceValue: {
-    fontSize: 18,
-    color: '#FFFFFF',
-    fontWeight: '700',
-  },
-  discountBadge: {
-    backgroundColor: 'rgba(46, 211, 198, 0.15)',
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-    borderRadius: 4,
-    marginLeft: 10,
-  },
-  discountText: {
-    color: '#2ED3C6',
-    fontSize: 10,
-    fontWeight: '800',
-  },
-  emptyState: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingTop: 60,
-  },
-  emptyStateText: {
-    color: 'rgba(255, 255, 255, 0.4)',
-    fontSize: 14,
-    textAlign: 'center',
-  },
-  lockedCard: {
-    opacity: 0.6,
-  },
-  lockedIconContainer: {
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-  },
-  lockedText: {
-    color: 'rgba(255, 255, 255, 0.4)',
-  },
-  lockedBadge: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    borderColor: 'rgba(255, 255, 255, 0.2)',
-  },
-  lockedBadgeText: {
-    color: 'rgba(255, 255, 255, 0.5)',
-  },
-  lockedOverlay: {
-    position: 'absolute',
-    top: 12,
-    right: 12,
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.6)',
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 8,
-  },
-  lockedOverlayText: {
-    color: '#FFD700',
-    fontSize: 10,
     fontWeight: '700',
     letterSpacing: 0.5,
+    minWidth: 40,
+    textAlign: 'right',
+  },
+  progressTrack: {
+    flex: 1,
+    height: 5,
+    backgroundColor: 'rgba(255,255,255,0.06)',
+    borderRadius: 3,
+    overflow: 'hidden',
+  },
+  progressFill: {
+    height: '100%',
+    borderRadius: 3,
+  },
+
+  /* Premium pill on locked cards */
+  premiumPill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginTop: 12,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 10,
+    backgroundColor: 'rgba(201,168,76,0.06)',
+    borderWidth: 1,
+    borderColor: 'rgba(201,168,76,0.18)',
+  },
+  premiumPillText: {
+    fontSize: 11,
+    color: '#C9A84C',
+    fontWeight: '600',
+    letterSpacing: 0.3,
+  },
+
+  /* Bottom paywall CTA */
+  paywallCTA: {
+    marginTop: 16,
+    borderRadius: 18,
+    borderWidth: 1,
+    borderColor: 'rgba(201,168,76,0.35)',
+    backgroundColor: 'rgba(201,168,76,0.05)',
+    padding: 20,
+    overflow: 'hidden',
+  },
+  paywallCTALabelRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    marginBottom: 6,
+  },
+  paywallCTALabel: {
+    fontSize: 10,
+    color: '#C9A84C',
+    letterSpacing: 2,
+    fontWeight: '700',
+  },
+  paywallCTATitle: {
+    fontSize: 20,
+    color: '#F0E6D3',
+    fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
+    fontWeight: '600',
+    marginBottom: 6,
+  },
+  paywallCTASub: {
+    fontSize: 12,
+    color: '#8BA4BF',
+    marginBottom: 16,
+    lineHeight: 18,
+  },
+  paywallCTAButton: {
+    backgroundColor: '#C9A84C',
+    paddingVertical: 14,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    // subtle glow
+    shadowColor: '#C9A84C',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.35,
+    shadowRadius: 12,
+    elevation: 6,
+  },
+  paywallCTAButtonText: {
+    fontSize: 13,
+    color: '#0A1321',
+    fontWeight: '700',
+    letterSpacing: 1.2,
   },
 });
