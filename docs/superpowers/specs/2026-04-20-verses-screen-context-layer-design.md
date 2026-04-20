@@ -75,13 +75,16 @@ export type ContextBlock =
 Small pure-function module building canonical URLs:
 
 ```ts
+export const TAFSIR_IDS = {
+  AS_SADI: /* verified during implementation via GET api.quran.com/api/v4/resources/tafsirs */ 0,
+};
+
 export function quranVerseUrl(verseKey: string): string            // → https://quran.com/{chapter}/{verse}
-export function quranTafsirUrl(verseKey: string, tafsirId = 170)   // → https://quran.com/{chapter}/{verse}/tafsirs/{id}
-                                                                    //   (170 = Tafsir As-Sa'di)
-export function sunnahUrl(collection: string, number: string)      // → https://sunnah.com/{collection}/{book}:{hadithNumber}
+export function quranTafsirUrl(verseKey: string, tafsirId: number) // → https://quran.com/{chapter}/{verse}/tafsirs/{id}
+export function sunnahUrl(collection: string, number: string)      // → https://sunnah.com/{collection}:{hadithNumber}
 ```
 
-Used by content authors when writing `contextBlocks` so every citation points to the right canonical URL, and by `SourceChip` for tap-through.
+`TAFSIR_IDS.AS_SADI` is populated during implementation by hitting the quran.com tafsirs endpoint and confirming the current numeric resource ID — the spec does not bake in a magic number. Used by content authors when writing `contextBlocks` so every citation points to the right canonical URL, and by `SourceChip` for tap-through.
 
 ## Section 2 — Layer wiring (`GuidanceScreen`)
 
@@ -95,9 +98,17 @@ type LayerKind = 'verse' | 'context' | 'practice' | 'reflection';
 function buildLayerConfig(experience: GuidanceExperience): LayerKind[] {
   const layers: LayerKind[] = ['verse'];
   if (experience.angle.contextBlocks?.length) layers.push('context');
-  if (parsePracticeSteps(experience.angle.practiceSteps).length) layers.push('practice');
+  if (parsePracticeSteps(experience.angle.practiceSteps).length > 0) layers.push('practice');
   if (experience.angle.reflection) layers.push('reflection');
   return layers;
+}
+
+// parsePracticeSteps: safe JSON parser for the existing `ContentAngle.practiceSteps: string`
+// field (already a JSON-serialized array consumed by PracticeLayer today). Returns [] on
+// null/undefined/invalid JSON so the config builder degrades gracefully.
+function parsePracticeSteps(raw: string | undefined): PracticeStepData[] {
+  if (!raw) return [];
+  try { return JSON.parse(raw) as PracticeStepData[]; } catch { return []; }
 }
 ```
 
@@ -119,12 +130,18 @@ Replace the current `{currentLayer === 0 && <VerseLayer ... />}` block with a di
 In `VerseLayer` (and later in other layers), the "Explore" hint becomes the name of the next layer. Small helper:
 
 ```ts
-const NEXT_LAYER_LABEL: Record<LayerKind, string> = {
-  verse: 'Tafsir', context: 'Practice', practice: 'Reflect', reflection: 'Next Verse',
+// The label is the NAME of the layer you'll land on by swiping up from the current one.
+// Computed as NEXT_LAYER_LABEL[layers[currentLayer + 1]] — so only defined for layers
+// that have a successor. Reflection is always the last layer (dismissed by its own
+// "Complete Session" button, not by swipe), so it has no next-layer label.
+const NEXT_LAYER_LABEL: Record<Exclude<LayerKind, 'reflection'>, string> = {
+  verse: 'Tafsir',     // shown on Verse when Context is next in `layers`
+  context: 'Practice', // shown on Context when Practice is next
+  practice: 'Reflect', // shown on Practice when Reflection is next
 };
 ```
 
-Passed from `GuidanceScreen` into the layer as `nextLayerLabel?: string`. Layer shows "↑ {label}" in its swipe hint. Small change; big affordance win.
+Passed from `GuidanceScreen` into the layer as `nextLayerLabel?: string` (undefined on the final layer). Layer shows "↑ {label}" in its swipe hint when defined, hides the hint otherwise. Small change; big affordance win.
 
 ## Section 3 — ContextLayer refactor
 
