@@ -289,8 +289,8 @@ Content backfill is ongoing work, not a blocker for shipping the layer infrastru
 5. The translation on the verse screen renders with intact punctuation, parentheticals, and grammar — no more regex-mangled output.
 6. An angle with no `contextBlocks` still works — the user just doesn't get a context layer. No empty screens, no filler.
 
-## Open questions for the implementation plan
+## Resolved decisions
 
-- Which mood is "day one" for Pass B curatorial rollout? (User's call — recommend `Overwhelmed` since it has the largest existing verse set.)
-- Do we want a small CLI/UI for authoring `ContextBlock` entries (with source lookup), or is hand-edited TS acceptable for a ~50-entry corpus? (Recommend hand-edited; build the helper only if authoring drags.)
-- Should `SourceChip` track taps for analytics (which sources users actually verify)? Out of scope unless explicitly wanted.
+- **First mood for curatorial rollout (Pass B):** `Overwhelmed`. Largest existing verse set, matches the app's primary anxious/stressed use case, highest early-user hit rate.
+- **Authoring flow:** hand-edited TS in [quranData.ts](../../../src/data/quranData.ts). No authoring helper at this stage — the corpus is small (~50 angles) and building tooling is YAGNI until authoring becomes a measurable bottleneck.
+- **`SourceChip` analytics:** none. Privacy-first is a top constraint; tracking which sources users verify would contradict it. Tap handler calls `Linking.openURL` only.
