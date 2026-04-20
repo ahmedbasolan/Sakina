@@ -162,6 +162,17 @@ export const migrateDatabase = async (): Promise<void> => {
 
 const runMigrationSteps = async (db: SQLite.SQLiteDatabase): Promise<void> => {
   try {
+    // 1. user_history: add pending_sync for offline-write tracking
+    //    (0 = synced/guest entry, 1 = written locally while Supabase was unavailable)
+    const userHistoryInfo = await db.getAllAsync(`PRAGMA table_info(user_history)`);
+    const userHistoryColumns = (userHistoryInfo as any[]) || [];
+    if (!userHistoryColumns.some((col) => col.name === 'pending_sync')) {
+      console.log('Adding pending_sync to user_history...');
+      await db.execAsync(
+        `ALTER TABLE user_history ADD COLUMN pending_sync INTEGER NOT NULL DEFAULT 0`,
+      );
+    }
+
     // 2. saved_reflections migrations
     const savedReflectionsInfo = await db.getAllAsync(`PRAGMA table_info(saved_reflections)`);
     const savedReflectionsColumns = (savedReflectionsInfo as any[]) || [];
@@ -368,6 +379,7 @@ const runInitializationSteps = async (db: SQLite.SQLiteDatabase): Promise<void> 
         angleId TEXT NOT NULL,
         mood TEXT NOT NULL,
         timestamp INTEGER NOT NULL,
+        pending_sync INTEGER NOT NULL DEFAULT 0,
         FOREIGN KEY (contentId) REFERENCES content (id),
         FOREIGN KEY (angleId) REFERENCES content_angles (id)
       );`,

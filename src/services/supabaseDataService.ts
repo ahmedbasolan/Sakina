@@ -81,8 +81,11 @@ export class SupabaseDataService {
 
     /**
      * Record a guidance selection in history.
-     * - Logged-in: writes to Supabase
-     * - Guest: writes to local SQLite
+     * - Logged-in + online:  writes to Supabase, then opportunistically flushes
+     *                        any rows that were queued while offline.
+     * - Logged-in + offline: writes to local SQLite with pending_sync = 1 so
+     *                        syncPendingHistory() can upload them later.
+     * - Guest:               writes to local SQLite (pending_sync = 0, never synced).
      */
     async recordHistory(contentId: string, angleId: string, mood: Mood): Promise<void> {
         const userId = await this.getUserId();
@@ -98,32 +101,116 @@ export class SupabaseDataService {
 
             if (error) {
                 console.error('[SupabaseDataService] Error recording history:', error.message);
-                // Fallback to local
-                await this.recordHistoryLocal(contentId, angleId, mood);
+                // Fallback: persist locally and flag for sync when connectivity returns.
+                await this.recordHistoryLocal(contentId, angleId, mood, true);
+            } else {
+                // Write succeeded — we're online. Opportunistically flush any entries
+                // that were queued during a previous offline session. Fire-and-forget
+                // so the current write path isn't delayed.
+                this.syncPendingHistory().catch((e) =>
+                    console.warn('[SupabaseDataService] Background pending-sync failed:', e),
+                );
             }
         } else {
-            // ── Guest/offline path ──
-            await this.recordHistoryLocal(contentId, angleId, mood);
+            // ── Guest path: local only, no sync needed ──
+            await this.recordHistoryLocal(contentId, angleId, mood, false);
         }
     }
 
+    /**
+     * @param pendingSync  true when called as an offline fallback for a logged-in
+     *                     user — marks the row for upload once connectivity returns.
+     *                     Always false for guest writes.
+     */
     private async recordHistoryLocal(
         contentId: string,
         angleId: string,
         mood: string,
+        pendingSync: boolean = false,
     ): Promise<void> {
         await dbQuery(async (db) => {
             await db.runAsync(
-                `INSERT INTO user_history (id, contentId, angleId, mood, timestamp) VALUES (?, ?, ?, ?, ?)`,
+                `INSERT INTO user_history (id, contentId, angleId, mood, timestamp, pending_sync) VALUES (?, ?, ?, ?, ?, ?)`,
                 [
                     `history_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
                     contentId,
                     angleId,
                     mood,
                     Date.now(),
+                    pendingSync ? 1 : 0,
                 ],
             );
         });
+    }
+
+    /**
+     * Upload any locally-queued history rows (pending_sync = 1) to Supabase,
+     * then clear the flag on rows that were successfully uploaded.
+     *
+     * Called opportunistically from recordHistory whenever a Supabase write
+     * succeeds (meaning we're online). Safe to call at app startup too.
+     *
+     * Rows that fail to upload keep pending_sync = 1 and will be retried on
+     * the next online write.
+     */
+    async syncPendingHistory(): Promise<void> {
+        const userId = await this.getUserId();
+        if (!userId) return; // nothing to sync for guests
+
+        // 1. Read all locally-queued rows
+        const pendingRows = await dbQuery(async (db) => {
+            return db.getAllAsync<{
+                id: string;
+                contentId: string;
+                angleId: string;
+                mood: string;
+                timestamp: number;
+            }>(
+                `SELECT id, contentId, angleId, mood, timestamp
+                 FROM user_history
+                 WHERE pending_sync = 1
+                 ORDER BY timestamp ASC`,
+            );
+        });
+
+        if (pendingRows.length === 0) return;
+
+        // 2. Upload each row; collect IDs of those that succeeded
+        const syncedIds: string[] = [];
+        for (const row of pendingRows) {
+            const { error } = await supabase.from('user_history').insert({
+                user_id: userId,
+                content_id: row.contentId,
+                angle_id: row.angleId,
+                mood: row.mood,
+                // Preserve the original timestamp so calendar/streak stay accurate
+                created_at: new Date(row.timestamp).toISOString(),
+            });
+            if (error) {
+                console.warn(
+                    `[SupabaseDataService] Pending sync failed for row ${row.id}:`,
+                    error.message,
+                );
+                // Leave pending_sync = 1 — will retry on the next online write
+            } else {
+                syncedIds.push(row.id);
+            }
+        }
+
+        if (syncedIds.length === 0) return;
+
+        // 3. Clear the flag only for rows we successfully uploaded
+        await dbQuery(async (db) => {
+            const placeholders = syncedIds.map(() => '?').join(',');
+            await db.runAsync(
+                `UPDATE user_history SET pending_sync = 0 WHERE id IN (${placeholders})`,
+                syncedIds,
+            );
+        });
+
+        console.log(
+            `[SupabaseDataService] Synced ${syncedIds.length} / ${pendingRows.length} pending history entries`,
+        );
     }
 
     /**
