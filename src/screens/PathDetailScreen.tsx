@@ -191,12 +191,16 @@ export const PathDetailScreen: React.FC = () => {
     // No-op if already marked complete.
     if (base.completedDays.includes(day)) return;
 
+    const isNowComplete = day >= path.duration;
     const updatedProgress: UserPathProgress = {
       ...base,
       completedDays: [...base.completedDays, day].sort((a, b) => a - b),
-      currentDay: Math.max(base.currentDay, day + 1),
-      isCompleted: day >= path.duration,
-      completedAt: day >= path.duration ? Date.now() : base.completedAt,
+      // Clamp to path.duration so the "Today's Lesson" tile doesn't stay pinned
+      // to the last day after completion (nextStepDay = Math.min(currentDay, totalDays)
+      // would otherwise always resolve to the final day instead of a complete state).
+      currentDay: isNowComplete ? path.duration : Math.max(base.currentDay, day + 1),
+      isCompleted: isNowComplete,
+      completedAt: isNowComplete ? Date.now() : base.completedAt,
     };
     await pathsService.saveProgress(updatedProgress);
     setUserProgress(updatedProgress);
@@ -319,8 +323,8 @@ export const PathDetailScreen: React.FC = () => {
           </View>
         </View>
 
-        {/* Today's Lesson */}
-        {nextStep && (
+        {/* Today's Lesson — hidden once the path is fully complete */}
+        {nextStep && !userProgress?.isCompleted && (
           <View style={styles.todaySection}>
             <Text style={styles.sectionHeaderLabel}>TODAY · DAY {nextStepDay}</Text>
             <TouchableOpacity 

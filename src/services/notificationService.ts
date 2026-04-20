@@ -154,7 +154,17 @@ class NotificationService {
     // 1. Tahajjud Reminder (fajr_pre) - 1 hour before Fajr
     const fajrTime = this.parseTime(timings.Fajr);
     const tahajjudDate = new Date();
-    tahajjudDate.setHours(fajrTime.hours - 1, fajrTime.minutes, 0, 0);
+    // Use total-minutes arithmetic so setHours never receives a negative hour
+    // (e.g. Fajr at 00:30 → tahajjud at 23:30 previous day via setHours(-1,30)
+    // would move the date backwards and fail the > new Date() guard).
+    const fajrTotalMinutes = fajrTime.hours * 60 + fajrTime.minutes;
+    const tahajjudTotalMinutes = fajrTotalMinutes - 60;
+    tahajjudDate.setHours(
+      Math.floor(tahajjudTotalMinutes / 60) % 24,
+      tahajjudTotalMinutes % 60,
+      0,
+      0,
+    );
 
     if (tahajjudDate > new Date()) {
       const id = await Notifications.scheduleNotificationAsync({

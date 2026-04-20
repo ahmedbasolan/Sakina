@@ -205,8 +205,11 @@ export class MoodHistoryService {
 
     const today = new Date();
     const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
-    const yesterday = new Date(today.getTime() - 86400000);
-    const yesterdayStr = `${yesterday.getFullYear()}-${String(yesterday.getMonth() + 1).padStart(2, '0')}-${String(yesterday.getDate()).padStart(2, '0')}`;
+    // Use calendar arithmetic (not fixed ms offset) so the date is correct across
+    // DST transitions where a "day" is 23 h or 25 h rather than exactly 86400000 ms.
+    const yesterdayDate = new Date(today);
+    yesterdayDate.setDate(yesterdayDate.getDate() - 1);
+    const yesterdayStr = `${yesterdayDate.getFullYear()}-${String(yesterdayDate.getMonth() + 1).padStart(2, '0')}-${String(yesterdayDate.getDate()).padStart(2, '0')}`;
 
     for (let i = 1; i < sortedDays.length; i++) {
       const prev = new Date(sortedDays[i - 1] + 'T00:00:00');
@@ -228,7 +231,10 @@ export class MoodHistoryService {
       let checkDate = new Date(startDay + 'T00:00:00');
 
       while (true) {
-        checkDate = new Date(checkDate.getTime() - 86400000);
+        // setDate(-1) respects DST — avoids 23h/25h day edge cases from fixed ms offset.
+        const prev = new Date(checkDate);
+        prev.setDate(prev.getDate() - 1);
+        checkDate = prev;
         const checkStr = `${checkDate.getFullYear()}-${String(checkDate.getMonth() + 1).padStart(2, '0')}-${String(checkDate.getDate()).padStart(2, '0')}`;
         if (sortedDays.includes(checkStr)) {
           currentStreak++;

@@ -312,6 +312,9 @@ export class SupabaseDataService {
                     if (error) {
                         console.error('[Migration] History batch insert error:', error.message);
                         historyInsertSucceeded = false;
+                        break; // Stop on first failure — avoids orphaning later batches in a
+                               // state where Supabase has some rows but idempotency check would
+                               // skip all remaining rows on next login.
                     } else {
                         migratedCount += batch.length;
                     }
