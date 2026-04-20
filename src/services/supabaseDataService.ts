@@ -203,13 +203,18 @@ export class SupabaseDataService {
 
             if (error) {
                 console.error('[SupabaseDataService] Error fetching mood history:', error.message);
-                return [];
+                // Fall back to local SQLite so an offline session (where recordHistory
+                // already wrote entries locally) still surfaces data in the calendar/stats.
+                // NOTE: local entries written during an offline session are not auto-synced
+                // back to Supabase when connectivity is restored — a sync queue would be
+                // needed for that. This fallback ensures reads are at least consistent with
+                // what the offline writes produced.
+            } else {
+                return data || [];
             }
-
-            return data || [];
         }
 
-        // Guest fallback: query local SQLite
+        // Guest path, or logged-in user with a Supabase read failure:
         return dbQuery(async (db) => {
             const startMs = new Date(startDate).getTime();
             const endMs = new Date(endDate).getTime();
