@@ -25,6 +25,16 @@ import NotificationService from '../services/notificationService';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { getDailyVerse, getDailyVerseSync, DailyVerse } from '../services/dailyVerseService';
 import { AnimatedMandala } from '../components/AnimatedMandala';
+import { logServiceError } from '../services/errorLoggingService';
+import {
+  HeroHeader,
+  VerseOfTheDay,
+  StreakBar,
+  SpiritualWindowBanner,
+  MoodButton,
+  CheckInBanner,
+  TwinklingStar,
+} from '../components/home';
 
 const { width, height } = Dimensions.get('window');
 
@@ -70,172 +80,6 @@ function getGreeting(): string {
   if (h < 12) return 'Good Morning';
   if (h < 17) return 'Good Afternoon';
   return 'Good Evening';
-}
-
-/* ─── Twinkling Star Component ───────────────────────────────── */
-
-function TwinklingStar({ x, y, delay, size }: { x: number; y: number; delay: number; size: number }) {
-  const opacity = useRef(new Animated.Value(0.2)).current;
-
-  useEffect(() => {
-    const anim = Animated.loop(
-      Animated.sequence([
-        Animated.delay(delay),
-        Animated.timing(opacity, { toValue: 0.9, duration: 1200, useNativeDriver: true }),
-        Animated.timing(opacity, { toValue: 0.2, duration: 1200, useNativeDriver: true }),
-      ])
-    );
-    anim.start();
-    return () => anim.stop();
-  }, []);
-
-  return (
-    <Animated.View
-      style={{
-        position: 'absolute',
-        left: x * width,
-        top: y * 200,
-        width: size,
-        height: size,
-        borderRadius: size / 2,
-        backgroundColor: Colors.accent.primary,
-        opacity,
-      }}
-    />
-  );
-}
-
-
-/* ─── Mood Button Component ──────────────────────────────────── */
-
-function MoodButton({
-  mood,
-  isChecked,
-  isRecentlySelected,
-  onPress,
-  animDelay,
-}: {
-  mood: MoodConfig;
-  isChecked: boolean;
-  isRecentlySelected?: boolean;
-  onPress: () => void;
-  animDelay: number;
-}) {
-  const scaleAnim = useRef(new Animated.Value(0)).current;
-  const glowAnim = useRef(new Animated.Value(0)).current;
-
-  useEffect(() => {
-    Animated.sequence([
-      Animated.delay(animDelay),
-      Animated.spring(scaleAnim, { toValue: 1, friction: 5, tension: 40, useNativeDriver: true }),
-    ]).start();
-  }, []);
-
-  useEffect(() => {
-    if (isChecked) {
-      Animated.loop(
-        Animated.sequence([
-          Animated.timing(glowAnim, { toValue: 1, duration: 1200, useNativeDriver: true }),
-          Animated.timing(glowAnim, { toValue: 0, duration: 1200, useNativeDriver: true }),
-        ])
-      ).start();
-    }
-  }, [isChecked]);
-
-  const handlePress = () => {
-    Animated.sequence([
-      Animated.spring(scaleAnim, { toValue: 0.9, friction: 3, useNativeDriver: true }),
-      Animated.spring(scaleAnim, { toValue: 1, friction: 4, useNativeDriver: true }),
-    ]).start();
-    onPress();
-  };
-
-  const glowOpacity = glowAnim.interpolate({ inputRange: [0, 1], outputRange: [0, 0.18] });
-
-  return (
-    <Animated.View style={[styles.moodButtonWrapper, { transform: [{ scale: scaleAnim }] }]}>
-      <TouchableOpacity
-        onPress={handlePress}
-        activeOpacity={0.85}
-        style={[
-          styles.moodButton,
-          {
-            backgroundColor: mood.bgColor,
-            borderColor: isChecked ? mood.color + '60' : mood.borderColor,
-          },
-        ]}
-      >
-        {/* Ambient glow */}
-        <Animated.View
-          style={[
-            StyleSheet.absoluteFill,
-            { borderRadius: 16, backgroundColor: mood.color, opacity: glowOpacity },
-          ]}
-        />
-
-        {/* Icon */}
-        <View
-          style={[
-            styles.moodIconContainer,
-            { backgroundColor: mood.color + '16', borderColor: mood.color + '30' },
-          ]}
-        >
-          <Ionicons name={mood.iconName as any} size={22} color={mood.color} />
-        </View>
-
-        {/* Label */}
-        <Text style={[styles.moodLabel, { color: mood.color }]}>{mood.label}</Text>
-
-        {/* Sublabel */}
-        <Text style={[styles.moodSublabel, { color: mood.color, opacity: isChecked ? 0.75 : 0.45 }]}>
-          {mood.sublabel}
-        </Text>
-
-        {/* Checked badge */}
-        {isChecked && (
-          <View style={[styles.checkedBadge, { backgroundColor: mood.color }]}>
-            <Ionicons name="checkmark" size={8} color={mood.bgColor} />
-          </View>
-        )}
-
-        {/* Recently selected dot (not today) */}
-        {!isChecked && isRecentlySelected && (
-          <View style={[styles.recentDot, { backgroundColor: mood.color }]} />
-        )}
-      </TouchableOpacity>
-    </Animated.View>
-  );
-}
-
-/* ─── Check-In Banner ────────────────────────────────────────── */
-
-function CheckInBanner({ onDismiss }: { onDismiss: () => void }) {
-  const pulseAnim = useRef(new Animated.Value(1)).current;
-
-  useEffect(() => {
-    Animated.loop(
-      Animated.sequence([
-        Animated.timing(pulseAnim, { toValue: 1.5, duration: 900, useNativeDriver: true }),
-        Animated.timing(pulseAnim, { toValue: 1, duration: 900, useNativeDriver: true }),
-      ])
-    ).start();
-  }, []);
-
-  return (
-    <View style={styles.checkinBanner}>
-      <View style={styles.checkinBannerLeft}>
-        <Animated.View
-          style={[styles.pulsingDot, { transform: [{ scale: pulseAnim }] }]}
-        />
-        <Text style={styles.checkinBannerText}>
-          You haven't checked in today — how is your heart?
-        </Text>
-      </View>
-      <TouchableOpacity onPress={onDismiss} style={styles.checkinDismiss}>
-        <Ionicons name="close" size={10} color={Colors.accent.primary} />
-      </TouchableOpacity>
-    </View>
-  );
 }
 
 /* ─── Prayer Arch Icon (SVG) ─────────────────────────────────── */
@@ -400,7 +244,7 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
         }
       }
     } catch (error) {
-      console.warn('[HomeScreen] Failed to load active path:', error);
+      logServiceError('HomeScreen', 'loadActivePath', error instanceof Error ? error : new Error(String(error)));
     }
   };
 
@@ -410,7 +254,7 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
       const stats = await moodHistoryService.getStats();
       setStreakDays(stats.currentStreak);
     } catch (error) {
-      console.warn('[HomeScreen] Failed to load streak data:', error);
+      logServiceError('HomeScreen', 'loadStreakData', error instanceof Error ? error : new Error(String(error)));
     }
   };
 
@@ -435,7 +279,7 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
       const notificationService = NotificationService.getInstance();
       await notificationService.scheduleSpiritualReminders(data.timings);
     } catch (error) {
-      console.warn('[HomeScreen] Failed to load prayer times:', error);
+      logServiceError('HomeScreen', 'loadPrayerData', error instanceof Error ? error : new Error(String(error)));
     } finally {
       setLoadingPrayers(false);
     }
@@ -488,7 +332,7 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
         });
       }
     } catch (error) {
-      console.error('Error getting timed guidance:', error);
+      logServiceError('HomeScreen', 'navigateToTimedGuidance', error instanceof Error ? error : new Error(String(error)));
     }
   };
 
@@ -510,7 +354,7 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
         });
       }
     } catch (error) {
-      console.error('Error getting guidance:', error);
+      logServiceError('HomeScreen', 'handleMoodTap', error instanceof Error ? error : new Error(String(error)));
     } finally {
       setLoadingMood(false);
     }

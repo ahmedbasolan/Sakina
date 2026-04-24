@@ -17,8 +17,9 @@ import {
   ViewStyle,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useAudioPlayer, useAudioPlayerStatus } from 'expo-audio';
-import { getAudioUrl, getAudioUrls } from '../services/audioService';
+import { getAudioUrls, RECITER_FALLBACKS } from '../services/audioService';
+
+import { Colors, Spacing, Typography, BorderRadius } from '../theme/DesignSystem';
 
 interface AudioPlayerButtonProps {
   verseKey: string;
@@ -30,10 +31,22 @@ interface AudioPlayerButtonProps {
   containerStyle?: StyleProp<ViewStyle>;
 }
 
-export default function AudioPlayerButton({
+import { BuildService } from '../services/buildService';
+
+// Use a check to prevent hook crashes if native module is missing
+const AudioModule = BuildService.getCapabilities().audio ? require('expo-audio') : null;
+
+export default function AudioPlayerButton(props: AudioPlayerButtonProps) {
+  if (!AudioModule) {
+    return null; // Gracefully hide if native module is missing
+  }
+  return <AudioPlayerButtonInternal {...props} />;
+}
+
+function AudioPlayerButtonInternal({
   verseKey,
   size = 48,
-  color = '#2DD4BF',
+  color = Colors.accent.primary,
   showLabel = true,
   isLocked = false,
   style,
@@ -41,23 +54,48 @@ export default function AudioPlayerButton({
 }: AudioPlayerButtonProps) {
   const pulseAnim = useRef(new Animated.Value(1)).current;
 
-  // Get audio URLs (could be one or many for a range)
-  const audioUrls = getAudioUrls(verseKey);
+  const [fallbackIndex, setFallbackIndex] = useState(0);
   const [currentVerseIndex, setCurrentVerseIndex] = useState(0);
 
-  // Use expo-audio hook with the current audio source from the range
-  const player = useAudioPlayer({ uri: audioUrls[currentVerseIndex] });
-  const status = useAudioPlayerStatus(player);
+  // Get audio URLs (could be one or many for a range)
+  const audioUrls = getAudioUrls(verseKey, RECITER_FALLBACKS[fallbackIndex]);
+
+  // These hooks are now safe because they are inside a component
+  // that only renders if the module exists
+  const player = AudioModule.useAudioPlayer({ uri: audioUrls[currentVerseIndex] });
+  const status = AudioModule.useAudioPlayerStatus(player);
 
   const isPlaying = status?.playing || false;
   const isBuffering = status?.isBuffering || false;
   const progress =
     status?.duration && status.duration > 0 ? (status.currentTime || 0) / status.duration : 0;
 
+  // Handle fallback if audio fails to load
+  useEffect(() => {
+    if (status?.error) {
+      console.warn('Audio playback error encountered:', status.error);
+      if (fallbackIndex < RECITER_FALLBACKS.length - 1) {
+        console.log(`Falling back to reciter: ${RECITER_FALLBACKS[fallbackIndex + 1].name}`);
+        setFallbackIndex((prev) => prev + 1);
+      }
+    }
+  }, [status?.error]);
+
+  // Update immediately when fallback changes
+  useEffect(() => {
+    if (fallbackIndex > 0) {
+      player.replace({ uri: audioUrls[currentVerseIndex] });
+      if (isPlaying) {
+        player.play();
+      }
+    }
+  }, [fallbackIndex]);
+
   // Pulse animation for playing state
   useEffect(() => {
+    let animation: Animated.CompositeAnimation | null = null;
     if (isPlaying) {
-      Animated.loop(
+      animation = Animated.loop(
         Animated.sequence([
           Animated.timing(pulseAnim, {
             toValue: 1.1,
@@ -70,10 +108,16 @@ export default function AudioPlayerButton({
             useNativeDriver: true,
           }),
         ]),
-      ).start();
+      );
+      animation.start();
     } else {
       pulseAnim.setValue(1);
     }
+    return () => {
+      if (animation) {
+        animation.stop();
+      }
+    };
   }, [isPlaying]);
 
   // Handle verse transition or finished playback
@@ -82,7 +126,11 @@ export default function AudioPlayerButton({
       if (currentVerseIndex < audioUrls.length - 1) {
         // There are more verses in this range - advance to next
         console.log(`AudioPlayerButton: Verse ${currentVerseIndex + 1} finished, playing next...`);
-        setCurrentVerseIndex((prev) => prev + 1);
+        const nextIndex = currentVerseIndex + 1;
+        setCurrentVerseIndex(nextIndex);
+        // Replace the audio source with the next verse and play
+        player.replace({ uri: audioUrls[nextIndex] });
+        player.play();
       } else {
         // Finished the whole range
         console.log('AudioPlayerButton: Range finished.');
@@ -91,14 +139,7 @@ export default function AudioPlayerButton({
         setCurrentVerseIndex(0); // Reset for next play
       }
     }
-  }, [status?.didJustFinish, currentVerseIndex, audioUrls.length]);
-
-  // Ensure player plays after switching verse in a range
-  useEffect(() => {
-    if (currentVerseIndex > 0 && !isPlaying && !isBuffering) {
-      player.play();
-    }
-  }, [currentVerseIndex]);
+  }, [status?.didJustFinish]);
 
   const handlePress = async () => {
     if (isLocked) return;
@@ -117,7 +158,7 @@ export default function AudioPlayerButton({
     }
   };
 
-  const displayColor = isLocked ? 'rgba(255, 255, 255, 0.4)' : color;
+  const displayColor = isLocked ? Colors.text.muted : color;
 
   return (
     <TouchableOpacity
@@ -147,8 +188,8 @@ export default function AudioPlayerButton({
               width: size,
               height: size,
               borderRadius: size / 2,
-              borderColor: isPlaying ? color : 'rgba(255, 255, 255, 0.1)',
-              backgroundColor: isPlaying ? `${color}15` : 'rgba(255, 255, 255, 0.06)',
+              borderColor: isPlaying ? color : Colors.glass.border,
+              backgroundColor: isPlaying ? `${color}15` : Colors.glass.light,
             },
             containerStyle,
           ]}
@@ -159,13 +200,7 @@ export default function AudioPlayerButton({
             <Ionicons
               name={isPlaying ? 'pause' : 'volume-low'}
               size={size * 0.45}
-              color={
-                isPlaying
-                  ? color
-                  : isLocked
-                    ? 'rgba(255, 255, 255, 0.4)'
-                    : 'rgba(255, 255, 255, 0.8)'
-              }
+              color={isPlaying ? color : isLocked ? Colors.text.muted : Colors.text.secondary}
             />
           )}
 
@@ -193,11 +228,7 @@ export default function AudioPlayerButton({
 
       {showLabel && (
         <Text
-          style={[
-            styles.label,
-            isPlaying && { color },
-            isLocked && { color: 'rgba(255, 255, 255, 0.4)' },
-          ]}
+          style={[styles.label, isPlaying && { color }, isLocked && { color: Colors.text.muted }]}
         >
           {isBuffering
             ? 'Loading...'
@@ -215,25 +246,25 @@ export default function AudioPlayerButton({
 const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
-    marginVertical: 12,
+    marginVertical: Spacing.md,
   },
   buttonContainer: {
     flexDirection: 'row',
-    backgroundColor: 'rgba(46, 211, 198, 0.08)',
-    borderRadius: 16,
-    paddingVertical: 12,
-    paddingHorizontal: 20,
+    backgroundColor: Colors.accent.muted,
+    borderRadius: BorderRadius.lg,
+    paddingVertical: Spacing.md,
+    paddingHorizontal: Spacing.xl,
     borderWidth: 1,
-    borderColor: 'rgba(46, 211, 198, 0.25)',
-    gap: 12,
+    borderColor: Colors.accent.glow,
+    gap: Spacing.md,
   },
   buttonContainerActive: {
     backgroundColor: 'rgba(46, 211, 198, 0.15)',
     borderColor: 'rgba(46, 211, 198, 0.5)',
   },
   buttonContainerLocked: {
-    backgroundColor: 'rgba(255, 255, 255, 0.04)',
-    borderColor: 'rgba(255, 255, 255, 0.1)',
+    backgroundColor: Colors.glass.light,
+    borderColor: Colors.glass.border,
     opacity: 0.8,
   },
   button: {
@@ -242,8 +273,8 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   label: {
-    color: 'rgba(255, 255, 255, 0.87)',
-    fontSize: 14,
+    color: Colors.text.primary,
+    fontSize: Typography.sizes.small,
     fontWeight: '600',
     alignSelf: 'center',
   },

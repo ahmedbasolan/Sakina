@@ -19,6 +19,7 @@ import Svg, {
   RadialGradient as SvgRadialGradient,
   Stop,
 } from 'react-native-svg';
+import { logServiceError } from '../services/errorLoggingService';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRoute, useNavigation } from '@react-navigation/native';
@@ -54,7 +55,7 @@ const LessonCard = ({ step, visual, isCompleted, isCurrent, isLocked, isExpanded
     if (isExpanded && !experience) {
       rotationEngine.getGuidanceForStep(step.contentId, step.angleId)
         .then(setExperience)
-        .catch(console.error);
+        .catch((error) => logServiceError('PathDetailScreen', 'loadGuidanceExperience', error instanceof Error ? error : new Error(String(error))));
     }
   }, [isExpanded, experience, rotationEngine, step]);
 

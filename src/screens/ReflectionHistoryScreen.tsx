@@ -9,6 +9,7 @@
  */
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Colors } from '../theme/DesignSystem';
+import { logServiceError } from '../services/errorLoggingService';
 import {
   View,
   Text,
@@ -301,7 +302,7 @@ export default function ReflectionHistoryScreen() {
       });
       setReflections(data);
     } catch (e) {
-      console.warn('Could not load reflections:', e);
+      logServiceError('ReflectionHistoryScreen', 'loadReflections', e instanceof Error ? e : new Error(String(e)));
       setReflections([]);
     }
   };
@@ -317,7 +318,7 @@ export default function ReflectionHistoryScreen() {
       });
       loadReflections();
     } catch (e) {
-      console.warn('Could not save reflection:', e);
+      logServiceError('ReflectionHistoryScreen', 'saveReflection', e instanceof Error ? e : new Error(String(e)));
     }
   };
 

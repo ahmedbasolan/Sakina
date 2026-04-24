@@ -1,21 +1,39 @@
 export type Mood =
-  | 'Anxious'
-  | 'Calm'
+  | 'Overwhelmed'
   | 'Sad'
-  | 'Content'
   | 'Angry'
+  | 'Tired'
+  | 'Lonely'
   | 'Grateful'
-  | 'Energized'
-  | 'Stressed'
   | 'Hopeful'
-  | 'Happy'
-  | 'Guilty';
+  | 'Guilty'
+  | 'Calm';
 export type Intensity = 'Low' | 'Medium' | 'High';
 export type Duration = 'Just now' | 'All day' | 'Long time';
 export type SubscriptionTier = 'free' | 'premium';
 export type SubscriptionType = 'monthly' | 'yearly' | 'trial';
 
 export type ContentType = 'Quran' | 'Hadith' | 'Dua' | 'Sunnah Practice' | 'Dhikr';
+
+export type PrayerContext =
+  | 'fajr_pre' // Before Fajr (Tahajjud)
+  | 'fajr_post' // After Fajr (Morning Adhkar)
+  | 'dhuhr' // Around Dhuhr
+  | 'asr' // Around Asr
+  | 'maghrib_pre' // Sunset/Evening Adhkar prep
+  | 'maghrib_post' // After Maghrib
+  | 'isha' // Night/Bedtime
+  | 'general'; // Any time
+
+// ─── Content Authenticity Types ────────────────────────────────
+// Hard gate: only these categories are allowed on the Guidance screen.
+export type PracticeSourceType =
+  | 'quran_dua' // Du'a that appears verbatim in the Qur'an (cite verse)
+  | 'prophetic_dua' // Ma'thūr du'a with hadith chain
+  | 'prophetic_dhikr' // Dhikr with hadith chain
+  | 'sunnah_action'; // Action with explicit hadith or primary fiqh citation
+
+export type HadithGrading = 'sahih' | 'hasan' | 'sahih_li_ghayrihi' | 'hasan_li_ghayrihi';
 
 export interface Content {
   id: string;
@@ -40,6 +58,7 @@ export interface Content {
   whyThisWorks?: string; // Scholar/Hadith explanation for why the practice is effective
   moods: Mood[];
   moodScores?: Record<string, number>; // Optional custom relevance scores: { 'Anxious': 15, 'Calm': 20 }
+  prayerContext?: PrayerContext[]; // Explicit time-of-day tagging
 }
 
 export interface ContentAngle {
@@ -61,8 +80,11 @@ export interface ContentAngle {
   actionRepeatCount?: number; // Target repetitions for the specific action
   actionDifficulty?: 1 | 2 | 3;
   actionWhyThisWorks?: string;
+  practiceSteps?: string; // JSON array of structured practice steps
   reflection?: string; // Maps to "Reflection Prompt"
   contentType?: ContentType;
+  actionType?: ContentType;
+  content?: Content;
 }
 
 export interface GuidanceExperience {
@@ -86,17 +108,8 @@ export interface SavedReflection {
   reflection: string;
   timestamp: number;
   isFavorite?: boolean; // Premium feature
-  collectionId?: string; // Premium feature
 }
 
-export interface Collection {
-  id: string;
-  name: string;
-  description?: string;
-  itemCount: number;
-  createdAt: number;
-  updatedAt: number;
-}
 
 export interface UserSession {
   id: string;
@@ -194,4 +207,20 @@ export type LanguagePreference = 'english' | 'arabic';
 export interface UserPreferences {
   primaryLanguage: LanguagePreference;
   showTransliteration: boolean;
+}
+
+export type BackgroundThemeCategory =
+  | 'sky'
+  | 'mountains'
+  | 'nature'
+  | 'landscapes'
+  | 'ocean'
+  | 'animals';
+
+export interface BackgroundTheme {
+  id: string;
+  name: string;
+  category: BackgroundThemeCategory;
+  imageUri: string;
+  isPremium: boolean;
 }
