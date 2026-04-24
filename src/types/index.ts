@@ -35,6 +35,31 @@ export type PracticeSourceType =
 
 export type HadithGrading = 'sahih' | 'hasan' | 'sahih_li_ghayrihi' | 'hasan_li_ghayrihi';
 
+// ─── Source Citation & Context Blocks ──────────────────────────
+// Every user-visible text block on the guidance screen must cite its source.
+// A SourceCitation is always link-resolvable — tapping the matching chip
+// opens the canonical URL on quran.com or sunnah.com.
+export type SourceCitation = {
+  label: string;                   // e.g. "Tafsir As-Sa'di", "Sahih al-Bukhari 6363", "Surah Yunus 21:87"
+  url: string;                     // canonical quran.com or sunnah.com URL
+  grading?: HadithGrading;         // present on hadith citations only
+};
+
+// A ContextBlock is one "section" the user reads on the Context layer,
+// after swiping up from the verse. Tafsir explains the verse; hadith
+// supplies prophetic commentary when it deepens the meaning; story
+// weaves relevant prophet/companion narratives.
+export type ContextBlock =
+  | { kind: 'tafsir'; text: string; source: SourceCitation }
+  | {
+      kind: 'hadith';
+      text: string;
+      arabicText?: string;
+      transliteration?: string;
+      source: SourceCitation;
+    }
+  | { kind: 'story'; text: string; citations: SourceCitation[] };
+
 export interface Content {
   id: string;
   type: ContentType;
@@ -65,9 +90,14 @@ export interface ContentAngle {
   id: string;
   contentId: string;
   mood: Mood;
+  contextBlocks?: ContextBlock[];
+  /** @deprecated Prefer `contextBlocks: ContextBlock[]`. Retained for unmigrated data. */
   angle: string; // Maps to "Prophetic Context"
+  /** @deprecated Prefer `contextBlocks: ContextBlock[]`. Retained for unmigrated data. */
   angleArabicText?: string;
+  /** @deprecated Prefer `contextBlocks: ContextBlock[]`. Retained for unmigrated data. */
   angleTransliteration?: string;
+  /** @deprecated Prefer `contextBlocks: ContextBlock[]`. Retained for unmigrated data. */
   angleSource?: string;
   action?: string;
   actionArabicText?: string;
