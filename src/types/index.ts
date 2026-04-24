@@ -109,6 +109,7 @@ export interface ContentAngle {
   actionAudioKey?: string;
   actionRepeatCount?: number; // Target repetitions for the specific action
   actionDifficulty?: 1 | 2 | 3;
+  /** @deprecated Prefer `contextBlocks: ContextBlock[]`. Retained for unmigrated data. */
   actionWhyThisWorks?: string;
   practiceSteps?: string; // JSON array of structured practice steps
   reflection?: string; // Maps to "Reflection Prompt"
