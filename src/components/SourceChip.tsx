@@ -36,10 +36,12 @@ const SourceChip: React.FC<SourceChipProps> = ({ citation, onPress }) => {
       activeOpacity={0.7}
     >
       <View style={styles.chip}>
+        {citation.grading ? (
+          <View style={styles.gradingBadge}>
+            <Text style={styles.gradingText}>{GRADING_LABEL[citation.grading]}</Text>
+          </View>
+        ) : null}
         <Text style={styles.label} numberOfLines={1}>
-          {citation.grading ? (
-            <Text style={styles.gradingText}>{GRADING_LABEL[citation.grading]} </Text>
-          ) : null}
           {citation.label}
         </Text>
         <Ionicons name="open-outline" size={12} color={Colors.text.secondary} />
@@ -53,6 +55,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
+    // 6 and 10 are intentional non-token values; nearest tokens are Spacing.xs=4 and Spacing.sm=8
     paddingVertical: 6,
     paddingHorizontal: 10,
     borderRadius: BorderRadius.md,
@@ -60,6 +63,12 @@ const styles = StyleSheet.create({
     borderWidth: StyleSheet.hairlineWidth,
     borderColor: 'rgba(255, 235, 210, 0.14)',
     alignSelf: 'flex-start',
+  },
+  gradingBadge: {
+    paddingHorizontal: 6, // intentional non-token value; nearest is Spacing.xs=4 or Spacing.sm=8
+    paddingVertical: 2,
+    borderRadius: BorderRadius.sm,
+    backgroundColor: 'rgba(74, 222, 128, 0.12)',
   },
   label: {
     fontSize: 12,
