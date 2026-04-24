@@ -1,9 +1,10 @@
 import { Content, ContentAngle } from '../types';
 import { quranContent, quranContentAngles } from './quranData';
+import { sunnahContentData } from './sunnahData';
 
 /**
  * Combined initial content for the application.
- * Currently focuses on curated Quranic content.
+ * Focuses on curated Quranic and Sunnah content.
  */
-export const initialContent: Content[] = quranContent;
+export const initialContent: Content[] = [...quranContent, ...sunnahContentData];
 export const initialContentAngles: ContentAngle[] = quranContentAngles;

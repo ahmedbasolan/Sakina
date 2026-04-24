@@ -6,11 +6,10 @@
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
-    "newArchEnabled": true,
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#040D1A"
     },
     "ios": {
       "supportsTablet": true
@@ -22,8 +21,6 @@
       },
       "permissions": [
         "android.permission.RECORD_AUDIO",
-        "android.permission.MODIFY_AUDIO_SETTINGS",
-        "android.permission.RECORD_AUDIO",
         "android.permission.MODIFY_AUDIO_SETTINGS"
       ],
       "package": "com.lelahmed.islamicguidanceapp"
@@ -31,12 +28,7 @@
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "plugins": [
-      "expo-font",
-      "expo-audio",
-      "expo-sqlite",
-      "expo-asset"
-    ],
+    "plugins": ["expo-font", "expo-audio", "expo-sqlite", "expo-asset", "expo-notifications"],
     "extra": {
       "eas": {
         "projectId": "48691805-9833-4c4d-a8a6-c6bf5a054f1a"

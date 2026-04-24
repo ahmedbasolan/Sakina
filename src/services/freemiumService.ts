@@ -1,18 +1,7 @@
-import {
-  UserSession,
-  FreemiumLimits,
-  PaywallType,
-  SubscriptionState,
-} from '../types';
+import { UserSession, FreemiumLimits, PaywallType, SubscriptionState } from '../types';
 import { SessionService } from './sessionService';
 import { SubscriptionService } from './subscriptionService';
-
-const FREEMIUM_LIMITS: FreemiumLimits = {
-  dailyGuidanceSessions: 2,
-  nextRefreshesPerSession: 3,
-  maxSavedItems: 0,
-  rotationHistoryDays: 30,
-};
+import { FREEMIUM_LIMITS } from '../constants';
 
 const PREMIUM_LIMITS: FreemiumLimits = {
   dailyGuidanceSessions: Infinity,
@@ -34,7 +23,7 @@ export class FreemiumService {
     return FreemiumService.instance;
   }
 
-  private constructor() { }
+  private constructor() {}
 
   async initialize(): Promise<void> {
     if (this.isLoaded) return;
@@ -54,7 +43,10 @@ export class FreemiumService {
   }
 
   hasUnlockedBundle(bundleId: string): boolean {
-    return this.subscriptionService.getSubscriptionState()?.unlockedBundleIds?.includes(bundleId) || false;
+    return (
+      this.subscriptionService.getSubscriptionState()?.unlockedBundleIds?.includes(bundleId) ||
+      false
+    );
   }
 
   async purchaseBundle(bundleId: string): Promise<boolean> {
@@ -62,7 +54,10 @@ export class FreemiumService {
     if (success) {
       const { SPECIAL_EDITION_BUNDLES } = await import('../data/staticPaths');
       const bundle = SPECIAL_EDITION_BUNDLES.find((b) => b.id === bundleId);
-      if (bundle?.includesPremiumTrial && this.subscriptionService.getSubscriptionState()?.tier === 'free') {
+      if (
+        bundle?.includesPremiumTrial &&
+        this.subscriptionService.getSubscriptionState()?.tier === 'free'
+      ) {
         await this.startTrial();
       }
     }

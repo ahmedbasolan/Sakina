@@ -1,6 +1,15 @@
+import 'react-native-gesture-handler';
 import React, { useState, useEffect } from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, View, Text, Animated, LayoutAnimation, Platform, UIManager } from 'react-native';
+import {
+  StyleSheet,
+  View,
+  Text,
+  Animated,
+  LayoutAnimation,
+  Platform,
+  UIManager,
+} from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import * as Font from 'expo-font';
 import { Amiri_400Regular, Amiri_700Bold } from '@expo-google-fonts/amiri';
@@ -9,19 +18,33 @@ import {
   ScheherazadeNew_400Regular,
   ScheherazadeNew_700Bold,
 } from '@expo-google-fonts/scheherazade-new';
-import { MaterialCommunityIcons as MCIIcons } from '@expo/vector-icons';
+import { MaterialCommunityIcons as MCIIcons, Ionicons } from '@expo/vector-icons';
 import MainNavigator from './src/navigation/MainNavigator';
-import { RotationEngine } from './src/services/rotationEngine';
-import { FreemiumService } from './src/services/freemiumService';
-import { initializeDatabase, refreshContentOnly } from './src/database/schema';
+import ErrorBoundary from './src/components/ErrorBoundary';
+import { initializeDatabase } from './src/database/schema';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { NavigationContainer } from '@react-navigation/native';
+import { AppProvider } from './src/context/AppContext';
+import { AuthProvider } from './src/context/AuthContext';
+import { ThemeProvider, useTheme } from './src/context/ThemeContext';
 
-if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
-  UIManager.setLayoutAnimationEnabledExperimental(true);
+function AppContent() {
+  const { isDark } = useTheme();
+  return (
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <SafeAreaProvider>
+        <View style={styles.container}>
+          <ErrorBoundary>
+            <MainNavigator />
+          </ErrorBoundary>
+          <StatusBar style={isDark ? 'light' : 'dark'} />
+        </View>
+      </SafeAreaProvider>
+    </GestureHandlerRootView>
+  );
 }
 
 export default function App() {
-  const [rotationEngine] = useState(() => new RotationEngine());
-  const [freemiumService] = useState(() => FreemiumService.getInstance());
   const [isInitialized, setIsInitialized] = useState(false);
   const [fontsLoaded, setFontsLoaded] = useState(false);
   const [fadeAnim] = useState(new Animated.Value(0));
@@ -41,10 +64,10 @@ export default function App() {
           'ScheherazadeNew-Regular': ScheherazadeNew_400Regular,
           'ScheherazadeNew-Bold': ScheherazadeNew_700Bold,
           ...MCIIcons.font,
+          ...Ionicons.font,
         });
         setFontsLoaded(true);
       } catch (error) {
-        // Continue with system fonts if custom fonts fail
         setFontsLoaded(true);
       }
     };
@@ -54,7 +77,6 @@ export default function App() {
   useEffect(() => {
     const initializeApp = async () => {
       try {
-        // Start animations
         Animated.parallel([
           Animated.timing(fadeAnim, {
             toValue: 1,
@@ -75,7 +97,6 @@ export default function App() {
           ]),
         ]).start();
 
-        // Dot Animation Loop
         const animateDot = (anim: Animated.Value, delay: number) => {
           return Animated.sequence([
             Animated.delay(delay),
@@ -102,16 +123,11 @@ export default function App() {
           animateDot(dot3Anim, 400),
         ]).start();
 
-        // 1. Initialize database (auto-seeds if empty)
         await initializeDatabase();
-
-        // 2. Initialize services
-        await freemiumService.initialize();
-
         setIsInitialized(true);
       } catch (error) {
         console.error('Database initialization failed:', error);
-        setIsInitialized(true); // Still show app, errors will be handled per-screen
+        setIsInitialized(true);
       }
     };
 
@@ -128,7 +144,7 @@ export default function App() {
             <Text style={styles.loadingIcon}>✦</Text>
           </Animated.View>
 
-          <Text style={styles.loadingTitle}>Islamic Guidance</Text>
+          <Text style={styles.loadingTitle}>Quiet Heart</Text>
           <Text style={styles.loadingSubtitle}>Preparing your spiritual journey</Text>
 
           <View style={styles.loadingDots}>
@@ -142,12 +158,15 @@ export default function App() {
   }
 
   return (
-    <SafeAreaProvider>
-      <View style={styles.container}>
-        <MainNavigator rotationEngine={rotationEngine} freemiumService={freemiumService} />
-        <StatusBar style="light" />
-      </View>
-    </SafeAreaProvider>
+    <ThemeProvider>
+      <AppProvider>
+        <AuthProvider>
+          <NavigationContainer>
+            <AppContent />
+          </NavigationContainer>
+        </AuthProvider>
+      </AppProvider>
+    </ThemeProvider>
   );
 }
 

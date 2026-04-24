@@ -18,17 +18,14 @@ if (missingIds === 0) console.log('All content IDs valid.');
 // 2. Verify Mood Coverage
 console.log('\n2. Verifying Mood Coverage...');
 const moodsToCheck: Mood[] = [
-  'Anxious',
+  'Overwhelmed',
   'Sad',
   'Angry',
+  'Tired',
+  'Lonely',
   'Grateful',
-  'Happy',
   'Hopeful',
   'Calm',
-  'Energized',
-  'Content',
-  'Stressed',
-  'Guilty',
 ];
 
 moodsToCheck.forEach((mood: Mood) => {

@@ -15,7 +15,7 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Grid, Colors } from '../theme/DesignSystem';
+import { Colors, BorderRadius } from '../theme/DesignSystem';
 
 const { height: SCREEN_HEIGHT, width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -104,8 +104,9 @@ const ShareSheet = ({ isVisible, onClose, content }: ShareSheetProps) => {
     let shareText = '';
     if (showEnglish) shareText += `"${content.text}"\n\n`;
     if (showArabic && content.arabicText) shareText += `${content.arabicText}\n`;
-    if (showTransliteration && content.transliteration) shareText += `(${content.transliteration})\n`;
-    shareText += `\n${content.source}\n\nShared via SAKINA App`;
+    if (showTransliteration && content.transliteration)
+      shareText += `(${content.transliteration})\n`;
+    shareText += `\n${content.source}\n\nShared via Quiet Heart`;
 
     try {
       if (action === 'whatsapp') {
@@ -187,17 +188,12 @@ const ShareSheet = ({ isVisible, onClose, content }: ShareSheetProps) => {
               {
                 opacity: fadeAnim,
                 backgroundColor: 'rgba(0,0,0,0.85)',
-              }
+              },
             ]}
           />
         </TouchableWithoutFeedback>
 
-        <Animated.View
-          style={[
-            styles.sheetContainer,
-            { transform: [{ translateY: slideAnim }] }
-          ]}
-        >
+        <Animated.View style={[styles.sheetContainer, { transform: [{ translateY: slideAnim }] }]}>
           {/* HANDLEBAR */}
           <View style={styles.handleBar} />
 
@@ -214,9 +210,7 @@ const ShareSheet = ({ isVisible, onClose, content }: ShareSheetProps) => {
               style={styles.previewCard}
             >
               <View style={styles.cardHeader}>
-                <Text style={[styles.moodLabel, { color: subTextColor }]}>
-                  SPIRITUAL GUIDANCE
-                </Text>
+                <Text style={[styles.moodLabel, { color: subTextColor }]}>SPIRITUAL GUIDANCE</Text>
               </View>
 
               <View style={styles.cardDecoration}>
@@ -269,7 +263,7 @@ const ShareSheet = ({ isVisible, onClose, content }: ShareSheetProps) => {
                     color={subTextColor}
                     style={{ opacity: 0.7 }}
                   />
-                  <Text style={[styles.brandName, { color: subTextColor }]}>SAKINA</Text>
+                  <Text style={[styles.brandName, { color: subTextColor }]}>QUIET HEART</Text>
                 </View>
               </View>
             </LinearGradient>
@@ -278,7 +272,7 @@ const ShareSheet = ({ isVisible, onClose, content }: ShareSheetProps) => {
             <View style={styles.personalizeSection}>
               <View style={styles.sectionHeader}>
                 <Text style={styles.sectionTitle}>CONTENT REFINEMENT</Text>
-                <Ionicons name="options-outline" size={16} color={Colors.teal} />
+                <Ionicons name="options-outline" size={16} color={Colors.accent.primary} />
               </View>
 
               <View style={styles.filterContainer}>
@@ -287,7 +281,9 @@ const ShareSheet = ({ isVisible, onClose, content }: ShareSheetProps) => {
                     style={[styles.filterChip, showArabic && styles.filterChipActive]}
                     onPress={() => setShowArabic(!showArabic)}
                   >
-                    <Text style={[styles.filterChipText, showArabic && styles.filterChipTextActive]}>
+                    <Text
+                      style={[styles.filterChipText, showArabic && styles.filterChipTextActive]}
+                    >
                       ARABIC
                     </Text>
                   </TouchableOpacity>
@@ -305,7 +301,12 @@ const ShareSheet = ({ isVisible, onClose, content }: ShareSheetProps) => {
                     style={[styles.filterChip, showTransliteration && styles.filterChipActive]}
                     onPress={() => setShowTransliteration(!showTransliteration)}
                   >
-                    <Text style={[styles.filterChipText, showTransliteration && styles.filterChipTextActive]}>
+                    <Text
+                      style={[
+                        styles.filterChipText,
+                        showTransliteration && styles.filterChipTextActive,
+                      ]}
+                    >
                       PHONETIC
                     </Text>
                   </TouchableOpacity>
@@ -373,30 +374,15 @@ const ShareSheet = ({ isVisible, onClose, content }: ShareSheetProps) => {
                 showsHorizontalScrollIndicator={false}
                 contentContainerStyle={styles.socialScrollContent}
               >
-                <SocialTarget
-                  name="messages"
-                  icon="chatbubble"
-                  color="#007AFF"
-                  label="Messages"
-                />
+                <SocialTarget name="messages" icon="chatbubble" color="#007AFF" label="Messages" />
                 <SocialTarget
                   name="whatsapp"
                   icon="logo-whatsapp"
                   color="#25D366"
                   label="WhatsApp"
                 />
-                <SocialTarget
-                  name="telegram"
-                  icon="paper-plane"
-                  color="#5EAADE"
-                  label="Telegram"
-                />
-                <SocialTarget
-                  name="more"
-                  icon="ellipsis-horizontal"
-                  color="#1A1A1A"
-                  label="More"
-                />
+                <SocialTarget name="telegram" icon="paper-plane" color="#5EAADE" label="Telegram" />
+                <SocialTarget name="more" icon="ellipsis-horizontal" color="#1A1A1A" label="More" />
               </ScrollView>
             </View>
 
@@ -431,9 +417,9 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   sheetContainer: {
-    backgroundColor: '#111111', // Very dark grey/black
-    borderTopLeftRadius: 32,
-    borderTopRightRadius: 32,
+    backgroundColor: Colors.background.secondary,
+    borderTopLeftRadius: BorderRadius.xxl,
+    borderTopRightRadius: BorderRadius.xxl,
     paddingHorizontal: 20,
     maxHeight: SCREEN_HEIGHT * 0.92,
     width: '100%',
@@ -564,7 +550,7 @@ const styles = StyleSheet.create({
     borderColor: 'transparent',
   },
   themeOptionSelected: {
-    borderColor: '#2ED3C6',
+    borderColor: Colors.accent.primary,
   },
   themeCircle: {
     flex: 1,
@@ -583,7 +569,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255,255,255,0.02)',
   },
   fontChipSelected: {
-    borderColor: '#2ED3C6',
+    borderColor: Colors.accent.primary,
     backgroundColor: 'rgba(46, 211, 198, 0.1)',
   },
   fontChipText: {
@@ -591,7 +577,7 @@ const styles = StyleSheet.create({
     fontSize: 13,
   },
   fontChipTextSelected: {
-    color: '#2ED3C6',
+    color: Colors.accent.primary,
     fontWeight: '600',
   },
   // Filters
@@ -619,7 +605,7 @@ const styles = StyleSheet.create({
     letterSpacing: 1,
   },
   filterChipTextActive: {
-    color: '#2ED3C6',
+    color: Colors.accent.primary,
   },
   // Social
   socialRowContainer: {

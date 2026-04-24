@@ -1,8 +1,33 @@
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Switch, Alert } from 'react-native';
+import React, { useState } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity,
+  Switch,
+  Platform,
+  Alert,
+} from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { FreemiumService } from '../services/freemiumService';
-import { useState, useEffect } from 'react';
-import { resetDatabase, initializeDatabase, refreshContentOnly } from '../database/schema';
+import { useNavigation, CompositeNavigationProp } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
+import { useAuth } from '../context/AuthContext';
+import { RootStackParamList, MainTabParamList } from '../navigation/types';
+import { logServiceError } from '../services/errorLoggingService';
+
+import Icon from '../components/Icon';
+import { refreshContentOnly } from '../database/schema';
+import { SubscriptionService } from '../services/subscriptionService';
+import { backgroundThemeService } from '../services/backgroundThemeService';
+import BackgroundThemePicker from '../components/BackgroundThemePicker';
+import { BackgroundTheme } from '../types';
+
+type SettingsNavProp = CompositeNavigationProp<
+  StackNavigationProp<RootStackParamList, 'Settings'>,
+  BottomTabNavigationProp<MainTabParamList>
+>;
 
 interface SettingRowProps {
   label: string;
@@ -47,70 +72,52 @@ const SettingRow = ({
 );
 
 export default function SettingsScreen() {
+  const navigation = useNavigation<SettingsNavProp>();
+  const { user, signOut } = useAuth();
+  const onNavigateToDailyReminders = () => navigation.navigate('DailyReminders');
+  const onNavigateToMoodHistory = () => navigation.navigate('MoodHistory');
+  const onNavigateToReflections = () => navigation.navigate('Journal');
   const insets = useSafeAreaInsets();
-  const [freemiumService] = useState(() => FreemiumService.getInstance());
-  const [isPremium, setIsPremium] = useState(freemiumService.isPremium());
-  const [darkMode, setDarkMode] = useState(true);
-  const [notifications, setNotifications] = useState(false);
+  const [streakDays, setStreakDays] = useState(0);
+  const [reflectionCount, setReflectionCount] = useState(0);
+  const [totalSessions, setTotalSessions] = useState(0);
+  const [isPremium, setIsPremium] = useState(false);
+  const [selectedTheme, setSelectedTheme] = useState<BackgroundTheme | null>(null);
+  const [isThemePickerVisible, setIsThemePickerVisible] = useState(false);
 
-  useEffect(() => {
-    setIsPremium(freemiumService.isPremium());
-  }, [freemiumService]);
+  React.useEffect(() => {
+    loadStats();
+    loadThemePreferences();
+  }, []);
 
-  const handleCancelSubscription = () => {
-    Alert.alert(
-      'Manage Subscription',
-      'Your premium access is active. Would you like to turn off auto-renewal? You will keep access until the end of your billing period.',
-      [
-        { text: 'Keep Premium', style: 'cancel' },
-        {
-          text: 'Turn Off Renewal',
-          style: 'destructive',
-          onPress: async () => {
-            const success = await freemiumService.cancelSubscription();
-            if (success) {
-              Alert.alert(
-                'Renewal Off',
-                'Auto-renewal has been turned off. You will return to the free tier at the end of your period.',
-              );
-            }
-          },
-        },
-      ],
-    );
+  const loadThemePreferences = async () => {
+    const isPrem = SubscriptionService.getInstance().isPremium();
+    setIsPremium(isPrem);
+    const theme = await backgroundThemeService.getSelectedTheme();
+    setSelectedTheme(theme);
   };
 
-  const handleRestore = async () => {
+  const loadStats = async () => {
     try {
-      const success = await freemiumService.restorePurchase();
-      if (success) {
-        setIsPremium(true);
-        Alert.alert('Success', 'Your premium access has been restored! ✨');
-      } else {
-        Alert.alert('Restore Failed', 'No active premium subscription found for this account.');
-      }
-    } catch (error) {
-      Alert.alert('Error', 'An error occurred while restoring. Please try again.');
-    }
-  };
+      const { moodHistoryService } = await import('../services/moodHistoryService');
+      const { dbQuery } = await import('../database/schema');
 
-  const handleDebugReset = async () => {
-    Alert.alert(
-      'Debug Reset',
-      'This will instantly return you to the free tier for testing. Continue?',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Reset to Free',
-          style: 'destructive',
-          onPress: async () => {
-            await freemiumService.resetToFreeTier();
-            setIsPremium(false);
-            Alert.alert('Reset Complete', 'You are now on the free tier.');
-          },
-        },
-      ],
-    );
+      const [moodStats, reflectionCountResult] = await Promise.all([
+        moodHistoryService.getStats(),
+        dbQuery(async (db) => {
+          const res = await db.getFirstAsync<{ count: number }>(
+            'SELECT COUNT(*) as count FROM saved_reflections'
+          );
+          return res?.count ?? 0;
+        })
+      ]);
+
+      setReflectionCount(reflectionCountResult);
+      setTotalSessions(moodStats.totalDaysTracked);
+      setStreakDays(moodStats.currentStreak);
+    } catch (error) {
+      logServiceError('SettingsScreen', 'loadProfileStats', error instanceof Error ? error : new Error(String(error)));
+    }
   };
 
   const handleContentReset = async () => {
@@ -126,7 +133,7 @@ export default function SettingsScreen() {
             try {
               await refreshContentOnly();
               Alert.alert('Success', 'App content has been refreshed with the latest guidance! ✨');
-            } catch (error) {
+            } catch (_error) {
               Alert.alert('Error', 'Failed to refresh content. Please try again.');
             }
           },
@@ -135,62 +142,86 @@ export default function SettingsScreen() {
     );
   };
 
+  const handleTogglePremium = async (value: boolean) => {
+    try {
+      const subService = SubscriptionService.getInstance();
+      if (value) {
+        // Mock a monthly subscription activation for debug purposes
+        await subService.activatePremium('monthly');
+      } else {
+        await subService.resetToFreeTier();
+      }
+      setIsPremium(subService.isPremium());
+    } catch (error) {
+      logServiceError('SettingsScreen', 'togglePremium', error instanceof Error ? error : new Error(String(error)));
+      Alert.alert('Error', 'Could not update subscription state.');
+    }
+  };
+
   return (
     <View style={styles.container}>
       <View style={[styles.header, { paddingTop: Math.max(insets.top, 20) }]}>
-        <Text style={styles.headerTitle}>Settings</Text>
+        <Text style={styles.headerTitle}>Profile</Text>
       </View>
 
       <ScrollView
         style={styles.scrollView}
-        contentContainerStyle={[styles.content, { paddingBottom: insets.bottom + 20 }]}
+        contentContainerStyle={[styles.content, { paddingBottom: insets.bottom + 100 }]}
         showsVerticalScrollIndicator={false}
       >
-        <Text style={styles.sectionTitle}>ACCOUNT</Text>
-        <View style={styles.section}>
-          <SettingRow
-            label="Plan"
-            icon="💎"
-            value={isPremium ? 'Premium' : 'Free Tier'}
-            onPress={isPremium ? handleCancelSubscription : undefined}
-          />
-          {!isPremium && (
-            <TouchableOpacity style={styles.upgradeSection} onPress={() => {}}>
-              <Text style={styles.upgradeText}>Upgrade to Quiet Heart Premium</Text>
-              <Text style={styles.upgradeChevron}>›</Text>
-            </TouchableOpacity>
-          )}
-          <SettingRow label="Member Since" icon="📅" value="Jan 2024" />
-          <SettingRow label="Restore Purchase" icon="🔄" onPress={handleRestore} />
-          <SettingRow
-            label="Debug: Reset to Free"
-            icon="🛠️"
-            onPress={handleDebugReset}
-            isDestructive={true}
-          />
+        {/* Stats Cards */}
+        <View style={styles.statsRow}>
+          <TouchableOpacity
+            style={styles.statCard}
+            onPress={onNavigateToMoodHistory}
+            activeOpacity={0.7}
+          >
+            <Icon name="flame" size={28} color="#F59E0B" />
+            <Text style={styles.statValue}>{streakDays}</Text>
+            <Text style={styles.statLabel}>Day Streak</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.statCard}
+            onPress={onNavigateToReflections}
+            activeOpacity={0.7}
+          >
+            <Icon name="chat" size={28} color="#8B5CF6" />
+            <Text style={styles.statValue}>{reflectionCount}</Text>
+            <Text style={styles.statLabel}>Reflections</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.statCard}
+            onPress={onNavigateToMoodHistory}
+            activeOpacity={0.7}
+          >
+            <Icon name="chart" size={28} color="#3B82F6" />
+            <Text style={styles.statValue}>{totalSessions}</Text>
+            <Text style={styles.statLabel}>Sessions</Text>
+          </TouchableOpacity>
         </View>
 
         <Text style={styles.sectionTitle}>PREFERENCES</Text>
         <View style={styles.section}>
           <SettingRow
-            label="Dark Mode"
-            icon="🌙"
+            label="Premium Features"
+            icon="💎"
             showToggle={true}
-            toggleValue={darkMode}
-            onToggle={setDarkMode}
+            toggleValue={isPremium}
+            onToggle={handleTogglePremium}
           />
           <SettingRow
-            label="Notifications"
-            icon="🔔"
-            showToggle={true}
-            toggleValue={notifications}
-            onToggle={setNotifications}
+            label="Background Theme"
+            icon="✨"
+            value={selectedTheme?.name || 'Default'}
+            onPress={() => setIsThemePickerVisible(true)}
           />
+          <SettingRow label="Daily Reminders" icon="🔔" onPress={onNavigateToDailyReminders} />
           <SettingRow
             label="Translation Source"
             icon="📖"
             value="Sahih International"
-            onPress={() => {}}
           />
         </View>
 
@@ -201,20 +232,51 @@ export default function SettingsScreen() {
             label="Clear Search History"
             icon="🗑️"
             isDestructive={true}
-            onPress={() => {}}
+            onPress={() => Alert.alert('Clear History', 'Search history cleared.')}
           />
-          <SettingRow label="Privacy Policy" icon="🛡️" onPress={() => {}} />
+          <SettingRow label="Privacy Policy" icon="🛡️" onPress={() => Alert.alert('Privacy Policy', 'Your data is stored locally on your device. We do not share your personal information with third parties.')} />
         </View>
 
         <Text style={styles.sectionTitle}>SUPPORT</Text>
         <View style={styles.section}>
-          <SettingRow label="Send Feedback" icon="✉️" onPress={() => {}} />
-          <SettingRow label="Help Center" icon="❓" onPress={() => {}} />
-          <SettingRow label="Contact Us" icon="📧" onPress={() => {}} />
-          <SettingRow label="Rate App" icon="⭐" onPress={() => {}} />
+          <SettingRow label="Send Feedback" icon="✉️" onPress={() => Alert.alert('Coming Soon', 'Feedback feature will be available in the next update.')} />
+          <SettingRow label="Help Center" icon="❓" onPress={() => Alert.alert('Coming Soon', 'Help center will be available in the next update.')} />
+          <SettingRow label="Contact Us" icon="📧" onPress={() => Alert.alert('Contact', 'Email us at support@quietheart.app')} />
+          <SettingRow label="Rate App" icon="⭐" onPress={() => Alert.alert('Coming Soon', 'App Store rating will be available after launch.')} />
         </View>
 
-        <Text style={styles.sectionTitle}>────── ABOUT ──────</Text>
+        <Text style={styles.sectionTitle}>ACCOUNT</Text>
+        <View style={styles.section}>
+          {user ? (
+            <>
+              <SettingRow label="Email" value={user.email} icon="📧" />
+              <SettingRow
+                label="Sign Out"
+                icon="🚪"
+                isDestructive={true}
+                onPress={() => {
+                  Alert.alert('Sign Out', 'Are you sure you want to sign out?', [
+                    { text: 'Cancel', style: 'cancel' },
+                    { text: 'Sign Out', style: 'destructive', onPress: signOut },
+                  ]);
+                }}
+              />
+            </>
+          ) : (
+            <SettingRow
+              label="Sign In / Create Account"
+              icon="👤"
+              onPress={() => {
+                Alert.alert('Sign In', 'Exit guest mode to sign in or create an account?', [
+                  { text: 'Cancel', style: 'cancel' },
+                  { text: 'Continue', onPress: signOut },
+                ]);
+              }}
+            />
+          )}
+        </View>
+
+        <Text style={styles.sectionTitle}>── ABOUT ──</Text>
         <View style={styles.section}>
           <SettingRow
             label="Sources & Attribution"
@@ -234,6 +296,19 @@ export default function SettingsScreen() {
           <Text style={styles.footerSubtext}>Refining the soul, one verse at a time.</Text>
         </View>
       </ScrollView>
+
+      <BackgroundThemePicker
+        isVisible={isThemePickerVisible}
+        isPremium={isPremium}
+        selectedThemeId={selectedTheme?.id || null}
+        onClose={() => setIsThemePickerVisible(false)}
+        onSelectTheme={async (themeId) => {
+          await backgroundThemeService.setSelectedTheme(themeId);
+          const theme = await backgroundThemeService.getSelectedTheme();
+          setSelectedTheme(theme);
+          setIsThemePickerVisible(false);
+        }}
+      />
     </View>
   );
 }
@@ -241,17 +316,17 @@ export default function SettingsScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0B0F12',
+    backgroundColor: '#14100C',
   },
   header: {
     paddingHorizontal: 24,
     paddingBottom: 20,
-    backgroundColor: '#11171D',
+    backgroundColor: '#1C1612',
   },
   headerTitle: {
     fontSize: 28,
     fontWeight: '700',
-    color: '#FFFFFF',
+    color: '#F5EDE3',
   },
   scrollView: {
     flex: 1,
@@ -268,7 +343,7 @@ const styles = StyleSheet.create({
     marginTop: 16,
   },
   section: {
-    backgroundColor: '#1A232C',
+    backgroundColor: '#241E19',
     borderRadius: 16,
     overflow: 'hidden',
     borderWidth: 1,
@@ -295,7 +370,7 @@ const styles = StyleSheet.create({
   },
   rowLabel: {
     fontSize: 16,
-    color: '#FFFFFF',
+    color: '#F5EDE3',
   },
   destructiveText: {
     color: '#FF4D4D',
@@ -309,29 +384,38 @@ const styles = StyleSheet.create({
     color: 'rgba(255, 255, 255, 0.4)',
     marginRight: 8,
   },
-  upgradeSection: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 16,
-    paddingVertical: 16,
-    backgroundColor: 'rgba(46, 211, 198, 0.1)',
-    borderBottomWidth: 1,
-    borderBottomColor: 'rgba(46, 211, 198, 0.2)',
-  },
-  upgradeText: {
-    fontSize: 14,
-    fontWeight: '700',
-    color: '#2ED3C6',
-  },
-  upgradeChevron: {
-    fontSize: 20,
-    color: '#2ED3C6',
-  },
   chevron: {
     fontSize: 20,
     color: 'rgba(255, 255, 255, 0.2)',
     marginTop: -2,
+  },
+  // Stats
+  statsRow: {
+    flexDirection: 'row',
+    gap: 10,
+    marginBottom: 16,
+  },
+  statCard: {
+    flex: 1,
+    backgroundColor: '#241E19',
+    borderRadius: 16,
+    padding: 16,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.05)',
+  },
+  statValue: {
+    fontSize: 24,
+    fontWeight: '700',
+    color: '#F5EDE3',
+    marginBottom: 2,
+  },
+  statLabel: {
+    fontSize: 11,
+    color: 'rgba(255, 255, 255, 0.4)',
+    fontWeight: '600',
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
   },
   footer: {
     marginTop: 40,

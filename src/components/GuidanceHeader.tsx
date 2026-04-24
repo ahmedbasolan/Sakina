@@ -1,11 +1,10 @@
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 import { StyleSheet, View, Text, TouchableOpacity, Animated } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Mood } from '../types';
-import { Grid, Colors, Typography } from '../theme/DesignSystem';
-import * as Haptics from 'expo-haptics';
+import { Colors, Spacing, MoodColors } from '../theme/DesignSystem';
+import { HapticsService } from '../services/hapticsService';
 
 interface GuidanceHeaderProps {
   mood: Mood;
@@ -14,7 +13,10 @@ interface GuidanceHeaderProps {
   onOptionsPress: () => void;
   activeIndex: number;
   totalCards: number;
+  scrollY?: Animated.Value;
 }
+
+const LAYER_LABELS = ['Verse', 'Context', 'Practice', 'Reflection'];
 
 const GuidanceHeader: React.FC<GuidanceHeaderProps> = ({
   mood,
@@ -23,193 +25,149 @@ const GuidanceHeader: React.FC<GuidanceHeaderProps> = ({
   onOptionsPress,
   activeIndex,
   totalCards,
+  scrollY,
 }) => {
   const insets = useSafeAreaInsets();
-  const saveScale = React.useRef(new Animated.Value(1)).current;
+  const moodStyle = MoodColors[mood] || MoodColors.Calm;
+
+  // Subtle fade for progress dots
+  const dotAnims = useRef(
+    Array.from({ length: totalCards }, () => new Animated.Value(0)),
+  ).current;
+
+  useEffect(() => {
+    dotAnims.forEach((anim, i) => {
+      Animated.spring(anim, {
+        toValue: i <= activeIndex ? 1 : 0,
+        useNativeDriver: false,
+        damping: 20,
+        stiffness: 120,
+      }).start();
+    });
+  }, [activeIndex]);
 
   const handleBack = () => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    HapticsService.impactAsync('MEDIUM');
     onBack();
   };
 
-  const handleSave = () => {
-    // Redundant in simplified header, but keeping logic if needed later
-  };
-
   const handleOptions = () => {
-    Haptics.selectionAsync();
+    HapticsService.selectionAsync();
     onOptionsPress();
   };
 
-  return (
-    <View style={[styles.appBar, { paddingTop: Math.max(insets.top, Grid.space16) + Grid.space4 }]}>
-      <LinearGradient colors={Colors.headerGradient} style={StyleSheet.absoluteFill} />
+  // On verse layer (index 0), header is more transparent to maximize immersion
+  const isVerseLayer = activeIndex === 0;
 
-      <View style={styles.leftActions}>
+  return (
+    <View
+      style={[
+        styles.headerContainer,
+        { paddingTop: insets.top + Spacing.xs },
+      ]}
+    >
+      {/* Top Row: back, dots, options */}
+      <View style={styles.topRow}>
         <TouchableOpacity
-          style={styles.backButton}
+          style={styles.iconButton}
           onPress={handleBack}
           accessibilityLabel="Go back"
-          accessibilityRole="button"
         >
-          <Ionicons name="chevron-back" size={24} color={Colors.white} />
+          <Ionicons name="chevron-back" size={22} color={Colors.text.primary} />
         </TouchableOpacity>
-      </View>
 
-      <View style={styles.titleContainer}>
-        <Text style={styles.currentMoodLabel}>CURRENT MOOD</Text>
-        <View style={styles.moodRow}>
-          <View style={styles.activeDotContainer}>
-            <View style={styles.activeDot} />
-            <View style={styles.activeDotGlow} />
+        {/* Progress dots — small, spiritual, not a task bar */}
+        {totalCards > 1 && (
+          <View style={styles.dotsContainer}>
+            {Array.from({ length: totalCards }).map((_, i) => (
+              <Animated.View
+                key={i}
+                style={[
+                  styles.dot,
+                  {
+                    backgroundColor: dotAnims[i].interpolate({
+                      inputRange: [0, 1],
+                      outputRange: ['rgba(245, 237, 227, 0.15)', moodStyle.accent],
+                    }),
+                    width: i === activeIndex ? 18 : 6,
+                    opacity: dotAnims[i].interpolate({
+                      inputRange: [0, 1],
+                      outputRange: [0.5, i === activeIndex ? 1 : 0.5],
+                    }),
+                  },
+                ]}
+              />
+            ))}
           </View>
-          <Text style={styles.moodValue}>
-            {mood} <Text style={styles.islamicTermInline}>{islamicTerm}</Text>
-          </Text>
-        </View>
+        )}
 
-        {/* Story-Style Progress Bar - Positioned below mood for clarity */}
-        <View style={styles.progressContainer}>
-          {Array.from({ length: totalCards }).map((_, i) => (
-            <View
-              key={i}
-              style={[
-                styles.progressDot,
-                i === activeIndex && styles.progressDotActive,
-                i < activeIndex && styles.progressDotVisited,
-              ]}
-            />
-          ))}
-        </View>
-      </View>
-
-      <View style={styles.rightActions}>
         <TouchableOpacity
-          style={styles.actionButton}
+          style={styles.iconButton}
           onPress={handleOptions}
-          accessibilityLabel="Display options"
-          accessibilityRole="button"
+          accessibilityLabel="Options"
         >
-          <Ionicons
-            name="options-outline"
-            size={22}
-            color={Colors.white}
-          />
+          <Ionicons name="options-outline" size={22} color={Colors.text.primary} />
         </TouchableOpacity>
       </View>
+
+      {/* Layer label — only visible on non-verse layers */}
+      {!isVerseLayer && (
+        <Animated.View
+          style={[
+            styles.labelContainer,
+            scrollY && {
+              opacity: scrollY.interpolate({
+                inputRange: [0, 40],
+                outputRange: [1, 0],
+                extrapolate: 'clamp',
+              }),
+            },
+          ]}
+        >
+          <Text style={[styles.layerLabel, { color: moodStyle.accent }]}>
+            {LAYER_LABELS[activeIndex]}
+          </Text>
+        </Animated.View>
+      )}
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  appBar: {
-    height: 110,
+  headerContainer: {
+    width: '100%',
+    paddingHorizontal: Spacing.xl,
+    paddingBottom: Spacing.sm,
+  },
+  topRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: Grid.contentPadding,
-    zIndex: 100,
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
   },
-  progressContainer: {
-    flexDirection: 'row',
-    gap: Grid.space4,
-    width: '100%',
-    paddingHorizontal: Grid.space12,
-    marginTop: Grid.space12,
-    justifyContent: 'center',
-  },
-  progressDot: {
-    flex: 1,
-    height: 4,
-    backgroundColor: Colors.whiteMuted,
-    borderRadius: 2,
-  },
-  progressDotActive: {
-    backgroundColor: Colors.teal,
-  },
-  progressDotVisited: {
-    backgroundColor: Colors.tealMuted,
-  },
-  backButton: {
-    width: 44,
-    height: 44,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginLeft: -10, // Slight offset for chevron alignment
-  },
-  leftActions: {
-    width: 90, // Match rightActions for perfect center symmetry
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'flex-start',
-  },
-  titleContainer: {
-    alignItems: 'center',
-    flex: 1,
-  },
-  currentMoodLabel: {
-    fontSize: Typography.sizeDetail - 1,
-    fontWeight: '700',
-    color: Colors.whiteDim,
-    letterSpacing: Typography.lsWide,
-    textTransform: 'uppercase',
-    marginBottom: Grid.space4,
-  },
-  moodRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Grid.space8,
-  },
-  activeDotContainer: {
-    position: 'relative',
-    width: 6,
-    height: 6,
+  iconButton: {
+    width: 40,
+    height: 40,
     justifyContent: 'center',
     alignItems: 'center',
   },
-  activeDot: {
-    width: 6,
+  dotsContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  dot: {
     height: 6,
     borderRadius: 3,
-    backgroundColor: Colors.green,
-    zIndex: 2,
   },
-  activeDotGlow: {
-    position: 'absolute',
-    width: 14,
-    height: 14,
-    borderRadius: 7,
-    backgroundColor: Colors.greenGlow,
-    zIndex: 1,
-  },
-  moodValue: {
-    fontSize: Typography.sizeSmall + 2,
-    fontWeight: '600',
-    color: Colors.white,
-    letterSpacing: Typography.lsNormal,
-  },
-  islamicTermInline: {
-    fontSize: Typography.sizeSmall + 2,
-    fontWeight: '400',
-    color: Colors.teal,
-    fontStyle: 'italic',
-  },
-  rightActions: {
-    width: 90, // Matches leftActions
-    flexDirection: 'row',
+  labelContainer: {
     alignItems: 'center',
-    justifyContent: 'flex-end',
-    gap: Grid.space8,
+    marginTop: Spacing.xs,
   },
-  actionButton: {
-    width: 40,
-    height: 44,
-    justifyContent: 'center',
-    alignItems: 'center',
+  layerLabel: {
+    fontSize: 11,
+    fontWeight: '700',
+    letterSpacing: 2.5,
+    textTransform: 'uppercase',
   },
 });
 

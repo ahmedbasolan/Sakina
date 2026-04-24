@@ -4,10 +4,7 @@
     "strict": true,
     "target": "ESNext",
     "module": "ESNext",
-    "lib": [
-      "ESNext",
-      "DOM"
-    ],
+    "lib": ["ESNext", "DOM"],
     "jsx": "react-native",
     "moduleResolution": "bundler",
     "skipLibCheck": true,
