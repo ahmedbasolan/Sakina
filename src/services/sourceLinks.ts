@@ -8,9 +8,13 @@
  * time (in data files) and at render time (by SourceChip).
  */
 
-/** Verified against https://api.quran.com/api/v4/resources/tafsirs */
+/**
+ * Verified against https://api.quran.com/api/v4/resources/tafsirs
+ * ID 91 = Tafsir As-Sa'di (Arabic). No English version is currently on quran.com;
+ * contextBlocks text is hand-authored in English and this URL is for attribution only.
+ */
 export const TAFSIR_IDS = {
-  AS_SADI: 169,
+  AS_SADI: 91,
 } as const;
 
 /** Parse "2:255" or "94:5-6" into the starting verse key. */
