@@ -3,6 +3,10 @@ import { Linking } from 'react-native';
 import { render, fireEvent } from '@testing-library/react-native';
 import SourceChip from '../SourceChip';
 
+jest.mock('@expo/vector-icons', () => ({
+  Ionicons: () => null,
+}));
+
 describe('SourceChip', () => {
   const citation = { label: 'Sahih al-Bukhari 6363', url: 'https://sunnah.com/bukhari:6363' };
 
@@ -20,8 +24,9 @@ describe('SourceChip', () => {
   });
 
   it('shows grading when provided (hadith)', () => {
+    const gradedCitation = { label: 'Abu Dawud 1234', url: 'https://sunnah.com/abudawud:1234' };
     const { getByText } = render(
-      <SourceChip citation={{ ...citation, grading: 'sahih' }} />,
+      <SourceChip citation={{ ...gradedCitation, grading: 'sahih' }} />,
     );
     expect(getByText(/Sahih/i)).toBeTruthy();
   });
