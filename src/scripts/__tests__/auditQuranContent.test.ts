@@ -130,3 +130,44 @@ describe('diffContentEntry', () => {
     expect(diff).toContain('englishTranslation');
   });
 });
+
+import { applyFix } from '../auditQuranContent';
+
+describe('applyFix', () => {
+  const source = `const data = [
+  {
+    id: 'quran_2_255',
+    audioKey: '2:255',
+    arabicText: 'OLD_ARABIC',
+    englishTranslation: 'Old translation.',
+    moods: ['Calm'],
+  },
+  {
+    id: 'quran_93_4',
+    audioKey: '93:4',
+    arabicText: 'ANOTHER',
+    englishTranslation: 'Another.',
+    moods: ['Overwhelmed'],
+  },
+];`;
+
+  it('replaces arabicText and englishTranslation for a matching entry only', () => {
+    const out = applyFix(source, 'quran_2_255', {
+      audioKey: '2:255',
+      arabicText: 'NEW_ARABIC',
+      englishTranslation: 'New translation.',
+    });
+    expect(out).toContain('arabicText: "NEW_ARABIC"');
+    expect(out).toContain('englishTranslation: "New translation."');
+    expect(out).toContain("arabicText: 'ANOTHER'"); // other entry untouched
+  });
+
+  it('returns source unchanged if id not found', () => {
+    const out = applyFix(source, 'nonexistent_id', {
+      audioKey: '1:1',
+      arabicText: 'x',
+      englishTranslation: 'y',
+    });
+    expect(out).toBe(source);
+  });
+});

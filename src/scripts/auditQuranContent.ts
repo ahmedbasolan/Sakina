@@ -119,3 +119,102 @@ export function diffContentEntry(
   }
   return drift;
 }
+
+// ─── CLI (only when run directly) ──────────────────────────────
+
+/* istanbul ignore next -- CLI harness, exercised manually */
+async function main() {
+  const isFix = process.argv.includes('--fix');
+  const path = await import('path');
+  const fs = await import('fs/promises');
+
+  // Lazy import so jest tests don't load the 10k-line data file.
+  const { default: quranContentData } = (await import('../data/quranData')) as {
+    default: Array<{
+      id: string;
+      audioKey?: string;
+      arabicText?: string;
+      englishTranslation?: string;
+    }>;
+  };
+
+  const dataFilePath = path.resolve(__dirname, '../data/quranData.ts');
+  const canonicalOutPath = path.resolve(__dirname, '../data/canonical/quranCanonical.json');
+
+  let fileText = await fs.readFile(dataFilePath, 'utf8');
+  const canonicalMap: Record<string, CanonicalVerse> = {};
+  const report: Array<{ id: string; audioKey: string; drift: string[] }> = [];
+
+  for (const entry of quranContentData) {
+    if (!entry.audioKey) continue;
+    const parts = parseAudioKey(entry.audioKey);
+    if (!parts) {
+      report.push({ id: entry.id, audioKey: entry.audioKey, drift: ['INVALID_KEY'] });
+      continue;
+    }
+
+    let canonical: CanonicalVerse;
+    try {
+      canonical = await fetchCanonicalVerse(parts);
+    } catch (err) {
+      report.push({ id: entry.id, audioKey: entry.audioKey, drift: [`FETCH_FAILED: ${(err as Error).message}`] });
+      continue;
+    }
+    canonicalMap[entry.audioKey] = canonical;
+
+    const drift = diffContentEntry(
+      { arabicText: entry.arabicText, englishTranslation: entry.englishTranslation },
+      canonical,
+    );
+    if (drift.length) {
+      report.push({ id: entry.id, audioKey: entry.audioKey, drift });
+      if (isFix) {
+        fileText = applyFix(fileText, entry.id, canonical);
+      }
+    }
+  }
+
+  if (isFix) {
+    await fs.mkdir(path.dirname(canonicalOutPath), { recursive: true });
+    await fs.writeFile(canonicalOutPath, JSON.stringify(canonicalMap, null, 2) + '\n', 'utf8');
+    await fs.writeFile(dataFilePath, fileText, 'utf8');
+    console.log(`\u2713 Fixed ${report.filter((r) => !r.drift[0]?.startsWith('FETCH')).length} entries. Canonical snapshot written.`);
+  }
+
+  console.log('\nDrift report:');
+  if (!report.length) {
+    console.log('  (no drift detected)');
+  } else {
+    for (const r of report) console.log(`  ${r.audioKey.padEnd(10)} ${r.id.padEnd(32)} ${r.drift.join(', ')}`);
+  }
+  console.log(`\nTotal entries scanned: ${quranContentData.filter((e) => e.audioKey).length}`);
+}
+
+/**
+ * Rewrite `arabicText` and `englishTranslation` string literals for the entry
+ * with the given id. Uses a block-scoped regex — the block is delimited by
+ * `id: '<id>'` and the next closing `}` at column 2 (the per-entry indent).
+ */
+export function applyFix(source: string, entryId: string, canonical: CanonicalVerse): string {
+  const idMarker = `id: '${entryId}'`;
+  const idIndex = source.indexOf(idMarker);
+  if (idIndex === -1) return source;
+
+  // Walk forward to the entry's closing `},` at the top of the object array indent.
+  const blockEnd = source.indexOf('\n  },', idIndex);
+  if (blockEnd === -1) return source;
+
+  const block = source.slice(idIndex, blockEnd);
+  const rewrittenBlock = block
+    .replace(/arabicText:\s*(['"`])[\s\S]*?\1/m, `arabicText: ${JSON.stringify(canonical.arabicText)}`)
+    .replace(/englishTranslation:\s*(['"`])[\s\S]*?\1/m, `englishTranslation: ${JSON.stringify(canonical.englishTranslation)}`);
+
+  return source.slice(0, idIndex) + rewrittenBlock + source.slice(blockEnd);
+}
+
+if (require.main === module) {
+  main().catch((err) => {
+    console.error(err);
+    process.exit(1);
+  });
+}

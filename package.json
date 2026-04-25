@@ -10,6 +10,8 @@
     "lint": "eslint .",
     "format": "prettier --write .",
     "test": "jest",
+    "audit-quran": "ts-node --transpile-only --skip-project --compiler-options {\"module\":\"CommonJS\",\"moduleResolution\":\"node\",\"esModuleInterop\":true} src/scripts/auditQuranContent.ts",
+    "refresh-canonical": "ts-node --transpile-only --skip-project --compiler-options {\"module\":\"CommonJS\",\"moduleResolution\":\"node\",\"esModuleInterop\":true} src/scripts/auditQuranContent.ts --fix",
     "gen-types": "supabase gen types typescript --project-id $SUPABASE_PROJECT_ID > src/types/supabase.ts"
   },
   "dependencies": {
@@ -67,6 +69,7 @@
     "react-test-renderer": "19.1.0",
     "supabase": "^2.76.12",
     "ts-jest": "^29.2.1",
+    "ts-node": "^10.9.2",
     "typescript": "~5.9.2"
   },
   "overrides": {
