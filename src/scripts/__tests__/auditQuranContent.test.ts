@@ -55,14 +55,13 @@ describe('fetchCanonicalVerse', () => {
   afterEach(() => jest.restoreAllMocks());
 
   it('fetches a single verse and maps to CanonicalVerse', async () => {
+    // quran.com /verses/by_key returns {"verse": {...}} singular, not {"verses": [...]}
     const mockBody = {
-      verses: [
-        {
-          verse_key: '2:255',
-          text_uthmani: '\u0671\u0644\u0644\u064e\u0651\u0647\u064f \u0644\u064e\u0622 \u0625\u0650\u0644\u064e\u0670\u0647\u064e \u0625\u0650\u0644\u064e\u0651\u0627 \u0647\u064f\u0648\u064e',
-          translations: [{ resource_id: 131, text: 'Allah \u2014 there is no deity except Him.' }],
-        },
-      ],
+      verse: {
+        verse_key: '2:255',
+        text_uthmani: '\u0671\u0644\u0644\u064e\u0651\u0647\u064f \u0644\u064e\u0622 \u0625\u0650\u0644\u064e\u0670\u0647\u064e \u0625\u0650\u0644\u064e\u0651\u0627 \u0647\u064f\u0648\u064e',
+        translations: [{ resource_id: 20, text: 'Allah \u2014 there is no deity except Him.' }],
+      },
     };
     const fetchSpy = jest.spyOn(global, 'fetch').mockResolvedValue({
       ok: true,
@@ -81,13 +80,13 @@ describe('fetchCanonicalVerse', () => {
 
   it('concatenates a range across multiple fetches', async () => {
     const verses = [
-      { verse_key: '94:5', text_uthmani: '\u0641\u064e\u0625\u0650\u0646\u064e\u0651 \u0645\u064e\u0639\u064e', translations: [{ resource_id: 131, text: 'So with hardship.' }] },
-      { verse_key: '94:6', text_uthmani: '\u0625\u0650\u0646\u064e\u0651 \u0645\u064e\u0639\u064e', translations: [{ resource_id: 131, text: 'Indeed with hardship.' }] },
+      { verse_key: '94:5', text_uthmani: '\u0641\u064e\u0625\u0650\u0646\u064e\u0651 \u0645\u064e\u0639\u064e', translations: [{ resource_id: 20, text: 'So with hardship.' }] },
+      { verse_key: '94:6', text_uthmani: '\u0625\u0650\u0646\u064e\u0651 \u0645\u064e\u0639\u064e', translations: [{ resource_id: 20, text: 'Indeed with hardship.' }] },
     ];
     jest.spyOn(global, 'fetch').mockImplementation(async (url) => {
       const key = String(url).split('/').pop()?.split('?')[0] || '';
       const v = verses.find((x) => x.verse_key === key) ?? verses[0];
-      return { ok: true, json: async () => ({ verses: [v] }) } as Response;
+      return { ok: true, json: async () => ({ verse: v }) } as Response;
     });
 
     const result = await fetchCanonicalVerse({ chapter: 94, startVerse: 5, endVerse: 6 });
