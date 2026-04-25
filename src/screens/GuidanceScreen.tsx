@@ -191,7 +191,7 @@ const GuidanceScreen: React.FC = () => {
           source: shareContent.source,
           arabicText: shareContent.arabicText,
           transliteration: shareContent.transliteration,
-          translation: mood,
+          translation: experience.content.translation,
         }}
       />
 
