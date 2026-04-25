@@ -19,9 +19,9 @@ const quranContentData: Content[] = [
     id: 'quran_93_4',
     type: 'Quran',
     primaryText: 'walalākhiratu khayrun laka mina l-ūlā',
-    arabicText: 'وَلَلْـَٔاخِرَةُ خَيْرٌۭ لَّكَ مِنَ ٱلْأُولَىٰ ﴿4﴾',
+    arabicText: "وَلَلْـَٔاخِرَةُ خَيْرٌ لَّكَ مِنَ ٱلْأُولَىٰ",
     transliteration: 'walalākhiratu khayrun laka mina l-ūlā',
-    englishTranslation: 'And surely the Hereafter is better for you than the first.',
+    englishTranslation: "And the Hereafter is better for you than the first [life].",
     source: 'Surah Ad-Duha 93:4',
     audioKey: '93:4',
     whyThis: '',
@@ -31,9 +31,9 @@ const quranContentData: Content[] = [
     id: 'quran_94_5',
     type: 'Quran',
     primaryText: "fa-inna maʿa l-ʿus'ri yus'ran inna maʿa l-ʿus'ri yus'ran",
-    arabicText: 'فَإِنَّ مَعَ ٱلْعُسْرِ يُسْرًا إِنَّ مَعَ ٱلْعُسْرِ يُسْرًۭا ﴿5-6﴾',
+    arabicText: "فَإِنَّ مَعَ ٱلْعُسْرِ يُسْرًا إِنَّ مَعَ ٱلْعُسْرِ يُسْرًا",
     transliteration: "fa-inna maʿa l-ʿus'ri yus'ran inna maʿa l-ʿus'ri yus'ran",
-    englishTranslation: 'So indeed, with the hardship is ease. Indeed, with the hardship is ease.',
+    englishTranslation: "For indeed, with hardship [will be] ease [i.e., relief]. Indeed, with hardship [will be] ease.",
     source: 'Surah Ash-Sharh 94:5-6',
     audioKey: '94:5-6',
     whyThis: '',
@@ -44,12 +44,10 @@ const quranContentData: Content[] = [
     type: 'Quran',
     primaryText:
       "al-lahu lā ilāha illā huwa l-ḥayu l-qayūmu lā takhudhuhu sinatun walā nawmun lahu mā fī l-samāwāti wamā fī l-arḍi man dhā alladhī yashfaʿu ʿindahu illā bi-idh'nihi yaʿlamu mā bayna aydīhim wamā khalfahum walā yuḥīṭūna bishayin min ʿil'mihi illā bimā shāa wasiʿa kur'siyyuhu l-samāwāti wal-arḍa walā yaūduhu ḥif'ẓuhumā wahuwa l-ʿaliyu l-ʿaẓīmu",
-    arabicText:
-      'ٱللَّهُ لَآ إِلَـٰهَ إِلَّا هُوَ ٱلْحَىُّ ٱلْقَيُّومُ ۚ لَا تَأْخُذُهُۥ سِنَةٌۭ وَلَا نَوْمٌۭ ۚ لَّهُۥ مَا فِى ٱلسَّمَـٰوَٰتِ وَمَا فِى ٱلْأَرْضِ ۗ مَن ذَا ٱلَّذِى يَشْفَعُ عِندَهُۥٓ إِلَّا بِإِذْنِهِۦ ۚ يَعْلَمُ مَا بَيْنَ أَيْدِيهِمْ وَمَا خَلْفَهُمْ ۖ وَلَا يُحِيطُونَ بِشَىْءٍۢ مِّنْ عِلْمِهِۦٓ إِلَّا بِمَا شَآءَ ۚ وَسِعَ كُرْسِيُّهُ ٱلسَّمَـٰوَٰتِ وَٱلْأَرْضَ ۖ وَلَا يَـُٔودُهُۥ حِفْظُهُمَا ۚ وَهُوَ ٱلْعَلِىُّ ٱلْعَظِيمُ ﴿255﴾',
+    arabicText: "ٱللَّهُ لَآ إِلَـٰهَ إِلَّا هُوَ ٱلْحَىُّ ٱلْقَيُّومُ ۚ لَا تَأْخُذُهُۥ سِنَةٌ وَلَا نَوْمٌ ۚ لَّهُۥ مَا فِى ٱلسَّمَـٰوَٰتِ وَمَا فِى ٱلْأَرْضِ ۗ مَن ذَا ٱلَّذِى يَشْفَعُ عِندَهُۥٓ إِلَّا بِإِذْنِهِۦ ۚ يَعْلَمُ مَا بَيْنَ أَيْدِيهِمْ وَمَا خَلْفَهُمْ ۖ وَلَا يُحِيطُونَ بِشَىْءٍ مِّنْ عِلْمِهِۦٓ إِلَّا بِمَا شَآءَ ۚ وَسِعَ كُرْسِيُّهُ ٱلسَّمَـٰوَٰتِ وَٱلْأَرْضَ ۖ وَلَا يَـُٔودُهُۥ حِفْظُهُمَا ۚ وَهُوَ ٱلْعَلِىُّ ٱلْعَظِيمُ",
     transliteration:
       "al-lahu lā ilāha illā huwa l-ḥayu l-qayūmu lā takhudhuhu sinatun walā nawmun lahu mā fī l-samāwāti wamā fī l-arḍi man dhā alladhī yashfaʿu ʿindahu illā bi-idh'nihi yaʿlamu mā bayna aydīhim wamā khalfahum walā yuḥīṭūna bishayin min ʿil'mihi illā bimā shāa wasiʿa kur'siyyuhu l-samāwāti wal-arḍa walā yaūduhu ḥif'ẓuhumā wahuwa l-ʿaliyu l-ʿaẓīmu",
-    englishTranslation:
-      'Allah — there is no god except Him, the Ever-Living, the Sustainer of all that exists. Neither drowsiness overtakes Him nor sleep. To Him belongs whatever is in the heavens and whatever is on the earth. Who is it that can intercede with Him except by His permission? He knows what is before them and what is behind them, and they encompass nothing of His knowledge except what He wills. His Seat extends over the heavens and the earth, and their preservation does not tire Him. And He is the Most High, the Most Great.',
+    englishTranslation: "Allāh - there is no deity except Him, the Ever-Living, the Self-Sustaining. Neither drowsiness overtakes Him nor sleep. To Him belongs whatever is in the heavens and whatever is on the earth. Who is it that can intercede with Him except by His permission? He knows what is [presently] before them and what will be after them, and they encompass not a thing of His knowledge except for what He wills. His Kursī extends over the heavens and the earth, and their preservation tires Him not. And He is the Most High, the Most Great.",
     source: 'Surah Al-Baqarah 2:255',
     audioKey: '2:255',
     whyThis: 'The greatest verse in the Quran, providing ultimate spiritual protection and tranquility.',
@@ -60,12 +58,10 @@ const quranContentData: Content[] = [
     type: 'Quran',
     primaryText:
       "lā yukallifu l-lahu nafsan illā wus'ʿahā lahā mā kasabat waʿalayhā mā ik'tasabat rabbanā lā tuākhidh'nā in nasīnā aw akhṭanā rabbanā walā taḥmil ʿalaynā iṣ'ran kamā ḥamaltahu ʿalā alladhīna min qablinā rabbanā walā tuḥammil'nā mā lā ṭāqata lanā bihi wa-uʿ'fu ʿannā wa-igh'fir lanā wa-ir'ḥamnā anta mawlānā fa-unṣur'nā ʿalā l-qawmi l-kāfirīna",
-    arabicText:
-      'لَا يُكَلِّفُ ٱللَّهُ نَفْسًا إِلَّا وُسْعَهَا ۚ لَهَا مَا كَسَبَتْ وَعَلَيْهَا مَا ٱكْتَسَبَتْ ۗ رَبَّنَا لَا تُؤَاخِذْنَآ إِن نَّسِينَآ أَوْ أَخْطَأْنَا ۚ رَبَّنَا وَلَا تَحْمِلْ عَلَيْنَآ إِصْرًۭا كَمَا حَمَلْتَهُۥ عَلَى ٱلَّذِينَ مِن قَبْلِنَا ۚ رَبَّنَا وَلَا تُحَمِّلْنَا مَا لَا طَاقَةَ لَنَا بِهِۦ ۖ وَٱعْفُ عَنَّا وَٱغْفِرْ لَنَا وَٱرْحَمْنَآ ۚ أَنتَ مَوْلَىٰنَا فَٱنصُرْنَا عَلَى ٱلْقَوْمِ ٱلْكَـٰفِرِينَ ﴿286﴾',
+    arabicText: "لَا يُكَلِّفُ ٱللَّهُ نَفْسًا إِلَّا وُسْعَهَا ۚ لَهَا مَا كَسَبَتْ وَعَلَيْهَا مَا ٱكْتَسَبَتْ ۗ رَبَّنَا لَا تُؤَاخِذْنَآ إِن نَّسِينَآ أَوْ أَخْطَأْنَا ۚ رَبَّنَا وَلَا تَحْمِلْ عَلَيْنَآ إِصْرًا كَمَا حَمَلْتَهُۥ عَلَى ٱلَّذِينَ مِن قَبْلِنَا ۚ رَبَّنَا وَلَا تُحَمِّلْنَا مَا لَا طَاقَةَ لَنَا بِهِۦ ۖ وَٱعْفُ عَنَّا وَٱغْفِرْ لَنَا وَٱرْحَمْنَآ ۚ أَنتَ مَوْلَىٰنَا فَٱنصُرْنَا عَلَى ٱلْقَوْمِ ٱلْكَـٰفِرِينَ",
     transliteration:
       "lā yukallifu l-lahu nafsan illā wus'ʿahā lahā mā kasabat waʿalayhā mā ik'tasabat rabbanā lā tuākhidh'nā in nasīnā aw akhṭanā rabbanā walā taḥmil ʿalaynā iṣ'ran kamā ḥamaltahu ʿalā alladhīna min qablinā rabbanā walā tuḥammil'nā mā lā ṭāqata lanā bihi wa-uʿ'fu ʿannā wa-igh'fir lanā wa-ir'ḥamnā anta mawlānā fa-unṣur'nā ʿalā l-qawmi l-kāfirīna",
-    englishTranslation:
-      'Allah does not burden a soul beyond its capacity. It will have what it has earned, and against it what it has earned. Our Lord, do not take us to task if we forget or err. Our Lord, do not lay upon us a burden like that which You laid on those before us. Our Lord, do not burden us with what we have no strength to bear. Pardon us, forgive us, and have mercy on us. You are our Protector, so help us against the disbelieving people.',
+    englishTranslation: "Allāh does not charge a soul except [with that within] its capacity. It will have [the consequence of] what [good] it has gained, and it will bear [the consequence of] what [evil] it has earned. \"Our Lord, do not impose blame upon us if we have forgotten or erred. Our Lord, and lay not upon us a burden like that which You laid upon those before us. Our Lord, and burden us not with that which we have no ability to bear. And pardon us; and forgive us; and have mercy upon us. You are our protector, so give us victory over the disbelieving people.\"",
     source: 'Surah Al-Baqarah 2:286',
     audioKey: '2:286',
     whyThis: '',
@@ -76,12 +72,10 @@ const quranContentData: Content[] = [
     type: 'Quran',
     primaryText:
       "wayarzuq'hu min ḥaythu lā yaḥtasibu waman yatawakkal ʿalā l-lahi fahuwa ḥasbuhu inna l-laha bālighu amrihi qad jaʿala l-lahu likulli shayin qadran",
-    arabicText:
-      'وَيَرْزُقْهُ مِنْ حَيْثُ لَا يَحْتَسِبُ ۚ وَمَن يَتَوَكَّلْ عَلَى ٱللَّهِ فَهُوَ حَسْبُهُۥٓ ۚ إِنَّ ٱللَّهَ بَـٰلِغُ أَمْرِهِۦ ۚ قَدْ جَعَلَ ٱللَّهُ لِكُلِّ شَىْءٍۢ قَدْرًۭا ﴿3﴾',
+    arabicText: "وَيَرْزُقْهُ مِنْ حَيْثُ لَا يَحْتَسِبُ ۚ وَمَن يَتَوَكَّلْ عَلَى ٱللَّهِ فَهُوَ حَسْبُهُۥٓ ۚ إِنَّ ٱللَّهَ بَـٰلِغُ أَمْرِهِۦ ۚ قَدْ جَعَلَ ٱللَّهُ لِكُلِّ شَىْءٍ قَدْرًا",
     transliteration:
       "wayarzuq'hu min ḥaythu lā yaḥtasibu waman yatawakkal ʿalā l-lahi fahuwa ḥasbuhu inna l-laha bālighu amrihi qad jaʿala l-lahu likulli shayin qadran",
-    englishTranslation:
-      'And He will provide for him from where he does not expect. And whoever puts his trust upon Allah, then He is sufficient for him. Indeed, Allah will accomplish His purpose. Allah has already set for everything a measure.',
+    englishTranslation: "And will provide for him from where he does not expect. And whoever relies upon Allāh - then He is sufficient for him. Indeed, Allāh will accomplish His purpose. Allāh has already set for everything a [decreed] extent.",
     source: 'Surah At-Talaq 65:3',
     audioKey: '65:3',
     whyThis: 'True reliance on Allah (tawakkul) brings peace, provision, and sufficiency.',
@@ -92,12 +86,10 @@ const quranContentData: Content[] = [
     type: 'Quran',
     primaryText:
       "alladhīna qāla lahumu l-nāsu inna l-nāsa qad jamaʿū lakum fa-ikh'shawhum fazādahum īmānan waqālū ḥasbunā l-lahu waniʿ'ma l-wakīlu",
-    arabicText:
-      'ٱلَّذِينَ قَالَ لَهُمُ ٱلنَّاسُ إِنَّ ٱلنَّاسَ قَدْ جَمَعُوا۟ لَكُمْ فَٱخْشَوْهُمْ فَزَادَهُمْ إِيمَـٰنًۭا وَقَالُوا۟ حَسْبُنَا ٱللَّهُ وَنِعْمَ ٱلْوَكِيلُ ﴿173﴾',
+    arabicText: "ٱلَّذِينَ قَالَ لَهُمُ ٱلنَّاسُ إِنَّ ٱلنَّاسَ قَدْ جَمَعُوا۟ لَكُمْ فَٱخْشَوْهُمْ فَزَادَهُمْ إِيمَـٰنًا وَقَالُوا۟ حَسْبُنَا ٱللَّهُ وَنِعْمَ ٱلْوَكِيلُ",
     transliteration:
       "alladhīna qāla lahumu l-nāsu inna l-nāsa qad jamaʿū lakum fa-ikh'shawhum fazādahum īmānan waqālū ḥasbunā l-lahu waniʿ'ma l-wakīlu",
-    englishTranslation:
-      'Those who were told, "Indeed, the people have gathered against you, so fear them." But it increased them in faith, and they said, "Sufficient for us is Allah, and He is the best Disposer of affairs."',
+    englishTranslation: "Those to whom people [i.e., hypocrites] said, \"Indeed, the people have gathered against you, so fear them.\" But it [merely] increased them in faith, and they said, \"Sufficient for us is Allāh, and [He is] the best Disposer of affairs.\"",
     translation:
       'After the Battle of Uhud, the believers were warned that their enemies had regrouped against them. But instead of being afraid, their faith only grew stronger — and they declared: "Allah is enough for us; He is the best One to rely on."',
     source: 'Surah Ali Imran 3:173',
@@ -109,9 +101,9 @@ const quranContentData: Content[] = [
     id: 'quran_53_39',
     type: 'Quran',
     primaryText: "wa-an laysa lil'insāni illā mā saʿā",
-    arabicText: 'وَأَن لَّيْسَ لِلْإِنسَـٰنِ إِلَّا مَا سَعَىٰ ﴿39﴾',
+    arabicText: "وَأَن لَّيْسَ لِلْإِنسَـٰنِ إِلَّا مَا سَعَىٰ",
     transliteration: "wa-an laysa lil'insāni illā mā saʿā",
-    englishTranslation: 'And that there is nothing for man except what he strives for.',
+    englishTranslation: "And that there is not for man except that [good] for which he strives",
     source: 'Surah An-Najm 53:39',
     audioKey: '53:39',
     whyThis: '',
@@ -121,9 +113,9 @@ const quranContentData: Content[] = [
     id: 'quran_26_80',
     type: 'Quran',
     primaryText: "wa-idhā mariḍ'tu fahuwa yashfīni",
-    arabicText: 'وَإِذَا مَرِضْتُ فَهُوَ يَشْفِينِ ﴿80﴾',
+    arabicText: "وَإِذَا مَرِضْتُ فَهُوَ يَشْفِينِ",
     transliteration: "wa-idhā mariḍ'tu fahuwa yashfīni",
-    englishTranslation: 'And when I am ill, it is He who cures me.',
+    englishTranslation: "And when I am ill, it is He who cures me",
     source: "Surah Ash-Shu'ara 26:80",
     audioKey: '26:80',
     whyThis: '',
@@ -134,12 +126,10 @@ const quranContentData: Content[] = [
     type: 'Quran',
     primaryText:
       "al-lahu waliyyu alladhīna āmanū yukh'rijuhum mina l-ẓulumāti ilā l-nūri wa-alladhīna kafarū awliyāuhumu l-ṭāghūtu yukh'rijūnahum mina l-nūri ilā l-ẓulumāti ulāika aṣḥābu l-nāri hum fīhā khālidūna",
-    arabicText:
-      'ٱللَّهُ وَلِىُّ ٱلَّذِينَ ءَامَنُوا۟ يُخْرِجُهُم مِّنَ ٱلظُّلُمَـٰتِ إِلَى ٱلنُّورِ ۖ وَٱلَّذِينَ كَفَرُوٓا۟ أَوْلِيَآؤُهُمُ ٱلطَّـٰغُوتُ يُخْرِجُونَهُم مِّنَ ٱلنُّورِ إِلَى ٱلظُّلُمَـٰتِ ۗ أُو۟لَـٰٓئِكَ أَصْحَـٰبُ ٱلنَّارِ ۖ هُمْ فِيهَا خَـٰلِدُونَ ﴿257﴾',
+    arabicText: "ٱللَّهُ وَلِىُّ ٱلَّذِينَ ءَامَنُوا۟ يُخْرِجُهُم مِّنَ ٱلظُّلُمَـٰتِ إِلَى ٱلنُّورِ ۖ وَٱلَّذِينَ كَفَرُوٓا۟ أَوْلِيَآؤُهُمُ ٱلطَّـٰغُوتُ يُخْرِجُونَهُم مِّنَ ٱلنُّورِ إِلَى ٱلظُّلُمَـٰتِ ۗ أُو۟لَـٰٓئِكَ أَصْحَـٰبُ ٱلنَّارِ ۖ هُمْ فِيهَا خَـٰلِدُونَ",
     transliteration:
       "al-lahu waliyyu alladhīna āmanū yukh'rijuhum mina l-ẓulumāti ilā l-nūri wa-alladhīna kafarū awliyāuhumu l-ṭāghūtu yukh'rijūnahum mina l-nūri ilā l-ẓulumāti ulāika aṣḥābu l-nāri hum fīhā khālidūna",
-    englishTranslation:
-      'Allah is the Protecting Guardian of those who believe. He brings them out from darkness into light. And those who disbelieve — their guardians are the evil ones, who bring them out from light into darkness. Those are the companions of the Fire; they will abide therein forever.',
+    englishTranslation: "Allāh is the Ally of those who believe. He brings them out from darknesses into the light. And those who disbelieve - their allies are ṭāghūt. They take them out of the light into darknesses. Those are the companions of the Fire; they will abide eternally therein.",
     source: 'Surah Al-Baqarah 2:257',
     audioKey: '2:257',
     whyThis: '',
@@ -149,12 +139,10 @@ const quranContentData: Content[] = [
     id: 'quran_8_40',
     type: 'Quran',
     primaryText: "wa-in tawallaw fa-iʿ'lamū anna l-laha mawlākum niʿ'ma l-mawlā waniʿ'ma l-naṣīru",
-    arabicText:
-      'وَإِن تَوَلَّوْا۟ فَٱعْلَمُوٓا۟ أَنَّ ٱللَّهَ مَوْلَىٰكُمْ ۚ نِعْمَ ٱلْمَوْلَىٰ وَنِعْمَ ٱلنَّصِيرُ ﴿40﴾',
+    arabicText: "وَإِن تَوَلَّوْا۟ فَٱعْلَمُوٓا۟ أَنَّ ٱللَّهَ مَوْلَىٰكُمْ ۚ نِعْمَ ٱلْمَوْلَىٰ وَنِعْمَ ٱلنَّصِيرُ",
     transliteration:
       "wa-in tawallaw fa-iʿ'lamū anna l-laha mawlākum niʿ'ma l-mawlā waniʿ'ma l-naṣīru",
-    englishTranslation:
-      'And if they turn away, then know that Allah is your Protector. Excellent is the Protector, and Excellent is the Helper.',
+    englishTranslation: "But if they turn away - then know that Allāh is your protector. Excellent is the protector, and excellent is the helper.",
     source: 'Surah Al-Anfal 8:40',
     audioKey: '8:40',
     whyThis: '',
@@ -165,12 +153,10 @@ const quranContentData: Content[] = [
     type: 'Quran',
     primaryText:
       "qāla rajulāni mina alladhīna yakhāfūna anʿama l-lahu ʿalayhimā ud'khulū ʿalayhimu l-bāba fa-idhā dakhaltumūhu fa-innakum ghālibūna waʿalā l-lahi fatawakkalū in kuntum mu'minīna",
-    arabicText:
-      'قَالَ رَجُلَانِ مِنَ ٱلَّذِينَ يَخَافُونَ أَنْعَمَ ٱللَّهُ عَلَيْهِمَا ٱدْخُلُوا۟ عَلَيْهِمُ ٱلْبَابَ فَإِذَا دَخَلْتُمُوهُ فَإِنَّكُمْ غَـٰلِبُونَ ۚ وَعَلَى ٱللَّهِ فَتَوَكَّلُوٓا۟ إِن كُنتُم مُّؤْمِنِينَ ﴿23﴾',
+    arabicText: "قَالَ رَجُلَانِ مِنَ ٱلَّذِينَ يَخَافُونَ أَنْعَمَ ٱللَّهُ عَلَيْهِمَا ٱدْخُلُوا۟ عَلَيْهِمُ ٱلْبَابَ فَإِذَا دَخَلْتُمُوهُ فَإِنَّكُمْ غَـٰلِبُونَ ۚ وَعَلَى ٱللَّهِ فَتَوَكَّلُوٓا۟ إِن كُنتُم مُّؤْمِنِينَ",
     transliteration:
       "qāla rajulāni mina alladhīna yakhāfūna anʿama l-lahu ʿalayhimā ud'khulū ʿalayhimu l-bāba fa-idhā dakhaltumūhu fa-innakum ghālibūna waʿalā l-lahi fatawakkalū in kuntum mu'minīna",
-    englishTranslation:
-      'Two men from those who feared Allah, upon whom Allah had bestowed favor, said, "Enter upon them through the gate. When you have entered it, you will be victorious. And upon Allah put your trust, if you are believers."',
+    englishTranslation: "Said two men from those who feared [to disobey] upon whom Allāh had bestowed favor, \"Enter upon them through the gate, for when you have entered it, you will be predominant. And upon Allāh rely, if you should be believers.\"",
     translation:
       'Two men among those who feared Allah and upon whom Allah had bestowed favour said: "Enter upon them through the gate. When you have entered it, you will be victorious. And upon Allah put your trust, if you are believers."',
     source: 'Surah Al-Maidah 5:23',
@@ -183,12 +169,10 @@ const quranContentData: Content[] = [
     type: 'Quran',
     primaryText:
       'wamā lanā allā natawakkala ʿalā l-lahi waqad hadānā subulanā walanaṣbiranna ʿalā mā ādhaytumūnā waʿalā l-lahi falyatawakkali l-mutawakilūna',
-    arabicText:
-      'وَمَا لَنَآ أَلَّا نَتَوَكَّلَ عَلَى ٱللَّهِ وَقَدْ هَدَىٰنَا سُبُلَنَا ۚ وَلَنَصْبِرَنَّ عَلَىٰ مَآ ءَاذَيْتُمُونَا ۚ وَعَلَى ٱللَّهِ فَلْيَتَوَكَّلِ ٱلْمُتَوَكِّلُونَ ﴿12﴾',
+    arabicText: "وَمَا لَنَآ أَلَّا نَتَوَكَّلَ عَلَى ٱللَّهِ وَقَدْ هَدَىٰنَا سُبُلَنَا ۚ وَلَنَصْبِرَنَّ عَلَىٰ مَآ ءَاذَيْتُمُونَا ۚ وَعَلَى ٱللَّهِ فَلْيَتَوَكَّلِ ٱلْمُتَوَكِّلُونَ",
     transliteration:
       'wamā lanā allā natawakkala ʿalā l-lahi waqad hadānā subulanā walanaṣbiranna ʿalā mā ādhaytumūnā waʿalā l-lahi falyatawakkali l-mutawakilūna',
-    englishTranslation:
-      'And why should we not put our trust upon Allah, while He has guided us to our ways? And surely we will bear with patience whatever harm you may cause us. And upon Allah let those who trust put their trust.',
+    englishTranslation: "And why should we not rely upon Allāh while He has guided us to our [good] ways. And we will surely be patient against whatever harm you should cause us. And upon Allāh let those who would rely [indeed] rely.\"",
     translation:
       'The messengers of Allah replied to those who threatened them: "Why would we not trust in Allah, when He has already guided us? We will patiently endure whatever harm you cause us. Whoever truly trusts — let them place their trust in Allah alone."',
     source: 'Surah Ibrahim 14:12',
@@ -201,12 +185,10 @@ const quranContentData: Content[] = [
     type: 'Quran',
     primaryText:
       "innamā l-mu'minūna alladhīna idhā dhukira l-lahu wajilat qulūbuhum wa-idhā tuliyat ʿalayhim āyātuhu zādathum īmānan waʿalā rabbihim yatawakkalūna",
-    arabicText:
-      'إِنَّمَا ٱلْمُؤْمِنُونَ ٱلَّذِينَ إِذَا ذُكِرَ ٱللَّهُ وَجِلَتْ قُلُوبُهُمْ وَإِذَا تُلِيَتْ عَلَيْهِمْ ءَايَـٰتُهُۥ زَادَتْهُمْ إِيمَـٰنًۭا وَعَلَىٰ رَبِّهِمْ يَتَوَكَّلُونَ ﴿2﴾',
+    arabicText: "إِنَّمَا ٱلْمُؤْمِنُونَ ٱلَّذِينَ إِذَا ذُكِرَ ٱللَّهُ وَجِلَتْ قُلُوبُهُمْ وَإِذَا تُلِيَتْ عَلَيْهِمْ ءَايَـٰتُهُۥ زَادَتْهُمْ إِيمَـٰنًا وَعَلَىٰ رَبِّهِمْ يَتَوَكَّلُونَ",
     transliteration:
       "innamā l-mu'minūna alladhīna idhā dhukira l-lahu wajilat qulūbuhum wa-idhā tuliyat ʿalayhim āyātuhu zādathum īmānan waʿalā rabbihim yatawakkalūna",
-    englishTranslation:
-      'The believers are only those who, when Allah is mentioned, their hearts become fearful; and when His verses are recited to them, it increases them in faith; and upon their Lord they put their trust.',
+    englishTranslation: "The believers are only those who, when Allāh is mentioned, their hearts become fearful, and when His verses are recited to them, it increases them in faith; and upon their Lord they rely -",
     source: 'Surah Al-Anfal 8:2',
     audioKey: '8:2',
     whyThis: '',
@@ -217,12 +199,10 @@ const quranContentData: Content[] = [
     type: 'Quran',
     primaryText:
       'qul huwa l-raḥmānu āmannā bihi waʿalayhi tawakkalnā fasataʿlamūna man huwa fī ḍalālin mubīnin',
-    arabicText:
-      'قُلْ هُوَ ٱلرَّحْمَـٰنُ ءَامَنَّا بِهِۦ وَعَلَيْهِ تَوَكَّلْنَا ۖ فَسَتَعْلَمُونَ مَنْ هُوَ فِى ضَلَـٰلٍۢ مُّبِينٍۢ ﴿29﴾',
+    arabicText: "قُلْ هُوَ ٱلرَّحْمَـٰنُ ءَامَنَّا بِهِۦ وَعَلَيْهِ تَوَكَّلْنَا ۖ فَسَتَعْلَمُونَ مَنْ هُوَ فِى ضَلَـٰلٍ مُّبِينٍ",
     transliteration:
       'qul huwa l-raḥmānu āmannā bihi waʿalayhi tawakkalnā fasataʿlamūna man huwa fī ḍalālin mubīnin',
-    englishTranslation:
-      'Say, "He is the Most Gracious; we believe in Him, and upon Him we put our trust. So you will know who is in clear error."',
+    englishTranslation: "Say, \"He is the Most Merciful; we have believed in Him, and upon Him we have relied. And you will [come to] know who it is that is in clear error.\"",
     source: 'Surah Al-Mulk 67:29',
     audioKey: '67:29',
     whyThis: '',
@@ -233,12 +213,10 @@ const quranContentData: Content[] = [
     type: 'Quran',
     primaryText:
       'watawakkal ʿalā l-ḥayi alladhī lā yamūtu wasabbiḥ biḥamdihi wakafā bihi bidhunūbi ʿibādihi khabīran',
-    arabicText:
-      'وَتَوَكَّلْ عَلَى ٱلْحَىِّ ٱلَّذِى لَا يَمُوتُ وَسَبِّحْ بِحَمْدِهِۦ ۚ وَكَفَىٰ بِهِۦ بِذُنُوبِ عِبَادِهِۦ خَبِيرًا ﴿58﴾',
+    arabicText: "وَتَوَكَّلْ عَلَى ٱلْحَىِّ ٱلَّذِى لَا يَمُوتُ وَسَبِّحْ بِحَمْدِهِۦ ۚ وَكَفَىٰ بِهِۦ بِذُنُوبِ عِبَادِهِۦ خَبِيرًا",
     transliteration:
       'watawakkal ʿalā l-ḥayi alladhī lā yamūtu wasabbiḥ biḥamdihi wakafā bihi bidhunūbi ʿibādihi khabīran',
-    englishTranslation:
-      'And put your trust in the Ever-Living, the One Who does not die, and glorify with His praise. And sufficient is He, regarding the sins of His slaves, as All-Aware.',
+    englishTranslation: "And rely upon the Ever-Living who does not die, and exalt [Allāh] with His praise. And sufficient is He to be, with the sins of His servants, [fully] Aware -",
     source: 'Surah Al-Furqan 25:58',
     audioKey: '25:58',
     whyThis: '',
@@ -249,12 +227,10 @@ const quranContentData: Content[] = [
     type: 'Quran',
     primaryText:
       "qālū a-innaka la-anta yūsufu qāla anā yūsufu wahādhā akhī qad manna l-lahu ʿalaynā innahu man yattaqi wayaṣbir fa-inna l-laha lā yuḍīʿu ajra l-muḥ'sinīna",
-    arabicText:
-      'قَالُوٓا۟ أَءِنَّكَ لَأَنتَ يُوسُفُ ۖ قَالَ أَنَا۠ يُوسُفُ وَهَـٰذَآ أَخِى ۖ قَدْ مَنَّ ٱللَّهُ عَلَيْنَآ ۖ إِنَّهُۥ مَن يَتَّقِ وَيَصْبِرْ فَإِنَّ ٱللَّهَ لَا يُضِيعُ أَجْرَ ٱلْمُحْسِنِينَ ﴿90﴾',
+    arabicText: "قَالُوٓا۟ أَءِنَّكَ لَأَنتَ يُوسُفُ ۖ قَالَ أَنَا۠ يُوسُفُ وَهَـٰذَآ أَخِى ۖ قَدْ مَنَّ ٱللَّهُ عَلَيْنَآ ۖ إِنَّهُۥ مَن يَتَّقِ وَيَصْبِرْ فَإِنَّ ٱللَّهَ لَا يُضِيعُ أَجْرَ ٱلْمُحْسِنِينَ",
     transliteration:
       "qālū a-innaka la-anta yūsufu qāla anā yūsufu wahādhā akhī qad manna l-lahu ʿalaynā innahu man yattaqi wayaṣbir fa-inna l-laha lā yuḍīʿu ajra l-muḥ'sinīna",
-    englishTranslation:
-      'They said, "Are you indeed Yusuf?" He said, "I am Yusuf, and this is my brother. Indeed, Allah has been gracious to us. Indeed, he who fears Allah and is patient — then indeed, Allah does not allow the reward of the good-doers to be lost."',
+    englishTranslation: "They said, \"Are you indeed Joseph?\" He said, \"I am Joseph, and this is my brother. Allāh has certainly favored us. Indeed, he who fears Allāh and is patient, then indeed, Allāh does not allow to be lost the reward of those who do good.\"",
     translation:
       'They said, "Are you indeed Yusuf?" He said, "I am Yusuf, and this is my brother. Indeed, Allah has been gracious to us. Indeed, he who fears Allah and is patient — then indeed, Allah does not allow the reward of the good-doers to be lost."',
     source: 'Surah Yusuf 12:90',
@@ -267,12 +243,10 @@ const quranContentData: Content[] = [
     type: 'Quran',
     primaryText:
       "wa-aṭīʿū l-laha warasūlahu walā tanāzaʿū fatafshalū watadhhaba rīḥukum wa-iṣ'birū inna l-laha maʿa l-ṣābirīna",
-    arabicText:
-      'وَأَطِيعُوا۟ ٱللَّهَ وَرَسُولَهُۥ وَلَا تَنَـٰزَعُوا۟ فَتَفْشَلُوا۟ وَتَذْهَبَ رِيحُكُمْ ۖ وَٱصْبِرُوٓا۟ ۚ إِنَّ ٱللَّهَ مَعَ ٱلصَّـٰبِرِينَ ﴿46﴾',
+    arabicText: "وَأَطِيعُوا۟ ٱللَّهَ وَرَسُولَهُۥ وَلَا تَنَـٰزَعُوا۟ فَتَفْشَلُوا۟ وَتَذْهَبَ رِيحُكُمْ ۖ وَٱصْبِرُوٓا۟ ۚ إِنَّ ٱللَّهَ مَعَ ٱلصَّـٰبِرِينَ",
     transliteration:
       "wa-aṭīʿū l-laha warasūlahu walā tanāzaʿū fatafshalū watadhhaba rīḥukum wa-iṣ'birū inna l-laha maʿa l-ṣābirīna",
-    englishTranslation:
-      'And obey Allah and His Messenger, and do not dispute, lest you lose courage and your strength departs. And be patient; indeed, Allah is with the patient ones.',
+    englishTranslation: "And obey Allāh and His Messenger, and do not dispute and [thus] lose courage and [then] your strength would depart; and be patient. Indeed, Allāh is with the patient.",
     source: 'Surah Al-Anfal 8:46',
     audioKey: '8:46',
     whyThis: '',
@@ -282,11 +256,9 @@ const quranContentData: Content[] = [
     id: 'quran_10_62',
     type: 'Quran',
     primaryText: 'alā inna awliyāa l-lahi lā khawfun ʿalayhim walā hum yaḥzanūna',
-    arabicText:
-      'أَلَآ إِنَّ أَوْلِيَآءَ ٱللَّهِ لَا خَوْفٌ عَلَيْهِمْ وَلَا هُمْ يَحْزَنُونَ ﴿62﴾',
+    arabicText: "أَلَآ إِنَّ أَوْلِيَآءَ ٱللَّهِ لَا خَوْفٌ عَلَيْهِمْ وَلَا هُمْ يَحْزَنُونَ",
     transliteration: 'alā inna awliyāa l-lahi lā khawfun ʿalayhim walā hum yaḥzanūna',
-    englishTranslation:
-      'Unquestionably, for the allies of Allah there will be no fear upon them, nor will they grieve.',
+    englishTranslation: "Unquestionably, [for] the allies of Allāh there will be no fear concerning them, nor will they grieve -",
     source: 'Surah Yunus 10:62',
     audioKey: '10:62',
     whyThis: '',
@@ -298,9 +270,9 @@ const quranContentData: Content[] = [
     id: 'quran_93_3',
     type: 'Quran',
     primaryText: 'mā waddaʿaka rabbuka wamā qalā',
-    arabicText: 'مَا وَدَّعَكَ رَبُّكَ وَمَا قَلَىٰ ﴿3﴾',
+    arabicText: "مَا وَدَّعَكَ رَبُّكَ وَمَا قَلَىٰ",
     transliteration: 'mā waddaʿaka rabbuka wamā qalā',
-    englishTranslation: 'Your Lord has not forsaken you, nor is He displeased.',
+    englishTranslation: "Your Lord has not taken leave of you, [O Muḥammad], nor has He detested [you].",
     source: 'Surah Ad-Duha 93:3',
     audioKey: '93:3',
     whyThis: '"Your Lord has not forsaken you, nor is He displeased." [Quran 93:3]',
@@ -311,12 +283,10 @@ const quranContentData: Content[] = [
     type: 'Quran',
     primaryText:
       "yābaniyya idh'habū fataḥassasū min yūsufa wa-akhīhi walā tāy'asū min rawḥi l-lahi innahu lā yāy'asu min rawḥi l-lahi illā l-qawmu l-kāfirūna",
-    arabicText:
-      'يَـٰبَنِىَّ ٱذْهَبُوا۟ فَتَحَسَّسُوا۟ مِن يُوسُفَ وَأَخِيهِ وَلَا تَا۟يْـَٔسُوا۟ مِن رَّوْحِ ٱللَّهِ ۖ إِنَّهُۥ لَا يَا۟يْـَٔسُ مِن رَّوْحِ ٱللَّهِ إِلَّا ٱلْقَوْمُ ٱلْكَـٰفِرُونَ ﴿87﴾',
+    arabicText: "يَـٰبَنِىَّ ٱذْهَبُوا۟ فَتَحَسَّسُوا۟ مِن يُوسُفَ وَأَخِيهِ وَلَا تَا۟يْـَٔسُوا۟ مِن رَّوْحِ ٱللَّهِ ۖ إِنَّهُۥ لَا يَا۟يْـَٔسُ مِن رَّوْحِ ٱللَّهِ إِلَّا ٱلْقَوْمُ ٱلْكَـٰفِرُونَ",
     transliteration:
       "yābaniyya idh'habū fataḥassasū min yūsufa wa-akhīhi walā tāy'asū min rawḥi l-lahi innahu lā yāy'asu min rawḥi l-lahi illā l-qawmu l-kāfirūna",
-    englishTranslation:
-      'O my sons, go and inquire about Yusuf and his brother, and do not despair of the mercy of Allah. Indeed, none despairs of the mercy of Allah except the disbelieving people.',
+    englishTranslation: "O my sons, go and find out about Joseph and his brother and despair not of relief from Allāh. Indeed, no one despairs of relief from Allāh except the disbelieving people.\"",
     translation:
       'O my sons, go and inquire about Yusuf and his brother, and do not despair of the mercy of Allah. Indeed, none despairs of the mercy of Allah except the disbelieving people.',
     source: 'Surah Yusuf 12:87',
@@ -328,9 +298,9 @@ const quranContentData: Content[] = [
     id: 'quran_21_83',
     type: 'Quran',
     primaryText: 'annī massaniya l-ḍurru wa-anta arḥamu l-rāḥimīna',
-    arabicText: 'أَنِّى مَسَّنِىَ ٱلضُّرُّ وَأَنتَ أَرْحَمُ ٱلرَّٰحِمِينَ ﴿83﴾',
+    arabicText: "۞ وَأَيُّوبَ إِذْ نَادَىٰ رَبَّهُۥٓ أَنِّى مَسَّنِىَ ٱلضُّرُّ وَأَنتَ أَرْحَمُ ٱلرَّٰحِمِينَ",
     transliteration: 'annī massaniya l-ḍurru wa-anta arḥamu l-rāḥimīna',
-    englishTranslation: 'Indeed, adversity has touched me, and You are the Most Merciful of the merciful.',
+    englishTranslation: "And [mention] Job, when he called to his Lord, \"Indeed, adversity has touched me, and You are the most merciful of the merciful.\"",
     translation:
       'Indeed, adversity has touched me, and You are the Most Merciful of the merciful.',
     source: 'Surah Al-Anbiya 21:83',
@@ -343,12 +313,10 @@ const quranContentData: Content[] = [
     type: 'Quran',
     primaryText:
       'walanabluwannakum bishayin mina l-khawfi wal-jūʿi wanaqṣin mina l-amwāli wal-anfusi wal-thamarāti wabashiri l-ṣābirīna alladhīna idhā aṣābathum muṣībatun qālū innā lillahi wa-innā ilayhi rājiʿūna',
-    arabicText:
-      'وَلَنَبْلُوَنَّكُم بِشَىْءٍۢ مِّنَ ٱلْخَوْفِ وَٱلْجُوعِ وَنَقْصٍۢ مِّنَ ٱلْأَمْوَٰلِ وَٱلْأَنفُسِ وَٱلثَّمَرَٰتِ ۗ وَبَشِّرِ ٱلصَّـٰبِرِينَ ٱلَّذِينَ إِذَآ أَصَـٰبَتْهُم مُّصِيبَةٌۭ قَالُوٓا۟ إِنَّا لِلَّهِ وَإِنَّآ إِلَيْهِ رَٰجِعُونَ ﴿155-156﴾',
+    arabicText: "وَلَنَبْلُوَنَّكُم بِشَىْءٍ مِّنَ ٱلْخَوْفِ وَٱلْجُوعِ وَنَقْصٍ مِّنَ ٱلْأَمْوَٰلِ وَٱلْأَنفُسِ وَٱلثَّمَرَٰتِ ۗ وَبَشِّرِ ٱلصَّـٰبِرِينَ ٱلَّذِينَ إِذَآ أَصَـٰبَتْهُم مُّصِيبَةٌ قَالُوٓا۟ إِنَّا لِلَّهِ وَإِنَّآ إِلَيْهِ رَٰجِعُونَ",
     transliteration:
       'walanabluwannakum bishayin mina l-khawfi wal-jūʿi wanaqṣin mina l-amwāli wal-anfusi wal-thamarāti wabashiri l-ṣābirīna alladhīna idhā aṣābathum muṣībatun qālū innā lillahi wa-innā ilayhi rājiʿūna',
-    englishTranslation:
-      'And We will surely test you with something of fear and hunger and a loss of wealth and lives and fruits, but give good tidings to the patient — those who, when disaster strikes them, say, "Indeed, we belong to Allah, and indeed to Him we will return."',
+    englishTranslation: "And We will surely test you with something of fear and hunger and a loss of wealth and lives and fruits, but give good tidings to the patient, Who, when disaster strikes them, say, \"Indeed we belong to Allāh, and indeed to Him we will return.\"",
     source: 'Surah Al-Baqarah 2:155-156',
     audioKey: '2:155-156',
     whyThis: '',
@@ -359,12 +327,10 @@ const quranContentData: Content[] = [
     type: 'Quran',
     primaryText:
       "huwa alladhī khalaqa l-samāwāti wal-arḍa fī sittati ayyāmin thumma is'tawā ʿalā l-ʿarshi yaʿlamu mā yaliju fī l-arḍi wamā yakhruju min'hā wamā yanzilu mina l-samāi wamā yaʿruju fīhā wahuwa maʿakum ayna mā kuntum wal-lahu bimā taʿmalūna baṣīrun",
-    arabicText:
-      'هُوَ ٱلَّذِى خَلَقَ ٱلسَّمَـٰوَٰتِ وَٱلْأَرْضَ فِى سِتَّةِ أَيَّامٍۢ ثُمَّ ٱسْتَوَىٰ عَلَى ٱلْعَرْشِ ۚ يَعْلَمُ مَا يَلِجُ فِى ٱلْأَرْضِ وَمَا يَخْرُجُ مِنْهَا وَمَا يَنزِلُ مِنَ ٱلسَّمَآءِ وَمَا يَعْرُجُ فِيهَا ۖ وَهُوَ مَعَكُمْ أَيْنَ مَا كُنتُمْ ۚ وَٱللَّهُ بِمَا تَعْمَلُونَ بَصِيرٌۭ ﴿4﴾',
+    arabicText: "هُوَ ٱلَّذِى خَلَقَ ٱلسَّمَـٰوَٰتِ وَٱلْأَرْضَ فِى سِتَّةِ أَيَّامٍ ثُمَّ ٱسْتَوَىٰ عَلَى ٱلْعَرْشِ ۚ يَعْلَمُ مَا يَلِجُ فِى ٱلْأَرْضِ وَمَا يَخْرُجُ مِنْهَا وَمَا يَنزِلُ مِنَ ٱلسَّمَآءِ وَمَا يَعْرُجُ فِيهَا ۖ وَهُوَ مَعَكُمْ أَيْنَ مَا كُنتُمْ ۚ وَٱللَّهُ بِمَا تَعْمَلُونَ بَصِيرٌ",
     transliteration:
       "huwa alladhī khalaqa l-samāwāti wal-arḍa fī sittati ayyāmin thumma is'tawā ʿalā l-ʿarshi yaʿlamu mā yaliju fī l-arḍi wamā yakhruju min'hā wamā yanzilu mina l-samāi wamā yaʿruju fīhā wahuwa maʿakum ayna mā kuntum wal-lahu bimā taʿmalūna baṣīrun",
-    englishTranslation:
-      'He is the One Who created the heavens and the earth in six periods, then He rose over the Throne. He knows what penetrates into the earth and what comes forth from it, and what descends from the heaven and what ascends therein. And He is with you wherever you are. And Allah, of what you do, is All-Seeing.',
+    englishTranslation: "It is He who created the heavens and earth in six days and then established Himself above the Throne. He knows what penetrates into the earth and what emerges from it and what descends from the heaven and what ascends therein; and He is with you wherever you are. And Allāh, of what you do, is Seeing.",
     source: 'Surah Al-Hadid 57:4',
     audioKey: '57:4',
     whyThis: '',
@@ -374,9 +340,9 @@ const quranContentData: Content[] = [
     id: 'quran_94_5_sad',
     type: 'Quran',
     primaryText: "fa-inna maʿa l-ʿus'ri yus'ran",
-    arabicText: 'فَإِنَّ مَعَ ٱلْعُسْرِ يُسْرًا ﴿5﴾',
+    arabicText: "فَإِنَّ مَعَ ٱلْعُسْرِ يُسْرًا",
     transliteration: "fa-inna maʿa l-ʿus'ri yus'ran",
-    englishTranslation: 'So indeed, with the hardship is ease.',
+    englishTranslation: "For indeed, with hardship [will be] ease [i.e., relief].",
     source: 'Surah Ash-Sharh 94:5',
     audioKey: '94:5',
     whyThis: '',
@@ -386,11 +352,9 @@ const quranContentData: Content[] = [
     id: 'quran_3_139',
     type: 'Quran',
     primaryText: "walā tahinū walā taḥzanū wa-antumu l-aʿlawna in kuntum mu'minīna",
-    arabicText:
-      'وَلَا تَهِنُوا۟ وَلَا تَحْزَنُوا۟ وَأَنتُمُ ٱلْأَعْلَوْنَ إِن كُنتُم مُّؤْمِنِينَ ﴿139﴾',
+    arabicText: "وَلَا تَهِنُوا۟ وَلَا تَحْزَنُوا۟ وَأَنتُمُ ٱلْأَعْلَوْنَ إِن كُنتُم مُّؤْمِنِينَ",
     transliteration: "walā tahinū walā taḥzanū wa-antumu l-aʿlawna in kuntum mu'minīna",
-    englishTranslation:
-      'And do not weaken, and do not grieve, for you will be superior if you are believers.',
+    englishTranslation: "So do not weaken and do not grieve, and you will be superior if you are [true] believers.",
     source: 'Surah Ali Imran 3:139',
     audioKey: '3:139',
     whyThis: '',
@@ -401,12 +365,10 @@ const quranContentData: Content[] = [
     type: 'Quran',
     primaryText:
       "liyunfiq dhū saʿatin min saʿatihi waman qudira ʿalayhi riz'quhu falyunfiq mimmā ātāhu l-lahu lā yukallifu l-lahu nafsan illā mā ātāhā sayajʿalu l-lahu baʿda ʿus'rin yus'ran",
-    arabicText:
-      'لِيُنفِقْ ذُو سَعَةٍۢ مِّن سَعَتِهِۦ ۖ وَمَن قُدِرَ عَلَيْهِ رِزْقُهُۥ فَلْيُنفِقْ مِمَّآ ءَاتَىٰهُ ٱللَّهُ ۚ لَا يُكَلِّفُ ٱللَّهُ نَفْسًا إِلَّا مَآ ءَاتَىٰهَا ۚ سَيَجْعَلُ ٱللَّهُ بَعْدَ عُسْرٍۢ يُسْرًۭا ﴿7﴾',
+    arabicText: "لِيُنفِقْ ذُو سَعَةٍ مِّن سَعَتِهِۦ ۖ وَمَن قُدِرَ عَلَيْهِ رِزْقُهُۥ فَلْيُنفِقْ مِمَّآ ءَاتَىٰهُ ٱللَّهُ ۚ لَا يُكَلِّفُ ٱللَّهُ نَفْسًا إِلَّا مَآ ءَاتَىٰهَا ۚ سَيَجْعَلُ ٱللَّهُ بَعْدَ عُسْرٍ يُسْرًا",
     transliteration:
       "liyunfiq dhū saʿatin min saʿatihi waman qudira ʿalayhi riz'quhu falyunfiq mimmā ātāhu l-lahu lā yukallifu l-lahu nafsan illā mā ātāhā sayajʿalu l-lahu baʿda ʿus'rin yus'ran",
-    englishTranslation:
-      'Let the one of ample means spend from his means, and the one whose provision is restricted — let him spend from what Allah has given him. Allah does not burden a soul except with what He has given it. Allah will bring about, after hardship, ease.',
+    englishTranslation: "Let a man of wealth spend from his wealth, and he whose provision is restricted - let him spend from what Allāh has given him. Allāh does not charge a soul except [according to] what He has given it. Allāh will bring about, after hardship, ease [i.e., relief].",
     source: 'Surah At-Talaq 65:7',
     audioKey: '65:7',
     whyThis: 'A divine promise: after every hardship, Allah will certainly bring ease.',
@@ -417,12 +379,10 @@ const quranContentData: Content[] = [
     type: 'Quran',
     primaryText:
       "wadhā l-nūni idh dhahaba mughāḍiban faẓanna an lan naqdira ʿalayhi fanādā fī l-ẓulumāti an lā ilāha illā anta sub'ḥānaka innī kuntu mina l-ẓālimīna",
-    arabicText:
-      'وَذَا ٱلنُّونِ إِذ ذَّهَبَ مُغَـٰضِبًۭا فَظَنَّ أَن لَّن نَّقْدِرَ عَلَيْهِ فَنَادَىٰ فِى ٱلظُّلُمَـٰتِ أَن لَّآ إِلَـٰهَ إِلَّآ أَنتَ سُبْحَـٰنَكَ إِنِّى كُنتُ مِنَ ٱلظَّـٰلِمِينَ ﴿87﴾',
+    arabicText: "وَذَا ٱلنُّونِ إِذ ذَّهَبَ مُغَـٰضِبًا فَظَنَّ أَن لَّن نَّقْدِرَ عَلَيْهِ فَنَادَىٰ فِى ٱلظُّلُمَـٰتِ أَن لَّآ إِلَـٰهَ إِلَّآ أَنتَ سُبْحَـٰنَكَ إِنِّى كُنتُ مِنَ ٱلظَّـٰلِمِينَ",
     transliteration:
       "wadhā l-nūni idh dhahaba mughāḍiban faẓanna an lan naqdira ʿalayhi fanādā fī l-ẓulumāti an lā ilāha illā anta sub'ḥānaka innī kuntu mina l-ẓālimīna",
-    englishTranslation:
-      'And Dhun-Nun, when he went while angry and thought that We would not decree upon him. Then he called out in the darkness, "There is no god except You; glory be to You. Indeed, I have been of the wrongdoers."',
+    englishTranslation: "And [mention] the man of the fish [i.e., Jonah], when he went off in anger and thought that We would not decree [anything] upon him. And he called out within the darknesses, \"There is no deity except You; exalted are You. Indeed, I have been of the wrongdoers.\"",
     translation:
       'And remember the Man of the Fish — Prophet Yunus — when he departed in anger, thinking he would not be held to account. Then, from the depths of darkness, he cried out: "There is no god except You; glory be to You. Indeed, I have been among the wrongdoers."',
     source: 'Surah Al-Anbiya 21:87',
@@ -435,12 +395,10 @@ const quranContentData: Content[] = [
     type: 'Quran',
     primaryText:
       'rabbanā lā tuzigh qulūbanā baʿda idh hadaytanā wahab lanā min ladunka raḥmatan innaka anta l-wahābu',
-    arabicText:
-      'رَبَّنَا لَا تُزِغْ قُلُوبَنَا بَعْدَ إِذْ هَدَيْتَنَا وَهَبْ لَنَا مِن لَّدُنكَ رَحْمَةً ۚ إِنَّكَ أَنتَ ٱلْوَهَّابُ ﴿8﴾',
+    arabicText: "رَبَّنَا لَا تُزِغْ قُلُوبَنَا بَعْدَ إِذْ هَدَيْتَنَا وَهَبْ لَنَا مِن لَّدُنكَ رَحْمَةً ۚ إِنَّكَ أَنتَ ٱلْوَهَّابُ",
     transliteration:
       'rabbanā lā tuzigh qulūbanā baʿda idh hadaytanā wahab lanā min ladunka raḥmatan innaka anta l-wahābu',
-    englishTranslation:
-      'Our Lord, do not let our hearts deviate after You have guided us, and grant us from Yourself mercy. Indeed, You are the Bestower.',
+    englishTranslation: "[Who say], \"Our Lord, let not our hearts deviate after You have guided us and grant us from Yourself mercy. Indeed, You are the Bestower.",
     source: 'Surah Ali Imran 3:8',
     audioKey: '3:8',
     whyThis: '',
@@ -451,12 +409,10 @@ const quranContentData: Content[] = [
     type: 'Quran',
     primaryText:
       "waqāla rabbukumu id'ʿūnī astajib lakum inna alladhīna yastakbirūna ʿan ʿibādatī sayadkhulūna jahannama dākhirīna",
-    arabicText:
-      'وَقَالَ رَبُّكُمُ ٱدْعُونِىٓ أَسْتَجِبْ لَكُمْ ۚ إِنَّ ٱلَّذِينَ يَسْتَكْبِرُونَ عَنْ عِبَادَتِى سَيَدْخُلُونَ جَهَنَّمَ دَاخِرِينَ ﴿60﴾',
+    arabicText: "وَقَالَ رَبُّكُمُ ٱدْعُونِىٓ أَسْتَجِبْ لَكُمْ ۚ إِنَّ ٱلَّذِينَ يَسْتَكْبِرُونَ عَنْ عِبَادَتِى سَيَدْخُلُونَ جَهَنَّمَ دَاخِرِينَ",
     transliteration:
       "waqāla rabbukumu id'ʿūnī astajib lakum inna alladhīna yastakbirūna ʿan ʿibādatī sayadkhulūna jahannama dākhirīna",
-    englishTranslation:
-      'And your Lord said, "Call upon Me; I will respond to you." Indeed, those who are too proud to worship Me will enter Hell in humiliation.',
+    englishTranslation: "And your Lord says, \"Call upon Me; I will respond to you.\" Indeed, those who disdain My worship will enter Hell [rendered] contemptible.",
     source: 'Surah Ghafir 40:60',
     audioKey: '40:60',
     whyThis: '"And your Lord said: Call upon Me; I will respond to you." [Quran 40:60]',
@@ -467,12 +423,10 @@ const quranContentData: Content[] = [
     type: 'Quran',
     primaryText:
       "qul yāʿibādi alladhīna āmanū ittaqū rabbakum lilladhīna aḥsanū fī hādhihi l-dun'yā ḥasanatun wa-arḍu l-lahi wāsiʿatun innamā yuwaffā l-ṣābirūna ajrahum bighayri ḥisābin",
-    arabicText:
-      'قُلْ يَـٰعِبَادِ ٱلَّذِينَ ءَامَنُوا۟ ٱتَّقُوا۟ رَبَّكُمْ ۚ لِلَّذِينَ أَحْسَنُوا۟ فِى هَـٰذِهِ ٱلدُّنْيَا حَسَنَةٌۭ ۗ وَأَرْضُ ٱللَّهِ وَٰسِعَةٌ ۗ إِنَّمَا يُوَفَّى ٱلصَّـٰبِرُونَ أَجْرَهُم بِغَيْرِ حِسَابٍۢ ﴿10﴾',
+    arabicText: "قُلْ يَـٰعِبَادِ ٱلَّذِينَ ءَامَنُوا۟ ٱتَّقُوا۟ رَبَّكُمْ ۚ لِلَّذِينَ أَحْسَنُوا۟ فِى هَـٰذِهِ ٱلدُّنْيَا حَسَنَةٌ ۗ وَأَرْضُ ٱللَّهِ وَٰسِعَةٌ ۗ إِنَّمَا يُوَفَّى ٱلصَّـٰبِرُونَ أَجْرَهُم بِغَيْرِ حِسَابٍ",
     transliteration:
       "qul yāʿibādi alladhīna āmanū ittaqū rabbakum lilladhīna aḥsanū fī hādhihi l-dun'yā ḥasanatun wa-arḍu l-lahi wāsiʿatun innamā yuwaffā l-ṣābirūna ajrahum bighayri ḥisābin",
-    englishTranslation:
-      'Say, "O My slaves who believe, fear your Lord. For those who do good in this world is good, and the earth of Allah is spacious. Only the patient will be paid their reward without account."',
+    englishTranslation: "Say, \"O My servants who have believed, fear your Lord. For those who do good in this world is good, and the earth of Allāh is spacious. Indeed, the patient will be given their reward without account [i.e., limit].\"",
     source: 'Surah Az-Zumar 39:10',
     audioKey: '39:10',
     whyThis: '"Only the patient will be paid their reward without account." [Quran 39:10]',
@@ -482,10 +436,9 @@ const quranContentData: Content[] = [
     id: 'quran_11_115',
     type: 'Quran',
     primaryText: "wa-iṣ'bir fa-inna l-laha lā yuḍīʿu ajra l-muḥ'sinīna",
-    arabicText: 'وَٱصْبِرْ فَإِنَّ ٱللَّهَ لَا يُضِيعُ أَجْرَ ٱلْمُحْسِنِينَ ﴿115﴾',
+    arabicText: "وَٱصْبِرْ فَإِنَّ ٱللَّهَ لَا يُضِيعُ أَجْرَ ٱلْمُحْسِنِينَ",
     transliteration: "wa-iṣ'bir fa-inna l-laha lā yuḍīʿu ajra l-muḥ'sinīna",
-    englishTranslation:
-      'And be patient, for indeed Allah does not allow the reward of the good-doers to be lost.',
+    englishTranslation: "And be patient, for indeed, Allāh does not allow to be lost the reward of those who do good.",
     source: 'Surah Hud 11:115',
     audioKey: '11:115',
     whyThis: '',
@@ -496,12 +449,10 @@ const quranContentData: Content[] = [
     type: 'Quran',
     primaryText:
       'qul yāʿibādiya alladhīna asrafū ʿalā anfusihim lā taqnaṭū min raḥmati l-lahi inna l-laha yaghfiru l-dhunūba jamīʿan innahu huwa l-ghafūru l-raḥīmu wa-anībū ilā rabbikum wa-aslimū lahu min qabli an yatiyakumu l-ʿadhābu thumma lā tunṣarūna',
-    arabicText:
-      '۞ قُلْ يَـٰعِبَادِىَ ٱلَّذِينَ أَسْرَفُوا۟ عَلَىٰٓ أَنفُسِهِمْ لَا تَقْنَطُوا۟ مِن رَّحْمَةِ ٱللَّهِ ۚ إِنَّ ٱللَّهَ يَغْفِرُ ٱلذُّنُوبَ جَمِيعًا ۚ إِنَّهُۥ هُوَ ٱلْغَفُورُ ٱلرَّحِيمُ وَأَنِيبُوٓا۟ إِلَىٰ رَبِّكُمْ وَأَسْلِمُوا۟ لَهُۥ مِن قَبْلِ أَن يَأْتِيَكُمُ ٱلْعَذَابُ ثُمَّ لَا تُنصَرُونَ ﴿53-54﴾',
+    arabicText: "۞ قُلْ يَـٰعِبَادِىَ ٱلَّذِينَ أَسْرَفُوا۟ عَلَىٰٓ أَنفُسِهِمْ لَا تَقْنَطُوا۟ مِن رَّحْمَةِ ٱللَّهِ ۚ إِنَّ ٱللَّهَ يَغْفِرُ ٱلذُّنُوبَ جَمِيعًا ۚ إِنَّهُۥ هُوَ ٱلْغَفُورُ ٱلرَّحِيمُ وَأَنِيبُوٓا۟ إِلَىٰ رَبِّكُمْ وَأَسْلِمُوا۟ لَهُۥ مِن قَبْلِ أَن يَأْتِيَكُمُ ٱلْعَذَابُ ثُمَّ لَا تُنصَرُونَ",
     transliteration:
       'qul yāʿibādiya alladhīna asrafū ʿalā anfusihim lā taqnaṭū min raḥmati l-lahi inna l-laha yaghfiru l-dhunūba jamīʿan innahu huwa l-ghafūru l-raḥīmu wa-anībū ilā rabbikum wa-aslimū lahu min qabli an yatiyakumu l-ʿadhābu thumma lā tunṣarūna',
-    englishTranslation:
-      'Say, "O My slaves who have transgressed against themselves, do not despair of the mercy of Allah. Indeed, Allah forgives all sins. Indeed, He is the Oft-Forgiving, the Most Merciful." And turn to your Lord and submit to Him before the punishment comes upon you; then you will not be helped.',
+    englishTranslation: "Say, \"O My servants who have transgressed against themselves [by sinning], do not despair of the mercy of Allāh. Indeed, Allāh forgives all sins. Indeed, it is He who is the Forgiving, the Merciful.\" And return [in repentance] to your Lord and submit to Him before the punishment comes upon you; then you will not be helped.",
     source: 'Surah Az-Zumar 39:53-54',
     audioKey: '39:53-54',
     whyThis: '',
@@ -514,12 +465,10 @@ const quranContentData: Content[] = [
     type: 'Quran',
     primaryText:
       "alladhīna yunfiqūna fī l-sarāi wal-ḍarāi wal-kāẓimīna l-ghayẓa wal-ʿāfīna ʿani l-nāsi wal-lahu yuḥibbu l-muḥ'sinīna",
-    arabicText:
-      'ٱلَّذِينَ يُنفِقُونَ فِى ٱلسَّرَّآءِ وَٱلضَّرَّآءِ وَٱلْكَـٰظِمِينَ ٱلْغَيْظَ وَٱلْعَافِينَ عَنِ ٱلنَّاسِ ۗ وَٱللَّهُ يُحِبُّ ٱلْمُحْسِنِينَ ﴿134﴾',
+    arabicText: "ٱلَّذِينَ يُنفِقُونَ فِى ٱلسَّرَّآءِ وَٱلضَّرَّآءِ وَٱلْكَـٰظِمِينَ ٱلْغَيْظَ وَٱلْعَافِينَ عَنِ ٱلنَّاسِ ۗ وَٱللَّهُ يُحِبُّ ٱلْمُحْسِنِينَ",
     transliteration:
       "alladhīna yunfiqūna fī l-sarāi wal-ḍarāi wal-kāẓimīna l-ghayẓa wal-ʿāfīna ʿani l-nāsi wal-lahu yuḥibbu l-muḥ'sinīna",
-    englishTranslation:
-      'Those who spend in ease and hardship, and who restrain their anger and pardon the people — and Allah loves the good-doers.',
+    englishTranslation: "Who spend [in the cause of Allāh] during ease and hardship and who restrain anger and who pardon the people - and Allāh loves the doers of good;",
     source: 'Surah Ali Imran 3:134',
     audioKey: '3:134',
     whyThis: '"Those who restrain their anger and pardon the people — and Allah loves the good-doers." [Quran 3:134]',
@@ -530,12 +479,10 @@ const quranContentData: Content[] = [
     type: 'Quran',
     primaryText:
       "walā tastawī l-ḥasanatu walā l-sayi-atu id'faʿ bi-allatī hiya aḥsanu fa-idhā alladhī baynaka wabaynahu ʿadāwatun ka-annahu waliyyun ḥamīmun",
-    arabicText:
-      'وَلَا تَسْتَوِى ٱلْحَسَنَةُ وَلَا ٱلسَّيِّئَةُ ۚ ٱدْفَعْ بِٱلَّتِى هِىَ أَحْسَنُ فَإِذَا ٱلَّذِى بَيْنَكَ وَبَيْنَهُۥ عَدَٰوَةٌۭ كَأَنَّهُۥ وَلِىٌّ حَمِيمٌۭ ﴿34﴾',
+    arabicText: "وَلَا تَسْتَوِى ٱلْحَسَنَةُ وَلَا ٱلسَّيِّئَةُ ۚ ٱدْفَعْ بِٱلَّتِى هِىَ أَحْسَنُ فَإِذَا ٱلَّذِى بَيْنَكَ وَبَيْنَهُۥ عَدَٰوَةٌ كَأَنَّهُۥ وَلِىٌّ حَمِيمٌ",
     transliteration:
       "walā tastawī l-ḥasanatu walā l-sayi-atu id'faʿ bi-allatī hiya aḥsanu fa-idhā alladhī baynaka wabaynahu ʿadāwatun ka-annahu waliyyun ḥamīmun",
-    englishTranslation:
-      'Not equal are the good deed and the bad deed. Repel evil by that which is better, and thereupon the one between whom and you there was enmity will become as though he was a devoted friend.',
+    englishTranslation: "And not equal are the good deed and the bad. Repel [evil] by that [deed] which is better; and thereupon, the one whom between you and him is enmity [will become] as though he was a devoted friend.",
     source: 'Surah Fussilat 41:34',
     audioKey: '41:34',
     whyThis: '"Repel evil by that which is better, and thereupon the one between whom and you there was enmity will become as though he was a devoted friend." [Quran 41:34]',
@@ -545,9 +492,9 @@ const quranContentData: Content[] = [
     id: 'quran_7_199',
     type: 'Quran',
     primaryText: "khudhi l-ʿafwa wamur bil-ʿur'fi wa-aʿriḍ ʿani l-jāhilīna",
-    arabicText: 'خُذِ ٱلْعَفْوَ وَأْمُرْ بِٱلْعُرْفِ وَأَعْرِضْ عَنِ ٱلْجَـٰهِلِينَ ﴿199﴾',
+    arabicText: "خُذِ ٱلْعَفْوَ وَأْمُرْ بِٱلْعُرْفِ وَأَعْرِضْ عَنِ ٱلْجَـٰهِلِينَ",
     transliteration: "khudhi l-ʿafwa wamur bil-ʿur'fi wa-aʿriḍ ʿani l-jāhilīna",
-    englishTranslation: 'Hold to forgiveness, enjoin what is good, and turn away from the ignorant.',
+    englishTranslation: "Take what is given freely, enjoin what is good, and turn away from the ignorant.",
     source: "Surah Al-A'raf 7:199",
     audioKey: '7:199',
     whyThis: '"Hold to forgiveness, enjoin what is good, and turn away from the ignorant." [Quran 7:199]',
@@ -558,12 +505,10 @@ const quranContentData: Content[] = [
     type: 'Quran',
     primaryText:
       "wa-alladhīna yajtanibūna kabāira l-ith'mi wal-fawāḥisha wa-idhā mā ghaḍibū hum yaghfirūna",
-    arabicText:
-      'وَٱلَّذِينَ يَجْتَنِبُونَ كَبَـٰٓئِرَ ٱلْإِثْمِ وَٱلْفَوَٰحِشَ وَإِذَا مَا غَضِبُوا۟ هُمْ يَغْفِرُونَ ﴿37﴾',
+    arabicText: "وَٱلَّذِينَ يَجْتَنِبُونَ كَبَـٰٓئِرَ ٱلْإِثْمِ وَٱلْفَوَٰحِشَ وَإِذَا مَا غَضِبُوا۟ هُمْ يَغْفِرُونَ",
     transliteration:
       "wa-alladhīna yajtanibūna kabāira l-ith'mi wal-fawāḥisha wa-idhā mā ghaḍibū hum yaghfirūna",
-    englishTranslation:
-      'And those who avoid the greater sins and immoralities, and when they are angry, they forgive.',
+    englishTranslation: "And those who avoid the major sins and immoralities, and when they are angry, they forgive,",
     source: 'Surah Ash-Shura 42:37',
     audioKey: '42:37',
     whyThis: 'Forgiving when angry is a distinguishing trait of the believers.',
@@ -573,10 +518,9 @@ const quranContentData: Content[] = [
     id: 'quran_42_43',
     type: 'Quran',
     primaryText: 'walaman ṣabara waghafara inna dhālika lamin ʿazmi l-umūri',
-    arabicText: 'وَلَمَن صَبَرَ وَغَفَرَ إِنَّ ذَٰلِكَ لَمِنْ عَزْمِ ٱلْأُمُورِ ﴿43﴾',
+    arabicText: "وَلَمَن صَبَرَ وَغَفَرَ إِنَّ ذَٰلِكَ لَمِنْ عَزْمِ ٱلْأُمُورِ",
     transliteration: 'walaman ṣabara waghafara inna dhālika lamin ʿazmi l-umūri',
-    englishTranslation:
-      'And whoever is patient and forgives — indeed, that is surely of the matters requiring determination.',
+    englishTranslation: "And whoever is patient and forgives - indeed, that is of the matters [worthy] of resolve.",
     source: 'Surah Ash-Shura 42:43',
     audioKey: '42:43',
     whyThis: '',
@@ -587,12 +531,10 @@ const quranContentData: Content[] = [
     type: 'Quran',
     primaryText:
       "fabimā raḥmatin mina l-lahi linta lahum walaw kunta faẓẓan ghalīẓa l-qalbi la-infaḍḍū min ḥawlika fa-uʿ'fu ʿanhum wa-is'taghfir lahum washāwir'hum fī l-amri fa-idhā ʿazamta fatawakkal ʿalā l-lahi inna l-laha yuḥibbu l-mutawakilīna",
-    arabicText:
-      'فَبِمَا رَحْمَةٍۢ مِّنَ ٱللَّهِ لِنتَ لَهُمْ ۖ وَلَوْ كُنتَ فَظًّا غَلِيظَ ٱلْقَلْبِ لَٱنفَضُّوا۟ مِنْ حَوْلِكَ ۖ فَٱعْفُ عَنْهُمْ وَٱسْتَغْفِرْ لَهُمْ وَشَاوِرْهُمْ فِى ٱلْأَمْرِ ۖ فَإِذَا عَزَمْتَ فَتَوَكَّلْ عَلَى ٱللَّهِ ۚ إِنَّ ٱللَّهَ يُحِبُّ ٱلْمُتَوَكِّلِينَ ﴿159﴾',
+    arabicText: "فَبِمَا رَحْمَةٍ مِّنَ ٱللَّهِ لِنتَ لَهُمْ ۖ وَلَوْ كُنتَ فَظًّا غَلِيظَ ٱلْقَلْبِ لَٱنفَضُّوا۟ مِنْ حَوْلِكَ ۖ فَٱعْفُ عَنْهُمْ وَٱسْتَغْفِرْ لَهُمْ وَشَاوِرْهُمْ فِى ٱلْأَمْرِ ۖ فَإِذَا عَزَمْتَ فَتَوَكَّلْ عَلَى ٱللَّهِ ۚ إِنَّ ٱللَّهَ يُحِبُّ ٱلْمُتَوَكِّلِينَ",
     transliteration:
       "fabimā raḥmatin mina l-lahi linta lahum walaw kunta faẓẓan ghalīẓa l-qalbi la-infaḍḍū min ḥawlika fa-uʿ'fu ʿanhum wa-is'taghfir lahum washāwir'hum fī l-amri fa-idhā ʿazamta fatawakkal ʿalā l-lahi inna l-laha yuḥibbu l-mutawakilīna",
-    englishTranslation:
-      'So by mercy from Allah, you dealt gently with them. And if you had been rude and harsh in heart, they would have dispersed from around you. So pardon them, ask forgiveness for them, and consult them in the matter. Then when you have decided, put your trust in Allah. Indeed, Allah loves those who put their trust in Him.',
+    englishTranslation: "So by mercy from Allāh, [O Muḥammad], you were lenient with them. And if you had been rude [in speech] and harsh in heart, they would have disbanded from about you. So pardon them and ask forgiveness for them and consult them in the matter. And when you have decided, then rely upon Allāh. Indeed, Allāh loves those who rely [upon Him].",
     source: 'Surah Ali Imran 3:159',
     audioKey: '3:159',
     whyThis: '',
@@ -603,12 +545,10 @@ const quranContentData: Content[] = [
     type: 'Quran',
     primaryText:
       "walā yatali ulū l-faḍli minkum wal-saʿati an yu'tū ulī l-qur'bā wal-masākīna wal-muhājirīna fī sabīli l-lahi walyaʿfū walyaṣfaḥū alā tuḥibbūna an yaghfira l-lahu lakum wal-lahu ghafūrun raḥīmun",
-    arabicText:
-      'وَلَا يَأْتَلِ أُو۟لُوا۟ ٱلْفَضْلِ مِنكُمْ وَٱلسَّعَةِ أَن يُؤْتُوٓا۟ أُو۟لِى ٱلْقُرْبَىٰ وَٱلْمَسَـٰكِينَ وَٱلْمُهَـٰجِرِينَ فِى سَبِيلِ ٱللَّهِ ۖ وَلْيَعْفُوا۟ وَلْيَصْفَحُوٓا۟ ۗ أَلَا تُحِبُّونَ أَن يَغْفِرَ ٱللَّهُ لَكُمْ ۗ وَٱللَّهُ غَفُورٌۭ رَّحِيمٌ ﴿22﴾',
+    arabicText: "وَلَا يَأْتَلِ أُو۟لُوا۟ ٱلْفَضْلِ مِنكُمْ وَٱلسَّعَةِ أَن يُؤْتُوٓا۟ أُو۟لِى ٱلْقُرْبَىٰ وَٱلْمَسَـٰكِينَ وَٱلْمُهَـٰجِرِينَ فِى سَبِيلِ ٱللَّهِ ۖ وَلْيَعْفُوا۟ وَلْيَصْفَحُوٓا۟ ۗ أَلَا تُحِبُّونَ أَن يَغْفِرَ ٱللَّهُ لَكُمْ ۗ وَٱللَّهُ غَفُورٌ رَّحِيمٌ",
     transliteration:
       "walā yatali ulū l-faḍli minkum wal-saʿati an yu'tū ulī l-qur'bā wal-masākīna wal-muhājirīna fī sabīli l-lahi walyaʿfū walyaṣfaḥū alā tuḥibbūna an yaghfira l-lahu lakum wal-lahu ghafūrun raḥīmun",
-    englishTranslation:
-      'And let not those of virtue among you and wealth swear not to give to their relatives, the needy, and the emigrants in the cause of Allah. Let them pardon and overlook. Would you not like that Allah should forgive you? And Allah is Oft-Forgiving, Most Merciful.',
+    englishTranslation: "And let not those of virtue among you and wealth swear not to give [aid] to their relatives and the needy and the emigrants for the cause of Allāh, and let them pardon and overlook. Would you not like that Allāh should forgive you? And Allāh is Forgiving and Merciful.",
     translation:
       'Those among you who have been blessed with wealth and goodness should not swear to stop helping their relatives, the poor, and those who sacrificed for Allah\'s cause. Rather, forgive and let it go. Would you not love for Allah to forgive you? And Allah is Oft-Forgiving, Most Merciful.',
     source: 'Surah An-Nur 24:22',
@@ -621,12 +561,10 @@ const quranContentData: Content[] = [
     type: 'Quran',
     primaryText:
       "wa-in ʿāqabtum faʿāqibū bimith'li mā ʿūqib'tum bihi wala-in ṣabartum lahuwa khayrun lilṣṣābirīna",
-    arabicText:
-      'وَإِنْ عَاقَبْتُمْ فَعَاقِبُوا۟ بِمِثْلِ مَا عُوقِبْتُم بِهِۦ ۖ وَلَئِن صَبَرْتُمْ لَهُوَ خَيْرٌۭ لِّلصَّـٰبِرِينَ ﴿126﴾',
+    arabicText: "وَإِنْ عَاقَبْتُمْ فَعَاقِبُوا۟ بِمِثْلِ مَا عُوقِبْتُم بِهِۦ ۖ وَلَئِن صَبَرْتُمْ لَهُوَ خَيْرٌ لِّلصَّـٰبِرِينَ",
     transliteration:
       "wa-in ʿāqabtum faʿāqibū bimith'li mā ʿūqib'tum bihi wala-in ṣabartum lahuwa khayrun lilṣṣābirīna",
-    englishTranslation:
-      'And if you retaliate, then retaliate with the like of what you were afflicted with. But if you are patient, it is surely better for the patient.',
+    englishTranslation: "And if you punish [an enemy, O believers], punish with an equivalent of that with which you were harmed. But if you are patient - it is better for those who are patient.",
     source: 'Surah An-Nahl 16:126',
     audioKey: '16:126',
     whyThis: 'Patience is always the better choice for those who can practice it.',
@@ -637,12 +575,10 @@ const quranContentData: Content[] = [
     type: 'Quran',
     primaryText:
       "fabimā naqḍihim mīthāqahum laʿannāhum wajaʿalnā qulūbahum qāsiyatan yuḥarrifūna l-kalima ʿan mawāḍiʿihi wanasū ḥaẓẓan mimmā dhukkirū bihi walā tazālu taṭṭaliʿu ʿalā khāinatin min'hum illā qalīlan min'hum fa-uʿ'fu ʿanhum wa-iṣ'faḥ inna l-laha yuḥibbu l-muḥ'sinīna",
-    arabicText:
-      'فَبِمَا نَقْضِهِم مِّيثَـٰقَهُمْ لَعَنَّـٰهُمْ وَجَعَلْنَا قُلُوبَهُمْ قَـٰسِيَةًۭ ۖ يُحَرِّفُونَ ٱلْكَلِمَ عَن مَّوَاضِعِهِۦ ۙ وَنَسُوا۟ حَظًّۭا مِّمَّا ذُكِّرُوا۟ بِهِۦ ۚ وَلَا تَزَالُ تَطَّلِعُ عَلَىٰ خَآئِنَةٍۢ مِّنْهُمْ إِلَّا قَلِيلًۭا مِّنْهُمْ ۖ فَٱعْفُ عَنْهُمْ وَٱصْفَحْ ۚ إِنَّ ٱللَّهَ يُحِبُّ ٱلْمُحْسِنِينَ ﴿13﴾',
+    arabicText: "فَبِمَا نَقْضِهِم مِّيثَـٰقَهُمْ لَعَنَّـٰهُمْ وَجَعَلْنَا قُلُوبَهُمْ قَـٰسِيَةً ۖ يُحَرِّفُونَ ٱلْكَلِمَ عَن مَّوَاضِعِهِۦ ۙ وَنَسُوا۟ حَظًّا مِّمَّا ذُكِّرُوا۟ بِهِۦ ۚ وَلَا تَزَالُ تَطَّلِعُ عَلَىٰ خَآئِنَةٍ مِّنْهُمْ إِلَّا قَلِيلًا مِّنْهُمْ ۖ فَٱعْفُ عَنْهُمْ وَٱصْفَحْ ۚ إِنَّ ٱللَّهَ يُحِبُّ ٱلْمُحْسِنِينَ",
     transliteration:
       "fabimā naqḍihim mīthāqahum laʿannāhum wajaʿalnā qulūbahum qāsiyatan yuḥarrifūna l-kalima ʿan mawāḍiʿihi wanasū ḥaẓẓan mimmā dhukkirū bihi walā tazālu taṭṭaliʿu ʿalā khāinatin min'hum illā qalīlan min'hum fa-uʿ'fu ʿanhum wa-iṣ'faḥ inna l-laha yuḥibbu l-muḥ'sinīna",
-    englishTranslation:
-      'So for their breaking of the covenant, We cursed them and made their hearts hard. They distort words from their places and forgot a part of what they were reminded of. And you will still observe treachery from them, except a few. But forgive them and overlook. Indeed, Allah loves the good-doers.',
+    englishTranslation: "So for their breaking of the covenant We cursed them and made their hearts hardened. They distort words from their [proper] places [i.e., usages] and have forgotten a portion of that of which they were reminded. And you will still observe deceit among them, except a few of them. But pardon them and overlook [their misdeeds]. Indeed, Allāh loves the doers of good.",
     translation:
       'Because certain people among the Children of Israel broke their covenant with Allah, their hearts became hardened. They twisted the words of scripture, and forgot much of what they were taught. You will still see betrayal from many of them — but forgive them, and let it go. Indeed, Allah loves those who do good.',
     source: 'Surah Al-Maidah 5:13',
@@ -655,12 +591,10 @@ const quranContentData: Content[] = [
     type: 'Quran',
     primaryText:
       "yāayyuhā alladhīna āmanū inna min azwājikum wa-awlādikum ʿaduwwan lakum fa-iḥ'dharūhum wa-in taʿfū wataṣfaḥū wataghfirū fa-inna l-laha ghafūrun raḥīmun",
-    arabicText:
-      'يَـٰٓأَيُّهَا ٱلَّذِينَ ءَامَنُوٓا۟ إِنَّ مِنْ أَزْوَٰجِكُمْ وَأَوْلَـٰدِكُمْ عَدُوًّۭا لَّكُمْ فَٱحْذَرُوهُمْ ۚ وَإِن تَعْفُوا۟ وَتَصْفَحُوا۟ وَتَغْفِرُوا۟ فَإِنَّ ٱللَّهَ غَفُورٌۭ رَّحِيمٌ ﴿14﴾',
+    arabicText: "يَـٰٓأَيُّهَا ٱلَّذِينَ ءَامَنُوٓا۟ إِنَّ مِنْ أَزْوَٰجِكُمْ وَأَوْلَـٰدِكُمْ عَدُوًّا لَّكُمْ فَٱحْذَرُوهُمْ ۚ وَإِن تَعْفُوا۟ وَتَصْفَحُوا۟ وَتَغْفِرُوا۟ فَإِنَّ ٱللَّهَ غَفُورٌ رَّحِيمٌ",
     transliteration:
       "yāayyuhā alladhīna āmanū inna min azwājikum wa-awlādikum ʿaduwwan lakum fa-iḥ'dharūhum wa-in taʿfū wataṣfaḥū wataghfirū fa-inna l-laha ghafūrun raḥīmun",
-    englishTranslation:
-      'O you who believe, indeed among your spouses and your children are enemies to you, so beware of them. But if you pardon, overlook, and forgive, then indeed Allah is Oft-Forgiving, Most Merciful.',
+    englishTranslation: "O you who have believed, indeed, among your spouses and your children are enemies to you, so beware of them. But if you pardon and overlook and forgive - then indeed, Allāh is Forgiving and Merciful.",
     source: 'Surah At-Taghabun 64:14',
     audioKey: '64:14',
     whyThis: '',
@@ -671,12 +605,10 @@ const quranContentData: Content[] = [
     type: 'Quran',
     primaryText:
       "in tub'dū khayran aw tukh'fūhu aw taʿfū ʿan sūin fa-inna l-laha kāna ʿafuwwan qadīran",
-    arabicText:
-      'إِن تُبْدُوا۟ خَيْرًا أَوْ تُخْفُوهُ أَوْ تَعْفُوا۟ عَن سُوٓءٍۢ فَإِنَّ ٱللَّهَ كَانَ عَفُوًّۭا قَدِيرًا ﴿149﴾',
+    arabicText: "إِن تُبْدُوا۟ خَيْرًا أَوْ تُخْفُوهُ أَوْ تَعْفُوا۟ عَن سُوٓءٍ فَإِنَّ ٱللَّهَ كَانَ عَفُوًّا قَدِيرًا",
     transliteration:
       "in tub'dū khayran aw tukh'fūhu aw taʿfū ʿan sūin fa-inna l-laha kāna ʿafuwwan qadīran",
-    englishTranslation:
-      'If you disclose a good deed or conceal it, or pardon an evil, then indeed Allah is Oft-Pardoning, All-Powerful.',
+    englishTranslation: "If [instead] you show [some] good or conceal it or pardon an offense - indeed, Allāh is ever Pardoning and Competent.",
     source: 'Surah An-Nisa 4:149',
     audioKey: '4:149',
     whyThis: '',
@@ -687,12 +619,10 @@ const quranContentData: Content[] = [
     type: 'Quran',
     primaryText:
       'qul lilladhīna āmanū yaghfirū lilladhīna lā yarjūna ayyāma l-lahi liyajziya qawman bimā kānū yaksibūna',
-    arabicText:
-      'قُل لِّلَّذِينَ ءَامَنُوا۟ يَغْفِرُوا۟ لِلَّذِينَ لَا يَرْجُونَ أَيَّامَ ٱللَّهِ لِيَجْزِىَ قَوْمًۢا بِمَا كَانُوا۟ يَكْسِبُونَ ﴿14﴾',
+    arabicText: "قُل لِّلَّذِينَ ءَامَنُوا۟ يَغْفِرُوا۟ لِلَّذِينَ لَا يَرْجُونَ أَيَّامَ ٱللَّهِ لِيَجْزِىَ قَوْمًۢا بِمَا كَانُوا۟ يَكْسِبُونَ",
     transliteration:
       'qul lilladhīna āmanū yaghfirū lilladhīna lā yarjūna ayyāma l-lahi liyajziya qawman bimā kānū yaksibūna',
-    englishTranslation:
-      'Say to those who believe to forgive those who do not hope for the days of Allah, that He may recompense a people for what they used to earn.',
+    englishTranslation: "Say, [O Muḥammad], to those who have believed that they [should] forgive those who expect not the days of Allāh [i.e., of His retribution] so that He may recompense a people for what they used to earn.",
     translation:
       'Tell the believers: forgive those who do not fear the consequences of their actions before Allah — so that He may repay each group for what they have earned. Leave justice to Him.',
     source: 'Surah Al-Jathiyah 45:14',
@@ -707,12 +637,10 @@ const quranContentData: Content[] = [
     type: 'Quran',
     primaryText:
       'waman yaʿmal sūan aw yaẓlim nafsahu thumma yastaghfiri l-laha yajidi l-laha ghafūran raḥīman',
-    arabicText:
-      'وَمَن يَعْمَلْ سُوٓءًا أَوْ يَظْلِمْ نَفْسَهُۥ ثُمَّ يَسْتَغْفِرِ ٱللَّهَ يَجِدِ ٱللَّهَ غَفُورًۭا رَّحِيمًۭا ﴿110﴾',
+    arabicText: "وَمَن يَعْمَلْ سُوٓءًا أَوْ يَظْلِمْ نَفْسَهُۥ ثُمَّ يَسْتَغْفِرِ ٱللَّهَ يَجِدِ ٱللَّهَ غَفُورًا رَّحِيمًا",
     transliteration:
       'waman yaʿmal sūan aw yaẓlim nafsahu thumma yastaghfiri l-laha yajidi l-laha ghafūran raḥīman',
-    englishTranslation:
-      'And whoever does evil or wrongs himself, then seeks forgiveness of Allah, will find Allah Oft-Forgiving, Most Merciful.',
+    englishTranslation: "And whoever does a wrong or wrongs himself but then seeks forgiveness of Allāh will find Allāh Forgiving and Merciful.",
     source: 'Surah An-Nisa 4:110',
     audioKey: '4:110',
     whyThis: 'Seeking forgiveness guarantees finding it.',
@@ -723,12 +651,10 @@ const quranContentData: Content[] = [
     type: 'Quran',
     primaryText:
       'illā man tāba waāmana waʿamila ʿamalan ṣāliḥan fa-ulāika yubaddilu l-lahu sayyiātihim ḥasanātin wakāna l-lahu ghafūran raḥīman',
-    arabicText:
-      'إِلَّا مَن تَابَ وَءَامَنَ وَعَمِلَ عَمَلًۭا صَـٰلِحًۭا فَأُو۟لَـٰٓئِكَ يُبَدِّلُ ٱللَّهُ سَيِّـَٔاتِهِمْ حَسَنَـٰتٍۢ ۗ وَكَانَ ٱللَّهُ غَفُورًۭا رَّحِيمًۭا ﴿70﴾',
+    arabicText: "إِلَّا مَن تَابَ وَءَامَنَ وَعَمِلَ عَمَلًا صَـٰلِحًا فَأُو۟لَـٰٓئِكَ يُبَدِّلُ ٱللَّهُ سَيِّـَٔاتِهِمْ حَسَنَـٰتٍ ۗ وَكَانَ ٱللَّهُ غَفُورًا رَّحِيمًا",
     transliteration:
       'illā man tāba waāmana waʿamila ʿamalan ṣāliḥan fa-ulāika yubaddilu l-lahu sayyiātihim ḥasanātin wakāna l-lahu ghafūran raḥīman',
-    englishTranslation:
-      'Except those who repent, believe, and do righteous deeds — for those, Allah will replace their evil deeds with good ones. And Allah is Oft-Forgiving, Most Merciful.',
+    englishTranslation: "Except for those who repent, believe and do righteous work. For them Allāh will replace their evil deeds with good. And ever is Allāh Forgiving and Merciful.",
     translation:
       'But those who sincerely repent, renew their faith, and follow it up with good deeds — for them, Allah will transform their past sins into good deeds on their record. And ever is Allah Oft-Forgiving, Most Merciful.',
     source: 'Surah Al-Furqan 25:70',
@@ -741,12 +667,10 @@ const quranContentData: Content[] = [
     type: 'Quran',
     primaryText:
       "wa-alladhīna idhā faʿalū fāḥishatan aw ẓalamū anfusahum dhakarū l-laha fa-is'taghfarū lidhunūbihim waman yaghfiru l-dhunūba illā l-lahu walam yuṣirrū ʿalā mā faʿalū wahum yaʿlamūna",
-    arabicText:
-      'وَٱلَّذِينَ إِذَا فَعَلُوا۟ فَـٰحِشَةً أَوْ ظَلَمُوٓا۟ أَنفُسَهُمْ ذَكَرُوا۟ ٱللَّهَ فَٱسْتَغْفَرُوا۟ لِذُنُوبِهِمْ وَمَن يَغْفِرُ ٱلذُّنُوبَ إِلَّا ٱللَّهُ وَلَمْ يُصِرُّوا۟ عَلَىٰ مَا فَعَلُوا۟ وَهُمْ يَعْلَمُونَ ﴿135﴾',
+    arabicText: "وَٱلَّذِينَ إِذَا فَعَلُوا۟ فَـٰحِشَةً أَوْ ظَلَمُوٓا۟ أَنفُسَهُمْ ذَكَرُوا۟ ٱللَّهَ فَٱسْتَغْفَرُوا۟ لِذُنُوبِهِمْ وَمَن يَغْفِرُ ٱلذُّنُوبَ إِلَّا ٱللَّهُ وَلَمْ يُصِرُّوا۟ عَلَىٰ مَا فَعَلُوا۟ وَهُمْ يَعْلَمُونَ",
     transliteration:
       "wa-alladhīna idhā faʿalū fāḥishatan aw ẓalamū anfusahum dhakarū l-laha fa-is'taghfarū lidhunūbihim waman yaghfiru l-dhunūba illā l-lahu walam yuṣirrū ʿalā mā faʿalū wahum yaʿlamūna",
-    englishTranslation:
-      'And those who, when they commit an immorality or wrong themselves, remember Allah and seek forgiveness for their sins — and who can forgive sins except Allah? — and do not persist in what they did while they know.',
+    englishTranslation: "And those who, when they commit an immorality or wrong themselves [by transgression], remember Allāh and seek forgiveness for their sins - and who can forgive sins except Allāh? - and [who] do not persist in what they have done while they know.",
     source: 'Surah Ali Imran 3:135',
     audioKey: '3:135',
     whyThis: '',
@@ -757,12 +681,10 @@ const quranContentData: Content[] = [
     type: 'Quran',
     primaryText:
       "yāayyuhā alladhīna āmanū tūbū ilā l-lahi tawbatan naṣūḥan ʿasā rabbukum an yukaffira ʿankum sayyiātikum wayud'khilakum jannātin tajrī min taḥtihā l-anhāru yawma lā yukh'zī l-lahu l-nabiya wa-alladhīna āmanū maʿahu nūruhum yasʿā bayna aydīhim wabi-aymānihim yaqūlūna rabbanā atmim lanā nūranā wa-igh'fir lanā innaka ʿalā kulli shayin qadīrun",
-    arabicText:
-      'يَـٰٓأَيُّهَا ٱلَّذِينَ ءَامَنُوا۟ تُوبُوٓا۟ إِلَى ٱللَّهِ تَوْبَةًۭ نَّصُوحًا عَسَىٰ رَبُّكُمْ أَن يُكَفِّرَ عَنكُمْ سَيِّـَٔاتِكُمْ وَيُدْخِلَكُمْ جَنَّـٰتٍۢ تَجْرِى مِن تَحْتِهَا ٱلْأَنْهَـٰرُ يَوْمَ لَا يُخْزِى ٱللَّهُ ٱلنَّبِىَّ وَٱلَّذِينَ ءَامَنُوا۟ مَعَهُۥ ۖ نُورُهُمْ يَسْعَىٰ بَيْنَ أَيْدِيهِمْ وَبِأَيْمَـٰنِهِمْ يَقُولُونَ رَبَّنَآ أَتْمِمْ لَنَا نُورَنَا وَٱغْفِرْ لَنَآ ۖ إِنَّكَ عَلَىٰ كُلِّ شَىْءٍۢ قَدِيرٌۭ ﴿8﴾',
+    arabicText: "يَـٰٓأَيُّهَا ٱلَّذِينَ ءَامَنُوا۟ تُوبُوٓا۟ إِلَى ٱللَّهِ تَوْبَةً نَّصُوحًا عَسَىٰ رَبُّكُمْ أَن يُكَفِّرَ عَنكُمْ سَيِّـَٔاتِكُمْ وَيُدْخِلَكُمْ جَنَّـٰتٍ تَجْرِى مِن تَحْتِهَا ٱلْأَنْهَـٰرُ يَوْمَ لَا يُخْزِى ٱللَّهُ ٱلنَّبِىَّ وَٱلَّذِينَ ءَامَنُوا۟ مَعَهُۥ ۖ نُورُهُمْ يَسْعَىٰ بَيْنَ أَيْدِيهِمْ وَبِأَيْمَـٰنِهِمْ يَقُولُونَ رَبَّنَآ أَتْمِمْ لَنَا نُورَنَا وَٱغْفِرْ لَنَآ ۖ إِنَّكَ عَلَىٰ كُلِّ شَىْءٍ قَدِيرٌ",
     transliteration:
       "yāayyuhā alladhīna āmanū tūbū ilā l-lahi tawbatan naṣūḥan ʿasā rabbukum an yukaffira ʿankum sayyiātikum wayud'khilakum jannātin tajrī min taḥtihā l-anhāru yawma lā yukh'zī l-lahu l-nabiya wa-alladhīna āmanū maʿahu nūruhum yasʿā bayna aydīhim wabi-aymānihim yaqūlūna rabbanā atmim lanā nūranā wa-igh'fir lanā innaka ʿalā kulli shayin qadīrun",
-    englishTranslation:
-      'O you who believe, turn to Allah in sincere repentance. Perhaps your Lord will remove from you your evil deeds and admit you into Gardens beneath which rivers flow, on the Day when Allah will not disgrace the Prophet and those who believed with him. Their light will proceed before them and on their right. They will say, "Our Lord, perfect for us our light and grant us forgiveness. Indeed, You are over all things All-Powerful."',
+    englishTranslation: "O you who have believed, repent to Allāh with sincere repentance. Perhaps your Lord will remove from you your misdeeds and admit you into gardens beneath which rivers flow [on] the Day when Allāh will not disgrace the Prophet and those who believed with him. Their light will proceed before them and on their right; they will say, \"Our Lord, perfect for us our light and forgive us. Indeed, You are over all things competent.\"",
     source: 'Surah At-Tahrim 66:8',
     audioKey: '66:8',
     whyThis: 'Allah calls believers to sincere repentance as a path to success.',
@@ -775,12 +697,10 @@ const quranContentData: Content[] = [
     type: 'Quran',
     primaryText:
       'wa-idh ta-adhana rabbukum la-in shakartum la-azīdannakum wala-in kafartum inna ʿadhābī lashadīdun',
-    arabicText:
-      'وَإِذْ تَأَذَّنَ رَبُّكُمْ لَئِن شَكَرْتُمْ لَأَزِيدَنَّكُمْ ۖ وَلَئِن كَفَرْتُمْ إِنَّ عَذَابِى لَشَدِيدٌۭ ﴿7﴾',
+    arabicText: "وَإِذْ تَأَذَّنَ رَبُّكُمْ لَئِن شَكَرْتُمْ لَأَزِيدَنَّكُمْ ۖ وَلَئِن كَفَرْتُمْ إِنَّ عَذَابِى لَشَدِيدٌ",
     transliteration:
       'wa-idh ta-adhana rabbukum la-in shakartum la-azīdannakum wala-in kafartum inna ʿadhābī lashadīdun',
-    englishTranslation:
-      'And when your Lord proclaimed, "If you are thankful, I will surely increase you; but if you are ungrateful, indeed My punishment is surely severe."',
+    englishTranslation: "And [remember] when your Lord proclaimed, 'If you are grateful, I will surely increase you [in favor]; but if you deny, indeed, My punishment is severe.'\"",
     source: 'Surah Ibrahim 14:7',
     audioKey: '14:7',
     whyThis: '',
@@ -790,11 +710,9 @@ const quranContentData: Content[] = [
     id: 'quran_16_18',
     type: 'Quran',
     primaryText: "wa-in taʿuddū niʿ'mata l-lahi lā tuḥ'ṣūhā inna l-laha laghafūrun raḥīmun",
-    arabicText:
-      'وَإِن تَعُدُّوا۟ نِعْمَةَ ٱللَّهِ لَا تُحْصُوهَآ ۗ إِنَّ ٱللَّهَ لَغَفُورٌۭ رَّحِيمٌۭ ﴿18﴾',
+    arabicText: "وَإِن تَعُدُّوا۟ نِعْمَةَ ٱللَّهِ لَا تُحْصُوهَآ ۗ إِنَّ ٱللَّهَ لَغَفُورٌ رَّحِيمٌ",
     transliteration: "wa-in taʿuddū niʿ'mata l-lahi lā tuḥ'ṣūhā inna l-laha laghafūrun raḥīmun",
-    englishTranslation:
-      'And if you should count the favors of Allah, you could not enumerate them. Indeed, Allah is Oft-Forgiving, Most Merciful.',
+    englishTranslation: "And if you should count the favors of Allāh, you could not enumerate them. Indeed, Allāh is Forgiving and Merciful.",
     source: 'Surah An-Nahl 16:18',
     audioKey: '16:18',
     whyThis: '',
@@ -805,12 +723,10 @@ const quranContentData: Content[] = [
     type: 'Quran',
     primaryText:
       "walaqad ātaynā luq'māna l-ḥik'mata ani ush'kur lillahi waman yashkur fa-innamā yashkuru linafsihi waman kafara fa-inna l-laha ghaniyyun ḥamīdun",
-    arabicText:
-      'وَلَقَدْ ءَاتَيْنَا لُقْمَـٰنَ ٱلْحِكْمَةَ أَنِ ٱشْكُرْ لِلَّهِ ۚ وَمَن يَشْكُرْ فَإِنَّمَا يَشْكُرُ لِنَفْسِهِۦ ۖ وَمَن كَفَرَ فَإِنَّ ٱللَّهَ غَنِىٌّ حَمِيدٌۭ ﴿12﴾',
+    arabicText: "وَلَقَدْ ءَاتَيْنَا لُقْمَـٰنَ ٱلْحِكْمَةَ أَنِ ٱشْكُرْ لِلَّهِ ۚ وَمَن يَشْكُرْ فَإِنَّمَا يَشْكُرُ لِنَفْسِهِۦ ۖ وَمَن كَفَرَ فَإِنَّ ٱللَّهَ غَنِىٌّ حَمِيدٌ",
     transliteration:
       "walaqad ātaynā luq'māna l-ḥik'mata ani ush'kur lillahi waman yashkur fa-innamā yashkuru linafsihi waman kafara fa-inna l-laha ghaniyyun ḥamīdun",
-    englishTranslation:
-      'And We certainly gave Luqman wisdom, saying, "Be grateful to Allah." And whoever is grateful is grateful for himself. And whoever is ungrateful, then indeed Allah is Free of need, Praiseworthy.',
+    englishTranslation: "And We had certainly given Luqmān wisdom [and said], \"Be grateful to Allāh.\" And whoever is grateful is grateful for [the benefit of] himself. And whoever denies [His favor] - then indeed, Allāh is Free of need and Praiseworthy.",
     translation:
       'And We certainly gave Luqman wisdom, saying, "Be grateful to Allah." And whoever is grateful is grateful for himself. And whoever is ungrateful, then indeed Allah is Free of need, Praiseworthy.',
     source: 'Surah Luqman 31:12',
@@ -823,12 +739,10 @@ const quranContentData: Content[] = [
     type: 'Quran',
     primaryText:
       "qāla alladhī ʿindahu ʿil'mun mina l-kitābi anā ātīka bihi qabla an yartadda ilayka ṭarfuka falammā raāhu mus'taqirran ʿindahu qāla hādhā min faḍli rabbī liyabluwanī a-ashkuru am akfuru waman shakara fa-innamā yashkuru linafsihi waman kafara fa-inna rabbī ghaniyyun karīmun",
-    arabicText:
-      'قَالَ ٱلَّذِى عِندَهُۥ عِلْمٌۭ مِّنَ ٱلْكِتَـٰبِ أَنَا۠ ءَاتِيكَ بِهِۦ قَبْلَ أَن يَرْتَدَّ إِلَيْكَ طَرْفُكَ ۚ فَلَمَّا رَءَاهُ مُسْتَقِرًّا عِندَهُۥ قَالَ هَـٰذَا مِن فَضْلِ رَبِّى لِيَبْلُوَنِىٓ ءَأَشْكُرُ أَمْ أَكْفُرُ ۖ وَمَن شَكَرَ فَإِنَّمَا يَشْكُرُ لِنَفْسِهِۦ ۖ وَمَن كَفَرَ فَإِنَّ رَبِّى غَنِىٌّۭ كَرِيمٌۭ ﴿40﴾',
+    arabicText: "قَالَ ٱلَّذِى عِندَهُۥ عِلْمٌ مِّنَ ٱلْكِتَـٰبِ أَنَا۠ ءَاتِيكَ بِهِۦ قَبْلَ أَن يَرْتَدَّ إِلَيْكَ طَرْفُكَ ۚ فَلَمَّا رَءَاهُ مُسْتَقِرًّا عِندَهُۥ قَالَ هَـٰذَا مِن فَضْلِ رَبِّى لِيَبْلُوَنِىٓ ءَأَشْكُرُ أَمْ أَكْفُرُ ۖ وَمَن شَكَرَ فَإِنَّمَا يَشْكُرُ لِنَفْسِهِۦ ۖ وَمَن كَفَرَ فَإِنَّ رَبِّى غَنِىٌّ كَرِيمٌ",
     transliteration:
       "qāla alladhī ʿindahu ʿil'mun mina l-kitābi anā ātīka bihi qabla an yartadda ilayka ṭarfuka falammā raāhu mus'taqirran ʿindahu qāla hādhā min faḍli rabbī liyabluwanī a-ashkuru am akfuru waman shakara fa-innamā yashkuru linafsihi waman kafara fa-inna rabbī ghaniyyun karīmun",
-    englishTranslation:
-      'One who had knowledge from the Scripture said, "I will bring it to you before your glance returns to you." And when he saw it placed before him, he said, "This is from the favor of my Lord, to test me whether I am grateful or ungrateful. And whoever is grateful — it is only for his own soul. And whoever is ungrateful, then indeed my Lord is Self-sufficient, Noble."',
+    englishTranslation: "Said one who had knowledge from the Scripture, \"I will bring it to you before your glance returns to you.\" And when [Solomon] saw it placed before him, he said, \"This is from the favor of my Lord to test me whether I will be grateful or ungrateful. And whoever is grateful - his gratitude is only for [the benefit of] himself. And whoever is ungrateful - then indeed, my Lord is Free of need and Generous.\"",
     translation:
       'One who had knowledge from the Scripture said, "I will bring it to you before your glance returns to you." And when he saw it placed before him, he said, "This is from the favour of my Lord, to test me whether I will be grateful or ungrateful. And whoever is grateful — it is only for his own soul. And whoever is ungrateful, then indeed my Lord is Self-sufficient, Most Generous."',
     source: 'Surah An-Naml 27:40',
@@ -841,12 +755,10 @@ const quranContentData: Content[] = [
     type: 'Quran',
     primaryText:
       "yaʿmalūna lahu mā yashāu min maḥārība watamāthīla wajifānin kal-jawābi waqudūrin rāsiyātin iʿ'malū āla dāwūda shuk'ran waqalīlun min ʿibādiya l-shakūru",
-    arabicText:
-      'يَعْمَلُونَ لَهُۥ مَا يَشَآءُ مِن مَّحَـٰرِيبَ وَتَمَـٰثِيلَ وَجِفَانٍۢ كَٱلْجَوَابِ وَقُدُورٍۢ رَّاسِيَـٰتٍ ۚ ٱعْمَلُوٓا۟ ءَالَ دَاوُۥدَ شُكْرًۭا ۚ وَقَلِيلٌۭ مِّنْ عِبَادِىَ ٱلشَّكُورُ ﴿13﴾',
+    arabicText: "يَعْمَلُونَ لَهُۥ مَا يَشَآءُ مِن مَّحَـٰرِيبَ وَتَمَـٰثِيلَ وَجِفَانٍ كَٱلْجَوَابِ وَقُدُورٍ رَّاسِيَـٰتٍ ۚ ٱعْمَلُوٓا۟ ءَالَ دَاوُۥدَ شُكْرًا ۚ وَقَلِيلٌ مِّنْ عِبَادِىَ ٱلشَّكُورُ",
     transliteration:
       "yaʿmalūna lahu mā yashāu min maḥārība watamāthīla wajifānin kal-jawābi waqudūrin rāsiyātin iʿ'malū āla dāwūda shuk'ran waqalīlun min ʿibādiya l-shakūru",
-    englishTranslation:
-      'They made for him what he willed of elevated chambers, statues, bowls like reservoirs, and cooking pots firmly set. "Work, O family of Dawood, in gratitude." But few of My slaves are grateful.',
+    englishTranslation: "They made for him what he willed of elevated chambers, statues, bowls like reservoirs, and stationary kettles. [We said], \"Work, O family of David, in gratitude.\" And few of My servants are grateful.",
     translation:
       'They made for him what he willed of elevated chambers, statues, bowls like reservoirs, and cooking pots firmly set. "Work, O family of Dawood, in gratitude." But few of My servants are grateful.',
     source: 'Surah Saba 34:13',
@@ -858,10 +770,9 @@ const quranContentData: Content[] = [
     id: 'quran_76_3',
     type: 'Quran',
     primaryText: 'innā hadaynāhu l-sabīla immā shākiran wa-immā kafūran',
-    arabicText: 'إِنَّا هَدَيْنَـٰهُ ٱلسَّبِيلَ إِمَّا شَاكِرًۭا وَإِمَّا كَفُورًا ﴿3﴾',
+    arabicText: "إِنَّا هَدَيْنَـٰهُ ٱلسَّبِيلَ إِمَّا شَاكِرًا وَإِمَّا كَفُورًا",
     transliteration: 'innā hadaynāhu l-sabīla immā shākiran wa-immā kafūran',
-    englishTranslation:
-      'Indeed, We guided him to the way, whether he be grateful or ungrateful.',
+    englishTranslation: "Indeed, We guided him to the way, be he grateful or be he ungrateful.",
     source: 'Surah Al-Insan 76:3',
     audioKey: '76:3',
     whyThis: 'Allah has shown us the way - now the choice is ours: gratitude or ingratitude.',
@@ -871,9 +782,9 @@ const quranContentData: Content[] = [
     id: 'quran_54_35',
     type: 'Quran',
     primaryText: "niʿ'matan min ʿindinā kadhālika najzī man shakara",
-    arabicText: 'نِّعْمَةًۭ مِّنْ عِندِنَا ۚ كَذَٰلِكَ نَجْزِى مَن شَكَرَ ﴿35﴾',
+    arabicText: "نِّعْمَةً مِّنْ عِندِنَا ۚ كَذَٰلِكَ نَجْزِى مَن شَكَرَ",
     transliteration: "niʿ'matan min ʿindinā kadhālika najzī man shakara",
-    englishTranslation: 'As a favor from Us. Thus do We reward the one who is grateful.',
+    englishTranslation: "As favor from Us. Thus do We reward he who is grateful.",
     source: 'Surah Al-Qamar 54:35',
     audioKey: '54:35',
     whyThis: '"Thus do We reward the one who is grateful." [Quran 54:35]',
@@ -884,12 +795,10 @@ const quranContentData: Content[] = [
     type: 'Quran',
     primaryText:
       "wal-baladu l-ṭayibu yakhruju nabātuhu bi-idh'ni rabbihi wa-alladhī khabutha lā yakhruju illā nakidan kadhālika nuṣarrifu l-āyāti liqawmin yashkurūna",
-    arabicText:
-      'وَٱلْبَلَدُ ٱلطَّيِّبُ يَخْرُجُ نَبَاتُهُۥ بِإِذْنِ رَبِّهِۦ ۖ وَٱلَّذِى خَبُثَ لَا يَخْرُجُ إِلَّا نَكِدًۭا ۚ كَذَٰلِكَ نُصَرِّفُ ٱلْـَٔايَـٰتِ لِقَوْمٍۢ يَشْكُرُونَ ﴿58﴾',
+    arabicText: "وَٱلْبَلَدُ ٱلطَّيِّبُ يَخْرُجُ نَبَاتُهُۥ بِإِذْنِ رَبِّهِۦ ۖ وَٱلَّذِى خَبُثَ لَا يَخْرُجُ إِلَّا نَكِدًا ۚ كَذَٰلِكَ نُصَرِّفُ ٱلْـَٔايَـٰتِ لِقَوْمٍ يَشْكُرُونَ",
     transliteration:
       "wal-baladu l-ṭayibu yakhruju nabātuhu bi-idh'ni rabbihi wa-alladhī khabutha lā yakhruju illā nakidan kadhālika nuṣarrifu l-āyāti liqawmin yashkurūna",
-    englishTranslation:
-      'And the good land — its vegetation comes forth by permission of its Lord; but that which is bad — nothing comes forth except with difficulty. Thus do We explain the signs for a people who are grateful.',
+    englishTranslation: "And the good land - its vegetation emerges by permission of its Lord; but that which is bad - nothing emerges except sparsely, with difficulty. Thus do We diversify the signs for a people who are grateful.",
     source: "Surah Al-A'raf 7:58",
     audioKey: '7:58',
     whyThis: 'Gratitude opens the heart to understanding the signs of Allah.',
@@ -900,12 +809,10 @@ const quranContentData: Content[] = [
     type: 'Quran',
     primaryText:
       'mā yafʿalu l-lahu biʿadhābikum in shakartum waāmantum wakāna l-lahu shākiran ʿalīman',
-    arabicText:
-      'مَّا يَفْعَلُ ٱللَّهُ بِعَذَابِكُمْ إِن شَكَرْتُمْ وَءَامَنتُمْ ۚ وَكَانَ ٱللَّهُ شَاكِرًا عَلِيمًۭا ﴿147﴾',
+    arabicText: "مَّا يَفْعَلُ ٱللَّهُ بِعَذَابِكُمْ إِن شَكَرْتُمْ وَءَامَنتُمْ ۚ وَكَانَ ٱللَّهُ شَاكِرًا عَلِيمًا",
     transliteration:
       'mā yafʿalu l-lahu biʿadhābikum in shakartum waāmantum wakāna l-lahu shākiran ʿalīman',
-    englishTranslation:
-      'What would Allah do with your punishment if you are grateful and believe? And Allah is All-Appreciative, All-Knowing.',
+    englishTranslation: "What would Allāh do with [i.e., gain from] your punishment if you are grateful and believe? And ever is Allāh Appreciative and Knowing.",
     source: 'Surah An-Nisa 4:147',
     audioKey: '4:147',
     whyThis: '',
@@ -916,12 +823,10 @@ const quranContentData: Content[] = [
     type: 'Quran',
     primaryText:
       "yāayyuhā alladhīna āmanū kulū min ṭayyibāti mā razaqnākum wa-ush'kurū lillahi in kuntum iyyāhu taʿbudūna",
-    arabicText:
-      'يَـٰٓأَيُّهَا ٱلَّذِينَ ءَامَنُوا۟ كُلُوا۟ مِن طَيِّبَـٰتِ مَا رَزَقْنَـٰكُمْ وَٱشْكُرُوا۟ لِلَّهِ إِن كُنتُمْ إِيَّاهُ تَعْبُدُونَ ﴿172﴾',
+    arabicText: "يَـٰٓأَيُّهَا ٱلَّذِينَ ءَامَنُوا۟ كُلُوا۟ مِن طَيِّبَـٰتِ مَا رَزَقْنَـٰكُمْ وَٱشْكُرُوا۟ لِلَّهِ إِن كُنتُمْ إِيَّاهُ تَعْبُدُونَ",
     transliteration:
       "yāayyuhā alladhīna āmanū kulū min ṭayyibāti mā razaqnākum wa-ush'kurū lillahi in kuntum iyyāhu taʿbudūna",
-    englishTranslation:
-      'O you who believe, eat from the good things which We have provided for you, and be grateful to Allah if it is Him alone that you worship.',
+    englishTranslation: "O you who have believed, eat from the good [i.e., lawful] things which We have provided for you and be grateful to Allāh if it is [indeed] Him that you worship.",
     source: 'Surah Al-Baqarah 2:172',
     audioKey: '2:172',
     whyThis: "Gratitude is part of worship - enjoy Allah's provisions and thank Him.",
@@ -932,12 +837,10 @@ const quranContentData: Content[] = [
     type: 'Quran',
     primaryText:
       "wamā yastawī l-baḥrāni hādhā ʿadhbun furātun sāighun sharābuhu wahādhā mil'ḥun ujājun wamin kullin takulūna laḥman ṭariyyan watastakhrijūna ḥil'yatan talbasūnahā watarā l-ful'ka fīhi mawākhira litabtaghū min faḍlihi walaʿallakum tashkurūna",
-    arabicText:
-      'وَمَا يَسْتَوِى ٱلْبَحْرَانِ هَـٰذَا عَذْبٌۭ فُرَاتٌۭ سَآئِغٌۭ شَرَابُهُۥ وَهَـٰذَا مِلْحٌ أُجَاجٌۭ ۖ وَمِن كُلٍّۢ تَأْكُلُونَ لَحْمًۭا طَرِيًّۭا وَتَسْتَخْرِجُونَ حِلْيَةًۭ تَلْبَسُونَهَا ۖ وَتَرَى ٱلْفُلْكَ فِيهِ مَوَاخِرَ لِتَبْتَغُوا۟ مِن فَضْلِهِۦ وَلَعَلَّكُمْ تَشْكُرُونَ ﴿12﴾',
+    arabicText: "وَمَا يَسْتَوِى ٱلْبَحْرَانِ هَـٰذَا عَذْبٌ فُرَاتٌ سَآئِغٌ شَرَابُهُۥ وَهَـٰذَا مِلْحٌ أُجَاجٌ ۖ وَمِن كُلٍّ تَأْكُلُونَ لَحْمًا طَرِيًّا وَتَسْتَخْرِجُونَ حِلْيَةً تَلْبَسُونَهَا ۖ وَتَرَى ٱلْفُلْكَ فِيهِ مَوَاخِرَ لِتَبْتَغُوا۟ مِن فَضْلِهِۦ وَلَعَلَّكُمْ تَشْكُرُونَ",
     transliteration:
       "wamā yastawī l-baḥrāni hādhā ʿadhbun furātun sāighun sharābuhu wahādhā mil'ḥun ujājun wamin kullin takulūna laḥman ṭariyyan watastakhrijūna ḥil'yatan talbasūnahā watarā l-ful'ka fīhi mawākhira litabtaghū min faḍlihi walaʿallakum tashkurūna",
-    englishTranslation:
-      'And not alike are the two seas. This one is fresh and sweet, pleasant for drinking, and this one is salty and bitter. And from each you eat fresh meat and extract ornaments which you wear. And you see the ships cleaving through it, that you may seek of His bounty and that you may be grateful.',
+    englishTranslation: "And not alike are the two seas [i.e., bodies of water]. One is fresh and sweet, palatable for drinking, and one is salty and bitter. And from each you eat tender meat and extract ornaments which you wear, and you see the ships plowing through [them] that you might seek of His bounty; and perhaps you will be grateful.",
     source: 'Surah Fatir 35:12',
     audioKey: '35:12',
     whyThis: 'Seeking His bounty and being grateful go hand in hand.',
@@ -948,12 +851,10 @@ const quranContentData: Content[] = [
     type: 'Quran',
     primaryText:
       "in takfurū fa-inna l-laha ghaniyyun ʿankum walā yarḍā liʿibādihi l-kuf'ra wa-in tashkurū yarḍahu lakum walā taziru wāziratun wiz'ra ukh'rā thumma ilā rabbikum marjiʿukum fayunabbi-ukum bimā kuntum taʿmalūna innahu ʿalīmun bidhāti l-ṣudūri",
-    arabicText:
-      'إِن تَكْفُرُوا۟ فَإِنَّ ٱللَّهَ غَنِىٌّ عَنكُمْ ۖ وَلَا يَرْضَىٰ لِعِبَادِهِ ٱلْكُفْرَ ۖ وَإِن تَشْكُرُوا۟ يَرْضَهُ لَكُمْ ۗ وَلَا تَزِرُ وَازِرَةٌۭ وِزْرَ أُخْرَىٰ ۗ ثُمَّ إِلَىٰ رَبِّكُم مَّرْجِعُكُمْ فَيُنَبِّئُكُم بِمَا كُنتُمْ تَعْمَلُونَ ۚ إِنَّهُۥ عَلِيمٌۢ بِذَاتِ ٱلصُّدُورِ ﴿7﴾',
+    arabicText: "إِن تَكْفُرُوا۟ فَإِنَّ ٱللَّهَ غَنِىٌّ عَنكُمْ ۖ وَلَا يَرْضَىٰ لِعِبَادِهِ ٱلْكُفْرَ ۖ وَإِن تَشْكُرُوا۟ يَرْضَهُ لَكُمْ ۗ وَلَا تَزِرُ وَازِرَةٌ وِزْرَ أُخْرَىٰ ۗ ثُمَّ إِلَىٰ رَبِّكُم مَّرْجِعُكُمْ فَيُنَبِّئُكُم بِمَا كُنتُمْ تَعْمَلُونَ ۚ إِنَّهُۥ عَلِيمٌۢ بِذَاتِ ٱلصُّدُورِ",
     transliteration:
       "in takfurū fa-inna l-laha ghaniyyun ʿankum walā yarḍā liʿibādihi l-kuf'ra wa-in tashkurū yarḍahu lakum walā taziru wāziratun wiz'ra ukh'rā thumma ilā rabbikum marjiʿukum fayunabbi-ukum bimā kuntum taʿmalūna innahu ʿalīmun bidhāti l-ṣudūri",
-    englishTranslation:
-      'If you disbelieve, then indeed Allah is free from need of you. And He does not approve ungratefulness in His servants. And if you are grateful, He is pleased with it for you. No bearer of burdens will bear the burden of another. Then to your Lord is your return, and He will inform you about what you used to do. Indeed, He is the All-Knower of what is in the hearts.',
+    englishTranslation: "If you disbelieve - indeed, Allāh is Free from need of you. And He does not approve for His servants disbelief. And if you are grateful, He approves [i.e., likes] it for you; and no bearer of burdens will bear the burden of another. Then to your Lord is your return, and He will inform you about what you used to do. Indeed, He is Knowing of that within the breasts.",
     source: 'Surah Az-Zumar 39:7',
     audioKey: '39:7',
     whyThis: "Allah's approval comes with gratitude - He is pleased when you are thankful.",
@@ -966,12 +867,10 @@ const quranContentData: Content[] = [
     type: 'Quran',
     primaryText:
       'qul bifaḍli l-lahi wabiraḥmatihi fabidhālika falyafraḥū huwa khayrun mimmā yajmaʿūna',
-    arabicText:
-      'قُلْ بِفَضْلِ ٱللَّهِ وَبِرَحْمَتِهِۦ فَبِذَٰلِكَ فَلْيَفْرَحُوا۟ هُوَ خَيْرٌۭ مِّمَّا يَجْمَعُونَ ﴿58﴾',
+    arabicText: "قُلْ بِفَضْلِ ٱللَّهِ وَبِرَحْمَتِهِۦ فَبِذَٰلِكَ فَلْيَفْرَحُوا۟ هُوَ خَيْرٌ مِّمَّا يَجْمَعُونَ",
     transliteration:
       'qul bifaḍli l-lahi wabiraḥmatihi fabidhālika falyafraḥū huwa khayrun mimmā yajmaʿūna',
-    englishTranslation:
-      'Say, "In the bounty of Allah and in His mercy — in that let them rejoice. It is better than what they accumulate."',
+    englishTranslation: "Say, \"In the bounty of Allāh and in His mercy - in that let them rejoice; it is better than what they accumulate.\"",
     source: 'Surah Yunus 10:58',
     audioKey: '10:58',
     whyThis: "True joy comes from Allah's bounty and mercy, not worldly possessions.",
@@ -982,12 +881,10 @@ const quranContentData: Content[] = [
     type: 'Quran',
     primaryText:
       "yāayyuhā alladhīna āmanū iṣ'birū waṣābirū warābiṭū wa-ittaqū l-laha laʿallakum tuf'liḥūna",
-    arabicText:
-      'يَـٰٓأَيُّهَا ٱلَّذِينَ ءَامَنُوا۟ ٱصْبِرُوا۟ وَصَابِرُوا۟ وَرَابِطُوا۟ وَٱتَّقُوا۟ ٱللَّهَ لَعَلَّكُمْ تُفْلِحُونَ ﴿200﴾',
+    arabicText: "يَـٰٓأَيُّهَا ٱلَّذِينَ ءَامَنُوا۟ ٱصْبِرُوا۟ وَصَابِرُوا۟ وَرَابِطُوا۟ وَٱتَّقُوا۟ ٱللَّهَ لَعَلَّكُمْ تُفْلِحُونَ",
     transliteration:
       "yāayyuhā alladhīna āmanū iṣ'birū waṣābirū warābiṭū wa-ittaqū l-laha laʿallakum tuf'liḥūna",
-    englishTranslation:
-      'O you who believe, be steadfast and patient and constant, and fear Allah so that you may be successful.',
+    englishTranslation: "O you who have believed, persevere and endure and remain stationed and fear Allāh that you may be successful.",
     source: 'Surah Ali Imran 3:200',
     audioKey: '3:200',
     whyThis: '',
@@ -998,12 +895,10 @@ const quranContentData: Content[] = [
     type: 'Quran',
     primaryText:
       "waquli iʿ'malū fasayarā l-lahu ʿamalakum warasūluhu wal-mu'minūna wasaturaddūna ilā ʿālimi l-ghaybi wal-shahādati fayunabbi-ukum bimā kuntum taʿmalūna",
-    arabicText:
-      'وَقُلِ ٱعْمَلُوا۟ فَسَيَرَى ٱللَّهُ عَمَلَكُمْ وَرَسُولُهُۥ وَٱلْمُؤْمِنُونَ ۖ وَسَتُرَدُّونَ إِلَىٰ عَـٰلِمِ ٱلْغَيْبِ وَٱلشَّهَـٰدَةِ فَيُنَبِّئُكُم بِمَا كُنتُمْ تَعْمَلُونَ ﴿105﴾',
+    arabicText: "وَقُلِ ٱعْمَلُوا۟ فَسَيَرَى ٱللَّهُ عَمَلَكُمْ وَرَسُولُهُۥ وَٱلْمُؤْمِنُونَ ۖ وَسَتُرَدُّونَ إِلَىٰ عَـٰلِمِ ٱلْغَيْبِ وَٱلشَّهَـٰدَةِ فَيُنَبِّئُكُم بِمَا كُنتُمْ تَعْمَلُونَ",
     transliteration:
       "waquli iʿ'malū fasayarā l-lahu ʿamalakum warasūluhu wal-mu'minūna wasaturaddūna ilā ʿālimi l-ghaybi wal-shahādati fayunabbi-ukum bimā kuntum taʿmalūna",
-    englishTranslation:
-      'And say, "Do, for Allah will see your deed, and His Messenger, and the believers. And you will be brought back to the Knower of the unseen and the seen, and He will inform you of what you used to do."',
+    englishTranslation: "And say, \"Do [as you will], for Allāh will see your deeds, and [so will] His Messenger and the believers. And you will be returned to the Knower of the unseen and the witnessed, and He will inform you of what you used to do.\"",
     translation:
       'Say: "Act! For Allah will see your deeds, and so will His Prophet and the believers. Then you will be returned to the One who knows all things — the hidden and the visible — and He will inform you of everything you used to do."',
     source: 'Surah At-Tawbah 9:105',
@@ -1016,12 +911,10 @@ const quranContentData: Content[] = [
     type: 'Quran',
     primaryText:
       "wal-ʿaṣri inna l-insāna lafī khus'rin illā alladhīna āmanū waʿamilū l-ṣāliḥāti watawāṣaw bil-ḥaqi watawāṣaw bil-ṣabri",
-    arabicText:
-      'وَٱلْعَصْرِ إِنَّ ٱلْإِنسَـٰنَ لَفِى خُسْرٍ إِلَّا ٱلَّذِينَ ءَامَنُوا۟ وَعَمِلُوا۟ ٱلصَّـٰلِحَـٰتِ وَتَوَاصَوْا۟ بِٱلْحَقِّ وَتَوَاصَوْا۟ بِٱلصَّبْرِ ﴿1-3﴾',
+    arabicText: " وَٱلْعَصْرِ إِنَّ ٱلْإِنسَـٰنَ لَفِى خُسْرٍ إِلَّا ٱلَّذِينَ ءَامَنُوا۟ وَعَمِلُوا۟ ٱلصَّـٰلِحَـٰتِ وَتَوَاصَوْا۟ بِٱلْحَقِّ وَتَوَاصَوْا۟ بِٱلصَّبْرِ",
     transliteration:
       "wal-ʿaṣri inna l-insāna lafī khus'rin illā alladhīna āmanū waʿamilū l-ṣāliḥāti watawāṣaw bil-ḥaqi watawāṣaw bil-ṣabri",
-    englishTranslation:
-      'By time. Indeed, mankind is surely in loss — except those who believe and do righteous deeds, and enjoin each other to truth, and enjoin each other to patience.',
+    englishTranslation: "By time, Indeed, mankind is in loss, Except for those who have believed and done righteous deeds and advised each other to truth and advised each other to patience.",
     source: 'Surah Al-Asr 103:1-3',
     audioKey: '103:1-3',
     whyThis: 'Time is running - focus your efforts on faith, good deeds, truth, and patience.',
@@ -1032,12 +925,10 @@ const quranContentData: Content[] = [
     type: 'Quran',
     primaryText:
       "yāayyuhā alladhīna āmanū ir'kaʿū wa-us'judū wa-uʿ'budū rabbakum wa-if'ʿalū l-khayra laʿallakum tuf'liḥūna",
-    arabicText:
-      'يَـٰٓأَيُّهَا ٱلَّذِينَ ءَامَنُوا۟ ٱرْكَعُوا۟ وَٱسْجُدُوا۟ وَٱعْبُدُوا۟ رَبَّكُمْ وَٱفْعَلُوا۟ ٱلْخَيْرَ لَعَلَّكُمْ تُفْلِحُونَ ۩ ﴿77﴾',
+    arabicText: "يَـٰٓأَيُّهَا ٱلَّذِينَ ءَامَنُوا۟ ٱرْكَعُوا۟ وَٱسْجُدُوا۟ وَٱعْبُدُوا۟ رَبَّكُمْ وَٱفْعَلُوا۟ ٱلْخَيْرَ لَعَلَّكُمْ تُفْلِحُونَ ۩",
     transliteration:
       "yāayyuhā alladhīna āmanū ir'kaʿū wa-us'judū wa-uʿ'budū rabbakum wa-if'ʿalū l-khayra laʿallakum tuf'liḥūna",
-    englishTranslation:
-      'O you who believe, bow and prostrate and worship your Lord, and do good so that you may be successful.',
+    englishTranslation: "O you who have believed, bow and prostrate and worship your Lord and do good - that you may succeed.",
     source: 'Surah Al-Hajj 22:77',
     audioKey: '22:77',
     whyThis: 'direct your efforts toward worship and doing good - this is the path to success.',
@@ -1047,12 +938,10 @@ const quranContentData: Content[] = [
     id: 'quran_18_30',
     type: 'Quran',
     primaryText: 'inna alladhīna āmanū waʿamilū l-ṣāliḥāti innā lā nuḍīʿu ajra man aḥsana ʿamalan',
-    arabicText:
-      'إِنَّ ٱلَّذِينَ ءَامَنُوا۟ وَعَمِلُوا۟ ٱلصَّـٰلِحَـٰتِ إِنَّا لَا نُضِيعُ أَجْرَ مَنْ أَحْسَنَ عَمَلًا ﴿30﴾',
+    arabicText: "إِنَّ ٱلَّذِينَ ءَامَنُوا۟ وَعَمِلُوا۟ ٱلصَّـٰلِحَـٰتِ إِنَّا لَا نُضِيعُ أَجْرَ مَنْ أَحْسَنَ عَمَلًا",
     transliteration:
       'inna alladhīna āmanū waʿamilū l-ṣāliḥāti innā lā nuḍīʿu ajra man aḥsana ʿamalan',
-    englishTranslation:
-      'Indeed, those who believed and did righteous deeds — indeed, We will not allow the reward of anyone who does good deeds to be lost.',
+    englishTranslation: "Indeed, those who have believed and done righteous deeds - indeed, We will not allow to be lost the reward of any who did well in deeds.",
     source: 'Surah Al-Kahf 18:30',
     audioKey: '18:30',
     whyThis: 'No good deed is wasted - your efforts and devotion are always rewarded.',
@@ -1063,12 +952,10 @@ const quranContentData: Content[] = [
     type: 'Quran',
     primaryText:
       "wa-ib'taghi fīmā ātāka l-lahu l-dāra l-ākhirata walā tansa naṣībaka mina l-dun'yā wa-aḥsin kamā aḥsana l-lahu ilayka walā tabghi l-fasāda fī l-arḍi inna l-laha lā yuḥibbu l-muf'sidīna",
-    arabicText:
-      'وَٱبْتَغِ فِيمَآ ءَاتَىٰكَ ٱللَّهُ ٱلدَّارَ ٱلْـَٔاخِرَةَ ۖ وَلَا تَنسَ نَصِيبَكَ مِنَ ٱلدُّنْيَا ۖ وَأَحْسِن كَمَآ أَحْسَنَ ٱللَّهُ إِلَيْكَ ۖ وَلَا تَبْغِ ٱلْفَسَادَ فِى ٱلْأَرْضِ ۖ إِنَّ ٱللَّهَ لَا يُحِبُّ ٱلْمُفْسِدِينَ ﴿77﴾',
+    arabicText: "وَٱبْتَغِ فِيمَآ ءَاتَىٰكَ ٱللَّهُ ٱلدَّارَ ٱلْـَٔاخِرَةَ ۖ وَلَا تَنسَ نَصِيبَكَ مِنَ ٱلدُّنْيَا ۖ وَأَحْسِن كَمَآ أَحْسَنَ ٱللَّهُ إِلَيْكَ ۖ وَلَا تَبْغِ ٱلْفَسَادَ فِى ٱلْأَرْضِ ۖ إِنَّ ٱللَّهَ لَا يُحِبُّ ٱلْمُفْسِدِينَ",
     transliteration:
       "wa-ib'taghi fīmā ātāka l-lahu l-dāra l-ākhirata walā tansa naṣībaka mina l-dun'yā wa-aḥsin kamā aḥsana l-lahu ilayka walā tabghi l-fasāda fī l-arḍi inna l-laha lā yuḥibbu l-muf'sidīna",
-    englishTranslation:
-      'But seek, through what Allah has given you, the home of the Hereafter; and do not forget your share of the world. And do good as Allah has been good to you. And do not seek corruption in the earth. Indeed, Allah does not love the corrupters.',
+    englishTranslation: "But seek, through that which Allāh has given you, the home of the Hereafter; and [yet], do not forget your share of the world. And do good as Allāh has done good to you. And desire not corruption in the land. Indeed, Allāh does not like corrupters.\"",
     source: 'Surah Al-Qasas 28:77',
     audioKey: '28:77',
     whyThis: 'Use your energy to seek the Hereafter, but also enjoy the world and do good.',
@@ -1079,12 +966,10 @@ const quranContentData: Content[] = [
     type: 'Quran',
     primaryText:
       "walikullin wij'hatun huwa muwallīhā fa-is'tabiqū l-khayrāti ayna mā takūnū yati bikumu l-lahu jamīʿan inna l-laha ʿalā kulli shayin qadīrun",
-    arabicText:
-      'وَلِكُلٍّۢ وِجْهَةٌ هُوَ مُوَلِّيهَا ۖ فَٱسْتَبِقُوا۟ ٱلْخَيْرَٰتِ ۚ أَيْنَ مَا تَكُونُوا۟ يَأْتِ بِكُمُ ٱللَّهُ جَمِيعًا ۚ إِنَّ ٱللَّهَ عَلَىٰ كُلِّ شَىْءٍۢ قَدِيرٌۭ ﴿148﴾',
+    arabicText: "وَلِكُلٍّ وِجْهَةٌ هُوَ مُوَلِّيهَا ۖ فَٱسْتَبِقُوا۟ ٱلْخَيْرَٰتِ ۚ أَيْنَ مَا تَكُونُوا۟ يَأْتِ بِكُمُ ٱللَّهُ جَمِيعًا ۚ إِنَّ ٱللَّهَ عَلَىٰ كُلِّ شَىْءٍ قَدِيرٌ",
     transliteration:
       "walikullin wij'hatun huwa muwallīhā fa-is'tabiqū l-khayrāti ayna mā takūnū yati bikumu l-lahu jamīʿan inna l-laha ʿalā kulli shayin qadīrun",
-    englishTranslation:
-      'And for everyone is a direction toward which he turns; so race to good. Wherever you may be, Allah will bring you all together. Indeed, Allah is over all things All-Powerful.',
+    englishTranslation: "For each [religious following] is a [prayer] direction toward which it faces. So race to [all that is] good. Wherever you may be, Allāh will bring you forth [for judgement] all together. Indeed, Allāh is over all things competent.",
     source: 'Surah Al-Baqarah 2:148',
     audioKey: '2:148',
     whyThis: 'Race towards good deeds - let your energy propel you forward in righteousness.',
@@ -1095,12 +980,10 @@ const quranContentData: Content[] = [
     type: 'Quran',
     primaryText:
       "wa-anzalnā ilayka l-kitāba bil-ḥaqi muṣaddiqan limā bayna yadayhi mina l-kitābi wamuhayminan ʿalayhi fa-uḥ'kum baynahum bimā anzala l-lahu walā tattabiʿ ahwāahum ʿammā jāaka mina l-ḥaqi likullin jaʿalnā minkum shir'ʿatan wamin'hājan walaw shāa l-lahu lajaʿalakum ummatan wāḥidatan walākin liyabluwakum fī mā ātākum fa-is'tabiqū l-khayrāti ilā l-lahi marjiʿukum jamīʿan fayunabbi-ukum bimā kuntum fīhi takhtalifūna",
-    arabicText:
-      'وَأَنزَلْنَآ إِلَيْكَ ٱلْكِتَـٰبَ بِٱلْحَقِّ مُصَدِّقًۭا لِّمَا بَيْنَ يَدَيْهِ مِنَ ٱلْكِتَـٰبِ وَمُهَيْمِنًا عَلَيْهِ ۖ فَٱحْكُم بَيْنَهُم بِمَآ أَنزَلَ ٱللَّهُ ۖ وَلَا تَتَّبِعْ أَهْوَآءَهُمْ عَمَّا جَآءَكَ مِنَ ٱلْحَقِّ ۚ لِكُلٍّۢ جَعَلْنَا مِنكُمْ شِرْعَةًۭ وَمِنْهَاجًۭا ۚ وَلَوْ شَآءَ ٱللَّهُ لَجَعَلَكُمْ أُمَّةًۭ وَٰحِدَةًۭ وَلَـٰكِن لِّيَبْلُوَكُمْ فِى مَآ ءَاتَىٰكُمْ ۖ فَٱسْتَبِقُوا۟ ٱلْخَيْرَٰتِ ۚ إِلَى ٱللَّهِ مَرْجِعُكُمْ جَمِيعًۭا فَيُنَبِّئُكُم بِمَا كُنتُمْ فِيهِ تَخْتَلِفُونَ ﴿48﴾',
+    arabicText: "وَأَنزَلْنَآ إِلَيْكَ ٱلْكِتَـٰبَ بِٱلْحَقِّ مُصَدِّقًا لِّمَا بَيْنَ يَدَيْهِ مِنَ ٱلْكِتَـٰبِ وَمُهَيْمِنًا عَلَيْهِ ۖ فَٱحْكُم بَيْنَهُم بِمَآ أَنزَلَ ٱللَّهُ ۖ وَلَا تَتَّبِعْ أَهْوَآءَهُمْ عَمَّا جَآءَكَ مِنَ ٱلْحَقِّ ۚ لِكُلٍّ جَعَلْنَا مِنكُمْ شِرْعَةً وَمِنْهَاجًا ۚ وَلَوْ شَآءَ ٱللَّهُ لَجَعَلَكُمْ أُمَّةً وَٰحِدَةً وَلَـٰكِن لِّيَبْلُوَكُمْ فِى مَآ ءَاتَىٰكُمْ ۖ فَٱسْتَبِقُوا۟ ٱلْخَيْرَٰتِ ۚ إِلَى ٱللَّهِ مَرْجِعُكُمْ جَمِيعًا فَيُنَبِّئُكُم بِمَا كُنتُمْ فِيهِ تَخْتَلِفُونَ",
     transliteration:
       "wa-anzalnā ilayka l-kitāba bil-ḥaqi muṣaddiqan limā bayna yadayhi mina l-kitābi wamuhayminan ʿalayhi fa-uḥ'kum baynahum bimā anzala l-lahu walā tattabiʿ ahwāahum ʿammā jāaka mina l-ḥaqi likullin jaʿalnā minkum shir'ʿatan wamin'hājan walaw shāa l-lahu lajaʿalakum ummatan wāḥidatan walākin liyabluwakum fī mā ātākum fa-is'tabiqū l-khayrāti ilā l-lahi marjiʿukum jamīʿan fayunabbi-ukum bimā kuntum fīhi takhtalifūna",
-    englishTranslation:
-      'And We revealed to you the Book in truth, confirming what was before it of the Scripture and as a guardian over it. So judge between them by what Allah has revealed, and do not follow their vain desires away from the truth that has come to you. For each of you We have made a law and a clear way. And if Allah had willed, He would have made you one community, but to test you in what He has given you; so race to good. To Allah you will all return, and He will inform you concerning that over which you used to differ.',
+    englishTranslation: "And We have revealed to you, [O Muḥammad], the Book [i.e., the Qur’ān] in truth, confirming that which preceded it of the Scripture and as a criterion over it. So judge between them by what Allāh has revealed and do not follow their inclinations away from what has come to you of the truth. To each of you We prescribed a law and a method. Had Allāh willed, He would have made you one nation [united in religion], but [He intended] to test you in what He has given you; so race to [all that is] good. To Allāh is your return all together, and He will [then] inform you concerning that over which you used to differ.",
     translation:
       'We revealed the Quran to you in truth, confirming the scriptures before it. Judge between people by what Allah has revealed, and do not follow anyone\'s desires over the truth. For each community, We made a path and a way of life. Had Allah willed, He would have made you all one nation — but He tests you through what He has given you. So compete with one another in doing good; to Allah you will all return, and He will clarify everything you disagreed about.',
     source: 'Surah Al-Maidah 5:48',
@@ -1113,12 +996,10 @@ const quranContentData: Content[] = [
     type: 'Quran',
     primaryText:
       "qul innamā anā basharun mith'lukum yūḥā ilayya annamā ilāhukum ilāhun wāḥidun faman kāna yarjū liqāa rabbihi falyaʿmal ʿamalan ṣāliḥan walā yush'rik biʿibādati rabbihi aḥadan",
-    arabicText:
-      'قُلْ إِنَّمَآ أَنَا۠ بَشَرٌۭ مِّثْلُكُمْ يُوحَىٰٓ إِلَىَّ أَنَّمَآ إِلَـٰهُكُمْ إِلَـٰهٌۭ وَٰحِدٌۭ ۖ فَمَن كَانَ يَرْجُوا۟ لِقَآءَ رَبِّهِۦ فَلْيَعْمَلْ عَمَلًۭا صَـٰلِحًۭا وَلَا يُشْرِكْ بِعِبَادَةِ رَبِّهِۦٓ أَحَدًۢا ﴿110﴾',
+    arabicText: "قُلْ إِنَّمَآ أَنَا۠ بَشَرٌ مِّثْلُكُمْ يُوحَىٰٓ إِلَىَّ أَنَّمَآ إِلَـٰهُكُمْ إِلَـٰهٌ وَٰحِدٌ ۖ فَمَن كَانَ يَرْجُوا۟ لِقَآءَ رَبِّهِۦ فَلْيَعْمَلْ عَمَلًا صَـٰلِحًا وَلَا يُشْرِكْ بِعِبَادَةِ رَبِّهِۦٓ أَحَدًۢا",
     transliteration:
       "qul innamā anā basharun mith'lukum yūḥā ilayya annamā ilāhukum ilāhun wāḥidun faman kāna yarjū liqāa rabbihi falyaʿmal ʿamalan ṣāliḥan walā yush'rik biʿibādati rabbihi aḥadan",
-    englishTranslation:
-      'Say, "I am only a man like you. It has been revealed to me that your God is one God. So whoever hopes for the meeting with his Lord, let him do righteous deeds and not associate anyone in the worship of his Lord."',
+    englishTranslation: "Say, \"I am only a man like you, to whom has been revealed that your god is one God. So whoever would hope for the meeting with his Lord - let him do righteous work and not associate in the worship of his Lord anyone.\"",
     source: 'Surah Al-Kahf 18:110',
     audioKey: '18:110',
     whyThis: 'The ultimate motivation: working for the meeting with your Lord.',
@@ -1129,12 +1010,10 @@ const quranContentData: Content[] = [
     type: 'Quran',
     primaryText:
       'alladhī khalaqa l-mawta wal-ḥayata liyabluwakum ayyukum aḥsanu ʿamalan wahuwa l-ʿazīzu l-ghafūru',
-    arabicText:
-      'ٱلَّذِى خَلَقَ ٱلْمَوْتَ وَٱلْحَيَوٰةَ لِيَبْلُوَكُمْ أَيُّكُمْ أَحْسَنُ عَمَلًۭا ۚ وَهُوَ ٱلْعَزِيزُ ٱلْغَفُورُ ﴿2﴾',
+    arabicText: "ٱلَّذِى خَلَقَ ٱلْمَوْتَ وَٱلْحَيَوٰةَ لِيَبْلُوَكُمْ أَيُّكُمْ أَحْسَنُ عَمَلًا ۚ وَهُوَ ٱلْعَزِيزُ ٱلْغَفُورُ",
     transliteration:
       'alladhī khalaqa l-mawta wal-ḥayata liyabluwakum ayyukum aḥsanu ʿamalan wahuwa l-ʿazīzu l-ghafūru',
-    englishTranslation:
-      'The One Who created death and life to test which of you is best in deed. And He is the All-Mighty, the Oft-Forgiving.',
+    englishTranslation: "[He] who created death and life to test you [as to] which of you is best in deed - and He is the Exalted in Might, the Forgiving -",
     source: 'Surah Al-Mulk 67:2',
     audioKey: '67:2',
     whyThis: 'Life is a test of excellence in action - strive to be the best in your deeds.',
@@ -1145,12 +1024,10 @@ const quranContentData: Content[] = [
     type: 'Quran',
     primaryText:
       "faman yaʿmal mith'qāla dharratin khayran yarahu waman yaʿmal mith'qāla dharratin sharran yarahu",
-    arabicText:
-      'فَمَن يَعْمَلْ مِثْقَالَ ذَرَّةٍ خَيْرًۭا يَرَهُۥ ﴿7﴾ وَمَن يَعْمَلْ مِثْقَالَ ذَرَّةٍ شَرًّۭا يَرَهُۥ ﴿8﴾',
+    arabicText: "فَمَن يَعْمَلْ مِثْقَالَ ذَرَّةٍ خَيْرًا يَرَهُۥ وَمَن يَعْمَلْ مِثْقَالَ ذَرَّةٍ شَرًّا يَرَهُۥ",
     transliteration:
       "faman yaʿmal mith'qāla dharratin khayran yarahu waman yaʿmal mith'qāla dharratin sharran yarahu",
-    englishTranslation:
-      "So whoever does an atom's weight of good will see it, and whoever does an atom's weight of evil will see it.",
+    englishTranslation: "So whoever does an atom's weight of good will see it, And whoever does an atom's weight of evil will see it.",
     source: 'Surah Az-Zalzalah 99:7-8',
     audioKey: '99:7-8',
     whyThis: 'Every tiny effort counts - never underestimate the value of a small good deed.',
@@ -1161,12 +1038,10 @@ const quranContentData: Content[] = [
     type: 'Quran',
     primaryText:
       "fī biḍ'ʿi sinīna lillahi l-amru min qablu wamin baʿdu wayawma-idhin yafraḥu l-mu'minūna binaṣri l-lahi yanṣuru man yashāu wahuwa l-ʿazīzu l-raḥīmu",
-    arabicText:
-      'فِى بِضْعِ سِنِينَ ۗ لِلَّهِ ٱلْأَمْرُ مِن قَبْلُ وَمِنۢ بَعْدُ ۚ وَيَوْمَئِذٍۢ يَفْرَحُ ٱلْمُؤْمِنُونَ بِنَصْرِ ٱللَّهِ ۚ يَنصُرُ مَن يَشَآءُ ۖ وَهُوَ ٱلْعَزِيزُ ٱلرَّحِيمُ ﴿4-5﴾',
+    arabicText: "فِى بِضْعِ سِنِينَ ۗ لِلَّهِ ٱلْأَمْرُ مِن قَبْلُ وَمِنۢ بَعْدُ ۚ وَيَوْمَئِذٍ يَفْرَحُ ٱلْمُؤْمِنُونَ بِنَصْرِ ٱللَّهِ ۚ يَنصُرُ مَن يَشَآءُ ۖ وَهُوَ ٱلْعَزِيزُ ٱلرَّحِيمُ",
     transliteration:
       "fī biḍ'ʿi sinīna lillahi l-amru min qablu wamin baʿdu wayawma-idhin yafraḥu l-mu'minūna binaṣri l-lahi yanṣuru man yashāu wahuwa l-ʿazīzu l-raḥīmu",
-    englishTranslation:
-      'Within a few years. To Allah belongs the command before and after. And that day the believers will rejoice in the help of Allah. He helps whom He wills. And He is the All-Mighty, the Most Merciful.',
+    englishTranslation: "Within three to nine years. To Allāh belongs the command [i.e., decree] before and after. And that day the believers will rejoice In the victory of Allāh. He gives victory to whom He wills, and He is the Exalted in Might, the Merciful.",
     translation:
       'Within a few years. To Allah belongs the command before and after. And that day the believers will rejoice in the help of Allah. He helps whom He wills. And He is the All-Mighty, the Most Merciful.',
     source: 'Surah Ar-Rum 30:4-5',
@@ -1179,12 +1054,10 @@ const quranContentData: Content[] = [
     type: 'Quran',
     primaryText:
       'fariḥīna bimā ātāhumu l-lahu min faḍlihi wayastabshirūna bi-alladhīna lam yalḥaqū bihim min khalfihim allā khawfun ʿalayhim walā hum yaḥzanūna',
-    arabicText:
-      'فَرِحِينَ بِمَآ ءَاتَىٰهُمُ ٱللَّهُ مِن فَضْلِهِۦ وَيَسْتَبْشِرُونَ بِٱلَّذِينَ لَمْ يَلْحَقُوا۟ بِهِم مِّنْ خَلْفِهِمْ أَلَّا خَوْفٌ عَلَيْهِمْ وَلَا هُمْ يَحْزَنُونَ ﴿170﴾',
+    arabicText: "فَرِحِينَ بِمَآ ءَاتَىٰهُمُ ٱللَّهُ مِن فَضْلِهِۦ وَيَسْتَبْشِرُونَ بِٱلَّذِينَ لَمْ يَلْحَقُوا۟ بِهِم مِّنْ خَلْفِهِمْ أَلَّا خَوْفٌ عَلَيْهِمْ وَلَا هُمْ يَحْزَنُونَ",
     transliteration:
       'fariḥīna bimā ātāhumu l-lahu min faḍlihi wayastabshirūna bi-alladhīna lam yalḥaqū bihim min khalfihim allā khawfun ʿalayhim walā hum yaḥzanūna',
-    englishTranslation:
-      'Rejoicing in what Allah has bestowed upon them of His bounty, and they receive good tidings about those yet to join them — that there will be no fear upon them, nor will they grieve.',
+    englishTranslation: "Rejoicing in what Allāh has bestowed upon them of His bounty, and they receive good tidings about those [to be martyred] after them who have not yet joined them - that there will be no fear concerning them, nor will they grieve.",
     translation:
       'Those who gave their lives for Allah\'s cause are alive with their Lord — rejoicing in what He has given them. They are delighted for the believers still living on earth: that they, too, will have no fear, nor will they grieve.',
     source: 'Surah Ali Imran 3:170',
@@ -1197,12 +1070,10 @@ const quranContentData: Content[] = [
     type: 'Quran',
     primaryText:
       'waʿibādu l-raḥmāni alladhīna yamshūna ʿalā l-arḍi hawnan wa-idhā khāṭabahumu l-jāhilūna qālū salāman',
-    arabicText:
-      'وَعِبَادُ ٱلرَّحْمَـٰنِ ٱلَّذِينَ يَمْشُونَ عَلَى ٱلْأَرْضِ هَوْنًۭا وَإِذَا خَاطَبَهُمُ ٱلْجَـٰهِلُونَ قَالُوا۟ سَلَـٰمًۭا ﴿63﴾',
+    arabicText: "وَعِبَادُ ٱلرَّحْمَـٰنِ ٱلَّذِينَ يَمْشُونَ عَلَى ٱلْأَرْضِ هَوْنًا وَإِذَا خَاطَبَهُمُ ٱلْجَـٰهِلُونَ قَالُوا۟ سَلَـٰمًا",
     transliteration:
       'waʿibādu l-raḥmāni alladhīna yamshūna ʿalā l-arḍi hawnan wa-idhā khāṭabahumu l-jāhilūna qālū salāman',
-    englishTranslation:
-      'And the servants of the Most Gracious are those who walk upon the earth in humility, and when the ignorant address them, they say, "Peace."',
+    englishTranslation: "And the servants of the Most Merciful are those who walk upon the earth easily, and when the ignorant address them [harshly], they say [words of] peace,",
     source: 'Surah Al-Furqan 25:63',
     audioKey: '25:63',
     whyThis: 'Respond to harshness with peace - a hallmark of the true servants of Allah.',
@@ -1213,12 +1084,10 @@ const quranContentData: Content[] = [
     type: 'Quran',
     primaryText:
       "wamā jaʿalahu l-lahu illā bush'rā walitaṭma-inna bihi qulūbukum wamā l-naṣru illā min ʿindi l-lahi inna l-laha ʿazīzun ḥakīmun",
-    arabicText:
-      'وَمَا جَعَلَهُ ٱللَّهُ إِلَّا بُشْرَىٰ وَلِتَطْمَئِنَّ بِهِۦ قُلُوبُكُمْ ۚ وَمَا ٱلنَّصْرُ إِلَّا مِنْ عِندِ ٱللَّهِ ۚ إِنَّ ٱللَّهَ عَزِيزٌ حَكِيمٌ ﴿10﴾',
+    arabicText: "وَمَا جَعَلَهُ ٱللَّهُ إِلَّا بُشْرَىٰ وَلِتَطْمَئِنَّ بِهِۦ قُلُوبُكُمْ ۚ وَمَا ٱلنَّصْرُ إِلَّا مِنْ عِندِ ٱللَّهِ ۚ إِنَّ ٱللَّهَ عَزِيزٌ حَكِيمٌ",
     transliteration:
       "wamā jaʿalahu l-lahu illā bush'rā walitaṭma-inna bihi qulūbukum wamā l-naṣru illā min ʿindi l-lahi inna l-laha ʿazīzun ḥakīmun",
-    englishTranslation:
-      'And Allah made it not but as good tidings, and so that your hearts would be at rest. And there is no victory except from Allah. Indeed, Allah is All-Mighty, All-Wise.',
+    englishTranslation: "And Allāh made it not but good tidings and so that your hearts would be assured thereby. And victory is not but from Allāh. Indeed, Allāh is Exalted in Might and Wise.",
     translation:
       'Allah sent the angels at the Battle of Badr only as good news, and to put your hearts at ease — for victory comes from no one but Allah. Indeed, Allah is All-Mighty, All-Wise.',
     source: 'Surah Al-Anfal 8:10',
@@ -1231,12 +1100,10 @@ const quranContentData: Content[] = [
     type: 'Quran',
     primaryText:
       "thumma anzala l-lahu sakīnatahu ʿalā rasūlihi waʿalā l-mu'minīna wa-anzala junūdan lam tarawhā waʿadhaba alladhīna kafarū wadhālika jazāu l-kāfirīna",
-    arabicText:
-      'ثُمَّ أَنزَلَ ٱللَّهُ سَكِينَتَهُۥ عَلَىٰ رَسُولِهِۦ وَعَلَى ٱلْمُؤْمِنِينَ وَأَنزَلَ جُنُودًۭا لَّمْ تَرَوْهَا وَعَذَّبَ ٱلَّذِينَ كَفَرُوا۟ ۚ وَذَٰلِكَ جَزَآءُ ٱلْكَـٰفِرِينَ ﴿26﴾',
+    arabicText: "ثُمَّ أَنزَلَ ٱللَّهُ سَكِينَتَهُۥ عَلَىٰ رَسُولِهِۦ وَعَلَى ٱلْمُؤْمِنِينَ وَأَنزَلَ جُنُودًا لَّمْ تَرَوْهَا وَعَذَّبَ ٱلَّذِينَ كَفَرُوا۟ ۚ وَذَٰلِكَ جَزَآءُ ٱلْكَـٰفِرِينَ",
     transliteration:
       "thumma anzala l-lahu sakīnatahu ʿalā rasūlihi waʿalā l-mu'minīna wa-anzala junūdan lam tarawhā waʿadhaba alladhīna kafarū wadhālika jazāu l-kāfirīna",
-    englishTranslation:
-      'Then Allah sent down His tranquility upon His Messenger and upon the believers, and sent down forces which you did not see, and He punished those who disbelieved. And that is the recompense of the disbelievers.',
+    englishTranslation: "Then Allāh sent down His tranquility upon His Messenger and upon the believers and sent down soldiers [i.e., angels] whom you did not see and punished those who disbelieved. And that is the recompense of the disbelievers.",
     translation:
       'At the Battle of Hunayn, when the believers initially panicked and fled, Allah sent down His tranquility upon His Prophet and upon the believers. He sent down forces they could not see, and turned the tide against the disbelievers — that is how He repays those who reject faith.',
     source: 'Surah At-Tawbah 9:26',
@@ -1249,12 +1116,10 @@ const quranContentData: Content[] = [
     type: 'Quran',
     primaryText:
       "illā tanṣurūhu faqad naṣarahu l-lahu idh akhrajahu alladhīna kafarū thāniya ith'nayni idh humā fī l-ghāri idh yaqūlu liṣāḥibihi lā taḥzan inna l-laha maʿanā fa-anzala l-lahu sakīnatahu ʿalayhi wa-ayyadahu bijunūdin lam tarawhā wajaʿala kalimata alladhīna kafarū l-suf'lā wakalimatu l-lahi hiya l-ʿul'yā wal-lahu ʿazīzun ḥakīmun",
-    arabicText:
-      'إِلَّا تَنصُرُوهُ فَقَدْ نَصَرَهُ ٱللَّهُ إِذْ أَخْرَجَهُ ٱلَّذِينَ كَفَرُوا۟ ثَانِىَ ٱثْنَيْنِ إِذْ هُمَا فِى ٱلْغَارِ إِذْ يَقُولُ لِصَـٰحِبِهِۦ لَا تَحْزَنْ إِنَّ ٱللَّهَ مَعَنَا ۖ فَأَنزَلَ ٱللَّهُ سَكِينَتَهُۥ عَلَيْهِ وَأَيَّدَهُۥ بِجُنُودٍۢ لَّمْ تَرَوْهَا وَجَعَلَ كَلِمَةَ ٱلَّذِينَ كَفَرُوا۟ ٱلسُّفْلَىٰ ۗ وَكَلِمَةُ ٱللَّهِ هِىَ ٱلْعُلْيَا ۗ وَٱللَّهُ عَزِيزٌ حَكِيمٌ ﴿40﴾',
+    arabicText: "إِلَّا تَنصُرُوهُ فَقَدْ نَصَرَهُ ٱللَّهُ إِذْ أَخْرَجَهُ ٱلَّذِينَ كَفَرُوا۟ ثَانِىَ ٱثْنَيْنِ إِذْ هُمَا فِى ٱلْغَارِ إِذْ يَقُولُ لِصَـٰحِبِهِۦ لَا تَحْزَنْ إِنَّ ٱللَّهَ مَعَنَا ۖ فَأَنزَلَ ٱللَّهُ سَكِينَتَهُۥ عَلَيْهِ وَأَيَّدَهُۥ بِجُنُودٍ لَّمْ تَرَوْهَا وَجَعَلَ كَلِمَةَ ٱلَّذِينَ كَفَرُوا۟ ٱلسُّفْلَىٰ ۗ وَكَلِمَةُ ٱللَّهِ هِىَ ٱلْعُلْيَا ۗ وَٱللَّهُ عَزِيزٌ حَكِيمٌ",
     transliteration:
       "illā tanṣurūhu faqad naṣarahu l-lahu idh akhrajahu alladhīna kafarū thāniya ith'nayni idh humā fī l-ghāri idh yaqūlu liṣāḥibihi lā taḥzan inna l-laha maʿanā fa-anzala l-lahu sakīnatahu ʿalayhi wa-ayyadahu bijunūdin lam tarawhā wajaʿala kalimata alladhīna kafarū l-suf'lā wakalimatu l-lahi hiya l-ʿul'yā wal-lahu ʿazīzun ḥakīmun",
-    englishTranslation:
-      'If you do not help him, Allah has already helped him when those who disbelieved drove him out as one of two, when they were in the cave and he said to his companion, "Do not grieve; indeed, Allah is with us." Then Allah sent down His tranquility upon him and supported him with forces you did not see, and made the word of those who disbelieved the lowest, while the word of Allah is the highest. And Allah is All-Mighty, All-Wise.',
+    englishTranslation: "If you do not aid him [i.e., the Prophet (ﷺ)] - Allāh has already aided him when those who disbelieved had driven him out [of Makkah] as one of two, when they were in the cave and he [i.e., Muḥammad (ﷺ)] said to his companion, \"Do not grieve; indeed Allāh is with us.\" And Allāh sent down His tranquility upon him and supported him with soldiers [i.e., angels] you did not see and made the word of those who disbelieved the lowest, while the word of Allāh - that is the highest. And Allāh is Exalted in Might and Wise.",
     translation:
       'Even if you do not help the Prophet Muhammad ﷺ — Allah already helped him. When the disbelievers of Makkah drove him out, he hid in a cave with his companion Abu Bakr and told him: "Do not grieve; Allah is with us." Then Allah sent down His tranquility upon him, supported him with unseen forces, and made the word of the disbelievers the lowest — while the word of Allah remains the highest. And Allah is All-Mighty, All-Wise.',
     source: 'Surah At-Tawbah 9:40',
@@ -1266,11 +1131,9 @@ const quranContentData: Content[] = [
     id: 'quran_41_35',
     type: 'Quran',
     primaryText: 'wamā yulaqqāhā illā alladhīna ṣabarū wamā yulaqqāhā illā dhū ḥaẓẓin ʿaẓīmin',
-    arabicText:
-      'وَمَا يُلَقَّىٰهَآ إِلَّا ٱلَّذِينَ صَبَرُوا۟ وَمَا يُلَقَّىٰهَآ إِلَّا ذُو حَظٍّ عَظِيمٍۢ ﴿35﴾',
+    arabicText: "وَمَا يُلَقَّىٰهَآ إِلَّا ٱلَّذِينَ صَبَرُوا۟ وَمَا يُلَقَّىٰهَآ إِلَّا ذُو حَظٍّ عَظِيمٍ",
     transliteration: 'wamā yulaqqāhā illā alladhīna ṣabarū wamā yulaqqāhā illā dhū ḥaẓẓin ʿaẓīmin',
-    englishTranslation:
-      'And it is not granted except to those who are patient, and it is not granted except to one having a great fortune.',
+    englishTranslation: "But none is granted it except those who are patient, and none is granted it except one having a great portion [of good].",
     translation:
       'The ability to respond to evil with good — this quality is granted only to those who are truly patient; only to those whom Allah has blessed with an immense fortune of character.',
     source: 'Surah Fussilat 41:35',
@@ -1283,12 +1146,10 @@ const quranContentData: Content[] = [
     type: 'Quran',
     primaryText:
       "wamathalu alladhīna yunfiqūna amwālahumu ib'tighāa marḍāti l-lahi watathbītan min anfusihim kamathali jannatin birabwatin aṣābahā wābilun faātat ukulahā ḍiʿ'fayni fa-in lam yuṣib'hā wābilun faṭallun wal-lahu bimā taʿmalūna baṣīrun",
-    arabicText:
-      'وَمَثَلُ ٱلَّذِينَ يُنفِقُونَ أَمْوَٰلَهُمُ ٱبْتِغَآءَ مَرْضَاتِ ٱللَّهِ وَتَثْبِيتًۭا مِّنْ أَنفُسِهِمْ كَمَثَلِ جَنَّةٍۭ بِرَبْوَةٍ أَصَابَهَا وَابِلٌۭ فَـَٔاتَتْ أُكُلَهَا ضِعْفَيْنِ فَإِن لَّمْ يُصِبْهَا وَابِلٌۭ فَطَلٌّۭ ۗ وَٱللَّهُ بِمَا تَعْمَلُونَ بَصِيرٌ ﴿265﴾',
+    arabicText: "وَمَثَلُ ٱلَّذِينَ يُنفِقُونَ أَمْوَٰلَهُمُ ٱبْتِغَآءَ مَرْضَاتِ ٱللَّهِ وَتَثْبِيتًا مِّنْ أَنفُسِهِمْ كَمَثَلِ جَنَّةٍۭ بِرَبْوَةٍ أَصَابَهَا وَابِلٌ فَـَٔاتَتْ أُكُلَهَا ضِعْفَيْنِ فَإِن لَّمْ يُصِبْهَا وَابِلٌ فَطَلٌّ ۗ وَٱللَّهُ بِمَا تَعْمَلُونَ بَصِيرٌ",
     transliteration:
       "wamathalu alladhīna yunfiqūna amwālahumu ib'tighāa marḍāti l-lahi watathbītan min anfusihim kamathali jannatin birabwatin aṣābahā wābilun faātat ukulahā ḍiʿ'fayni fa-in lam yuṣib'hā wābilun faṭallun wal-lahu bimā taʿmalūna baṣīrun",
-    englishTranslation:
-      'And the example of those who spend their wealth seeking the pleasure of Allah and assuring their souls, is like a garden on a height: heavy rain falls on it, and it yields its harvest double. And if heavy rain does not fall on it, then a drizzle is sufficient. And Allah, of what you do, is All-Seeing.',
+    englishTranslation: "And the example of those who spend their wealth seeking means to the approval of Allāh and assuring [reward for] themselves is like a garden on high ground which is hit by a downpour - so it yields its fruits in double. And [even] if it is not hit by a downpour, then a drizzle [is sufficient]. And Allāh, of what you do, is Seeing.",
     source: 'Surah Al-Baqarah 2:265',
     audioKey: '2:265',
     whyThis: '',
@@ -1301,12 +1162,10 @@ const quranContentData: Content[] = [
     type: 'Quran',
     primaryText:
       "fa-idhā balaghna ajalahunna fa-amsikūhunna bimaʿrūfin aw fāriqūhunna bimaʿrūfin wa-ashhidū dhaway ʿadlin minkum wa-aqīmū l-shahādata lillahi dhālikum yūʿaẓu bihi man kāna yu'minu bil-lahi wal-yawmi l-ākhiri waman yattaqi l-laha yajʿal lahu makhrajan",
-    arabicText:
-      'فَإِذَا بَلَغْنَ أَجَلَهُنَّ فَأَمْسِكُوهُنَّ بِمَعْرُوفٍ أَوْ فَارِقُوهُنَّ بِمَعْرُوفٍۢ وَأَشْهِدُوا۟ ذَوَىْ عَدْلٍۢ مِّنكُمْ وَأَقِيمُوا۟ ٱلشَّهَـٰدَةَ لِلَّهِ ۚ ذَٰلِكُمْ يُوعَظُ بِهِۦ مَن كَانَ يُؤْمِنُ بِٱللَّهِ وَٱلْيَوْمِ ٱلْـَٔاخِرِ ۚ وَمَن يَتَّقِ ٱللَّهَ يَجْعَل لَّهُۥ مَخْرَجًۭا ﴿2﴾',
+    arabicText: "فَإِذَا بَلَغْنَ أَجَلَهُنَّ فَأَمْسِكُوهُنَّ بِمَعْرُوفٍ أَوْ فَارِقُوهُنَّ بِمَعْرُوفٍ وَأَشْهِدُوا۟ ذَوَىْ عَدْلٍ مِّنكُمْ وَأَقِيمُوا۟ ٱلشَّهَـٰدَةَ لِلَّهِ ۚ ذَٰلِكُمْ يُوعَظُ بِهِۦ مَن كَانَ يُؤْمِنُ بِٱللَّهِ وَٱلْيَوْمِ ٱلْـَٔاخِرِ ۚ وَمَن يَتَّقِ ٱللَّهَ يَجْعَل لَّهُۥ مَخْرَجًا",
     transliteration:
       "fa-idhā balaghna ajalahunna fa-amsikūhunna bimaʿrūfin aw fāriqūhunna bimaʿrūfin wa-ashhidū dhaway ʿadlin minkum wa-aqīmū l-shahādata lillahi dhālikum yūʿaẓu bihi man kāna yu'minu bil-lahi wal-yawmi l-ākhiri waman yattaqi l-laha yajʿal lahu makhrajan",
-    englishTranslation:
-      'Then when they have reached their term, either retain them with kindness or part with them with kindness. And bring to witness two just men among you, and establish the testimony for Allah. That is instructed to whoever believes in Allah and the Last Day. And whoever fears Allah — He will make for him a way out.',
+    englishTranslation: "And when they have [nearly] fulfilled their term, either retain them according to acceptable terms or part with them according to acceptable terms. And bring to witness two just men from among you and establish the testimony for [the acceptance of] Allāh. That is instructed to whoever should believe in Allāh and the Last Day. And whoever fears Allāh - He will make for him a way out",
     translation:
       'In matters of marriage: either stay together with kindness, or part with kindness — and let two trustworthy people witness the decision. This is the counsel for whoever believes in Allah and the Last Day. And whoever is mindful of Allah — He will always make a way out for them.',
     source: 'Surah At-Talaq 65:2',
@@ -1319,12 +1178,10 @@ const quranContentData: Content[] = [
     type: 'Quran',
     primaryText:
       "kutiba ʿalaykumu l-qitālu wahuwa kur'hun lakum waʿasā an takrahū shayan wahuwa khayrun lakum waʿasā an tuḥibbū shayan wahuwa sharrun lakum wal-lahu yaʿlamu wa-antum lā taʿlamūna",
-    arabicText:
-      'كُتِبَ عَلَيْكُمُ ٱلْقِتَالُ وَهُوَ كُرْهٌۭ لَّكُمْ ۖ وَعَسَىٰٓ أَن تَكْرَهُوا۟ شَيْـًۭٔا وَهُوَ خَيْرٌۭ لَّكُمْ ۖ وَعَسَىٰٓ أَن تُحِبُّوا۟ شَيْـًۭٔا وَهُوَ شَرٌّۭ لَّكُمْ ۗ وَٱللَّهُ يَعْلَمُ وَأَنتُمْ لَا تَعْلَمُونَ ﴿216﴾',
+    arabicText: "كُتِبَ عَلَيْكُمُ ٱلْقِتَالُ وَهُوَ كُرْهٌ لَّكُمْ ۖ وَعَسَىٰٓ أَن تَكْرَهُوا۟ شَيْـًٔا وَهُوَ خَيْرٌ لَّكُمْ ۖ وَعَسَىٰٓ أَن تُحِبُّوا۟ شَيْـًٔا وَهُوَ شَرٌّ لَّكُمْ ۗ وَٱللَّهُ يَعْلَمُ وَأَنتُمْ لَا تَعْلَمُونَ",
     transliteration:
       "kutiba ʿalaykumu l-qitālu wahuwa kur'hun lakum waʿasā an takrahū shayan wahuwa khayrun lakum waʿasā an tuḥibbū shayan wahuwa sharrun lakum wal-lahu yaʿlamu wa-antum lā taʿlamūna",
-    englishTranslation:
-      'Fighting has been prescribed upon you while it is hateful to you. But perhaps you dislike a thing and it is good for you; and perhaps you love a thing and it is bad for you. And Allah knows, while you do not know.',
+    englishTranslation: "Battle has been enjoined upon you while it is hateful to you. But perhaps you hate a thing and it is good for you; and perhaps you love a thing and it is bad for you. And Allāh knows, while you know not.",
     source: 'Surah Al-Baqarah 2:216',
     audioKey: '2:216',
     whyThis: "What seems bad may be good for you - trust Allah's wisdom.",
@@ -1335,9 +1192,9 @@ const quranContentData: Content[] = [
     id: 'quran_94_6',
     type: 'Quran',
     primaryText: "inna maʿa l-ʿus'ri yus'ran",
-    arabicText: 'إِنَّ مَعَ ٱلْعُسْرِ يُسْرًۭا ﴿6﴾',
+    arabicText: "إِنَّ مَعَ ٱلْعُسْرِ يُسْرًا",
     transliteration: "inna maʿa l-ʿus'ri yus'ran",
-    englishTranslation: 'Indeed, with the hardship is ease.',
+    englishTranslation: "Indeed, with hardship [will be] ease.",
     source: 'Surah Ash-Sharh 94:6',
     audioKey: '94:6',
     whyThis: '',
@@ -1348,12 +1205,10 @@ const quranContentData: Content[] = [
     type: 'Quran',
     primaryText:
       "quli l-lahuma mālika l-mul'ki tu'tī l-mul'ka man tashāu watanziʿu l-mul'ka mimman tashāu watuʿizzu man tashāu watudhillu man tashāu biyadika l-khayru innaka ʿalā kulli shayin qadīrun tūliju al-layla fī l-nahāri watūliju l-nahāra fī al-layli watukh'riju l-ḥaya mina l-mayiti watukh'riju l-mayita mina l-ḥayi watarzuqu man tashāu bighayri ḥisābin",
-    arabicText:
-      'قُلِ ٱللَّهُمَّ مَـٰلِكَ ٱلْمُلْكِ تُؤْتِى ٱلْمُلْكَ مَن تَشَآءُ وَتَنزِعُ ٱلْمُلْكَ مِمَّن تَشَآءُ وَتُعِزُّ مَن تَشَآءُ وَتُذِلُّ مَن تَشَآءُ ۖ بِيَدِكَ ٱلْخَيْرُ ۖ إِنَّكَ عَلَىٰ كُلِّ شَىْءٍۢ قَدِيرٌۭ تُولِجُ ٱلَّيْلَ فِى ٱلنَّهَارِ وَتُولِجُ ٱلنَّهَارَ فِى ٱلَّيْلِ ۖ وَتُخْرِجُ ٱلْحَىَّ مِنَ ٱلْمَيِّتِ وَتُخْرِجُ ٱلْمَيِّتَ مِنَ ٱلْحَىِّ ۖ وَتَرْزُقُ مَن تَشَآءُ بِغَيْرِ حِسَابٍۢ ﴿26-27﴾',
+    arabicText: "قُلِ ٱللَّهُمَّ مَـٰلِكَ ٱلْمُلْكِ تُؤْتِى ٱلْمُلْكَ مَن تَشَآءُ وَتَنزِعُ ٱلْمُلْكَ مِمَّن تَشَآءُ وَتُعِزُّ مَن تَشَآءُ وَتُذِلُّ مَن تَشَآءُ ۖ بِيَدِكَ ٱلْخَيْرُ ۖ إِنَّكَ عَلَىٰ كُلِّ شَىْءٍ قَدِيرٌ تُولِجُ ٱلَّيْلَ فِى ٱلنَّهَارِ وَتُولِجُ ٱلنَّهَارَ فِى ٱلَّيْلِ ۖ وَتُخْرِجُ ٱلْحَىَّ مِنَ ٱلْمَيِّتِ وَتُخْرِجُ ٱلْمَيِّتَ مِنَ ٱلْحَىِّ ۖ وَتَرْزُقُ مَن تَشَآءُ بِغَيْرِ حِسَابٍ",
     transliteration:
       "quli l-lahuma mālika l-mul'ki tu'tī l-mul'ka man tashāu watanziʿu l-mul'ka mimman tashāu watuʿizzu man tashāu watudhillu man tashāu biyadika l-khayru innaka ʿalā kulli shayin qadīrun tūliju al-layla fī l-nahāri watūliju l-nahāra fī al-layli watukh'riju l-ḥaya mina l-mayiti watukh'riju l-mayita mina l-ḥayi watarzuqu man tashāu bighayri ḥisābin",
-    englishTranslation:
-      'Say, "O Allah, Owner of the Dominion, You give dominion to whom You will and You take away dominion from whom You will. You honor whom You will and You humiliate whom You will. In Your hand is all good. Indeed, You are over all things All-Powerful. You cause the night to enter the day and cause the day to enter the night; and You bring the living from the dead and bring the dead from the living; and You give provision to whom You will without measure."',
+    englishTranslation: "Say, \"O Allāh, Owner of Sovereignty, You give sovereignty to whom You will and You take sovereignty away from whom You will. You honor whom You will and You humble whom You will. In Your hand is [all] good. Indeed, You are over all things competent. You cause the night to enter the day, and You cause the day to enter the night; and You bring the living out of the dead, and You bring the dead out of the living. And You give provision to whom You will without account [i.e., limit or measure].\"",
     source: 'Surah Ali Imran 3:26-27',
     audioKey: '3:26-27',
     whyThis: 'Allah is the Owner of all - He can change your situation in an instant.',
@@ -1364,12 +1219,10 @@ const quranContentData: Content[] = [
     type: 'Quran',
     primaryText:
       "al-mālu wal-banūna zīnatu l-ḥayati l-dun'yā wal-bāqiyātu l-ṣāliḥātu khayrun ʿinda rabbika thawāban wakhayrun amalan",
-    arabicText:
-      'ٱلْمَالُ وَٱلْبَنُونَ زِينَةُ ٱلْحَيَوٰةِ ٱلدُّنْيَا ۖ وَٱلْبَـٰقِيَـٰتُ ٱلصَّـٰلِحَـٰتُ خَيْرٌ عِندَ رَبِّكَ ثَوَابًۭا وَخَيْرٌ أَمَلًۭا ﴿46﴾',
+    arabicText: "ٱلْمَالُ وَٱلْبَنُونَ زِينَةُ ٱلْحَيَوٰةِ ٱلدُّنْيَا ۖ وَٱلْبَـٰقِيَـٰتُ ٱلصَّـٰلِحَـٰتُ خَيْرٌ عِندَ رَبِّكَ ثَوَابًا وَخَيْرٌ أَمَلًا",
     transliteration:
       "al-mālu wal-banūna zīnatu l-ḥayati l-dun'yā wal-bāqiyātu l-ṣāliḥātu khayrun ʿinda rabbika thawāban wakhayrun amalan",
-    englishTranslation:
-      'Wealth and children are the adornment of the life of this world. But the enduring good deeds are better to your Lord for reward and better for hope.',
+    englishTranslation: "Wealth and children are [but] adornment of the worldly life. But the enduring good deeds are better to your Lord for reward and better for [one's] hope.",
     source: 'Surah Al-Kahf 18:46',
     audioKey: '18:46',
     whyThis: 'Good deeds last forever - your hope lies in what endures with Allah.',
@@ -1379,11 +1232,9 @@ const quranContentData: Content[] = [
     id: 'quran_17_11',
     type: 'Quran',
     primaryText: 'wayadʿu l-insānu bil-shari duʿāahu bil-khayri wakāna l-insānu ʿajūlan',
-    arabicText:
-      'وَيَدْعُ ٱلْإِنسَـٰنُ بِٱلشَّرِّ دُعَآءَهُۥ بِٱلْخَيْرِ ۖ وَكَانَ ٱلْإِنسَـٰنُ عَجُولًۭا ﴿11﴾',
+    arabicText: "وَيَدْعُ ٱلْإِنسَـٰنُ بِٱلشَّرِّ دُعَآءَهُۥ بِٱلْخَيْرِ ۖ وَكَانَ ٱلْإِنسَـٰنُ عَجُولًا",
     transliteration: 'wayadʿu l-insānu bil-shari duʿāahu bil-khayri wakāna l-insānu ʿajūlan',
-    englishTranslation:
-      'And man supplicates for evil as he supplicates for good, and man is ever hasty.',
+    englishTranslation: "And man supplicates for evil [when angry] as he supplicates for good, and man is ever hasty.",
     source: 'Surah Al-Isra 17:11',
     audioKey: '17:11',
     whyThis: "Be patient - don't rush. Allah's timing is perfect even when we want results now.",
@@ -1394,12 +1245,10 @@ const quranContentData: Content[] = [
     type: 'Quran',
     primaryText:
       "fa-is'tajabnā lahu wawahabnā lahu yaḥyā wa-aṣlaḥnā lahu zawjahu innahum kānū yusāriʿūna fī l-khayrāti wayadʿūnanā raghaban warahaban wakānū lanā khāshiʿīna",
-    arabicText:
-      'فَٱسْتَجَبْنَا لَهُۥ وَوَهَبْنَا لَهُۥ يَحْيَىٰ وَأَصْلَحْنَا لَهُۥ زَوْجَهُۥٓ ۚ إِنَّهُمْ كَانُوا۟ يُسَـٰرِعُونَ فِى ٱلْخَيْرَٰتِ وَيَدْعُونَنَا رَغَبًۭا وَرَهَبًۭا ۖ وَكَانُوا۟ لَنَا خَـٰشِعِينَ ﴿90﴾',
+    arabicText: "فَٱسْتَجَبْنَا لَهُۥ وَوَهَبْنَا لَهُۥ يَحْيَىٰ وَأَصْلَحْنَا لَهُۥ زَوْجَهُۥٓ ۚ إِنَّهُمْ كَانُوا۟ يُسَـٰرِعُونَ فِى ٱلْخَيْرَٰتِ وَيَدْعُونَنَا رَغَبًا وَرَهَبًا ۖ وَكَانُوا۟ لَنَا خَـٰشِعِينَ",
     transliteration:
       "fa-is'tajabnā lahu wawahabnā lahu yaḥyā wa-aṣlaḥnā lahu zawjahu innahum kānū yusāriʿūna fī l-khayrāti wayadʿūnanā raghaban warahaban wakānū lanā khāshiʿīna",
-    englishTranslation:
-      'So We responded to him and bestowed upon him Yahya, and cured his wife for him. Indeed, they used to hasten in good deeds, and they supplicated to Us in hope and fear, and they were to Us humbly submissive.',
+    englishTranslation: "So We responded to him, and We gave to him John, and amended for him his wife. Indeed, they used to hasten to good deeds and supplicate Us in hope and fear, and they were to Us humbly submissive.",
     source: 'Surah Al-Anbiya 21:90',
     audioKey: '21:90',
     whyThis: 'The prophets combined hope with action - hasten in good while calling upon Allah.',
@@ -1410,12 +1259,10 @@ const quranContentData: Content[] = [
     type: 'Quran',
     primaryText:
       'tatajāfā junūbuhum ʿani l-maḍājiʿi yadʿūna rabbahum khawfan waṭamaʿan wamimmā razaqnāhum yunfiqūna',
-    arabicText:
-      'تَتَجَافَىٰ جُنُوبُهُمْ عَنِ ٱلْمَضَاجِعِ يَدْعُونَ رَبَّهُمْ خَوْفًۭا وَطَمَعًۭا وَمِمَّا رَزَقْنَـٰهُمْ يُنفِقُونَ ﴿16﴾',
+    arabicText: "تَتَجَافَىٰ جُنُوبُهُمْ عَنِ ٱلْمَضَاجِعِ يَدْعُونَ رَبَّهُمْ خَوْفًا وَطَمَعًا وَمِمَّا رَزَقْنَـٰهُمْ يُنفِقُونَ",
     transliteration:
       'tatajāfā junūbuhum ʿani l-maḍājiʿi yadʿūna rabbahum khawfan waṭamaʿan wamimmā razaqnāhum yunfiqūna',
-    englishTranslation:
-      'Their sides forsake their beds; they call upon their Lord in fear and hope, and from what We have provided them, they spend.',
+    englishTranslation: "Their sides part [i.e., they arise] from [their] beds; they supplicate their Lord in fear and aspiration, and from what We have provided them, they spend.",
     source: 'Surah As-Sajdah 32:16',
     audioKey: '32:16',
     whyThis: 'Balance hope with reverence - call upon Allah with both aspiration and awe.',
@@ -1429,12 +1276,10 @@ const quranContentData: Content[] = [
     type: 'Quran',
     primaryText:
       "alladhīna āmanū wataṭma-innu qulūbuhum bidhik'ri l-lahi alā bidhik'ri l-lahi taṭma-innu l-qulūbu",
-    arabicText:
-      'ٱلَّذِينَ ءَامَنُوا۟ وَتَطْمَئِنُّ قُلُوبُهُم بِذِكْرِ ٱللَّهِ ۗ أَلَا بِذِكْرِ ٱللَّهِ تَطْمَئِنُّ ٱلْقُلُوبُ ﴿28﴾',
+    arabicText: "ٱلَّذِينَ ءَامَنُوا۟ وَتَطْمَئِنُّ قُلُوبُهُم بِذِكْرِ ٱللَّهِ ۗ أَلَا بِذِكْرِ ٱللَّهِ تَطْمَئِنُّ ٱلْقُلُوبُ",
     transliteration:
       "alladhīna āmanū wataṭma-innu qulūbuhum bidhik'ri l-lahi alā bidhik'ri l-lahi taṭma-innu l-qulūbu",
-    englishTranslation:
-      'Those who believe, and whose hearts find satisfaction in the remembrance of Allah. Verily, in the remembrance of Allah do hearts find satisfaction.',
+    englishTranslation: "Those who have believed and whose hearts are assured by the remembrance of Allāh. Unquestionably, by the remembrance of Allāh hearts are assured.\"",
     source: "Surah Ar-Ra'd 13:28",
     audioKey: '13:28',
     whyThis: '"Verily, in the remembrance of Allah do hearts find satisfaction." [Quran 13:28]',
@@ -1444,10 +1289,9 @@ const quranContentData: Content[] = [
     id: 'quran_89_27',
     type: 'Quran',
     primaryText: "yāayyatuhā l-nafsu l-muṭ'ma-inatu ir'jiʿī ilā rabbiki rāḍiyatan marḍiyyatan",
-    arabicText:
-      'يَـٰٓأَيَّتُهَا ٱلنَّفْسُ ٱلْمُطْمَئِنَّةُ ٱرْجِعِىٓ إِلَىٰ رَبِّكِ رَاضِيَةًۭ مَّرْضِيَّةًۭ ﴿27-28﴾',
+    arabicText: "يَـٰٓأَيَّتُهَا ٱلنَّفْسُ ٱلْمُطْمَئِنَّةُ ٱرْجِعِىٓ إِلَىٰ رَبِّكِ رَاضِيَةً مَّرْضِيَّةً",
     transliteration: "yāayyatuhā l-nafsu l-muṭ'ma-inatu ir'jiʿī ilā rabbiki rāḍiyatan marḍiyyatan",
-    englishTranslation: 'O reassured soul, return to your Lord, well-pleased and pleasing to Him.',
+    englishTranslation: "[To the righteous it will be said], \"O reassured soul, Return to your Lord, well-pleased and pleasing [to Him],",
     source: 'Surah Al-Fajr 89:27-28',
     audioKey: '89:27-28',
     whyThis: 'The ultimate peace is the reassured soul returning to Allah in contentment.',
@@ -1457,12 +1301,10 @@ const quranContentData: Content[] = [
     id: 'quran_2_45',
     type: 'Quran',
     primaryText: "wa-is'taʿīnū bil-ṣabri wal-ṣalati wa-innahā lakabīratun illā ʿalā l-khāshiʿīna",
-    arabicText:
-      'وَٱسْتَعِينُوا۟ بِٱلصَّبْرِ وَٱلصَّلَوٰةِ ۚ وَإِنَّهَا لَكَبِيرَةٌ إِلَّا عَلَى ٱلْخَـٰشِعِينَ ﴿45﴾',
+    arabicText: "وَٱسْتَعِينُوا۟ بِٱلصَّبْرِ وَٱلصَّلَوٰةِ ۚ وَإِنَّهَا لَكَبِيرَةٌ إِلَّا عَلَى ٱلْخَـٰشِعِينَ",
     transliteration:
       "wa-is'taʿīnū bil-ṣabri wal-ṣalati wa-innahā lakabīratun illā ʿalā l-khāshiʿīna",
-    englishTranslation:
-      'And seek help through patience and prayer; and indeed, it is difficult except for the humble ones.',
+    englishTranslation: "And seek help through patience and prayer; and indeed, it is difficult except for the humbly submissive [to Allāh]",
     source: 'Surah Al-Baqarah 2:45',
     audioKey: '2:45',
     whyThis: 'Prayer is a source of help and strength, though its ease is found in humility.',
@@ -1473,12 +1315,10 @@ const quranContentData: Content[] = [
     type: 'Quran',
     primaryText:
       'wa-in yamsaska l-lahu biḍurrin falā kāshifa lahu illā huwa wa-in yamsaska bikhayrin fahuwa ʿalā kulli shayin qadīrun',
-    arabicText:
-      'وَإِن يَمْسَسْكَ ٱللَّهُ بِضُرٍّۢ فَلَا كَاشِفَ لَهُۥٓ إِلَّا هُوَ ۖ وَإِن يَمْسَسْكَ بِخَيْرٍۢ فَهُوَ عَلَىٰ كُلِّ شَىْءٍۢ قَدِيرٌۭ ﴿17﴾',
+    arabicText: "وَإِن يَمْسَسْكَ ٱللَّهُ بِضُرٍّ فَلَا كَاشِفَ لَهُۥٓ إِلَّا هُوَ ۖ وَإِن يَمْسَسْكَ بِخَيْرٍ فَهُوَ عَلَىٰ كُلِّ شَىْءٍ قَدِيرٌ",
     transliteration:
       'wa-in yamsaska l-lahu biḍurrin falā kāshifa lahu illā huwa wa-in yamsaska bikhayrin fahuwa ʿalā kulli shayin qadīrun',
-    englishTranslation:
-      'And if Allah touches you with affliction, there is no remover of it except Him. And if He touches you with good, then He is over all things All-Powerful.',
+    englishTranslation: "And if Allāh should touch you with adversity, there is no remover of it except Him. And if He touches you with good - then He is over all things competent.",
     source: "Surah Al-An'am 6:17",
     audioKey: '6:17',
     whyThis: 'Only Allah can remove hardship - turn to Him, the One with all power.',
@@ -1489,12 +1329,10 @@ const quranContentData: Content[] = [
     type: 'Quran',
     primaryText:
       "qul lā amliku linafsī nafʿan walā ḍarran illā mā shāa l-lahu walaw kuntu aʿlamu l-ghayba la-is'takthartu mina l-khayri wamā massaniya l-sūu in anā illā nadhīrun wabashīrun liqawmin yu'minūna",
-    arabicText:
-      'قُل لَّآ أَمْلِكُ لِنَفْسِى نَفْعًۭا وَلَا ضَرًّا إِلَّا مَا شَآءَ ٱللَّهُ ۚ وَلَوْ كُنتُ أَعْلَمُ ٱلْغَيْبَ لَٱسْتَكْثَرْتُ مِنَ ٱلْخَيْرِ وَمَا مَسَّنِىَ ٱلسُّوٓءُ ۚ إِنْ أَنَا۠ إِلَّا نَذِيرٌۭ وَبَشِيرٌۭ لِّقَوْمٍۢ يُؤْمِنُونَ ﴿188﴾',
+    arabicText: "قُل لَّآ أَمْلِكُ لِنَفْسِى نَفْعًا وَلَا ضَرًّا إِلَّا مَا شَآءَ ٱللَّهُ ۚ وَلَوْ كُنتُ أَعْلَمُ ٱلْغَيْبَ لَٱسْتَكْثَرْتُ مِنَ ٱلْخَيْرِ وَمَا مَسَّنِىَ ٱلسُّوٓءُ ۚ إِنْ أَنَا۠ إِلَّا نَذِيرٌ وَبَشِيرٌ لِّقَوْمٍ يُؤْمِنُونَ",
     transliteration:
       "qul lā amliku linafsī nafʿan walā ḍarran illā mā shāa l-lahu walaw kuntu aʿlamu l-ghayba la-is'takthartu mina l-khayri wamā massaniya l-sūu in anā illā nadhīrun wabashīrun liqawmin yu'minūna",
-    englishTranslation:
-      'Say, "I hold not for myself the power of benefit or harm, except what Allah has willed. And if I knew the unseen, I could have acquired much good, and no harm would have touched me. I am not except a warner and a bringer of good tidings to a people who believe."',
+    englishTranslation: "Say, \"I hold not for myself [the power of] benefit or harm, except what Allāh has willed. And if I knew the unseen, I could have acquired much wealth, and no harm would have touched me. I am not except a warner and a bringer of good tidings to a people who believe.\"",
     translation:
       'The Prophet Muhammad ﷺ was told to say: "I have no power to benefit or harm even myself — only what Allah wills. If I knew the future, I would have gathered only good for myself, and no hardship would have touched me. I am only a messenger: one who warns, and one who brings good news to those who believe."',
     source: "Surah Al-A'raf 7:188",
@@ -1507,11 +1345,9 @@ const quranContentData: Content[] = [
     id: 'quran_42_30',
     type: 'Quran',
     primaryText: 'wamā aṣābakum min muṣībatin fabimā kasabat aydīkum wayaʿfū ʿan kathīrin',
-    arabicText:
-      'وَمَآ أَصَـٰبَكُم مِّن مُّصِيبَةٍۢ فَبِمَا كَسَبَتْ أَيْدِيكُمْ وَيَعْفُوا۟ عَن كَثِيرٍۢ ﴿30﴾',
+    arabicText: "وَمَآ أَصَـٰبَكُم مِّن مُّصِيبَةٍ فَبِمَا كَسَبَتْ أَيْدِيكُمْ وَيَعْفُوا۟ عَن كَثِيرٍ",
     transliteration: 'wamā aṣābakum min muṣībatin fabimā kasabat aydīkum wayaʿfū ʿan kathīrin',
-    englishTranslation:
-      'And whatever misfortune befalls you, it is because of what your hands have earned. But He pardons much.',
+    englishTranslation: "And whatever strikes you of disaster - it is for what your hands have earned; but He pardons much.",
     source: 'Surah Ash-Shura 42:30',
     audioKey: '42:30',
     whyThis: 'Trials are often expiation - and Allah pardons even more than what befalls us.',
@@ -1522,12 +1358,10 @@ const quranContentData: Content[] = [
     type: 'Quran',
     primaryText:
       "amman yujību l-muḍ'ṭara idhā daʿāhu wayakshifu l-sūa wayajʿalukum khulafāa l-arḍi a-ilāhun maʿa l-lahi qalīlan mā tadhakkarūna",
-    arabicText:
-      'أَمَّن يُجِيبُ ٱلْمُضْطَرَّ إِذَا دَعَاهُ وَيَكْشِفُ ٱلسُّوٓءَ وَيَجْعَلُكُمْ خُلَفَآءَ ٱلْأَرْضِ ۗ أَءِلَـٰهٌۭ مَّعَ ٱللَّهِ ۚ قَلِيلًۭا مَّا تَذَكَّرُونَ ﴿62﴾',
+    arabicText: "أَمَّن يُجِيبُ ٱلْمُضْطَرَّ إِذَا دَعَاهُ وَيَكْشِفُ ٱلسُّوٓءَ وَيَجْعَلُكُمْ خُلَفَآءَ ٱلْأَرْضِ ۗ أَءِلَـٰهٌ مَّعَ ٱللَّهِ ۚ قَلِيلًا مَّا تَذَكَّرُونَ",
     transliteration:
       "amman yujību l-muḍ'ṭara idhā daʿāhu wayakshifu l-sūa wayajʿalukum khulafāa l-arḍi a-ilāhun maʿa l-lahi qalīlan mā tadhakkarūna",
-    englishTranslation:
-      'Or, Who responds to the distressed one when he calls upon Him and removes the evil, and makes you inheritors of the earth? Is there any god with Allah? Little do you remember.',
+    englishTranslation: "Is He [not best] who responds to the desperate one when he calls upon Him and removes evil and makes you inheritors of the earth? Is there a deity with Allāh? Little do you remember.",
     source: 'Surah An-Naml 27:62',
     audioKey: '27:62',
     whyThis: '',
@@ -1538,12 +1372,10 @@ const quranContentData: Content[] = [
     type: 'Quran',
     primaryText:
       'wamina l-shayāṭīni man yaghūṣūna lahu wayaʿmalūna ʿamalan dūna dhālika wakunnā lahum ḥāfiẓīna wa-ayyūba idh nādā rabbahu annī massaniya l-ḍuru wa-anta arḥamu l-rāḥimīna',
-    arabicText:
-      'وَمِنَ ٱلشَّيَـٰطِينِ مَن يَغُوصُونَ لَهُۥ وَيَعْمَلُونَ عَمَلًۭا دُونَ ذَٰلِكَ ۖ وَكُنَّا لَهُمْ حَـٰفِظِينَ ۞ وَأَيُّوبَ إِذْ نَادَىٰ رَبَّهُۥٓ أَنِّى مَسَّنِىَ ٱلضُّرُّ وَأَنتَ أَرْحَمُ ٱلرَّٰحِمِينَ ﴿82-83﴾',
+    arabicText: "وَمِنَ ٱلشَّيَـٰطِينِ مَن يَغُوصُونَ لَهُۥ وَيَعْمَلُونَ عَمَلًا دُونَ ذَٰلِكَ ۖ وَكُنَّا لَهُمْ حَـٰفِظِينَ ۞ وَأَيُّوبَ إِذْ نَادَىٰ رَبَّهُۥٓ أَنِّى مَسَّنِىَ ٱلضُّرُّ وَأَنتَ أَرْحَمُ ٱلرَّٰحِمِينَ",
     transliteration:
       'wamina l-shayāṭīni man yaghūṣūna lahu wayaʿmalūna ʿamalan dūna dhālika wakunnā lahum ḥāfiẓīna wa-ayyūba idh nādā rabbahu annī massaniya l-ḍuru wa-anta arḥamu l-rāḥimīna',
-    englishTranslation:
-      'And of the devils were some who would dive for him and do other work, and We were of them Guardians. And Ayub, when he called to his Lord, "Indeed, adversity has touched me, and You are the Most Merciful of the merciful."',
+    englishTranslation: "And of the devils [i.e., jinn] were those who dived for him and did work other than that. And We were of them a guardian. And [mention] Job, when he called to his Lord, \"Indeed, adversity has touched me, and You are the most merciful of the merciful.\"",
     translation:
       'Among the jinn, some would dive into the sea for Prophet Sulayman (Solomon) and carry out other tasks; and We kept watch over them all. And remember Prophet Ayyub (Job), when he cried out to his Lord: "Hardship has truly afflicted me — and You are the Most Merciful of all who show mercy."',
     source: 'Surah Al-Anbiya 21:82-83',
@@ -1556,12 +1388,10 @@ const quranContentData: Content[] = [
     type: 'Quran',
     primaryText:
       "qul lan yuṣībanā illā mā kataba l-lahu lanā huwa mawlānā waʿalā l-lahi falyatawakkali l-mu'minūna",
-    arabicText:
-      'قُل لَّن يُصِيبَنَآ إِلَّا مَا كَتَبَ ٱللَّهُ لَنَا هُوَ مَوْلَىٰنَا ۚ وَعَلَى ٱللَّهِ فَلْيَتَوَكَّلِ ٱلْمُؤْمِنُونَ ﴿51﴾',
+    arabicText: "قُل لَّن يُصِيبَنَآ إِلَّا مَا كَتَبَ ٱللَّهُ لَنَا هُوَ مَوْلَىٰنَا ۚ وَعَلَى ٱللَّهِ فَلْيَتَوَكَّلِ ٱلْمُؤْمِنُونَ",
     transliteration:
       "qul lan yuṣībanā illā mā kataba l-lahu lanā huwa mawlānā waʿalā l-lahi falyatawakkali l-mu'minūna",
-    englishTranslation:
-      'Say, "Never will anything befall us except what Allah has decreed for us; He is our Protector." And upon Allah let the believers put their trust.',
+    englishTranslation: "Say, \"Never will we be struck except by what Allāh has decreed for us; He is our protector.\" And upon Allāh let the believers rely.",
     source: 'Surah At-Tawbah 9:51',
     audioKey: '9:51',
     whyThis: '"Never will anything befall us except what Allah has decreed for us; He is our Protector." [Quran 9:51]',
@@ -1572,12 +1402,10 @@ const quranContentData: Content[] = [
     type: 'Quran',
     primaryText:
       "huwa alladhī anzala l-sakīnata fī qulūbi l-mu'minīna liyazdādū īmānan maʿa īmānihim walillahi junūdu l-samāwāti wal-arḍi wakāna l-lahu ʿalīman ḥakīman",
-    arabicText:
-      'هُوَ ٱلَّذِىٓ أَنزَلَ ٱلسَّكِينَةَ فِى قُلُوبِ ٱلْمُؤْمِنِينَ لِيَزْدَادُوٓا۟ إِيمَـٰنًۭا مَّعَ إِيمَـٰنِهِمْ ۗ وَلِلَّهِ جُنُودُ ٱلسَّمَـٰوَٰتِ وَٱلْأَرْضِ ۚ وَكَانَ ٱللَّهُ عَلِيمًا حَكِيمًۭا ﴿4﴾',
+    arabicText: "هُوَ ٱلَّذِىٓ أَنزَلَ ٱلسَّكِينَةَ فِى قُلُوبِ ٱلْمُؤْمِنِينَ لِيَزْدَادُوٓا۟ إِيمَـٰنًا مَّعَ إِيمَـٰنِهِمْ ۗ وَلِلَّهِ جُنُودُ ٱلسَّمَـٰوَٰتِ وَٱلْأَرْضِ ۚ وَكَانَ ٱللَّهُ عَلِيمًا حَكِيمًا",
     transliteration:
       "huwa alladhī anzala l-sakīnata fī qulūbi l-mu'minīna liyazdādū īmānan maʿa īmānihim walillahi junūdu l-samāwāti wal-arḍi wakāna l-lahu ʿalīman ḥakīman",
-    englishTranslation:
-      'He is the One Who sent down tranquility into the hearts of the believers, that they may increase in faith along with their faith. And to Allah belong the hosts of the heavens and the earth, and Allah is All-Knower, All-Wise.',
+    englishTranslation: "It is He who sent down tranquility into the hearts of the believers that they would increase in faith along with their [present] faith. And to Allāh belong the soldiers of the heavens and the earth, and ever is Allāh Knowing and Wise.",
     source: 'Surah Al-Fath 48:4',
     audioKey: '48:4',
     whyThis: 'Allah Himself sends sakinah (tranquility) to the hearts of believers.',
@@ -1588,12 +1416,10 @@ const quranContentData: Content[] = [
     type: 'Quran',
     primaryText:
       'wamin āyātihi an khalaqa lakum min anfusikum azwājan litaskunū ilayhā wajaʿala baynakum mawaddatan waraḥmatan inna fī dhālika laāyātin liqawmin yatafakkarūna',
-    arabicText:
-      'وَمِنْ ءَايَـٰتِهِۦٓ أَنْ خَلَقَ لَكُم مِّنْ أَنفُسِكُمْ أَزْوَٰجًۭا لِّتَسْكُنُوٓا۟ إِلَيْهَا وَجَعَلَ بَيْنَكُم مَّوَدَّةًۭ وَرَحْمَةً ۚ إِنَّ فِى ذَٰلِكَ لَـَٔايَـٰتٍۢ لِّقَوْمٍۢ يَتَفَكَّرُونَ ﴿21﴾',
+    arabicText: "وَمِنْ ءَايَـٰتِهِۦٓ أَنْ خَلَقَ لَكُم مِّنْ أَنفُسِكُمْ أَزْوَٰجًا لِّتَسْكُنُوٓا۟ إِلَيْهَا وَجَعَلَ بَيْنَكُم مَّوَدَّةً وَرَحْمَةً ۚ إِنَّ فِى ذَٰلِكَ لَـَٔايَـٰتٍ لِّقَوْمٍ يَتَفَكَّرُونَ",
     transliteration:
       'wamin āyātihi an khalaqa lakum min anfusikum azwājan litaskunū ilayhā wajaʿala baynakum mawaddatan waraḥmatan inna fī dhālika laāyātin liqawmin yatafakkarūna',
-    englishTranslation:
-      'And among His signs is that He created for you from yourselves mates that you may find tranquility in them, and He placed between you love and mercy. Indeed, in that are surely signs for a people who reflect.',
+    englishTranslation: "And of His signs is that He created for you from yourselves mates that you may find tranquility in them; and He placed between you affection and mercy. Indeed in that are signs for a people who give thought.",
     source: 'Surah Ar-Rum 30:21',
     audioKey: '30:21',
     whyThis: 'Tranquility (sakinah) is a divine gift placed between hearts in marriage.',
@@ -1604,12 +1430,10 @@ const quranContentData: Content[] = [
     type: 'Quran',
     primaryText:
       "laqad raḍiya l-lahu ʿani l-mu'minīna idh yubāyiʿūnaka taḥta l-shajarati faʿalima mā fī qulūbihim fa-anzala l-sakīnata ʿalayhim wa-athābahum fatḥan qarīban",
-    arabicText:
-      '۞ لَّقَدْ رَضِىَ ٱللَّهُ عَنِ ٱلْمُؤْمِنِينَ إِذْ يُبَايِعُونَكَ تَحْتَ ٱلشَّجَرَةِ فَعَلِمَ مَا فِى قُلُوبِهِمْ فَأَنزَلَ ٱلسَّكِينَةَ عَلَيْهِمْ وَأَثَـٰبَهُمْ فَتْحًۭا قَرِيبًۭا ﴿18﴾',
+    arabicText: "۞ لَّقَدْ رَضِىَ ٱللَّهُ عَنِ ٱلْمُؤْمِنِينَ إِذْ يُبَايِعُونَكَ تَحْتَ ٱلشَّجَرَةِ فَعَلِمَ مَا فِى قُلُوبِهِمْ فَأَنزَلَ ٱلسَّكِينَةَ عَلَيْهِمْ وَأَثَـٰبَهُمْ فَتْحًا قَرِيبًا",
     transliteration:
       "laqad raḍiya l-lahu ʿani l-mu'minīna idh yubāyiʿūnaka taḥta l-shajarati faʿalima mā fī qulūbihim fa-anzala l-sakīnata ʿalayhim wa-athābahum fatḥan qarīban",
-    englishTranslation:
-      'Certainly was Allah pleased with the believers when they pledged allegiance to you under the tree, and He knew what was in their hearts, so He sent down tranquility upon them and rewarded them with a near victory.',
+    englishTranslation: "Certainly was Allāh pleased with the believers when they pledged allegiance to you, [O Muḥammad], under the tree, and He knew what was in their hearts, so He sent down tranquility upon them and rewarded them with an imminent conquest",
     translation:
       'Allah was truly pleased with the believers when they pledged their loyalty to the Prophet Muhammad ﷺ at Hudaybiyyah, beneath a tree. He knew the sincerity in their hearts; so He sent down tranquility upon them, and rewarded them with a victory that was soon to come.',
     source: 'Surah Al-Fath 48:18',
@@ -1622,12 +1446,10 @@ const quranContentData: Content[] = [
     type: 'Quran',
     primaryText:
       "yāayyuhā alladhīna āmanū ud'khulū fī l-sil'mi kāffatan walā tattabiʿū khuṭuwāti l-shayṭāni innahu lakum ʿaduwwun mubīnun",
-    arabicText:
-      'يَـٰٓأَيُّهَا ٱلَّذِينَ ءَامَنُوا۟ ٱدْخُلُوا۟ فِى ٱلسِّلْمِ كَآفَّةًۭ وَلَا تَتَّبِعُوا۟ خُطُوَٰتِ ٱلشَّيْطَـٰنِ ۚ إِنَّهُۥ لَكُمْ عَدُوٌّۭ مُّبِينٌۭ ﴿208﴾',
+    arabicText: "يَـٰٓأَيُّهَا ٱلَّذِينَ ءَامَنُوا۟ ٱدْخُلُوا۟ فِى ٱلسِّلْمِ كَآفَّةً وَلَا تَتَّبِعُوا۟ خُطُوَٰتِ ٱلشَّيْطَـٰنِ ۚ إِنَّهُۥ لَكُمْ عَدُوٌّ مُّبِينٌ",
     transliteration:
       "yāayyuhā alladhīna āmanū ud'khulū fī l-sil'mi kāffatan walā tattabiʿū khuṭuwāti l-shayṭāni innahu lakum ʿaduwwun mubīnun",
-    englishTranslation:
-      'O you who believe, enter into Islam completely, and do not follow the footsteps of Satan. Indeed, he is to you a clear enemy.',
+    englishTranslation: "O you who have believed, enter into Islām completely [and perfectly] and do not follow the footsteps of Satan. Indeed, he is to you a clear enemy.",
     source: 'Surah Al-Baqarah 2:208',
     audioKey: '2:208',
     whyThis: '',
@@ -1638,12 +1460,10 @@ const quranContentData: Content[] = [
     type: 'Quran',
     primaryText:
       "wa-idhā jāaka alladhīna yu'minūna biāyātinā faqul salāmun ʿalaykum kataba rabbukum ʿalā nafsihi l-raḥmata annahu man ʿamila minkum sūan bijahālatin thumma tāba min baʿdihi wa-aṣlaḥa fa-annahu ghafūrun raḥīmun",
-    arabicText:
-      'وَإِذَا جَآءَكَ ٱلَّذِينَ يُؤْمِنُونَ بِـَٔايَـٰتِنَا فَقُلْ سَلَـٰمٌ عَلَيْكُمْ ۖ كَتَبَ رَبُّكُمْ عَلَىٰ نَفْسِهِ ٱلرَّحْمَةَ ۖ أَنَّهُۥ مَنْ عَمِلَ مِنكُمْ سُوٓءًۢا بِجَهَـٰلَةٍۢ ثُمَّ تَابَ مِنۢ بَعْدِهِۦ وَأَصْلَحَ فَأَنَّهُۥ غَفُورٌۭ رَّحِيمٌۭ ﴿54﴾',
+    arabicText: "وَإِذَا جَآءَكَ ٱلَّذِينَ يُؤْمِنُونَ بِـَٔايَـٰتِنَا فَقُلْ سَلَـٰمٌ عَلَيْكُمْ ۖ كَتَبَ رَبُّكُمْ عَلَىٰ نَفْسِهِ ٱلرَّحْمَةَ ۖ أَنَّهُۥ مَنْ عَمِلَ مِنكُمْ سُوٓءًۢا بِجَهَـٰلَةٍ ثُمَّ تَابَ مِنۢ بَعْدِهِۦ وَأَصْلَحَ فَأَنَّهُۥ غَفُورٌ رَّحِيمٌ",
     transliteration:
       "wa-idhā jāaka alladhīna yu'minūna biāyātinā faqul salāmun ʿalaykum kataba rabbukum ʿalā nafsihi l-raḥmata annahu man ʿamila minkum sūan bijahālatin thumma tāba min baʿdihi wa-aṣlaḥa fa-annahu ghafūrun raḥīmun",
-    englishTranslation:
-      'And when those who believe in Our verses come to you, say, "Peace be upon you. Your Lord has prescribed upon Himself mercy: that any of you who does evil in ignorance and then repents and reforms — then indeed, He is Oft-Forgiving, Most Merciful."',
+    englishTranslation: "And when those come to you who believe in Our verses, say, \"Peace be upon you. Your Lord has decreed upon Himself mercy: that any of you who does wrong out of ignorance and then repents after that and corrects himself - indeed, He is Forgiving and Merciful.\"",
     source: "Surah Al-An'am 6:54",
     audioKey: '6:54',
     whyThis: 'Allah greets the believers with peace and has obligated mercy upon Himself.',
@@ -1654,12 +1474,10 @@ const quranContentData: Content[] = [
     type: 'Quran',
     primaryText:
       "alladhīna tatawaffāhumu l-malāikatu ṭayyibīna yaqūlūna salāmun ʿalaykumu ud'khulū l-janata bimā kuntum taʿmalūna",
-    arabicText:
-      'ٱلَّذِينَ تَتَوَفَّىٰهُمُ ٱلْمَلَـٰٓئِكَةُ طَيِّبِينَ ۙ يَقُولُونَ سَلَـٰمٌ عَلَيْكُمُ ٱدْخُلُوا۟ ٱلْجَنَّةَ بِمَا كُنتُمْ تَعْمَلُونَ ﴿32﴾',
+    arabicText: "ٱلَّذِينَ تَتَوَفَّىٰهُمُ ٱلْمَلَـٰٓئِكَةُ طَيِّبِينَ ۙ يَقُولُونَ سَلَـٰمٌ عَلَيْكُمُ ٱدْخُلُوا۟ ٱلْجَنَّةَ بِمَا كُنتُمْ تَعْمَلُونَ",
     transliteration:
       "alladhīna tatawaffāhumu l-malāikatu ṭayyibīna yaqūlūna salāmun ʿalaykumu ud'khulū l-janata bimā kuntum taʿmalūna",
-    englishTranslation:
-      'Those whom the angels take in death while they are pure, saying, "Peace be upon you. Enter Paradise for what you used to do."',
+    englishTranslation: "The ones whom the angels take in death, [being] good and pure; [the angels] will say, \"Peace be upon you. Enter Paradise for what you used to do.\"",
     translation:
       'The righteous — those whose souls the angels take gently, while they are in a state of goodness — the angels greet them, saying: "Peace be upon you. Enter Paradise, as a reward for the good you used to do."',
     source: 'Surah An-Nahl 16:32',
@@ -1671,9 +1489,9 @@ const quranContentData: Content[] = [
     id: 'quran_36_58',
     type: 'Quran',
     primaryText: 'salāmun qawlan min rabbin raḥīmin',
-    arabicText: 'سَلَـٰمٌۭ قَوْلًۭا مِّن رَّبٍّۢ رَّحِيمٍۢ ﴿58﴾',
+    arabicText: "سَلَـٰمٌ قَوْلًا مِّن رَّبٍّ رَّحِيمٍ",
     transliteration: 'salāmun qawlan min rabbin raḥīmin',
-    englishTranslation: '"Peace" — a word from a Most Merciful Lord.',
+    englishTranslation: "[And] \"Peace,\" a word from a Merciful Lord.",
     source: 'Surah Ya-Sin 36:58',
     audioKey: '36:58',
     whyThis: 'The ultimate greeting of peace comes directly from the Lord of Mercy Himself.',
@@ -1683,9 +1501,9 @@ const quranContentData: Content[] = [
     id: 'quran_97_5',
     type: 'Quran',
     primaryText: 'salāmun hiya ḥattā maṭlaʿi l-fajri',
-    arabicText: 'سَلَـٰمٌ هِىَ حَتَّىٰ مَطْلَعِ ٱلْفَجْرِ ﴿5﴾',
+    arabicText: "سَلَـٰمٌ هِىَ حَتَّىٰ مَطْلَعِ ٱلْفَجْرِ",
     transliteration: 'salāmun hiya ḥattā maṭlaʿi l-fajri',
-    englishTranslation: 'Peace it is, until the emergence of dawn.',
+    englishTranslation: "Peace it is until the emergence of dawn.",
     translation:
       'Laylat al-Qadr — the Night of Power; a single night in Ramadan, worth more than a thousand months — is nothing but peace: from dusk, until the break of dawn.',
     source: 'Surah Al-Qadr 97:5',
@@ -1697,9 +1515,9 @@ const quranContentData: Content[] = [
     id: 'quran_56_91',
     type: 'Quran',
     primaryText: 'fasalāmun laka min aṣḥābi l-yamīni',
-    arabicText: 'فَسَلَـٰمٌۭ لَّكَ مِنْ أَصْحَـٰبِ ٱلْيَمِينِ ﴿91﴾',
+    arabicText: "فَسَلَـٰمٌ لَّكَ مِنْ أَصْحَـٰبِ ٱلْيَمِينِ",
     transliteration: 'fasalāmun laka min aṣḥābi l-yamīni',
-    englishTranslation: 'Then peace for you, from the companions of the right.',
+    englishTranslation: "Then [the angels will say], \"Peace for you; [you are] from the companions of the right.\"",
     translation:
       'For the righteous — those destined for Paradise — there is nothing but peace; a greeting of "Salam."',
     source: "Surah Al-Waqi'ah 56:91",
@@ -1712,9 +1530,9 @@ const quranContentData: Content[] = [
     id: 'quran_93_11',
     type: 'Quran',
     primaryText: "wa-ammā biniʿ'mati rabbika faḥaddith",
-    arabicText: 'وَأَمَّا بِنِعْمَةِ رَبِّكَ فَحَدِّثْ ﴿11﴾',
+    arabicText: "وَأَمَّا بِنِعْمَةِ رَبِّكَ فَحَدِّثْ",
     transliteration: "wa-ammā biniʿ'mati rabbika faḥaddith",
-    englishTranslation: 'But as for the favor of your Lord, proclaim it.',
+    englishTranslation: "But as for the favor of your Lord, report [it].",
     source: 'Surah Ad-Duha 93:11',
     audioKey: '93:11',
     whyThis: 'Speak of your blessings - sharing gratitude amplifies contentment.',
@@ -1738,12 +1556,10 @@ const quranContentData: Content[] = [
     type: 'Quran',
     primaryText:
       "ḥurrimat ʿalaykumu l-maytatu wal-damu walaḥmu l-khinzīri wamā uhilla lighayri l-lahi bihi wal-mun'khaniqatu wal-mawqūdhatu wal-mutaradiyatu wal-naṭīḥatu wamā akala l-sabuʿu illā mā dhakkaytum wamā dhubiḥa ʿalā l-nuṣubi wa-an tastaqsimū bil-azlāmi dhālikum fis'qun l-yawma ya-isa alladhīna kafarū min dīnikum falā takhshawhum wa-ikh'shawni l-yawma akmaltu lakum dīnakum wa-atmamtu ʿalaykum niʿ'matī waraḍītu lakumu l-is'lāma dīnan famani uḍ'ṭurra fī makhmaṣatin ghayra mutajānifin li-ith'min fa-inna l-laha ghafūrun raḥīmun",
-    arabicText:
-      'حُرِّمَتْ عَلَيْكُمُ ٱلْمَيْتَةُ وَٱلدَّمُ وَلَحْمُ ٱلْخِنزِيرِ وَمَآ أُهِلَّ لِغَيْرِ ٱللَّهِ بِهِۦ وَٱلْمُنْخَنِقَةُ وَٱلْمَوْقُوذَةُ وَٱلْمُتَرَدِّيَةُ وَٱلنَّطِيحَةُ وَمَآ أَكَلَ ٱلسَّبُعُ إِلَّا مَا ذَكَّيْتُمْ وَمَا ذُبِحَ عَلَى ٱلنُّصُبِ وَأَن تَسْتَقْسِمُوا۟ بِٱلْأَزْلَـٰمِ ۚ ذَٰلِكُمْ فِسْقٌ ۗ ٱلْيَوْمَ يَئِسَ ٱلَّذِينَ كَفَرُوا۟ مِن دِينِكُمْ فَلَا تَخْشَوْهُمْ وَٱخْشَوْنِ ۚ ٱلْيَوْمَ أَكْمَلْتُ لَكُمْ دِينَكُمْ وَأَتْمَمْتُ عَلَيْكُمْ نِعْمَتِى وَرَضِيتُ لَكُمُ ٱلْإِسْلَـٰمَ دِينًۭا ۚ فَمَنِ ٱضْطُرَّ فِى مَخْمَصَةٍ غَيْرَ مُتَجَانِفٍۢ لِّإِثْمٍۢ ۙ فَإِنَّ ٱللَّهَ غَفُورٌۭ رَّحِيمٌۭ ﴿3﴾',
+    arabicText: "حُرِّمَتْ عَلَيْكُمُ ٱلْمَيْتَةُ وَٱلدَّمُ وَلَحْمُ ٱلْخِنزِيرِ وَمَآ أُهِلَّ لِغَيْرِ ٱللَّهِ بِهِۦ وَٱلْمُنْخَنِقَةُ وَٱلْمَوْقُوذَةُ وَٱلْمُتَرَدِّيَةُ وَٱلنَّطِيحَةُ وَمَآ أَكَلَ ٱلسَّبُعُ إِلَّا مَا ذَكَّيْتُمْ وَمَا ذُبِحَ عَلَى ٱلنُّصُبِ وَأَن تَسْتَقْسِمُوا۟ بِٱلْأَزْلَـٰمِ ۚ ذَٰلِكُمْ فِسْقٌ ۗ ٱلْيَوْمَ يَئِسَ ٱلَّذِينَ كَفَرُوا۟ مِن دِينِكُمْ فَلَا تَخْشَوْهُمْ وَٱخْشَوْنِ ۚ ٱلْيَوْمَ أَكْمَلْتُ لَكُمْ دِينَكُمْ وَأَتْمَمْتُ عَلَيْكُمْ نِعْمَتِى وَرَضِيتُ لَكُمُ ٱلْإِسْلَـٰمَ دِينًا ۚ فَمَنِ ٱضْطُرَّ فِى مَخْمَصَةٍ غَيْرَ مُتَجَانِفٍ لِّإِثْمٍ ۙ فَإِنَّ ٱللَّهَ غَفُورٌ رَّحِيمٌ",
     transliteration:
       "ḥurrimat ʿalaykumu l-maytatu wal-damu walaḥmu l-khinzīri wamā uhilla lighayri l-lahi bihi wal-mun'khaniqatu wal-mawqūdhatu wal-mutaradiyatu wal-naṭīḥatu wamā akala l-sabuʿu illā mā dhakkaytum wamā dhubiḥa ʿalā l-nuṣubi wa-an tastaqsimū bil-azlāmi dhālikum fis'qun l-yawma ya-isa alladhīna kafarū min dīnikum falā takhshawhum wa-ikh'shawni l-yawma akmaltu lakum dīnakum wa-atmamtu ʿalaykum niʿ'matī waraḍītu lakumu l-is'lāma dīnan famani uḍ'ṭurra fī makhmaṣatin ghayra mutajānifin li-ith'min fa-inna l-laha ghafūrun raḥīmun",
-    englishTranslation:
-      'Prohibited to you are dead animals, blood, the flesh of swine, and that which has been dedicated to other than Allah, and the strangled, the struck, the fallen, the gored, and that which a wild animal has eaten — except what you slaughter — and that which is sacrificed on stone altars, and that you seek decision through divining arrows. That is grave disobedience. This day those who disbelieve have despaired of your religion, so do not fear them but fear Me. This day I have perfected for you your religion, completed My favor upon you, and have approved for you Islam as a religion. But whoever is forced by severe hunger with no inclination to sin, then indeed Allah is Oft-Forgiving, Most Merciful.',
+    englishTranslation: "Prohibited to you are dead animals, blood, the flesh of swine, and that which has been dedicated to other than Allāh, and [those animals] killed by strangling or by a violent blow or by a head-long fall or by the goring of horns, and those from which a wild animal has eaten, except what you [are able to] slaughter [before its death], and those which are sacrificed on stone altars, and [prohibited is] that you seek decision through divining arrows. That is grave disobedience. This day those who disbelieve have despaired of [defeating] your religion; so fear them not, but fear Me. This day I have perfected for you your religion and completed My favor upon you and have approved for you Islām as religion. But whoever is forced by severe hunger with no inclination to sin - then indeed, Allāh is Forgiving and Merciful.",
     source: 'Surah Al-Maidah 5:3',
     audioKey: '5:3',
     whyThis: 'Islam itself is the ultimate blessing - a complete, perfected favor from Allah.',
@@ -1754,12 +1570,10 @@ const quranContentData: Content[] = [
     type: 'Quran',
     primaryText:
       'wamin raḥmatihi jaʿala lakumu al-layla wal-nahāra litaskunū fīhi walitabtaghū min faḍlihi walaʿallakum tashkurūna',
-    arabicText:
-      'وَمِن رَّحْمَتِهِۦ جَعَلَ لَكُمُ ٱلَّيْلَ وَٱلنَّهَارَ لِتَسْكُنُوا۟ فِيهِ وَلِتَبْتَغُوا۟ مِن فَضْلِهِۦ وَلَعَلَّكُمْ تَشْكُرُونَ ﴿73﴾',
+    arabicText: "وَمِن رَّحْمَتِهِۦ جَعَلَ لَكُمُ ٱلَّيْلَ وَٱلنَّهَارَ لِتَسْكُنُوا۟ فِيهِ وَلِتَبْتَغُوا۟ مِن فَضْلِهِۦ وَلَعَلَّكُمْ تَشْكُرُونَ",
     transliteration:
       'wamin raḥmatihi jaʿala lakumu al-layla wal-nahāra litaskunū fīhi walitabtaghū min faḍlihi walaʿallakum tashkurūna',
-    englishTranslation:
-      'And from His mercy, He made for you the night and the day, that you may rest therein and that you may seek from His bounty, and so that you may be grateful.',
+    englishTranslation: "And out of His mercy He made for you the night and the day that you may rest therein and [by day] seek from His bounty and [that] perhaps you will be grateful.",
     source: 'Surah Al-Qasas 28:73',
     audioKey: '28:73',
     whyThis: '',
@@ -1769,10 +1583,9 @@ const quranContentData: Content[] = [
     id: 'quran_2_152',
     type: 'Quran',
     primaryText: "fa-udh'kurūnī adhkur'kum wa-ush'kurū lī walā takfurūni",
-    arabicText: 'فَٱذْكُرُونِىٓ أَذْكُرْكُمْ وَٱشْكُرُوا۟ لِى وَلَا تَكْفُرُونِ ﴿152﴾',
+    arabicText: "فَٱذْكُرُونِىٓ أَذْكُرْكُمْ وَٱشْكُرُوا۟ لِى وَلَا تَكْفُرُونِ",
     transliteration: "fa-udh'kurūnī adhkur'kum wa-ush'kurū lī walā takfurūni",
-    englishTranslation:
-      'So remember Me; I will remember you. And be grateful to Me, and do not be ungrateful to Me.',
+    englishTranslation: "So remember Me; I will remember you. And be grateful to Me and do not deny Me.",
     source: 'Surah Al-Baqarah 2:152',
     audioKey: '2:152',
     whyThis: '"So remember Me; I will remember you. And be grateful to Me, and do not be ungrateful to Me." [Quran 2:152]',
@@ -1783,12 +1596,10 @@ const quranContentData: Content[] = [
     type: 'Quran',
     primaryText:
       "wa-idhā sa-alaka ʿibādī ʿannī fa-innī qarībun ujību daʿwata l-dāʿi idhā daʿāni falyastajībū lī walyu'minū bī laʿallahum yarshudūna",
-    arabicText:
-      'وَإِذَا سَأَلَكَ عِبَادِى عَنِّى فَإِنِّى قَرِيبٌ ۖ أُجِيبُ دَعْوَةَ ٱلدَّاعِ إِذَا دَعَانِ ۖ فَلْيَسْتَجِيبُوا۟ لِى وَلْيُؤْمِنُوا۟ بِى لَعَلَّهُمْ يَرْشُدُونَ ﴿186﴾',
+    arabicText: "وَإِذَا سَأَلَكَ عِبَادِى عَنِّى فَإِنِّى قَرِيبٌ ۖ أُجِيبُ دَعْوَةَ ٱلدَّاعِ إِذَا دَعَانِ ۖ فَلْيَسْتَجِيبُوا۟ لِى وَلْيُؤْمِنُوا۟ بِى لَعَلَّهُمْ يَرْشُدُونَ",
     transliteration:
       "wa-idhā sa-alaka ʿibādī ʿannī fa-innī qarībun ujību daʿwata l-dāʿi idhā daʿāni falyastajībū lī walyu'minū bī laʿallahum yarshudūna",
-    englishTranslation:
-      'And when My servants ask you concerning Me, indeed I am near. I respond to the invocation of the supplicant when he calls upon Me. So let them respond to Me and believe in Me, that they may be rightly guided.',
+    englishTranslation: "And when My servants ask you, [O Muḥammad], concerning Me - indeed I am near. I respond to the invocation of the supplicant when he calls upon Me. So let them respond to Me [by obedience] and believe in Me that they may be [rightly] guided.",
     source: 'Surah Al-Baqarah 2:186',
     audioKey: '2:186',
     whyThis: '"Indeed I am near. I respond to the invocation of the supplicant when he calls upon Me." [Quran 2:186]',
@@ -1799,9 +1610,9 @@ const quranContentData: Content[] = [
     id: 'quran_20_25',
     type: 'Quran',
     primaryText: "qāla rabbi ish'raḥ lī ṣadrī wayassir lī amrī",
-    arabicText: 'قَالَ رَبِّ ٱشْرَحْ لِى صَدْرِى وَيَسِّرْ لِىٓ أَمْرِى ﴿25-26﴾',
+    arabicText: "قَالَ رَبِّ ٱشْرَحْ لِى صَدْرِى وَيَسِّرْ لِىٓ أَمْرِى",
     transliteration: "qāla rabbi ish'raḥ lī ṣadrī wayassir lī amrī",
-    englishTranslation: 'He said, "My Lord, expand for me my breast, and ease for me my task."',
+    englishTranslation: "[Moses] said, \"My Lord, expand [i.e., relax] for me my breast [with assurance] And ease for me my task",
     translation:
       'Prophet Musa (Moses) — when Allah gave him the mission to confront Pharaoh — prayed: "My Lord, open up my heart for me, and make my task easy."',
     source: 'Surah Taha 20:25-26',
@@ -1814,12 +1625,10 @@ const quranContentData: Content[] = [
     type: 'Quran',
     primaryText:
       'fasatadhkurūna mā aqūlu lakum wa-ufawwiḍu amrī ilā l-lahi inna l-laha baṣīrun bil-ʿibādi',
-    arabicText:
-      'فَسَتَذْكُرُونَ مَآ أَقُولُ لَكُمْ ۚ وَأُفَوِّضُ أَمْرِىٓ إِلَى ٱللَّهِ ۚ إِنَّ ٱللَّهَ بَصِيرٌۢ بِٱلْعِبَادِ ﴿44﴾',
+    arabicText: "فَسَتَذْكُرُونَ مَآ أَقُولُ لَكُمْ ۚ وَأُفَوِّضُ أَمْرِىٓ إِلَى ٱللَّهِ ۚ إِنَّ ٱللَّهَ بَصِيرٌۢ بِٱلْعِبَادِ",
     transliteration:
       'fasatadhkurūna mā aqūlu lakum wa-ufawwiḍu amrī ilā l-lahi inna l-laha baṣīrun bil-ʿibādi',
-    englishTranslation:
-      'And you will remember what I say to you. And I entrust my affair to Allah. Indeed, Allah is All-Seeing of His slaves.',
+    englishTranslation: "And you will remember what I [now] say to you, and I entrust my affair to Allāh. Indeed, Allāh is Seeing of [His] servants.\"",
     translation:
       'A believing man from Pharaoh\'s own people — who had been hiding his faith — stood up and warned them: "You will remember what I am telling you. As for me, I entrust my affair entirely to Allah. Indeed, Allah sees all that His servants do."',
     source: 'Surah Ghafir 40:44',
@@ -1832,12 +1641,10 @@ const quranContentData: Content[] = [
     type: 'Quran',
     primaryText:
       "yāayyuhā alladhīna āmanū is'taʿīnū bil-ṣabri wal-ṣalati inna l-laha maʿa l-ṣābirīna",
-    arabicText:
-      'يَـٰٓأَيُّهَا ٱلَّذِينَ ءَامَنُوا۟ ٱسْتَعِينُوا۟ بِٱلصَّبْرِ وَٱلصَّلَوٰةِ ۚ إِنَّ ٱللَّهَ مَعَ ٱلصَّـٰبِرِينَ ﴿153﴾',
+    arabicText: "يَـٰٓأَيُّهَا ٱلَّذِينَ ءَامَنُوا۟ ٱسْتَعِينُوا۟ بِٱلصَّبْرِ وَٱلصَّلَوٰةِ ۚ إِنَّ ٱللَّهَ مَعَ ٱلصَّـٰبِرِينَ",
     transliteration:
       "yāayyuhā alladhīna āmanū is'taʿīnū bil-ṣabri wal-ṣalati inna l-laha maʿa l-ṣābirīna",
-    englishTranslation:
-      'O you who believe, seek help through patience and prayer. Indeed, Allah is with the patient.',
+    englishTranslation: "O you who have believed, seek help through patience and prayer. Indeed, Allāh is with the patient.",
     source: 'Surah Al-Baqarah 2:153',
     audioKey: '2:153',
     whyThis: '',
@@ -1848,12 +1655,10 @@ const quranContentData: Content[] = [
     type: 'Quran',
     primaryText:
       "inna alladhīna qālū rabbunā l-lahu thumma is'taqāmū tatanazzalu ʿalayhimu l-malāikatu allā takhāfū walā taḥzanū wa-abshirū bil-janati allatī kuntum tūʿadūna",
-    arabicText:
-      'إِنَّ ٱلَّذِينَ قَالُوا۟ رَبُّنَا ٱللَّهُ ثُمَّ ٱسْتَقَـٰمُوا۟ تَتَنَزَّلُ عَلَيْهِمُ ٱلْمَلَـٰٓئِكَةُ أَلَّا تَخَافُوا۟ وَلَا تَحْزَنُوا۟ وَأَبْشِرُوا۟ بِٱلْجَنَّةِ ٱلَّتِى كُنتُمْ تُوعَدُونَ ﴿30﴾',
+    arabicText: "إِنَّ ٱلَّذِينَ قَالُوا۟ رَبُّنَا ٱللَّهُ ثُمَّ ٱسْتَقَـٰمُوا۟ تَتَنَزَّلُ عَلَيْهِمُ ٱلْمَلَـٰٓئِكَةُ أَلَّا تَخَافُوا۟ وَلَا تَحْزَنُوا۟ وَأَبْشِرُوا۟ بِٱلْجَنَّةِ ٱلَّتِى كُنتُمْ تُوعَدُونَ",
     transliteration:
       "inna alladhīna qālū rabbunā l-lahu thumma is'taqāmū tatanazzalu ʿalayhimu l-malāikatu allā takhāfū walā taḥzanū wa-abshirū bil-janati allatī kuntum tūʿadūna",
-    englishTranslation:
-      'Indeed, those who say, "Our Lord is Allah," and then remain steadfast — the angels will descend upon them, saying, "Do not fear and do not grieve, but receive the glad tidings of Paradise which you were promised."',
+    englishTranslation: "Indeed, those who have said, \"Our Lord is Allāh\" and then remained on a right course - the angels will descend upon them, [saying], \"Do not fear and do not grieve but receive good tidings of Paradise, which you were promised.",
     source: 'Surah Fussilat 41:30',
     audioKey: '41:30',
     whyThis: '',
@@ -1863,9 +1668,9 @@ const quranContentData: Content[] = [
     id: 'quran_20_46',
     type: 'Quran',
     primaryText: 'qāla lā takhāfā innanī maʿakumā asmaʿu wa-arā',
-    arabicText: 'قَالَ لَا تَخَافَآ ۖ إِنَّنِى مَعَكُمَآ أَسْمَعُ وَأَرَىٰ ﴿46﴾',
+    arabicText: "قَالَ لَا تَخَافَآ ۖ إِنَّنِى مَعَكُمَآ أَسْمَعُ وَأَرَىٰ",
     transliteration: 'qāla lā takhāfā innanī maʿakumā asmaʿu wa-arā',
-    englishTranslation: 'He said, "Do not fear. Indeed, I am with you both; I hear and I see."',
+    englishTranslation: "[Allāh] said, \"Fear not. Indeed, I am with you both; I hear and I see.",
     translation:
       'When Allah sent Prophet Musa and his brother Harun to confront Pharaoh, they were afraid. Allah reassured them: "Do not fear. I am with you both; I hear everything, and I see everything."',
     source: 'Surah Taha 20:46',
@@ -1879,12 +1684,10 @@ const quranContentData: Content[] = [
     type: 'Quran',
     primaryText:
       'wamā kāna l-lahu liyuʿadhibahum wa-anta fīhim wamā kāna l-lahu muʿadhibahum wahum yastaghfirūna',
-    arabicText:
-      'وَمَا كَانَ ٱللَّهُ لِيُعَذِّبَهُمْ وَأَنتَ فِيهِمْ ۚ وَمَا كَانَ ٱللَّهُ مُعَذِّبَهُمْ وَهُمْ يَسْتَغْفِرُونَ ﴿33﴾',
+    arabicText: "وَمَا كَانَ ٱللَّهُ لِيُعَذِّبَهُمْ وَأَنتَ فِيهِمْ ۚ وَمَا كَانَ ٱللَّهُ مُعَذِّبَهُمْ وَهُمْ يَسْتَغْفِرُونَ",
     transliteration:
       'wamā kāna l-lahu liyuʿadhibahum wa-anta fīhim wamā kāna l-lahu muʿadhibahum wahum yastaghfirūna',
-    englishTranslation:
-      'But Allah would not punish them while you are among them, and Allah would not punish them while they seek forgiveness.',
+    englishTranslation: "But Allāh would not punish them while you, [O Muḥammad], are among them, and Allāh would not punish them while they seek forgiveness.",
     translation:
       'Allah would not punish the people of Makkah while the Prophet Muhammad ﷺ was still living among them; and Allah would not punish any people so long as they are seeking His forgiveness.',
     source: 'Surah Al-Anfal 8:33',
@@ -1898,12 +1701,10 @@ const quranContentData: Content[] = [
     type: 'Quran',
     primaryText:
       "wamā bikum min niʿ'matin famina l-lahi thumma idhā massakumu l-ḍuru fa-ilayhi tajarūna",
-    arabicText:
-      'وَمَا بِكُم مِّن نِّعْمَةٍۢ فَمِنَ ٱللَّهِ ۖ ثُمَّ إِذَا مَسَّكُمُ ٱلضُّرُّ فَإِلَيْهِ تَجْـَٔرُونَ ﴿53﴾',
+    arabicText: "وَمَا بِكُم مِّن نِّعْمَةٍ فَمِنَ ٱللَّهِ ۖ ثُمَّ إِذَا مَسَّكُمُ ٱلضُّرُّ فَإِلَيْهِ تَجْـَٔرُونَ",
     transliteration:
       "wamā bikum min niʿ'matin famina l-lahi thumma idhā massakumu l-ḍuru fa-ilayhi tajarūna",
-    englishTranslation:
-      'And whatever you have of favor, it is from Allah. Then when adversity touches you, to Him you cry for help.',
+    englishTranslation: "And whatever you have of favor - it is from Allāh. Then when adversity touches you, to Him you cry for help.",
     source: 'Surah An-Nahl 16:53',
     audioKey: '16:53',
     whyThis: '',
@@ -1914,12 +1715,10 @@ const quranContentData: Content[] = [
     type: 'Quran',
     primaryText:
       'alladhī aḥallanā dāra l-muqāmati min faḍlihi lā yamassunā fīhā naṣabun walā yamassunā fīhā lughūbun',
-    arabicText:
-      'ٱلَّذِىٓ أَحَلَّنَا دَارَ ٱلْمُقَامَةِ مِن فَضْلِهِۦ لَا يَمَسُّنَا فِيهَا نَصَبٌۭ وَلَا يَمَسُّنَا فِيهَا لُغُوبٌۭ ﴿35﴾',
+    arabicText: "ٱلَّذِىٓ أَحَلَّنَا دَارَ ٱلْمُقَامَةِ مِن فَضْلِهِۦ لَا يَمَسُّنَا فِيهَا نَصَبٌ وَلَا يَمَسُّنَا فِيهَا لُغُوبٌ",
     transliteration:
       'alladhī aḥallanā dāra l-muqāmati min faḍlihi lā yamassunā fīhā naṣabun walā yamassunā fīhā lughūbun',
-    englishTranslation:
-      'He Who has settled us in the Home of Eternity out of His bounty. No fatigue touches us therein, nor does weariness.',
+    englishTranslation: "He who has settled us in the home of duration [i.e., Paradise] out of His bounty. There touches us not in it any fatigue, and there touches us not in it weariness [of mind].\"",
     translation:
       'The people of Paradise will say: "It is Allah who, by His grace, has settled us in the eternal Home. No tiredness touches us here; no exhaustion reaches us."',
     source: 'Surah Fatir 35:35',
@@ -1932,12 +1731,10 @@ const quranContentData: Content[] = [
     type: 'Quran',
     primaryText:
       'wahuwa alladhī jaʿala lakumu al-layla libāsan wal-nawma subātan wajaʿala l-nahāra nushūran',
-    arabicText:
-      'وَهُوَ ٱلَّذِى جَعَلَ لَكُمُ ٱلَّيْلَ لِبَاسًۭا وَٱلنَّوْمَ سُبَاتًۭا وَجَعَلَ ٱلنَّهَارَ نُشُورًۭا ﴿47﴾',
+    arabicText: "وَهُوَ ٱلَّذِى جَعَلَ لَكُمُ ٱلَّيْلَ لِبَاسًا وَٱلنَّوْمَ سُبَاتًا وَجَعَلَ ٱلنَّهَارَ نُشُورًا",
     transliteration:
       'wahuwa alladhī jaʿala lakumu al-layla libāsan wal-nawma subātan wajaʿala l-nahāra nushūran',
-    englishTranslation:
-      'And He is the One Who made the night a covering for you, and sleep a rest, and made the day a resurrection.',
+    englishTranslation: "And it is He who has made the night for you as clothing and sleep [a means for] rest and has made the day a resurrection.",
     source: 'Surah Al-Furqan 25:47',
     audioKey: '25:47',
     whyThis: 'Allah designed sleep as a mercy - rest is a divine gift, not weakness.',
@@ -1947,9 +1744,9 @@ const quranContentData: Content[] = [
     id: 'quran_78_9',
     type: 'Quran',
     primaryText: 'wajaʿalnā nawmakum subātan',
-    arabicText: 'وَجَعَلْنَا نَوْمَكُمْ سُبَاتًۭا ﴿9﴾',
+    arabicText: "وَجَعَلْنَا نَوْمَكُمْ سُبَاتًا",
     transliteration: 'wajaʿalnā nawmakum subātan',
-    englishTranslation: 'And We made your sleep for rest.',
+    englishTranslation: "And made your sleep [a means for] rest",
     source: 'Surah An-Naba 78:9',
     audioKey: '78:9',
     whyThis: 'Sleep is not a waste of time but a deliberate creation for your renewal.',
@@ -1960,12 +1757,10 @@ const quranContentData: Content[] = [
     type: 'Quran',
     primaryText:
       "wamin āyātihi manāmukum bi-al-layli wal-nahāri wa-ib'tighāukum min faḍlihi inna fī dhālika laāyātin liqawmin yasmaʿūna",
-    arabicText:
-      'وَمِنْ ءَايَـٰتِهِۦ مَنَامُكُم بِٱلَّيْلِ وَٱلنَّهَارِ وَٱبْتِغَآؤُكُم مِّن فَضْلِهِۦٓ ۚ إِنَّ فِى ذَٰلِكَ لَـَٔايَـٰتٍۢ لِّقَوْمٍۢ يَسْمَعُونَ ﴿23﴾',
+    arabicText: "وَمِنْ ءَايَـٰتِهِۦ مَنَامُكُم بِٱلَّيْلِ وَٱلنَّهَارِ وَٱبْتِغَآؤُكُم مِّن فَضْلِهِۦٓ ۚ إِنَّ فِى ذَٰلِكَ لَـَٔايَـٰتٍ لِّقَوْمٍ يَسْمَعُونَ",
     transliteration:
       "wamin āyātihi manāmukum bi-al-layli wal-nahāri wa-ib'tighāukum min faḍlihi inna fī dhālika laāyātin liqawmin yasmaʿūna",
-    englishTranslation:
-      'And among His signs is your sleep by night and day, and your seeking of His bounty. Indeed, in that are surely signs for a people who listen.',
+    englishTranslation: "And of His signs is your sleep by night and day and your seeking of His bounty. Indeed in that are signs for a people who listen.",
     source: 'Surah Ar-Rum 30:23',
     audioKey: '30:23',
     whyThis: 'Sleep is one of the signs of Allah - a miracle we experience daily.',
@@ -1975,11 +1770,9 @@ const quranContentData: Content[] = [
     id: 'quran_6_13',
     type: 'Quran',
     primaryText: 'walahu mā sakana fī al-layli wal-nahāri wahuwa l-samīʿu l-ʿalīmu',
-    arabicText:
-      '۞ وَلَهُۥ مَا سَكَنَ فِى ٱلَّيْلِ وَٱلنَّهَارِ ۚ وَهُوَ ٱلسَّمِيعُ ٱلْعَلِيمُ ﴿13﴾',
+    arabicText: "۞ وَلَهُۥ مَا سَكَنَ فِى ٱلَّيْلِ وَٱلنَّهَارِ ۚ وَهُوَ ٱلسَّمِيعُ ٱلْعَلِيمُ",
     transliteration: 'walahu mā sakana fī al-layli wal-nahāri wahuwa l-samīʿu l-ʿalīmu',
-    englishTranslation:
-      'And to Him belongs whatever dwells in the night and the day. And He is the All-Hearing, the All-Knowing.',
+    englishTranslation: "And to Him belongs that which reposes by night and by day, and He is the Hearing, the Knowing.",
     source: "Surah Al-An'am 6:13",
     audioKey: '6:13',
     whyThis: '',
@@ -1990,12 +1783,10 @@ const quranContentData: Content[] = [
     type: 'Quran',
     primaryText:
       "yāayyuhā l-muzamilu qumi al-layla illā qalīlan niṣ'fahu awi unquṣ min'hu qalīlan aw zid ʿalayhi warattili l-qur'āna tartīlan",
-    arabicText:
-      'يَـٰٓأَيُّهَا ٱلْمُزَّمِّلُ قُمِ ٱلَّيْلَ إِلَّا قَلِيلًۭا نِّصْفَهُۥٓ أَوِ ٱنقُصْ مِنْهُ قَلِيلًا أَوْ زِدْ عَلَيْهِ وَرَتِّلِ ٱلْقُرْءَانَ تَرْتِيلًا ﴿1-4﴾',
+    arabicText: " يَـٰٓأَيُّهَا ٱلْمُزَّمِّلُ قُمِ ٱلَّيْلَ إِلَّا قَلِيلًا نِّصْفَهُۥٓ أَوِ ٱنقُصْ مِنْهُ قَلِيلًا أَوْ زِدْ عَلَيْهِ وَرَتِّلِ ٱلْقُرْءَانَ تَرْتِيلًا",
     transliteration:
       "yāayyuhā l-muzamilu qumi al-layla illā qalīlan niṣ'fahu awi unquṣ min'hu qalīlan aw zid ʿalayhi warattili l-qur'āna tartīlan",
-    englishTranslation:
-      'O you who wraps himself, stand in prayer at night, except for a little — half of it, or lessen from it a little, or add to it — and recite the Quran with measured, rhythmic recitation.',
+    englishTranslation: "O you who wraps himself [in clothing] Arise [to pray] the night, except for a little - Half of it - or subtract from it a little Or add to it, and recite the Qur’ān with measured recitation.",
     translation:
       'Allah addressed the Prophet Muhammad ﷺ — who was wrapped in his garments after receiving revelation — and said: "Rise, and pray through the night — except a little. Half of it, or a bit less, or a bit more; and recite the Quran slowly and beautifully."',
     source: 'Surah Al-Muzzammil 73:1-4',
@@ -2009,12 +1800,10 @@ const quranContentData: Content[] = [
     type: 'Quran',
     primaryText:
       "laysa l-bira an tuwallū wujūhakum qibala l-mashriqi wal-maghribi walākinna l-bira man āmana bil-lahi wal-yawmi l-ākhiri wal-malāikati wal-kitābi wal-nabiyīna waātā l-māla ʿalā ḥubbihi dhawī l-qur'bā wal-yatāmā wal-masākīna wa-ib'na l-sabīli wal-sāilīna wafī l-riqābi wa-aqāma l-ṣalata waātā l-zakata wal-mūfūna biʿahdihim idhā ʿāhadū wal-ṣābirīna fī l-basāi wal-ḍarāi waḥīna l-basi ulāika alladhīna ṣadaqū wa-ulāika humu l-mutaqūna",
-    arabicText:
-      '۞ لَّيْسَ ٱلْبِرَّ أَن تُوَلُّوا۟ وُجُوهَكُمْ قِبَلَ ٱلْمَشْرِقِ وَٱلْمَغْرِبِ وَلَـٰكِنَّ ٱلْبِرَّ مَنْ ءَامَنَ بِٱللَّهِ وَٱلْيَوْمِ ٱلْـَٔاخِرِ وَٱلْمَلَـٰٓئِكَةِ وَٱلْكِتَـٰبِ وَٱلنَّبِيِّـۧنَ وَءَاتَى ٱلْمَالَ عَلَىٰ حُبِّهِۦ ذَوِى ٱلْقُرْبَىٰ وَٱلْيَتَـٰمَىٰ وَٱلْمَسَـٰكِينَ وَٱبْنَ ٱلسَّبِيلِ وَٱلسَّآئِلِينَ وَفِى ٱلرِّقَابِ وَأَقَامَ ٱلصَّلَوٰةَ وَءَاتَى ٱلزَّكَوٰةَ وَٱلْمُوفُونَ بِعَهْدِهِمْ إِذَا عَـٰهَدُوا۟ ۖ وَٱلصَّـٰبِرِينَ فِى ٱلْبَأْسَآءِ وَٱلضَّرَّآءِ وَحِينَ ٱلْبَأْسِ ۗ أُو۟لَـٰٓئِكَ ٱلَّذِينَ صَدَقُوا۟ ۖ وَأُو۟لَـٰٓئِكَ هُمُ ٱلْمُتَّقُونَ ﴿177﴾',
+    arabicText: "۞ لَّيْسَ ٱلْبِرَّ أَن تُوَلُّوا۟ وُجُوهَكُمْ قِبَلَ ٱلْمَشْرِقِ وَٱلْمَغْرِبِ وَلَـٰكِنَّ ٱلْبِرَّ مَنْ ءَامَنَ بِٱللَّهِ وَٱلْيَوْمِ ٱلْـَٔاخِرِ وَٱلْمَلَـٰٓئِكَةِ وَٱلْكِتَـٰبِ وَٱلنَّبِيِّـۧنَ وَءَاتَى ٱلْمَالَ عَلَىٰ حُبِّهِۦ ذَوِى ٱلْقُرْبَىٰ وَٱلْيَتَـٰمَىٰ وَٱلْمَسَـٰكِينَ وَٱبْنَ ٱلسَّبِيلِ وَٱلسَّآئِلِينَ وَفِى ٱلرِّقَابِ وَأَقَامَ ٱلصَّلَوٰةَ وَءَاتَى ٱلزَّكَوٰةَ وَٱلْمُوفُونَ بِعَهْدِهِمْ إِذَا عَـٰهَدُوا۟ ۖ وَٱلصَّـٰبِرِينَ فِى ٱلْبَأْسَآءِ وَٱلضَّرَّآءِ وَحِينَ ٱلْبَأْسِ ۗ أُو۟لَـٰٓئِكَ ٱلَّذِينَ صَدَقُوا۟ ۖ وَأُو۟لَـٰٓئِكَ هُمُ ٱلْمُتَّقُونَ",
     transliteration:
       "laysa l-bira an tuwallū wujūhakum qibala l-mashriqi wal-maghribi walākinna l-bira man āmana bil-lahi wal-yawmi l-ākhiri wal-malāikati wal-kitābi wal-nabiyīna waātā l-māla ʿalā ḥubbihi dhawī l-qur'bā wal-yatāmā wal-masākīna wa-ib'na l-sabīli wal-sāilīna wafī l-riqābi wa-aqāma l-ṣalata waātā l-zakata wal-mūfūna biʿahdihim idhā ʿāhadū wal-ṣābirīna fī l-basāi wal-ḍarāi waḥīna l-basi ulāika alladhīna ṣadaqū wa-ulāika humu l-mutaqūna",
-    englishTranslation:
-      'Righteousness is not that you turn your faces toward the east or the west, but true righteousness is in one who believes in Allah, the Last Day, the Angels, the Book, and the Prophets; and gives wealth, in spite of love for it, to relatives, orphans, the needy, the traveler, those who ask, and for freeing slaves; and establishes prayer and gives zakah; and those who fulfill their promise when they make it; and those who are patient in suffering, hardship, and times of stress. Those are the ones who are true, and those are the righteous.',
+    englishTranslation: "Righteousness is not that you turn your faces toward the east or the west, but [true] righteousness is [in] one who believes in Allāh, the Last Day, the angels, the Book, and the prophets and gives wealth, in spite of love for it, to relatives, orphans, the needy, the traveler, those who ask [for help], and for freeing slaves; [and who] establishes prayer and gives zakāh; [those who] fulfill their promise when they promise; and [those who] are patient in poverty and hardship and during battle. Those are the ones who have been true, and it is those who are the righteous.",
     source: 'Surah Al-Baqarah 2:177',
     audioKey: '2:177',
     whyThis: 'Patience through exhaustion is praiseworthy - your struggle is seen.',
@@ -2025,12 +1814,10 @@ const quranContentData: Content[] = [
     type: 'Quran',
     primaryText:
       "fa-iṣ'bir ʿalā mā yaqūlūna wasabbiḥ biḥamdi rabbika qabla ṭulūʿi l-shamsi waqabla ghurūbihā wamin ānāi al-layli fasabbiḥ wa-aṭrāfa l-nahāri laʿallaka tarḍā",
-    arabicText:
-      'فَٱصْبِرْ عَلَىٰ مَا يَقُولُونَ وَسَبِّحْ بِحَمْدِ رَبِّكَ قَبْلَ طُلُوعِ ٱلشَّمْسِ وَقَبْلَ غُرُوبِهَا ۖ وَمِنْ ءَانَآئِ ٱلَّيْلِ فَسَبِّحْ وَأَطْرَافَ ٱلنَّهَارِ لَعَلَّكَ تَرْضَىٰ ﴿130﴾',
+    arabicText: "فَٱصْبِرْ عَلَىٰ مَا يَقُولُونَ وَسَبِّحْ بِحَمْدِ رَبِّكَ قَبْلَ طُلُوعِ ٱلشَّمْسِ وَقَبْلَ غُرُوبِهَا ۖ وَمِنْ ءَانَآئِ ٱلَّيْلِ فَسَبِّحْ وَأَطْرَافَ ٱلنَّهَارِ لَعَلَّكَ تَرْضَىٰ",
     transliteration:
       "fa-iṣ'bir ʿalā mā yaqūlūna wasabbiḥ biḥamdi rabbika qabla ṭulūʿi l-shamsi waqabla ghurūbihā wamin ānāi al-layli fasabbiḥ wa-aṭrāfa l-nahāri laʿallaka tarḍā",
-    englishTranslation:
-      'So be patient over what they say, and glorify with the praise of your Lord before the rising of the sun and before its setting; and during the hours of the night glorify, and at the ends of the day, so that you may be satisfied.',
+    englishTranslation: "So be patient over what they say and exalt [Allāh] with praise of your Lord before the rising of the sun and before its setting; and during periods of the night [exalt Him] and at the ends of the day, that you may be satisfied.",
     source: 'Surah Ta-Ha 20:130',
     audioKey: '20:130',
     whyThis: 'Dhikr at key times brings satisfaction - structure your rest around remembrance.',
@@ -2042,12 +1829,10 @@ const quranContentData: Content[] = [
     type: 'Quran',
     primaryText:
       'wamina al-layli fatahajjad bihi nāfilatan laka ʿasā an yabʿathaka rabbuka maqāman maḥmūdan',
-    arabicText:
-      'وَمِنَ ٱلَّيْلِ فَتَهَجَّدْ بِهِۦ نَافِلَةًۭ لَّكَ عَسَىٰٓ أَن يَبْعَثَكَ رَبُّكَ مَقَامًۭا مَّحْمُودًۭا ﴿79﴾',
+    arabicText: "وَمِنَ ٱلَّيْلِ فَتَهَجَّدْ بِهِۦ نَافِلَةً لَّكَ عَسَىٰٓ أَن يَبْعَثَكَ رَبُّكَ مَقَامًا مَّحْمُودًا",
     transliteration:
       'wamina al-layli fatahajjad bihi nāfilatan laka ʿasā an yabʿathaka rabbuka maqāman maḥmūdan',
-    englishTranslation:
-      'And from the night, arise for prayer as an additional act for you; it may be that your Lord will raise you to a praised station.',
+    englishTranslation: "And from [part of] the night, pray with it [i.e., recitation of the Qur’ān] as additional [worship] for you; it is expected that your Lord will resurrect you to a praised station.",
     source: 'Surah Al-Isra 17:79',
     audioKey: '17:79',
     whyThis: 'Night prayer, even when tired, elevates you to a praised station.',
@@ -2058,10 +1843,9 @@ const quranContentData: Content[] = [
     id: 'quran_94_7',
     type: 'Quran',
     primaryText: "fa-idhā faraghta fa-inṣab wa-ilā rabbika fa-ir'ghab",
-    arabicText: 'فَإِذَا فَرَغْتَ فَٱنصَبْ وَإِلَىٰ رَبِّكَ فَٱرْغَب ﴿7-8﴾',
+    arabicText: "فَإِذَا فَرَغْتَ فَٱنصَبْ وَإِلَىٰ رَبِّكَ فَٱرْغَب",
     transliteration: "fa-idhā faraghta fa-inṣab wa-ilā rabbika fa-ir'ghab",
-    englishTranslation:
-      'So when you have finished, then labor hard. And to your Lord turn your attention.',
+    englishTranslation: "So when you have finished [your duties], then stand up [for worship]. And to your Lord direct [your] longing.",
     source: 'Surah Al-Inshirah 94:7-8',
     audioKey: '94:7-8',
     whyThis: 'The secret to sustainable energy: recharging your spirit after exhausting your body.',
@@ -2072,12 +1856,10 @@ const quranContentData: Content[] = [
     type: 'Quran',
     primaryText:
       "wa-alladhīna jāhadū fīnā lanahdiyannahum subulanā wa-inna l-laha lamaʿa l-muḥ'sinīna",
-    arabicText:
-      'وَٱلَّذِينَ جَـٰهَدُوا۟ فِينَا لَنَهْدِيَنَّهُمْ سُبُلَنَا ۚ وَإِنَّ ٱللَّهَ لَمَعَ ٱلْمُحْسِنِينَ ﴿69﴾',
+    arabicText: "وَٱلَّذِينَ جَـٰهَدُوا۟ فِينَا لَنَهْدِيَنَّهُمْ سُبُلَنَا ۚ وَإِنَّ ٱللَّهَ لَمَعَ ٱلْمُحْسِنِينَ",
     transliteration:
       "wa-alladhīna jāhadū fīnā lanahdiyannahum subulanā wa-inna l-laha lamaʿa l-muḥ'sinīna",
-    englishTranslation:
-      'And those who strive for Us, We will surely guide them to Our ways. And indeed, Allah is with the good-doers.',
+    englishTranslation: "And those who strive for Us - We will surely guide them to Our ways. And indeed, Allāh is with the doers of good.",
     source: 'Surah Al-Ankabut 29:69',
     audioKey: '29:69',
     whyThis: '"Those who strive for Us, We will surely guide them to Our ways. And indeed, Allah is with the good-doers." [Quran 29:69]',
@@ -2088,12 +1870,10 @@ const quranContentData: Content[] = [
     type: 'Quran',
     primaryText:
       'walaqad khalaqnā l-insāna wanaʿlamu mā tuwaswisu bihi nafsuhu wanaḥnu aqrabu ilayhi min ḥabli l-warīdi',
-    arabicText:
-      'وَلَقَدْ خَلَقْنَا ٱلْإِنسَـٰنَ وَنَعْلَمُ مَا تُوَسْوِسُ بِهِۦ نَفْسُهُۥ ۖ وَنَحْنُ أَقْرَبُ إِلَيْهِ مِنْ حَبْلِ ٱلْوَرِيدِ ﴿16﴾',
+    arabicText: "وَلَقَدْ خَلَقْنَا ٱلْإِنسَـٰنَ وَنَعْلَمُ مَا تُوَسْوِسُ بِهِۦ نَفْسُهُۥ ۖ وَنَحْنُ أَقْرَبُ إِلَيْهِ مِنْ حَبْلِ ٱلْوَرِيدِ",
     transliteration:
       'walaqad khalaqnā l-insāna wanaʿlamu mā tuwaswisu bihi nafsuhu wanaḥnu aqrabu ilayhi min ḥabli l-warīdi',
-    englishTranslation:
-      'And We have certainly created man, and We know what his soul whispers to him; and We are nearer to him than his jugular vein.',
+    englishTranslation: "And We have already created man and know what his soul whispers to him, and We are closer to him than [his] jugular vein.",
     source: 'Surah Qaf 50:16',
     audioKey: '50:16',
     whyThis: 'Loneliness is impossible when the Creator is closer to you than your own lifeblood.',
@@ -2103,11 +1883,9 @@ const quranContentData: Content[] = [
     id: 'quran_67_13',
     type: 'Quran',
     primaryText: "wa-asirrū qawlakum awi ij'harū bihi innahu ʿalīmun bidhāti l-ṣudūri",
-    arabicText:
-      'وَأَسِرُّوا۟ قَوْلَكُمْ أَوِ ٱجْهَرُوا۟ بِهِۦٓ ۖ إِنَّهُۥ عَلِيمٌۢ بِذَاتِ ٱلصُّدُورِ ﴿13﴾',
+    arabicText: "وَأَسِرُّوا۟ قَوْلَكُمْ أَوِ ٱجْهَرُوا۟ بِهِۦٓ ۖ إِنَّهُۥ عَلِيمٌۢ بِذَاتِ ٱلصُّدُورِ",
     transliteration: "wa-asirrū qawlakum awi ij'harū bihi innahu ʿalīmun bidhāti l-ṣudūri",
-    englishTranslation:
-      'And conceal your speech or proclaim it. Indeed, He is the All-Knower of what is in the hearts.',
+    englishTranslation: "And conceal your speech or publicize it; indeed, He is Knowing of that within the breasts.",
     source: 'Surah Al-Mulk 67:13',
     audioKey: '67:13',
     whyThis: '',
@@ -2120,12 +1898,10 @@ const quranContentData: Content[] = [
     type: 'Quran',
     primaryText:
       "wal-ḍuḥā wal-layli idhā sajā mā waddaʿaka rabbuka wamā qalā walal-ākhiratu khayrun laka mina l-ūlā walasawfa yuʿ'ṭīka rabbuka fatarḍā",
-    arabicText:
-      'وَٱلضُّحَىٰ ﴿1﴾ وَٱلَّيْلِ إِذَا سَجَىٰ ﴿2﴾ مَا وَدَّعَكَ رَبُّكَ وَمَا قَلَىٰ ﴿3﴾ وَلَلْآخِرَةُ خَيْرٌۭ لَّكَ مِنَ ٱلْأُولَىٰ ﴿4﴾ وَلَسَوْفَ يُعْطِيكَ رَبُّكَ فَتَرْضَىٰ ﴿5﴾',
+    arabicText: " وَٱلضُّحَىٰ وَٱلَّيْلِ إِذَا سَجَىٰ مَا وَدَّعَكَ رَبُّكَ وَمَا قَلَىٰ وَلَلْـَٔاخِرَةُ خَيْرٌ لَّكَ مِنَ ٱلْأُولَىٰ وَلَسَوْفَ يُعْطِيكَ رَبُّكَ فَتَرْضَىٰٓ",
     transliteration:
       "wal-ḍuḥā wal-layli idhā sajā mā waddaʿaka rabbuka wamā qalā walal-ākhiratu khayrun laka mina l-ūlā walasawfa yuʿ'ṭīka rabbuka fatarḍā",
-    englishTranslation:
-      'By the morning brightness and by the night when it covers with darkness, your Lord has not taken leave of you, [O Muhammad], nor has He detested [you]. And the Hereafter is better for you than the first [life]. And your Lord is going to give you, and you will be satisfied.',
+    englishTranslation: "By the morning brightness And [by] the night when it covers with darkness, Your Lord has not taken leave of you, [O Muḥammad], nor has He detested [you]. And the Hereafter is better for you than the first [life]. And your Lord is going to give you, and you will be satisfied.",
     translation:
       'After revelation had paused for a time — and the Prophet Muhammad ﷺ feared he had been abandoned — Allah swore by the morning light and the still of night, reassuring him: "Your Lord has not left you, nor does He dislike you. What is coming is far better than what has passed; and your Lord will give you so much, that you will be completely satisfied."',
     source: 'Surah Ad-Duha 93:1-5',
@@ -2138,12 +1914,10 @@ const quranContentData: Content[] = [
     type: 'Quran',
     primaryText:
       "alam nashraḥ laka ṣadraka wawaḍaʿnā ʿanka wiz'raka alladhī anqaḍa ẓahraka warafaʿnā laka dhik'raka fa-inna maʿa l-ʿus'ri yus'ran inna maʿa l-ʿus'ri yus'ran fa-idhā faraghta fa-inṣab wa-ilā rabbika fa-ir'ghab",
-    arabicText:
-      'أَلَمْ نَشْرَحْ لَكَ صَدْرَكَ وَوَضَعْنَا عَنكَ وِزْرَكَ ٱلَّذِىٓ أَنقَضَ ظَهْرَكَ وَرَفَعْنَا لَكَ ذِكْرَكَ فَإِنَّ مَعَ ٱلْعُسْرِ يُسْرًا إِنَّ مَعَ ٱلْعُسْرِ يُسْرًۭا فَإِذَا فَرَغْتَ فَٱنصَبْ وَإِلَىٰ رَبِّكَ فَٱرْغَب ﴿1-8﴾',
+    arabicText: " أَلَمْ نَشْرَحْ لَكَ صَدْرَكَ وَوَضَعْنَا عَنكَ وِزْرَكَ ٱلَّذِىٓ أَنقَضَ ظَهْرَكَ وَرَفَعْنَا لَكَ ذِكْرَكَ فَإِنَّ مَعَ ٱلْعُسْرِ يُسْرًا إِنَّ مَعَ ٱلْعُسْرِ يُسْرًا فَإِذَا فَرَغْتَ فَٱنصَبْ وَإِلَىٰ رَبِّكَ فَٱرْغَب",
     transliteration:
       "alam nashraḥ laka ṣadraka wawaḍaʿnā ʿanka wiz'raka alladhī anqaḍa ẓahraka warafaʿnā laka dhik'raka fa-inna maʿa l-ʿus'ri yus'ran inna maʿa l-ʿus'ri yus'ran fa-idhā faraghta fa-inṣab wa-ilā rabbika fa-ir'ghab",
-    englishTranslation:
-      'Did We not relieve your heart for you [Prophet], and remove the burden that weighed so heavily on your back, and raise your reputation high? So truly where there is hardship there is also ease; truly where there is hardship there is also ease. The moment you are freed [of one task] work on, and turn to your Lord for everything.',
+    englishTranslation: "Did We not expand for you, [O Muḥammad], your breast? And We removed from you your burden Which had weighed upon your back And raised high for you your repute. For indeed, with hardship [will be] ease [i.e., relief]. Indeed, with hardship [will be] ease. So when you have finished [your duties], then stand up [for worship]. And to your Lord direct [your] longing.",
     source: 'Surah Al-Inshirah 94:1-8 (Complete)',
     audioKey: '94:1-8',
     whyThis: '',
@@ -2154,12 +1928,10 @@ const quranContentData: Content[] = [
     type: 'Quran',
     primaryText:
       "qāla rabbi ish'raḥ lī ṣadrī wayassir lī amrī wa-iḥ'lul ʿuqdatan min lisānī yafqahū qawlī",
-    arabicText:
-      'قَالَ رَبِّ ٱشْرَحْ لِى صَدْرِى ﴿25﴾ وَيَسِّرْ لِىٓ أَمْرِى ﴿26﴾ وَٱحْلُلْ عُقْدَةًۭ مِّن لِّسَانِى ﴿27﴾ يَفْقَهُوا۟ قَوْلِى ﴿28﴾',
+    arabicText: "قَالَ رَبِّ ٱشْرَحْ لِى صَدْرِى وَيَسِّرْ لِىٓ أَمْرِى وَٱحْلُلْ عُقْدَةً مِّن لِّسَانِى يَفْقَهُوا۟ قَوْلِى",
     transliteration:
       "qāla rabbi ish'raḥ lī ṣadrī wayassir lī amrī wa-iḥ'lul ʿuqdatan min lisānī yafqahū qawlī",
-    englishTranslation:
-      '[Moses] said, "My Lord, expand for me my breast [with assurance] and ease for me my task and untie the knot from my tongue that they may understand my speech."',
+    englishTranslation: "[Moses] said, \"My Lord, expand [i.e., relax] for me my breast [with assurance] And ease for me my task And untie the knot from my tongue That they may understand my speech.",
     translation:
       'Prophet Musa (Moses) — nervous before his mission to confront Pharaoh — prayed: "My Lord, open up my heart for me; make my task easy; and remove the difficulty from my speech, so that people can understand what I say."',
     source: 'Surah Taha 20:25-28',
@@ -2172,12 +1944,10 @@ const quranContentData: Content[] = [
     type: 'Quran',
     primaryText:
       "yāayyatuhā l-nafsu l-muṭ'ma-innatu ir'jiʿī ilā rabbiki rāḍiyatan marḍiyyatan fadkhulī fī ʿibādī wadkhulī jannatī",
-    arabicText:
-      'يَـٰٓأَيَّتُهَا ٱلنَّفْسُ ٱلْمُطْمَئِنَّةُ ﴿27﴾ ٱرْجِعِىٓ إِلَىٰ رَبِّكِ رَاضِيَةًۭ مَّرْضِيَّةًۭ ﴿28﴾ فَٱدْخُلِى فِى عِبَٰدِى ﴿29﴾ وَٱدْخُلِى جَنَّتِى ﴿30﴾',
+    arabicText: "يَـٰٓأَيَّتُهَا ٱلنَّفْسُ ٱلْمُطْمَئِنَّةُ ٱرْجِعِىٓ إِلَىٰ رَبِّكِ رَاضِيَةً مَّرْضِيَّةً فَٱدْخُلِى فِى عِبَـٰدِى وَٱدْخُلِى جَنَّتِى",
     transliteration:
       "yāayyatuhā l-nafsu l-muṭ'ma-innatu ir'jiʿī ilā rabbiki rāḍiyatan marḍiyyatan fadkhulī fī ʿibādī wadkhulī jannatī",
-    englishTranslation:
-      '[To the righteous it will be said], "O reassured soul, return to your Lord, well-pleased and pleasing [to Him], and enter among My [righteous] servants, and enter My Paradise."',
+    englishTranslation: "[To the righteous it will be said], \"O reassured soul, Return to your Lord, well-pleased and pleasing [to Him], And enter among My [righteous] servants And enter My Paradise.\"",
     source: 'Surah Al-Fajr 89:27-30',
     audioKey: '89:27-30',
     whyThis: '',
@@ -2187,10 +1957,9 @@ const quranContentData: Content[] = [
     id: 'quran_23_1',
     type: 'Quran',
     primaryText: "qad aflaḥa l-mu'minūna alladhīna hum fī ṣalātihim khāshiʿūna",
-    arabicText: 'قَدْ أَفْلَحَ ٱلْمُؤْمِنُونَ ٱلَّذِينَ هُمْ فِى صَلَاتِهِمْ خَـٰشِعُونَ ﴿1-2﴾',
+    arabicText: " قَدْ أَفْلَحَ ٱلْمُؤْمِنُونَ ٱلَّذِينَ هُمْ فِى صَلَاتِهِمْ خَـٰشِعُونَ",
     transliteration: "qad aflaḥa l-mu'minūna alladhīna hum fī ṣalātihim khāshiʿūna",
-    englishTranslation:
-      'Indeed, successful are the believers — those who during their prayers are humbly submissive.',
+    englishTranslation: "Certainly will the believers have succeeded: They who are during their prayer humbly intent",
     source: "Surah Al-Mu'minun 23:1-2",
     audioKey: '23:1-2',
     whyThis: 'Identifies Khushu (humility) as the defining trait of successful believers.',
@@ -2201,12 +1970,10 @@ const quranContentData: Content[] = [
     type: 'Quran',
     primaryText:
       "yābanī ādama khudhū zīnatakum ʿinda kulli masjidin wakulū wa-ish'rabū walā tus'rifū innahu lā yuḥibbu l-mus'rifīna",
-    arabicText:
-      '۞ يَـٰبَنِىٓ ءَادَمَ خُذُوا۟ زِينَتَكُمْ عِندَ كُلِّ مَسْجِدٍۢ وَكُلُوا۟ وَٱشْرَبُوا۟ وَلَا تُسْرِفُوٓا۟ ۚ إِنَّهُۥ لَا يُحِبُّ ٱلْمُسْرِفِينَ ﴿31﴾',
+    arabicText: "۞ يَـٰبَنِىٓ ءَادَمَ خُذُوا۟ زِينَتَكُمْ عِندَ كُلِّ مَسْجِدٍ وَكُلُوا۟ وَٱشْرَبُوا۟ وَلَا تُسْرِفُوٓا۟ ۚ إِنَّهُۥ لَا يُحِبُّ ٱلْمُسْرِفِينَ",
     transliteration:
       "yābanī ādama khudhū zīnatakum ʿinda kulli masjidin wakulū wa-ish'rabū walā tus'rifū innahu lā yuḥibbu l-mus'rifīna",
-    englishTranslation:
-      'O Children of Adam, take your adornment at every masjid, and eat and drink, but do not be extravagant. Indeed, He does not love the extravagant.',
+    englishTranslation: "O children of Adam, take your adornment [i.e., wear your clothing] at every masjid, and eat and drink, but be not excessive. Indeed, He likes not those who commit excess.",
     source: "Surah Al-A'raf 7:31",
     audioKey: '7:31',
     whyThis: 'The divine command to prepare yourself physically and spiritually before prayer.',
@@ -2217,12 +1984,10 @@ const quranContentData: Content[] = [
     type: 'Quran',
     primaryText:
       "ut'lu mā ūḥiya ilayka mina l-kitābi wa-aqimi l-ṣalata inna l-ṣalata tanhā ʿani l-faḥshāi wal-munkari waladhik'ru l-lahi akbaru wal-lahu yaʿlamu mā taṣnaʿūna",
-    arabicText:
-      'ٱتْلُ مَآ أُوحِىَ إِلَيْكَ مِنَ ٱلْكِتَـٰبِ وَأَقِمِ ٱلصَّلَوٰةَ ۖ إِنَّ ٱلصَّلَوٰةَ تَنْهَىٰ عَنِ ٱلْفَحْشَآءِ وَٱلْمُنكَرِ ۗ وَلَذِكْرُ ٱللَّهِ أَكْبَرُ ۗ وَٱللَّهُ يَعْلَمُ مَا تَصْنَعُونَ ﴿45﴾',
+    arabicText: "ٱتْلُ مَآ أُوحِىَ إِلَيْكَ مِنَ ٱلْكِتَـٰبِ وَأَقِمِ ٱلصَّلَوٰةَ ۖ إِنَّ ٱلصَّلَوٰةَ تَنْهَىٰ عَنِ ٱلْفَحْشَآءِ وَٱلْمُنكَرِ ۗ وَلَذِكْرُ ٱللَّهِ أَكْبَرُ ۗ وَٱللَّهُ يَعْلَمُ مَا تَصْنَعُونَ",
     transliteration:
       "ut'lu mā ūḥiya ilayka mina l-kitābi wa-aqimi l-ṣalata inna l-ṣalata tanhā ʿani l-faḥshāi wal-munkari waladhik'ru l-lahi akbaru wal-lahu yaʿlamu mā taṣnaʿūna",
-    englishTranslation:
-      'Recite what has been revealed to you of the Book, and establish prayer. Indeed, prayer prevents immorality and evil deeds, and surely the remembrance of Allah is greatest. And Allah knows what you do.',
+    englishTranslation: "Recite, [O Muḥammad], what has been revealed to you of the Book and establish prayer. Indeed, prayer prohibits immorality and wrongdoing, and the remembrance of Allāh is greater. And Allāh knows that which you do.",
     translation:
       'Recite what has been revealed to you of the Quran, and establish your prayer. Truly, prayer keeps you away from shameful and evil deeds; and the remembrance of Allah is the greatest thing of all. Allah knows everything you do.',
     source: 'Surah Al-Ankabut 29:45',
@@ -2234,12 +1999,10 @@ const quranContentData: Content[] = [
     id: 'quran_2_45_salah_dup',
     type: 'Quran',
     primaryText: "wa-is'taʿīnū bil-ṣabri wal-ṣalati wa-innahā lakabīratun illā ʿalā l-khāshiʿīna",
-    arabicText:
-      'وَٱسْتَعِينُوا۟ بِٱلصَّبْرِ وَٱلصَّلَوٰةِ ۚ وَإِنَّهَا لَكَبِيرَةٌ إِلَّا عَلَى ٱلْخَـٰشِعِينَ ﴿45﴾',
+    arabicText: "وَٱسْتَعِينُوا۟ بِٱلصَّبْرِ وَٱلصَّلَوٰةِ ۚ وَإِنَّهَا لَكَبِيرَةٌ إِلَّا عَلَى ٱلْخَـٰشِعِينَ",
     transliteration:
       "wa-is'taʿīnū bil-ṣabri wal-ṣalati wa-innahā lakabīratun illā ʿalā l-khāshiʿīna",
-    englishTranslation:
-      'And seek help through patience and prayer; and indeed, it is difficult except for the humble ones.',
+    englishTranslation: "And seek help through patience and prayer; and indeed, it is difficult except for the humbly submissive [to Allāh]",
     source: 'Surah Al-Baqarah 2:45',
     audioKey: '2:45',
     whyThis: 'Prayer is a source of help and strength, though its ease is found in humility.',
@@ -2250,12 +2013,10 @@ const quranContentData: Content[] = [
     type: 'Quran',
     primaryText:
       "yāayyuhā alladhīna āmanū ir'kaʿū wa-us'judū wa-uʿ'budū rabbakum wa-if'ʿalū l-khayra laʿallakum tuf'liḥūna",
-    arabicText:
-      'يَـٰٓأَيُّهَا ٱلَّذِينَ ءَامَنُوا۟ ٱرْكَعُوا۟ وَٱسْجُدُوا۟ وَٱعْبُدُوا۟ رَبَّكُمْ وَٱفْعَلُوا۟ ٱلْخَيْرَ لَعَلَّكُمْ تُفْلِحُونَ ۩ ﴿77﴾',
+    arabicText: "يَـٰٓأَيُّهَا ٱلَّذِينَ ءَامَنُوا۟ ٱرْكَعُوا۟ وَٱسْجُدُوا۟ وَٱعْبُدُوا۟ رَبَّكُمْ وَٱفْعَلُوا۟ ٱلْخَيْرَ لَعَلَّكُمْ تُفْلِحُونَ ۩",
     transliteration:
       "yāayyuhā alladhīna āmanū ir'kaʿū wa-us'judū wa-uʿ'budū rabbakum wa-if'ʿalū l-khayra laʿallakum tuf'liḥūna",
-    englishTranslation:
-      'O you who believe, bow and prostrate and worship your Lord, and do good so that you may be successful.',
+    englishTranslation: "O you who have believed, bow and prostrate and worship your Lord and do good - that you may succeed.",
     source: 'Surah Al-Hajj 22:77',
     audioKey: '22:77',
     whyThis: 'A direct command to engage the body in the physical acts of worship.',
@@ -2265,11 +2026,9 @@ const quranContentData: Content[] = [
     id: 'quran_14_40',
     type: 'Quran',
     primaryText: "rabbi ij'ʿalnī muqīma l-ṣalati wamin dhurriyyatī rabbanā wataqabbal duʿāi",
-    arabicText:
-      'رَبِّ ٱجْعَلْنِى مُقِيمَ ٱلصَّلَوٰةِ وَمِن ذُرِّيَّتِى ۚ رَبَّنَا وَتَقَبَّلْ دُعَآءِ ﴿40﴾',
+    arabicText: "رَبِّ ٱجْعَلْنِى مُقِيمَ ٱلصَّلَوٰةِ وَمِن ذُرِّيَّتِى ۚ رَبَّنَا وَتَقَبَّلْ دُعَآءِ",
     transliteration: "rabbi ij'ʿalnī muqīma l-ṣalati wamin dhurriyyatī rabbanā wataqabbal duʿāi",
-    englishTranslation:
-      'My Lord, make me an establisher of prayer, and from my offspring. Our Lord, and accept my prayer.',
+    englishTranslation: "My Lord, make me an establisher of prayer, and [many] from my descendants. Our Lord, and accept my supplication.",
     source: 'Surah Ibrahim 14:40',
     audioKey: '14:40',
     whyThis: 'The powerful dua of Ibrahim (AS) for steadfastness in prayer for himself and his family.',
@@ -2281,9 +2040,9 @@ const quranContentData: Content[] = [
     id: 'quran_51_22',
     type: 'Quran',
     primaryText: "wafī l-samāi riz'qukum wamā tūʿadūna",
-    arabicText: 'وَفِى ٱلسَّمَآءِ رِزْقُكُمْ وَمَا تُوعَدُونَ ﴿22﴾',
+    arabicText: "وَفِى ٱلسَّمَآءِ رِزْقُكُمْ وَمَا تُوعَدُونَ",
     transliteration: "wafī l-samāi riz'qukum wamā tūʿadūna",
-    englishTranslation: 'And in the heaven is your provision and what you are promised.',
+    englishTranslation: "And in the heaven is your provision and whatever you are promised.",
     source: 'Surah Adh-Dhariyat 51:22',
     audioKey: '51:22',
     whyThis: '',
@@ -2294,12 +2053,10 @@ const quranContentData: Content[] = [
     type: 'Quran',
     primaryText:
       "wamā min dābbatin fī l-arḍi illā ʿalā l-lahi riz'quhā wayaʿlamu mus'taqarrahā wamus'tawdaʿahā kullun fī kitābin mubīnin",
-    arabicText:
-      '۞ وَمَا مِن دَآبَّةٍۢ فِى ٱلْأَرْضِ إِلَّا عَلَى ٱللَّهِ رِزْقُهَا وَيَعْلَمُ مُسْتَقَرَّهَا وَمُسْتَوْدَعَهَا ۚ كُلٌّۭ فِى كِتَـٰبٍۢ مُّبِينٍۢ ﴿6﴾',
+    arabicText: "۞ وَمَا مِن دَآبَّةٍ فِى ٱلْأَرْضِ إِلَّا عَلَى ٱللَّهِ رِزْقُهَا وَيَعْلَمُ مُسْتَقَرَّهَا وَمُسْتَوْدَعَهَا ۚ كُلٌّ فِى كِتَـٰبٍ مُّبِينٍ",
     transliteration:
       "wamā min dābbatin fī l-arḍi illā ʿalā l-lahi riz'quhā wayaʿlamu mus'taqarrahā wamus'tawdaʿahā kullun fī kitābin mubīnin",
-    englishTranslation:
-      'And there is no creature on earth but that upon Allah is its provision. And He knows its dwelling place and its place of storage. All is in a clear record.',
+    englishTranslation: "And there is no creature on earth but that upon Allāh is its provision, and He knows its place of dwelling and place of storage. All is in a clear register.",
     source: 'Surah Hud 11:6',
     audioKey: '11:6',
     whyThis: '',
@@ -2311,12 +2068,10 @@ const quranContentData: Content[] = [
     type: 'Quran',
     primaryText:
       'yāayyuhā l-nāsu kulū mimmā fī l-arḍi ḥalālan ṭayyiban walā tattabiʿū khuṭuwāti l-shayṭāni innahu lakum ʿaduwwun mubīnun',
-    arabicText:
-      'يَـٰٓأَيُّهَا ٱلنَّاسُ كُلُوا۟ مِمَّا فِى ٱلْأَرْضِ حَلَـٰلًۭا طَيِّبًۭا وَلَا تَتَّبِعُوا۟ خُطُوَٰتِ ٱلشَّيْطَـٰنِ ۚ إِنَّهُۥ لَكُمْ عَدُوٌّۭ مُّبِينٌ ﴿168﴾',
+    arabicText: "يَـٰٓأَيُّهَا ٱلنَّاسُ كُلُوا۟ مِمَّا فِى ٱلْأَرْضِ حَلَـٰلًا طَيِّبًا وَلَا تَتَّبِعُوا۟ خُطُوَٰتِ ٱلشَّيْطَـٰنِ ۚ إِنَّهُۥ لَكُمْ عَدُوٌّ مُّبِينٌ",
     transliteration:
       'yāayyuhā l-nāsu kulū mimmā fī l-arḍi ḥalālan ṭayyiban walā tattabiʿū khuṭuwāti l-shayṭāni innahu lakum ʿaduwwun mubīnun',
-    englishTranslation:
-      'O mankind, eat from whatever is on earth that is lawful and good, and do not follow the footsteps of Satan. Indeed, he is to you a clear enemy.',
+    englishTranslation: "O mankind, eat from whatever is on earth [that is] lawful and good and do not follow the footsteps of Satan. Indeed, he is to you a clear enemy.",
     source: 'Surah Al-Baqarah 2:168',
     audioKey: '2:168',
     whyThis: '',
@@ -2328,12 +2083,10 @@ const quranContentData: Content[] = [
     type: 'Quran',
     primaryText:
       "wayarzuq'hu min ḥaythu lā yaḥtasibu waman yatawakkal ʿalā l-lahi fahuwa ḥasbuhu inna l-laha bālighu amrihi qad jaʿala l-lahu likulli shayin qadran",
-    arabicText:
-      'وَيَرْزُقْهُ مِنْ حَيْثُ لَا يَحْتَسِبُ ۚ وَمَن يَتَوَكَّلْ عَلَى ٱللَّهِ فَهُوَ حَسْبُهُۥٓ ۚ إِنَّ ٱللَّهَ بَـٰلِغُ أَمْرِهِۦ ۚ قَدْ جَعَلَ ٱللَّهُ لِكُلِّ شَىْءٍۢ قَدْرًۭا ﴿3﴾',
+    arabicText: "وَيَرْزُقْهُ مِنْ حَيْثُ لَا يَحْتَسِبُ ۚ وَمَن يَتَوَكَّلْ عَلَى ٱللَّهِ فَهُوَ حَسْبُهُۥٓ ۚ إِنَّ ٱللَّهَ بَـٰلِغُ أَمْرِهِۦ ۚ قَدْ جَعَلَ ٱللَّهُ لِكُلِّ شَىْءٍ قَدْرًا",
     transliteration:
       "wayarzuq'hu min ḥaythu lā yaḥtasibu waman yatawakkal ʿalā l-lahi fahuwa ḥasbuhu inna l-laha bālighu amrihi qad jaʿala l-lahu likulli shayin qadran",
-    englishTranslation:
-      'And He will provide for him from where he does not expect. And whoever puts his trust upon Allah, then He is sufficient for him. Indeed, Allah will accomplish His purpose. Allah has already set for everything a measure.',
+    englishTranslation: "And will provide for him from where he does not expect. And whoever relies upon Allāh - then He is sufficient for him. Indeed, Allāh will accomplish His purpose. Allāh has already set for everything a [decreed] extent.",
     source: 'Surah At-Talaq 65:3',
     audioKey: '65:3',
     whyThis: '',
@@ -2345,12 +2098,10 @@ const quranContentData: Content[] = [
     type: 'Quran',
     primaryText:
       "waka-ayyin min dābbatin lā taḥmilu riz'qahā l-lahu yarzuquhā wa-iyyākum wahuwa l-samīʿu l-ʿalīmu",
-    arabicText:
-      'وَكَأَيِّن مِّن دَآبَّةٍۢ لَّا تَحْمِلُ رِزْقَهَا ٱللَّهُ يَرْزُقُهَا وَإِيَّاكُمْ ۚ وَهُوَ ٱلسَّمِيعُ ٱلْعَلِيمُ ﴿60﴾',
+    arabicText: "وَكَأَيِّن مِّن دَآبَّةٍ لَّا تَحْمِلُ رِزْقَهَا ٱللَّهُ يَرْزُقُهَا وَإِيَّاكُمْ ۚ وَهُوَ ٱلسَّمِيعُ ٱلْعَلِيمُ",
     transliteration:
       "waka-ayyin min dābbatin lā taḥmilu riz'qahā l-lahu yarzuquhā wa-iyyākum wahuwa l-samīʿu l-ʿalīmu",
-    englishTranslation:
-      'And how many a creature does not carry its own provision. Allah provides for it and for you. And He is the All-Hearer, the All-Knower.',
+    englishTranslation: "And how many a creature carries not its [own] provision. Allāh provides for it and for you. And He is the Hearing, the Knowing.",
     source: 'Surah Al-Ankabut 29:60',
     audioKey: '29:60',
     whyThis: '',
@@ -2362,12 +2113,10 @@ const quranContentData: Content[] = [
     type: 'Quran',
     primaryText:
       'walanabluwannakum bishayin mina l-khawfi wal-jūʿi wanaqṣin mina l-amwāli wal-anfusi wal-thamarāti wabashiri l-ṣābirīna alladhīna idhā aṣābathum muṣībatun qālū innā lillahi wa-innā ilayhi rājiʿūna',
-    arabicText:
-      'وَلَنَبْلُوَنَّكُم بِشَىْءٍۢ مِّنَ ٱلْخَوْفِ وَٱلْجُوعِ وَنَقْصٍۢ مِّنَ ٱلْأَمْوَٰلِ وَٱلْأَنفُسِ وَٱلثَّمَرَٰتِ ۗ وَبَشِّرِ ٱلصَّـٰبِرِينَ ﴿155﴾ ٱلَّذِينَ إِذَآ أَصَابَتْهُم مُّصِيبَةٌۭ قَالُوٓا۟ إِنَّا لِلَّهِ وَإِنَّآ إِلَيْهِ رَٰجِعُونَ ﴿156﴾',
+    arabicText: "وَلَنَبْلُوَنَّكُم بِشَىْءٍ مِّنَ ٱلْخَوْفِ وَٱلْجُوعِ وَنَقْصٍ مِّنَ ٱلْأَمْوَٰلِ وَٱلْأَنفُسِ وَٱلثَّمَرَٰتِ ۗ وَبَشِّرِ ٱلصَّـٰبِرِينَ ٱلَّذِينَ إِذَآ أَصَـٰبَتْهُم مُّصِيبَةٌ قَالُوٓا۟ إِنَّا لِلَّهِ وَإِنَّآ إِلَيْهِ رَٰجِعُونَ",
     transliteration:
       'walanabluwannakum bishayin mina l-khawfi wal-jūʿi wanaqṣin mina l-amwāli wal-anfusi wal-thamarāti wabashiri l-ṣābirīna alladhīna idhā aṣābathum muṣībatun qālū innā lillahi wa-innā ilayhi rājiʿūna',
-    englishTranslation:
-      'And We will surely test you with something of fear and hunger and a loss of wealth and lives and fruits, but give good tidings to the patient, who, when disaster strikes them, say, "Indeed we belong to Allah, and indeed to Him we will return."',
+    englishTranslation: "And We will surely test you with something of fear and hunger and a loss of wealth and lives and fruits, but give good tidings to the patient, Who, when disaster strikes them, say, \"Indeed we belong to Allāh, and indeed to Him we will return.\"",
     source: 'Surah Al-Baqarah 2:155-156',
     audioKey: '2:155-156',
     whyThis: '',
@@ -2379,12 +2128,10 @@ const quranContentData: Content[] = [
     type: 'Quran',
     primaryText:
       'walaw anna ahla l-qurā āmanū wa-ittaqaw lafataḥnā ʿalayhim barakātin mina l-samāi wal-arḍi walākin kadhabū fa-akhadhnāhum bimā kānū yaksibūna',
-    arabicText:
-      'وَلَوْ أَنَّ أَهْلَ ٱلْقُرَىٰٓ ءَامَنُوا۟ وَٱتَّقَوْا۟ لَفَتَحْنَا عَلَيْهِم بَرَكَـٰتٍۢ مِّنَ ٱلسَّمَآءِ وَٱلْأَرْضِ وَلَـٰكِن كَذَّبُوا۟ فَأَخَذْنَـٰهُم بِمَا كَانُوا۟ يَكْسِبُونَ ﴿96﴾',
+    arabicText: "وَلَوْ أَنَّ أَهْلَ ٱلْقُرَىٰٓ ءَامَنُوا۟ وَٱتَّقَوْا۟ لَفَتَحْنَا عَلَيْهِم بَرَكَـٰتٍ مِّنَ ٱلسَّمَآءِ وَٱلْأَرْضِ وَلَـٰكِن كَذَّبُوا۟ فَأَخَذْنَـٰهُم بِمَا كَانُوا۟ يَكْسِبُونَ",
     transliteration:
       'walaw anna ahla l-qurā āmanū wa-ittaqaw lafataḥnā ʿalayhim barakātin mina l-samāi wal-arḍi walākin kadhabū fa-akhadhnāhum bimā kānū yaksibūna',
-    englishTranslation:
-      'And if only the people of the cities had believed and feared Allah, We would have opened upon them blessings from the heaven and the earth; but they denied, so We seized them for what they used to earn.',
+    englishTranslation: "And if only the people of the cities had believed and feared Allāh, We would have opened [i.e., bestowed] upon them blessings from the heaven and the earth; but they denied [the messengers], so We seized them for what they were earning.",
     source: "Surah Al-A'raf 7:96",
     audioKey: '7:96',
     whyThis: '',
@@ -2396,12 +2143,10 @@ const quranContentData: Content[] = [
     type: 'Quran',
     primaryText:
       'mathalu alladhīna yunfiqūna amwālahum fī sabīli l-lahi kamathali ḥabbatin anbatat sabʿa sanābila fī kulli sunbulatin mi-atu ḥabbatin wal-lahu yuḍāʿifu liman yashāu wal-lahu wāsiʿun ʿalīmun',
-    arabicText:
-      'مَّثَلُ ٱلَّذِينَ يُنفِقُونَ أَمْوَٰلَهُمْ فِى سَبِيلِ ٱللَّهِ كَمَثَلِ حَبَّةٍ أَنۢبَتَتْ سَبْعَ سَنَابِلَ فِى كُلِّ سُنۢبُلَةٍۢ مِّا۟ئَةُ حَبَّةٍۢ ۗ وَٱللَّهُ يُضَـٰعِفُ لِمَن يَشَآءُ ۗ وَٱللَّهُ وَٰسِعٌ عَلِيمٌ ﴿261﴾',
+    arabicText: "مَّثَلُ ٱلَّذِينَ يُنفِقُونَ أَمْوَٰلَهُمْ فِى سَبِيلِ ٱللَّهِ كَمَثَلِ حَبَّةٍ أَنۢبَتَتْ سَبْعَ سَنَابِلَ فِى كُلِّ سُنۢبُلَةٍ مِّا۟ئَةُ حَبَّةٍ ۗ وَٱللَّهُ يُضَـٰعِفُ لِمَن يَشَآءُ ۗ وَٱللَّهُ وَٰسِعٌ عَلِيمٌ",
     transliteration:
       'mathalu alladhīna yunfiqūna amwālahum fī sabīli l-lahi kamathali ḥabbatin anbatat sabʿa sanābila fī kulli sunbulatin mi-atu ḥabbatin wal-lahu yuḍāʿifu liman yashāu wal-lahu wāsiʿun ʿalīmun',
-    englishTranslation:
-      'The example of those who spend their wealth in the way of Allah is like a grain which grows seven ears; in each ear is a hundred grains. And Allah gives manifold to whom He wills. And Allah is All-Encompassing, All-Knowing.',
+    englishTranslation: "The example of those who spend their wealth in the way of Allāh is like a seed [of grain] which grows seven spikes; in each spike is a hundred grains. And Allāh multiplies [His reward] for whom He wills. And Allāh is all-Encompassing and Knowing.",
     source: 'Surah Al-Baqarah 2:261',
     audioKey: '2:261',
     whyThis: '',
@@ -2413,12 +2158,10 @@ const quranContentData: Content[] = [
     type: 'Quran',
     primaryText:
       "huwa alladhī jaʿala lakumu l-arḍa dhalūlan fa-im'shū fī manākibihā wakulū min riz'qihi wa-ilayhi l-nushūru",
-    arabicText:
-      'هُوَ ٱلَّذِى جَعَلَ لَكُمُ ٱلْأَرْضَ ذَلُولًۭا فَٱمْشُوا۟ فِى مَنَاكِبِهَا وَكُلُوا۟ مِن رِّزْقِهِۦ ۖ وَإِلَيْهِ ٱلنُّشُورُ ﴿15﴾',
+    arabicText: "هُوَ ٱلَّذِى جَعَلَ لَكُمُ ٱلْأَرْضَ ذَلُولًا فَٱمْشُوا۟ فِى مَنَاكِبِهَا وَكُلُوا۟ مِن رِّزْقِهِۦ ۖ وَإِلَيْهِ ٱلنُّشُورُ",
     transliteration:
       "huwa alladhī jaʿala lakumu l-arḍa dhalūlan fa-im'shū fī manākibihā wakulū min riz'qihi wa-ilayhi l-nushūru",
-    englishTranslation:
-      'He is the One Who made the earth subservient for you; so walk in its paths and eat of His provision, and to Him is the resurrection.',
+    englishTranslation: "It is He who made the earth tame for you - so walk among its slopes and eat of His provision - and to Him is the resurrection.",
     source: 'Surah Al-Mulk 67:15',
     audioKey: '67:15',
     whyThis: '',
@@ -2430,12 +2173,10 @@ const quranContentData: Content[] = [
     type: 'Quran',
     primaryText:
       "rabbanā innī askantu min dhurriyyatī biwādin ghayri dhī zarʿin ʿinda baytika l-muḥarami rabbanā liyuqīmū l-ṣalata fa-ij'ʿal afidatan mina l-nāsi tahwī ilayhim wa-ur'zuq'hum mina l-thamarāti laʿallahum yashkurūna",
-    arabicText:
-      'رَّبَّنَآ إِنِّىٓ أَسْكَنتُ مِن ذُرِّيَّتِى بِوَادٍ غَيْرِ ذِى زَرْعٍ عِندَ بَيْتِكَ ٱلْمُحَرَّمِ رَبَّنَا لِيُقِيمُوا۟ ٱلصَّلَوٰةَ فَٱجْعَلْ أَفْـِٔدَةًۭ مِّنَ ٱلنَّاسِ تَهْوِىٓ إِلَيْهِمْ وَٱرْزُقْهُم مِّنَ ٱلثَّمَرَٰتِ لَعَلَّهُمْ يَشْكُرُونَ ﴿37﴾',
+    arabicText: "رَّبَّنَآ إِنِّىٓ أَسْكَنتُ مِن ذُرِّيَّتِى بِوَادٍ غَيْرِ ذِى زَرْعٍ عِندَ بَيْتِكَ ٱلْمُحَرَّمِ رَبَّنَا لِيُقِيمُوا۟ ٱلصَّلَوٰةَ فَٱجْعَلْ أَفْـِٔدَةً مِّنَ ٱلنَّاسِ تَهْوِىٓ إِلَيْهِمْ وَٱرْزُقْهُم مِّنَ ٱلثَّمَرَٰتِ لَعَلَّهُمْ يَشْكُرُونَ",
     transliteration:
       "rabbanā innī askantu min dhurriyyatī biwādin ghayri dhī zarʿin ʿinda baytika l-muḥarami rabbanā liyuqīmū l-ṣalata fa-ij'ʿal afidatan mina l-nāsi tahwī ilayhim wa-ur'zuq'hum mina l-thamarāti laʿallahum yashkurūna",
-    englishTranslation:
-      'Our Lord, indeed I have settled some of my offspring in a valley without cultivation, near Your Sacred House, our Lord, that they may establish prayer. So make hearts among the people incline toward them, and provide them with fruits so that they may be grateful.',
+    englishTranslation: "Our Lord, I have settled some of my descendants in an uncultivated valley near Your sacred House, our Lord, that they may establish prayer. So make hearts among the people incline toward them and provide for them from the fruits that they might be grateful.",
     translation:
       'Prophet Ibrahim (Abraham) — after leaving his wife Hajar and infant son Ismail in the barren desert of Makkah, near the Sacred Ka\'bah — prayed: "Our Lord, I have settled some of my family in a valley with no crops, near Your Holy House, so they may establish prayer. Make people\'s hearts drawn to them; and provide them with fruits, so they may give thanks."',
     source: 'Surah Ibrahim 14:37',
@@ -2449,10 +2190,9 @@ const quranContentData: Content[] = [
     id: 'quran_102_1_2',
     type: 'Quran',
     primaryText: 'alhākumu l-takāthuru ḥattā zurtumu l-maqābira',
-    arabicText: 'أَلْهَىٰكُمُ ٱلتَّكَاثُرُ ﴿1﴾ حَتَّىٰ زُرْتُمُ ٱلْمَقَابِرَ ﴿2﴾',
+    arabicText: " أَلْهَىٰكُمُ ٱلتَّكَاثُرُ حَتَّىٰ زُرْتُمُ ٱلْمَقَابِرَ",
     transliteration: 'alhākumu l-takāthuru ḥattā zurtumu l-maqābira',
-    englishTranslation:
-      'The mutual rivalry for piling up (the good things of this world) diverts you (from the more serious things), until you visit the graves.',
+    englishTranslation: "Competition in [worldly] increase diverts you Until you visit the graveyards.",
     source: 'Surah At-Takathur 102:1-2',
     audioKey: '102:1-2',
     whyThis: '',
@@ -2464,12 +2204,10 @@ const quranContentData: Content[] = [
     type: 'Quran',
     primaryText:
       'liyajziyahumu l-lahu aḥsana mā ʿamilū wayazīdahum min faḍlihi wal-lahu yarzuqu man yashāu bighayri ḥisābin',
-    arabicText:
-      'لِيَجْزِيَهُمُ ٱللَّهُ أَحْسَنَ مَا عَمِلُوا۟ وَيَزِيدَهُم مِّن فَضْلِهِۦ ۗ وَٱللَّهُ يَرْزُقُ مَن يَشَآءُ بِغَيْرِ حِسَابٍۢ ﴿38﴾',
+    arabicText: "لِيَجْزِيَهُمُ ٱللَّهُ أَحْسَنَ مَا عَمِلُوا۟ وَيَزِيدَهُم مِّن فَضْلِهِۦ ۗ وَٱللَّهُ يَرْزُقُ مَن يَشَآءُ بِغَيْرِ حِسَابٍ",
     transliteration:
       'liyajziyahumu l-lahu aḥsana mā ʿamilū wayazīdahum min faḍlihi wal-lahu yarzuqu man yashāu bighayri ḥisābin',
-    englishTranslation:
-      'That Allah may reward them according to the best of what they did, and increase them from His bounty. And Allah provides for whom He wills without measure.',
+    englishTranslation: "That Allāh may reward them [according to] the best of what they did and increase them from His bounty. And Allāh gives provision to whom He wills without account [i.e., limit].",
     source: 'Surah An-Nur 24:38',
     audioKey: '24:38',
     whyThis: '',
@@ -2480,12 +2218,10 @@ const quranContentData: Content[] = [
     type: 'Quran',
     primaryText:
       'mā yakūnu min najwā thalāthatin illā huwa rābiʿuhum walā khamsatin illā huwa sādisuhum walā adnā min dhālika walā akthara illā huwa maʿahum ayna mā kānū',
-    arabicText:
-      'مَا يَكُونُ مِن نَّجْوَىٰ ثَلَـٰثَةٍ إِلَّا هُوَ رَابِعُهُمْ وَلَا خَمْسَةٍ إِلَّا هُوَ سَادِسُهُمْ وَلَا أَدْنَىٰ مِن ذَٰلِكَ وَلَا أَكْثَرَ إِلَّا هُوَ مَعَهُمْ أَيْنَ مَا كَانُوا۟ ۖ ﴿7﴾',
+    arabicText: "أَلَمْ تَرَ أَنَّ ٱللَّهَ يَعْلَمُ مَا فِى ٱلسَّمَـٰوَٰتِ وَمَا فِى ٱلْأَرْضِ ۖ مَا يَكُونُ مِن نَّجْوَىٰ ثَلَـٰثَةٍ إِلَّا هُوَ رَابِعُهُمْ وَلَا خَمْسَةٍ إِلَّا هُوَ سَادِسُهُمْ وَلَآ أَدْنَىٰ مِن ذَٰلِكَ وَلَآ أَكْثَرَ إِلَّا هُوَ مَعَهُمْ أَيْنَ مَا كَانُوا۟ ۖ ثُمَّ يُنَبِّئُهُم بِمَا عَمِلُوا۟ يَوْمَ ٱلْقِيَـٰمَةِ ۚ إِنَّ ٱللَّهَ بِكُلِّ شَىْءٍ عَلِيمٌ",
     transliteration:
       'mā yakūnu min najwā thalāthatin illā huwa rābiʿuhum walā khamsatin illā huwa sādisuhum walā adnā min dhālika walā akthara illā huwa maʿahum ayna mā kānū',
-    englishTranslation:
-      'There is no private conversation of three but that He is the fourth of them, nor of five but that He is the sixth of them — nor of less than that, nor of more — but that He is with them wherever they are.',
+    englishTranslation: "Have you not considered that Allāh knows what is in the heavens and what is on the earth? There are not three in a private conversation but that He is the fourth of them, nor are there five but that He is the sixth of them - and no less than that and no more except that He is with them [in knowledge] wherever they are. Then He will inform them of what they did, on the Day of Resurrection. Indeed Allāh is, of all things, Knowing.",
     source: 'Surah Al-Mujadila 58:7',
     audioKey: '58:7',
     whyThis: 'You are never truly alone; Allah is always present in every moment and conversation.',
@@ -2495,11 +2231,9 @@ const quranContentData: Content[] = [
     id: 'quran_11_90_lonely',
     type: 'Quran',
     primaryText: "wa-is'taghfirū rabbakum thumma tūbū ilayhi inna rabbī raḥīmun wadūdun",
-    arabicText:
-      'وَٱسْتَغْفِرُوا۟ رَبَّكُمْ ثُمَّ تُوبُوٓا۟ إِلَيْهِ ۚ إِنَّ رَبِّى رَحِيمٌۭ وَدُودٌۭ ﴿90﴾',
+    arabicText: "وَٱسْتَغْفِرُوا۟ رَبَّكُمْ ثُمَّ تُوبُوٓا۟ إِلَيْهِ ۚ إِنَّ رَبِّى رَحِيمٌ وَدُودٌ",
     transliteration: "wa-is'taghfirū rabbakum thumma tūbū ilayhi inna rabbī raḥīmun wadūdun",
-    englishTranslation:
-      'And ask forgiveness of your Lord, then turn to Him in repentance. Indeed, my Lord is Most Merciful, Most Loving.',
+    englishTranslation: "And ask forgiveness of your Lord and then repent to Him. Indeed, my Lord is Merciful and Affectionate.\"",
     source: 'Surah Hud 11:90',
     audioKey: '11:90',
     whyThis: 'Allah is Al-Wadud - the Most Loving. His love is the ultimate cure for a lonely heart.',

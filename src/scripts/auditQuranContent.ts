@@ -39,15 +39,15 @@ export function normalizeArabic(text: string): string {
     .trim();
 }
 
-/** Collapse whitespace; leave all punctuation intact. */
+/** Strip HTML tags (e.g. footnote <sup> markers from quran.com API), collapse whitespace. */
 export function normalizeEnglish(text: string): string {
-  return text.replace(/\s+/g, ' ').trim();
+  return text.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
 }
 
 // ─── quran.com fetch ───────────────────────────────────────────
 
 const QURAN_API_BASE = 'https://api.quran.com/api/v4';
-const SAHIH_INTERNATIONAL_ID = 131;
+const SAHIH_INTERNATIONAL_ID = 20; // Saheeh International (id 20), not 131
 
 export type CanonicalVerse = {
   audioKey: string;
@@ -63,16 +63,17 @@ type QuranApiVerse = {
 };
 
 async function fetchOneVerse(verseKey: string): Promise<QuranApiVerse> {
-  const url = `${QURAN_API_BASE}/verses/by_key/${verseKey}?translations=${SAHIH_INTERNATIONAL_ID}&fields=text_uthmani`;
+  // /verses/by_key returns {"verse": {...}} (singular), not {"verses": [...]}
+  const url = `${QURAN_API_BASE}/verses/by_key/${verseKey}?translations=${SAHIH_INTERNATIONAL_ID}&fields=text_uthmani,translations`;
   const response = await fetch(url, { headers: { Accept: 'application/json' } });
   if (!response.ok) {
     throw new Error(`quran.com fetch failed for ${verseKey}: ${response.status}`);
   }
-  const body = (await response.json()) as { verses: QuranApiVerse[] };
-  if (!body.verses?.[0]) {
+  const body = (await response.json()) as { verse?: QuranApiVerse };
+  if (!body.verse) {
     throw new Error(`quran.com returned no verse for ${verseKey}`);
   }
-  return body.verses[0];
+  return body.verse;
 }
 
 export async function fetchCanonicalVerse(parts: AudioKeyParts): Promise<CanonicalVerse> {
@@ -85,7 +86,8 @@ export async function fetchCanonicalVerse(parts: AudioKeyParts): Promise<Canonic
     arabicChunks.push(verse.text_uthmani);
     const english = verse.translations?.find((t) => t.resource_id === SAHIH_INTERNATIONAL_ID);
     if (!english) throw new Error(`Missing Sahih International for ${key}`);
-    englishChunks.push(english.text);
+    // Strip HTML footnote elements entirely (e.g. <sup foot_note=...>1</sup>) before storing
+    englishChunks.push(english.text.replace(/<sup[^>]*>[\s\S]*?<\/sup>/g, '').replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim());
   }
 
   const audioKey =
