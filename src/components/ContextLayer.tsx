@@ -1,83 +1,18 @@
-import React, { useMemo, useRef, useEffect } from 'react';
+import React, { useRef, useEffect } from 'react';
 import { StyleSheet, View, Text, Dimensions, Animated } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-const { height } = Dimensions.get('window');
 import Svg, { Path } from 'react-native-svg';
-import { Colors, Spacing, Typography, BorderRadius } from '../theme/DesignSystem';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { Colors, Spacing, Typography, BorderRadius } from '../theme/DesignSystem';
+import ArabicText from './ArabicText';
+import SourceChip from './SourceChip';
+import { ContextBlock, SourceCitation } from '../types';
+
+const { height } = Dimensions.get('window');
 
 interface ContextLayerProps {
-  attribution: string;
-  text: string;
-  source: string;
+  blocks: ContextBlock[];
   scrollY?: Animated.Value;
-}
-
-/**
- * Splits the tafsir text into two sections:
- * 1. "How to Understand This" - the scholarly explanation
- * 2. "Why It Matters" - the prophetic hadith / practical relevance
- */
-function splitIntoSections(text: string): { understand: string; matters: string } {
-  const splitPatterns = [
-    /\.\s+The Prophet\s+ﷺ\s+said:/,
-    /\.\s+The Prophet\s+ﷺ\s+would/,
-    /\.\s+The Prophet\s+ﷺ\s+used to/,
-    /\.\s+The Prophet\s+ﷺ\s+never/,
-    /\.\s+The Prophet\s+ﷺ\s+himself/,
-    /\.\s+The Prophet\s+ﷺ\s+was/,
-    /\.\s+Your\s/,
-    /\.\s+When you/,
-    /\.\s+Despair/,
-    /\.\s+Being an ally/,
-    /\.\s+No sadness/,
-    /\.\s+Even when/,
-  ];
-
-  for (const pattern of splitPatterns) {
-    const match = text.match(pattern);
-    if (match && match.index !== undefined) {
-      const splitIndex = match.index + 1;
-      return {
-        understand: text.substring(0, splitIndex).trim(),
-        matters: text.substring(splitIndex).trim(),
-      };
-    }
-  }
-
-  const sentences = text.split(/(?<=\.)\s+/);
-  if (sentences.length >= 4) {
-    const midpoint = Math.ceil(sentences.length * 0.6);
-    return {
-      understand: sentences.slice(0, midpoint).join(' ').trim(),
-      matters: sentences.slice(midpoint).join(' ').trim(),
-    };
-  }
-
-  return { understand: text, matters: '' };
-}
-
-/** Extracts a clean source label from the tafsir text */
-function extractSourceLabel(text: string, fallbackSource: string): string {
-  const match = text.match(/\[Tafsir\s+[^\]]+\]/);
-  if (match) return match[0].replace(/[[\]]/g, '');
-  if (fallbackSource && fallbackSource !== 'Quran') return fallbackSource;
-  return 'Islamic Scholarship';
-}
-
-/** Detect and extract a prophetic quote if present */
-function extractPropheticQuote(text: string): { before: string; quote: string; after: string } | null {
-  // Match "The Prophet ﷺ said: "..." patterns
-  const quoteMatch = text.match(
-    /The Prophet\s+ﷺ\s+said:\s*["""]([^"""]+)["""]/,
-  );
-  if (quoteMatch && quoteMatch.index !== undefined) {
-    const before = text.substring(0, quoteMatch.index).trim();
-    const quote = quoteMatch[1].trim();
-    const after = text.substring(quoteMatch.index + quoteMatch[0].length).trim();
-    return { before, quote, after };
-  }
-  return null;
 }
 
 /* ─── Decorative Quote Mark ─────────────────────────────────── */
@@ -92,66 +27,92 @@ function QuoteOrnament({ color }: { color: string }) {
   );
 }
 
-const ContextLayer: React.FC<ContextLayerProps> = ({ attribution, text, source, scrollY }) => {
-  const insets = useSafeAreaInsets();
-  const { understand, matters } = useMemo(() => splitIntoSections(text), [text]);
-  const sourceLabel = useMemo(() => extractSourceLabel(text, source), [text, source]);
-  const propheticQuote = useMemo(() => extractPropheticQuote(matters || text), [matters, text]);
+/* ─── Tafsir Block ──────────────────────────────────────────── */
+function TafsirSection({ text, source }: { text: string; source: SourceCitation }) {
+  return (
+    <View style={styles.section}>
+      <View style={styles.sectionHeader}>
+        <MaterialCommunityIcons name="book-open-variant" size={16} color={Colors.accent.secondary} />
+        <Text style={styles.sectionLabel}>Tafsir</Text>
+      </View>
+      <View style={styles.textCard}>
+        <Text style={styles.bodyText}>{text}</Text>
+      </View>
+      <View style={styles.chipRow}>
+        <SourceChip citation={source} />
+      </View>
+    </View>
+  );
+}
 
-  // Staggered fade-in for sections
-  const fadeAnim1 = useRef(new Animated.Value(0)).current;
-  const fadeAnim2 = useRef(new Animated.Value(0)).current;
-  const slideAnim1 = useRef(new Animated.Value(12)).current;
-  const slideAnim2 = useRef(new Animated.Value(12)).current;
+/* ─── Hadith Block ──────────────────────────────────────────── */
+function HadithSection({
+  text,
+  arabicText,
+  transliteration,
+  source,
+}: {
+  text: string;
+  arabicText?: string;
+  transliteration?: string;
+  source: SourceCitation;
+}) {
+  return (
+    <View style={styles.section}>
+      <View style={styles.sectionHeader}>
+        <MaterialCommunityIcons name="heart-outline" size={16} color={Colors.accent.warm} />
+        <Text style={[styles.sectionLabel, { color: Colors.accent.warm }]}>Prophetic Wisdom</Text>
+      </View>
+      <View style={styles.quoteCard}>
+        <View style={styles.quoteCardInner}>
+          <QuoteOrnament color={Colors.accent.secondary} />
+          {arabicText ? <ArabicText text={arabicText} style={styles.hadithArabic} /> : null}
+          {transliteration ? (
+            <Text style={styles.hadithTransliteration}>{transliteration}</Text>
+          ) : null}
+          <Text style={styles.quoteText}>{text}</Text>
+          <Text style={styles.quoteAttribution}>— Prophet Muhammad ﷺ</Text>
+        </View>
+      </View>
+      <View style={styles.chipRow}>
+        <SourceChip citation={source} />
+      </View>
+    </View>
+  );
+}
+
+/* ─── Story Block ───────────────────────────────────────────── */
+function StorySection({ text, citations }: { text: string; citations: SourceCitation[] }) {
+  return (
+    <View style={styles.section}>
+      <View style={styles.sectionHeader}>
+        <MaterialCommunityIcons name="star-four-points-outline" size={16} color={Colors.accent.primary} />
+        <Text style={[styles.sectionLabel, { color: Colors.accent.primary }]}>Story</Text>
+      </View>
+      <View style={styles.textCard}>
+        <Text style={styles.bodyText}>{text}</Text>
+      </View>
+      <View style={styles.chipRow}>
+        {citations.map((c, i) => (
+          <SourceChip key={`${c.url}-${i}`} citation={c} />
+        ))}
+      </View>
+    </View>
+  );
+}
+
+/* ─── ContextLayer ──────────────────────────────────────────── */
+const ContextLayer: React.FC<ContextLayerProps> = ({ blocks, scrollY }) => {
+  const insets = useSafeAreaInsets();
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+  const slideAnim = useRef(new Animated.Value(12)).current;
 
   useEffect(() => {
-    Animated.sequence([
-      Animated.parallel([
-        Animated.timing(fadeAnim1, { toValue: 1, duration: 500, useNativeDriver: true }),
-        Animated.timing(slideAnim1, { toValue: 0, duration: 500, useNativeDriver: true }),
-      ]),
-      Animated.parallel([
-        Animated.timing(fadeAnim2, { toValue: 1, duration: 500, useNativeDriver: true }),
-        Animated.timing(slideAnim2, { toValue: 0, duration: 500, useNativeDriver: true }),
-      ]),
+    Animated.parallel([
+      Animated.timing(fadeAnim, { toValue: 1, duration: 500, useNativeDriver: true }),
+      Animated.timing(slideAnim, { toValue: 0, duration: 500, useNativeDriver: true }),
     ]).start();
   }, []);
-
-  const cleanText = (t: string) =>
-    t
-      .replace(
-        /\s*\[(?:Tafsir[^\]]*|Sahih[^\]]*|At-Tirmidhi[^\]]*|Abu Dawud[^\]]*|Musnad[^\]]*|Ibn[^\]]*|An-Nasa[^\]]*|Al-[^\]]*)\]\s*/g,
-        ' ',
-      )
-      .trim();
-
-  // For the "matters" section, if we extracted a prophetic quote, render it specially
-  const renderMattersContent = () => {
-    if (!propheticQuote) {
-      return <Text style={styles.bodyText}>{cleanText(matters)}</Text>;
-    }
-
-    return (
-      <>
-        {propheticQuote.before ? (
-          <Text style={styles.bodyText}>{cleanText(propheticQuote.before)}</Text>
-        ) : null}
-
-        {/* Prophetic Quote Callout */}
-        <View style={styles.quoteCard}>
-          <View style={styles.quoteCardInner}>
-            <QuoteOrnament color={Colors.accent.secondary} />
-            <Text style={styles.quoteText}>{propheticQuote.quote}</Text>
-            <Text style={styles.quoteAttribution}>— Prophet Muhammad ﷺ</Text>
-          </View>
-        </View>
-
-        {propheticQuote.after ? (
-          <Text style={styles.bodyText}>{cleanText(propheticQuote.after)}</Text>
-        ) : null}
-      </>
-    );
-  };
 
   return (
     <View
@@ -172,58 +133,30 @@ const ContextLayer: React.FC<ContextLayerProps> = ({ attribution, text, source, 
         onScroll={
           scrollY
             ? Animated.event([{ nativeEvent: { contentOffset: { y: scrollY } } }], {
-              useNativeDriver: true,
-            })
+                useNativeDriver: true,
+              })
             : undefined
         }
       >
-        {/* Section 1: Scholarly Understanding */}
-        <Animated.View
-          style={[
-            styles.section,
-            { opacity: fadeAnim1, transform: [{ translateY: slideAnim1 }] },
-          ]}
-        >
-          <View style={styles.sectionHeader}>
-            <MaterialCommunityIcons name="book-open-variant" size={16} color={Colors.accent.secondary} />
-            <Text style={styles.sectionLabel}>
-              {attribution || 'Scholarly Context'}
-            </Text>
-          </View>
-
-          <View style={styles.textCard}>
-            <Text style={styles.bodyText}>{cleanText(understand)}</Text>
-          </View>
-        </Animated.View>
-
-        {/* Section 2: Why It Matters / Prophetic Wisdom */}
-        {matters.length > 0 && (
-          <Animated.View
-            style={[
-              styles.section,
-              { opacity: fadeAnim2, transform: [{ translateY: slideAnim2 }] },
-            ]}
-          >
-            <View style={styles.sectionHeader}>
-              <MaterialCommunityIcons name="heart-outline" size={16} color={Colors.accent.warm} />
-              <Text style={[styles.sectionLabel, { color: Colors.accent.warm }]}>
-                Why It Matters
-              </Text>
-            </View>
-
-            <View style={styles.textCard}>
-              {renderMattersContent()}
-            </View>
-          </Animated.View>
-        )}
-
-        {/* Source Attribution */}
-        <Animated.View style={[styles.sourceRow, { opacity: fadeAnim2 }]}>
-          <View style={styles.sourceLine} />
-          <View style={styles.sourceBadge}>
-            <MaterialCommunityIcons name="shield-check" size={13} color={Colors.accent.primary} />
-            <Text style={styles.sourceText}>{sourceLabel}</Text>
-          </View>
+        <Animated.View style={{ opacity: fadeAnim, transform: [{ translateY: slideAnim }] }}>
+          {blocks.map((block, i) => {
+            const key = `${block.kind}-${i}`;
+            if (block.kind === 'tafsir') {
+              return <TafsirSection key={key} text={block.text} source={block.source} />;
+            }
+            if (block.kind === 'hadith') {
+              return (
+                <HadithSection
+                  key={key}
+                  text={block.text}
+                  arabicText={block.arabicText}
+                  transliteration={block.transliteration}
+                  source={block.source}
+                />
+              );
+            }
+            return <StorySection key={key} text={block.text} citations={block.citations} />;
+          })}
         </Animated.View>
       </Animated.ScrollView>
     </View>
@@ -231,23 +164,11 @@ const ContextLayer: React.FC<ContextLayerProps> = ({ attribution, text, source, 
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    paddingHorizontal: 24,
-  },
-  scrollArea: {
-    flex: 1,
-  },
-  scrollContent: {
-    flexGrow: 1,
-    paddingBottom: Spacing.xxl,
-    paddingTop: Spacing.sm,
-  },
+  container: { flex: 1, paddingHorizontal: 24 },
+  scrollArea: { flex: 1 },
+  scrollContent: { flexGrow: 1, paddingBottom: Spacing.xxl, paddingTop: Spacing.sm },
 
-  /* ── Sections ── */
-  section: {
-    marginBottom: Spacing.xl,
-  },
+  section: { marginBottom: Spacing.xl },
   sectionHeader: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -263,7 +184,6 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
   },
 
-  /* ── Text Card ── */
   textCard: {
     backgroundColor: 'rgba(255, 235, 210, 0.04)',
     borderRadius: BorderRadius.lg,
@@ -279,18 +199,28 @@ const styles = StyleSheet.create({
     opacity: 0.9,
   },
 
-  /* ── Prophetic Quote Callout ── */
-  quoteCard: {
-    marginVertical: Spacing.lg,
-    borderRadius: BorderRadius.lg,
-    overflow: 'hidden',
-  },
+  quoteCard: { borderRadius: BorderRadius.lg, overflow: 'hidden' },
   quoteCardInner: {
     backgroundColor: 'rgba(212, 175, 55, 0.06)',
     borderLeftWidth: 3,
     borderLeftColor: Colors.accent.secondary,
     padding: Spacing.xl,
-    paddingLeft: Spacing.xl,
+  },
+  hadithArabic: {
+    fontSize: 20,
+    lineHeight: 38,
+    color: Colors.text.primary,
+    textAlign: 'center',
+    marginBottom: Spacing.md,
+  },
+  hadithTransliteration: {
+    fontFamily: Typography.fonts.serif,
+    fontSize: 13,
+    lineHeight: 20,
+    color: 'rgba(245, 237, 227, 0.55)',
+    textAlign: 'center',
+    fontStyle: 'italic',
+    marginBottom: Spacing.md,
   },
   quoteText: {
     fontFamily: Typography.fonts.serif,
@@ -310,28 +240,12 @@ const styles = StyleSheet.create({
     opacity: 0.7,
   },
 
-  /* ── Source ── */
-  sourceRow: {
-    marginTop: Spacing.md,
-    alignItems: 'flex-start',
-    gap: Spacing.md,
-  },
-  sourceLine: {
-    height: StyleSheet.hairlineWidth,
-    backgroundColor: 'rgba(245, 237, 227, 0.08)',
-    width: '100%',
-  },
-  sourceBadge: {
+  chipRow: {
     flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
+    flexWrap: 'wrap',
+    gap: Spacing.sm,
+    marginTop: Spacing.md,
     paddingLeft: 4,
-  },
-  sourceText: {
-    fontSize: 12,
-    color: 'rgba(245, 237, 227, 0.4)',
-    fontWeight: '600',
-    fontStyle: 'italic',
   },
 });
 

@@ -137,9 +137,20 @@ export const PathStepScreen: React.FC = () => {
       case 'context':
         return (
           <ContextLayer
-            attribution="Insightful Context"
-            text={guidanceExperience.angle.angle}
-            source={guidanceExperience.content.whyThis || 'Islamic Guidance'}
+            blocks={
+              guidanceExperience.angle.contextBlocks && guidanceExperience.angle.contextBlocks.length > 0
+                ? guidanceExperience.angle.contextBlocks
+                : [
+                    {
+                      kind: 'tafsir' as const,
+                      text: guidanceExperience.angle.angle,
+                      source: {
+                        label: guidanceExperience.content.whyThis || 'Islamic Guidance',
+                        url: '',
+                      },
+                    },
+                  ]
+            }
           />
         );
       case 'practice':
