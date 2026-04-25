@@ -23,6 +23,7 @@ interface ReflectionLayerProps {
   footerText?: string;
   requireText?: boolean;
   scrollY?: Animated.Value;
+  nextLayerLabel?: string;
 }
 
 const ReflectionLayer: React.FC<ReflectionLayerProps> = ({
@@ -32,6 +33,7 @@ const ReflectionLayer: React.FC<ReflectionLayerProps> = ({
   footerText = 'Your reflections are private and only you can see them.',
   requireText = true,
   scrollY,
+  nextLayerLabel,
 }) => {
   const insets = useSafeAreaInsets();
   const [reflection, setReflection] = useState('');

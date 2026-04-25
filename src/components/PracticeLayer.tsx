@@ -15,6 +15,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { HapticsService } from '../services/hapticsService';
 import { PracticeSourceType, HadithGrading, PracticeStepData } from '../types';
 import Icon, { IconName } from './Icon';
+import LayerBottomRail from './LayerBottomRail';
 
 export type { PracticeStepData }; // re-export for any existing imports
 
@@ -22,6 +23,7 @@ interface PracticeLayerProps {
   steps: PracticeStepData[];
   onCheckAll: () => void;
   scrollY?: Animated.Value;
+  nextLayerLabel?: string;
 }
 
 const TYPE_COLORS: Record<PracticeStepData['type'], string> = {
@@ -247,7 +249,7 @@ const PracticeStepCard = ({
 };
 
 // ─── Main Component ────────────────────────────────────────────
-const PracticeLayer: React.FC<PracticeLayerProps> = ({ steps, onCheckAll, scrollY }) => {
+const PracticeLayer: React.FC<PracticeLayerProps> = ({ steps, onCheckAll, scrollY, nextLayerLabel }) => {
   const insets = useSafeAreaInsets();
   const [checkedIndexes, setCheckedIndexes] = useState<Set<number>>(new Set());
   const [expandedIndex, setExpandedIndex] = useState<number | null>(0);
@@ -337,6 +339,11 @@ const PracticeLayer: React.FC<PracticeLayerProps> = ({ steps, onCheckAll, scroll
           </TouchableOpacity>
         )}
       </Animated.ScrollView>
+
+      <LayerBottomRail
+        nextLayerLabel={nextLayerLabel}
+        onNext={onCheckAll}
+      />
     </Animated.View>
   );
 };
