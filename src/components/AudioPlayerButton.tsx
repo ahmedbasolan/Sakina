@@ -120,37 +120,34 @@ function AudioPlayerButtonInternal({
     };
   }, [isPlaying]);
 
-  // Handle verse transition or finished playback
+  // Auto-advance through a verse range. When a source finishes:
+  //   - if there are more verses in the range, advance (the next useEffect plays them)
+  //   - otherwise reset to the first verse (ready for replay) and stay paused
   useEffect(() => {
-    if (status?.didJustFinish) {
-      if (currentVerseIndex < audioUrls.length - 1) {
-        // There are more verses in this range - advance to next
-        console.log(`AudioPlayerButton: Verse ${currentVerseIndex + 1} finished, playing next...`);
-        const nextIndex = currentVerseIndex + 1;
-        setCurrentVerseIndex(nextIndex);
-        // Replace the audio source with the next verse and play
-        player.replace({ uri: audioUrls[nextIndex] });
-        player.play();
-      } else {
-        // Finished the whole range
-        console.log('AudioPlayerButton: Range finished.');
-        player.seekTo(0);
-        player.pause();
-        setCurrentVerseIndex(0); // Reset for next play
-      }
+    if (!status?.didJustFinish) return;
+    if (currentVerseIndex < audioUrls.length - 1) {
+      setCurrentVerseIndex((prev) => prev + 1);
+    } else {
+      player.seekTo(0);
+      player.pause();
+      setCurrentVerseIndex(0);
     }
   }, [status?.didJustFinish]);
 
-  const handlePress = async () => {
+  // When currentVerseIndex changes mid-range (i.e. after auto-advance), start
+  // playback of the new source automatically.
+  useEffect(() => {
+    if (currentVerseIndex > 0) {
+      player.play();
+    }
+  }, [currentVerseIndex]);
+
+  const handlePress = () => {
     if (isLocked) return;
     try {
       if (isPlaying) {
         player.pause();
       } else {
-        // If we were at the end of a range, handlePress starts from first verse again
-        if (currentVerseIndex === 0 && (status?.currentTime || 0) > 0 && status?.didJustFinish) {
-          player.seekTo(0);
-        }
         player.play();
       }
     } catch (error) {
