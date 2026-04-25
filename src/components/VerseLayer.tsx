@@ -214,6 +214,7 @@ interface VerseLayerProps {
   onSave?: () => void;
   isSaved?: boolean;
   audioKey?: string;
+  nextLayerLabel?: string;
 }
 
 
@@ -231,6 +232,7 @@ const VerseLayer: React.FC<VerseLayerProps> = ({
   onSave,
   isSaved = false,
   audioKey,
+  nextLayerLabel,
 }) => {
   const insets = useSafeAreaInsets();
   const { surahName, verseRef } = useMemo(() => parseReference(reference), [reference]);
@@ -369,7 +371,7 @@ const VerseLayer: React.FC<VerseLayerProps> = ({
         {/* Center: swipe up hint */}
         <Animated.View style={[styles.swipeHintCenter, { opacity: swipeHintOpacity }]}>
           <Ionicons name="chevron-up" size={18} color={'rgba(245, 237, 227, 0.3)'} />
-          <Text style={styles.swipeHintText}>Explore</Text>
+          <Text style={styles.swipeHintText}>{nextLayerLabel || 'Explore'}</Text>
         </Animated.View>
 
         {/* Right FAB: next verse */}

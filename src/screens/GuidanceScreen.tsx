@@ -5,17 +5,19 @@ import {
   Text,
   ActivityIndicator,
   StatusBar,
-  TouchableOpacity,
   Animated,
 } from 'react-native';
 import ImmersiveBackground from '../components/ImmersiveBackground';
 import GuidanceHeader from '../components/GuidanceHeader';
 import VerseLayer from '../components/VerseLayer';
-import FloatingActionRow from '../components/FloatingActionRow';
+import ContextLayer from '../components/ContextLayer';
+import PracticeLayer from '../components/PracticeLayer';
+import ReflectionLayer from '../components/ReflectionLayer';
 import ShareSheet from '../components/ShareSheet';
 import DisplayPreferencesModal from '../components/DisplayPreferencesModal';
 import LayerContainer from '../components/LayerContainer';
 import { useGuidanceLogic } from '../hooks/useGuidanceLogic';
+import { buildLayerConfig, nextLayerLabelFor, parsePracticeSteps } from '../hooks/useLayerConfig';
 import { Colors, Spacing, Typography, MoodColors } from '../theme/DesignSystem';
 import { logServiceError } from '../services/errorLoggingService';
 
@@ -60,11 +62,17 @@ const GuidanceScreen: React.FC = () => {
   const [isPrefsModalVisible, setIsPrefsModalVisible] = useState(false);
   const scrollY = useRef(new Animated.Value(0)).current;
   const [currentLayer, setCurrentLayer] = useState(0);
-  const totalLayers = 1; // verse only
 
-  const LAYER_TYPES: Array<'verse'> = [
-    'verse',
-  ];
+  const layers = React.useMemo(
+    () => experience ? buildLayerConfig(experience) : ['verse' as const],
+    [experience],
+  );
+  const totalLayers = layers.length;
+  const nextLayerLabel = nextLayerLabelFor(layers, currentLayer);
+  const practiceSteps = React.useMemo(
+    () => parsePracticeSteps(experience?.angle?.practiceSteps),
+    [experience?.angle?.practiceSteps],
+  );
 
   const {
     savedStates,
@@ -75,7 +83,7 @@ const GuidanceScreen: React.FC = () => {
     handleShare,
     preferences,
     updatePreference,
-  } = useGuidanceLogic(experience, mood, onNext, onSaveReflection, () => { }, 1);
+  } = useGuidanceLogic(experience, mood, onNext, onSaveReflection, () => { }, totalLayers);
 
   if (!experience) {
     return (
@@ -114,7 +122,7 @@ const GuidanceScreen: React.FC = () => {
             }
           }}
         >
-        {currentLayer === 0 && (
+        {layers[currentLayer] === 'verse' && (
           <VerseLayer
             arabic={experience.content.arabicText || ''}
             translation={experience.content.translation || experience.content.englishTranslation}
@@ -133,6 +141,28 @@ const GuidanceScreen: React.FC = () => {
             onSave={() => handleSave(0)}
             isSaved={!!savedStates[0]}
             audioKey={experience.content.audioKey}
+            nextLayerLabel={nextLayerLabel}
+          />
+        )}
+        {layers[currentLayer] === 'context' && experience.angle.contextBlocks && (
+          <ContextLayer blocks={experience.angle.contextBlocks} scrollY={scrollY} />
+        )}
+        {layers[currentLayer] === 'practice' && (
+          <PracticeLayer
+            steps={practiceSteps}
+            onCheckAll={() => setCurrentLayer(currentLayer + 1)}
+            scrollY={scrollY}
+          />
+        )}
+        {layers[currentLayer] === 'reflection' && experience.angle.reflection && (
+          <ReflectionLayer
+            prompt={experience.angle.reflection}
+            onComplete={(reflection) => {
+              onSaveReflection(reflection);
+              onNext();
+              setCurrentLayer(0);
+            }}
+            scrollY={scrollY}
           />
         )}
       </LayerContainer>
@@ -151,18 +181,6 @@ const GuidanceScreen: React.FC = () => {
         />
       </View>
 
-      {currentLayer !== 0 && (
-        <View style={styles.floatingFooter} pointerEvents="box-none">
-          <FloatingActionRow
-            layerType={LAYER_TYPES[currentLayer] || 'verse'}
-            onShare={handleShareVerse}
-            onSave={() => handleSave(0)}
-            isSaved={!!savedStates[0]}
-            audioKey={experience.content.audioKey}
-            onSaveReflection={() => {}}
-          />
-        </View>
-      )}
 
       <ShareSheet
         isVisible={isShareSheetVisible}
