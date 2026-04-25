@@ -2248,6 +2248,25 @@ const quranContentAnglesData: ContentAngle[] = [
     id: 'q_angle_93_4_anxious',
     contentId: 'quran_93_4',
     mood: 'Overwhelmed',
+    contextBlocks: [
+      {
+        kind: 'tafsir',
+        text: "As-Sa'di explains that this verse was revealed during a painful silence in revelation — a gap that left the Prophet ﷺ fearing he had been abandoned. Allah responds not with a command but with a promise: your future is better than your present. The Hereafter holds a gift so vast it will make you forget every difficulty of this world. For anyone overwhelmed today, this verse is a divine declaration that the pressure you carry now is nothing compared to what is being prepared for you.",
+        source: {
+          label: "Tafsir As-Sa'di",
+          url: 'https://quran.com/93/4/tafsirs/91',
+        },
+      },
+      {
+        kind: 'hadith',
+        text: '"How wonderful is the affair of the believer, for his affairs are all good, and this applies to no one but the believer. If something good happens to him, he is thankful for it and that is good for him. If something bad happens to him, he bears it with patience and that is good for him."',
+        source: {
+          label: 'Sahih Muslim 2999',
+          url: 'https://sunnah.com/muslim:2999',
+          grading: 'sahih',
+        },
+      },
+    ],
     angle:
       'The scholars note that this verse was revealed to the Prophet ﷺ during a period of silence from revelation, reassuring him that his Lord had not forsaken him—symbolizing hope for every believer in times of spiritual dry spells.',
     action: "Pray two rak'ahs of prayer and ask Allah for ease in your situation.",
@@ -2295,6 +2314,25 @@ const quranContentAnglesData: ContentAngle[] = [
     id: 'q_angle_2_286_anxious',
     contentId: 'quran_2_286',
     mood: 'Overwhelmed',
+    contextBlocks: [
+      {
+        kind: 'tafsir',
+        text: "As-Sa'di explains that Allah places a divine cap on every burden He tests a soul with. The soul is never loaded beyond what it was created to carry. This is not a vague hope — it is a cosmic law. Whatever weight you are carrying right now, Allah has already guaranteed your soul is strong enough to bear it. The verse ends with a series of duas that Allah Himself taught us to ask — an invitation to unburden the heart in conversation with the One who set the limit.",
+        source: {
+          label: "Tafsir As-Sa'di",
+          url: 'https://quran.com/2/286/tafsirs/91',
+        },
+      },
+      {
+        kind: 'hadith',
+        text: '"The closest a servant is to his Lord is when he is in prostration, so increase your supplication therein."',
+        source: {
+          label: 'Sahih Muslim 482',
+          url: 'https://sunnah.com/muslim:482',
+          grading: 'sahih',
+        },
+      },
+    ],
     angle:
       'The Prophet ﷺ said: "Allah does not burden a soul beyond its capacity" is among the most beloved verses to the believers. This verse ends with a powerful dua the Prophet ﷺ taught us to make. [Source: Sahih Muslim 126]',
     action: 'Recite the last two verses of Al-Baqarah before sleep as protection.',
@@ -2343,6 +2381,25 @@ const quranContentAnglesData: ContentAngle[] = [
     id: 'q_angle_65_3_anxious',
     contentId: 'quran_65_3',
     mood: 'Overwhelmed',
+    contextBlocks: [
+      {
+        kind: 'tafsir',
+        text: "As-Sa'di explains that whoever truly places their reliance on Allah — not just in words but with the heart — Allah becomes their complete sufficiency. The word 'hasbuh' (He suffices him) is comprehensive: Allah handles what the believer cannot control, provides from where the believer cannot see, and resolves what the believer cannot solve. Overwhelm shrinks when you realise the outcome was never yours to carry.",
+        source: {
+          label: "Tafsir As-Sa'di",
+          url: 'https://quran.com/65/3/tafsirs/91',
+        },
+      },
+      {
+        kind: 'hadith',
+        text: '"If you were to rely upon Allah with the reliance He is due, He would provide for you just as He provides for the birds: they go out hungry in the morning and return full in the evening."',
+        source: {
+          label: 'Sunan at-Tirmidhi 2344',
+          url: 'https://sunnah.com/tirmidhi:2344',
+          grading: 'sahih',
+        },
+      },
+    ],
     angle:
       'The Prophet ﷺ said: "If you were to rely upon Allah with the reliance He is due, He would provide for you just as He provides for the birds; they go out hungry in the morning and return full in the evening." [At-Tirmidhi 2344]',
     action:
@@ -2391,6 +2448,16 @@ const quranContentAnglesData: ContentAngle[] = [
     id: 'q_angle_53_39_anxious',
     contentId: 'quran_53_39',
     mood: 'Overwhelmed',
+    contextBlocks: [
+      {
+        kind: 'tafsir',
+        text: "As-Sa'di explains that this verse draws a precise boundary: human beings will only see the fruit of their own sincere striving, not the efforts of others. This is both a comfort and a clarification. When you feel overwhelmed by results beyond your control, this verse redirects you to what actually matters — your honest effort. The outcome belongs to Allah; the effort belongs to you. Focusing only on what is yours removes the unbearable weight of what is not.",
+        source: {
+          label: "Tafsir As-Sa'di",
+          url: 'https://quran.com/53/39/tafsirs/91',
+        },
+      },
+    ],
     angle:
       'Scholars of Tafsir explain that this verse focuses the believer on their sincere effort, which is within their control, rather than the results, which are with Allah. He sees every small step you take. [Tafsir al-Qurtubi]',
     action: 'Renew your intention (Niyyah) for your current task to be purely for Allah.',
@@ -2438,6 +2505,25 @@ const quranContentAnglesData: ContentAngle[] = [
     id: 'q_angle_26_80_anxious',
     contentId: 'quran_26_80',
     mood: 'Overwhelmed',
+    contextBlocks: [
+      {
+        kind: 'tafsir',
+        text: "As-Sa'di explains that Ibrahim AS attributed his illness to himself — using the phrase 'when I am ill' — but attributed healing entirely to Allah. This is perfect Quranic etiquette: acknowledging your weakness while affirming that the cure rests solely with Allah. In moments of emotional, physical, or spiritual overwhelm, the believer's path is not to find their own solution but to turn to Ash-Shafi, the Healer of all that is broken.",
+        source: {
+          label: "Tafsir As-Sa'di",
+          url: 'https://quran.com/26/80/tafsirs/91',
+        },
+      },
+      {
+        kind: 'hadith',
+        text: '"No fatigue, nor disease, nor anxiety, nor sadness, nor harm, nor distress befalls a Muslim — even the prick of a thorn — except that Allah expiates some of his sins for it."',
+        source: {
+          label: 'Sahih Bukhari 5641',
+          url: 'https://sunnah.com/bukhari:5641',
+          grading: 'sahih',
+        },
+      },
+    ],
     angle:
       'Prophet Ibrahim (as) stated this with absolute certainty. The Prophet ﷺ used to make dua: "Remove the harm, O Lord of mankind, and heal, for You are the Healer (Ash-Shafi). There is no healing but Yours." [Sahih Bukhari 5743]',
     action: 'Focus on your well-being by reciting this prophetic dua for yourself.',
@@ -2493,6 +2579,23 @@ const quranContentAnglesData: ContentAngle[] = [
     id: 'q_angle_3_173_anxious',
     contentId: 'quran_3_173',
     mood: 'Overwhelmed',
+    contextBlocks: [
+      {
+        kind: 'tafsir',
+        text: "As-Sa'di explains that this phrase — Hasbunallahu wa ni'mal-wakil — is the summit of trust in Allah. Ibn Abbas reported that both Ibrahim AS said it when cast into the fire and the Prophet ﷺ said it when warned that armies had massed against him. In both cases, Allah converted the threat into safety. As-Sa'di notes that the phrase contains two components: declaring Allah sufficient (Hasbuna) and entrusting all management to Him (ni'mal-wakil). For the overwhelmed believer, it is not a passive resignation but an active handover.",
+        source: {
+          label: "Tafsir As-Sa'di",
+          url: 'https://quran.com/3/173/tafsirs/91',
+        },
+      },
+      {
+        kind: 'story',
+        text: "When the Prophet ﷺ and his companions were warned at the Battle of Uhud that the enemy forces had regrouped to attack, rather than retreating in fear, they responded: 'Hasbunallahu wa ni\'mal-wakil.' Their trust in Allah was so complete that, as Allah says, 'they returned with favour from Allah and bounty, no harm having touched them.' The same phrase used by Ibrahim AS in the fire was the shield of the believers on the battlefield.",
+        citations: [
+          { label: 'Surah Ali Imran 3:173-174', url: 'https://quran.com/3/173' },
+        ],
+      },
+    ],
     angle:
       'Ibn Abbas said this phrase was used by Ibrahim (as) when thrown into the fire, and by the Prophet ﷺ during hardship. It is the ultimate statement of reliance in times of peak pressure. [Sahih Bukhari 4563]',
     action: 'Recite "Hasbunallahu wa ni\'mal-wakil" whenever you feel overwhelmed.',
@@ -2542,6 +2645,16 @@ const quranContentAnglesData: ContentAngle[] = [
     id: 'q_angle_2_257_anxious',
     contentId: 'quran_2_257',
     mood: 'Overwhelmed',
+    contextBlocks: [
+      {
+        kind: 'tafsir',
+        text: "As-Sa'di explains that the word 'Wali' in this verse describes Allah's active guardianship — He does not merely observe the believer's struggle, He intervenes in it. The movement described is from 'darknesses' (plural) to 'light' (singular): multiple forms of confusion, fear, and overwhelm are all resolved in one divine clarity. As-Sa'di notes that this promise is especially relevant for believers drowning in anxious thoughts, because Allah's guardianship leads them out of every kind of darkness.",
+        source: {
+          label: "Tafsir As-Sa'di",
+          url: 'https://quran.com/2/257/tafsirs/91',
+        },
+      },
+    ],
     angle:
       'Scholars explain that Allah as the "Wali" (Protector) actively guides the believer out of the darkness of confusion and worry into the light of certainty and peace. [Tafsir al-Qurtubi]',
     action: 'Identify a "darkness" of worry and ask Allah to lead you to the light of clarity.',
@@ -2590,6 +2703,25 @@ const quranContentAnglesData: ContentAngle[] = [
     id: 'q_angle_8_40_anxious',
     contentId: 'quran_8_40',
     mood: 'Overwhelmed',
+    contextBlocks: [
+      {
+        kind: 'tafsir',
+        text: "As-Sa'di explains that 'ni'ma al-Mawla wa ni'ma al-Nasir' — Excellent is the Protector and Excellent is the Helper — are two divine attributes invoked together to assure the believer. The Mawla guards you from threat; the Nasir aids you in action. When every human support seems to fail, the One who holds both titles has never wavered. This verse was revealed in the context of a battle where the believers were vastly outnumbered, reminding them that the quality of their Protector matters more than the quantity of their enemies.",
+        source: {
+          label: "Tafsir As-Sa'di",
+          url: 'https://quran.com/8/40/tafsirs/91',
+        },
+      },
+      {
+        kind: 'hadith',
+        text: '"How wonderful is the affair of the believer, for his affairs are all good, and this applies to no one but the believer. If something good happens to him, he is thankful for it and that is good for him. If something bad happens to him, he bears it with patience and that is good for him."',
+        source: {
+          label: 'Sahih Muslim 2999',
+          url: 'https://sunnah.com/muslim:2999',
+          grading: 'sahih',
+        },
+      },
+    ],
     angle:
       'Ibn Kathir explains that "ni\'ma al-Mawla wa ni\'ma al-Nasir" (Excellent is the Protector and Excellent is the Helper) means that Allah is the best of those who protect and the best of those who aid. When all people turn away, Allah remains your Guardian (Mawla). The Prophet ﷺ said on the day of Uhud: "Allah is sufficient for us and He is the best Disposer of affairs." This verse assures the believer that divine protection surpasses all worldly support. [Tafsir Ibn Kathir]',
     angleSource: 'Tafsir Ibn Kathir',
@@ -2640,6 +2772,16 @@ const quranContentAnglesData: ContentAngle[] = [
     id: 'q_angle_5_23_anxious',
     contentId: 'quran_5_23',
     mood: 'Overwhelmed',
+    contextBlocks: [
+      {
+        kind: 'tafsir',
+        text: "As-Sa'di explains that this verse models the correct combination of action and trust: the two righteous men urged the people to 'enter the gate' — take the concrete first step — and simultaneously declared reliance on Allah. True tawakkul is not waiting in place for outcomes to fall from the sky; it is moving forward while your heart rests entirely on Allah. Overwhelm often comes from trying to do both jobs — effort and outcome — at once. This verse liberates you to own only the effort.",
+        source: {
+          label: "Tafsir As-Sa'di",
+          url: 'https://quran.com/5/23/tafsirs/91',
+        },
+      },
+    ],
     angle:
       'Ibn Kathir narrates that two righteous men, Yusha ibn Nun and Kalib ibn Yufanna, urged the Israelites to trust Allah and take action. They said: "Enter upon them through the gate"—meaning take the first step—"and upon Allah put your trust if you are believers." This verse teaches that tawakkul (reliance on Allah) is not passivity; it is taking courageous action while trusting Allah with the outcome. True faith demands both effort and trust. [Tafsir Ibn Kathir]',
     angleSource: 'Tafsir Ibn Kathir',
@@ -2683,6 +2825,16 @@ const quranContentAnglesData: ContentAngle[] = [
     id: 'q_angle_14_12_anxious',
     contentId: 'quran_14_12',
     mood: 'Overwhelmed',
+    contextBlocks: [
+      {
+        kind: 'tafsir',
+        text: "As-Sa'di explains that the Prophets and Messengers declared their reliance on Allah using a logical argument: He already guided us — so why would He now abandon us? Past guidance is proof of continuing care. The believers' statement, 'we will bear with patience whatever harm you do us,' was not resignation but confidence — they had already experienced Allah's faithfulness and could rely on it in the future. For anyone overwhelmed, your personal history of being carried through hardship is evidence that you will be carried through this one too.",
+        source: {
+          label: "Tafsir As-Sa'di",
+          url: 'https://quran.com/14/12/tafsirs/91',
+        },
+      },
+    ],
     angle:
       'The Prophets and Messengers declared: "Why should we not rely upon Allah when He has already guided us to our ways?" Imam al-Qurtubi explains that their argument was logical: the One who guided you through past confusion will not abandon you now. Past guidance is proof of future care. The Prophet ﷺ said: "Know Allah in prosperity and He will know you in adversity." Your history with Allah is evidence that He will see you through again. [Tafsir al-Qurtubi]',
     angleSource: 'Tafsir al-Qurtubi',
@@ -2730,6 +2882,16 @@ const quranContentAnglesData: ContentAngle[] = [
     id: 'q_angle_8_2_anxious',
     contentId: 'quran_8_2',
     mood: 'Overwhelmed',
+    contextBlocks: [
+      {
+        kind: 'tafsir',
+        text: "As-Sa'di explains that the true believers are identified by three living signs: their hearts tremble at Allah's name, their faith increases with every verse they hear, and they place total reliance on their Lord. Faith is not static — it breathes and grows with each encounter with the Quran. As-Sa'di notes that trembling at the mention of Allah is not fear but awe mixed with love, and this very sensitivity is what opens the heart to divine support during overwhelming times.",
+        source: {
+          label: "Tafsir As-Sa'di",
+          url: 'https://quran.com/8/2/tafsirs/91',
+        },
+      },
+    ],
     angle:
       'Ibn Kathir explains that true believers are described by three qualities: their hearts tremble when Allah is mentioned, their faith increases when His verses are recited, and they rely fully upon their Lord. Imam al-Sa\'di adds that faith is not static—it grows with every act of remembrance and recitation. The Prophet ﷺ said: "Faith wears out in the heart as a garment wears out, so ask Allah to renew faith in your hearts." [Tafsir Ibn Kathir, al-Sa\'di]',
     angleSource: 'Tafsir Ibn Kathir',
@@ -2774,6 +2936,16 @@ const quranContentAnglesData: ContentAngle[] = [
     id: 'q_angle_67_29_anxious',
     contentId: 'quran_67_29',
     mood: 'Overwhelmed',
+    contextBlocks: [
+      {
+        kind: 'tafsir',
+        text: "As-Sa'di explains that this verse commands the Prophet ﷺ to declare belief in Ar-Rahman — the Most Merciful — and to place all reliance upon Him. The pairing of infinite mercy with tawakkul is deliberate: you are not trusting a distant force but a Being whose defining attribute is compassion. As-Sa'di notes that when you combine genuine belief in Allah's mercy with genuine reliance on Him, the result is a tranquility that worldly anxiety cannot penetrate.",
+        source: {
+          label: "Tafsir As-Sa'di",
+          url: 'https://quran.com/67/29/tafsirs/91',
+        },
+      },
+    ],
     angle:
       'This verse commands the Prophet ﷺ to declare: "He is the Most Merciful (Ar-Rahman); we have believed in Him, and upon Him we have relied." Ibn Kathir explains the pairing of Ar-Rahman with tawakkul: you are placing your trust not in a distant power, but in the One whose very name means infinite mercy and compassion. Al-Sa\'di notes that combining belief and reliance in the Most Merciful produces a tranquility that no worldly worry can shake. [Tafsir Ibn Kathir, Tafsir al-Sa\'di]',
     angleSource: 'Tafsir Ibn Kathir',
@@ -2820,6 +2992,16 @@ const quranContentAnglesData: ContentAngle[] = [
     id: 'q_angle_25_58_anxious',
     contentId: 'quran_25_58',
     mood: 'Overwhelmed',
+    contextBlocks: [
+      {
+        kind: 'tafsir',
+        text: "As-Sa'di explains that Allah commands the Prophet ﷺ to place trust in Al-Hayy — the Ever-Living — specifically because every other support will eventually perish. People leave, health fails, and wealth disappears, but Al-Hayy Al-Qayyum never sleeps and never ends. The command to glorify and praise Him alongside this instruction ties remembrance of Allah to relief from overwhelm: the tongue engaged in His praise keeps the heart anchored to the only security that is guaranteed.",
+        source: {
+          label: "Tafsir As-Sa'di",
+          url: 'https://quran.com/25/58/tafsirs/91',
+        },
+      },
+    ],
     angle:
       'Allah commands: "Put your trust in the Ever-Living (Al-Hayy) who does not die." Ibn Kathir explains that every other support will eventually perish, but Allah is Al-Hayy Al-Qayyum—the Ever-Living, the Self-Sustaining. Imam al-Sa\'di adds: people, wealth, and health are temporary supports that fail, but the One who never dies never fails those who rely upon Him. This is why the Prophet ﷺ would say: "O Ever-Living, O Sustainer, by Your mercy I seek help." [Tafsir Ibn Kathir]',
     angleSource: 'Tafsir Ibn Kathir',
@@ -2864,6 +3046,23 @@ const quranContentAnglesData: ContentAngle[] = [
     id: 'q_angle_12_90_anxious',
     contentId: 'quran_12_90',
     mood: 'Overwhelmed',
+    contextBlocks: [
+      {
+        kind: 'tafsir',
+        text: "As-Sa'di explains that Yusuf AS spoke these words after decades of betrayal, slavery, false accusation, and imprisonment — and from the position of victory. The verse is living proof embedded in the Quran: taqwa (God-consciousness) paired with sabr (patient endurance) is an unbreakable formula. Allah does not waste a single moment of genuine patient striving. As-Sa'di emphasises that 'does not allow the reward to be lost' is an absolute divine promise, not a possibility.",
+        source: {
+          label: "Tafsir As-Sa'di",
+          url: 'https://quran.com/12/90/tafsirs/91',
+        },
+      },
+      {
+        kind: 'story',
+        text: 'Yusuf AS was thrown into a well by his own brothers, sold into slavery, and then imprisoned on a false accusation — each trial harder than the last. At no point did he lose his trust in Allah or abandon his character. When he finally stood before his brothers in a position of power, his first declaration was not about vengeance but about divine wisdom: "Whoever fears Allah and is patient — indeed, Allah does not allow the reward of those who do good to be lost." Every year of his suffering was preparation for the position Allah had written for him.',
+        citations: [
+          { label: 'Surah Yusuf 12:90', url: 'https://quran.com/12/90' },
+        ],
+      },
+    ],
     angle:
       'When Prophet Yusuf (AS) was finally reunited with his brothers after years of separation, he declared: "Whoever fears Allah and is patient—indeed, Allah does not allow the reward of those who do good to be lost." Ibn Kathir explains that Yusuf\'s story is living proof: decades of unjust imprisonment, betrayal, and exile were all redeemed. Al-Qurtubi adds that "taqwa" (God-consciousness) paired with "sabr" (patience) is the winning formula—no good deed done with these two qualities is ever wasted. [Tafsir Ibn Kathir]',
     angleSource: 'Tafsir Ibn Kathir',
@@ -2910,6 +3109,16 @@ const quranContentAnglesData: ContentAngle[] = [
     id: 'q_angle_8_46_anxious',
     contentId: 'quran_8_46',
     mood: 'Overwhelmed',
+    contextBlocks: [
+      {
+        kind: 'tafsir',
+        text: "As-Sa'di explains that 'Allah is with the patient' (inna Allaha ma'as-sabirin) describes a special divine companionship that is distinct from His general knowledge of all creation. This 'ma'iyyah' (with-ness) of Allah for the patient means He strengthens them, guides their steps, and grants them victory. As-Sa'di notes that the verse appears in the context of a battlefield command, showing that patience under pressure — whether on a battlefield or in daily overwhelm — activates this special divine presence.",
+        source: {
+          label: "Tafsir As-Sa'di",
+          url: 'https://quran.com/8/46/tafsirs/91',
+        },
+      },
+    ],
     angle:
       'Allah says: "Obey Allah and His Messenger, and do not dispute... and be patient. Indeed, Allah is with the patient." Ibn Kathir explains that this "with-ness" (ma\'iyyah) is a special divine companionship—Allah\'s support, aid, and guidance. Al-Sa\'di distinguishes between Allah\'s general knowledge of all creation and His special presence with the patient: He strengthens them, guides them, and grants them victory. The Prophet ﷺ said to Ibn Abbas: "Know that if the whole nation were to benefit you, they could not benefit you except with what Allah has written for you." [Tafsir al-Sa\'di]',
     angleSource: "Tafsir al-Sa'di",
@@ -2953,6 +3162,25 @@ const quranContentAnglesData: ContentAngle[] = [
     id: 'q_angle_10_62_anxious',
     contentId: 'quran_10_62',
     mood: 'Overwhelmed',
+    contextBlocks: [
+      {
+        kind: 'tafsir',
+        text: "As-Sa'di explains that the awliya — the allies of Allah — are defined in the very next verse as those who believe and maintain taqwa. Their freedom from fear covers the future (no fear of what is to come) and their freedom from grief covers the past (no grief over what has gone). This is total emotional liberation. As-Sa'di notes that the path to becoming an ally of Allah is not reserved for the spiritually elite — it is open to any believer who turns sincerely to Him.",
+        source: {
+          label: "Tafsir As-Sa'di",
+          url: 'https://quran.com/10/62/tafsirs/91',
+        },
+      },
+      {
+        kind: 'hadith',
+        text: '"Allah said: Whoever shows enmity to a wali of Mine, I declare war against him. My servant does not draw near to Me with anything more beloved to Me than what I have made obligatory upon him."',
+        source: {
+          label: 'Sahih Bukhari 6502',
+          url: 'https://sunnah.com/bukhari:6502',
+          grading: 'sahih',
+        },
+      },
+    ],
     angle:
       'Allah declares: "Unquestionably, the allies (awliya) of Allah—no fear will there be concerning them, nor will they grieve." Ibn Kathir defines the awliya as those who believe and have taqwa (God-consciousness). Al-Qurtubi explains that the promise of "no fear" refers to the future (the Hereafter), while "no grief" refers to what they left behind in this world. The Prophet ﷺ said: "Allah said: Whoever shows enmity to a wali of Mine, I declare war against him." Being an ally of Allah is the ultimate security. [Tafsir Ibn Kathir, Sahih Bukhari 6502]',
     angleSource: 'Tafsir Ibn Kathir',
@@ -5024,6 +5252,23 @@ const quranContentAnglesData: ContentAngle[] = [
     id: 'q_angle_20_25_stressed_angle',
     contentId: 'quran_20_25',
     mood: 'Overwhelmed',
+    contextBlocks: [
+      {
+        kind: 'tafsir',
+        text: "As-Sa'di explains that 'sharh al-sadr' — the expansion of the chest — is a divine gift that removes constriction, fear, and anxiety from the heart and replaces it with light, openness, and capacity. Musa AS made this dua before his most daunting task: confronting Pharaoh. As-Sa'di notes that Allah also granted this expansion to the Prophet ﷺ (Surah 94:1), confirming that asking for internal spaciousness before a hard task is a prayer Allah loves to answer. The formula is not reducing your problems — it is expanding your capacity to carry them.",
+        source: {
+          label: "Tafsir As-Sa'di",
+          url: 'https://quran.com/20/25/tafsirs/91',
+        },
+      },
+      {
+        kind: 'story',
+        text: "Musa AS was standing at the edge of the most terrifying assignment any human had received — walk alone into Pharaoh's palace and demand the release of his people. Before taking a single step, he turned to Allah and made this dua: expand my chest, ease my task. He did not ask to avoid the hard thing; he asked for the inner capacity to face it. Allah granted the expansion, and Musa walked in. The same dua is available to you before every overwhelming moment.",
+        citations: [
+          { label: 'Surah Ta-Ha 20:25-28', url: 'https://quran.com/20/25' },
+        ],
+      },
+    ],
     angle:
       'Musa (AS) made this dua before his most daunting task—confronting Pharaoh. Ibn Kathir explains that "sharh al-sadr" (expansion of the chest) means removing anxiety, fear, and constriction from the heart, replacing them with confidence, clarity, and divine light. Al-Sa\'di adds that the Prophet ﷺ was also granted this expansion: "Have We not expanded for you your breast?" [94:1]—showing that Allah answers this dua for those who carry heavy burdens. The Prophet ﷺ said: "Whoever Allah wishes good for, He gives him understanding of the religion." [Sahih Bukhari 71] Understanding brings expansion. [Tafsir Ibn Kathir]',
     angleSource: 'Tafsir Ibn Kathir',
@@ -5066,6 +5311,25 @@ const quranContentAnglesData: ContentAngle[] = [
     id: 'q_angle_40_44_stressed_angle',
     contentId: 'quran_40_44',
     mood: 'Overwhelmed',
+    contextBlocks: [
+      {
+        kind: 'tafsir',
+        text: "As-Sa'di explains that tafwid — entrusting your affair to Allah — is the highest form of tawakkul. The believing man of Pharaoh's court demonstrated this in the most dangerous environment imaginable: surrounded by tyrants who wanted him dead, he simply declared 'I entrust my affair to Allah.' The result was immediate: 'So Allah protected him from the evils they plotted.' As-Sa'di notes that entrusting releases the impossible weight of trying to control what belongs to Allah — the outcome — and activates divine protection in its place.",
+        source: {
+          label: "Tafsir As-Sa'di",
+          url: 'https://quran.com/40/44/tafsirs/91',
+        },
+      },
+      {
+        kind: 'hadith',
+        text: '"If you were to rely upon Allah with the reliance He is due, He would provide for you just as He provides for the birds: they go out hungry in the morning and return full in the evening."',
+        source: {
+          label: 'Sunan at-Tirmidhi 2344',
+          url: 'https://sunnah.com/tirmidhi:2344',
+          grading: 'sahih',
+        },
+      },
+    ],
     angle:
       'The believer mentioned in Surah Ghafir said: "I entrust my affair to Allah. Indeed, Allah is Seeing of His servants." Ibn Kathir explains that this man was a secret believer among Pharaoh\'s people who, after speaking truth to power, placed his entire outcome in Allah\'s hands. Al-Sa\'di adds that "tafwid" (entrusting one\'s affair to Allah) is the ultimate act of tawakkul—releasing the weight of "how will this work out?" by trusting the One who sees all outcomes before they unfold. The result? "So Allah protected him from the evils they plotted." [40:45] Entrusting brings divine protection. [Tafsir al-Sa\'di]',
     angleSource: "Tafsir al-Sa'di",
@@ -5109,6 +5373,16 @@ const quranContentAnglesData: ContentAngle[] = [
     id: 'q_angle_2_153_stressed',
     contentId: 'quran_2_153',
     mood: 'Overwhelmed',
+    contextBlocks: [
+      {
+        kind: 'tafsir',
+        text: "As-Sa'di explains that Allah prescribes two specific tools for difficulty — sabr (patient endurance) and salah (prayer) — and places them together because they reinforce each other. Patience creates the stillness needed to pray sincerely; prayer renews the strength to keep being patient. As-Sa'di notes that the verse qualifies 'difficult except for the humbly submissive,' meaning those whose hearts are already inclined toward Allah find prayer a relief rather than a burden. The companions would rush to prayer at the first sign of trouble, following the prophetic model.",
+        source: {
+          label: "Tafsir As-Sa'di",
+          url: 'https://quran.com/2/153/tafsirs/91',
+        },
+      },
+    ],
     angle:
       'Allah says: "Seek help through patience and prayer. And indeed, it is difficult except for the humbly submissive." Ibn Kathir explains that Allah prescribes two specific tools for difficulty: sabr (patience) and salah (prayer)—and places them together because each strengthens the other. Al-Qurtubi adds that the companions would rush to prayer whenever they felt anxious or troubled, following the Prophetic example. The Prophet ﷺ said: "Whenever a matter distressed the Prophet, he would rush to prayer." [Abu Dawud 1319] Prayer is not just worship—it is a stabilizer for the overwhelmed soul. [Tafsir al-Qurtubi]',
     angleSource: 'Tafsir al-Qurtubi',
@@ -5156,6 +5430,16 @@ const quranContentAnglesData: ContentAngle[] = [
     id: 'q_angle_67_13_stressed',
     contentId: 'quran_67_13',
     mood: 'Overwhelmed',
+    contextBlocks: [
+      {
+        kind: 'tafsir',
+        text: "As-Sa'di explains that 'dhaat al-sudur' — what is within the chests — refers to every hidden thought, unspoken worry, and silent anxiety that no human being can access. Allah knows your overwhelm more intimately than you know it yourself. As-Sa'di notes that this knowledge is meant as comfort, not surveillance: the One who sees your struggle most clearly is the One who has the most ability and the most desire to relieve it. You never need to explain your pain to Allah — He already knows it completely.",
+        source: {
+          label: "Tafsir As-Sa'di",
+          url: 'https://quran.com/67/13/tafsirs/91',
+        },
+      },
+    ],
     angle:
       'Allah says: "He knows what is within the breasts." Ibn Kathir explains that "dhaat al-sudur" encompasses every hidden thought, unspoken anxiety, and silent struggle within the human heart. Al-Sa\'di adds that this knowledge is a source of comfort, not fear—because it means you never need to explain your pain to Allah; He already knows it more deeply than you do yourself. The Prophet ﷺ said: "Allah does not look at your bodies or your appearances, but He looks at your hearts." [Sahih Muslim 2564] When the stress of being misunderstood weighs on you, remember: the One who matters most understands you perfectly. [Tafsir al-Sa\'di]',
     angleSource: "Tafsir al-Sa'di",
@@ -5200,6 +5484,16 @@ const quranContentAnglesData: ContentAngle[] = [
     id: 'q_angle_94_1_8_stressed',
     contentId: 'quran_94_1_8',
     mood: 'Overwhelmed',
+    contextBlocks: [
+      {
+        kind: 'tafsir',
+        text: "As-Sa'di explains that the repetition of 'with hardship comes ease' in verses 5 and 6 is a deliberate divine guarantee — one singular hardship cannot overcome two eases. The Arabic grammar places 'the hardship' with a definite article (meaning it refers to one known hardship) while 'ease' is indefinite (meaning it is fresh and new each time). After establishing this, Allah commands: 'When you have finished, stand up for worship, and to your Lord direct your longing.' As-Sa'di notes this sequence means the prescribed exit from stress is turning directly toward Allah in devotion.",
+        source: {
+          label: "Tafsir As-Sa'di",
+          url: 'https://quran.com/94/1/tafsirs/91',
+        },
+      },
+    ],
     angle:
       'Allah says: "Indeed, with hardship comes ease. So when you have finished, then stand up for worship. And to your Lord direct your longing." Ibn Kathir explains that the repetition of "with hardship comes ease" is a divine guarantee—one hardship can never overcome two eases. Al-Sa\'di adds that the command to "stand up" (fansab) after completing tasks means redirecting your focus toward Allah rather than toward more worldly concerns. The Prophet ﷺ said: "The coolness of my eyes has been placed in prayer." [An-Nasa\'i 3940] When stress peaks, devotion is the prescribed relief. [Tafsir al-Sa\'di]',
     angleSource: "Tafsir al-Sa'di",
@@ -5243,6 +5537,23 @@ const quranContentAnglesData: ContentAngle[] = [
     id: 'q_angle_20_25_28_stressed',
     contentId: 'quran_20_25_28',
     mood: 'Overwhelmed',
+    contextBlocks: [
+      {
+        kind: 'tafsir',
+        text: "As-Sa'di explains that Musa's comprehensive dua addresses three dimensions of human struggle simultaneously: the internal (expand my chest — remove the constriction inside), the external (ease my task — make what's outside manageable), and the relational (untie the knot from my tongue — remove the communication barrier). As-Sa'di notes that even a prophet needed to ask for divine help before a challenging task. This dua is a complete toolkit for anyone standing before a daunting responsibility.",
+        source: {
+          label: "Tafsir As-Sa'di",
+          url: 'https://quran.com/20/25/tafsirs/91',
+        },
+      },
+      {
+        kind: 'story',
+        text: "Musa AS was given the most difficult assignment in prophetic history: go to Pharaoh — the most powerful ruler on earth who had enslaved his people — with nothing but a staff and a message. Before taking a single step, he turned to Allah and outlined exactly what he needed: internal expansion, practical ease, and clear speech. He did not pray for Pharaoh to be removed. He prayed for himself to be strengthened. Allah granted every request and sent his brother Harun with him. Whatever overwhelming task faces you, the formula is the same: ask for what you need inside before you face what waits outside.",
+        citations: [
+          { label: 'Surah Ta-Ha 20:25-28', url: 'https://quran.com/20/25' },
+        ],
+      },
+    ],
     angle:
       'Musa (AS) made a comprehensive dua: "My Lord, expand for me my breast, ease for me my task, and untie the knot from my tongue that they may understand my speech." Ibn Kathir explains that this dua addresses three dimensions of difficulty: internal constriction (chest), external burden (task), and communication barriers (tongue). Al-Qurtubi adds that Musa asked for these before his mission to Pharaoh—showing that even prophets sought divine help before facing overwhelming situations. The Prophet ﷺ used to recite specific duas before important matters. This dua is a complete toolkit for anyone facing a daunting task. [Tafsir Ibn Kathir]',
     angleSource: 'Tafsir Ibn Kathir',
@@ -6347,6 +6658,25 @@ const quranContentAnglesData: ContentAngle[] = [
     id: 'q_angle_2_186_anxious',
     contentId: 'quran_2_186',
     mood: 'Overwhelmed',
+    contextBlocks: [
+      {
+        kind: 'tafsir',
+        text: "As-Sa'di explains that this verse is unique in the Quran: other questions about Allah begin with the phrase 'say to them,' but here Allah answers directly — 'I am near' — removing any intermediary. As-Sa'di notes this is because the context is du'a: when His servant calls upon Him, the connection is so direct and so intimate that no relay is needed. The promise 'I respond to the supplicant's call when he calls' is a divine commitment that every sincere du'a reaches Allah immediately. Overwhelm melts when you understand that the One listening is already closer than your next breath.",
+        source: {
+          label: "Tafsir As-Sa'di",
+          url: 'https://quran.com/2/186/tafsirs/91',
+        },
+      },
+      {
+        kind: 'hadith',
+        text: '"You are not calling upon one who is deaf or absent. You are calling upon One who is All-Hearing, Ever-Near, and He is with you."',
+        source: {
+          label: 'Sahih Bukhari 2992',
+          url: 'https://sunnah.com/bukhari:2992',
+          grading: 'sahih',
+        },
+      },
+    ],
     angle:
       'Allah says: "And when My servants ask you concerning Me—indeed I am near." Ibn Kathir explains that this verse is unique in the Quran: unlike other questions where Allah tells the Prophet to "say" the answer, here Allah answers directly—"I am near"—emphasizing the intimacy and immediacy of His presence. Al-Sa\'di adds that this nearness is especially felt in moments of desperation, when the heart races and the mind spirals. The Prophet ﷺ said: "You are not calling upon one who is deaf or absent. You are calling upon One who is All-Hearing, Ever-Near." [Sahih Bukhari 2992] When anxiety strikes, the Hearer of all prayers is already listening. [Tafsir al-Sa\'di]',
     angleSource: "Tafsir al-Sa'di",
@@ -6390,6 +6720,23 @@ const quranContentAnglesData: ContentAngle[] = [
     id: 'q_angle_20_25_anxious',
     contentId: 'quran_20_25',
     mood: 'Overwhelmed',
+    contextBlocks: [
+      {
+        kind: 'tafsir',
+        text: "As-Sa'di explains that 'Rabbish-rah li sadri' — expand my chest — is a request to have the spiritual constriction of anxiety removed and replaced with inner light and confidence. The word 'sharh' (expansion) is the opposite of 'dayyiq' (tightness), and As-Sa'di notes that this tight feeling in the chest is one of the most recognisable symptoms of being overwhelmed. Musa AS asked for this expansion specifically because he knew no human willpower could open a heart — only Allah can replace constriction with spaciousness.",
+        source: {
+          label: "Tafsir As-Sa'di",
+          url: 'https://quran.com/20/25/tafsirs/91',
+        },
+      },
+      {
+        kind: 'story',
+        text: "When Musa AS stood at the threshold of the most terrifying conversation in history, his first act was not to rehearse his speech or strategise his approach. He turned to Allah and asked for the one thing no preparation could give him: an expanded chest. His anxiety about facing Pharaoh was real — he had a speech impediment and the enormity of the task weighed on him — yet he brought all of that to Allah in this single dua. Allah answered, and Musa walked in. Your 'Pharaoh' may be smaller — but the same dua, the same Allah, and the same answer are available to you.",
+        citations: [
+          { label: 'Surah Ta-Ha 20:25', url: 'https://quran.com/20/25' },
+        ],
+      },
+    ],
     angle:
       'Musa (AS) prayed: "My Lord, expand for me my breast." Ibn Kathir explains that "sharh al-sadr" is the removal of tightness, anxiety, and spiritual constriction—replacing them with light, confidence, and inner spaciousness. Al-Qurtubi adds that this dua was made before Musa\'s most challenging moment (facing Pharaoh), showing it is specifically designed for overwhelming situations. The Prophet ﷺ was also granted this gift: "Have We not expanded for you your breast?" [94:1] The Prophet ﷺ said: "Make things easy for the people, and do not make it difficult for them." [Sahih Bukhari 6125] Seeking expansion is the antidote to the constriction of anxiety. [Tafsir al-Qurtubi]',
     angleSource: 'Tafsir al-Qurtubi',
@@ -6434,6 +6781,16 @@ const quranContentAnglesData: ContentAngle[] = [
     id: 'q_angle_40_44_anxious',
     contentId: 'quran_40_44',
     mood: 'Overwhelmed',
+    contextBlocks: [
+      {
+        kind: 'tafsir',
+        text: "As-Sa'di explains that tafwid — the complete entrusting of one's affair to Allah — is the highest tier of tawakkul. It means releasing not only the outcome but the anxiety about the outcome. The believing man of Pharaoh's court practised this in the most life-threatening environment: he spoke truth, faced certain death, and then declared 'I entrust my affair to Allah.' As-Sa'di notes the immediate result was divine protection: 'Allah protected him from the evils they plotted.' When you hand over what you cannot control, you activate the protection of the One who controls everything.",
+        source: {
+          label: "Tafsir As-Sa'di",
+          url: 'https://quran.com/40/44/tafsirs/91',
+        },
+      },
+    ],
     angle:
       'The secret believer among Pharaoh\'s people said: "I entrust my affair to Allah. Indeed, Allah is Seeing of His servants." Ibn Kathir explains that this man trusted Allah when surrounded by the most powerful tyrant in history—and Allah saved him. Al-Sa\'di adds that "tafwid" (entrusting) is the highest form of tawakkul: it means releasing your grip on the outcome entirely and placing it in the hands of the One who sees all hidden realities. "So Allah protected him from the evils they plotted." [40:45] The Prophet ﷺ said: "If you relied on Allah as He should be relied upon, He would provide for you as He provides for the birds." [At-Tirmidhi 2344] [Tafsir al-Sa\'di]',
     angleSource: "Tafsir al-Sa'di",
@@ -6476,6 +6833,16 @@ const quranContentAnglesData: ContentAngle[] = [
     id: 'q_angle_2_153_anxious_angle',
     contentId: 'quran_2_153',
     mood: 'Overwhelmed',
+    contextBlocks: [
+      {
+        kind: 'tafsir',
+        text: "As-Sa'di explains that sabr (patient endurance) and salah (prayer) are paired together as the two prescribed remedies for the overwhelmed heart. Sabr provides the inner stillness needed to even begin prayer; prayer renews the fuel for continued patience. Together they form a feedback loop that no sustained anxiety can break. As-Sa'di emphasises that Allah's closing promise — 'He is with the patient' — means a special companionship and support specifically granted to those who endure. Prayer is not just worship in this context; it is a direct emergency line.",
+        source: {
+          label: "Tafsir As-Sa'di",
+          url: 'https://quran.com/2/153/tafsirs/91',
+        },
+      },
+    ],
     angle:
       'Allah says: "O you who have believed, seek help through patience and prayer. Indeed, Allah is with the patient." Ibn Kathir explains that sabr (patience) and salah (prayer) are the two divinely prescribed stabilizers for the overwhelmed heart. Al-Qurtubi adds that the Prophet ﷺ himself would turn to prayer whenever a matter distressed him [Abu Dawud 1319], establishing that even the strongest souls need this anchor. The verse ends with "Allah is with the patient"—a promise of special divine companionship for those who endure. The Prophet ﷺ said: "The prayer is light." [Sahih Muslim 223] It illuminates the path when anxiety clouds your vision. [Tafsir al-Qurtubi]',
     angleSource: 'Tafsir al-Qurtubi',
@@ -6523,6 +6890,16 @@ const quranContentAnglesData: ContentAngle[] = [
     id: 'q_angle_41_30_anxious_angle',
     contentId: 'quran_41_30',
     mood: 'Overwhelmed',
+    contextBlocks: [
+      {
+        kind: 'tafsir',
+        text: "As-Sa'di explains that the angels who descend upon the steadfast believers carry three specific gifts: 'Do not fear, do not grieve, and receive good news of the Garden.' This angelic support is not only promised at death — As-Sa'di notes it accompanies believers throughout life's trials, providing an unseen reassurance during times of fear and pressure. The condition for receiving this support is istiqamah: remaining on the straight path despite the difficulty of doing so. Anxiety recedes when you know that holding firm in faith summons unseen reinforcement.",
+        source: {
+          label: "Tafsir As-Sa'di",
+          url: 'https://quran.com/41/30/tafsirs/91',
+        },
+      },
+    ],
     angle:
       'Allah says: "Indeed, those who have said, \'Our Lord is Allah,\' and then remained on a right course—the angels will descend upon them." Ibn Kathir explains that istiqamah (steadfastness) is maintaining faith despite fear and pressure—and the reward is angelic support that says: "Do not fear and do not grieve." Al-Sa\'di adds that the angels descend throughout life, not only at death, providing unseen comfort during moments of anxiety and fear. The Prophet ﷺ said: "Say: I believe in Allah, then be steadfast." [Sahih Muslim 38] When you hold firm despite your fears, heaven sends reinforcements. [Tafsir al-Sa\'di]',
     angleSource: "Tafsir al-Sa'di",
@@ -6568,6 +6945,23 @@ const quranContentAnglesData: ContentAngle[] = [
     id: 'q_angle_20_46_anxious_angle',
     contentId: 'quran_20_46',
     mood: 'Overwhelmed',
+    contextBlocks: [
+      {
+        kind: 'tafsir',
+        text: "As-Sa'di explains that Allah's words to Musa and Harun — 'I am with you both, I hear and I see' — came at the most terrifying moment of their mission: the command to go to Pharaoh. The two divine names invoked here, As-Sami' (The All-Hearing) and Al-Basir (The All-Seeing), are specifically chosen to address every dimension of their fear. As-Sa'di notes that Allah is saying: whatever you say, I hear; whatever you face, I see. Nothing about your situation is hidden from the One who sent you into it.",
+        source: {
+          label: "Tafsir As-Sa'di",
+          url: 'https://quran.com/20/46/tafsirs/91',
+        },
+      },
+      {
+        kind: 'story',
+        text: "When Musa and Harun AS were given the command to go to Pharaoh, they voiced their fear openly: 'We fear he will hasten to persecute us.' Allah did not dismiss their fear or tell them it was irrational. He simply said: 'Do not fear — I am with you both. I hear and I see.' He then gave them a precise strategy and the words to use. Their vulnerability before Allah was not a weakness; it was the door through which divine support entered. Facing something overwhelming? Bring your fear to Allah, just as the prophets did.",
+        citations: [
+          { label: 'Surah Ta-Ha 20:45-46', url: 'https://quran.com/20/46' },
+        ],
+      },
+    ],
     angle:
       'Allah said to Musa and Harun: "Do not fear; indeed, I am with you both. I hear and I see." Ibn Kathir explains that this reassurance was given at the most terrifying moment—being sent to confront the most powerful ruler on earth. Al-Sa\'di adds that Allah\'s names As-Sami\' (The All-Hearing) and Al-Basir (The All-Seeing) are invoked here to show that He perceives every detail of your struggle: the trembling in your voice, the racing of your heart, the fear you cannot articulate. The Prophet ﷺ said: "Be mindful of Allah and you will find Him before you." [At-Tirmidhi 2516] You are never facing your fears alone. [Tafsir al-Sa\'di]',
     angleSource: "Tafsir al-Sa'di",
@@ -6614,6 +7008,16 @@ const quranContentAnglesData: ContentAngle[] = [
     id: 'q_angle_8_33_stressed',
     contentId: 'quran_8_33',
     mood: 'Overwhelmed',
+    contextBlocks: [
+      {
+        kind: 'tafsir',
+        text: "As-Sa'di explains that in this verse, Allah identifies two shields that protect a community from punishment: the presence of the Prophet ﷺ and the practice of istighfar (seeking forgiveness). The second shield — istighfar — remains available to every believer at every moment. As-Sa'di notes that when difficulties pile up and overwhelm strikes, the practice of seeking forgiveness is more than a spiritual act; it literally clears the path of blockages and opens unseen doors of ease. The Prophet ﷺ confirmed this: whoever makes istighfar constant, Allah makes a way out for him from every distress.",
+        source: {
+          label: "Tafsir As-Sa'di",
+          url: 'https://quran.com/8/33/tafsirs/91',
+        },
+      },
+    ],
     angle:
       'Allah says: "But Allah would not punish them while they seek forgiveness." Ibn Kathir explains that istighfar (seeking forgiveness) is explicitly named as a divine shield against punishment and calamity. Al-Sa\'di adds that stress and difficulty can sometimes be spiritual signals—and istighfar is the prescribed response that clears spiritual blockages and opens doors of ease. The Prophet ﷺ said: "Whoever makes istighfar his constant practice, Allah will provide a way out of every distress, relief from every anxiety, and provide for him from sources he never imagined." [Abu Dawud 1518] A clean spiritual slate reduces the weight of external pressure. [Tafsir al-Sa\'di]',
     angleSource: "Tafsir al-Sa'di",
@@ -6661,6 +7065,16 @@ const quranContentAnglesData: ContentAngle[] = [
     id: 'q_angle_35_35_stressed',
     contentId: 'quran_35_35',
     mood: 'Overwhelmed',
+    contextBlocks: [
+      {
+        kind: 'tafsir',
+        text: "As-Sa'di explains that the people of Paradise will say: 'All praise is due to Allah who has settled us in the home of lasting residence' — and one of the features of that home is the complete absence of fatigue. The Arabic 'la yamassuna fiha nasab' (no fatigue will touch them therein) is absolute: no exhaustion, no deadlines, no pressure. As-Sa'di notes that reflecting on this eternal relief during temporary worldly stress provides a perspective shift of cosmic proportions. Your current overwhelm is finite and measured in days; the rest that awaits is infinite.",
+        source: {
+          label: "Tafsir As-Sa'di",
+          url: 'https://quran.com/35/35/tafsirs/91',
+        },
+      },
+    ],
     angle:
       'Allah says about the people of Paradise: "No fatigue will touch them therein, nor from it will they ever be removed." Ibn Kathir explains that the Hereafter is described as a place of zero fatigue—no stress, no exhaustion, no deadlines, no anxiety. Al-Sa\'di adds that reflecting on this eternal relief puts temporary worldly stress into perspective: your current struggle is measured in days, but the rest that awaits is measured in eternity. The Prophet ﷺ said: "The most tested people are the prophets, then the next best, then the next best." [At-Tirmidhi 2398] Your weariness now is the price of eternal ease. [Tafsir al-Sa\'di]',
     angleSource: "Tafsir al-Sa'di",
@@ -6705,6 +7119,16 @@ const quranContentAnglesData: ContentAngle[] = [
     id: 'q_angle_3_17_tired_angle',
     contentId: 'quran_2_177',
     mood: 'Overwhelmed',
+    contextBlocks: [
+      {
+        kind: 'tafsir',
+        text: "As-Sa'di explains that this verse describes the complete character of the righteous by listing their qualities — and prominently among them is sabr (patience). The verse specifically mentions patience 'during suffering, adversity, and times of stress,' acknowledging that the test of character happens precisely when you are most tired. As-Sa'di notes that patience during exhaustion is especially valued because it is hardest to maintain. Every act of worship performed when you are drained carries greater spiritual weight than the same act done in comfort.",
+        source: {
+          label: "Tafsir As-Sa'di",
+          url: 'https://quran.com/2/177/tafsirs/91',
+        },
+      },
+    ],
     angle:
       'Allah describes the righteous as "the patient, the true, the obedient, those who spend, and those who seek forgiveness before dawn." Ibn Kathir explains that patience (sabr) during exhaustion is listed among the highest qualities of the righteous. Al-Sa\'di adds that patience when tired is especially meritorious because it requires fighting against the natural desire to give up. The Prophet ﷺ said: "The most beloved of deeds to Allah are those that are consistent, even if they are small." [Sahih Bukhari 6464] Small, steady acts during fatigue are worth more than grand gestures in comfort. [Tafsir al-Sa\'di]',
     angleSource: "Tafsir al-Sa'di",
@@ -6750,6 +7174,25 @@ const quranContentAnglesData: ContentAngle[] = [
     id: 'q_angle_50_16_anxious_angle',
     contentId: 'quran_50_16',
     mood: 'Overwhelmed',
+    contextBlocks: [
+      {
+        kind: 'tafsir',
+        text: "As-Sa'di explains that 'closer to him than his jugular vein' describes the intimacy of Allah's knowledge — He knows the whispers of the soul, the fears that have not yet formed into words, and the anxieties too private to share with anyone. The jugular vein was chosen as the example because it is the most vital and the most internal vessel of the human body, yet Allah's nearness surpasses even that depth. As-Sa'di notes this closeness is a comfort: no struggle you carry is invisible to the One who is nearest to you.",
+        source: {
+          label: "Tafsir As-Sa'di",
+          url: 'https://quran.com/50/16/tafsirs/91',
+        },
+      },
+      {
+        kind: 'hadith',
+        text: '"The closest a servant is to his Lord is when he is in prostration, so increase your supplication therein."',
+        source: {
+          label: 'Sahih Muslim 482',
+          url: 'https://sunnah.com/muslim:482',
+          grading: 'sahih',
+        },
+      },
+    ],
     angle:
       'Allah says: "We are closer to him than his jugular vein." Ibn Kathir explains that this closeness is through divine knowledge—Allah knows the whispers of your soul, the fears you haven\'t named, and the anxieties you can\'t articulate. Al-Qurtubi adds that the jugular vein was specifically chosen because it is the most internal and vital vessel, yet Allah\'s awareness surpasses even that intimacy. The Prophet ﷺ said: "No fatigue, disease, sorrow, sadness, or distress befalls a Muslim, even the prick of a thorn, except that Allah expiates sins for it." [Sahih Bukhari 5641] Your closest struggles are His closest concern. [Tafsir al-Qurtubi]',
     angleSource: 'Tafsir al-Qurtubi',
@@ -6793,6 +7236,25 @@ const quranContentAnglesData: ContentAngle[] = [
     id: 'q_angle_3_173_stressed_angle',
     contentId: 'quran_3_173',
     mood: 'Overwhelmed',
+    contextBlocks: [
+      {
+        kind: 'tafsir',
+        text: "As-Sa'di explains that 'ni'ma al-wakil' — the Best Disposer of affairs — conveys that Allah manages your situation better than you ever could. He has knowledge you do not have, sees outcomes you cannot see, and has power you do not possess. As-Sa'di notes that this phrase is used in the verse to describe the response of believers who were warned by threatening news — yet instead of panicking, they said 'Allah is sufficient and He is the Best Disposer.' Their trust transformed a threatening moment into a return 'with favour from Allah and bounty, no harm having touched them.'",
+        source: {
+          label: "Tafsir As-Sa'di",
+          url: 'https://quran.com/3/173/tafsirs/91',
+        },
+      },
+      {
+        kind: 'hadith',
+        text: '"If you were to rely upon Allah with the reliance He is due, He would provide for you just as He provides for the birds: they go out hungry in the morning and return full in the evening."',
+        source: {
+          label: 'Sunan at-Tirmidhi 2344',
+          url: 'https://sunnah.com/tirmidhi:2344',
+          grading: 'sahih',
+        },
+      },
+    ],
     angle:
       'The believers declared: "Sufficient for us is Allah, and He is the best Disposer of affairs." Ibn Kathir narrates that Ibrahim (AS) said these words when thrown into fire, and the Prophet ﷺ said them when told the armies had gathered against him. Al-Sa\'di explains that "ni\'ma al-wakil" (the best Disposer) means Allah handles your affairs better than you ever could—and the proof is that both Ibrahim and Muhammad ﷺ were saved after saying these words. The Prophet ﷺ said: "If you relied on Allah as He should be relied upon, He would provide for you as He provides for the birds." [At-Tirmidhi 2344] Hand your heaviest load to the strongest Carrier. [Tafsir al-Sa\'di]',
     angleSource: "Tafsir al-Sa'di",
@@ -6837,6 +7299,16 @@ const quranContentAnglesData: ContentAngle[] = [
     id: 'q_angle_6_17_stressed',
     contentId: 'quran_6_17',
     mood: 'Overwhelmed',
+    contextBlocks: [
+      {
+        kind: 'tafsir',
+        text: "As-Sa'di explains that this verse establishes a foundational truth: Allah alone removes hardship, and Allah alone grants benefit. No doctor, no advisor, no amount of effort can remove what Allah has decreed, and nothing can stop the good He intends for you. As-Sa'di notes this is liberation rather than limitation: it means you only need to turn to one Source for help — the most powerful Source in existence. For the overwhelmed believer, the clarity of this singular dependence simplifies everything: ask the One who can actually answer.",
+        source: {
+          label: "Tafsir As-Sa'di",
+          url: 'https://quran.com/6/17/tafsirs/91',
+        },
+      },
+    ],
     angle:
       'Allah says: "And if Allah should touch you with adversity, there is no remover of it except Him." Ibn Kathir explains that this verse establishes a foundational truth: only Allah has the power to remove hardship. Al-Sa\'di adds that this is not a limitation but a liberation—it means you only need to ask One source for help, and that source is the most powerful being in existence. The Prophet ﷺ used to make dua: "O Allah, there is no ease except what You make easy, and You can make difficulty easy if You wish." [Ibn Hibban] When stress feels immovable, remember: the Remover of hardship is just one sincere dua away. [Tafsir al-Sa\'di]',
     angleSource: "Tafsir al-Sa'di",
@@ -6884,6 +7356,16 @@ const quranContentAnglesData: ContentAngle[] = [
     id: 'q_angle_7_188_stressed',
     contentId: 'quran_7_188',
     mood: 'Overwhelmed',
+    contextBlocks: [
+      {
+        kind: 'tafsir',
+        text: "As-Sa'di explains that even the Prophet ﷺ — the most honoured human being — was commanded to declare: 'I do not possess for myself harm or benefit except what Allah wills.' This is not a statement of weakness but of spiritual clarity. As-Sa'di notes that acknowledging your complete dependence on Allah removes the crushing illusion that you are responsible for controlling outcomes. The stress of trying to manage what belongs to Allah dissolves when you sincerely hand it back to Him. Admitting dependence is the beginning of real relief.",
+        source: {
+          label: "Tafsir As-Sa'di",
+          url: 'https://quran.com/7/188/tafsirs/91',
+        },
+      },
+    ],
     angle:
       'The Prophet ﷺ was commanded to say: "I do not possess for myself any harm or benefit except what Allah wills." Ibn Kathir explains that even the Prophet ﷺ—the most honored creation—declared he had no power over his own affairs without Allah\'s permission. Al-Qurtubi adds that this acknowledgment is the essence of true humility: recognizing that control belongs entirely to Allah frees you from the impossible burden of trying to manage everything. The Prophet ﷺ said: "Be mindful of Allah and you will find Him before you. If you ask, ask from Allah. If you seek help, seek help from Allah." [At-Tirmidhi 2516] Admitting your dependence is the beginning of real strength. [Tafsir al-Qurtubi]',
     angleSource: 'Tafsir al-Qurtubi',
@@ -6930,6 +7412,16 @@ const quranContentAnglesData: ContentAngle[] = [
     id: 'q_angle_42_30_stressed',
     contentId: 'quran_42_30',
     mood: 'Overwhelmed',
+    contextBlocks: [
+      {
+        kind: 'tafsir',
+        text: "As-Sa'di explains that this verse acknowledges a hard reality — some difficulties come as a result of our own actions — but immediately balances it with a mercy: 'He pardons much.' The majority of what we deserve, Allah has already forgiven without us even realising it. As-Sa'di notes this should produce a response of both accountability (honest self-reflection on what may have contributed to the stress) and hope (confidence that Allah's mercy is always greater than our mistakes). The path through overwhelm begins with turning back to Allah.",
+        source: {
+          label: "Tafsir As-Sa'di",
+          url: 'https://quran.com/42/30/tafsirs/91',
+        },
+      },
+    ],
     angle:
       'Allah says: "And whatever strikes you of disaster—it is for what your hands have earned; but He pardons much." Ibn Kathir explains that even when difficulty comes as a consequence of our actions, Allah still pardons much of what we deserve—meaning His mercy softens even the trials we bring upon ourselves. Al-Sa\'di adds that "ya\'fu \'an kathir" (He pardons much) means the majority of our mistakes are forgiven without us even realizing it. The Prophet ﷺ said: "If Allah were to punish the inhabitants of His heavens and earth, He would do so without being unjust to them. But if He were to have mercy on them, His mercy would be better for them than their deeds." [Abu Dawud 4699] [Tafsir al-Sa\'di]',
     angleSource: "Tafsir al-Sa'di",
@@ -6976,6 +7468,16 @@ const quranContentAnglesData: ContentAngle[] = [
     id: 'q_angle_27_62_stressed',
     contentId: 'quran_27_62',
     mood: 'Overwhelmed',
+    contextBlocks: [
+      {
+        kind: 'tafsir',
+        text: "As-Sa'di explains that 'al-mudtarr' — the desperate one — is given a privileged status in this verse. Allah phrased the promise as a rhetorical question: 'Is He not the One who responds to the desperate one when he calls?' — implying the answer is self-evident and beyond doubt. As-Sa'di notes that desperation itself is not a spiritual failure; it is the condition that strips away reliance on everything except Allah and makes the du'a most pure. The desperate believer who calls on Allah with nothing left is closest to being answered.",
+        source: {
+          label: "Tafsir As-Sa'di",
+          url: 'https://quran.com/27/62/tafsirs/91',
+        },
+      },
+    ],
     angle:
       'Allah asks: "Is He not the One who responds to the desperate one when he calls upon Him and removes evil?" Ibn Kathir explains that "al-mudtarr" (the desperate one) is given a special status—Allah specifically promises to answer those who have reached the end of their rope. Al-Qurtubi adds that this verse is phrased as a rhetorical question, meaning the answer is so obvious it needs no debate: of course Allah responds to the desperate. The Prophet ﷺ said: "The dua of the distressed person is: O Allah, I hope for Your mercy; do not leave me to myself even for the blink of an eye." [Abu Dawud 5090] Desperation is not weakness—it is the key to divine response. [Tafsir al-Qurtubi]',
     angleSource: 'Tafsir al-Qurtubi',
@@ -7021,6 +7523,23 @@ const quranContentAnglesData: ContentAngle[] = [
     id: 'q_angle_21_83_stressed',
     contentId: 'quran_21_83',
     mood: 'Overwhelmed',
+    contextBlocks: [
+      {
+        kind: 'tafsir',
+        text: "As-Sa'di explains that Ayyub AS's du'a is a masterclass in etiquette before Allah: he simply stated his condition — 'adversity has touched me' — without complaining, accusation, or demand. He then appealed to a divine attribute — 'You are the Most Merciful of the merciful' — without specifying the relief he wanted, leaving it to Allah's wisdom. As-Sa'di notes that Allah's response was immediate and complete: 'So We responded to him and removed what afflicted him of adversity.' Perfect etiquette in du'a invites a perfect response.",
+        source: {
+          label: "Tafsir As-Sa'di",
+          url: 'https://quran.com/21/83/tafsirs/91',
+        },
+      },
+      {
+        kind: 'story',
+        text: "Ayyub AS was tested with the loss of his health, his children, and his wealth — and the trial lasted for years. According to the scholars, he bore it with patience for so long that his body became severely weakened. Yet throughout the ordeal, he never lost his trust in Allah or blamed Him for his suffering. When he finally called out, his call was not a complaint but a gentle declaration: 'Adversity has touched me, and You are the Most Merciful.' Allah responded immediately, restored him, and multiplied what he had lost. His patience during the worst years of his life became one of the most cited examples of trust in all of prophetic history.",
+        citations: [
+          { label: 'Surah Al-Anbiya 21:83-84', url: 'https://quran.com/21/83' },
+        ],
+      },
+    ],
     angle:
       'Prophet Ayyub (AS) called out: "Indeed, adversity has touched me, and You are the Most Merciful of the merciful." Ibn Kathir explains that Ayyub\'s dua is a model of perfect etiquette: he acknowledged his suffering without complaining, then appealed to Allah\'s mercy without demanding relief. Al-Sa\'di adds that Allah\'s response was immediate and complete: "So We responded to him and removed what afflicted him of adversity." [21:84] The Prophet ﷺ said: "The dua of my brother Dhun-Nun (Yunus): none who is afflicted supplicates with it except that Allah relieves him." [At-Tirmidhi 3505] The prophets\' prayers are proven prescriptions for relief. [Tafsir al-Sa\'di]',
     angleSource: "Tafsir al-Sa'di",
@@ -7065,6 +7584,23 @@ const quranContentAnglesData: ContentAngle[] = [
     id: 'q_angle_9_51_stressed_angle',
     contentId: 'quran_9_51',
     mood: 'Overwhelmed',
+    contextBlocks: [
+      {
+        kind: 'tafsir',
+        text: "As-Sa'di explains that this verse commands believers to declare a complete doctrine of decree: 'Nothing will reach us except what Allah has decreed for us.' The Arabic grammar makes this absolute — nothing bad can befall you except what was already written, and by definition, what was written is controlled by the One who is also your Protector (Mawlana). As-Sa'di notes this declaration, when sincerely believed, dissolves anxiety about the future: you cannot be ambushed by a fate that Allah has already written and is already managing.",
+        source: {
+          label: "Tafsir As-Sa'di",
+          url: 'https://quran.com/9/51/tafsirs/91',
+        },
+      },
+      {
+        kind: 'story',
+        text: "At the Battle of Tabuk, the hypocrites stayed behind in comfort while the believers marched through extreme heat and hardship. The believers' faith carried them through because they believed their trials and safety were both in Allah's hands — nothing more could reach them than what He had written. This same confidence was demonstrated by the Prophet ﷺ in the cave of Thawr when surrounded by search parties: 'Do not grieve; Allah is with us.' The decree was already written — no enemy could change it.",
+        citations: [
+          { label: 'Surah At-Tawbah 9:51', url: 'https://quran.com/9/51' },
+        ],
+      },
+    ],
     angle:
       'Allah commands the believers to say: "Never will we be struck except by what Allah has decreed for us; He is our protector." Ibn Kathir explains that this verse is the ultimate antidote to anxiety about the future—everything that reaches you was already written, and nothing that was not written can touch you. Al-Sa\'di adds that "Huwa Mawlana" (He is our protector) means that the same God who wrote the decree is also your guardian through it. The Prophet ﷺ said: "Know that what has passed you by was not going to befall you, and what has befallen you was not going to pass you by." [Abu Dawud 4699] Accepting the decree dissolves the fear of the unknown. [Tafsir al-Sa\'di]',
     angleSource: "Tafsir al-Sa'di",
@@ -7543,6 +8079,16 @@ const quranContentAnglesData: ContentAngle[] = [
     id: 'q_angle_94_5_stressed',
     contentId: 'quran_94_5',
     mood: 'Overwhelmed',
+    contextBlocks: [
+      {
+        kind: 'tafsir',
+        text: "As-Sa'di explains that the Arabic 'ma'a' (with) in 'with hardship comes ease' is critical — ease does not merely follow hardship but accompanies it simultaneously. The hardship and the ease coexist. As-Sa'di further notes the grammatical insight: the hardship appears with a definite article (one specific, known hardship) while ease appears as an indefinite noun (a fresh, open-ended ease). This means one finite hardship is always paired with an ease that is not yet limited. The believer who looks closely enough will find the ease already present within their difficulty.",
+        source: {
+          label: "Tafsir As-Sa'di",
+          url: 'https://quran.com/94/5/tafsirs/91',
+        },
+      },
+    ],
     angle:
       'Allah says: "Indeed, with hardship comes ease." Ibn Kathir explains that the Arabic "ma\'a" (with) is critical—it means ease is not merely after hardship but simultaneous with it. Al-Sa\'di adds that the definite article on "al-\'usr" (the hardship) and the indefinite "yusra" (an ease) means one specific hardship is paired with multiple, open-ended eases. The Prophet ﷺ said: "One hardship will never overcome two eases." Umar ibn al-Khattab (RA) understood this linguistic miracle: the hardship is singular and finite, but the ease is plural and limitless. [Tafsir al-Sa\'di]',
     angleSource: "Tafsir al-Sa'di",
@@ -7585,6 +8131,16 @@ const quranContentAnglesData: ContentAngle[] = [
     id: 'q_angle_2_45_stressed',
     contentId: 'quran_2_45',
     mood: 'Overwhelmed',
+    contextBlocks: [
+      {
+        kind: 'tafsir',
+        text: "As-Sa'di explains that 'the humbly submissive' (khashi'in) find prayer easy not because they have no stress but because their hearts are already inclined toward Allah. The qualifier teaches that the path to making prayer a relief rather than a burden is cultivating khushu' — a heart that genuinely turns toward Allah. As-Sa'di notes that sabr (patience) is mentioned first in the verse because you need patience to begin the prayer when you are overwhelmed; the prayer then renews your patience. The two tools are interdependent.",
+        source: {
+          label: "Tafsir As-Sa'di",
+          url: 'https://quran.com/2/45/tafsirs/91',
+        },
+      },
+    ],
     angle:
       'Allah says: "And seek help through patience and prayer, and indeed, it is difficult except for the humbly submissive." Ibn Kathir explains that the "humbly submissive" (khashi\'in) find prayer easy because their hearts are already inclined toward Allah. Al-Qurtubi adds that sabr (patience) is mentioned before salah (prayer) because patience is needed to even begin the act of worship when stressed. The Prophet ﷺ said: "Whenever a matter distressed the Prophet, he would rush to prayer." [Abu Dawud 1319] The twin pillars of patience and prayer create a foundation that no stress can shake. [Tafsir al-Qurtubi]',
     angleSource: 'Tafsir al-Qurtubi',
@@ -7628,6 +8184,16 @@ const quranContentAnglesData: ContentAngle[] = [
     id: 'q_angle_20_25_stressed',
     contentId: 'quran_20_25',
     mood: 'Overwhelmed',
+    contextBlocks: [
+      {
+        kind: 'tafsir',
+        text: "As-Sa'di explains that 'expand my chest' is a request for the divine gift of internal spaciousness — the ability to carry heavy responsibilities without breaking under them. The opposite of 'sharh al-sadr' is the tightness and constriction that comes with external pressure mounting on an unprepared heart. As-Sa'di notes that the Prophet ﷺ was also granted this expansion (Surah 94:1), confirming that asking for inner expansion is a prayer Allah loves to answer. The formula is seeking bigger capacity, not smaller problems.",
+        source: {
+          label: "Tafsir As-Sa'di",
+          url: 'https://quran.com/20/25/tafsirs/91',
+        },
+      },
+    ],
     angle:
       'Musa (AS) prayed: "My Lord, expand for me my breast" before the enormous task of confronting Pharaoh. Ibn Kathir explains that this dua asks for spiritual spaciousness—the ability to carry heavy responsibilities without breaking. Al-Sa\'di adds that the Prophet ﷺ was also granted this expansion (94:1), confirming it as a dua that Allah loves to answer. The Prophet ﷺ said: "O Allah, I seek refuge in You from anxiety and grief, weakness and laziness." [Sahih Bukhari 6369] When external pressure mounts, asking for internal expansion is the Prophetic response. [Tafsir al-Sa\'di]',
     angleSource: "Tafsir al-Sa'di",
@@ -7672,6 +8238,16 @@ const quranContentAnglesData: ContentAngle[] = [
     id: 'q_angle_40_44_stressed',
     contentId: 'quran_40_44',
     mood: 'Overwhelmed',
+    contextBlocks: [
+      {
+        kind: 'tafsir',
+        text: "As-Sa'di explains that the believing man's declaration — 'I entrust my affair to Allah' — demonstrated that tawakkul functions even in the most hostile environments. Surrounded by Pharaoh's court and facing death, he released the outcome entirely and placed it in Allah's hands. As-Sa'di notes the result was immediate protection: 'So Allah protected him from the evils they plotted.' Entrusting your affair to Allah is not passive; it actively triggers divine protection. When you stop carrying what belongs to Allah, He picks it up.",
+        source: {
+          label: "Tafsir As-Sa'di",
+          url: 'https://quran.com/40/44/tafsirs/91',
+        },
+      },
+    ],
     angle:
       'The believing man said: "I entrust my affair to Allah. Indeed, Allah is Seeing of His servants." Ibn Kathir explains that this anonymous believer among Pharaoh\'s people demonstrated that tawakkul works even in the most hostile environments. Al-Sa\'di adds that the immediate result of his trust was divine protection: "So Allah protected him from the evils they plotted." [40:45] The Prophet ﷺ said: "Whoever puts his trust in Allah, He will be enough for him." [Quran 65:3] When the outcome feels uncertain, entrust it to the One who already sees the result. [Tafsir al-Sa\'di]',
     angleSource: "Tafsir al-Sa'di",
@@ -8322,6 +8898,16 @@ const quranContentAnglesData: ContentAngle[] = [
     id: 'q_angle_93_1_5_anxious',
     contentId: 'quran_93_1_5',
     mood: 'Overwhelmed',
+    contextBlocks: [
+      {
+        kind: 'tafsir',
+        text: "As-Sa'di explains that Allah swears by the brightness of morning and the stillness of night in this surah — the two extremes of the day — to demonstrate that both light and darkness are under His command. The oaths themselves are the evidence: just as dawn always breaks after the darkest hour, divine care always follows periods of perceived absence. As-Sa'di notes that the message 'Your Lord has not forsaken you' was given at the Prophet's ﷺ most difficult moment of spiritual dry spell — proof that what feels like abandonment is often the silence before a greater gift.",
+        source: {
+          label: "Tafsir As-Sa'di",
+          url: 'https://quran.com/93/1/tafsirs/91',
+        },
+      },
+    ],
     angle:
       'Allah swears by the morning brightness and the still night, then declares: "Your Lord has not taken leave of you, nor has He detested you." Ibn Kathir explains that this surah was revealed during a painful gap in revelation when the Prophet ﷺ feared he had been abandoned. Al-Sa\'di adds that the two oaths—by morning light and by night—are themselves the proof: just as dawn always follows darkness, Allah\'s care always follows perceived silence. The Prophet ﷺ was told: what you interpret as absence is actually preparation for something greater. [Tafsir Ibn Kathir]',
     angleSource: 'Tafsir Ibn Kathir',
@@ -8364,6 +8950,16 @@ const quranContentAnglesData: ContentAngle[] = [
     id: 'q_angle_94_1_8_anxious',
     contentId: 'quran_94_1_8',
     mood: 'Overwhelmed',
+    contextBlocks: [
+      {
+        kind: 'tafsir',
+        text: "As-Sa'di explains that Allah opens this surah by recounting three past favours to the Prophet ﷺ: expanding his chest, removing his burden, and raising his name. This rhetorical pattern — listing what He has already done — is the divine argument for trust in what He will do next. As-Sa'di notes that the promise of ease repeated twice in one surah is intentional emphasis: one hardship cannot overcome two eases. When anxiety about the present overwhelms you, look back at what Allah has already carried you through — that is the evidence for what He will do now.",
+        source: {
+          label: "Tafsir As-Sa'di",
+          url: 'https://quran.com/94/1/tafsirs/91',
+        },
+      },
+    ],
     angle:
       'Allah says: "Did We not expand for you your breast? And We removed from you your burden, which had weighed upon your back. And raised high for you your repute." Ibn Kathir explains that Allah is reminding the Prophet ﷺ of His past care as proof of future care: He expanded his chest, removed his burden, and elevated his name. Al-Sa\'di adds that this is a rhetorical pattern—Allah recounts His past favors to build confidence for the future. The Prophet ﷺ said: "Whoever Allah wishes good for, He puts him through tribulation." [Sahih Bukhari 5645] If Allah has already carried you through past burdens, He will carry you through this one too. [Tafsir al-Sa\'di]',
     angleSource: "Tafsir al-Sa'di",
@@ -8406,6 +9002,23 @@ const quranContentAnglesData: ContentAngle[] = [
     id: 'q_angle_20_25_28_anxious',
     contentId: 'quran_20_25_28',
     mood: 'Overwhelmed',
+    contextBlocks: [
+      {
+        kind: 'tafsir',
+        text: "As-Sa'di explains that Musa's request to 'untie the knot from my tongue' (wahlul 'uqdatan min lisani) represents the fear of not being understood — a fear that adds an extra layer to any overwhelming situation. The 'uqdah (knot) symbolises any obstacle that blocks expression or communication: social anxiety, fear of judgment, or the inability to articulate what is inside. As-Sa'di notes that Musa had a speech impediment yet was tasked with the most important speech in history. He did not hide his limitation from Allah — he brought it to Him, and Allah answered by sending his brother Harun as support.",
+        source: {
+          label: "Tafsir As-Sa'di",
+          url: 'https://quran.com/20/25/tafsirs/91',
+        },
+      },
+      {
+        kind: 'story',
+        text: "Musa AS had a speech impediment — his tongue was not perfectly fluent — yet he was commanded to go speak truth to the most powerful orator-politician of his era. Rather than hiding this weakness, he presented it openly to Allah and asked for it to be relieved. Allah did not remove the impediment entirely but sent Harun as a companion and communicator. Sometimes Allah does not remove your limitation — He sends you a 'Harun.' Bringing your vulnerabilities to Allah in du'a opens doors of support you could not have imagined.",
+        citations: [
+          { label: 'Surah Ta-Ha 20:25-28', url: 'https://quran.com/20/25' },
+        ],
+      },
+    ],
     angle:
       'Musa (AS) prayed: "And untie the knot from my tongue that they may understand my speech." Ibn Kathir explains that this dua addresses the fear of miscommunication and the anxiety of not being understood—Musa had a speech impediment yet was tasked with the most important conversation in history. Al-Qurtubi adds that "knots" (uqdah) symbolize any obstacle that blocks your path—whether in speech, thought, or action. The Prophet ﷺ would make specific duas before important matters, showing that seeking divine help for practical challenges is part of the Sunnah. This dua is especially powerful for anyone facing a difficult conversation or decision. [Tafsir al-Qurtubi]',
     angleSource: 'Tafsir al-Qurtubi',
@@ -8971,6 +9584,16 @@ const quranContentAnglesData: ContentAngle[] = [
     id: 'q_angle_3_17_tired_final_angle',
     contentId: 'quran_2_177',
     mood: 'Overwhelmed',
+    contextBlocks: [
+      {
+        kind: 'tafsir',
+        text: "As-Sa'di explains that this verse lists the qualities of the righteous (al-birr), and patience appears prominently as a virtue that runs through all the others. The verse specifically mentions patience 'during suffering, adversity, and times of stress' — not patience during ease, but patience precisely when it is hardest to maintain. As-Sa'di notes that those who hold onto worship, honesty, and generosity while physically or emotionally exhausted are practising the highest form of spiritual steadiness. Small, consistent acts during fatigue carry a weight that grand gestures in comfort do not.",
+        source: {
+          label: "Tafsir As-Sa'di",
+          url: 'https://quran.com/2/177/tafsirs/91',
+        },
+      },
+    ],
     angle:
       'Allah describes the righteous as "the patient, the truthful, the devoutly obedient, those who spend in the way of Allah, and those who seek forgiveness before dawn." Ibn Kathir explains that seeking forgiveness in the pre-dawn hours (sahar) is highlighted because it combines the difficulty of waking up with the sincerity of worship when no one is watching. Al-Qurtubi adds that patience is listed first because it is the foundation upon which all other virtues are built—especially when energy is low. The Prophet ﷺ said: "Our Lord descends every night to the lowest heaven and says: Is there anyone who calls upon Me, so that I may answer him?" [Sahih Bukhari 1145] Even small acts of constancy in fatigue earn immense reward. [Tafsir al-Qurtubi]',
     angleSource: 'Tafsir al-Qurtubi',
@@ -9418,6 +10041,25 @@ const quranContentAnglesData: ContentAngle[] = [
     id: 'q_angle_40_60_stressed',
     contentId: 'quran_40_60',
     mood: 'Overwhelmed',
+    contextBlocks: [
+      {
+        kind: 'tafsir',
+        text: "As-Sa'di explains that 'ud'uni astajib lakum' — call upon Me, I will respond to you — is a direct divine promise with no conditions attached to the response, only the condition that you call. The verse then warns that those who are too arrogant to ask will enter Hell humiliated: it is the very act of calling on Allah that is honoured. As-Sa'di notes that du'a is itself an act of worship, and the verse frames it as an expression of the worship that Allah commanded. When stress builds, the prescribed response is immediate: open your hands and call.",
+        source: {
+          label: "Tafsir As-Sa'di",
+          url: 'https://quran.com/40/60/tafsirs/91',
+        },
+      },
+      {
+        kind: 'hadith',
+        text: '"Du\'a is worship." Then he recited: "And your Lord said, Call upon Me; I will respond to you."',
+        source: {
+          label: 'Abu Dawud 1479 / Tirmidhi 2969',
+          url: 'https://sunnah.com/abudawud:1479',
+          grading: 'sahih',
+        },
+      },
+    ],
     angle:
       'The Prophet ﷺ said: "Your Lord is Generous and Shy; if His servant raises his hands to Him, He is shy to return them empty." Stress is a call to this direct connection. [Abu Dawud 1488]',
     action: 'When stress feels heavy, call upon Allah immediately with a sincere Du’a.',
@@ -9465,6 +10107,25 @@ const quranContentAnglesData: ContentAngle[] = [
     id: 'q_angle_rizq_day1',
     contentId: 'quran_51_22',
     mood: 'Overwhelmed',
+    contextBlocks: [
+      {
+        kind: 'tafsir',
+        text: "As-Sa'di explains that 'in the heaven is your provision and what you are promised' establishes that rizq (provision) originates in the heavens — it is not generated by earth-based effort alone but decreed and sent down by Allah. As-Sa'di notes this does not negate effort but reframes it: effort is the channel, not the source. The One who guarantees provision from the heavens is not limited by economic conditions, employers, or visible opportunities. Anxiety about provision is, in light of this verse, anxiety about whether Allah will fulfil His promise — and His promise never fails.",
+        source: {
+          label: "Tafsir As-Sa'di",
+          url: 'https://quran.com/51/22/tafsirs/91',
+        },
+      },
+      {
+        kind: 'hadith',
+        text: '"If you were to rely upon Allah with the reliance He is due, He would provide for you just as He provides for the birds: they go out hungry in the morning and return full in the evening."',
+        source: {
+          label: 'Sunan at-Tirmidhi 2344',
+          url: 'https://sunnah.com/tirmidhi:2344',
+          grading: 'sahih',
+        },
+      },
+    ],
     angle:
       "Ibn Kathir's Tafsir: Allah reminds us that our rizq is already written in the heavens—recorded and guaranteed. Worrying about it won't increase it, and relaxing about it won't decrease it.",
     action: 'Redefine Wealth: Write down 5 things you have that money cannot buy.',
@@ -9518,6 +10179,16 @@ const quranContentAnglesData: ContentAngle[] = [
     id: 'q_angle_rizq_day2',
     contentId: 'quran_11_6',
     mood: 'Overwhelmed',
+    contextBlocks: [
+      {
+        kind: 'tafsir',
+        text: "As-Sa'di explains that 'no creature on earth but its provision is guaranteed by Allah' covers every living thing — from the invisible microorganism to the largest creature in the sea. The guarantee is absolute and universal: Allah knows every creature's location and has accepted responsibility for every creature's sustenance. As-Sa'di notes this should produce a profound peace for the believer: if Allah guarantees provision for every being on earth, the idea that He would neglect you specifically is incoherent. Your provision was written before you were born.",
+        source: {
+          label: "Tafsir As-Sa'di",
+          url: 'https://quran.com/11/6/tafsirs/91',
+        },
+      },
+    ],
     angle:
       "Imam Al-Ghazali: 'Ar-Razzaq is the One who created sustenance and distributed it to all creation. He provides for the bird in the sky, the fish in the ocean, and the baby in the womb—none of them earned it, yet all are sustained.' Ibn al-Qayyim: 'When you know that your Provider is Ar-Razzaq, you realize that no human can withhold what Allah has written for you. This knowledge liberates the heart from depending on creation.'",
     action: "Learn the Name: Repeat 'Ya Razzaq' (O Provider) 100 times today.",
@@ -9573,6 +10244,16 @@ const quranContentAnglesData: ContentAngle[] = [
     id: 'q_angle_rizq_day3',
     contentId: 'quran_2_168',
     mood: 'Overwhelmed',
+    contextBlocks: [
+      {
+        kind: 'tafsir',
+        text: "As-Sa'di explains that 'eat from what is lawful and good on earth' combines two conditions: halal (permitted by Islamic law) and tayyib (pure and wholesome). As-Sa'di notes that choosing halal provision is not just a religious requirement but a spiritual protection — haram wealth corrupts the heart, clouds the mind, and blocks du'a from being answered. The verse also frames the earth's bounty as a gift already spread before humanity, suggesting abundance is the default; anxiety about provision is most often a failure to see what is already available through lawful means.",
+        source: {
+          label: "Tafsir As-Sa'di",
+          url: 'https://quran.com/2/168/tafsirs/91',
+        },
+      },
+    ],
     angle:
       "Imam Ahmad ibn Hanbal was offered a large sum to endorse a ruler's policy he disagreed with. He refused, saying: 'A single dirham earned with halal is better than a mountain of gold earned through doubt.' Prophet ﷺ said: 'A body nourished by haram will not enter Paradise.' [Tirmidhi 614] Ibn Rajab explained: 'Haram wealth blocks your duas from being answered, clouds your judgment, and removes barakah from your life.'",
     action:
@@ -9686,6 +10367,16 @@ const quranContentAnglesData: ContentAngle[] = [
     id: 'q_angle_rizq_day5',
     contentId: 'quran_29_60',
     mood: 'Overwhelmed',
+    contextBlocks: [
+      {
+        kind: 'tafsir',
+        text: "As-Sa'di explains that 'how many creatures carry not their provision' — meaning they have no ability to store or secure food for themselves — yet Allah provides for them. The verse is a direct challenge to the scarcity mindset: countless creatures cannot plan, earn, or save, yet they are fed. As-Sa'di notes that the closing phrase 'Allah provides for them and for you' places the believer in the same category of divine care as every creature that depends entirely on Allah. Anxiety about rizq is incompatible with what this verse clearly teaches.",
+        source: {
+          label: "Tafsir As-Sa'di",
+          url: 'https://quran.com/29/60/tafsirs/91',
+        },
+      },
+    ],
     angle:
       "Ibn al-Qayyim described two types of people: (1) Those who see rizq as limited—they hoard, compete, envy, and anxiety consumes them. (2) Those who see rizq as guaranteed by Al-Waasi' (The All-Encompassing)—they give freely, compete in good, and live in peace. Shaykh Ibn Uthaymeen said: 'The one obsessed with wealth rarely finds contentment. The one content with Allah's decree often finds wealth coming to him without obsession.'",
     action:
@@ -10127,6 +10818,25 @@ const quranContentAnglesData: ContentAngle[] = [
     id: 'q_angle_rizq_day13',
     contentId: 'quran_102_1_2',
     mood: 'Overwhelmed',
+    contextBlocks: [
+      {
+        kind: 'tafsir',
+        text: "As-Sa'di explains that 'distraction by rivalry in worldly increase' (at-takathur) refers to the human tendency to measure worth by accumulation — competing in wealth, status, and possessions to the point where death itself is the only thing that ends the race. As-Sa'di notes that the surah's very brevity is instructive: this fatal distraction and its consequences are summarised in just eight short verses. The cure is not denying ambition but remembering that the race ends at the grave — and what you took with you spiritually is the only thing that counts.",
+        source: {
+          label: "Tafsir As-Sa'di",
+          url: 'https://quran.com/102/1/tafsirs/91',
+        },
+      },
+      {
+        kind: 'hadith',
+        text: '"If the son of Adam had a valley of gold, he would want a second one. Nothing fills the belly of the son of Adam except dust (death). Yet Allah accepts the repentance of whoever repents."',
+        source: {
+          label: 'Sahih Bukhari 6436',
+          url: 'https://sunnah.com/bukhari:6436',
+          grading: 'sahih',
+        },
+      },
+    ],
     angle:
       "Ibn Kathir: 'This surah is a warning to those who are so busy competing in wealth, status, and possessions that they forget death is coming. The race ends at the grave—and the winner is not who has the most, but who used what they had best.' Prophet ﷺ said: 'If the son of Adam had a valley of gold, he would want a second one. Nothing fills the belly of the son of Adam except dust (death). Yet Allah accepts the repentance of whoever repents.' [Bukhari 6436] Human nature is to always want more. The cure is remembering death.",
     action:
