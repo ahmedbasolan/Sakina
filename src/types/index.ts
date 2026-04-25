@@ -35,6 +35,21 @@ export type PracticeSourceType =
 
 export type HadithGrading = 'sahih' | 'hasan' | 'sahih_li_ghayrihi' | 'hasan_li_ghayrihi';
 
+export interface PracticeStepData {
+  type: 'mindset' | 'physical' | 'verbal';
+  icon: string; // IconName — kept as string here to avoid coupling to Icon component
+  title: string;
+  instruction: string;
+  arabicText?: string;
+  transliteration?: string;
+  translation?: string;
+  source: string;
+  sourceType: PracticeSourceType;
+  sourceGrading?: HadithGrading;
+  count?: number;
+  countSource?: string;
+}
+
 // ─── Source Citation & Context Blocks ──────────────────────────
 // Every user-visible text block on the guidance screen must cite its source.
 // A SourceCitation is always link-resolvable — tapping the matching chip

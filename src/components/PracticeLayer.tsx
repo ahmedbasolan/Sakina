@@ -13,23 +13,10 @@ const { height } = Dimensions.get('window');
 import { Colors, Spacing, Typography, BorderRadius } from '../theme/DesignSystem';
 import { Ionicons } from '@expo/vector-icons';
 import { HapticsService } from '../services/hapticsService';
-import { PracticeSourceType, HadithGrading } from '../types';
+import { PracticeSourceType, HadithGrading, PracticeStepData } from '../types';
 import Icon, { IconName } from './Icon';
 
-export interface PracticeStepData {
-  type: 'mindset' | 'physical' | 'verbal';
-  icon: IconName;
-  title: string;
-  instruction: string;
-  arabicText?: string;
-  transliteration?: string;
-  translation?: string;
-  source: string;
-  sourceType: PracticeSourceType;
-  sourceGrading?: HadithGrading;
-  count?: number;
-  countSource?: string;
-}
+export type { PracticeStepData }; // re-export for any existing imports
 
 interface PracticeLayerProps {
   steps: PracticeStepData[];
@@ -175,7 +162,7 @@ const PracticeStepCard = ({
           <View style={styles.stepCardHeader}>
             <View style={styles.stepTitleRow}>
               <View style={[styles.stepIconBg, { backgroundColor: accentColor + '15' }]}>
-                <Icon name={item.icon} size={20} color={accentColor} />
+                <Icon name={item.icon as IconName} size={20} color={accentColor} />
               </View>
               <View style={styles.stepTitleBlock}>
                 <Text style={[styles.stepTitle, checked && { opacity: 0.5 }]}>{item.title}</Text>
