@@ -1,5 +1,4 @@
-import { GuidanceExperience } from '../types';
-import type { PracticeStepData } from '../components/PracticeLayer';
+import { GuidanceExperience, PracticeStepData } from '../types';
 
 export type LayerKind = 'verse' | 'context' | 'practice' | 'reflection';
 
