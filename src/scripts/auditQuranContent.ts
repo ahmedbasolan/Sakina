@@ -194,6 +194,19 @@ async function main() {
 }
 
 /**
+ * Matches any quoted string literal while correctly skipping escape sequences.
+ * Handles single-quoted, double-quoted, and backtick template literals.
+ *
+ * Each alternative `'(?:[^'\\]|\\.)*'` means:
+ *   - opening quote
+ *   - zero or more of: any char that is NOT the closing quote or backslash  OR  a backslash + any char
+ *   - closing quote
+ *
+ * `[^'\\]` matches newlines too, so multi-line template literals are covered.
+ */
+const QUOTED_STRING_RE = `(?:'(?:[^'\\\\]|\\\\.)*'|"(?:[^"\\\\]|\\\\.)*"|\`(?:[^\`\\\\]|\\\\.)*\`)`;
+
+/**
  * Rewrite `arabicText` and `englishTranslation` string literals for the entry
  * with the given id. Uses a block-scoped regex — the block is delimited by
  * `id: '<id>'` and the next closing `}` at column 2 (the per-entry indent).
@@ -209,8 +222,14 @@ export function applyFix(source: string, entryId: string, canonical: CanonicalVe
 
   const block = source.slice(idIndex, blockEnd);
   const rewrittenBlock = block
-    .replace(/arabicText:\s*(['"`])[\s\S]*?\1/m, `arabicText: ${JSON.stringify(canonical.arabicText)}`)
-    .replace(/englishTranslation:\s*(['"`])[\s\S]*?\1/m, `englishTranslation: ${JSON.stringify(canonical.englishTranslation)}`);
+    .replace(
+      new RegExp(`arabicText:\\s*${QUOTED_STRING_RE}`, 'm'),
+      `arabicText: ${JSON.stringify(canonical.arabicText)}`,
+    )
+    .replace(
+      new RegExp(`englishTranslation:\\s*${QUOTED_STRING_RE}`, 'm'),
+      `englishTranslation: ${JSON.stringify(canonical.englishTranslation)}`,
+    );
 
   return source.slice(0, idIndex) + rewrittenBlock + source.slice(blockEnd);
 }

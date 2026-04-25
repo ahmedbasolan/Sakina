@@ -169,4 +169,68 @@ describe('applyFix', () => {
     });
     expect(out).toBe(source);
   });
+
+  it('handles a value that contains an escaped quote without stopping early', () => {
+    const srcWithEscape = `const data = [
+  {
+    id: 'quran_escape_test',
+    audioKey: '2:1',
+    arabicText: 'It\\'s Arabic',
+    englishTranslation: 'Value with \\"escaped\\" double quotes.',
+    moods: ['Calm'],
+  },
+];`;
+    const out = applyFix(srcWithEscape, 'quran_escape_test', {
+      audioKey: '2:1',
+      arabicText: 'NEW',
+      englishTranslation: 'FIXED',
+    });
+    expect(out).toContain('arabicText: "NEW"');
+    expect(out).toContain('englishTranslation: "FIXED"');
+  });
+
+  it('handles a double-quoted value (as written by JSON.stringify on a previous fix run)', () => {
+    const srcDoubleQuoted = `const data = [
+  {
+    id: 'quran_dq_test',
+    audioKey: '3:1',
+    arabicText: "Already double-quoted Arabic",
+    englishTranslation: "Already double-quoted English.",
+    moods: ['Calm'],
+  },
+];`;
+    const out = applyFix(srcDoubleQuoted, 'quran_dq_test', {
+      audioKey: '3:1',
+      arabicText: 'UPDATED_ARABIC',
+      englishTranslation: 'Updated English.',
+    });
+    expect(out).toContain('arabicText: "UPDATED_ARABIC"');
+    expect(out).toContain('englishTranslation: "Updated English."');
+  });
+
+  it('handles a template-literal value spanning multiple lines', () => {
+    // Template literals can span lines; the regex must consume the whole value
+    const srcTemplateLiteral = `const data = [
+  {
+    id: 'quran_tl_test',
+    audioKey: '4:1',
+    arabicText: \`Multi
+line
+Arabic\`,
+    englishTranslation: \`Multi
+line
+English.\`,
+    moods: ['Calm'],
+  },
+];`;
+    const out = applyFix(srcTemplateLiteral, 'quran_tl_test', {
+      audioKey: '4:1',
+      arabicText: 'SINGLE LINE',
+      englishTranslation: 'Single line English.',
+    });
+    expect(out).toContain('arabicText: "SINGLE LINE"');
+    expect(out).toContain('englishTranslation: "Single line English."');
+    // Confirm the old multi-line content is gone
+    expect(out).not.toContain('Multi\nline');
+  });
 });
