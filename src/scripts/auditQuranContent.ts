@@ -129,8 +129,9 @@ async function main() {
   const fs = await import('fs/promises');
 
   // Lazy import so jest tests don't load the 10k-line data file.
-  const { default: quranContentData } = (await import('../data/quranData')) as {
-    default: Array<{
+  // quranData.ts uses a named export `quranContent`, not a default export.
+  const { quranContent: quranContentData } = (await import('../data/quranData')) as {
+    quranContent: Array<{
       id: string;
       audioKey?: string;
       arabicText?: string;
