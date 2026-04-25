@@ -3137,7 +3137,7 @@ const quranContentAnglesData: ContentAngle[] = [
     practiceSteps: JSON.stringify([
       {
         type: 'mindset',
-        emoji: '🏛️',
+        icon: 'mosque',
         title: "Remember Yusuf's decades",
         instruction:
           'Yusuf (AS) endured betrayal, a well, slavery, and prison — for years. Yet every moment was being recorded. Your current struggle has an expiration date, and not a single moment of your patience is wasted.',
@@ -3183,7 +3183,7 @@ const quranContentAnglesData: ContentAngle[] = [
     practiceSteps: JSON.stringify([
       {
         type: 'physical',
-        emoji: '🤫',
+        icon: 'breathing',
         title: '30 seconds of sacred silence',
         instruction:
           'Close your eyes for 30 seconds. In the stillness, acknowledge: "Allah is with me right now." This is not poetic — it is a Quranic promise for those who are patient.',
@@ -3337,7 +3337,7 @@ const quranContentAnglesData: ContentAngle[] = [
       },
       {
         type: 'mindset',
-        emoji: '🌊',
+        icon: 'breathing',
         title: 'The most hope-giving verse',
         instruction:
           '"Say: O My slaves who have transgressed against themselves, do not despair of the mercy of Allah. Indeed, Allah forgives all sins. Indeed, He is the Oft-Forgiving, the Most Merciful." [Quran 39:53]',
@@ -3368,7 +3368,7 @@ const quranContentAnglesData: ContentAngle[] = [
     practiceSteps: JSON.stringify([
       {
         type: 'physical',
-        emoji: '🤫',
+        icon: 'breathing',
         title: 'Sit in His presence',
         instruction:
           'Sit quietly for 60 seconds. Close your eyes and internally acknowledge: "Allah is with me right now. He sees my sadness. He is already arranging my relief." This is not imagination — it is a Quranic fact.',
@@ -3439,7 +3439,7 @@ const quranContentAnglesData: ContentAngle[] = [
       },
       {
         type: 'physical',
-        emoji: '😢',
+        icon: 'heart',
         title: 'Let yourself grieve',
         instruction:
           'The Prophet ﷺ wept when his son Ibrahim died and said: "The eyes shed tears, the heart grieves, but we say nothing except what pleases our Lord." Crying is not weakness — it is human. Grieve, but grieve with faith.',
@@ -3461,7 +3461,7 @@ const quranContentAnglesData: ContentAngle[] = [
     practiceSteps: JSON.stringify([
       {
         type: 'physical',
-        emoji: '🧍',
+        icon: 'person',
         title: 'Straighten your posture',
         instruction:
           'Physically sit or stand upright. Straighten your back, lift your chin. Allah said "you are superior" — carry yourself with the dignity of someone whose worth is measured by their Lord, not by their circumstances.',
@@ -3470,7 +3470,7 @@ const quranContentAnglesData: ContentAngle[] = [
       },
       {
         type: 'mindset',
-        emoji: '👑',
+        icon: 'star',
         title: 'Your worth is with Allah',
         instruction:
           'This verse was revealed after a devastating defeat at Uhud. Despite losing the battle, Allah told the believers: "You are superior." Your worth is not measured by worldly outcomes but by your standing with Allah. If you have Him, you have everything.',
@@ -3523,7 +3523,7 @@ const quranContentAnglesData: ContentAngle[] = [
       },
       {
         type: 'mindset',
-        emoji: '⏰',
+        icon: 'clock',
         title: 'Hardship has an expiration date',
         instruction:
           "Your hardship is definite and limited (al-'usr). But the ease coming after it is indefinite and multiplied (yusra). In Arabic grammar, Allah made your pain specific — it will end. But He left the ease open-ended — it keeps growing.",
@@ -3568,7 +3568,7 @@ const quranContentAnglesData: ContentAngle[] = [
       },
       {
         type: 'mindset',
-        emoji: '🐋',
+        icon: 'bird',
         title: 'From the darkest place',
         instruction:
           'Yunus was inside a whale, inside the ocean, inside the darkness of night — three layers of darkness. Yet his dua reached Allah instantly. No matter how deep your sadness, your call to Allah has no barriers.',
@@ -3612,7 +3612,7 @@ const quranContentAnglesData: ContentAngle[] = [
       },
       {
         type: 'mindset',
-        emoji: '💝',
+        icon: 'heart',
         title: 'Special divine mercy',
         instruction:
           'The word "ladunka" means a special, direct mercy from Allah Himself — not from any intermediary or effort. When sadness weighs on your heart, ask for this unique mercy that only He can give. It is a direct infusion of peace from the Lord of the worlds.',
@@ -3653,7 +3653,7 @@ const quranContentAnglesData: ContentAngle[] = [
       },
       {
         type: 'mindset',
-        emoji: '💌',
+        icon: 'pen',
         title: 'He invited you',
         instruction:
           '"Call upon Me" is not just permission — it is an invitation. Allah WANTS you to bring your pain to Him. Your sadness is not a burden to your Lord; it is the very reason He told you to speak. Silence is the only wrong response.',
@@ -3690,7 +3690,7 @@ const quranContentAnglesData: ContentAngle[] = [
     practiceSteps: JSON.stringify([
       {
         type: 'mindset',
-        emoji: '♾️',
+        icon: 'target',
         title: 'Reward without limit',
         instruction:
           'Patience is the ONLY deed for which Allah promises reward "without account" — meaning limitless. Every moment of your silent endurance right now is being recorded at a rate beyond human comprehension. Your sadness is an investment.',
@@ -3713,7 +3713,7 @@ const quranContentAnglesData: ContentAngle[] = [
       },
       {
         type: 'physical',
-        emoji: '🧎',
+        icon: 'hands-prayer',
         title: 'Patience in prayer',
         instruction:
           "Pray two rak'ahs and in your sujud, simply be still. Don't rush. Let the silence itself be an act of patience. The Prophet ﷺ said patience is a light — let it fill you in this moment of stillness.",
@@ -3735,7 +3735,7 @@ const quranContentAnglesData: ContentAngle[] = [
     practiceSteps: JSON.stringify([
       {
         type: 'physical',
-        emoji: '🌱',
+        icon: 'leaf',
         title: 'One good deed despite sadness',
         instruction:
           'Do one small good deed right now — smile at someone, send a kind message, give charity, or even just make dua for another person. Doing good while sad is the highest form of ihsan. Allah will never let it be lost.',
@@ -3745,7 +3745,7 @@ const quranContentAnglesData: ContentAngle[] = [
       },
       {
         type: 'mindset',
-        emoji: '📦',
+        icon: 'home',
         title: 'Nothing is wasted',
         instruction:
           "Every tear, every ache, every moment of holding on — it is all being recorded by Allah. He does not lose even an atom's weight of good. Your patience during this sadness IS the good deed that earns a limitless reward.",
@@ -3777,7 +3777,7 @@ const quranContentAnglesData: ContentAngle[] = [
     practiceSteps: JSON.stringify([
       {
         type: 'mindset',
-        emoji: '🤗',
+        icon: 'heart',
         title: '"O MY servants"',
         instruction:
           'Notice: Allah says "ya ibadi" — O MY servants. Even to those who transgressed, He claims them as His own. This is not a rejection. It is an embrace. You are still His servant, no matter what you have done.',
@@ -3822,7 +3822,7 @@ const quranContentAnglesData: ContentAngle[] = [
     practiceSteps: JSON.stringify([
       {
         type: 'physical',
-        emoji: '💓',
+        icon: 'heart',
         title: 'Hand on heart',
         instruction:
           'Place your hand on your heart and whisper "Ya Qareeb" (O Near One) three times. Feel the warmth of your hand. Allah is nearer to you than your own heartbeat.',
@@ -3831,7 +3831,7 @@ const quranContentAnglesData: ContentAngle[] = [
       },
       {
         type: 'mindset',
-        emoji: '🔗',
+        icon: 'target',
         title: 'No intermediary needed',
         instruction:
           'Notice: Allah did not say "tell them I am near." He said directly "I am near" — removing every intermediary. You do not need a special place, a special person, or a special time. Right now, right here, He hears you.',
@@ -3882,7 +3882,7 @@ const quranContentAnglesData: ContentAngle[] = [
       },
       {
         type: 'mindset',
-        emoji: '👼',
+        icon: 'star',
         title: 'Angels are with you now',
         instruction:
           'The angels do not only descend at death — Al-Qurtubi says they descend throughout life, bringing unseen comfort to the steadfast. Right now, as you hold on to your faith through sadness, angelic support is being sent to you.',
@@ -3933,7 +3933,7 @@ const quranContentAnglesData: ContentAngle[] = [
       },
       {
         type: 'physical',
-        emoji: '🤫',
+        icon: 'breathing',
         title: 'Rest in being known',
         instruction:
           'Sit quietly for a moment and let go of the need to explain your sadness to anyone. Allah does not look at your appearance — He looks at your heart. And He already knows what is in it. Let that knowledge give you rest.',
@@ -3955,7 +3955,7 @@ const quranContentAnglesData: ContentAngle[] = [
     practiceSteps: JSON.stringify([
       {
         type: 'mindset',
-        emoji: '💔',
+        icon: 'heart',
         title: 'Pardoning heals the pardoner',
         instruction:
           'Abu Bakr (RA) was deeply hurt when his own relative slandered his daughter. Yet Allah asked him: "Would you not like that Allah should forgive YOU?" Abu Bakr immediately said yes and resumed his support. Forgiveness is not for the other person — it is your ticket to Allah\'s mercy.',
@@ -4021,7 +4021,7 @@ const quranContentAnglesData: ContentAngle[] = [
       },
       {
         type: 'physical',
-        emoji: '🚿',
+        icon: 'hands-prayer',
         title: 'Wudu and istighfar',
         instruction:
           'Make wudu while saying "Astaghfirullah" with each limb you wash. Water cleanses the body; istighfar cleanses the soul. Both together create a complete renewal.',
@@ -4042,7 +4042,7 @@ const quranContentAnglesData: ContentAngle[] = [
     practiceSteps: JSON.stringify([
       {
         type: 'physical',
-        emoji: '🫁',
+        icon: 'breathing',
         title: 'Breathe with awareness',
         instruction:
           'Take 5 deep breaths. With each inhale, think: "Allah is closer to me than my jugular vein." With each exhale, release the weight of your sadness. He already knows what your soul whispers — you do not need to carry it alone.',
@@ -4051,7 +4051,7 @@ const quranContentAnglesData: ContentAngle[] = [
       },
       {
         type: 'mindset',
-        emoji: '💫',
+        icon: 'star',
         title: 'Closer than your jugular vein',
         instruction:
           "The jugular vein is the closest vital vessel to your heart and brain. Allah chose this image to show that His awareness of you is more intimate than your own body's connection to itself. He knows what your soul whispers before you even form the thought.",
@@ -4093,7 +4093,7 @@ const quranContentAnglesData: ContentAngle[] = [
       },
       {
         type: 'physical',
-        emoji: '💓',
+        icon: 'heart',
         title: 'Place hand on your heart',
         instruction:
           'Place your hand on your chest. The Prophet ﷺ said the heart is the most important piece of flesh in the body. Feel it beating. The One who created it knows exactly what it carries. Let that be a comfort, not a fear.',
@@ -4152,7 +4152,7 @@ const quranContentAnglesData: ContentAngle[] = [
       },
       {
         type: 'physical',
-        emoji: '🚶',
+        icon: 'person',
         title: 'Step into the light',
         instruction:
           "If possible, step outside or look at natural light. Let the sun remind you of Allah's oath. Just as He never fails to bring the morning, He never fails to bring relief. Your night, too, has a dawn.",
@@ -4175,7 +4175,7 @@ const quranContentAnglesData: ContentAngle[] = [
     practiceSteps: JSON.stringify([
       {
         type: 'physical',
-        emoji: '🚿',
+        icon: 'hands-prayer',
         title: 'Make wudu now',
         instruction:
           'The Prophet ﷺ said anger is from Shaytan, and Shaytan was created from fire. Water extinguishes fire. Go make wudu right now — feel the cool water put out the heat of your anger.',
@@ -4221,7 +4221,7 @@ const quranContentAnglesData: ContentAngle[] = [
     practiceSteps: JSON.stringify([
       {
         type: 'mindset',
-        emoji: '🔄',
+        icon: 'rewind',
         title: 'Enemy to friend',
         instruction:
           'Allah promises a social miracle: if you respond to harm with good, the person who was your enemy can become "as though he was a devoted friend." This is not naivety — it is a divine guarantee for those with the strength to try.',
@@ -4292,7 +4292,7 @@ const quranContentAnglesData: ContentAngle[] = [
       },
       {
         type: 'physical',
-        emoji: '🚿',
+        icon: 'hands-prayer',
         title: "Wudu and 2 rak'ahs of tawbah",
         instruction:
           "Make wudu with the intention that your sins are washing away. Then pray 2 rak'ahs of tawbah and in your sujud, sincerely intend to leave the sin and ask Allah for help to stay away.",
@@ -4324,7 +4324,7 @@ const quranContentAnglesData: ContentAngle[] = [
       },
       {
         type: 'physical',
-        emoji: '🌱',
+        icon: 'leaf',
         title: 'Replace with a good deed',
         instruction:
           'Do one specific good deed right now to "replace" a recent mistake: give charity, help someone, or perform extra prayer. The Prophet ﷺ said: "Follow a bad deed with a good deed and it will wipe it out." This is the tabdil in action.',
@@ -4362,7 +4362,7 @@ const quranContentAnglesData: ContentAngle[] = [
     practiceSteps: JSON.stringify([
       {
         type: 'mindset',
-        emoji: '🦸',
+        icon: 'shield',
         title: 'Forgiveness is heroic',
         instruction:
           'Combining patience with forgiveness is not passive — it is heroic. It requires more courage than retaliation. Allah calls it "azm al-umur" — matters of the highest determination. You are not being weak; you are being spiritually elite.',
@@ -4386,7 +4386,7 @@ const quranContentAnglesData: ContentAngle[] = [
       },
       {
         type: 'physical',
-        emoji: '🧘',
+        icon: 'breathing',
         title: 'Change your position',
         instruction:
           'The Prophet ﷺ said: "If one of you becomes angry while standing, let him sit down. If the anger does not leave, let him lie down." Physically change your position right now.',
@@ -4429,7 +4429,7 @@ const quranContentAnglesData: ContentAngle[] = [
       },
       {
         type: 'physical',
-        emoji: '🚿',
+        icon: 'hands-prayer',
         title: 'Cool down with water',
         instruction:
           'Splash cold water on your face or make wudu. The physical cooling mirrors the spiritual cooling you need. Then pause before responding — harshness drives people away; gentleness draws them close.',
@@ -4496,7 +4496,7 @@ const quranContentAnglesData: ContentAngle[] = [
     practiceSteps: JSON.stringify([
       {
         type: 'physical',
-        emoji: '🚿',
+        icon: 'hands-prayer',
         title: 'Extinguish with water',
         instruction:
           'Go make wudu with cool water right now. The Prophet ﷺ said anger is from Shaytan, Shaytan is from fire, and fire is extinguished with water. Feel the coolness on your skin putting out the flames of anger.',
@@ -4506,7 +4506,7 @@ const quranContentAnglesData: ContentAngle[] = [
       },
       {
         type: 'mindset',
-        emoji: '⚖️',
+        icon: 'target',
         title: 'Patience is the higher path',
         instruction:
           'Islam permits equal retaliation — but Allah says patience is BETTER. The Prophet ﷺ himself was guided away from revenge after the martyrdom of Hamza (RA). You have a right to respond — but choosing patience elevates you above the situation.',
@@ -4540,7 +4540,7 @@ const quranContentAnglesData: ContentAngle[] = [
     practiceSteps: JSON.stringify([
       {
         type: 'mindset',
-        emoji: '⭐',
+        icon: 'star',
         title: 'Forgiveness is ihsan',
         instruction:
           'Pardoning is not just kindness — it is classified as ihsan, the HIGHEST level of worship. Justice demands equal retaliation. Ihsan chooses to forgive when you have every right to punish. This is not weakness; it is the peak of devotion.',
@@ -4584,7 +4584,7 @@ const quranContentAnglesData: ContentAngle[] = [
     practiceSteps: JSON.stringify([
       {
         type: 'mindset',
-        emoji: '🔄',
+        icon: 'rewind',
         title: 'Three levels of forgiveness',
         instruction:
           "Allah teaches three progressive steps: (1) Pardon ('afw) — let go of the offense. (2) Overlook (safh) — turn away from it entirely. (3) Forgive (ghafr) — cover it as if it never happened. This mirrors how Allah treats YOUR sins. Start with step 1 today.",
@@ -4627,7 +4627,7 @@ const quranContentAnglesData: ContentAngle[] = [
     practiceSteps: JSON.stringify([
       {
         type: 'mindset',
-        emoji: '🤐',
+        icon: 'breathing',
         title: "Conceal, don't expose",
         instruction:
           "You have the power to expose someone's fault. But choosing to conceal it imitates a divine quality — Al-'Afuw, The Pardoner. The Prophet ﷺ said whoever conceals the faults of a Muslim, Allah will conceal THEIR faults in this world and the Hereafter.",
@@ -4637,7 +4637,7 @@ const quranContentAnglesData: ContentAngle[] = [
       },
       {
         type: 'physical',
-        emoji: '🤐',
+        icon: 'breathing',
         title: 'Bite your tongue',
         instruction:
           "If you are about to expose someone's mistake out of anger, physically pause. Take 3 deep breaths. Then ask: would I want MY faults exposed? Choose the silence that earns Allah's concealment of your own flaws.",
@@ -4672,7 +4672,7 @@ const quranContentAnglesData: ContentAngle[] = [
     practiceSteps: JSON.stringify([
       {
         type: 'mindset',
-        emoji: '⚖️',
+        icon: 'target',
         title: 'Trust the Judge',
         instruction:
           'You do not need to settle every account yourself. Allah will recompense every person for what they earned with PERFECT justice. Rising above provocation is not ignoring injustice — it is trusting the ultimate Judge to handle it better than you ever could.',
@@ -4694,7 +4694,7 @@ const quranContentAnglesData: ContentAngle[] = [
       },
       {
         type: 'physical',
-        emoji: '🧘',
+        icon: 'breathing',
         title: 'Change position and cool down',
         instruction:
           'If standing, sit. If sitting, lie down. Splash water on your face. The Prophet ﷺ gave physical prescriptions for anger because the body and soul are connected. Cool the body to cool the heart.',
@@ -4731,7 +4731,7 @@ const quranContentAnglesData: ContentAngle[] = [
       },
       {
         type: 'mindset',
-        emoji: '📈',
+        icon: 'chart',
         title: 'Gratitude triggers increase',
         instruction:
           'This is a divine law, not a suggestion: gratitude triggers increase (ziyadah). The increase is not limited to the blessing you are grateful for — it overflows into ALL areas of life. Gratitude is the engine of divine abundance.',
@@ -4808,7 +4808,7 @@ const quranContentAnglesData: ContentAngle[] = [
     practiceSteps: JSON.stringify([
       {
         type: 'physical',
-        emoji: '📱',
+        icon: 'chat',
         title: 'Thank a person today',
         instruction:
           'Send a message to one person thanking them for something specific they did. The Prophet ﷺ said: "He who does not thank people does not thank Allah." Gratitude to creation is the first step to gratitude to the Creator.',
@@ -4862,7 +4862,7 @@ const quranContentAnglesData: ContentAngle[] = [
       },
       {
         type: 'physical',
-        emoji: '🌱',
+        icon: 'leaf',
         title: 'Use a blessing for good',
         instruction:
           'Identify one gift Allah has given you — your health, your wealth, your time, your skills — and commit to using it for good TODAY. Give charity, help someone, teach someone, or make someone smile. Pass the test.',
@@ -4942,7 +4942,7 @@ const quranContentAnglesData: ContentAngle[] = [
     practiceSteps: JSON.stringify([
       {
         type: 'mindset',
-        emoji: '🔀',
+        icon: 'rewind',
         title: 'Gratitude is a choice',
         instruction:
           'Allah presents it as a binary: grateful or ungrateful. There is no neutral. Every moment you are making this choice. Right now, consciously choose to be among the grateful. It is an active decision, not a passive feeling.',
@@ -4986,7 +4986,7 @@ const quranContentAnglesData: ContentAngle[] = [
     practiceSteps: JSON.stringify([
       {
         type: 'mindset',
-        emoji: '🌱',
+        icon: 'leaf',
         title: 'Recognition is the seed',
         instruction:
           'Think of one recent positive outcome. Now trace it back: it was not luck, not just your effort — it was a direct favor from Allah. Recognition of the Source is the seed; divine increase is the harvest.',
@@ -5032,7 +5032,7 @@ const quranContentAnglesData: ContentAngle[] = [
     practiceSteps: JSON.stringify([
       {
         type: 'physical',
-        emoji: '🌿',
+        icon: 'leaf',
         title: 'See nature as a sign',
         instruction:
           'Step outside or look out a window. Notice one element of nature — a tree, the sky, a breeze. See it as a message of love from your Creator. The grateful heart sees divine messages in every leaf and raindrop.',
@@ -5041,7 +5041,7 @@ const quranContentAnglesData: ContentAngle[] = [
       },
       {
         type: 'mindset',
-        emoji: '🌻',
+        icon: 'sun',
         title: 'Your heart is the soil',
         instruction:
           'Good land produces abundant fruit. Bad land produces almost nothing. Your heart is the soil — water it with gratitude and it will produce abundant faith, peace, and blessings. Neglect it with ingratitude and it becomes barren.',
@@ -5117,7 +5117,7 @@ const quranContentAnglesData: ContentAngle[] = [
     practiceSteps: JSON.stringify([
       {
         type: 'physical',
-        emoji: '🍽️',
+        icon: 'honey',
         title: 'Mindful eating',
         instruction:
           'At your next meal, slow down. Say "Bismillah" before the first bite. Taste each flavor. Recognize that every ingredient was provided by Allah. Then say "Alhamdulillah" when done. Every bite is an act of worship.',
@@ -5208,7 +5208,7 @@ const quranContentAnglesData: ContentAngle[] = [
     practiceSteps: JSON.stringify([
       {
         type: 'mindset',
-        emoji: '💖',
+        icon: 'heart',
         title: 'Earn divine approval',
         instruction:
           "Allah's approval (rida) is the highest reward a servant can receive — greater even than Paradise in spiritual significance. And you can earn it right now through the simplest act: being grateful. He is pleased when you praise Him for your food and drink.",
@@ -5318,7 +5318,7 @@ const quranContentAnglesData: ContentAngle[] = [
       },
       {
         type: 'physical',
-        emoji: '🫁',
+        icon: 'breathing',
         title: 'Breathe and expand',
         instruction:
           'Take 5 deep breaths, expanding your chest fully with each inhale. As you breathe in, reflect on Allah expanding your heart. As you breathe out, release the constriction. This is "inshirah" in physical form.',
@@ -5351,7 +5351,7 @@ const quranContentAnglesData: ContentAngle[] = [
       },
       {
         type: 'mindset',
-        emoji: '🔓',
+        icon: 'lock',
         title: "Stop doing Allah's job",
         instruction:
           "How much of your stress comes from trying to control the outcome? That is Allah's job. Your job is effort; His job is results. The believer entrusted his affair — and Allah PROTECTED him from every evil they plotted. Tafwid brings divine protection.",
@@ -5392,7 +5392,7 @@ const quranContentAnglesData: ContentAngle[] = [
       },
       {
         type: 'mindset',
-        emoji: '⚖️',
+        icon: 'target',
         title: 'Patience + Prayer',
         instruction:
           'Allah prescribes two tools together: patience AND prayer. Patience without prayer leads to burnout. Prayer without patience leads to frustration. Together they create a balance that anchors the soul through any storm.',
@@ -5438,7 +5438,7 @@ const quranContentAnglesData: ContentAngle[] = [
       },
       {
         type: 'physical',
-        emoji: '🤫',
+        icon: 'breathing',
         title: 'Release the need to explain',
         instruction:
           'Take a deep breath. Let go of the stress of being misunderstood by people. Place your hand on your chest and say: "Allah knows what is here. That is enough for me."',
@@ -5473,7 +5473,7 @@ const quranContentAnglesData: ContentAngle[] = [
     practiceSteps: JSON.stringify([
       {
         type: 'mindset',
-        emoji: '⚖️',
+        icon: 'target',
         title: 'One hardship, two eases',
         instruction:
           'Allah repeats "with hardship comes ease" TWICE. The scholars say: one hardship can never overcome two eases. You are outnumbered by ease. The math is in your favor.',
@@ -5482,7 +5482,7 @@ const quranContentAnglesData: ContentAngle[] = [
       },
       {
         type: 'physical',
-        emoji: '🧘',
+        icon: 'breathing',
         title: 'Stand up for devotion',
         instruction:
           'When you finish your current task, instead of moving to the next one, STAND UP and pray 2 rak\'ahs. Allah commands: "When you have finished, then stand up for worship." Redirect your focus to Him before anything else.',
@@ -5531,7 +5531,7 @@ const quranContentAnglesData: ContentAngle[] = [
       },
       {
         type: 'mindset',
-        emoji: '🛠️',
+        icon: 'target',
         title: 'Three-dimensional relief',
         instruction:
           'This dua is a complete toolkit: (1) Expand my chest — fix what is inside me. (2) Ease my task — fix what is outside me. (3) Untie my tongue — fix how I communicate. Even prophets asked for help before daunting tasks. You should too.',
@@ -5563,7 +5563,7 @@ const quranContentAnglesData: ContentAngle[] = [
     practiceSteps: JSON.stringify([
       {
         type: 'mindset',
-        emoji: '🎉',
+        icon: 'star',
         title: 'Rejoice in what matters',
         instruction:
           'The bounty of Allah is the Quran. His mercy is Islam. These are greater than everything the world accumulates. If you have faith and guidance, you already possess the greatest reasons to rejoice.',
@@ -5616,7 +5616,7 @@ const quranContentAnglesData: ContentAngle[] = [
       },
       {
         type: 'physical',
-        emoji: '👀',
+        icon: 'compass',
         title: 'Look around you',
         instruction:
           'Look around your room right now. The roof, the light, the air you breathe. Say "Alhamdulillah" for each thing your eyes land on. When you express gratitude for what you have, Allah multiplies it.',
@@ -5651,7 +5651,7 @@ const quranContentAnglesData: ContentAngle[] = [
     practiceSteps: JSON.stringify([
       {
         type: 'physical',
-        emoji: '⏱️',
+        icon: 'clock',
         title: 'One-hour blessing count',
         instruction:
           'Try to count every favor from Allah in just the LAST HOUR: every breath, every heartbeat, every thought, every comfort. You cannot finish — and that impossibility itself proves how overwhelmingly blessed you are.',
@@ -5694,7 +5694,7 @@ const quranContentAnglesData: ContentAngle[] = [
     practiceSteps: JSON.stringify([
       {
         type: 'physical',
-        emoji: '📱',
+        icon: 'chat',
         title: 'Share a blessing',
         instruction:
           'Send a message to someone right now sharing one good thing Allah has given you. Speaking of blessings is gratitude; silence about them is ingratitude. Sharing joy amplifies it.',
@@ -5704,7 +5704,7 @@ const quranContentAnglesData: ContentAngle[] = [
       },
       {
         type: 'mindset',
-        emoji: '🔊',
+        icon: 'headphones',
         title: 'Sharing amplifies',
         instruction:
           'When contentment fills your heart, sharing it does not diminish it — it amplifies it. Allah commanded "haddith" (proclaim) — not as boasting but as testimony. Let your blessings inspire others to see their own.',
@@ -5749,7 +5749,7 @@ const quranContentAnglesData: ContentAngle[] = [
       },
       {
         type: 'mindset',
-        emoji: '🌊',
+        icon: 'breathing',
         title: '31 invitations to mindfulness',
         instruction:
           'This question is repeated 31 times in Surah Ar-Rahman. Each repetition is a divine invitation to pause and reflect on a different category of blessing. Allah is asking you personally: which favor would you deny?',
@@ -5780,7 +5780,7 @@ const quranContentAnglesData: ContentAngle[] = [
     practiceSteps: JSON.stringify([
       {
         type: 'mindset',
-        emoji: '💰',
+        icon: 'honey',
         title: 'Contentment = true wealth',
         instruction:
           'The Prophet ﷺ said: "Be content with what Allah has apportioned for you and you will be the richest of people." Contentment is not settling for less — it is recognizing that what Allah chose for you IS the best. You are already rich.',
@@ -5876,7 +5876,7 @@ const quranContentAnglesData: ContentAngle[] = [
       },
       {
         type: 'mindset',
-        emoji: '🔄',
+        icon: 'rewind',
         title: 'Rest is divinely ordained',
         instruction:
           'There is a time for effort and a time for stillness — both divinely ordained. If it is nighttime, Allah designed it for your rest. If it is daytime, He designed it for your provision. Finding peace in natural rhythms is worship.',
@@ -5922,7 +5922,7 @@ const quranContentAnglesData: ContentAngle[] = [
       },
       {
         type: 'mindset',
-        emoji: '👑',
+        icon: 'star',
         title: 'The most intimate transaction',
         instruction:
           'When you remember Allah quietly, He remembers you in Himself. When you mention Him in a gathering, He mentions you in a gathering BETTER than yours. There is no relationship in existence more intimate or fulfilling than this.',
@@ -5932,7 +5932,7 @@ const quranContentAnglesData: ContentAngle[] = [
       },
       {
         type: 'physical',
-        emoji: '🧘',
+        icon: 'breathing',
         title: 'Sit in dhikr',
         instruction:
           'Sit quietly for 2 minutes doing nothing but dhikr. Say "SubhanAllah" on each exhale. The Prophet ﷺ said the one who remembers Allah vs the one who does not is like the living vs the dead. Be alive right now.',
@@ -5997,7 +5997,7 @@ const quranContentAnglesData: ContentAngle[] = [
     practiceSteps: JSON.stringify([
       {
         type: 'mindset',
-        emoji: '🏠',
+        icon: 'home',
         title: 'You are heading home',
         instruction:
           'The "nafs al-mutma\'innah" is the soul that found deep contentment through certainty in Allah. "Return to your Lord" is the most beautiful invitation — a homecoming. You are not wandering; you are heading home to the One who loves you.',
@@ -6056,7 +6056,7 @@ const quranContentAnglesData: ContentAngle[] = [
       },
       {
         type: 'mindset',
-        emoji: '💓',
+        icon: 'heart',
         title: 'The void only He fills',
         instruction:
           'Your heart was created with a void that no wealth, status, or relationship can fill. Only the remembrance of Allah brings "tatma\'innu" — deep, settled peace. You have found the only Source of lasting calm.',
@@ -6065,7 +6065,7 @@ const quranContentAnglesData: ContentAngle[] = [
       },
       {
         type: 'physical',
-        emoji: '🧘',
+        icon: 'breathing',
         title: 'Sit in stillness',
         instruction:
           'Sit in a quiet place for 3 minutes. Do nothing but breathe and repeat "SubhanAllah" on each exhale. Let the remembrance settle into your bones. This is what rest feels like.',
@@ -6086,7 +6086,7 @@ const quranContentAnglesData: ContentAngle[] = [
     practiceSteps: JSON.stringify([
       {
         type: 'physical',
-        emoji: '📱',
+        icon: 'chat',
         title: 'Express appreciation',
         instruction:
           'Send a kind message to a loved one right now expressing appreciation. The peace you feel with them is a direct sign (ayah) of Allah — a divinely placed tranquility. Honor that sign by nurturing it.',
@@ -6096,7 +6096,7 @@ const quranContentAnglesData: ContentAngle[] = [
       },
       {
         type: 'mindset',
-        emoji: '💕',
+        icon: 'heart',
         title: 'Affection and mercy',
         instruction:
           'Allah placed TWO gifts in your relationships: mawaddah (affection — the warmth of love) and rahmah (mercy — the patience that sustains through difficulty). Both are divine gifts. Recognize them and protect them.',
@@ -6130,7 +6130,7 @@ const quranContentAnglesData: ContentAngle[] = [
     practiceSteps: JSON.stringify([
       {
         type: 'mindset',
-        emoji: '📜',
+        icon: 'book-quran',
         title: 'A decree of mercy',
         instruction:
           'Allah OBLIGATED mercy upon Himself. He wrote it above the Throne: "My mercy prevails over My wrath." This is not a suggestion — it is a decree that cannot be revoked. You are living under permanent mercy.',
@@ -6182,7 +6182,7 @@ const quranContentAnglesData: ContentAngle[] = [
       },
       {
         type: 'physical',
-        emoji: '🚿',
+        icon: 'hands-prayer',
         title: 'Purify with wudu',
         instruction:
           'Make wudu as a physical act of purification. As you wash each limb, intend to cleanse not just your body but your heart. The Prophet ﷺ said sins fall off with the drops of water during wudu.',
@@ -6216,7 +6216,7 @@ const quranContentAnglesData: ContentAngle[] = [
     practiceSteps: JSON.stringify([
       {
         type: 'verbal',
-        emoji: '☮️',
+        icon: 'breathing',
         title: 'Repeat "Salam"',
         instruction:
           'Slowly say "Salam." This is a divine Name. Each time you say it, you are invoking Allah\'s attribute of Peace.',
@@ -6228,7 +6228,7 @@ const quranContentAnglesData: ContentAngle[] = [
       },
       {
         type: 'mindset',
-        emoji: '🌌',
+        icon: 'moon',
         title: 'The ultimate greeting',
         instruction:
           'ponder: Allah Himself will say "Salam" to you in Paradise. A direct, personal word of peace from the Creator. This single word encompasses freedom from ALL harm, grief, fear, and pain — forever. That peace begins now, in your heart.',
@@ -6268,7 +6268,7 @@ const quranContentAnglesData: ContentAngle[] = [
       },
       {
         type: 'physical',
-        emoji: '🌃',
+        icon: 'moon',
         title: 'Night devotion',
         instruction:
           "Set an intention to wake up 15 minutes before Fajr tomorrow. In that stillness, pray 2 rak'ahs. The night is when the world is quiet and your heart can hear Allah most clearly.",
@@ -6306,7 +6306,7 @@ const quranContentAnglesData: ContentAngle[] = [
     practiceSteps: JSON.stringify([
       {
         type: 'physical',
-        emoji: '📱',
+        icon: 'chat',
         title: 'Reach out with peace',
         instruction:
           'Send a message to a righteous friend right now — someone whose presence reminds you of Allah. Share a word of peace or a kind thought. The best companion is the one who is best to their companions.',
@@ -6366,7 +6366,7 @@ const quranContentAnglesData: ContentAngle[] = [
       },
       {
         type: 'mindset',
-        emoji: '🏠',
+        icon: 'home',
         title: 'At home in your faith',
         instruction:
           "The nafs al-mutma'innah responds to EVERY decree with pleasure — not just the easy ones. This soul is tranquil because it is certain in its Lord. You are not lost; you are at home in your faith.",
@@ -6445,7 +6445,7 @@ const quranContentAnglesData: ContentAngle[] = [
     practiceSteps: JSON.stringify([
       {
         type: 'physical',
-        emoji: '📱',
+        icon: 'chat',
         title: 'Share your story',
         instruction:
           'Share a story of how Allah helped you with a friend or family member today. Speaking of blessings IS gratitude. Silence about them is ingratitude.',
@@ -6455,7 +6455,7 @@ const quranContentAnglesData: ContentAngle[] = [
       },
       {
         type: 'mindset',
-        emoji: '📈',
+        icon: 'chart',
         title: 'Sharing triggers increase',
         instruction:
           "When you report Allah's favors, He increases them. This is a divine law. Your testimony of blessings is not boasting — it is an act of worship that opens doors to more blessings.",
@@ -6492,7 +6492,7 @@ const quranContentAnglesData: ContentAngle[] = [
     practiceSteps: JSON.stringify([
       {
         type: 'physical',
-        emoji: '🌿',
+        icon: 'leaf',
         title: "Observe nature's favor",
         instruction:
           'Look at a flower, a tree, or the sky and say: "SubhanAllah, this is Your favor." The signs of Allah in nature are divine invitations to mindfulness and gratitude.',
@@ -6513,7 +6513,7 @@ const quranContentAnglesData: ContentAngle[] = [
       },
       {
         type: 'mindset',
-        emoji: '🌊',
+        icon: 'breathing',
         title: 'Deep mindfulness',
         instruction:
           'This question is repeated 31 times in Surah Ar-Rahman — each time inviting you to pause and reflect on a different blessing. Right now, identify the ONE favor you are most aware of and sit with that awareness.',
@@ -6589,7 +6589,7 @@ const quranContentAnglesData: ContentAngle[] = [
       },
       {
         type: 'mindset',
-        emoji: '🔄',
+        icon: 'rewind',
         title: 'The beautiful cycle',
         instruction:
           'The ability to be grateful is itself a blessing that deserves gratitude. This creates a beautiful cycle: gratitude → remembrance → divine attention → more blessings → more gratitude. You are in this cycle right now.',
@@ -6598,7 +6598,7 @@ const quranContentAnglesData: ContentAngle[] = [
       },
       {
         type: 'physical',
-        emoji: '🧘',
+        icon: 'breathing',
         title: 'Sit in grateful dhikr',
         instruction:
           'Sit for 2 minutes doing nothing but dhikr with a grateful heart. The fact that you CAN remember Allah right now is itself a sign that He is remembering you. Thank Him for the ability to thank Him.',
@@ -6728,7 +6728,7 @@ const quranContentAnglesData: ContentAngle[] = [
       },
       {
         type: 'physical',
-        emoji: '✋',
+        icon: 'shield',
         title: 'Release your grip',
         instruction:
           'Physically clench your fists tight for 10 seconds, then slowly open them. As you open your hands, say "I hand this to You, Ya Allah." This physical act of release mirrors the spiritual act of tafwid.',
@@ -6809,7 +6809,7 @@ const quranContentAnglesData: ContentAngle[] = [
       },
       {
         type: 'mindset',
-        emoji: '👼',
+        icon: 'star',
         title: 'Angels are descending',
         instruction:
           'The angels do not only come at death. They descend upon you right now as you hold firm in faith. Unseen support is surrounding you. Your steadfastness triggers heavenly reinforcement.',
@@ -6818,7 +6818,7 @@ const quranContentAnglesData: ContentAngle[] = [
       },
       {
         type: 'physical',
-        emoji: '🚶',
+        icon: 'person',
         title: 'One step of istiqamah',
         instruction:
           'Choose one small righteous act right now — make wudu, give sadaqah, or call someone to check on them. Steadfastness is built one small act at a time, especially when it feels hard.',
@@ -6841,7 +6841,7 @@ const quranContentAnglesData: ContentAngle[] = [
     practiceSteps: JSON.stringify([
       {
         type: 'mindset',
-        emoji: '👂',
+        icon: 'headphones',
         title: 'He hears and He sees',
         instruction:
           'Allah told Musa at his most terrifying moment: "I hear and I see." The trembling you feel, the fear you cannot name, the worry keeping you up — He perceives every detail. You are not invisible.',
@@ -6865,7 +6865,7 @@ const quranContentAnglesData: ContentAngle[] = [
       },
       {
         type: 'physical',
-        emoji: '🚶',
+        icon: 'person',
         title: 'Face your fear with Bismillah',
         instruction:
           'Identify the one thing you are most afraid of today. Say "Bismillah, tawakkaltu \'alAllah" and take one step towards it. Musa faced Pharaoh — you can face your challenge.',
@@ -6903,7 +6903,7 @@ const quranContentAnglesData: ContentAngle[] = [
       },
       {
         type: 'mindset',
-        emoji: '🧹',
+        icon: 'leaf',
         title: 'Clear the spiritual blockage',
         instruction:
           'Stress can be a spiritual signal. Ask yourself: is there something I need to make right with Allah or with another person? Sometimes external pressure is reduced by internal cleansing.',
@@ -6934,7 +6934,7 @@ const quranContentAnglesData: ContentAngle[] = [
     practiceSteps: JSON.stringify([
       {
         type: 'mindset',
-        emoji: '🏞️',
+        icon: 'sunrise',
         title: 'Reflect on eternal rest',
         instruction:
           'Close your eyes for 30 seconds. ponder a place with zero fatigue, zero deadlines, zero anxiety — that is Jannah, and it is real, and it is waiting for you. Your current stress is measured in days; that relief is measured in eternity.',
@@ -6978,7 +6978,7 @@ const quranContentAnglesData: ContentAngle[] = [
     practiceSteps: JSON.stringify([
       {
         type: 'mindset',
-        emoji: '🌱',
+        icon: 'leaf',
         title: 'Small is beloved',
         instruction:
           "The Prophet ﷺ said the most beloved deeds to Allah are those that are consistent, even if small. You don't need to do everything today. One small sincere act while exhausted is worth more than a grand gesture in comfort.",
@@ -7023,7 +7023,7 @@ const quranContentAnglesData: ContentAngle[] = [
     practiceSteps: JSON.stringify([
       {
         type: 'mindset',
-        emoji: '💓',
+        icon: 'heart',
         title: 'Closer than your jugular vein',
         instruction:
           'Place your hand on your neck. Feel your pulse. Allah is closer to you than that vein. He knows the whispers of your soul, the fears you have not named, the anxieties you cannot articulate. You are never unseen.',
@@ -7125,7 +7125,7 @@ const quranContentAnglesData: ContentAngle[] = [
       },
       {
         type: 'mindset',
-        emoji: '🔑',
+        icon: 'lock',
         title: 'Only One door to knock',
         instruction:
           'This is liberation, not limitation: you only need ONE source of help, and that source is the most powerful being in existence. Stop knocking on doors that cannot help you. Knock on the only door that can.',
@@ -7157,7 +7157,7 @@ const quranContentAnglesData: ContentAngle[] = [
     practiceSteps: JSON.stringify([
       {
         type: 'mindset',
-        emoji: '🪶',
+        icon: 'bird',
         title: 'You were never in control',
         instruction:
           "Even the Prophet ﷺ — the most honored creation — said he had no power over his own affairs without Allah's permission. The illusion of control is what causes your stress. Letting go of what was never yours to carry is not weakness — it is the beginning of real strength.",
@@ -7179,7 +7179,7 @@ const quranContentAnglesData: ContentAngle[] = [
       },
       {
         type: 'physical',
-        emoji: '✋',
+        icon: 'shield',
         title: 'Open your palms',
         instruction:
           'Lift your hands in dua. The open palm position is itself a symbol of dependency — you are asking, not demanding. Sit with this posture for a moment and feel the relief of admitting: "I need You, Ya Allah."',
@@ -7203,7 +7203,7 @@ const quranContentAnglesData: ContentAngle[] = [
     practiceSteps: JSON.stringify([
       {
         type: 'mindset',
-        emoji: '🌊',
+        icon: 'breathing',
         title: 'He pardons much',
         instruction:
           'Whatever you are going through — even if it is a consequence of your own mistakes — know that Allah is already pardoning most of what you deserve. The difficulty you feel is softened by mercy you cannot see.',
@@ -7262,7 +7262,7 @@ const quranContentAnglesData: ContentAngle[] = [
       },
       {
         type: 'mindset',
-        emoji: '🔓',
+        icon: 'lock',
         title: 'Desperation is the key',
         instruction:
           'Your desperation is not weakness — it is the key that unlocks divine response. Allah specifically promises to answer "al-mudtarr" — the one who has reached the end of their rope. The more helpless you feel, the closer you are to His answer.',
@@ -7402,7 +7402,7 @@ const quranContentAnglesData: ContentAngle[] = [
       },
       {
         type: 'physical',
-        emoji: '🧘',
+        icon: 'breathing',
         title: 'Dhikr circle of one',
         instruction:
           'Sit in dhikr for 3 minutes. The Prophet ﷺ said tranquility DESCENDS upon the people of dhikr, mercy covers them, and angels surround them. Your private dhikr creates an invisible sanctuary.',
@@ -7433,7 +7433,7 @@ const quranContentAnglesData: ContentAngle[] = [
       },
       {
         type: 'physical',
-        emoji: '📱',
+        icon: 'chat',
         title: 'Be the best to family',
         instruction:
           'Do one kind act for a family member right now: a message of love, a small gift, a word of encouragement. The Prophet ﷺ said the best of you is the best to his family.',
@@ -7466,7 +7466,7 @@ const quranContentAnglesData: ContentAngle[] = [
     practiceSteps: JSON.stringify([
       {
         type: 'mindset',
-        emoji: '💖',
+        icon: 'heart',
         title: 'He knows your heart',
         instruction:
           'Allah knew what was in the hearts of the believers — their sincerity. He knows YOUR heart too. Your genuine intention, even imperfect, is seen and recognized. His pleasure (rida) is the deepest source of inner calm.',
@@ -7510,7 +7510,7 @@ const quranContentAnglesData: ContentAngle[] = [
     practiceSteps: JSON.stringify([
       {
         type: 'mindset',
-        emoji: '👼',
+        icon: 'star',
         title: 'Unseen soldiers',
         instruction:
           'When sakina descends, it does not come alone — Allah sends "soldiers you did not see" alongside it. Angels. Right now, if you feel calm, it may be because unseen support is surrounding you. Your peace has heavenly backup.',
@@ -7519,7 +7519,7 @@ const quranContentAnglesData: ContentAngle[] = [
       },
       {
         type: 'physical',
-        emoji: '🧘',
+        icon: 'breathing',
         title: 'Recall unexpected calm',
         instruction:
           'Think of a time you felt unexpectedly calm during a storm. That was sakina. It descends precisely when crisis peaks. The same God who sent it then can send it now — and at any moment you need it.',
@@ -7683,7 +7683,7 @@ const quranContentAnglesData: ContentAngle[] = [
     practiceSteps: JSON.stringify([
       {
         type: 'mindset',
-        emoji: '⚖️',
+        icon: 'target',
         title: 'Hope and awe in balance',
         instruction:
           'Hope without fear breeds complacency. Fear without hope breeds despair. The prophets combined raghab (eager hope) with rahab (reverential awe). This balance is essential — it keeps your heart healthy and your dua powerful.',
@@ -7726,7 +7726,7 @@ const quranContentAnglesData: ContentAngle[] = [
     practiceSteps: JSON.stringify([
       {
         type: 'mindset',
-        emoji: '🌠',
+        icon: 'star',
         title: 'Hidden rewards',
         instruction:
           'Allah has prepared for His righteous servants what no eye has seen, no ear has heard, and what has not occurred to the human heart. The reward is "hidden" because it surpasses ALL expectation — matching the hidden nature of your worship.',
@@ -7736,7 +7736,7 @@ const quranContentAnglesData: ContentAngle[] = [
       },
       {
         type: 'physical',
-        emoji: '🌃',
+        icon: 'moon',
         title: 'Secret good deed',
         instruction:
           'Do one good deed today that only Allah knows about: give anonymous charity, pray secretly, or forgive someone in your heart without telling anyone. Hidden worship earns hidden rewards.',
@@ -7769,7 +7769,7 @@ const quranContentAnglesData: ContentAngle[] = [
     practiceSteps: JSON.stringify([
       {
         type: 'mindset',
-        emoji: '🏠',
+        icon: 'home',
         title: 'An invitation home',
         instruction:
           '"Return to your Lord" is spoken with tenderness — it is an invitation home, not a command. The reassured soul finds contentment not in circumstances but in the Lord of all circumstances. You are being called home.',
@@ -7778,7 +7778,7 @@ const quranContentAnglesData: ContentAngle[] = [
       },
       {
         type: 'physical',
-        emoji: '🫁',
+        icon: 'breathing',
         title: 'Breathe in tranquility',
         instruction:
           "Take 5 slow, deep breaths. With each inhale, breathe in tranquility. With each exhale, release attachment to circumstances. The nafs al-mutma'innah finds its rest in Allah, not in outcomes.",
@@ -7816,7 +7816,7 @@ const quranContentAnglesData: ContentAngle[] = [
     practiceSteps: JSON.stringify([
       {
         type: 'mindset',
-        emoji: '⚖️',
+        icon: 'target',
         title: 'The math is in your favor',
         instruction:
           "The hardship is singular and definite (al-'usr). The ease is indefinite and plural (yusra). One hardship can NEVER overcome two eases. The math is permanently in your favor.",
@@ -7825,7 +7825,7 @@ const quranContentAnglesData: ContentAngle[] = [
       },
       {
         type: 'physical',
-        emoji: '👀',
+        icon: 'compass',
         title: 'Find the ease within',
         instruction:
           'Ease is "with" (ma\'a) hardship — not after it. Right now, identify one small thing going right in the middle of your stress. That IS the ease. It is already present, hiding alongside the difficulty.',
@@ -7858,7 +7858,7 @@ const quranContentAnglesData: ContentAngle[] = [
     practiceSteps: JSON.stringify([
       {
         type: 'physical',
-        emoji: '🫁',
+        icon: 'breathing',
         title: 'Breathe with Ya Sabur',
         instruction:
           'Take 5 deep breaths. With each exhale, say "Ya Sabur" (O Patient One). Let the divine attribute of patience flow through you with each breath.',
@@ -7868,7 +7868,7 @@ const quranContentAnglesData: ContentAngle[] = [
       },
       {
         type: 'mindset',
-        emoji: '🛠️',
+        icon: 'target',
         title: 'Patience before prayer',
         instruction:
           'Sabr is mentioned BEFORE salah because patience is needed to even begin worship when stressed. The humbly submissive find prayer easy because their hearts are already inclined. Incline your heart first, then pray.',
@@ -7989,7 +7989,7 @@ const quranContentAnglesData: ContentAngle[] = [
     practiceSteps: JSON.stringify([
       {
         type: 'physical',
-        emoji: '🧘',
+        icon: 'breathing',
         title: 'Sit with your Witness',
         instruction:
           'Sit in silence for 2 minutes. Place your hand on your neck and feel your pulse. Allah is closer to you than that vein. You are not alone — you are being witnessed by the Creator at this very moment.',
@@ -7998,7 +7998,7 @@ const quranContentAnglesData: ContentAngle[] = [
       },
       {
         type: 'mindset',
-        emoji: '💓',
+        icon: 'heart',
         title: 'Never truly alone',
         instruction:
           "He knows the loneliness you feel, the isolation that weighs on you, the words you cannot form. The jugular vein is the most intimate vessel in your body — yet Allah's nearness surpasses even that. You may feel alone, but you never are.",
@@ -8044,7 +8044,7 @@ const quranContentAnglesData: ContentAngle[] = [
       },
       {
         type: 'mindset',
-        emoji: '📞',
+        icon: 'chat',
         title: 'Two-way connection',
         instruction:
           'Dua is not a one-way ritual — it is the moment of deepest CONNECTION between you and your Creator. You speak, He listens. He responds, you receive. In your loneliest moment, this two-way line is always open.',
@@ -8120,7 +8120,7 @@ const quranContentAnglesData: ContentAngle[] = [
     practiceSteps: JSON.stringify([
       {
         type: 'mindset',
-        emoji: '👑',
+        icon: 'star',
         title: 'The King is watching',
         instruction:
           'No work goes unwitnessed. Allah sees every effort, every struggle, every good intention behind your actions. When you know the King is watching, every task becomes an act of worship. Work with Ihsan (excellence).',
@@ -8163,7 +8163,7 @@ const quranContentAnglesData: ContentAngle[] = [
     practiceSteps: JSON.stringify([
       {
         type: 'mindset',
-        emoji: '⏰',
+        icon: 'clock',
         title: 'Time is irreplaceable',
         instruction:
           'Allah swears by time because it is your most precious resource. The 4 conditions to avoid loss: faith, righteous deeds, advising truth, advising patience. Are you investing your time or wasting it?',
@@ -8172,7 +8172,7 @@ const quranContentAnglesData: ContentAngle[] = [
       },
       {
         type: 'physical',
-        emoji: '📚',
+        icon: 'book-quran',
         title: '15 minutes of eternal value',
         instruction:
           'Dedicate the next 15 minutes to something with eternal value: read Quran, learn a hadith, give sadaqah, or call someone to advise them to patience. This is how you escape the "loss."',
@@ -8251,7 +8251,7 @@ const quranContentAnglesData: ContentAngle[] = [
     practiceSteps: JSON.stringify([
       {
         type: 'mindset',
-        emoji: '💾',
+        icon: 'pen',
         title: 'Eternally preserved',
         instruction:
           'Every good deed, no matter how small or unnoticed, is PRESERVED. Allah guarantees: "We will not allow to be lost the reward of any who did well." Your effort is never wasted — it is eternally saved.',
@@ -8294,7 +8294,7 @@ const quranContentAnglesData: ContentAngle[] = [
     practiceSteps: JSON.stringify([
       {
         type: 'mindset',
-        emoji: '⚖️',
+        icon: 'target',
         title: 'Balanced ambition',
         instruction:
           'Islam does not demand abandoning the world — it demands redirecting it. Use your resources, skills, and energy for BOTH worldly benefit AND eternal reward. This is balanced ambition, the Quranic model.',
@@ -8303,7 +8303,7 @@ const quranContentAnglesData: ContentAngle[] = [
       },
       {
         type: 'physical',
-        emoji: '💵',
+        icon: 'honey',
         title: 'Give as He gave you',
         instruction:
           'Give something today — money, time, or effort. "Do good as Allah has done good to you." Your generosity should mirror His generosity. The upper hand (the giver) is better than the lower hand.',
@@ -8336,7 +8336,7 @@ const quranContentAnglesData: ContentAngle[] = [
     practiceSteps: JSON.stringify([
       {
         type: 'mindset',
-        emoji: '🌱',
+        icon: 'leaf',
         title: 'Effort unlocks guidance',
         instruction:
           'Divine guidance is proportional to effort. The more you strive, the more paths Allah opens. "Our ways" is PLURAL — meaning He opens multiple paths of guidance, not just one. Your effort is the seed; guidance is the harvest.',
@@ -8345,7 +8345,7 @@ const quranContentAnglesData: ContentAngle[] = [
       },
       {
         type: 'physical',
-        emoji: '📚',
+        icon: 'book-quran',
         title: 'Tread the path',
         instruction:
           'Set a spiritual goal right now: learn one new verse, read one page of tafsir, or attend one class this week. "Whoever treads a path seeking knowledge, Allah makes easy the path to Paradise."',
@@ -8378,7 +8378,7 @@ const quranContentAnglesData: ContentAngle[] = [
     practiceSteps: JSON.stringify([
       {
         type: 'mindset',
-        emoji: '💖',
+        icon: 'heart',
         title: 'Hope for the meeting',
         instruction:
           '"Hoping for the meeting" transforms death from something feared into something anticipated — a reunion with the Most Merciful. The Prophet ﷺ said: whoever loves to meet Allah, Allah loves to meet them. Work today as if preparing for that reunion.',
@@ -8421,7 +8421,7 @@ const quranContentAnglesData: ContentAngle[] = [
     practiceSteps: JSON.stringify([
       {
         type: 'mindset',
-        emoji: '🎨',
+        icon: 'pen',
         title: 'Quality over quantity',
         instruction:
           '"Best in deed" means quality, not quantity. One deed done with sincerity and excellence outweighs a thousand done carelessly. The test of life is not "who did more" but "who did BETTER."',
@@ -8464,7 +8464,7 @@ const quranContentAnglesData: ContentAngle[] = [
     practiceSteps: JSON.stringify([
       {
         type: 'mindset',
-        emoji: '⚖️',
+        icon: 'target',
         title: 'Nothing is too small',
         instruction:
           "Even an atom's weight (dharrah) of good is recorded. This shocked the companions who thought only major deeds mattered. Allah's accounting system catches EVERYTHING. No good deed is too small to tip the scales.",
@@ -8473,7 +8473,7 @@ const quranContentAnglesData: ContentAngle[] = [
       },
       {
         type: 'physical',
-        emoji: '😄',
+        icon: 'sunrise',
         title: 'One small good deed',
         instruction:
           'Do one small good deed right now: smile at someone, pick up litter, check on a neighbor, or send a kind message. The Prophet ﷺ said: "Do not belittle any good deed, even meeting your brother with a cheerful face."',
@@ -8553,7 +8553,7 @@ const quranContentAnglesData: ContentAngle[] = [
     practiceSteps: JSON.stringify([
       {
         type: 'mindset',
-        emoji: '🚨',
+        icon: 'shield',
         title: 'Multiple paths open',
         instruction:
           '"Our ways" (subulana) is PLURAL. Sincere striving opens not just one path but many — guidance in worship, relationships, career, self-understanding. Every sincere effort unlocks new dimensions of guidance you never expected.',
@@ -8562,7 +8562,7 @@ const quranContentAnglesData: ContentAngle[] = [
       },
       {
         type: 'physical',
-        emoji: '🚶',
+        icon: 'person',
         title: 'Take one step today',
         instruction:
           'Identify one area where you want guidance and take one concrete step today. This religion is easy — do not overburden yourself. One step with sincerity is enough for Allah to open the door.',
@@ -8646,7 +8646,7 @@ const quranContentAnglesData: ContentAngle[] = [
       },
       {
         type: 'mindset',
-        emoji: '📜',
+        icon: 'book-quran',
         title: 'Past care proves future care',
         instruction:
           'Allah recounts His past favors to build your confidence for the future. He expanded your chest, removed your burden, and raised your repute. If He has already carried you through past difficulties, why would He abandon you now?',
@@ -8691,7 +8691,7 @@ const quranContentAnglesData: ContentAngle[] = [
       },
       {
         type: 'mindset',
-        emoji: '🧵',
+        icon: 'target',
         title: 'Every knot can be untied',
         instruction:
           '"Knots" symbolize any obstacle blocking your path — in speech, thought, or action. Musa asked Allah to untie his, and he went on to defeat Pharaoh. Whatever knot is in your life, the Untier of all knots is listening.',
@@ -8700,7 +8700,7 @@ const quranContentAnglesData: ContentAngle[] = [
       },
       {
         type: 'physical',
-        emoji: '🫁',
+        icon: 'breathing',
         title: 'Breathe before speaking',
         instruction:
           "Before your next difficult conversation, take 3 slow breaths and recite Musa's dua silently. Then speak. The combination of divine help and calm breathing transforms your ability to communicate.",
@@ -8721,7 +8721,7 @@ const quranContentAnglesData: ContentAngle[] = [
     practiceSteps: JSON.stringify([
       {
         type: 'mindset',
-        emoji: '💖',
+        icon: 'heart',
         title: 'Mutual satisfaction',
         instruction:
           '"Radiyah" means YOU are pleased with Allah. "Mardiyyah" means Allah is pleased with YOU. This mutual satisfaction is the pinnacle of spiritual achievement. Gratitude for inner peace is gratitude for the greatest gift.',
@@ -8764,7 +8764,7 @@ const quranContentAnglesData: ContentAngle[] = [
     practiceSteps: JSON.stringify([
       {
         type: 'mindset',
-        emoji: '💚',
+        icon: 'heart',
         title: 'Your heart is alive',
         instruction:
           'The fact that you feel remorse is PROOF your heart is alive. A dead heart feels nothing. Your sadness over mistakes is itself a sign that Allah is calling you back. He has not abandoned you.',
@@ -8810,7 +8810,7 @@ const quranContentAnglesData: ContentAngle[] = [
     practiceSteps: JSON.stringify([
       {
         type: 'mindset',
-        emoji: '🌱',
+        icon: 'leaf',
         title: 'Like one who has no sin',
         instruction:
           'The Prophet ﷺ said: "The one who repents from sin is like one who has no sin." [Ibn Majah 4250]',
@@ -8832,7 +8832,7 @@ const quranContentAnglesData: ContentAngle[] = [
       },
       {
         type: 'physical',
-        emoji: '🚿',
+        icon: 'hands-prayer',
         title: 'Wudu of renewal',
         instruction:
           "Make wudu with the intention of washing away sins. The Prophet ﷺ said sins fall off with the water. Then pray 2 rak'ahs of repentance. This physical act of purification mirrors your internal renewal.",
@@ -8854,7 +8854,7 @@ const quranContentAnglesData: ContentAngle[] = [
     practiceSteps: JSON.stringify([
       {
         type: 'mindset',
-        emoji: '🏃',
+        icon: 'person',
         title: "Race, don't walk",
         instruction:
           'Good deeds have a limited window — health, energy, and opportunity do not last forever. The command is not "walk toward good" but "RACE." When you have energy, do not delay.',
@@ -8863,7 +8863,7 @@ const quranContentAnglesData: ContentAngle[] = [
       },
       {
         type: 'physical',
-        emoji: '⚡',
+        icon: 'flame',
         title: 'Do it NOW',
         instruction:
           'Identify one good deed and do it immediately, without delay: give charity, help someone, read Quran, or pray nafl. The Prophet ﷺ said: "Take advantage of five before five."',
@@ -8961,7 +8961,7 @@ const quranContentAnglesData: ContentAngle[] = [
       },
       {
         type: 'physical',
-        emoji: '😄',
+        icon: 'sunrise',
         title: 'Rejoice in advance',
         instruction:
           'Smile right now. The believers REJOICED in the victory of Allah — and you can too, even before your victory arrives. Trusting His promise is itself an act of worship.',
@@ -8983,7 +8983,7 @@ const quranContentAnglesData: ContentAngle[] = [
     practiceSteps: JSON.stringify([
       {
         type: 'physical',
-        emoji: '😄',
+        icon: 'sunrise',
         title: 'Smile with gratitude',
         instruction:
           'Smile right now and thank Allah for one specific bounty He gave you today. Rejoicing in divine bounty is not just a response — it is itself a source of continued joy and expanding bounty.',
@@ -8992,7 +8992,7 @@ const quranContentAnglesData: ContentAngle[] = [
       },
       {
         type: 'mindset',
-        emoji: '💖',
+        icon: 'heart',
         title: 'When Allah loves you',
         instruction:
           'When Allah loves a servant, He calls Jibril and says: "I love so-and-so, so love him." Then Jibril calls to the inhabitants of heaven. Then love is placed for that person on earth. Your gratitude may be a sign of that love.',
@@ -9026,7 +9026,7 @@ const quranContentAnglesData: ContentAngle[] = [
     practiceSteps: JSON.stringify([
       {
         type: 'mindset',
-        emoji: '🔑',
+        icon: 'lock',
         title: 'Taqwa is the key',
         instruction:
           'Taqwa (God-consciousness) is the key that unlocks unexpected doors. The relief will come from a direction you never anticipated. You cannot plan your way out — only Allah can. Trust the Unseen Provider.',
@@ -9068,7 +9068,7 @@ const quranContentAnglesData: ContentAngle[] = [
     practiceSteps: JSON.stringify([
       {
         type: 'mindset',
-        emoji: '🧩',
+        icon: 'brain',
         title: 'You see one piece',
         instruction:
           'You see one piece of the puzzle. Allah sees the entire picture. What feels like a wound may be the door to healing. Many companions experienced losses that later turned into blessings they never predicted. Your story is still unfolding.',
@@ -9111,7 +9111,7 @@ const quranContentAnglesData: ContentAngle[] = [
     practiceSteps: JSON.stringify([
       {
         type: 'mindset',
-        emoji: '×2️',
+        icon: 'rewind',
         title: 'A double guarantee',
         instruction:
           'Allah repeated this promise TWICE — a double divine guarantee. The Arabic reveals: "the hardship" (al-\'usr) is the same single hardship both times, but "ease" (yusra) is indefinite — meaning a NEW ease each time. One hardship cannot defeat two eases.',
@@ -9166,7 +9166,7 @@ const quranContentAnglesData: ContentAngle[] = [
       },
       {
         type: 'mindset',
-        emoji: '👑',
+        icon: 'star',
         title: 'All good is in His hand',
         instruction:
           'Even when circumstances appear negative, ALL good is in His hand. He is arranging blessings in ways beyond your perception. The One who controls sovereignty, honor, and provision is working FOR you, not against you.',
@@ -9214,7 +9214,7 @@ const quranContentAnglesData: ContentAngle[] = [
       },
       {
         type: 'mindset',
-        emoji: '💰',
+        icon: 'honey',
         title: 'True currency of hope',
         instruction:
           'Wealth and children are temporary adornments. Righteous deeds are the true currency of hope. Build your hope on what ENDURES — not on what fades. The dhikr you say today will be on your scales forever.',
@@ -9223,7 +9223,7 @@ const quranContentAnglesData: ContentAngle[] = [
       },
       {
         type: 'physical',
-        emoji: '🌱',
+        icon: 'leaf',
         title: 'Plant an enduring seed',
         instruction:
           'Do one act right now with the intention of it being an "enduring good": teach someone something beneficial, give sadaqah jariyah, or help establish something that outlasts you.',
@@ -9288,7 +9288,7 @@ const quranContentAnglesData: ContentAngle[] = [
     practiceSteps: JSON.stringify([
       {
         type: 'mindset',
-        emoji: '☮️',
+        icon: 'breathing',
         title: 'Pardoning protects YOU',
         instruction:
           'Pardoning is not about the other person — it is about preserving YOUR inner peace. "Take what is given freely" means accepting people as they are rather than demanding perfection. Lower your expectations and your anger drops.',
@@ -9297,7 +9297,7 @@ const quranContentAnglesData: ContentAngle[] = [
       },
       {
         type: 'physical',
-        emoji: '🚶',
+        icon: 'person',
         title: 'Turn away from ignorance',
         instruction:
           'If someone provokes you, physically disengage: walk away, change the subject, or simply stay silent. The verse commands "turn away from the ignorant" — disengagement is divine strategy, not weakness.',
@@ -9340,7 +9340,7 @@ const quranContentAnglesData: ContentAngle[] = [
       },
       {
         type: 'physical',
-        emoji: '🚿',
+        icon: 'hands-prayer',
         title: 'Change your state',
         instruction:
           'The Prophet ﷺ said: if you are angry while standing, sit down. If still angry, lie down. Change your physical posture to break the anger cycle.',
@@ -9421,7 +9421,7 @@ const quranContentAnglesData: ContentAngle[] = [
     practiceSteps: JSON.stringify([
       {
         type: 'physical',
-        emoji: '🚶',
+        icon: 'person',
         title: 'Walk with dignity',
         instruction:
           'Walk slowly and gently for the next 2 minutes. "Walking easily" (hawnan) refers to dignity and tranquility. Let your inner calm manifest in your physical presence.',
@@ -9439,7 +9439,7 @@ const quranContentAnglesData: ContentAngle[] = [
       },
       {
         type: 'verbal',
-        emoji: '☮️',
+        icon: 'breathing',
         title: 'Respond with Salam',
         instruction:
           'When addressed by the ignorant, the servants of the Most Merciful say "Salama" (peace). Practice this today.',
@@ -9466,7 +9466,7 @@ const quranContentAnglesData: ContentAngle[] = [
     practiceSteps: JSON.stringify([
       {
         type: 'mindset',
-        emoji: '🌿',
+        icon: 'leaf',
         title: 'Humble even when honored',
         instruction:
           'The servants of the Most Merciful do not behave with arrogance even when honored. Their contentment is reflected in gentle dealings. True gratitude produces humility, not pride.',
@@ -9475,7 +9475,7 @@ const quranContentAnglesData: ContentAngle[] = [
       },
       {
         type: 'physical',
-        emoji: '🫂',
+        icon: 'heart',
         title: 'Soft words today',
         instruction:
           'Intentionally use soft, peaceful words in every interaction today. Gentleness beautifies everything it touches. Practice responding to one difficulty with peaceful words.',
@@ -9523,7 +9523,7 @@ const quranContentAnglesData: ContentAngle[] = [
       },
       {
         type: 'physical',
-        emoji: '🧘',
+        icon: 'breathing',
         title: 'Change your posture',
         instruction:
           "If standing, sit. If sitting, lie down. Change your physical state to break the anger cycle. Then remain SILENT — silence is the Prophet's ﷺ weapon against regrettable words.",
@@ -9557,7 +9557,7 @@ const quranContentAnglesData: ContentAngle[] = [
     practiceSteps: JSON.stringify([
       {
         type: 'mindset',
-        emoji: '🌾',
+        icon: 'leaf',
         title: 'A garden on a height',
         instruction:
           'When energy is paired with sincerity, every effort yields multiple rewards — like a garden on a height that receives double rainfall. Renew your intention for Allah and watch your efforts multiply.',
@@ -9603,7 +9603,7 @@ const quranContentAnglesData: ContentAngle[] = [
     practiceSteps: JSON.stringify([
       {
         type: 'physical',
-        emoji: '🌺',
+        icon: 'leaf',
         title: 'List your blessings',
         instruction:
           'List 3 specific blessings that have multiplied in your life and say "Alhamdulillah" for each with presence of heart. Like the well-watered garden, your blessings have flourished beyond expectation.',
@@ -9612,7 +9612,7 @@ const quranContentAnglesData: ContentAngle[] = [
       },
       {
         type: 'mindset',
-        emoji: '🌧️',
+        icon: 'candle',
         title: 'Gratitude invites increase',
         instruction:
           'Gratitude and sincerity invite divine blessing. No matter the "rainfall" in your life, Allah ensures your garden flourishes. And He promised: if you are grateful, He will INCREASE you.',
@@ -9706,7 +9706,7 @@ const quranContentAnglesData: ContentAngle[] = [
       },
       {
         type: 'mindset',
-        emoji: '📞',
+        icon: 'chat',
         title: 'Stress is a call to connect',
         instruction:
           'Your stress is not a punishment — it is a CALL to connect. Dua is worship. Every call to Him is recorded as a high act of devotion. Your stress is driving you toward the best possible response: turning to Allah.',
@@ -9747,7 +9747,7 @@ const quranContentAnglesData: ContentAngle[] = [
     practiceSteps: JSON.stringify([
       {
         type: 'mindset',
-        emoji: '☁️',
+        icon: 'moon',
         title: 'Written in the heavens',
         instruction:
           'Your rizq is already written in the heavens — recorded and guaranteed. Worrying will not increase it, and relaxing will not decrease it. This is divine accounting.',
@@ -9810,7 +9810,7 @@ const quranContentAnglesData: ContentAngle[] = [
       },
       {
         type: 'mindset',
-        emoji: '🐣',
+        icon: 'bird',
         title: 'Liberate your heart',
         instruction:
           'He provides for the bird in the sky, the fish in the ocean, and the baby in the womb — none of them earned it. When you know your Provider is Ar-Razzaq, you stop depending on creation.',
@@ -9856,7 +9856,7 @@ const quranContentAnglesData: ContentAngle[] = [
     practiceSteps: JSON.stringify([
       {
         type: 'mindset',
-        emoji: '⚖️',
+        icon: 'target',
         title: 'Halal over haram',
         instruction:
           'A single dirham earned halal is better than a mountain of gold earned through doubt. Haram wealth blocks duas, clouds judgment, and removes barakah. A little with barakah beats abundance with anxiety.',
@@ -9911,7 +9911,7 @@ const quranContentAnglesData: ContentAngle[] = [
     practiceSteps: JSON.stringify([
       {
         type: 'physical',
-        emoji: '🐪',
+        icon: 'bird',
         title: 'Tie your camel',
         instruction:
           'Identify one action you have been avoiding and do it TODAY: update resume, learn a skill, apply for an opportunity. Tie the camel THEN trust. True tawakkul means your heart relies on Allah while your limbs are active.',
@@ -10128,7 +10128,7 @@ const quranContentAnglesData: ContentAngle[] = [
     practiceSteps: JSON.stringify([
       {
         type: 'physical',
-        emoji: '💰',
+        icon: 'honey',
         title: 'Give from what you need',
         instruction:
           'Give something today — not from surplus, from what you need. The Sahaba gave from their poverty. Set up a monthly sadaqah: even $5/month. Consistency opens the floodgates of rizq.',
@@ -10138,7 +10138,7 @@ const quranContentAnglesData: ContentAngle[] = [
       },
       {
         type: 'mindset',
-        emoji: '🌱',
+        icon: 'leaf',
         title: '70,000% return',
         instruction:
           "Allah doesn't just replace what you give — He multiplies it. One seed becomes 700 grains. What you keep, you lose. What you give, you keep forever. True belief is when your wealth moves with your heart.",
@@ -10184,7 +10184,7 @@ const quranContentAnglesData: ContentAngle[] = [
     practiceSteps: JSON.stringify([
       {
         type: 'physical',
-        emoji: '🚶',
+        icon: 'person',
         title: 'Walk among its slopes',
         instruction:
           'Allah said "Walk among its slopes" — not sit and wait. Take one PRACTICAL step today: send applications, learn a skill, reach out to a mentor. Maryam had to shake the tree. Do your part.',
@@ -10193,7 +10193,7 @@ const quranContentAnglesData: ContentAngle[] = [
       },
       {
         type: 'mindset',
-        emoji: '🌴',
+        icon: 'leaf',
         title: 'Shake the tree',
         instruction:
           "Allah could have dropped dates into Maryam's lap without effort — but He told her to shake the tree. He divided the work: He provides, you seek. Don't do His job, and don't skip yours.",
@@ -10255,7 +10255,7 @@ const quranContentAnglesData: ContentAngle[] = [
       },
       {
         type: 'mindset',
-        emoji: '🏜️',
+        icon: 'sunrise',
         title: "Ibrahim's dua in the desert",
         instruction:
           'Ibrahim left Hajar and Ismail in a barren desert with zero resources — and made dua. Allah responded with Zamzam, turned a valley into the center of world trade. Even prophets make dua for provision. It is Sunnah, not weak faith.',
@@ -10310,7 +10310,7 @@ const quranContentAnglesData: ContentAngle[] = [
       },
       {
         type: 'mindset',
-        emoji: '📈',
+        icon: 'chart',
         title: 'Guaranteed contract',
         instruction:
           'This is not a suggestion — it is a guaranteed contract: show gratitude, get increase. Three levels of Shukr: Heart (recognize the blessing), Tongue (say Alhamdulillah), Limbs (use the blessing to obey Allah). Complete shukr activates the increase.',
@@ -10408,7 +10408,7 @@ const quranContentAnglesData: ContentAngle[] = [
     practiceSteps: JSON.stringify([
       {
         type: 'physical',
-        emoji: '⚰️',
+        icon: 'candle',
         title: 'Death reminder',
         instruction:
           'Visit a graveyard, or read about someone\'s death. Ask: "When I\'m in that grave, will it matter how much I earned or how much I gave?" Define "Enough" — write a number, then realize people earning 10x that are still anxious. Enough is a state of heart.',
@@ -10418,7 +10418,7 @@ const quranContentAnglesData: ContentAngle[] = [
       },
       {
         type: 'mindset',
-        emoji: '🏁',
+        icon: 'target',
         title: 'The race ends at the grave',
         instruction:
           'The race ends at the grave — and the winner is not who has the most, but who used what they had best. If the son of Adam had a valley of gold, he would want a second one. The cure for greed is remembering death.',
@@ -10462,7 +10462,7 @@ const quranContentAnglesData: ContentAngle[] = [
     practiceSteps: JSON.stringify([
       {
         type: 'physical',
-        emoji: '📋',
+        icon: 'pen',
         title: '14-day review',
         instruction:
           'Look back at your journey Days 1-13. Create your Rizq Routine: pick 3 daily habits. Morning: "Ya Razzaq" after Fajr. Afternoon: Give $1 sadaqah. Night: Write 3 gratitudes. Commit for 30 days.',
@@ -10507,7 +10507,7 @@ const quranContentAnglesData: ContentAngle[] = [
     practiceSteps: JSON.stringify([
       {
         type: 'physical',
-        emoji: '🤫',
+        icon: 'breathing',
         title: 'Acknowledge the Fourth',
         instruction:
           'Sit in silence for 60 seconds. Acknowledge that you are not alone — Allah is the "fourth" in your room or the "second" in your heart. He hears your unspoken words right now.',
@@ -10552,7 +10552,7 @@ const quranContentAnglesData: ContentAngle[] = [
     practiceSteps: JSON.stringify([
       {
         type: 'mindset',
-        emoji: '💝',
+        icon: 'heart',
         title: 'The Most Loving',
         instruction:
           'Allah is Al-Wadud — the Most Loving. This is not a distant, cold mercy; it is an affectionate, active love. Jibril and the angels are told to love those whom Allah loves. Consider yourself part of that circle of divine affection.',
@@ -10573,7 +10573,7 @@ const quranContentAnglesData: ContentAngle[] = [
       },
       {
         type: 'physical',
-        emoji: '🤝',
+        icon: 'heart',
         title: 'Connect with a believer',
         instruction:
           'Reach out to one person today just to say salam or ask how they are. Allah is Al-Wadud, and He places "wud" (affection) between His servants. Reconnecting with people is an extension of His love.',
@@ -10609,7 +10609,7 @@ const quranContentAnglesData: ContentAngle[] = [
       },
       {
         type: 'mindset',
-        emoji: '🧠',
+        icon: 'brain',
         title: 'Interrupt the pattern',
         instruction:
           'The moment you feel guilt, immediately pivot to remembrance. Don\'t marinate in the shame; use the shame as a signal to return. "They remember Allah" — let the memory of His mercy be stronger than the memory of your mistake.',
@@ -10618,7 +10618,7 @@ const quranContentAnglesData: ContentAngle[] = [
       },
       {
         type: 'physical',
-        emoji: '↗️',
+        icon: 'arrow-right',
         title: 'Pivot to goodness',
         instruction:
           'The Prophet ﷺ said: "Follow a bad deed with a good deed and it will wipe it out." Do one small good act right now — give $1 charity or pray 2 rak\'ahs. Use your energy to build, not just regret.',
@@ -10655,7 +10655,7 @@ const quranContentAnglesData: ContentAngle[] = [
       },
       {
         type: 'mindset',
-        emoji: '🐪',
+        icon: 'bird',
         title: 'The Happy Lord',
         instruction:
           'Reflect on the joy of a man finding his lost camel in a vast desert. The Prophet ﷺ said Allah is MORE happy with your return than that. You are not begging a reluctant judge; you are returning to a Lord who loves to forgive.',
