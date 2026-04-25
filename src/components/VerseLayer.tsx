@@ -9,6 +9,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { HapticsService } from '../services/hapticsService';
 import ArabicText from './ArabicText';
 import AudioPlayerButton from './AudioPlayerButton';
+import LayerBottomRail from './LayerBottomRail';
 
 /* ─── Subtle Geometric Ornament ──────────────────────────────── */
 function GeometricOrnament({ size, color }: { size: number; color: string }) {
@@ -237,20 +238,6 @@ const VerseLayer: React.FC<VerseLayerProps> = ({
   const insets = useSafeAreaInsets();
   const { surahName, verseRef } = useMemo(() => parseReference(reference), [reference]);
 
-  // Gentle swipe hint — shows once then fades out
-  const swipeHintOpacity = useRef(new Animated.Value(0)).current;
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      Animated.sequence([
-        Animated.timing(swipeHintOpacity, { toValue: 0.7, duration: 600, useNativeDriver: true }),
-        Animated.delay(3000),
-        Animated.timing(swipeHintOpacity, { toValue: 0, duration: 1200, useNativeDriver: true }),
-      ]).start();
-    }, 2000);
-    return () => clearTimeout(timer);
-  }, []);
-
   const formattedTranslation = translation ?? '';
 
   const isLongArabic = arabic.length > 200;
@@ -353,11 +340,10 @@ const VerseLayer: React.FC<VerseLayerProps> = ({
         )}
       </Animated.ScrollView>
 
-      {/* ── Footer: FABs on edges, swipe hint centered ── */}
-      <View style={styles.footer}>
-        {/* Left FAB: expandable actions */}
-        <View style={styles.fabLeft}>
-          {onShare && onSave && (
+      {/* ── Footer: shared bottom rail ── */}
+      <LayerBottomRail
+        leftSlot={
+          onShare && onSave ? (
             <ActionsFAB
               accentColor={accentColor}
               onShare={onShare}
@@ -365,32 +351,11 @@ const VerseLayer: React.FC<VerseLayerProps> = ({
               isSaved={isSaved}
               audioKey={audioKey}
             />
-          )}
-        </View>
-
-        {/* Center: swipe up hint */}
-        <Animated.View style={[styles.swipeHintCenter, { opacity: swipeHintOpacity }]}>
-          <Ionicons name="chevron-up" size={18} color={'rgba(245, 237, 227, 0.3)'} />
-          <Text style={styles.swipeHintText}>{nextLayerLabel || 'Explore'}</Text>
-        </Animated.View>
-
-        {/* Right FAB: next verse */}
-        <View style={styles.fabRight}>
-          {onNextVerse && (
-            <TouchableOpacity
-              onPress={() => {
-                HapticsService.impactAsync('LIGHT');
-                onNextVerse();
-              }}
-              activeOpacity={0.8}
-            >
-              <BlurView intensity={30} tint="dark" style={styles.nextFab}>
-                <Ionicons name="arrow-forward" size={22} color={Colors.text.primary} />
-              </BlurView>
-            </TouchableOpacity>
-          )}
-        </View>
-      </View>
+          ) : null
+        }
+        nextLayerLabel={nextLayerLabel}
+        onNext={onNextVerse}
+      />
     </View>
   );
 };
@@ -560,33 +525,6 @@ const styles = StyleSheet.create({
     transform: [{ rotate: '45deg' }],
   },
 
-  /* ── Footer ── */
-  footer: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-evenly',
-    paddingHorizontal: Spacing.xl,
-    paddingBottom: Spacing.lg,
-    minHeight: 64,
-  },
-  fabLeft: {
-    width: 60,
-    alignItems: 'center',
-  },
-  fabRight: {
-    width: 60,
-    alignItems: 'center',
-  },
-  swipeHintCenter: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingBottom: 0,
-  },
-
   /* ── Glass FABs ── */
   fabContainer: {
     alignItems: 'center',
@@ -621,24 +559,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     overflow: 'hidden',
-  },
-  nextFab: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    backgroundColor: 'rgba(255, 235, 210, 0.1)',
-    borderWidth: 1,
-    borderColor: 'rgba(255, 235, 210, 0.15)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    overflow: 'hidden',
-  },
-
-  swipeHintText: {
-    fontSize: 10,
-    color: 'rgba(245, 237, 227, 0.35)',
-    fontWeight: '500',
-    letterSpacing: 1,
   },
 });
 

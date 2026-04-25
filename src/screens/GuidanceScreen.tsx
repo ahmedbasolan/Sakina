@@ -152,6 +152,7 @@ const GuidanceScreen: React.FC = () => {
             steps={practiceSteps}
             onCheckAll={() => setCurrentLayer(currentLayer + 1)}
             scrollY={scrollY}
+            nextLayerLabel={nextLayerLabel}
           />
         )}
         {layers[currentLayer] === 'reflection' && experience.angle.reflection && (
