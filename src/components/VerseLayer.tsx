@@ -123,21 +123,36 @@ function ActionsFAB({
     outputRange: ['0deg', '45deg'],
   });
 
-  const actions = [
+  type RegularAction = {
+    isAudio?: false;
+    icon: React.ComponentProps<typeof Ionicons>['name'];
+    color: string;
+    onPress: () => void;
+  };
+  type AudioAction = {
+    isAudio: true;
+    icon: React.ComponentProps<typeof Ionicons>['name'];
+    color: string;
+    onPress: () => void;
+    audioKey: string;
+  };
+  type ActionItem = RegularAction | AudioAction;
+
+  const actions: ActionItem[] = [
     {
-      icon: isSaved ? 'heart' as const : 'heart-outline' as const,
+      icon: isSaved ? 'heart' : 'heart-outline',
       color: isSaved ? Colors.status.error : Colors.text.primary,
       onPress: () => { HapticsService.impactAsync('LIGHT'); onSave(); },
     },
     ...(audioKey ? [{
-      icon: 'volume-medium-outline' as const,
+      icon: 'volume-medium-outline' as React.ComponentProps<typeof Ionicons>['name'],
       color: Colors.text.primary,
       onPress: () => { }, // Audio handled by AudioPlayerButton
-      isAudio: true,
+      isAudio: true as const,
       audioKey,
     }] : []),
     {
-      icon: 'share-outline' as const,
+      icon: 'share-outline',
       color: Colors.text.primary,
       onPress: () => { HapticsService.impactAsync('LIGHT'); onShare(); },
     },
@@ -161,10 +176,10 @@ function ActionsFAB({
           ]}
           pointerEvents={expanded ? 'auto' : 'none'}
         >
-          {(action as any).isAudio && (action as any).audioKey ? (
+          {'isAudio' in action && action.isAudio ? (
             <BlurView intensity={30} tint="dark" style={styles.fabAction}>
               <AudioPlayerButton
-                verseKey={(action as any).audioKey}
+                verseKey={action.audioKey}
                 size={22}
                 color={Colors.accent.primary}
                 showLabel={false}
