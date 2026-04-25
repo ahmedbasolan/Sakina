@@ -33,7 +33,7 @@ const ReflectionLayer: React.FC<ReflectionLayerProps> = ({
   footerText = 'Your reflections are private and only you can see them.',
   requireText = true,
   scrollY,
-  nextLayerLabel,
+  nextLayerLabel: _nextLayerLabel, // accepted for API symmetry; reflection is always the last layer
 }) => {
   const insets = useSafeAreaInsets();
   const [reflection, setReflection] = useState('');

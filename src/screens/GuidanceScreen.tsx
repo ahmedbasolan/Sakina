@@ -228,14 +228,6 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
   },
-  floatingFooter: {
-    position: 'absolute',
-    bottom: Spacing.md,
-    left: 0,
-    right: 0,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
 });
 
 export default GuidanceScreen;
