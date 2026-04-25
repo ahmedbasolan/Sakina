@@ -216,28 +216,6 @@ interface VerseLayerProps {
   audioKey?: string;
 }
 
-const formatTranslation = (raw: string): string => {
-  if (!raw) return '';
-
-  let cleaned = raw
-    .replace(/\s*\([^)]+\)\s*/g, ' ')
-    .replace(/\s+/g, ' ')
-    .replace(/\s*([,.!?])\s*/g, '$1 ')
-    .replace(/^./, (c) => c.toUpperCase())
-    .trim();
-
-  cleaned = cleaned
-    .replace(/([a-z])([A-Z])/g, '$1 $2')
-    .replace(/([a-z])And/g, '$1 and')
-    .replace(/([a-z])The/g, '$1 the')
-    .replace(/([a-z])Will/g, '$1 will')
-    .replace(/([a-z])Is/g, '$1 is')
-    .replace(/([a-z])Has/g, '$1 has')
-    .replace(/([a-z])Have/g, '$1 have')
-    .replace(/([a-z])Are/g, '$1 are');
-
-  return cleaned;
-};
 
 const VerseLayer: React.FC<VerseLayerProps> = ({
   arabic,
@@ -271,7 +249,7 @@ const VerseLayer: React.FC<VerseLayerProps> = ({
     return () => clearTimeout(timer);
   }, []);
 
-  const formattedTranslation = useMemo(() => formatTranslation(translation), [translation]);
+  const formattedTranslation = translation ?? '';
 
   const isLongArabic = arabic.length > 200;
   const isLongTranslation = formattedTranslation.length > 200;
