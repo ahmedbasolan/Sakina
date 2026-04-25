@@ -132,7 +132,7 @@ const GuidanceScreen: React.FC = () => {
             onShare={handleShareVerse}
             onSave={() => handleSave(0)}
             isSaved={!!savedStates[0]}
-            audioKey={extractVerseKey(experience.content.source)}
+            audioKey={experience.content.audioKey}
           />
         )}
       </LayerContainer>
@@ -158,7 +158,7 @@ const GuidanceScreen: React.FC = () => {
             onShare={handleShareVerse}
             onSave={() => handleSave(0)}
             isSaved={!!savedStates[0]}
-            audioKey={extractVerseKey(experience.content.source)}
+            audioKey={experience.content.audioKey}
             onSaveReflection={() => {}}
           />
         </View>
@@ -186,13 +186,6 @@ const GuidanceScreen: React.FC = () => {
   );
 };
 
-function extractVerseKey(source: string): string {
-  const match = source.match(/(\d+):(\d+(?:-\d+)?)/);
-  if (match) {
-    return match[1] + ':' + match[2];
-  }
-  return '1:1';
-}
 
 const styles = StyleSheet.create({
   container: {
