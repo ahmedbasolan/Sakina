@@ -26,7 +26,7 @@ export function CheckInBanner({ onDismiss }: CheckInBannerProps) {
           style={[styles.pulsingDot, { transform: [{ scale: pulseAnim }] }]}
         />
         <Text style={styles.checkinBannerText}>
-          You haven't checked in today — how is your heart?
+          Your heart has a story today — take a moment
         </Text>
       </View>
       <TouchableOpacity onPress={onDismiss} style={styles.checkinDismiss}>
