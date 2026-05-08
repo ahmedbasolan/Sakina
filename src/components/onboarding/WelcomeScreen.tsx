@@ -116,7 +116,7 @@ export default function WelcomeScreen({ isActive, onNext, onSkip }: Props) {
         <Animated.View style={[styles.chip, s[4]]}>
           <SparklesIcon size={12} color={Colors.accent.primary} />
           <Text style={styles.chipText}>
-            {'  '}Personalized verse recommendations based on your emotions
+            {'  '}A verse chosen for your heart, right now
           </Text>
         </Animated.View>
 
@@ -263,7 +263,7 @@ const styles = StyleSheet.create({
   },
   skipText: {
     fontSize: 14,
-    color: 'rgba(176, 196, 215, 0.4)',
+    color: 'rgba(176, 196, 215, 0.25)',
     letterSpacing: 0.5,
   },
 });
