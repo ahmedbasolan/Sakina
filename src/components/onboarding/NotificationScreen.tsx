@@ -93,13 +93,13 @@ export default function NotificationScreen({ isActive, onAllow, onSkip }: Props)
 
         {/* Title */}
         <Animated.Text style={[styles.title, s[1]]}>
-          Stay Connected
+          Gentle Reminders
         </Animated.Text>
 
         {/* Body */}
         <Animated.Text style={[styles.body, s[2]]}>
-          Gentle reminders for prayer times and daily{'\n'}
-          verses — like a soft call to spiritual practice
+          A verse at Fajr. A reflection at Maghrib.{'\n'}
+          Like a friend who remembers.
         </Animated.Text>
       </View>
 
@@ -107,13 +107,13 @@ export default function NotificationScreen({ isActive, onAllow, onSkip }: Props)
       <View style={styles.bottomSection}>
         <Animated.View style={[styles.btnWrap, s[3]]}>
           <TouchableOpacity style={styles.allowBtn} activeOpacity={0.8} onPress={onAllow}>
-            <Text style={styles.allowBtnText}>Allow Notifications</Text>
+            <Text style={styles.allowBtnText}>Yes, remind me</Text>
           </TouchableOpacity>
         </Animated.View>
 
         <Animated.View style={[styles.skipWrap, s[4]]}>
           <TouchableOpacity style={styles.skipBtn} activeOpacity={0.7} onPress={onSkip}>
-            <Text style={styles.skipBtnText}>Maybe later</Text>
+            <Text style={styles.skipBtnText}>Not now</Text>
           </TouchableOpacity>
         </Animated.View>
 
