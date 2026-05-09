@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
   StyleSheet,
   View,
@@ -21,6 +21,7 @@ import { Colors, Spacing, Typography, MoodColors } from '../theme/DesignSystem';
 import { logServiceError } from '../services/errorLoggingService';
 
 import { useRoute, useNavigation } from '@react-navigation/native';
+import { ReflectionPrompt } from '../components/ReflectionPrompt';
 import { useAppContext } from '../context/AppContext';
 import { SubscriptionService } from '../services/subscriptionService';
 
@@ -62,6 +63,30 @@ const GuidanceScreen: React.FC = () => {
   const scrollY = useRef(new Animated.Value(0)).current;
   const [currentLayer, setCurrentLayer] = useState(0);
   const totalLayers = 1; // verse only
+
+  const [showReflection, setShowReflection] = useState(false);
+  const hasShownReflection = useRef(false);
+
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('beforeRemove', (e: any) => {
+      if (hasShownReflection.current) return;
+      e.preventDefault();
+      hasShownReflection.current = true;
+      setShowReflection(true);
+    });
+    return unsubscribe;
+  }, [navigation]);
+
+  const handleReflectionSave = async (text: string) => {
+    await onSaveReflection(text);
+    setShowReflection(false);
+    navigation.goBack();
+  };
+
+  const handleReflectionSkip = () => {
+    setShowReflection(false);
+    navigation.goBack();
+  };
 
   const LAYER_TYPES: Array<'verse'> = [
     'verse',
@@ -183,6 +208,12 @@ const GuidanceScreen: React.FC = () => {
         onClose={() => setIsPrefsModalVisible(false)}
         preferences={preferences}
         onUpdatePreference={updatePreference}
+      />
+
+      <ReflectionPrompt
+        visible={showReflection}
+        onSave={handleReflectionSave}
+        onSkip={handleReflectionSkip}
       />
     </ImmersiveBackground>
   );
