@@ -92,6 +92,31 @@ export default function FirstGuidanceScreen({ isActive, onNext }: Props) {
   // [0] pretitle, [1] goldLine, [2] arabic, [3] ornament, [4] translation, [5] ref, [6] chip, [7] CTA
   const s = useStaggerEntry(isActive, 8, { baseDelay: 400, stagger: 160 });
 
+  const ctaOpacity = useRef(new Animated.Value(0)).current;
+  const chipOpacity = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    if (!isActive) return;
+
+    const chipTimer = setTimeout(() => {
+      Animated.timing(chipOpacity, { toValue: 1, duration: 1000, useNativeDriver: true }).start();
+    }, 3000);
+
+    const ctaTimer = setTimeout(() => {
+      Animated.timing(ctaOpacity, { toValue: 1, duration: 1000, useNativeDriver: true }).start();
+    }, 4000);
+
+    return () => {
+      clearTimeout(chipTimer);
+      clearTimeout(ctaTimer);
+    };
+  }, [isActive]);
+
+  const forceShowCta = () => {
+    ctaOpacity.setValue(1);
+    chipOpacity.setValue(1);
+  };
+
   useEffect(() => {
     if (!isActive) return;
     AsyncStorage.getItem('@onboarding_mood').then(mood => {
@@ -115,7 +140,7 @@ export default function FirstGuidanceScreen({ isActive, onNext }: Props) {
         <AnimatedMandala size={200} color={Colors.accent.primary} opacity={0.035} direction="ccw" />
       </View>
 
-      <View style={styles.contentArea}>
+      <View style={styles.contentArea} onTouchEnd={forceShowCta}>
         {/* Pre-title */}
         <Animated.Text style={[styles.pretitle, s[0]]}>
           {moodLabel
@@ -153,15 +178,13 @@ export default function FirstGuidanceScreen({ isActive, onNext }: Props) {
 
       {/* Bottom */}
       <View style={styles.bottomSection}>
-        {/* Journey chip */}
-        <Animated.View style={[styles.chip, s[6]]}>
-          <Text style={styles.chipText}>
-            ✦  Your journey has already begun
-          </Text>
-        </Animated.View>
+        {/* Journey whisper */}
+        <Animated.Text style={[styles.journeyWhisper, { opacity: chipOpacity }]}>
+          ✦  Your journey has already begun
+        </Animated.Text>
 
         {/* CTA */}
-        <Animated.View style={[styles.ctaWrap, s[7]]}>
+        <Animated.View style={[styles.ctaWrap, { opacity: ctaOpacity }]}>
           <TouchableOpacity style={styles.ctaBtn} activeOpacity={0.85} onPress={onNext}>
             <LinearGradient
               colors={[Colors.accent.primary, Colors.accent.primary]}
@@ -247,21 +270,16 @@ const styles = StyleSheet.create({
     gap: 14,
     zIndex: 2,
   },
-  chip: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: 12,
-    paddingHorizontal: 16,
-    paddingVertical: 14,
-    borderWidth: 1,
-    borderColor: 'rgba(201,168,76,0.2)',
-    backgroundColor: 'rgba(201,168,76,0.06)',
-  },
-  chipText: {
+  journeyWhisper: {
     fontSize: 13,
-    color: 'rgba(201,168,76,0.75)',
-    letterSpacing: 0.3,
+    color: Colors.accent.primary,
+    opacity: 0.6,
+    textAlign: 'center',
+    letterSpacing: 0.5,
+    marginBottom: 14,
+    textShadowColor: 'rgba(212, 175, 55, 0.3)',
+    textShadowOffset: { width: 0, height: 0 },
+    textShadowRadius: 8,
   },
   ctaWrap: { width: '100%' },
   ctaBtn: {
