@@ -21,6 +21,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useStaggerEntry } from '../../hooks/useStaggerEntry';
 import { AnimatedMandala } from '../AnimatedMandala';
 import { InteractiveStarfield } from './InteractiveStarfield';
+import { GoldenMotes } from '../GoldenMotes';
 
 const { width, height } = Dimensions.get('window');
 
@@ -139,6 +140,8 @@ export default function FirstGuidanceScreen({ isActive, onNext }: Props) {
       <View style={styles.mandalaInner} pointerEvents="none">
         <AnimatedMandala size={200} color={Colors.accent.primary} opacity={0.035} direction="ccw" />
       </View>
+
+      <GoldenMotes />
 
       <View style={styles.contentArea} onTouchEnd={forceShowCta}>
         {/* Pre-title */}
