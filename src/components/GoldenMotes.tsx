@@ -10,7 +10,9 @@ function Mote({ delay }: { delay: number }) {
   const translateX = useRef(new Animated.Value(width * (0.2 + Math.random() * 0.6))).current;
 
   useEffect(() => {
+    let stopped = false;
     const animate = () => {
+      if (stopped) return;
       translateY.setValue(height * 0.8);
       translateX.setValue(width * (0.2 + Math.random() * 0.6));
 
@@ -28,10 +30,13 @@ function Mote({ delay }: { delay: number }) {
             Animated.timing(opacity, { toValue: 0, duration: 2000, useNativeDriver: true }),
           ]),
         ]),
-      ]).start(() => animate());
+      ]).start(() => {
+        if (!stopped) animate();
+      });
     };
 
     animate();
+    return () => { stopped = true; };
   }, []);
 
   return (

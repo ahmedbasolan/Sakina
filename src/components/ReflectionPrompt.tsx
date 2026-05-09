@@ -10,7 +10,7 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
-import { Colors, Typography } from '../theme/DesignSystem';
+import { Colors } from '../theme/DesignSystem';
 
 const { height } = Dimensions.get('window');
 
@@ -27,6 +27,9 @@ export function ReflectionPrompt({ visible, onSave, onSkip }: ReflectionPromptPr
 
   useEffect(() => {
     if (visible) {
+      setText('');
+      slideAnim.setValue(height * 0.4);
+      backdropOpacity.setValue(0);
       Animated.parallel([
         Animated.spring(slideAnim, {
           toValue: 0,
