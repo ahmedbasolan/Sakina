@@ -292,6 +292,58 @@ const VerseLayer: React.FC<VerseLayerProps> = ({
   const isLongTranslation = formattedTranslation.length > 200;
   const isArabicPrimary = primaryLanguage === 'arabic';
 
+  // Staged verse revelation animation
+  const arabicOpacity = useRef(new Animated.Value(0)).current;
+  const arabicSlide = useRef(new Animated.Value(15)).current;
+  const dividerOpacity = useRef(new Animated.Value(0)).current;
+  const transOpacity = useRef(new Animated.Value(0)).current;
+  const transSlide = useRef(new Animated.Value(10)).current;
+  const refOpacity = useRef(new Animated.Value(0)).current;
+  const [revealComplete, setRevealComplete] = useState(false);
+
+  useEffect(() => {
+    arabicOpacity.setValue(0);
+    arabicSlide.setValue(15);
+    dividerOpacity.setValue(0);
+    transOpacity.setValue(0);
+    transSlide.setValue(10);
+    refOpacity.setValue(0);
+    setRevealComplete(false);
+
+    const sequence = Animated.sequence([
+      Animated.delay(100),
+      Animated.parallel([
+        Animated.timing(arabicOpacity, { toValue: 1, duration: 600, useNativeDriver: true }),
+        Animated.timing(arabicSlide, { toValue: 0, duration: 600, useNativeDriver: true }),
+      ]),
+      Animated.delay(400),
+      Animated.timing(dividerOpacity, { toValue: 1, duration: 200, useNativeDriver: true }),
+      Animated.parallel([
+        Animated.timing(transOpacity, { toValue: 1, duration: 600, useNativeDriver: true }),
+        Animated.timing(transSlide, { toValue: 0, duration: 600, useNativeDriver: true }),
+      ]),
+      Animated.timing(refOpacity, { toValue: 1, duration: 400, useNativeDriver: true }),
+    ]);
+
+    setTimeout(() => {
+      HapticsService.impactAsync('LIGHT');
+    }, 100);
+
+    sequence.start(() => setRevealComplete(true));
+    return () => sequence.stop();
+  }, [arabic, translation]);
+
+  const skipReveal = () => {
+    if (revealComplete) return;
+    arabicOpacity.setValue(1);
+    arabicSlide.setValue(0);
+    dividerOpacity.setValue(1);
+    transOpacity.setValue(1);
+    transSlide.setValue(0);
+    refOpacity.setValue(1);
+    setRevealComplete(true);
+  };
+
   return (
     <View
       style={[
@@ -309,6 +361,7 @@ const VerseLayer: React.FC<VerseLayerProps> = ({
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
         scrollEventThrottle={16}
+        onTouchEnd={skipReveal}
         onScroll={
           scrollY
             ? Animated.event([{ nativeEvent: { contentOffset: { y: scrollY } } }], {
@@ -318,7 +371,7 @@ const VerseLayer: React.FC<VerseLayerProps> = ({
         }
       >
         {/* ── Reference at top ── */}
-        <View style={styles.referenceTop}>
+        <Animated.View style={[styles.referenceTop, { opacity: refOpacity }]}>
           {/* Decorative top flourish */}
           <View style={styles.refFlourish}>
             <View style={[styles.refFlLine, { backgroundColor: accentColor + '25' }]} />
@@ -338,51 +391,63 @@ const VerseLayer: React.FC<VerseLayerProps> = ({
               <View style={[styles.refDot, { backgroundColor: accentColor + '50' }]} />
             </View>
           )}
-        </View>
+        </Animated.View>
 
         {/* ── Verse content ── */}
         {isArabicPrimary ? (
           <>
-            <ArabicText text={arabic} style={isLongArabic ? styles.arabicCompact : styles.arabic} />
+            <Animated.View style={{ opacity: arabicOpacity, transform: [{ translateY: arabicSlide }] }}>
+              <ArabicText text={arabic} style={isLongArabic ? styles.arabicCompact : styles.arabic} />
+            </Animated.View>
 
             {showTransliteration && transliteration ? (
-              <Text style={styles.transliteration}>{transliteration}</Text>
+              <Animated.View style={{ opacity: transOpacity }}>
+                <Text style={styles.transliteration}>{transliteration}</Text>
+              </Animated.View>
             ) : null}
 
-            <View style={styles.divider}>
+            <Animated.View style={[styles.divider, { opacity: dividerOpacity }]}>
               <View style={styles.dividerLine} />
               <View style={styles.dividerDiamond} />
               <View style={styles.dividerLine} />
-            </View>
+            </Animated.View>
 
-            <Text style={[styles.translation, isLongTranslation && styles.translationCompact]}>
-              {formattedTranslation}
-            </Text>
+            <Animated.View style={{ opacity: transOpacity, transform: [{ translateY: transSlide }] }}>
+              <Text style={[styles.translation, isLongTranslation && styles.translationCompact]}>
+                {formattedTranslation}
+              </Text>
+            </Animated.View>
           </>
         ) : (
           <>
-            <Text
-              style={[
-                styles.translationPrimary,
-                isLongTranslation && styles.translationPrimaryCompact,
-              ]}
-            >
-              {formattedTranslation}
-            </Text>
+            <Animated.View style={{ opacity: arabicOpacity, transform: [{ translateY: arabicSlide }] }}>
+              <Text
+                style={[
+                  styles.translationPrimary,
+                  isLongTranslation && styles.translationPrimaryCompact,
+                ]}
+              >
+                {formattedTranslation}
+              </Text>
+            </Animated.View>
 
-            <View style={styles.divider}>
+            <Animated.View style={[styles.divider, { opacity: dividerOpacity }]}>
               <View style={styles.dividerLine} />
               <View style={styles.dividerDiamond} />
               <View style={styles.dividerLine} />
-            </View>
+            </Animated.View>
 
-            <ArabicText
-              text={arabic}
-              style={isLongArabic ? styles.arabicSecondaryCompact : styles.arabicSecondary}
-            />
+            <Animated.View style={{ opacity: transOpacity, transform: [{ translateY: transSlide }] }}>
+              <ArabicText
+                text={arabic}
+                style={isLongArabic ? styles.arabicSecondaryCompact : styles.arabicSecondary}
+              />
+            </Animated.View>
 
             {showTransliteration && transliteration ? (
-              <Text style={styles.transliteration}>{transliteration}</Text>
+              <Animated.View style={{ opacity: transOpacity }}>
+                <Text style={styles.transliteration}>{transliteration}</Text>
+              </Animated.View>
             ) : null}
           </>
         )}
