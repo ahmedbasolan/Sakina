@@ -36,7 +36,9 @@ function PxStar({ x, y, size, delay }: StarProps) {
   
   const pulseAnim = useRef(new Animated.Value(0.15)).current;
   const scaleAnim = useRef(new Animated.Value(1)).current;
-  
+  const driftX = useRef(new Animated.Value(0)).current;
+  const driftY = useRef(new Animated.Value(0)).current;
+
   // Base loop
   useEffect(() => {
     const anim = Animated.loop(
@@ -48,6 +50,41 @@ function PxStar({ x, y, size, delay }: StarProps) {
     );
     anim.start();
     return () => anim.stop();
+  }, []);
+
+  // Parallax drift
+  useEffect(() => {
+    const speed = size < 2 ? 0.3 : size < 2.5 ? 0.6 : 0.9;
+    const driftDuration = 20000 / speed;
+
+    Animated.loop(
+      Animated.sequence([
+        Animated.parallel([
+          Animated.timing(driftX, {
+            toValue: 15 * speed,
+            duration: driftDuration,
+            useNativeDriver: true,
+          }),
+          Animated.timing(driftY, {
+            toValue: 10 * speed,
+            duration: driftDuration,
+            useNativeDriver: true,
+          }),
+        ]),
+        Animated.parallel([
+          Animated.timing(driftX, {
+            toValue: 0,
+            duration: driftDuration,
+            useNativeDriver: true,
+          }),
+          Animated.timing(driftY, {
+            toValue: 0,
+            duration: driftDuration,
+            useNativeDriver: true,
+          }),
+        ]),
+      ])
+    ).start();
   }, []);
 
   // Distance tracking
@@ -89,7 +126,7 @@ function PxStar({ x, y, size, delay }: StarProps) {
         borderRadius: size / 2,
         backgroundColor: Colors.accent.primary,
         opacity: pulseAnim,
-        transform: [{ scale: scaleAnim }],
+        transform: [{ scale: scaleAnim }, { translateX: driftX }, { translateY: driftY }],
         zIndex: 1,
       }}
     />
