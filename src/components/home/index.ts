@@ -6,3 +6,4 @@ export { CrescentIcon } from './CrescentIcon';
 export { SpiritualWindowBanner } from './SpiritualWindowBanner';
 export { MoodButton } from './MoodButton';
 export { CheckInBanner } from './CheckInBanner';
+export { SmartMoodGrid } from './SmartMoodGrid';
