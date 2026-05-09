@@ -34,6 +34,7 @@ import {
   MoodButton,
   CheckInBanner,
   TwinklingStar,
+  SmartMoodGrid,
 } from '../components/home';
 
 const { width, height } = Dimensions.get('window');
@@ -445,18 +446,12 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
             {showBanner && <CheckInBanner onDismiss={() => setBannerDismissed(true)} />}
 
             {/* Mood Grid */}
-            <View style={styles.moodGrid}>
-              {moodConfigs.map((mood, idx) => (
-                <MoodButton
-                  key={mood.id}
-                  mood={mood}
-                  isChecked={localSelectedMood === mood.id}
-                  isRecentlySelected={!checkedInToday && lastCheckin?.moodId === mood.id}
-                  onPress={() => handleMoodTap(mood.id)}
-                  animDelay={idx * 60}
-                />
-              ))}
-            </View>
+            <SmartMoodGrid
+              moodConfigs={moodConfigs}
+              selectedMood={localSelectedMood}
+              checkedInToday={checkedInToday}
+              onMoodPress={handleMoodTap}
+            />
 
             {/* Success text */}
             {checkedInToday && localSelectedMood && (
