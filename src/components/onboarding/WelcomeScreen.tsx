@@ -72,6 +72,17 @@ export default function WelcomeScreen({ isActive, onNext, onSkip }: Props) {
   // [0] icon, [1] title, [2] subtitle, [3] dots, [4] chip, [5] CTA
   const s = useStaggerEntry(isActive, 6, { baseDelay: 300, stagger: 130 });
 
+  const glowAnim = useRef(new Animated.Value(0.08)).current;
+
+  useEffect(() => {
+    Animated.loop(
+      Animated.sequence([
+        Animated.timing(glowAnim, { toValue: 0.2, duration: 3000, useNativeDriver: true }),
+        Animated.timing(glowAnim, { toValue: 0.08, duration: 3000, useNativeDriver: true }),
+      ])
+    ).start();
+  }, []);
+
   return (
     <View style={styles.container}>
       {/* Dark navy gradient background — matches reference exactly */}
@@ -89,6 +100,12 @@ export default function WelcomeScreen({ isActive, onNext, onSkip }: Props) {
       <View style={styles.contentArea}>
         {/* Hero Area grouping the Icon and Mandala perfectly centered */}
         <View style={styles.heroWrap}>
+          {/* Breathing gold glow */}
+          <Animated.View
+            style={[styles.breathingGlow, { opacity: glowAnim }]}
+            pointerEvents="none"
+          />
+
           {/* Sparkle icon in gold circle */}
           <Animated.View style={[styles.iconRing, s[0]]}>
             <SparklesIcon size={30} color={Colors.accent.primary} />
@@ -159,6 +176,13 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginBottom: 32,
     marginTop: 60, // Push it down somewhat
+  },
+  breathingGlow: {
+    position: 'absolute',
+    width: 120,
+    height: 120,
+    borderRadius: 60,
+    backgroundColor: '#D4AF37',
   },
   contentArea: {
     flex: 1,
