@@ -1,5 +1,5 @@
 import React, { useRef, useEffect } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Animated } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Animated, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Mood } from '../../types';
 import { Colors } from '../../theme/DesignSystem';
@@ -141,6 +141,8 @@ const styles = StyleSheet.create({
   moodSublabel: {
     fontSize: 11,
     fontWeight: '500',
+    fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
+    fontStyle: 'italic',
   },
   checkedBadge: {
     position: 'absolute',

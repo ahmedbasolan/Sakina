@@ -179,11 +179,15 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
       Animated.spring(slideAnim, { toValue: 0, friction: 8, tension: 40, useNativeDriver: true }),
     ]).start();
 
-    loadPrayerData();
-    loadStreakData();
-    loadActivePath();
-    checkTodayMood();
-    getDailyVerse().then(setDailyVerse);
+    // Load data sequentially to prevent dbQuery re-entrancy (guest mode)
+    const loadAllData = async () => {
+      await loadPrayerData();
+      await loadStreakData();
+      await loadActivePath();
+      await checkTodayMood();
+      getDailyVerse().then(setDailyVerse);
+    };
+    loadAllData();
   }, []);
 
   useEffect(() => {
@@ -376,10 +380,6 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
     return `${days} days ago`;
   };
 
-  /* ═══════════════════════════════════════════════════════════════
-     RENDER
-     ═══════════════════════════════════════════════════════════════ */
-
   return (
     <View style={styles.container}>
       <LinearGradient colors={['#07111E', '#0C1A2E', '#0F1519']} style={styles.gradient}>
@@ -391,7 +391,11 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
               refreshing={refreshing}
               onRefresh={async () => {
                 setRefreshing(true);
-                await Promise.all([loadPrayerData(), loadStreakData(), loadActivePath(), getDailyVerse().then(setDailyVerse)]);
+                // Sequential to prevent dbQuery re-entrancy in guest mode
+                await loadPrayerData();
+                await loadStreakData();
+                await loadActivePath();
+                await getDailyVerse().then(setDailyVerse);
                 setRefreshing(false);
               }}
               tintColor={Colors.accent.primary}
@@ -399,146 +403,23 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
             />
           }
         >
-
           {/* ═══ HERO HEADER ═══════════════════════════════════ */}
-          <View style={styles.heroHeader}>
-            {/* Ambient glow orb */}
-            <View style={styles.glowOrb} pointerEvents="none" />
-
-            {/* Twinkling Stars */}
-            {starPositions.map((s, i) => (
-              <TwinklingStar key={i} x={s.x} y={s.y} delay={s.delay} size={s.size} />
-            ))}
-
-            {/* Animated Mandala - outer */}
-            <View style={styles.mandalaOuter} pointerEvents="none">
-              <AnimatedMandala size={220} color={Colors.accent.primary} opacity={0.35} />
-            </View>
-            {/* Animated Mandala - inner (counter-rotates) */}
-            <View style={styles.mandalaInner} pointerEvents="none">
-              <AnimatedMandala size={160} color={Colors.accent.primary} opacity={0.25} direction="ccw" />
-            </View>
-
-            {/* Top bar */}
-            <Animated.View
-              style={[
-                styles.heroTopBar,
-                { paddingTop: Math.max(insets.top, 20), opacity: fadeAnim, transform: [{ translateY: slideAnim }] },
-              ]}
-            >
-              <View>
-                <Text style={styles.greetingText}>{getGreeting()}</Text>
-                <Text style={styles.heroTitle}>Assalamu Alaikum</Text>
-              </View>
-
-              {/* Notification bell — top right */}
-              <TouchableOpacity
-                style={styles.notifBell}
-                onPress={() => navigation.navigate('Settings')}
-                accessibilityRole="button"
-                accessibilityLabel="Notifications"
-                hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-              >
-                <Ionicons name="notifications-outline" size={20} color={Colors.accent.primary} />
-                <View style={styles.notifDot} />
-              </TouchableOpacity>
-            </Animated.View>
-
-            {/* Bismillah */}
-            <Text style={styles.bismillah}>بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</Text>
-          </View>
+          <HeroHeader fadeAnim={fadeAnim} slideAnim={slideAnim} onSettingsPress={() => navigation.navigate('Settings')} />
 
           {/* ═══ VERSE OF THE DAY ══════════════════════════════ */}
-          <Animated.View style={[styles.verseSection, { opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
-            <View style={styles.verseCard}>
-              {/* Gold top line */}
-              <LinearGradient colors={['transparent', Colors.accent.primary, 'transparent']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={styles.verseBorderLine} />
-
-              {/* Badge */}
-              <View style={styles.verseBadge}>
-                <Text style={styles.verseBadgeStar}>★</Text>
-                <Text style={styles.verseBadgeText}>VERSE OF THE DAY</Text>
-                <Text style={styles.verseBadgeStar}>★</Text>
-              </View>
-
-              {/* Arabic */}
-              <Text style={styles.verseArabic}>{dailyVerse.arabic}</Text>
-
-              {/* Ornament divider */}
-              <Text style={styles.ornamentStar}>✦</Text>
-
-              {/* Translation */}
-              <Text style={styles.verseTranslation}>{dailyVerse.translation}</Text>
-
-              {/* Reference */}
-              <Text style={styles.verseRef}>— {dailyVerse.ref}</Text>
-
-              {/* Gold bottom line */}
-              <LinearGradient colors={['transparent', '#C9A84C60', 'transparent']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={styles.verseBorderLineBottom} />
-            </View>
-          </Animated.View>
+          <VerseOfTheDay dailyVerse={dailyVerse} fadeAnim={fadeAnim} slideAnim={slideAnim} />
 
           {/* ═══ STREAK BAR ════════════════════════════════════ */}
-          <Animated.View style={[styles.streakSection, { opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
-            <TouchableOpacity activeOpacity={0.9} onPress={() => navigation.navigate('MoodHistory')}>
-              <LinearGradient colors={['#0C2214', '#0A1A0E']} style={styles.streakBar}>
-                {/* Flame icon */}
-                <View style={styles.streakLeft}>
-                  <View style={styles.streakFlameContainer}>
-                    <CrescentIcon size={18} color="#4ADE80" />
-                  </View>
-                  <View>
-                    <Text style={styles.streakText}>{streakDays}-Day Streak</Text>
-                    <View style={styles.streakMoons}>
-                      {[...Array(7)].map((_, i) => (
-                        <View key={i} style={[styles.streakMoonDot, i < streakDays ? styles.streakMoonActive : null]} />
-                      ))}
-                    </View>
-                  </View>
-                </View>
-                <View style={styles.streakRight}>
-                  <Text style={styles.streakViewText}>View</Text>
-                  <Ionicons name="arrow-forward" size={12} color="#2A6A2A" />
-                </View>
-              </LinearGradient>
-            </TouchableOpacity>
-          </Animated.View>
+          <StreakBar streakDays={streakDays} fadeAnim={fadeAnim} slideAnim={slideAnim} onPress={() => navigation.navigate('MoodHistory')} />
 
-          {/* ═══ SPIRITUAL WINDOW BANNER (KEPT) ════════════════ */}
-          <Animated.View style={[styles.spiritualSection, { opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
-            <TouchableOpacity activeOpacity={0.9} onPress={navigateToTimedGuidance}>
-              <LinearGradient
-                colors={['#1e293b', '#0f172a']}
-                style={styles.spiritualBanner}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 1 }}
-              >
-                <View style={styles.bannerContent}>
-                  <View style={styles.bannerTextContainer}>
-                    <Text style={styles.bannerPreTitle}>Current Spiritual Window</Text>
-                    <Text style={styles.bannerTitle}>{getSpiritualWindowName(prayerContext)}</Text>
-                    <View style={styles.bannerCTA}>
-                      <Text style={styles.bannerCTAText}>{getSpiritualActionText(prayerContext)}</Text>
-                      <Ionicons name="arrow-forward" size={14} color="#D4A574" />
-                    </View>
-                  </View>
-                  <View style={styles.bannerIconContainer}>
-                    <Ionicons
-                      name={prayerContext === 'fajr_pre' || prayerContext === 'isha' ? 'moon' : 'sunny'}
-                      size={40}
-                      color="rgba(212, 165, 116, 0.2)"
-                    />
-                  </View>
-                </View>
-              </LinearGradient>
-            </TouchableOpacity>
-          </Animated.View>
+          {/* ═══ SPIRITUAL WINDOW BANNER ════════════════ */}
+          <SpiritualWindowBanner prayerContext={prayerContext} fadeAnim={fadeAnim} slideAnim={slideAnim} onPress={navigateToTimedGuidance} />
 
           {/* ═══ HOW IS YOUR HEART? ════════════════════════════ */}
           <View style={styles.moodSection}>
             {/* Section Header */}
             <View style={styles.sectionHeader}>
-              <Text style={styles.sectionHeaderTitle}>HOW IS YOUR HEART?</Text>
+              <Text style={styles.sectionHeaderTitle}>How Is Your Heart?</Text>
               <TouchableOpacity onPress={() => navigation.navigate('MoodSelection')} style={styles.seeAllButton}>
                 <Text style={styles.seeAllText}>See all</Text>
                 <Ionicons name="chevron-forward" size={11} color="#8BA4BF" />
@@ -669,7 +550,7 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
               {/* Journal */}
               <TouchableOpacity
                 style={[styles.quickCard, { backgroundColor: '#180E2E', borderColor: '#3D1E6A' }]}
-                onPress={() => navigation.navigate('Reflect')}
+                onPress={() => navigation.navigate('Journal')}
                 activeOpacity={0.85}
               >
                 <View style={[styles.quickCardIcon, { backgroundColor: '#120A20', borderColor: '#2A1040' }]}>

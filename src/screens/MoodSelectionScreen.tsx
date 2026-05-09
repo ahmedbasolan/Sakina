@@ -253,6 +253,9 @@ export default function MoodSelectionScreen({ navigation }: any) {
             Every emotion has divine guidance waiting.{'\n'}
             Choose how you feel right now.
           </Text>
+          <Text style={styles.headerReassurance}>
+            There's no wrong answer. Just be honest.
+          </Text>
         </View>
       </Animated.View>
 
@@ -338,6 +341,13 @@ const styles = StyleSheet.create({
     color: 'rgba(176,196,215,0.7)',
     textAlign: 'center',
     lineHeight: 20,
+  },
+  headerReassurance: {
+    fontSize: 13,
+    color: 'rgba(245, 237, 227, 0.35)',
+    textAlign: 'center',
+    marginTop: 4,
+    letterSpacing: 0.2,
   },
 
   grid: {
