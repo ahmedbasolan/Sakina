@@ -54,20 +54,26 @@ function SmartMoodCard({
   const glowAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
-    Animated.sequence([
+    const anim = Animated.sequence([
       Animated.delay(index * 80),
       Animated.spring(scaleAnim, { toValue: 1, friction: 5, tension: 40, useNativeDriver: true }),
-    ]).start();
+    ]);
+    anim.start();
+    return () => anim.stop();
   }, []);
 
   useEffect(() => {
     if (isChecked) {
-      Animated.loop(
+      const loop = Animated.loop(
         Animated.sequence([
           Animated.timing(glowAnim, { toValue: 1, duration: 1200, useNativeDriver: true }),
           Animated.timing(glowAnim, { toValue: 0, duration: 1200, useNativeDriver: true }),
         ])
-      ).start();
+      );
+      loop.start();
+      return () => loop.stop();
+    } else {
+      glowAnim.setValue(0);
     }
   }, [isChecked]);
 

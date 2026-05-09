@@ -325,12 +325,15 @@ const VerseLayer: React.FC<VerseLayerProps> = ({
       Animated.timing(refOpacity, { toValue: 1, duration: 400, useNativeDriver: true }),
     ]);
 
-    setTimeout(() => {
+    const hapticTimer = setTimeout(() => {
       HapticsService.impactAsync('LIGHT');
     }, 100);
 
     sequence.start(() => setRevealComplete(true));
-    return () => sequence.stop();
+    return () => {
+      sequence.stop();
+      clearTimeout(hapticTimer);
+    };
   }, [arabic, translation]);
 
   const skipReveal = () => {
