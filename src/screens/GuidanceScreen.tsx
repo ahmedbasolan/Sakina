@@ -9,6 +9,7 @@ import {
   Animated,
 } from 'react-native';
 import ImmersiveBackground from '../components/ImmersiveBackground';
+import { GoldenMotes } from '../components/GoldenMotes';
 import GuidanceHeader from '../components/GuidanceHeader';
 import VerseLayer from '../components/VerseLayer';
 import FloatingActionRow from '../components/FloatingActionRow';
@@ -98,6 +99,7 @@ const GuidanceScreen: React.FC = () => {
 
   return (
     <ImmersiveBackground mood={mood} isPremium={isPremium}>
+      <GoldenMotes />
       <StatusBar barStyle="light-content" translucent backgroundColor="transparent" />
 
       {/* Full-bleed layer container */}
