@@ -21,17 +21,10 @@ interface HeroHeaderProps {
   fadeAnim: Animated.Value;
   slideAnim: Animated.Value;
   onSettingsPress: () => void;
+  greeting?: string;
 }
 
-function getGreeting(): string {
-  const h = new Date().getHours();
-  if (h < 5) return 'Peace be upon you';
-  if (h < 12) return 'Good Morning';
-  if (h < 17) return 'Good Afternoon';
-  return 'Good Evening';
-}
-
-export function HeroHeader({ fadeAnim, slideAnim, onSettingsPress }: HeroHeaderProps) {
+export function HeroHeader({ fadeAnim, slideAnim, onSettingsPress, greeting }: HeroHeaderProps) {
   const insets = useSafeAreaInsets();
 
   return (
@@ -61,7 +54,7 @@ export function HeroHeader({ fadeAnim, slideAnim, onSettingsPress }: HeroHeaderP
         ]}
       >
         <View>
-          <Text style={styles.greetingText}>{getGreeting()}</Text>
+          <Text style={styles.greetingText}>{greeting ?? 'Good Morning'}</Text>
           <Text style={styles.heroTitle}>Assalamu Alaikum</Text>
         </View>
 

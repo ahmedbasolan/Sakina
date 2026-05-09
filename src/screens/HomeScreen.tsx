@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Colors } from '../theme/DesignSystem';
 import {
   View,
@@ -75,8 +76,20 @@ const moodConfigs: MoodConfig[] = [
 
 /* ─── Helper Functions ───────────────────────────────────────── */
 
-function getGreeting(): string {
+function getGreeting(streakDays?: number, lastOpenDate?: string | null): string {
   const h = new Date().getHours();
+
+  // Absence recognition (3+ days since last open)
+  if (lastOpenDate) {
+    const daysSince = Math.floor((Date.now() - new Date(lastOpenDate).getTime()) / 86400000);
+    if (daysSince >= 3) return 'Welcome back. This door is always open.';
+  }
+
+  // Streak recognition (7+ days)
+  if (streakDays && streakDays >= 7) return `${streakDays} days of showing up for your soul`;
+
+  // Time-based
+  if (h >= 0 && h < 4) return 'You\'re awake. Allah is with you.';
   if (h < 5) return 'Peace be upon you';
   if (h < 12) return 'Good Morning';
   if (h < 17) return 'Good Afternoon';
@@ -169,6 +182,7 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
 
   // Daily verse state — sync fallback renders immediately, async version loads with history check
   const [dailyVerse, setDailyVerse] = useState<DailyVerse>(getDailyVerseSync());
+  const [lastOpenDate, setLastOpenDate] = useState<string | null>(null);
 
   const prayerService = PrayerTimesService.getInstance();
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -182,6 +196,9 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
 
     // Load data sequentially to prevent dbQuery re-entrancy (guest mode)
     const loadAllData = async () => {
+      const lastOpen = await AsyncStorage.getItem('@noor_last_open');
+      setLastOpenDate(lastOpen);
+      await AsyncStorage.setItem('@noor_last_open', new Date().toISOString());
       await loadPrayerData();
       await loadStreakData();
       await loadActivePath();
@@ -405,7 +422,7 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
           }
         >
           {/* ═══ HERO HEADER ═══════════════════════════════════ */}
-          <HeroHeader fadeAnim={fadeAnim} slideAnim={slideAnim} onSettingsPress={() => navigation.navigate('Settings')} />
+          <HeroHeader fadeAnim={fadeAnim} slideAnim={slideAnim} onSettingsPress={() => navigation.navigate('Settings')} greeting={getGreeting(streakDays, lastOpenDate)} />
 
           {/* ═══ VERSE OF THE DAY ══════════════════════════════ */}
           <VerseOfTheDay dailyVerse={dailyVerse} fadeAnim={fadeAnim} slideAnim={slideAnim} />
