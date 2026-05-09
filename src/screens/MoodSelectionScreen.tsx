@@ -5,7 +5,7 @@
  * 2-column bento grid with mood icon, Arabic name, English name, description.
  * Dark navy background, twinkling stars, animated mandala, from reference image.
  */
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Colors } from '../theme/DesignSystem';
 import {
   View,
@@ -203,13 +203,60 @@ function MoodCard({ mood, onPress, index }: { mood: typeof MOODS[0]; onPress: ()
 export default function MoodSelectionScreen({ navigation }: any) {
   const insets = useSafeAreaInsets();
   const headerOpacity = useRef(new Animated.Value(0)).current;
+  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+  const cardAnims = useRef(MOODS.map(() => ({
+    scale: new Animated.Value(1),
+    opacity: new Animated.Value(1),
+  }))).current;
+  const transitionTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     Animated.timing(headerOpacity, { toValue: 1, duration: 500, useNativeDriver: true }).start();
   }, []);
 
-  const handleMoodSelect = (mood: (typeof MOODS)[0]) => {
-    navigation.navigate('Guidance', { mood: mood.key });
+  useEffect(() => {
+    return () => {
+      if (transitionTimeout.current) clearTimeout(transitionTimeout.current);
+    };
+  }, []);
+
+  const handleMoodSelect = (mood: (typeof MOODS)[0], index: number) => {
+    if (transitionTimeout.current) {
+      clearTimeout(transitionTimeout.current);
+      cardAnims.forEach((a) => {
+        a.scale.setValue(1);
+        a.opacity.setValue(1);
+      });
+    }
+
+    setSelectedIndex(index);
+
+    Animated.spring(cardAnims[index].scale, {
+      toValue: 1.05,
+      friction: 8,
+      tension: 100,
+      useNativeDriver: true,
+    }).start();
+
+    cardAnims.forEach((a, i) => {
+      if (i !== index) {
+        Animated.parallel([
+          Animated.timing(a.opacity, { toValue: 0, duration: 400, useNativeDriver: true }),
+          Animated.timing(a.scale, { toValue: 0.95, duration: 400, useNativeDriver: true }),
+        ]).start();
+      }
+    });
+
+    transitionTimeout.current = setTimeout(() => {
+      navigation.navigate('Guidance', { mood: mood.key });
+      setTimeout(() => {
+        setSelectedIndex(null);
+        cardAnims.forEach((a) => {
+          a.scale.setValue(1);
+          a.opacity.setValue(1);
+        });
+      }, 500);
+    }, 800);
   };
 
   return (
@@ -266,12 +313,19 @@ export default function MoodSelectionScreen({ navigation }: any) {
       >
         <View style={styles.row}>
           {MOODS.map((mood, i) => (
-            <MoodCard
+            <Animated.View
               key={mood.key}
-              mood={mood}
-              index={i}
-              onPress={() => handleMoodSelect(mood)}
-            />
+              style={{
+                opacity: cardAnims[i].opacity,
+                transform: [{ scale: cardAnims[i].scale }],
+              }}
+            >
+              <MoodCard
+                mood={mood}
+                index={i}
+                onPress={() => handleMoodSelect(mood, i)}
+              />
+            </Animated.View>
           ))}
         </View>
       </ScrollView>
