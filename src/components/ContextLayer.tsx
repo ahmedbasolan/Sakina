@@ -191,24 +191,26 @@ const ContextLayer: React.FC<ContextLayerProps> = ({ attribution, text, source, 
             : undefined
         }
       >
-        {/* Section 1: Scholarly Understanding */}
-        <Animated.View
-          style={[
-            styles.section,
-            { opacity: fadeAnim1, transform: [{ translateY: slideAnim1 }] },
-          ]}
-        >
-          <View style={styles.sectionHeader}>
-            <MaterialCommunityIcons name="book-open-variant" size={16} color={Colors.accent.secondary} />
-            <Text style={styles.sectionLabel}>
-              {attribution || 'Scholarly Context'}
-            </Text>
-          </View>
+        {/* Section 1: Scholarly Understanding — hidden when whyThis is empty */}
+        {understand.length > 0 && (
+          <Animated.View
+            style={[
+              styles.section,
+              { opacity: fadeAnim1, transform: [{ translateY: slideAnim1 }] },
+            ]}
+          >
+            <View style={styles.sectionHeader}>
+              <MaterialCommunityIcons name="book-open-variant" size={16} color={Colors.accent.secondary} />
+              <Text style={styles.sectionLabel}>
+                {attribution || 'Scholarly Context'}
+              </Text>
+            </View>
 
-          <View style={styles.textCard}>
-            <Text style={styles.bodyText}>{cleanText(understand)}</Text>
-          </View>
-        </Animated.View>
+            <View style={styles.textCard}>
+              <Text style={styles.bodyText}>{cleanText(understand)}</Text>
+            </View>
+          </Animated.View>
+        )}
 
         {/* Section 2: Why It Matters / Prophetic Wisdom */}
         {matters.length > 0 && (
@@ -231,14 +233,16 @@ const ContextLayer: React.FC<ContextLayerProps> = ({ attribution, text, source, 
           </Animated.View>
         )}
 
-        {/* Source Attribution */}
-        <Animated.View style={[styles.sourceRow, { opacity: fadeAnim2 }]}>
-          <View style={styles.sourceLine} />
-          <View style={styles.sourceBadge}>
-            <MaterialCommunityIcons name="shield-check" size={13} color={Colors.accent.primary} />
-            <Text style={styles.sourceText}>{sourceLabel}</Text>
-          </View>
-        </Animated.View>
+        {/* Source Attribution — only when there is scholarly text to attribute */}
+        {understand.length > 0 && (
+          <Animated.View style={[styles.sourceRow, { opacity: fadeAnim2 }]}>
+            <View style={styles.sourceLine} />
+            <View style={styles.sourceBadge}>
+              <MaterialCommunityIcons name="shield-check" size={13} color={Colors.accent.primary} />
+              <Text style={styles.sourceText}>{sourceLabel}</Text>
+            </View>
+          </Animated.View>
+        )}
 
         {/* Section 3: For Your Heart — mood-specific framing from ContentAngle */}
         {angle ? (

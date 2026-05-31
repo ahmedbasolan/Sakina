@@ -166,9 +166,22 @@ export class ContentRepository {
 
   /**
    * Fetch all angles for a given mood.
-   * Tries Supabase first; falls back to local SQLite on failure or empty result.
+   *
+   * Local-first: SQLite is always populated via seedContent.ts at init time
+   * and contains the full, up-to-date whyThis / attribution data.  Supabase
+   * is only used as a fallback for content that hasn't been seeded locally
+   * (e.g. future admin-only additions pushed before the next app release).
+   *
+   * We deliberately avoid cloud-first here because the Supabase content table
+   * can fall behind local data (e.g. whyThis fields were backfilled locally
+   * but not yet re-seeded to Supabase), which would serve stale/empty data
+   * to logged-in users.
    */
   async fetchForMood(mood: Mood): Promise<ContentAngle[]> {
+    const local = await this.fetchForMoodLocal(mood);
+    if (local.length > 0) return local;
+
+    // Cloud fallback — only reached if local has no content for this mood
     try {
       const cloudData = await this.supabaseData.fetchContentByMood(mood);
       if (cloudData && cloudData.length > 0) {
@@ -182,7 +195,7 @@ export class ContentRepository {
         { mood },
       );
     }
-    return this.fetchForMoodLocal(mood);
+    return [];
   }
 
   /** SQLite fallback for fetchForMood. */
@@ -235,9 +248,32 @@ export class ContentRepository {
 
   /**
    * Fetch a single angle by ID for path-step guidance.
-   * Tries Supabase first; falls back to SQLite.
+   * Local-first (same rationale as fetchForMood); Supabase as fallback.
    */
   async fetchAngleById(angleId: string): Promise<ContentAngle | null> {
+    // SQLite primary
+    const row = await dbQuery(async (db) =>
+      db.getFirstAsync<any>(`SELECT * FROM content_angles WHERE id = ?`, [angleId]),
+    );
+    if (row) {
+      return {
+        id: row.id,
+        contentId: row.contentId,
+        mood: row.mood,
+        angle: row.angle,
+        angleSource: row.angleSource,
+        action: row.action,
+        actionArabicText: row.actionArabicText,
+        actionTransliteration: row.actionTransliteration,
+        actionSource: row.actionSource,
+        actionHowTo: row.actionHowTo,
+        actionReward: row.actionReward,
+        practiceSteps: row.practiceSteps,
+        reflection: row.reflection,
+      };
+    }
+
+    // Cloud fallback — angle not seeded locally yet
     try {
       const cloudAngle = await this.supabaseData.fetchAngleById(angleId);
       if (cloudAngle) return mapCloudRow(cloudAngle);
@@ -249,28 +285,7 @@ export class ContentRepository {
         { angleId },
       );
     }
-
-    // SQLite fallback
-    const row = await dbQuery(async (db) =>
-      db.getFirstAsync<any>(`SELECT * FROM content_angles WHERE id = ?`, [angleId]),
-    );
-    if (!row) return null;
-
-    return {
-      id: row.id,
-      contentId: row.contentId,
-      mood: row.mood,
-      angle: row.angle,
-      angleSource: row.angleSource,
-      action: row.action,
-      actionArabicText: row.actionArabicText,
-      actionTransliteration: row.actionTransliteration,
-      actionSource: row.actionSource,
-      actionHowTo: row.actionHowTo,
-      actionReward: row.actionReward,
-      practiceSteps: row.practiceSteps,
-      reflection: row.reflection,
-    };
+    return null;
   }
 
   /**
