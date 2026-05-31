@@ -199,7 +199,8 @@ const GuidanceScreen: React.FC = () => {
         />
       </View>
 
-      {currentLayer !== 0 && (
+      {/* FloatingActionRow — verse-action buttons only; not shown on context layer */}
+      {currentLayer !== 0 && LAYER_TYPES[currentLayer] !== 'context' && (
         <View style={styles.floatingFooter} pointerEvents="box-none">
           <FloatingActionRow
             layerType={LAYER_TYPES[currentLayer] || 'verse'}
