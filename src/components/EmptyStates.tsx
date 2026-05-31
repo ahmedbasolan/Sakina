@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Animated, Dimensions } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { Colors } from '../theme/DesignSystem';
 import Icon from './Icon';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
@@ -28,9 +29,13 @@ function BaseEmptyState({
 }: BaseEmptyStateProps) {
   const fadeAnim = React.useRef(new Animated.Value(0)).current;
   const slideAnim = React.useRef(new Animated.Value(20)).current;
+  // Store the CompositeAnimation so it can be stopped on unmount.
+  // Without this, the native driver fires callbacks into an already-unmounted
+  // component when the user navigates away before the animation completes.
+  const animRef = React.useRef<{ stop: () => void } | null>(null);
 
   React.useEffect(() => {
-    Animated.parallel([
+    const anim = Animated.parallel([
       Animated.timing(fadeAnim, {
         toValue: 1,
         duration: 600,
@@ -42,7 +47,12 @@ function BaseEmptyState({
         stiffness: 150,
         useNativeDriver: true,
       }),
-    ]).start();
+    ]);
+    anim.start();
+    animRef.current = anim;
+    return () => {
+      animRef.current?.stop();
+    };
   }, []);
 
   return (
@@ -51,7 +61,12 @@ function BaseEmptyState({
         style={[styles.content, { opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}
       >
         {icon && (
-          <MaterialCommunityIcons name={icon} size={iconSize} color="#D1D5DB" style={styles.icon} />
+          <MaterialCommunityIcons
+            name={icon}
+            size={iconSize}
+            color={Colors.text.muted}
+            style={styles.icon}
+          />
         )}
 
         <Text style={styles.title}>{title}</Text>
@@ -61,12 +76,18 @@ function BaseEmptyState({
         {children}
 
         {buttonTitle && onButtonPress && (
-          <TouchableOpacity style={styles.button} onPress={onButtonPress} activeOpacity={0.85}>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={onButtonPress}
+            activeOpacity={0.85}
+            accessibilityRole="button"
+            accessibilityLabel={buttonTitle}
+          >
             <Text style={styles.buttonText}>{buttonTitle}</Text>
             <MaterialCommunityIcons
               name="arrow-right"
               size={20}
-              color="#FFFFFF"
+              color={Colors.background.primary}
               style={styles.buttonIcon}
             />
           </TouchableOpacity>
@@ -91,16 +112,16 @@ export function NoPathsEnrolled({ onBrowsePaths }: { onBrowsePaths: () => void }
           <Text style={styles.pathLabel}>Salah</Text>
         </View>
         <View style={styles.pathCategory}>
-          <Icon name="star" size={24} color="#F59E0B" />
+          <Icon name="star" size={24} color={Colors.accent.primary} />
           <Text style={styles.pathLabel}>Rizq</Text>
         </View>
         <View style={styles.pathCategory}>
-          <Icon name="leaf" size={24} color="#10B981" />
+          <Icon name="leaf" size={24} color={Colors.status.success} />
           <Text style={styles.pathLabel}>Growth</Text>
         </View>
       </View>
 
-      {/* Custom SVG path illustration */}
+      {/* Path illustration */}
       <View style={styles.pathIllustration}>
         <View style={styles.pathLine} />
         <View style={[styles.pathDot, styles.pathStart]} />
@@ -114,9 +135,12 @@ export function NoPathsEnrolled({ onBrowsePaths }: { onBrowsePaths: () => void }
 // ── Streak Broken ───────────────────────────────────────────────────────
 export function StreakBroken({
   lastStreak,
+  bestStreak,
   onRestart,
 }: {
   lastStreak: number;
+  /** The user's all-time best streak. Pass from moodHistoryService.getStats(). */
+  bestStreak: number;
   onRestart: () => void;
 }) {
   return (
@@ -134,7 +158,7 @@ export function StreakBroken({
         </Text>
       </View>
 
-      {/* Streak stats */}
+      {/* Streak stats — both values come from the caller; no fabricated numbers */}
       <View style={styles.streakStats}>
         <Text style={styles.streakStatsLabel}>Your Best Streaks</Text>
         <View style={styles.streakNumbers}>
@@ -144,7 +168,7 @@ export function StreakBroken({
           </View>
           <View style={styles.streakDivider} />
           <View style={styles.streakNumber}>
-            <Text style={[styles.streakValue, styles.streakBest]}>{Math.max(lastStreak, 23)}</Text>
+            <Text style={[styles.streakValue, styles.streakBest]}>{bestStreak}</Text>
             <Text style={styles.streakLabel}>Best ever</Text>
           </View>
         </View>
@@ -287,7 +311,12 @@ export function SearchNoResults({
         <Text style={styles.searchSuggestion}>• Searching for a mood instead</Text>
       </View>
 
-      <TouchableOpacity onPress={onClearSearch} style={styles.clearSearchButton}>
+      <TouchableOpacity
+        onPress={onClearSearch}
+        style={styles.clearSearchButton}
+        accessibilityRole="button"
+        accessibilityLabel="Clear search"
+      >
         <Text style={styles.clearSearchText}>Clear search</Text>
       </TouchableOpacity>
     </BaseEmptyState>
@@ -316,29 +345,29 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 28,
     fontWeight: '700',
-    color: '#1F2937',
+    color: Colors.text.primary,
     textAlign: 'center',
     lineHeight: 34,
     letterSpacing: -0.3,
   },
   subtitle: {
     fontSize: 15,
-    color: '#6B7280',
+    color: Colors.text.secondary,
     textAlign: 'center',
     lineHeight: 22,
   },
 
-  // Button
+  // Button — uses Sakina gold, not indigo
   button: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     gap: 8,
-    backgroundColor: '#6366F1',
+    backgroundColor: Colors.accent.primary,
     paddingVertical: 16,
     paddingHorizontal: 24,
     borderRadius: 20,
-    shadowColor: '#6366F1',
+    shadowColor: Colors.accent.primary,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,
@@ -347,7 +376,7 @@ const styles = StyleSheet.create({
   buttonText: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#FFFFFF',
+    color: Colors.background.primary,
   },
   buttonIcon: {
     transform: [{ rotate: '-45deg' }],
@@ -362,18 +391,19 @@ const styles = StyleSheet.create({
   pathCategory: {
     flex: 1,
     alignItems: 'center',
-    backgroundColor: '#F3F4F6',
+    backgroundColor: Colors.glass.light,
     borderRadius: 16,
     padding: 16,
     borderWidth: 1,
-    borderColor: '#E5E7EB',
+    borderColor: Colors.glass.border,
   },
   pathLabel: {
     fontSize: 11,
     fontWeight: '600',
-    color: '#6B7280',
+    color: Colors.text.secondary,
     textTransform: 'uppercase',
     letterSpacing: 0.5,
+    marginTop: 6,
   },
 
   // Path Illustration
@@ -406,7 +436,7 @@ const styles = StyleSheet.create({
   pathEnd: {
     top: 34,
     left: 94,
-    backgroundColor: '#6366F1',
+    backgroundColor: Colors.accent.primary,
     width: 16,
     height: 16,
     borderRadius: 8,
@@ -418,18 +448,18 @@ const styles = StyleSheet.create({
     width: 0,
     height: 0,
     borderTopWidth: 8,
-    borderTopColor: '#10B981',
+    borderTopColor: Colors.status.success,
     borderLeftWidth: 6,
     borderLeftColor: 'transparent',
     borderRightWidth: 6,
     borderRightColor: 'transparent',
   },
 
-  // Hadith Box
+  // Hadith Box — gold-tinted glass
   hadithBox: {
-    backgroundColor: '#FEF3C7',
+    backgroundColor: 'rgba(212, 175, 55, 0.08)',
     borderLeftWidth: 4,
-    borderLeftColor: '#F59E0B',
+    borderLeftColor: Colors.accent.primary,
     borderRadius: 12,
     padding: 16,
     marginBottom: 16,
@@ -438,27 +468,29 @@ const styles = StyleSheet.create({
   hadithLabel: {
     fontSize: 13,
     fontWeight: '600',
-    color: '#92400E',
+    color: Colors.accent.primary,
     marginBottom: 4,
   },
   hadithText: {
     fontSize: 13,
-    color: '#78716C',
+    color: Colors.text.secondary,
     lineHeight: 18,
   },
 
   // Streak Stats
   streakStats: {
-    backgroundColor: '#F9FAFB',
+    backgroundColor: Colors.glass.light,
     borderRadius: 20,
     padding: 20,
     width: '100%',
     alignItems: 'center',
+    borderWidth: 1,
+    borderColor: Colors.glass.border,
   },
   streakStatsLabel: {
     fontSize: 13,
     fontWeight: '600',
-    color: '#6B7280',
+    color: Colors.text.secondary,
     marginBottom: 12,
   },
   streakNumbers: {
@@ -472,25 +504,25 @@ const styles = StyleSheet.create({
   streakValue: {
     fontSize: 32,
     fontWeight: '700',
-    color: '#1F2937',
+    color: Colors.text.primary,
     marginBottom: 2,
   },
   streakBest: {
-    color: '#10B981',
+    color: Colors.status.success,
   },
   streakLabel: {
     fontSize: 11,
-    color: '#9CA3AF',
+    color: Colors.text.muted,
     fontWeight: '600',
   },
   streakDivider: {
     width: 1,
     height: 40,
-    backgroundColor: '#E5E7EB',
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
   },
   encouragement: {
     fontSize: 13,
-    color: '#6B7280',
+    color: Colors.text.secondary,
     textAlign: 'center',
     fontStyle: 'italic',
     marginTop: 16,
@@ -507,17 +539,17 @@ const styles = StyleSheet.create({
     position: 'absolute',
     width: 80,
     height: 100,
-    backgroundColor: '#F3F4F6',
+    backgroundColor: Colors.glass.light,
     borderRadius: 4,
     borderWidth: 2,
-    borderColor: '#D1D5DB',
+    borderColor: Colors.glass.border,
     left: 10,
   },
   bookSpine: {
     position: 'absolute',
     width: 2,
     height: 100,
-    backgroundColor: '#047857',
+    backgroundColor: Colors.accent.primary,
     left: 49,
   },
   bookPages: {
@@ -529,7 +561,7 @@ const styles = StyleSheet.create({
   bookLine: {
     width: 60,
     height: 2,
-    backgroundColor: '#9CA3AF',
+    backgroundColor: Colors.text.muted,
     borderRadius: 1,
   },
   bookHeart: {
@@ -538,25 +570,27 @@ const styles = StyleSheet.create({
     right: 20,
   },
 
-  // Pro Tip
+  // Pro Tip — green-tinted glass
   proTipBox: {
-    backgroundColor: '#D1FAE5',
+    backgroundColor: 'rgba(74, 222, 128, 0.08)',
     borderRadius: 16,
     padding: 16,
     flexDirection: 'row',
     alignItems: 'flex-start',
     gap: 12,
     width: '100%',
+    borderWidth: 1,
+    borderColor: 'rgba(74, 222, 128, 0.15)',
   },
   proTipLabel: {
     fontSize: 13,
     fontWeight: '600',
-    color: '#065F46',
+    color: Colors.status.success,
     marginBottom: 2,
   },
   proTipText: {
     fontSize: 13,
-    color: '#047857',
+    color: 'rgba(74, 222, 128, 0.8)',
     lineHeight: 18,
     flex: 1,
   },
@@ -566,10 +600,12 @@ const styles = StyleSheet.create({
     width: 80,
     height: 80,
     borderRadius: 40,
-    backgroundColor: '#F3F4F6',
+    backgroundColor: Colors.glass.light,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 16,
+    borderWidth: 1,
+    borderColor: Colors.glass.border,
   },
   emojiText: {
     fontSize: 48,
@@ -584,29 +620,30 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 12,
-    backgroundColor: '#F3F4F6',
+    backgroundColor: Colors.glass.light,
     borderRadius: 12,
-    borderWidth: 2,
-    borderColor: '#E5E7EB',
+    borderWidth: 1,
+    borderColor: Colors.glass.border,
     padding: 12,
   },
   moodExampleIcon: {
     fontSize: 20,
+    color: Colors.accent.primary,
   },
   moodExampleText: {
     fontSize: 14,
     fontWeight: '500',
-    color: '#374151',
+    color: Colors.text.primary,
     flex: 1,
   },
 
-  // How It Works
+  // How It Works — purple-tinted glass
   howItWorksBox: {
-    backgroundColor: '#EDE9FE',
+    backgroundColor: 'rgba(139, 92, 246, 0.08)',
     borderRadius: 16,
     padding: 16,
-    borderWidth: 2,
-    borderColor: '#C7D2FE',
+    borderWidth: 1,
+    borderColor: 'rgba(139, 92, 246, 0.2)',
     flexDirection: 'row',
     alignItems: 'flex-start',
     gap: 12,
@@ -615,12 +652,12 @@ const styles = StyleSheet.create({
   howItWorksLabel: {
     fontSize: 13,
     fontWeight: '600',
-    color: '#5B21B6',
+    color: 'rgba(167, 139, 250, 0.9)',
     marginBottom: 2,
   },
   howItWorksText: {
     fontSize: 13,
-    color: '#6366F1',
+    color: 'rgba(139, 92, 246, 0.8)',
     lineHeight: 18,
     flex: 1,
   },
@@ -636,10 +673,10 @@ const styles = StyleSheet.create({
     position: 'absolute',
     width: 80,
     height: 100,
-    backgroundColor: '#F3F4F6',
+    backgroundColor: Colors.glass.light,
     borderRadius: 4,
     borderWidth: 2,
-    borderColor: '#D1D5DB',
+    borderColor: Colors.glass.border,
     left: 10,
   },
   journalLines: {
@@ -651,7 +688,7 @@ const styles = StyleSheet.create({
   journalLine: {
     width: 40,
     height: 2,
-    backgroundColor: '#9CA3AF',
+    backgroundColor: Colors.text.muted,
     borderRadius: 1,
   },
   journalPen: {
@@ -660,33 +697,36 @@ const styles = StyleSheet.create({
     right: 5,
     width: 30,
     height: 4,
-    backgroundColor: '#8B5CF6',
+    backgroundColor: 'rgba(167, 139, 250, 0.8)',
     borderRadius: 2,
     transform: [{ rotate: '45deg' }],
   },
   journalPenLine: {
     width: 30,
     height: 4,
-    backgroundColor: '#8B5CF6',
+    backgroundColor: 'rgba(167, 139, 250, 0.8)',
     borderRadius: 2,
   },
 
-  // Research Box
+  // Research Box — gold accent border
   researchBox: {
-    backgroundColor: '#EEF2FF',
+    backgroundColor: Colors.glass.light,
     borderLeftWidth: 4,
-    borderLeftColor: '#6366F1',
+    borderLeftColor: Colors.accent.primary,
     borderRadius: 12,
     padding: 16,
     width: '100%',
+    borderWidth: 1,
+    borderColor: Colors.glass.border,
   },
   researchLabel: {
     fontSize: 13,
-    color: '#4338CA',
+    color: Colors.text.secondary,
     lineHeight: 18,
   },
   researchLabelBold: {
     fontWeight: '600',
+    color: Colors.text.primary,
   },
 
   // Search Suggestions
@@ -698,12 +738,12 @@ const styles = StyleSheet.create({
   searchSuggestionsLabel: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#6B7280',
+    color: Colors.text.secondary,
     marginBottom: 8,
   },
   searchSuggestion: {
     fontSize: 13,
-    color: '#6B7280',
+    color: Colors.text.muted,
     marginBottom: 2,
   },
 
@@ -714,6 +754,6 @@ const styles = StyleSheet.create({
   clearSearchText: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#6366F1',
+    color: Colors.accent.primary,
   },
 });

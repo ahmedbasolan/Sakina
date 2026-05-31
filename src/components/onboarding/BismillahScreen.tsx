@@ -16,6 +16,7 @@ import {
   TouchableOpacity,
   Text,
 } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useStaggerEntry } from '../../hooks/useStaggerEntry';
 import { useTheme } from '../../context/ThemeContext';
 import { InteractiveStarfield } from './InteractiveStarfield';
@@ -32,7 +33,7 @@ const STAR_POS = [
 
 
 
-const IMG_SIZE = width * 0.48;
+const IMG_SIZE = width * 0.36;
 
 interface Props {
   isActive: boolean;
@@ -93,11 +94,18 @@ export default function BismillahScreen({ isActive, onNext }: Props) {
       {/* CTA Button */}
       <Animated.View style={[styles.ctaWrap, stagger[3], { transform: [{ scale: ctaPulse }] }]}>
         <TouchableOpacity
-          style={[styles.ctaBtn, { backgroundColor: c.ctaBg }]}
+          style={styles.ctaBtn}
           activeOpacity={0.85}
           onPress={onNext}
         >
-          <Text style={[styles.ctaText, { color: c.ctaText }]}>Continue</Text>
+          <LinearGradient
+            colors={['#E8C84A', '#B8860B']}
+            style={styles.ctaBtnGradient}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+          >
+            <Text style={styles.ctaText}>Continue</Text>
+          </LinearGradient>
         </TouchableOpacity>
       </Animated.View>
     </View>
@@ -113,6 +121,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: 32,
+    paddingTop: height * 0.06,
   },
   calligraphyWrap: {
     alignItems: 'center',
@@ -147,15 +156,25 @@ const styles = StyleSheet.create({
     paddingBottom: height * 0.10,
   },
   ctaBtn: {
+    borderRadius: 28,
+    overflow: 'hidden',
+    shadowColor: '#C9A84C',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.5,
+    shadowRadius: 20,
+    elevation: 10,
+  },
+  ctaBtnGradient: {
     height: 56,
-    borderRadius: 16,
+    borderRadius: 28,
     justifyContent: 'center',
     alignItems: 'center',
   },
   ctaText: {
     fontFamily: 'serif',
     fontSize: 17,
-    letterSpacing: 0.5,
+    letterSpacing: 1.5,
     fontWeight: '600',
+    color: '#0D1B2A',
   },
 });

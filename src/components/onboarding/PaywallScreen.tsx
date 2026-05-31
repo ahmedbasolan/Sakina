@@ -10,6 +10,7 @@ import {
   Platform,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import { useStaggerEntry } from '../../hooks/useStaggerEntry';
 import { InteractiveStarfield } from './InteractiveStarfield';
@@ -26,10 +27,10 @@ const STAR_POS = [
   { x: 0.5, y: 0.15, s: 1.5, d: 100 },
 ];
 
-const FEATURES = [
-  { icon: 'book-quran', title: 'Unlimited Reflections', desc: 'Deep AI-guided spiritual journaling' },
-  { icon: 'headphones', title: 'Curated Soundscapes', desc: 'Premium ambient audio for focus' },
-  { icon: 'compass', title: 'All Spiritual Paths', desc: 'Unlock every guided journey' },
+const FEATURES: { icon: React.ComponentProps<typeof Ionicons>['name']; title: string; desc: string }[] = [
+  { icon: 'heart-outline', title: 'Daily Personalised Verses', desc: 'Matched to your mood and emotional state every day' },
+  { icon: 'sync-outline', title: 'Unlimited Heart Check-ins', desc: 'Track your spiritual and emotional journey over time' },
+  { icon: 'notifications-outline', title: 'Full Reminder Suite', desc: 'Fajr, Dhuhr, Asr, Maghrib & Isha — all five reminders' },
 ];
 
 interface Props {
@@ -38,8 +39,8 @@ interface Props {
 }
 
 export default function PaywallScreen({ isActive, onComplete }: Props) {
-  // [0] badge, [1] title, [2] subtitle, [3,4,5] features, [6] CTA, [7] skip
-  const s = useStaggerEntry(isActive, 8, { baseDelay: 300, stagger: 100 });
+  // [0] badge, [1] title, [2] subtitle, [3,4,5] features, [6] verse, [7] CTA, [8] skip
+  const s = useStaggerEntry(isActive, 9, { baseDelay: 300, stagger: 100 });
   const pulseAnim = useRef(new Animated.Value(1)).current;
 
   useEffect(() => {
@@ -69,14 +70,14 @@ export default function PaywallScreen({ isActive, onComplete }: Props) {
       <InteractiveStarfield positions={STAR_POS} />
 
       <View style={styles.mandalaOuter} pointerEvents="none">
-        <AnimatedMandala size={400} color={Colors.accent.primary} opacity={0.05} />
+        <AnimatedMandala size={400} color={Colors.accent.primary} opacity={0.03} />
       </View>
 
       <View style={styles.contentArea}>
         {/* Premium Badge */}
         <Animated.View style={[styles.badgeWrap, s[0]]}>
           <Icon name="star" size={14} color={Colors.accent.primary} />
-          <Text style={styles.badgeText}>NOOR PREMIUM</Text>
+          <Text style={styles.badgeText}>SAKINA PREMIUM</Text>
         </Animated.View>
 
         {/* Title */}
@@ -86,7 +87,7 @@ export default function PaywallScreen({ isActive, onComplete }: Props) {
 
         {/* Subtitle */}
         <Animated.Text style={[styles.subtitle, s[2]]}>
-          Unlock the full experience and let Noor guide you every step of the way.
+          Unlock the full experience and let Sakina guide you every step of the way.
         </Animated.Text>
 
         {/* Features List */}
@@ -94,7 +95,7 @@ export default function PaywallScreen({ isActive, onComplete }: Props) {
           {FEATURES.map((feat, i) => (
             <Animated.View key={i} style={[styles.featureRow, s[3 + i]]}>
               <View style={styles.featureIconWrap}>
-                <Icon name={feat.icon as any} size={20} color={Colors.accent.primary} />
+                <Ionicons name={feat.icon} size={20} color={Colors.accent.primary} />
               </View>
               <View style={styles.featureTextWrap}>
                 <Text style={styles.featureTitle}>{feat.title}</Text>
@@ -103,18 +104,27 @@ export default function PaywallScreen({ isActive, onComplete }: Props) {
             </Animated.View>
           ))}
         </View>
+
+        {/* Quranic verse quote */}
+        <Animated.View style={[styles.verseCard, s[6]]}>
+          <Text style={styles.verseArabic}>أَلَا بِذِكْرِ اللَّهِ تَطْمَئِنُّ الْقُلُوبُ</Text>
+          <Text style={styles.verseTranslation}>
+            "Verily, in the remembrance of Allah do hearts find rest."
+          </Text>
+          <Text style={styles.verseRef}>— Surah Ar-Ra'd 13:28</Text>
+        </Animated.View>
       </View>
 
       <View style={styles.bottomSection}>
         {/* Main CTA */}
-        <Animated.View style={[styles.ctaWrap, s[6], { transform: [{ scale: pulseAnim }] }]}>
+        <Animated.View style={[styles.ctaWrap, s[7], { transform: [{ scale: pulseAnim }] }]}>
           <TouchableOpacity
             style={styles.ctaBtn}
             activeOpacity={0.85}
             onPress={handleSubscribe}
           >
             <LinearGradient
-              colors={[Colors.accent.primary, Colors.accent.primary]}
+              colors={['#E8C84A', '#B8860B']}
               style={styles.ctaBtnGradient}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 1 }}
@@ -126,7 +136,7 @@ export default function PaywallScreen({ isActive, onComplete }: Props) {
         </Animated.View>
 
         {/* Skip Button (Soft Paywall Escape) */}
-        <Animated.View style={[styles.skipWrap, s[7]]}>
+        <Animated.View style={[styles.skipWrap, s[8]]}>
           <TouchableOpacity onPress={handleSkip} hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}>
             <Text style={styles.skipText}>Maybe later</Text>
           </TouchableOpacity>
@@ -149,7 +159,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 32,
     justifyContent: 'center',
     zIndex: 2,
-    paddingTop: height * 0.05,
+    paddingTop: height * 0.12,
   },
   badgeWrap: {
     flexDirection: 'row',
@@ -181,11 +191,46 @@ const styles = StyleSheet.create({
     fontSize: 15,
     color: 'rgba(245, 237, 227, 0.7)',
     lineHeight: 24,
-    marginBottom: 40,
+    marginBottom: 24,
     paddingRight: 20,
   },
   featuresList: {
-    gap: 24,
+    gap: 20,
+    marginBottom: 0,
+  },
+  verseCard: {
+    marginTop: 28,
+    paddingHorizontal: 20,
+    paddingVertical: 18,
+    borderRadius: 16,
+    backgroundColor: 'rgba(212, 175, 55, 0.05)',
+    borderWidth: 1,
+    borderColor: 'rgba(212, 175, 55, 0.15)',
+    alignItems: 'center',
+    gap: 8,
+  },
+  verseArabic: {
+    fontSize: 18,
+    color: Colors.accent.primary,
+    fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
+    textAlign: 'center',
+    opacity: 0.85,
+    textShadowColor: 'rgba(212, 175, 55, 0.4)',
+    textShadowOffset: { width: 0, height: 0 },
+    textShadowRadius: 8,
+  },
+  verseTranslation: {
+    fontSize: 13,
+    color: 'rgba(245, 237, 227, 0.7)',
+    fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
+    fontStyle: 'italic',
+    textAlign: 'center',
+    lineHeight: 20,
+  },
+  verseRef: {
+    fontSize: 11,
+    color: 'rgba(212, 175, 55, 0.5)',
+    letterSpacing: 0.5,
   },
   featureRow: {
     flexDirection: 'row',
@@ -196,7 +241,9 @@ const styles = StyleSheet.create({
     width: 44,
     height: 44,
     borderRadius: 22,
-    backgroundColor: 'rgba(212, 175, 55, 0.1)',
+    backgroundColor: 'rgba(212, 175, 55, 0.08)',
+    borderWidth: 1,
+    borderColor: 'rgba(212, 175, 55, 0.25)',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -222,17 +269,18 @@ const styles = StyleSheet.create({
   },
   ctaWrap: { width: '100%' },
   ctaBtn: {
-    borderRadius: 16,
-    shadowColor: Colors.accent.primary,
+    borderRadius: 28,
+    overflow: 'hidden',
+    shadowColor: '#C9A84C',
     shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.35,
+    shadowOpacity: 0.5,
     shadowRadius: 16,
     elevation: 8,
   },
   ctaBtnGradient: {
     paddingVertical: 18,
     alignItems: 'center',
-    borderRadius: 16,
+    borderRadius: 28,
   },
   ctaText: {
     fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',

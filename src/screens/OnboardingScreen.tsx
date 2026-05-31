@@ -12,10 +12,9 @@ import {
   View,
   StyleSheet,
   Animated,
-  Dimensions,
+  Easing,
   StatusBar,
   TouchableOpacity,
-  Easing,
 } from 'react-native';
 import {
   PanGestureHandler,
@@ -40,11 +39,9 @@ import NotificationService from '../services/notificationService';
 import ThemeToggle from '../components/ThemeToggle';
 import { ProgressMandala } from '../components/onboarding/ProgressMandala';
 import { touchEmitter } from '../components/onboarding/InteractiveStarfield';
-import { SoundscapeToggle } from '../components/onboarding/SoundscapeToggle';
 import { useTheme } from '../context/ThemeContext';
 import { useAuth } from '../context/AuthContext';
 
-const { width, height } = Dimensions.get('window');
 const TOTAL_SCREENS = 8;
 const SWIPE_THRESHOLD = 50;
 const VELOCITY_THRESHOLD = 0.5;
@@ -73,9 +70,9 @@ export default function OnboardingScreen({ navigation }: any) {
 
   // Transition animations
   const fadeAnim = useRef(new Animated.Value(1)).current;
-  const slideAnim = useRef(new Animated.Value(0)).current;
   const mandalaScale = useRef(new Animated.Value(1)).current;
   const bgScale = useRef(new Animated.Value(1)).current;
+  const isTransitioning = useRef(false);
 
   // Breathing background gradient loop
   useEffect(() => {
@@ -117,41 +114,27 @@ export default function OnboardingScreen({ navigation }: any) {
   const transitionTo = useCallback(
     (nextIndex: number) => {
       if (nextIndex < 0 || nextIndex >= TOTAL_SCREENS) return;
-      const direction = nextIndex > currentScreen ? -1 : 1;
+      if (isTransitioning.current) return;
+      isTransitioning.current = true;
 
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
 
-      Animated.parallel([
+      Animated.timing(fadeAnim, {
+        toValue: 0,
+        duration: 220,
+        useNativeDriver: true,
+      }).start(() => {
+        setCurrentScreen(nextIndex);
         Animated.timing(fadeAnim, {
-          toValue: 0,
-          duration: 250,
+          toValue: 1,
+          duration: 300,
           useNativeDriver: true,
-        }),
-        Animated.timing(slideAnim, {
-          toValue: direction * 30,
-          duration: 250,
-          useNativeDriver: true,
-        }),
-      ]).start(() => {
-        setTimeout(() => {
-          setCurrentScreen(nextIndex);
-          slideAnim.setValue(-direction * 30);
-          Animated.parallel([
-            Animated.timing(fadeAnim, {
-              toValue: 1,
-              duration: 400,
-              useNativeDriver: true,
-            }),
-            Animated.timing(slideAnim, {
-              toValue: 0,
-              duration: 400,
-              useNativeDriver: true,
-            }),
-          ]).start();
-        }, 50);
+        }).start(() => {
+          isTransitioning.current = false;
+        });
       });
     },
-    [currentScreen],
+    [],
   );
 
   const goNext = useCallback(() => {
@@ -165,11 +148,6 @@ export default function OnboardingScreen({ navigation }: any) {
   }, [currentScreen, transitionTo]);
 
   // --- Swipe gesture ---
-  const onGestureEvent = useRef(
-    Animated.event([{ nativeEvent: { translationX: new Animated.Value(0) } }], {
-      useNativeDriver: false,
-    }),
-  ).current;
 
   const onHandlerStateChange = useCallback(
     (event: any) => {
@@ -233,7 +211,7 @@ export default function OnboardingScreen({ navigation }: any) {
         <View style={[styles.headerRow, { top: insets.top + 12 }]}>
           {/* Left section: back arrow / theme toggle */}
           <View style={styles.headerLeft}>
-            {currentScreen > 0 ? (
+            {currentScreen > 1 ? (
               <TouchableOpacity
                 style={styles.backBtn}
                 onPress={goBack}
@@ -246,40 +224,32 @@ export default function OnboardingScreen({ navigation }: any) {
               <View style={{ width: 36, height: 36 }} />
             )}
             
-            {/* Soundscape toggle */}
-            <View style={{ marginLeft: 8 }}>
-              <SoundscapeToggle />
-            </View>
           </View>
 
           {/* Breadcrumb Progress Mandala */}
           <View style={styles.breadcrumbWrap}>
             <Animated.View style={{ transform: [{ scale: mandalaScale }] }}>
-              <ProgressMandala progress={(currentScreen + 1) / TOTAL_SCREENS} size={52} />
+              <ProgressMandala progress={(currentScreen + 1) / TOTAL_SCREENS} size={60} />
             </Animated.View>
           </View>
         </View>
 
         {/* Screen content */}
         <PanGestureHandler
-          onGestureEvent={onGestureEvent}
           onHandlerStateChange={onHandlerStateChange}
           activeOffsetX={[-15, 15]}
         >
           <Animated.View
             style={[
               styles.screenWrap,
-              {
-                opacity: fadeAnim,
-                transform: [{ translateX: slideAnim }],
-              },
+              { opacity: fadeAnim },
             ]}
           >
             {currentScreen === 0 && (
               <BismillahScreen isActive={currentScreen === 0} onNext={goNext} />
             )}
             {currentScreen === 1 && (
-              <WelcomeScreen isActive={currentScreen === 1} onNext={goNext} onSkip={handleCommitComplete} />
+              <WelcomeScreen isActive={currentScreen === 1} onNext={goNext} onSkip={() => transitionTo(7)} />
             )}
             {currentScreen === 2 && (
               <HeartCheckInScreen isActive={currentScreen === 2} onNext={goNext} />

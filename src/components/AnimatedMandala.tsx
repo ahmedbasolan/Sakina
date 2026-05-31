@@ -56,22 +56,18 @@ function AnimatedMandalaInner({
     return () => anim.stop();
   }, [rotation]);
 
-  const rotate = rotation.interpolate({
-    inputRange: [0, 1],
-    outputRange: direction === 'cw' ? ['0deg', '360deg'] : ['360deg', '0deg'],
-  });
+  // useMemo prevents a new interpolation node being registered on every re-render
+  const rotate = useMemo(
+    () =>
+      rotation.interpolate({
+        inputRange: [0, 1],
+        outputRange: direction === 'cw' ? ['0deg', '360deg'] : ['360deg', '0deg'],
+      }),
+    [direction],
+  );
 
-  // Precompute the complex geometric web paths
-  const webPaths = useMemo(() => {
-    return {
-      // 12-pointed star (sharpest, passes near center)
-      web12_5: generateStarWeb(12, 5, OUTER_R, CENTER, CENTER),
-      // 3 overlapping squares
-      web12_4: generateStarWeb(12, 4, OUTER_R, CENTER, CENTER),
-      // 4 overlapping triangles
-      web12_3: generateStarWeb(12, 3, OUTER_R, CENTER, CENTER),
-    };
-  }, []);
+  // Precompute minimal geometric web path (single 12-pointed star only)
+  const starPath = useMemo(() => generateStarWeb(12, 5, OUTER_R, CENTER, CENTER), []);
 
   return (
     <Animated.View
@@ -80,15 +76,16 @@ function AnimatedMandalaInner({
     >
       <Svg width={size} height={size} viewBox={`0 0 ${VB} ${VB}`}>
         {/* Outer Circular Boundary */}
-        <Circle cx={CENTER} cy={CENTER} r={OUTER_R} stroke={color} strokeWidth={0.3} fill="none" opacity={0.7} />
-        
-        {/* Central Hollow Ring */}
-        <Circle cx={CENTER} cy={CENTER} r={OUTER_R * 0.18} stroke={color} strokeWidth={0.3} fill="none" opacity={0.8} />
+        <Circle cx={CENTER} cy={CENTER} r={OUTER_R} stroke={color} strokeWidth={0.3} fill="none" opacity={0.6} />
 
-        {/* The overlapping geometric webs */}
-        <Path d={webPaths.web12_5} stroke={color} strokeWidth={0.3} fill="none" opacity={0.8} />
-        <Path d={webPaths.web12_4} stroke={color} strokeWidth={0.2} fill="none" opacity={0.5} />
-        <Path d={webPaths.web12_3} stroke={color} strokeWidth={0.2} fill="none" opacity={0.4} />
+        {/* Mid ring */}
+        <Circle cx={CENTER} cy={CENTER} r={OUTER_R * 0.55} stroke={color} strokeWidth={0.2} fill="none" opacity={0.3} />
+
+        {/* Central Hollow Ring */}
+        <Circle cx={CENTER} cy={CENTER} r={OUTER_R * 0.18} stroke={color} strokeWidth={0.3} fill="none" opacity={0.5} />
+
+        {/* Single 12-pointed star web */}
+        <Path d={starPath} stroke={color} strokeWidth={0.3} fill="none" opacity={0.7} />
       </Svg>
     </Animated.View>
   );

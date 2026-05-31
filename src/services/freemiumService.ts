@@ -15,6 +15,10 @@ export class FreemiumService {
   private sessionService = SessionService.getInstance();
   private subscriptionService = SubscriptionService.getInstance();
   private isLoaded: boolean = false;
+  // Stored Promise so waitForInitialization() can await it directly instead of
+  // polling every 50 ms on the JS thread. Previously the busy-wait approach
+  // held the event loop and could delay time-critical animations on slow devices.
+  private initPromise: Promise<void> | null = null;
 
   static getInstance(): FreemiumService {
     if (!FreemiumService.instance) {
@@ -27,15 +31,22 @@ export class FreemiumService {
 
   async initialize(): Promise<void> {
     if (this.isLoaded) return;
-    await this.subscriptionService.initialize();
-    await this.sessionService.initialize(this.isPremium());
-    this.isLoaded = true;
+    if (this.initPromise) return this.initPromise;
+
+    this.initPromise = (async () => {
+      await this.subscriptionService.initialize();
+      await this.sessionService.initialize(this.isPremium());
+      this.isLoaded = true;
+    })();
+
+    return this.initPromise;
   }
 
   async waitForInitialization(): Promise<void> {
-    while (!this.isLoaded) {
-      await new Promise((resolve) => setTimeout(resolve, 50));
-    }
+    // If initialize() has already been called, await the stored Promise instead
+    // of polling. If it hasn't been called yet, trigger it now.
+    if (this.initPromise) return this.initPromise;
+    return this.initialize();
   }
 
   isPremium(): boolean {

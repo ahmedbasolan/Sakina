@@ -28,7 +28,6 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { BlurView } from 'expo-blur';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import Svg, { Path } from 'react-native-svg';
-import { quranContent } from '../data/quranData';
 import { Content, Mood } from '../types';
 import { dbQuery } from '../database/schema';
 import { AnimatedMandala } from '../components/AnimatedMandala';

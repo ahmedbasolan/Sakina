@@ -16,14 +16,12 @@ import {
   TouchableOpacity,
   Platform,
 } from 'react-native';
-import Svg, { Path, Circle } from 'react-native-svg';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useStaggerEntry } from '../../hooks/useStaggerEntry';
 import { InteractiveStarfield } from './InteractiveStarfield';
 
 const { width, height } = Dimensions.get('window');
 
-// Star positions matching the reference image — scattered across upper half
 const STAR_POSITIONS = [
   { x: 0.08, y: 0.06, size: 2.5, delay: 0 },
   { x: 0.88, y: 0.04, size: 2, delay: 600 },
@@ -35,32 +33,18 @@ const STAR_POSITIONS = [
   { x: 0.96, y: 0.46, size: 2, delay: 1050 },
   { x: 0.25, y: 0.32, size: 1.5, delay: 200 },
   { x: 0.70, y: 0.22, size: 1.5, delay: 800 },
+  { x: 0.35, y: 0.55, size: 1.5, delay: 350 },
+  { x: 0.62, y: 0.50, size: 2, delay: 650 },
+  { x: 0.14, y: 0.62, size: 1.5, delay: 500 },
+  { x: 0.84, y: 0.60, size: 2, delay: 950 },
+  { x: 0.45, y: 0.70, size: 1.5, delay: 100 },
+  { x: 0.92, y: 0.72, size: 1.5, delay: 1200 },
+  { x: 0.06, y: 0.76, size: 2, delay: 400 },
+  { x: 0.55, y: 0.84, size: 1.5, delay: 700 },
 ];
 
 
 
-function SparklesIcon({ size = 32, color = Colors.accent.primary }: { size?: number; color?: string }) {
-  return (
-    <Svg width={size} height={size} viewBox="0 0 24 24">
-      <Path
-        d="M12,2 C12,2 13.5,8.5 18,12 C13.5,15.5 12,22 12,22 C12,22 10.5,15.5 6,12 C10.5,8.5 12,2 12,2 Z"
-        fill={color}
-      />
-      <Path
-        d="M19,2 C19,2 19.5,4 21,5 C19.5,6 19,8 19,8 C19,8 18.5,6 17,5 C18.5,4 19,2 19,2 Z"
-        fill={color}
-        opacity={0.6}
-      />
-      <Path
-        d="M5,7 C5,7 5.4,8.5 6.5,9 C5.4,9.5 5,11 5,11 C5,11 4.6,9.5 3.5,9 C4.6,8.5 5,7 5,7 Z"
-        fill={color}
-        opacity={0.5}
-      />
-    </Svg>
-  );
-}
-
-// Removed LoopingDots
 
 interface Props {
   isActive: boolean;
@@ -68,9 +52,15 @@ interface Props {
   onSkip: () => void;
 }
 
+const FEATURES = [
+  'A verse matched to how you feel, every day',
+  'Gentle reminders at Fajr and Maghrib',
+  'Track your heart\'s journey over time',
+];
+
 export default function WelcomeScreen({ isActive, onNext, onSkip }: Props) {
-  // [0] icon, [1] title, [2] subtitle, [3] dots, [4] chip, [5] CTA
-  const s = useStaggerEntry(isActive, 6, { baseDelay: 300, stagger: 130 });
+  // [0] icon, [1] title, [2] subtitle, [3-5] features, [6] CTA, [7] skip
+  const s = useStaggerEntry(isActive, 8, { baseDelay: 300, stagger: 120 });
 
   const glowAnim = useRef(new Animated.Value(0.08)).current;
 
@@ -106,46 +96,45 @@ export default function WelcomeScreen({ isActive, onNext, onSkip }: Props) {
             pointerEvents="none"
           />
 
-          {/* Sparkle icon in gold circle */}
+          {/* Arabic calligraphy "سكينة" in gold ring */}
           <Animated.View style={[styles.iconRing, s[0]]}>
-            <SparklesIcon size={30} color={Colors.accent.primary} />
+            <Text style={styles.calligraphyText}>سكينة</Text>
           </Animated.View>
         </View>
 
         {/* Title */}
         <Animated.Text style={[styles.title, s[1]]}>
-          WELCOME TO NOOR
+          Welcome to Sakina
         </Animated.Text>
 
         {/* Subtitle */}
         <Animated.Text style={[styles.subtitle, s[2]]}>
-          Your personal companion for spiritual growth,{'\n'}
+          Your companion for spiritual growth,{'\n'}
           guided by the wisdom of the Quran
         </Animated.Text>
 
-        {/* Ornament instead of dots */}
-        <Animated.Text style={[styles.ornament, s[3]]}>✦</Animated.Text>
+        {/* Feature rows */}
+        <View style={styles.featuresWrap}>
+          {FEATURES.map((text, i) => (
+            <Animated.View key={i} style={[styles.featureRow, s[3 + i]]}>
+              <Text style={styles.featureOrnament}>✦</Text>
+              <Text style={styles.featureText}>{text}</Text>
+            </Animated.View>
+          ))}
+        </View>
       </View>
 
       {/* Bottom section */}
       <View style={styles.bottomSection}>
-        {/* Feature chip — matches reference pill with sparkle prefix */}
-        <Animated.View style={[styles.chip, s[4]]}>
-          <SparklesIcon size={12} color={Colors.accent.primary} />
-          <Text style={styles.chipText}>
-            {'  '}A verse chosen for your heart, right now
-          </Text>
-        </Animated.View>
-
         {/* CTA */}
-        <Animated.View style={[styles.ctaWrap, s[5]]}>
+        <Animated.View style={[styles.ctaWrap, s[6]]}>
           <TouchableOpacity
             style={styles.ctaBtn}
             activeOpacity={0.85}
             onPress={onNext}
           >
             <LinearGradient
-              colors={[Colors.accent.primary, Colors.accent.primary]}
+              colors={['#E8C84A', '#B8860B']}
               style={styles.ctaBtnGradient}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 1 }}
@@ -156,7 +145,7 @@ export default function WelcomeScreen({ isActive, onNext, onSkip }: Props) {
         </Animated.View>
 
         {/* Skip button for power users */}
-        <Animated.View style={[styles.skipWrap, s[5]]}>
+        <Animated.View style={[styles.skipWrap, s[7]]}>
           <TouchableOpacity onPress={onSkip} hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}>
             <Text style={styles.skipText}>Skip onboarding</Text>
           </TouchableOpacity>
@@ -174,8 +163,8 @@ const styles = StyleSheet.create({
   heroWrap: {
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 32,
-    marginTop: 60, // Push it down somewhat
+    marginBottom: 28,
+    marginTop: 20,
   },
   breathingGlow: {
     position: 'absolute',
@@ -192,21 +181,28 @@ const styles = StyleSheet.create({
     zIndex: 2,
   },
   iconRing: {
-    width: 72,
-    height: 72,
-    borderRadius: 36,
+    width: 100,
+    height: 100,
+    borderRadius: 50,
     borderWidth: 1.5,
-    borderColor: 'rgba(201, 168, 76, 0.35)',
-    backgroundColor: 'rgba(201, 168, 76, 0.12)',
+    borderColor: 'rgba(201, 168, 76, 0.6)',
+    backgroundColor: 'rgba(201, 168, 76, 0.1)',
     justifyContent: 'center',
     alignItems: 'center',
-    // Removed marginBottom since it's now handled by heroWrap
-    // Gold inner glow matching reference
     shadowColor: Colors.accent.primary,
     shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.4,
-    shadowRadius: 16,
-    elevation: 8,
+    shadowOpacity: 0.6,
+    shadowRadius: 28,
+    elevation: 12,
+  },
+  calligraphyText: {
+    fontSize: 28,
+    color: Colors.accent.primary,
+    fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
+    textShadowColor: 'rgba(201, 168, 76, 0.8)',
+    textShadowOffset: { width: 0, height: 0 },
+    textShadowRadius: 14,
+    letterSpacing: 2,
   },
   title: {
     fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
@@ -215,7 +211,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     letterSpacing: 0.5,
     marginBottom: 14,
-    // Subtle text glow
     textShadowColor: 'rgba(201, 168, 76, 0.3)',
     textShadowOffset: { width: 0, height: 0 },
     textShadowRadius: 12,
@@ -226,68 +221,74 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     lineHeight: 24,
     letterSpacing: 0.2,
-    marginBottom: 24,
+    marginBottom: 32,
   },
-  ornament: {
-    fontSize: 16,
-    color: 'rgba(201,168,76,0.5)',
+  featuresWrap: {
+    width: '100%',
+    gap: 14,
+    paddingHorizontal: 8,
+  },
+  featureRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    borderRadius: 14,
+    backgroundColor: 'rgba(255, 255, 255, 0.04)',
+    borderWidth: 1,
+    borderColor: 'rgba(201, 168, 76, 0.1)',
+  },
+  featureOrnament: {
+    fontSize: 10,
+    color: Colors.accent.primary,
+    opacity: 0.75,
+  },
+  featureText: {
+    fontSize: 14,
+    color: 'rgba(245, 237, 227, 0.7)',
+    letterSpacing: 0.2,
+    lineHeight: 20,
+    flex: 1,
   },
   bottomSection: {
     paddingHorizontal: 24,
     paddingBottom: height * 0.10,
-    gap: 14,
+    gap: 12,
     zIndex: 2,
-  },
-  chip: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderRadius: 12,
-    paddingHorizontal: 16,
-    paddingVertical: 14,
-    borderWidth: 1,
-    borderColor: 'rgba(201, 168, 76, 0.2)',
-    backgroundColor: 'rgba(201, 168, 76, 0.06)',
-  },
-  chipText: {
-    fontSize: 13,
-    color: 'rgba(201, 168, 76, 0.75)',
-    letterSpacing: 0.3,
-    lineHeight: 18,
-    flex: 1,
-    textAlign: 'center',
   },
   ctaWrap: {
     width: '100%',
   },
   ctaBtn: {
-    borderRadius: 16,
+    borderRadius: 28,
     overflow: 'hidden',
     shadowColor: Colors.accent.primary,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.35,
-    shadowRadius: 12,
-    elevation: 8,
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.5,
+    shadowRadius: 20,
+    elevation: 10,
   },
   ctaBtnGradient: {
     height: 58,
     justifyContent: 'center',
     alignItems: 'center',
-    borderRadius: 16,
+    borderRadius: 28,
   },
   ctaText: {
     fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
     fontSize: 17,
-    letterSpacing: 1,
+    letterSpacing: 1.5,
     fontWeight: '600',
     color: '#0C1A2E',
   },
   skipWrap: {
-    marginTop: 16,
+    marginTop: 4,
     alignItems: 'center',
   },
   skipText: {
     fontSize: 14,
-    color: 'rgba(176, 196, 215, 0.25)',
+    color: 'rgba(176, 196, 215, 0.4)',
     letterSpacing: 0.5,
   },
 });

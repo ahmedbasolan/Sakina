@@ -251,32 +251,52 @@ class ErrorLoggingService {
     }
   }
 
-  private async persistError(errorLog: ErrorLog): Promise<void> {
+  /**
+   * Fields that must never be forwarded to PostHog or any external service.
+   * Callers sometimes pass userId, city, country in context — those are fine
+   * for debugging but email / tokens must never leave the device.
+   */
+  private readonly PII_KEYS = new Set(['email', 'password', 'token', 'access_token', 'refresh_token']);
+
+  /** Strips known PII keys from a context object before sending to PostHog. */
+  private sanitizeContext(context?: Record<string, any>): Record<string, any> {
+    if (!context) return {};
+    return Object.fromEntries(
+      Object.entries(context).filter(([key]) => !this.PII_KEYS.has(key.toLowerCase()))
+    );
+  }
+
+  private captureToPostHog(errorLog: ErrorLog): void {
     try {
-      // In a real app, you might want to save to AsyncStorage or send to a crash reporting service
-      // For now, we'll just keep it in memory since this is a privacy-focused app
-      // If needed, you can add AsyncStorage persistence here
-    } catch (error) {
-      console.error('Failed to persist error log:', error);
+      // Lazy import to avoid circular deps at module init time
+      const posthog = require('../config/posthog').default;
+      posthog.capture('$exception', {
+        $exception_message: errorLog.message,
+        $exception_type: errorLog.severity,
+        $exception_stack: errorLog.stack,
+        component: errorLog.component,
+        severity: errorLog.severity,
+        // Spread sanitized context — raw context spread was removed because
+        // callers could accidentally include PII (email, tokens) in context
+        // which would then be forwarded to PostHog unredacted.
+        ...this.sanitizeContext(errorLog.context),
+      });
+    } catch {
+      // Never let PostHog break the app
     }
+  }
+
+  private async persistError(errorLog: ErrorLog): Promise<void> {
+    // Send HIGH and CRITICAL errors to PostHog for remote visibility
+    this.captureToPostHog(errorLog);
   }
 
   private async loadPersistedLogs(): Promise<void> {
-    try {
-      // Load from AsyncStorage if implemented
-      // For now, this is a placeholder
-    } catch (error) {
-      console.error('Failed to load persisted logs:', error);
-    }
+    // No local persistence — PostHog is the source of truth for errors
   }
 
   private async clearPersistedLogs(): Promise<void> {
-    try {
-      // Clear from AsyncStorage if implemented
-      // For now, this is a placeholder
-    } catch (error) {
-      console.error('Failed to clear persisted logs:', error);
-    }
+    // No local persistence to clear
   }
 }
 

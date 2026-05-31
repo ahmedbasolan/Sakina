@@ -224,14 +224,21 @@ export function LoginScreen({ navigation, onLogin }: AuthScreenProps) {
   }, []);
 
   const handleSignIn = async () => {
-    if (!email || !password) {
+    const trimmedEmail = email.trim().toLowerCase();
+    if (!trimmedEmail || !password) {
       Alert.alert('Error', 'Please enter both email and password.');
+      return;
+    }
+    // Basic email format check — catches obvious mistakes before a network round-trip
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(trimmedEmail)) {
+      Alert.alert('Invalid Email', 'Please enter a valid email address.');
       return;
     }
     setIsLoading(true);
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     try {
-      await authService.signInWithEmail(email, password);
+      await authService.signInWithEmail(trimmedEmail, password);
       if (onLogin) onLogin();
     } catch (error: any) {
       Alert.alert('Sign In Failed', error.message || 'An unexpected error occurred.');
@@ -371,13 +378,22 @@ export function LoginScreen({ navigation, onLogin }: AuthScreenProps) {
             {/* Divider */}
             <GoldDivider text="Or continue with" />
 
-            {/* Social buttons */}
+            {/* Social buttons — OAuth not yet integrated; buttons are disabled to
+                prevent the email/password handler from being called accidentally */}
             <View style={styles.socialRow}>
-              <TouchableOpacity style={styles.socialBtn} activeOpacity={0.7} onPress={handleSignIn}>
+              <TouchableOpacity
+                style={[styles.socialBtn, styles.socialBtnDisabled]}
+                activeOpacity={0.5}
+                onPress={() => Alert.alert('Coming Soon', 'Google sign-in will be available soon.')}
+              >
                 <GoogleIcon size={18} />
                 <Text style={styles.socialBtnText}>Google</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.socialBtn} activeOpacity={0.7} onPress={handleSignIn}>
+              <TouchableOpacity
+                style={[styles.socialBtn, styles.socialBtnDisabled]}
+                activeOpacity={0.5}
+                onPress={() => Alert.alert('Coming Soon', 'Apple sign-in will be available soon.')}
+              >
                 <AppleIcon size={18} fill="#F5EDE3" />
                 <Text style={styles.socialBtnText}>Apple</Text>
               </TouchableOpacity>
@@ -452,8 +468,22 @@ export function SignUpScreen({ navigation, onSignUp }: AuthScreenProps) {
   }, []);
 
   const handleCreateAccount = async () => {
-    if (!name || !email || !password) {
+    const trimmedName = name.trim();
+    const trimmedEmail = email.trim().toLowerCase();
+
+    if (!trimmedName || !trimmedEmail || !password) {
       Alert.alert('Error', 'Please fill in all fields.');
+      return;
+    }
+    // Basic email format check
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(trimmedEmail)) {
+      Alert.alert('Invalid Email', 'Please enter a valid email address.');
+      return;
+    }
+    // Enforce the password hint shown to the user ("at least 8 characters")
+    if (password.length < 8) {
+      Alert.alert('Weak Password', 'Password must be at least 8 characters long.');
       return;
     }
     if (!agreeTerms) {
@@ -463,7 +493,7 @@ export function SignUpScreen({ navigation, onSignUp }: AuthScreenProps) {
     setIsLoading(true);
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     try {
-      await authService.signUpWithEmail(email, password, name);
+      await authService.signUpWithEmail(trimmedEmail, password, trimmedName);
       Alert.alert(
         'Success',
         'Your account has been created. Please check your email for verification.',
@@ -609,13 +639,21 @@ export function SignUpScreen({ navigation, onSignUp }: AuthScreenProps) {
             {/* Divider */}
             <GoldDivider text="Or sign up with" />
 
-            {/* Social */}
+            {/* Social — OAuth not yet integrated */}
             <View style={styles.socialRow}>
-              <TouchableOpacity style={styles.socialBtn} activeOpacity={0.7} onPress={handleCreateAccount}>
+              <TouchableOpacity
+                style={[styles.socialBtn, styles.socialBtnDisabled]}
+                activeOpacity={0.5}
+                onPress={() => Alert.alert('Coming Soon', 'Google sign-up will be available soon.')}
+              >
                 <GoogleIcon size={18} />
                 <Text style={styles.socialBtnText}>Google</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.socialBtn} activeOpacity={0.7} onPress={handleCreateAccount}>
+              <TouchableOpacity
+                style={[styles.socialBtn, styles.socialBtnDisabled]}
+                activeOpacity={0.5}
+                onPress={() => Alert.alert('Coming Soon', 'Apple sign-up will be available soon.')}
+              >
                 <AppleIcon size={18} fill="#F5EDE3" />
                 <Text style={styles.socialBtnText}>Apple</Text>
               </TouchableOpacity>
@@ -936,6 +974,9 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: 'rgba(245, 237, 227, 0.7)',
     letterSpacing: 0.3,
+  },
+  socialBtnDisabled: {
+    opacity: 0.5,
   },
   // --- Guest button ---
   guestBtn: {

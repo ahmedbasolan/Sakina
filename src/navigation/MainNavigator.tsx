@@ -7,7 +7,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Icon, { IconName } from '../components/Icon';
 import StreakCenterTab from '../components/StreakCenterTab';
 import { useAuth } from '../context/AuthContext';
-import { moodHistoryService } from '../services/moodHistoryService';
+import { useAppContext } from '../context/AppContext';
 
 // Navigation Types
 import { RootStackParamList, AuthStackParamList, MainTabParamList } from './types';
@@ -127,22 +127,10 @@ const CustomTabButton = (props: any) => {
 function MainTabNavigator() {
   const insets = useSafeAreaInsets();
   const bottomInset = insets?.bottom ?? 0;
-  const [streakCount, setStreakCount] = React.useState<number>(0);
-
-  React.useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      try {
-        const stats = await moodHistoryService.getStats();
-        if (!cancelled) setStreakCount(stats.currentStreak);
-      } catch {
-        if (!cancelled) setStreakCount(0);
-      }
-    })();
-    return () => {
-      cancelled = true;
-    };
-  }, []);
+  // Read streak from SessionContext — HomeScreen writes it there after loading.
+  // Previously this component called moodHistoryService.getStats() (SQLite) directly,
+  // coupling the navigation layer to the data layer.
+  const { streakCount } = useAppContext();
 
   return (
     <Tab.Navigator

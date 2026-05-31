@@ -14,6 +14,7 @@ import {
   Animated,
   Dimensions,
   TouchableOpacity,
+  Platform,
 } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -38,6 +39,7 @@ const CARD_SIZE = (width - 64 - 14) / 2;
 interface GoalOption {
   id: string;
   title: string;
+  desc: string;
   iconPath: string;
   accentColor: string;
 }
@@ -46,28 +48,28 @@ const GOALS: GoalOption[] = [
   {
     id: 'consistency',
     title: 'Build\nConsistency',
-    // Sunrise icon — clean arc + rays
+    desc: 'A daily habit of dhikr and Quran',
     iconPath: 'M12,15 C14.8,15 17,12.8 17,10 M3,18 L21,18 M12,2 L12,5 M5.6,5.6 L7.8,7.8 M18.4,5.6 L16.2,7.8 M2,13 L5,13 M19,13 L22,13',
     accentColor: '#FBBF24',
   },
   {
     id: 'peace',
     title: 'Find Peace',
-    // Heart icon — clean smooth shape
+    desc: 'Verses for stillness and serenity',
     iconPath: 'M12,20 C12,20 4,14.5 4,9 C4,6 6.5,4 9,4 C10.5,4 11.5,4.8 12,5.5 C12.5,4.8 13.5,4 15,4 C17.5,4 20,6 20,9 C20,14.5 12,20 12,20 Z',
     accentColor: '#F472B6',
   },
   {
     id: 'growth',
     title: 'Spiritual\nGrowth',
-    // 5-point star icon
+    desc: 'Deepen your knowledge and reflection',
     iconPath: 'M12,2 L14.4,8.5 L21.5,9.2 L16.4,13.8 L17.8,21 L12,17.3 L6.2,21 L7.6,13.8 L2.5,9.2 L9.6,8.5 Z',
     accentColor: '#A78BFA',
   },
   {
     id: 'night',
     title: 'Night\nReflections',
-    // Crescent moon icon — clean bezier
+    desc: 'Gentle Tahajjud and night reminders',
     iconPath: 'M21,12.8 C21,17.9 16.9,22 11.8,22 C7.8,22 4.4,19.4 3,15.8 C4.2,16.6 5.6,17 7.2,17 C11.6,17 15.2,13.4 15.2,9 C15.2,6.8 14.4,4.8 13,3.2 C17.5,3.8 21,7.9 21,12.8 Z',
     accentColor: '#60A5FA',
   },
@@ -159,7 +161,7 @@ export default function PersonalizationScreen({ isActive, onNext }: Props) {
 
         {/* Subtitle */}
         <Animated.Text style={[styles.subtitle, s[1]]}>
-          This helps us personalize your experience
+          Your choice shapes every verse and reminder you receive
         </Animated.Text>
 
         {/* 2x2 Grid */}
@@ -189,7 +191,7 @@ export default function PersonalizationScreen({ isActive, onNext }: Props) {
                 />
 
                 {/* Icon */}
-                <View style={[styles.iconCircle, { borderColor: goal.accentColor + '40' }]}>
+                <View style={[styles.iconCircle, { borderColor: goal.accentColor + '60' }]}>
                   <Svg width={26} height={26} viewBox="0 0 24 24">
                     <Path
                       d={goal.iconPath}
@@ -205,6 +207,11 @@ export default function PersonalizationScreen({ isActive, onNext }: Props) {
                 {/* Title */}
                 <Text style={[styles.cardTitle, { color: goal.accentColor }]}>
                   {goal.title}
+                </Text>
+
+                {/* Description */}
+                <Text style={[styles.cardDesc, { color: goal.accentColor }]}>
+                  {goal.desc}
                 </Text>
 
                 {/* Checkmark */}
@@ -270,7 +277,7 @@ const styles = StyleSheet.create({
   },
   subtitle: {
     fontSize: 14,
-    color: 'rgba(245, 237, 227, 0.5)',
+    color: 'rgba(245, 237, 227, 0.75)',
     textAlign: 'center',
     lineHeight: 22,
     marginBottom: 36,
@@ -283,14 +290,14 @@ const styles = StyleSheet.create({
   },
   cardWrap: {
     width: CARD_SIZE,
-    height: CARD_SIZE * 1.05,
+    height: CARD_SIZE * 1.35,
   },
   card: {
     flex: 1,
     borderRadius: 18,
     borderWidth: 1,
-    borderColor: 'rgba(201, 168, 76, 0.08)',
-    backgroundColor: 'rgba(201, 168, 76, 0.03)',
+    borderColor: 'rgba(201, 168, 76, 0.2)',
+    backgroundColor: 'rgba(255, 255, 255, 0.06)',
     justifyContent: 'center',
     alignItems: 'center',
     overflow: 'hidden',
@@ -315,7 +322,16 @@ const styles = StyleSheet.create({
     fontSize: 14,
     textAlign: 'center',
     letterSpacing: 0.3,
-    lineHeight: 18,
+    lineHeight: 20,
+  },
+  cardDesc: {
+    fontSize: 11,
+    fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
+    fontStyle: 'italic',
+    textAlign: 'center',
+    lineHeight: 16,
+    opacity: 0.55,
+    paddingHorizontal: 4,
   },
   checkWrap: {
     position: 'absolute',
@@ -335,7 +351,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 12,
     borderWidth: 1,
-    borderColor: 'rgba(201, 168, 76, 0.08)',
+    borderColor: 'rgba(201, 168, 76, 0.15)',
     marginHorizontal: 24,
     marginBottom: height * 0.10,
   },

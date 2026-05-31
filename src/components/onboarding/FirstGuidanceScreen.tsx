@@ -68,9 +68,9 @@ const MOOD_VERSES: Record<string, { arabic: string; translation: string; ref: st
     ref: 'Surah Al-Hadid 57:4',
   },
   Sad: {
-    arabic: 'فَإِنَّ مَعَ الْعُسْرِ يُسْرًا',
-    translation: '"For indeed, with hardship will be ease."',
-    ref: 'Surah Ash-Sharh 94:5',
+    arabic: 'لَا تَقْنَطُوا مِن رَّحْمَةِ اللَّهِ',
+    translation: '"Do not despair of the mercy of Allah."',
+    ref: 'Surah Az-Zumar 39:53',
   },
   Angry: {
     arabic: 'وَالْكَاظِمِينَ الْغَيْظَ وَالْعَافِينَ عَنِ النَّاسِ',
@@ -80,6 +80,18 @@ const MOOD_VERSES: Record<string, { arabic: string; translation: string; ref: st
 };
 
 const DEFAULT_VERSE = MOOD_VERSES.Calm;
+
+// Maps stored mood id → human-readable display label shown in pretitle
+const MOOD_DISPLAY_LABELS: Record<string, string> = {
+  Grateful: 'Grateful',
+  Hopeful: 'Hopeful',
+  Calm: 'Peaceful',
+  Overwhelmed: 'Overwhelmed',
+  Tired: 'Tired',
+  Lonely: 'Lonely',
+  Sad: 'Sad',
+  Angry: 'Angry',
+};
 
 interface Props {
   isActive: boolean;
@@ -100,12 +112,12 @@ export default function FirstGuidanceScreen({ isActive, onNext }: Props) {
     if (!isActive) return;
 
     const chipTimer = setTimeout(() => {
-      Animated.timing(chipOpacity, { toValue: 1, duration: 1000, useNativeDriver: true }).start();
-    }, 3000);
+      Animated.timing(chipOpacity, { toValue: 1, duration: 800, useNativeDriver: true }).start();
+    }, 2000);
 
     const ctaTimer = setTimeout(() => {
-      Animated.timing(ctaOpacity, { toValue: 1, duration: 1000, useNativeDriver: true }).start();
-    }, 4000);
+      Animated.timing(ctaOpacity, { toValue: 1, duration: 800, useNativeDriver: true }).start();
+    }, 2500);
 
     return () => {
       clearTimeout(chipTimer);
@@ -123,13 +135,13 @@ export default function FirstGuidanceScreen({ isActive, onNext }: Props) {
     AsyncStorage.getItem('@onboarding_mood').then(mood => {
       if (mood && MOOD_VERSES[mood]) {
         setVerse(MOOD_VERSES[mood]);
-        setMoodLabel(mood);
+        setMoodLabel(MOOD_DISPLAY_LABELS[mood] ?? mood);
       }
     }).catch(() => {});
   }, [isActive]);
 
   return (
-    <View style={styles.container}>
+    <View style={styles.container} onTouchEnd={forceShowCta}>
       {/* Stars */}
       <InteractiveStarfield positions={STAR_POS.map(p => ({ ...p, y: p.y * 1.5 }))} />
 
@@ -143,7 +155,7 @@ export default function FirstGuidanceScreen({ isActive, onNext }: Props) {
 
       <GoldenMotes />
 
-      <View style={styles.contentArea} onTouchEnd={forceShowCta}>
+      <View style={styles.contentArea}>
         {/* Pre-title */}
         <Animated.Text style={[styles.pretitle, s[0]]}>
           {moodLabel
@@ -183,14 +195,14 @@ export default function FirstGuidanceScreen({ isActive, onNext }: Props) {
       <View style={styles.bottomSection}>
         {/* Journey whisper */}
         <Animated.Text style={[styles.journeyWhisper, { opacity: chipOpacity }]}>
-          ✦  Your journey has already begun
+          ✦ Your journey has already begun
         </Animated.Text>
 
         {/* CTA */}
         <Animated.View style={[styles.ctaWrap, { opacity: ctaOpacity }]}>
           <TouchableOpacity style={styles.ctaBtn} activeOpacity={0.85} onPress={onNext}>
             <LinearGradient
-              colors={[Colors.accent.primary, Colors.accent.primary]}
+              colors={['#E8C84A', '#B8860B']}
               style={styles.ctaBtnGradient}
               start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}
             >
@@ -286,24 +298,24 @@ const styles = StyleSheet.create({
   },
   ctaWrap: { width: '100%' },
   ctaBtn: {
-    borderRadius: 16,
+    borderRadius: 28,
     overflow: 'hidden',
-    shadowColor: Colors.accent.primary,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.35,
-    shadowRadius: 12,
-    elevation: 8,
+    shadowColor: '#C9A84C',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.5,
+    shadowRadius: 20,
+    elevation: 10,
   },
   ctaBtnGradient: {
     height: 58,
     justifyContent: 'center',
     alignItems: 'center',
-    borderRadius: 16,
+    borderRadius: 28,
   },
   ctaText: {
     fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
     fontSize: 17,
-    letterSpacing: 1,
+    letterSpacing: 1.5,
     fontWeight: '600',
     color: '#0C1A2E',
   },

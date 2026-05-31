@@ -4,6 +4,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { PrayerContext } from '../types';
 import { getUserLocation } from './locationStorage';
 import { logServiceError, logNetworkError } from './errorLoggingService';
+import { formatDateYMD } from '../utils/date';
+import { withRetry, AXIOS_RETRY_CONFIG } from './retryUtils';
 
 export interface PrayerTimings {
   Fajr: string;
@@ -55,35 +57,46 @@ class PrayerTimesService {
     country: string,
     method: number = 2,
   ): Promise<PrayerTimesData> {
-    const today = new Date().toISOString().split('T')[0];
+    // Use local calendar date (not UTC) so users in UTC+4/+5 don't see
+    // yesterday's prayer times for several hours after local midnight.
+    const today = formatDateYMD();
     const cacheKey = `@prayer_timings_${city}_${country}_${today}`;
+    // Cross-day fallback key — stores the most recently successful response
+    // regardless of date, so first-launch / day-rollover with no connectivity
+    // still has something to show rather than a complete blank.
+    const fallbackKey = `@prayer_timings_${city}_${country}_fallback`;
 
     try {
-      // Check cache first
+      // 1. Serve today's cached data if available
       const cachedData = await AsyncStorage.getItem(cacheKey);
-      if (cachedData) {
-        return JSON.parse(cachedData);
-      }
+      if (cachedData) return JSON.parse(cachedData);
 
-      const response = await axios.get(`${this.BASE_URL}`, {
-        params: {
-          city,
-          country,
-          method,
+      // 2. Fetch with exponential back-off retry (3 attempts, up to 8s max)
+      const data = await withRetry(
+        async () => {
+          const response = await axios.get(this.BASE_URL, { params: { city, country, method } });
+          if (response.data.code === 200) return response.data.data;
+          throw new Error(response.data.status || 'Failed to fetch prayer times');
         },
-      });
+        'PrayerTimesService.getTimingsByCity',
+        AXIOS_RETRY_CONFIG,
+      );
 
-      if (response.data.code === 200) {
-        const data = response.data.data;
-        // Save to cache
-        await AsyncStorage.setItem(cacheKey, JSON.stringify(data));
-        return data;
-      } else {
-        throw new Error(response.data.status || 'Failed to fetch prayer times');
-      }
+      // 3. Persist today's data + update cross-day fallback
+      await AsyncStorage.setItem(cacheKey, JSON.stringify(data));
+      await AsyncStorage.setItem(fallbackKey, JSON.stringify(data));
+      return data;
     } catch (error: any) {
       logNetworkError(this.BASE_URL, 'GET', error instanceof Error ? error : new Error(String(error)), { city, country });
-      throw new Error(error.response?.data?.data || error.message || 'Network error');
+
+      // 4. Cross-day stale fallback — better than throwing and showing nothing
+      const stale = await AsyncStorage.getItem(fallbackKey);
+      if (stale) {
+        console.warn('[PrayerTimes] Network unavailable — using stale cached timings');
+        return JSON.parse(stale);
+      }
+
+      throw new Error(error.message || 'Network error fetching prayer times');
     }
   }
 
@@ -107,16 +120,17 @@ class PrayerTimesService {
   /**
    * Determines the current spiritual "context" based on prayer timings.
    */
+  /** Convert "HH:MM" (or "HH:MM suffix") to total minutes since midnight. */
+  private parseTimeToMinutes(timeStr: string): number {
+    const cleanTime = timeStr.split(' ')[0]; // strip " (GST)" style suffixes
+    const [hours, minutes] = cleanTime.split(':').map(Number);
+    return hours * 60 + minutes;
+  }
+
   public determineContextFromTimings(timings: PrayerTimings): PrayerContext {
     const now = new Date();
     const currentTime = now.getHours() * 60 + now.getMinutes();
-
-    const parseTime = (timeStr: string) => {
-      // Remove any non-digit/colon chars (some APIs return "05:01 (GST)")
-      const cleanTime = timeStr.split(' ')[0];
-      const [hours, minutes] = cleanTime.split(':').map(Number);
-      return hours * 60 + minutes;
-    };
+    const parseTime = (t: string) => this.parseTimeToMinutes(t);
 
     const fajr = parseTime(timings.Fajr);
     const sunrise = parseTime(timings.Sunrise);
@@ -169,12 +183,7 @@ class PrayerTimesService {
   public getNextPrayerInfo(timings: PrayerTimings): { name: string; time: string; minutesRemaining: number } {
     const now = new Date();
     const currentTime = now.getHours() * 60 + now.getMinutes();
-
-    const parseTime = (timeStr: string) => {
-      const cleanTime = timeStr.split(' ')[0];
-      const [hours, minutes] = cleanTime.split(':').map(Number);
-      return hours * 60 + minutes;
-    };
+    const parseTime = (t: string) => this.parseTimeToMinutes(t);
 
     const prayerOrder: (keyof PrayerTimings)[] = ['Fajr', 'Sunrise', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'];
 

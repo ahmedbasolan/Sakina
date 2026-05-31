@@ -299,7 +299,7 @@ export default function CommitScreen({ isActive, onCommit }: Props) {
   });
   const bgOpacity = bgBrightness.interpolate({
     inputRange: [0, 1],
-    outputRange: [0, 0.12],
+    outputRange: [0, 0.22],
   });
 
   return (
@@ -321,24 +321,15 @@ export default function CommitScreen({ isActive, onCommit }: Props) {
       </Animated.View>
 
       <Animated.Text style={[styles.subtitle, s[1]]}>
-        Hold the star below for 3 seconds to begin{'\n'}your journey toward {selectedMood} through {selectedGoal}
+        Hold the star for 3 seconds to seal{'\n'}your intention and begin your journey
       </Animated.Text>
 
       {/* Hold area */}
       <Animated.View style={[styles.holdAreaWrap, s[2]]}>
         <View style={styles.particleContainer}>
-          {/* Burst particles */}
-          {PARTICLES.map((p, i) => (
-            <BurstParticle key={i} {...p} trigger={burstTrigger} />
-          ))}
-          {/* Floating embers */}
-          {EMBERS.map((e, i) => (
-            <FloatingEmber key={i} {...e} trigger={emberTrigger} />
-          ))}
-
-          <Pressable 
-            onPressIn={handlePressIn} 
-            onPressOut={handlePressOut} 
+          <Pressable
+            onPressIn={handlePressIn}
+            onPressOut={handlePressOut}
             style={styles.holdArea}
             accessibilityRole="button"
             accessibilityLabel="Hold to commit"
@@ -402,20 +393,7 @@ export default function CommitScreen({ isActive, onCommit }: Props) {
               />
             </Svg>
 
-            {/* Star overlay — scales, rotates, and glows on hold */}
-            <Animated.View
-              style={[
-                styles.starOverlay,
-                { transform: [{ scale: starScale }, { rotate: rotateInterp }] },
-              ]}
-              pointerEvents="none"
-            >
-              <Svg width={RING_SIZE} height={RING_SIZE} viewBox={`0 0 ${RING_SIZE} ${RING_SIZE}`}>
-                <Path d={STAR_PATH} fill="url(#starGoldG)" />
-              </Svg>
-            </Animated.View>
-
-            {/* Star glow halo that grows on hold */}
+            {/* Star glow halo — rendered BEFORE star so star sits on top */}
             <Animated.View
               style={[
                 styles.starGlowHalo,
@@ -426,7 +404,38 @@ export default function CommitScreen({ isActive, onCommit }: Props) {
               ]}
               pointerEvents="none"
             />
+
+            {/* Star overlay — scales, rotates, and glows on hold */}
+            <Animated.View
+              style={[
+                styles.starOverlay,
+                { transform: [{ scale: starScale }, { rotate: rotateInterp }] },
+              ]}
+              pointerEvents="none"
+            >
+              {/* Defs MUST live in the same SVG as the element using them */}
+              <Svg width={RING_SIZE} height={RING_SIZE} viewBox={`0 0 ${RING_SIZE} ${RING_SIZE}`}>
+                <Defs>
+                  <SvgGradient id="starGold" x1="0" y1="0" x2="1" y2="1">
+                    <Stop offset="0" stopColor="#FFF4DC" />
+                    <Stop offset="0.4" stopColor="#E8C84A" />
+                    <Stop offset="1" stopColor={Colors.accent.primary} />
+                  </SvgGradient>
+                </Defs>
+                <Path d={STAR_PATH} fill="url(#starGold)" />
+              </Svg>
+            </Animated.View>
           </Pressable>
+
+          {/* Particles rendered after Pressable so they appear on top of the circle */}
+          <View pointerEvents="none" style={StyleSheet.absoluteFill}>
+            {PARTICLES.map((p, i) => (
+              <BurstParticle key={i} {...p} trigger={burstTrigger} />
+            ))}
+            {EMBERS.map((e, i) => (
+              <FloatingEmber key={i} {...e} trigger={emberTrigger} />
+            ))}
+          </View>
         </View>
       </Animated.View>
 
@@ -513,22 +522,27 @@ const styles = StyleSheet.create({
     width: RING_SIZE - 30,
     height: RING_SIZE - 30,
     borderRadius: (RING_SIZE - 30) / 2,
-    backgroundColor: 'rgba(10, 12, 20, 0.85)',
+    backgroundColor: 'rgba(12, 18, 30, 0.9)',
     borderWidth: 1,
-    borderColor: 'rgba(212, 175, 55, 0.08)',
+    borderColor: 'rgba(212, 175, 55, 0.18)',
+    shadowColor: Colors.accent.primary,
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.15,
+    shadowRadius: 16,
   },
   ringGlowOverlay: {
     position: 'absolute',
     width: RING_SIZE,
     height: RING_SIZE,
     borderRadius: RING_SIZE / 2,
-    backgroundColor: 'transparent',
-    borderWidth: 8,
+    backgroundColor: 'rgba(212, 175, 55, 0.04)',
+    borderWidth: 6,
     borderColor: Colors.accent.primary,
     shadowColor: Colors.accent.primary,
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 1,
-    shadowRadius: 20,
+    shadowRadius: 24,
+    elevation: 20,
   },
   starOverlay: {
     position: 'absolute',
@@ -537,13 +551,15 @@ const styles = StyleSheet.create({
   },
   starGlowHalo: {
     position: 'absolute',
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    backgroundColor: 'transparent',
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    // Must have a real background for shadow/glow to render on both platforms
+    backgroundColor: '#E8C84A',
     shadowColor: '#FFF4DC',
     shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.9,
+    shadowOpacity: 1,
+    elevation: 30,
   },
   instruction: {
     fontSize: 14,

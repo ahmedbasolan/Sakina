@@ -1,6 +1,7 @@
 import { dbQuery } from '../database/schema';
 import { Mood } from '../types';
 import { SupabaseDataService } from './supabaseDataService';
+import { formatDateYMD, subtractDays } from '../utils/date';
 
 // ── Types ───────────────────────────────────────────────────────────
 export interface MoodDayEntry {
@@ -65,7 +66,7 @@ export class MoodHistoryService {
     for (let i = history.length - 1; i >= 0; i--) {
       const row = history[i];
       const d = new Date(row.created_at);
-      const dateStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+      const dateStr = formatDateYMD(d);
       byDate[dateStr] = {
         date: dateStr,
         mood: row.mood as Mood,
@@ -164,9 +165,11 @@ export class MoodHistoryService {
    * Compute stats from all history data.
    */
   async getStats(): Promise<MoodStats> {
-    // We'll fetch the last year of history for stats to avoid huge payloads
-    const endDate = new Date().toISOString();
-    const startDate = new Date(Date.now() - 365 * 24 * 60 * 60 * 1000).toISOString();
+    // Extend window by 1 day on each side so entries near local midnight are
+    // never cut off by a UTC boundary mismatch (max timezone offset is ±14 h).
+    // formatDateYMD then attributes each entry to the correct LOCAL calendar day.
+    const endDate = new Date(Date.now() + 86400000).toISOString();
+    const startDate = new Date(Date.now() - 366 * 86400000).toISOString();
 
     const history = await this.supabaseData.getMoodHistory(startDate, endDate);
 
@@ -188,8 +191,7 @@ export class MoodHistoryService {
     // Process ASC to let later entries win for dayMoods
     for (let i = history.length - 1; i >= 0; i--) {
       const row = history[i];
-      const d = new Date(row.created_at);
-      const dateStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+      const dateStr = formatDateYMD(new Date(row.created_at));
       uniqueDays.add(dateStr);
       dayMoods[dateStr] = row.mood as Mood; // last entry wins
       moodCounts[row.mood] = (moodCounts[row.mood] || 0) + 1;
@@ -199,17 +201,14 @@ export class MoodHistoryService {
 
     // Streak calculation
     const sortedDays = Array.from(uniqueDays).sort();
+    // O(1) Set lookup replaces O(n) Array.includes inside the streak walk
+    const daySet = new Set(sortedDays);
     let currentStreak = 0;
     let longestStreak = 0;
     let tempStreak = 1;
 
-    const today = new Date();
-    const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
-    // Use calendar arithmetic (not fixed ms offset) so the date is correct across
-    // DST transitions where a "day" is 23 h or 25 h rather than exactly 86400000 ms.
-    const yesterdayDate = new Date(today);
-    yesterdayDate.setDate(yesterdayDate.getDate() - 1);
-    const yesterdayStr = `${yesterdayDate.getFullYear()}-${String(yesterdayDate.getMonth() + 1).padStart(2, '0')}-${String(yesterdayDate.getDate()).padStart(2, '0')}`;
+    const todayStr = formatDateYMD();
+    const yesterdayStr = formatDateYMD(subtractDays(new Date(), 1));
 
     for (let i = 1; i < sortedDays.length; i++) {
       const prev = new Date(sortedDays[i - 1] + 'T00:00:00');
@@ -225,18 +224,13 @@ export class MoodHistoryService {
     }
     longestStreak = Math.max(longestStreak, tempStreak);
 
-    if (sortedDays.includes(todayStr) || sortedDays.includes(yesterdayStr)) {
+    if (daySet.has(todayStr) || daySet.has(yesterdayStr)) {
       currentStreak = 1;
-      const startDay = sortedDays.includes(todayStr) ? todayStr : yesterdayStr;
-      let checkDate = new Date(startDay + 'T00:00:00');
+      let checkDate = new Date((daySet.has(todayStr) ? todayStr : yesterdayStr) + 'T00:00:00');
 
       while (true) {
-        // setDate(-1) respects DST — avoids 23h/25h day edge cases from fixed ms offset.
-        const prev = new Date(checkDate);
-        prev.setDate(prev.getDate() - 1);
-        checkDate = prev;
-        const checkStr = `${checkDate.getFullYear()}-${String(checkDate.getMonth() + 1).padStart(2, '0')}-${String(checkDate.getDate()).padStart(2, '0')}`;
-        if (sortedDays.includes(checkStr)) {
+        checkDate = subtractDays(checkDate, 1);
+        if (daySet.has(formatDateYMD(checkDate))) {
           currentStreak++;
         } else {
           break;
@@ -269,7 +263,7 @@ export class MoodHistoryService {
   /**
    * Generate insights based on mood history patterns.
    */
-  async getInsights(): Promise<MoodInsight[]> {
+  async getInsights(precomputedStats?: MoodStats): Promise<MoodInsight[]> {
     const endDate = new Date().toISOString();
     const startDate = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
 
@@ -345,7 +339,9 @@ export class MoodHistoryService {
       }
     }
 
-    const stats = await this.getStats();
+    // Reuse pre-computed stats if the caller already has them to avoid a
+    // redundant full-table Supabase fetch.
+    const stats = precomputedStats ?? await this.getStats();
     if (stats.currentStreak >= 3) {
       insights.push({
         type: 'streak',

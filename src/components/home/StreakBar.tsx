@@ -17,18 +17,27 @@ export function StreakBar({ streakDays, fadeAnim, slideAnim, onPress }: StreakBa
     <Animated.View style={[styles.streakSection, { opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
       <TouchableOpacity activeOpacity={0.9} onPress={onPress}>
         <LinearGradient colors={['#0C2214', '#0A1A0E']} style={styles.streakBar}>
-          {/* Flame icon */}
+          {/* Crescent icon + streak info */}
           <View style={styles.streakLeft}>
             <View style={styles.streakFlameContainer}>
               <CrescentIcon size={18} color="#4ADE80" />
             </View>
             <View>
-              <Text style={styles.streakText}>{streakDays}-Day Streak</Text>
-              <View style={styles.streakMoons}>
-                {[...Array(7)].map((_, i) => (
-                  <View key={i} style={[styles.streakMoonDot, i < streakDays ? styles.streakMoonActive : null]} />
-                ))}
-              </View>
+              {streakDays === 0 ? (
+                <>
+                  <Text style={styles.streakText}>Begin your streak today</Text>
+                  <Text style={styles.streakHint}>Check in to start your journey</Text>
+                </>
+              ) : (
+                <>
+                  <Text style={styles.streakText}>{streakDays}-Day Streak</Text>
+                  <View style={styles.streakMoons}>
+                    {[...Array(7)].map((_, i) => (
+                      <View key={i} style={[styles.streakMoonDot, i < streakDays ? styles.streakMoonActive : null]} />
+                    ))}
+                  </View>
+                </>
+              )}
             </View>
           </View>
           <View style={styles.streakRight}>
@@ -72,7 +81,12 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: '600',
     color: '#4ADE80',
-    marginBottom: 4,
+    marginBottom: 2,
+  },
+  streakHint: {
+    fontSize: 11,
+    color: 'rgba(74, 222, 128, 0.45)',
+    letterSpacing: 0.2,
   },
   streakMoons: {
     flexDirection: 'row',

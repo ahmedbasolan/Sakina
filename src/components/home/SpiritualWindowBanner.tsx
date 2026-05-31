@@ -4,6 +4,19 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { PrayerContext } from '../../types';
 import { Colors } from '../../theme/DesignSystem';
+import { getSpiritualWindowName, getSpiritualActionText } from '../../utils/prayerContext';
+
+/** Maps each of the 8 prayer contexts to a semantically appropriate Ionicons icon. */
+const CONTEXT_ICONS: Record<PrayerContext, React.ComponentProps<typeof Ionicons>['name']> = {
+  fajr_pre: 'moon',           // Tahajjud — deep night
+  fajr_post: 'partly-sunny',  // After Fajr — morning light emerging
+  dhuhr: 'sunny',             // Midday
+  asr: 'partly-sunny-outline',// Afternoon
+  maghrib_pre: 'sunset',      // Pre-Maghrib — golden hour
+  maghrib_post: 'moon-outline',// After Maghrib — dusk to night
+  isha: 'moon',               // Night
+  general: 'compass',         // No specific window
+};
 
 interface SpiritualWindowBannerProps {
   prayerContext: PrayerContext;
@@ -12,36 +25,17 @@ interface SpiritualWindowBannerProps {
   onPress: () => void;
 }
 
-function getSpiritualWindowName(context: PrayerContext) {
-  switch (context) {
-    case 'fajr_pre': return 'The Deep Night (Tahajjud)';
-    case 'fajr_post': return 'The Morning Light';
-    case 'dhuhr': return 'The High Zenith';
-    case 'asr': return 'The Golden Hour';
-    case 'maghrib_pre': return 'The Approach of Night';
-    case 'maghrib_post': return 'The Evening Glow';
-    case 'isha': return 'The Peace of Night';
-    default: return 'A Moment of Reflection';
-  }
-}
-
-function getSpiritualActionText(context: PrayerContext) {
-  switch (context) {
-    case 'fajr_pre': return 'Guided Tahajjud Reflection';
-    case 'fajr_post': return 'Morning Protection Adhkar';
-    case 'dhuhr': return 'Mid-day Spiritual Break';
-    case 'asr': return 'The Golden Hour Remembrance';
-    case 'maghrib_pre': return 'Evening Protection Adhkar';
-    case 'maghrib_post': return 'Post-Maghrib Gratitude';
-    case 'isha': return 'Nightly Habit & Reflection';
-    default: return 'Explore Guidance';
-  }
-}
 
 export function SpiritualWindowBanner({ prayerContext, fadeAnim, slideAnim, onPress }: SpiritualWindowBannerProps) {
   return (
     <Animated.View style={[styles.spiritualSection, { opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
-      <TouchableOpacity activeOpacity={0.9} onPress={onPress}>
+      <TouchableOpacity
+        activeOpacity={0.9}
+        onPress={onPress}
+        accessibilityRole="button"
+        accessibilityLabel={`${getSpiritualWindowName(prayerContext)} — ${getSpiritualActionText(prayerContext)}`}
+        accessibilityHint="Double tap to open the spiritual window screen"
+      >
         <LinearGradient
           colors={['#1e293b', '#0f172a']}
           style={styles.spiritualBanner}
@@ -59,7 +53,7 @@ export function SpiritualWindowBanner({ prayerContext, fadeAnim, slideAnim, onPr
             </View>
             <View style={styles.bannerIconContainer}>
               <Ionicons
-                name={prayerContext === 'fajr_pre' || prayerContext === 'isha' ? 'moon' : 'sunny'}
+                name={CONTEXT_ICONS[prayerContext] ?? 'compass'}
                 size={40}
                 color="rgba(212, 165, 116, 0.2)"
               />
