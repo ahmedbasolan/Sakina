@@ -6,7 +6,6 @@ import {
   ScrollView,
   TouchableOpacity,
   Switch,
-  Platform,
   Alert,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -20,9 +19,11 @@ import { logServiceError } from '../services/errorLoggingService';
 import Icon from '../components/Icon';
 import { refreshContentOnly } from '../database/schema';
 import { SubscriptionService } from '../services/subscriptionService';
+import { SupabaseDataService } from '../services/supabaseDataService';
 import { backgroundThemeService } from '../services/backgroundThemeService';
 import BackgroundThemePicker from '../components/BackgroundThemePicker';
 import { BackgroundTheme } from '../types';
+import { Colors } from '../theme/DesignSystem';
 
 type SettingsNavProp = CompositeNavigationProp<
   StackNavigationProp<RootStackParamList, 'Settings'>,
@@ -61,7 +62,7 @@ const SettingRow = ({
         <Switch
           value={toggleValue}
           onValueChange={onToggle}
-          trackColor={{ false: '#3e3e3e', true: '#2ED3C6' }}
+          trackColor={{ false: '#3e3e3e', true: Colors.accent.primary }}
           thumbColor="#f4f3f4"
         />
       ) : onPress ? (
@@ -102,15 +103,16 @@ export default function SettingsScreen() {
       const { moodHistoryService } = await import('../services/moodHistoryService');
       const { dbQuery } = await import('../database/schema');
 
-      const [moodStats, reflectionCountResult] = await Promise.all([
-        moodHistoryService.getStats(),
-        dbQuery(async (db) => {
-          const res = await db.getFirstAsync<{ count: number }>(
-            'SELECT COUNT(*) as count FROM saved_reflections'
-          );
-          return res?.count ?? 0;
-        })
-      ]);
+      // Sequenced — not concurrent — because moodHistoryService.getStats() internally
+      // calls dbQuery for guest users. Running both in Promise.all would queue them
+      // correctly after the connection.ts fix, but sequential is clearer and safer.
+      const moodStats = await moodHistoryService.getStats();
+      const reflectionCountResult = await dbQuery(async (db) => {
+        const res = await db.getFirstAsync<{ count: number }>(
+          'SELECT COUNT(*) as count FROM saved_reflections',
+        );
+        return res?.count ?? 0;
+      });
 
       setReflectionCount(reflectionCountResult);
       setTotalSessions(moodStats.totalDaysTracked);
@@ -229,10 +231,33 @@ export default function SettingsScreen() {
         <View style={styles.section}>
           <SettingRow label="Reset App Content" icon="🔄" onPress={handleContentReset} />
           <SettingRow
-            label="Clear Search History"
+            label="Clear Mood History"
             icon="🗑️"
             isDestructive={true}
-            onPress={() => Alert.alert('Clear History', 'Search history cleared.')}
+            onPress={() =>
+              Alert.alert(
+                'Clear Mood History',
+                'This will permanently delete all your mood check-ins and guidance history. Your saved reflections will NOT be deleted. Continue?',
+                [
+                  { text: 'Cancel', style: 'cancel' },
+                  {
+                    text: 'Clear History',
+                    style: 'destructive',
+                    onPress: async () => {
+                      try {
+                        await SupabaseDataService.getInstance().clearHistory();
+                        setStreakDays(0);
+                        setTotalSessions(0);
+                        Alert.alert('Done', 'Your mood history has been cleared.');
+                      } catch (error) {
+                        logServiceError('SettingsScreen', 'clearHistory', error instanceof Error ? error : new Error(String(error)));
+                        Alert.alert('Error', 'Could not clear history. Please try again.');
+                      }
+                    },
+                  },
+                ],
+              )
+            }
           />
           <SettingRow label="Privacy Policy" icon="🛡️" onPress={() => Alert.alert('Privacy Policy', 'Your data is stored locally on your device. We do not share your personal information with third parties.')} />
         </View>
@@ -241,7 +266,7 @@ export default function SettingsScreen() {
         <View style={styles.section}>
           <SettingRow label="Send Feedback" icon="✉️" onPress={() => Alert.alert('Coming Soon', 'Feedback feature will be available in the next update.')} />
           <SettingRow label="Help Center" icon="❓" onPress={() => Alert.alert('Coming Soon', 'Help center will be available in the next update.')} />
-          <SettingRow label="Contact Us" icon="📧" onPress={() => Alert.alert('Contact', 'Email us at support@quietheart.app')} />
+          <SettingRow label="Contact Us" icon="📧" onPress={() => Alert.alert('Contact', 'Email us at support@sakinaapp.com')} />
           <SettingRow label="Rate App" icon="⭐" onPress={() => Alert.alert('Coming Soon', 'App Store rating will be available after launch.')} />
         </View>
 
@@ -249,7 +274,7 @@ export default function SettingsScreen() {
         <View style={styles.section}>
           {user ? (
             <>
-              <SettingRow label="Email" value={user.email} icon="📧" />
+              <SettingRow label="Email" value={user.email ?? 'No email'} icon="📧" />
               <SettingRow
                 label="Sign Out"
                 icon="🚪"
@@ -280,11 +305,11 @@ export default function SettingsScreen() {
         <View style={styles.section}>
           <SettingRow
             label="Sources & Attribution"
-            icon=""
+            icon="📚"
             onPress={() => {
               Alert.alert(
                 'Sources & Attribution',
-                '• Quranic Text: Tanzil.net\n• Translations: Sahih International\n• Hadith: Sunnah.com API / Authentic Collections\n• Audio: Quran.com API (Mishary Rashid Alafasy)',
+                '• Quranic Text: Tanzil.net\n• Translations: Sahih International\n• Hadith: Authentic Collections (Bukhari, Muslim, Tirmidhi, Abu Dawud)\n• Tafsir: Ibn Kathir, As-Sa\'di, Ibn al-Qayyim',
               );
             }}
           />
@@ -292,7 +317,7 @@ export default function SettingsScreen() {
         </View>
 
         <View style={styles.footer}>
-          <Text style={styles.footerText}>Quiet Heart v1.0.0</Text>
+          <Text style={styles.footerText}>Sakina v1.0.0</Text>
           <Text style={styles.footerSubtext}>Refining the soul, one verse at a time.</Text>
         </View>
       </ScrollView>
