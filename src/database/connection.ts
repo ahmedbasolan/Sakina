@@ -60,23 +60,24 @@ let dbQueryHeld = false;
  * and "database is locked" errors during heavy initialization/refresh cycles.
  *
  * IMPORTANT: dbQuery is NOT re-entrant. Never call dbQuery from inside another
- * dbQuery callback — it will throw. If you need nested DB work, pass the `db`
- * handle explicitly through function arguments instead.
+ * dbQuery callback — it will deadlock and eventually throw. If you need nested
+ * DB work, pass the `db` handle explicitly through function arguments instead.
  *
- * Rationale: the previous implementation used a global depth counter to allow
- * re-entrancy, but the counter raced across async boundaries and caused the
- * very "database is locked" errors it was meant to prevent. A strict mutex is
- * safer; nested callers are explicit about passing `db` down.
+ * Concurrency model:
+ *   - Concurrent callers (e.g. from Promise.all at boot) are FINE — they queue
+ *     up behind each other and each runs when the previous one finishes.
+ *   - Nested callers (calling dbQuery from inside an operation callback) are NOT
+ *     allowed — they deadlock waiting for the outer call's queue slot.
+ *
+ * The `dbQueryHeld` guard is checked AFTER awaiting the queue so that concurrent
+ * callers (which are valid) do not trip it.  A truly nested call would deadlock
+ * at `await currentQueue` before reaching the guard, so the guard exists as a
+ * belt-and-suspenders check in case a future code path acquires the lock twice
+ * via some unexpected scheduling.
  */
 export const dbQuery = async <T>(
   operation: (db: SQLite.SQLiteDatabase) => Promise<T>,
 ): Promise<T> => {
-  if (dbQueryHeld) {
-    throw new Error(
-      'dbQuery called re-entrantly. Pass the db handle explicitly to nested operations instead of calling dbQuery again.',
-    );
-  }
-
   const db = await getDatabase();
 
   const currentQueue = executionQueue;
@@ -87,6 +88,17 @@ export const dbQuery = async <T>(
 
   try {
     await currentQueue;
+
+    // Guard is placed HERE (after queue) so concurrent callers — which simply
+    // wait their turn — never see dbQueryHeld = true.  Only a genuinely nested
+    // call reaching this point with the lock somehow already held would trip it.
+    if (dbQueryHeld) {
+      resolveQueue!(); // unblock remaining queue waiters before throwing
+      throw new Error(
+        'dbQuery called re-entrantly. Pass the db handle explicitly to nested operations instead of calling dbQuery again.',
+      );
+    }
+
     dbQueryHeld = true;
     return await operation(db);
   } finally {
