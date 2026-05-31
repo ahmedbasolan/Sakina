@@ -229,6 +229,8 @@ interface VerseLayerProps {
   onSave?: () => void;
   isSaved?: boolean;
   audioKey?: string;
+  /** When true the swipe-up hint pulses persistently to signal a context layer is available */
+  hasContext?: boolean;
 }
 
 const formatTranslation = (raw: string): string => {
@@ -268,23 +270,46 @@ const VerseLayer: React.FC<VerseLayerProps> = ({
   onSave,
   isSaved = false,
   audioKey,
+  hasContext = false,
 }) => {
   const insets = useSafeAreaInsets();
   const { surahName, verseRef } = useMemo(() => parseReference(reference), [reference]);
 
-  // Gentle swipe hint — shows once then fades out
+  // Swipe hint — pulses gently when a context layer is available, fades once otherwise
   const swipeHintOpacity = useRef(new Animated.Value(0)).current;
+  const hintLoopRef = useRef<Animated.CompositeAnimation | null>(null);
 
   useEffect(() => {
+    swipeHintOpacity.setValue(0);
+    hintLoopRef.current?.stop();
+
     const timer = setTimeout(() => {
-      Animated.sequence([
-        Animated.timing(swipeHintOpacity, { toValue: 0.7, duration: 600, useNativeDriver: true }),
-        Animated.delay(3000),
-        Animated.timing(swipeHintOpacity, { toValue: 0, duration: 1200, useNativeDriver: true }),
-      ]).start();
+      if (hasContext) {
+        // Fade in, then breathe continuously so users notice it
+        Animated.timing(swipeHintOpacity, { toValue: 1, duration: 600, useNativeDriver: true }).start(() => {
+          hintLoopRef.current = Animated.loop(
+            Animated.sequence([
+              Animated.timing(swipeHintOpacity, { toValue: 0.35, duration: 1400, useNativeDriver: true }),
+              Animated.timing(swipeHintOpacity, { toValue: 1,    duration: 1400, useNativeDriver: true }),
+            ]),
+          );
+          hintLoopRef.current.start();
+        });
+      } else {
+        // No context — show once and fade out
+        Animated.sequence([
+          Animated.timing(swipeHintOpacity, { toValue: 0.55, duration: 600, useNativeDriver: true }),
+          Animated.delay(2500),
+          Animated.timing(swipeHintOpacity, { toValue: 0,    duration: 1000, useNativeDriver: true }),
+        ]).start();
+      }
     }, 2000);
-    return () => clearTimeout(timer);
-  }, []);
+
+    return () => {
+      clearTimeout(timer);
+      hintLoopRef.current?.stop();
+    };
+  }, [hasContext]);
 
   const formattedTranslation = useMemo(() => formatTranslation(translation), [translation]);
 
@@ -473,8 +498,17 @@ const VerseLayer: React.FC<VerseLayerProps> = ({
 
         {/* Center: swipe up hint */}
         <Animated.View style={[styles.swipeHintCenter, { opacity: swipeHintOpacity }]}>
-          <Ionicons name="chevron-up" size={18} color={'rgba(245, 237, 227, 0.3)'} />
-          <Text style={styles.swipeHintText}>Explore</Text>
+          {hasContext && (
+            <View style={[styles.contextDot, { backgroundColor: accentColor }]} />
+          )}
+          <Ionicons
+            name="chevron-up"
+            size={18}
+            color={hasContext ? accentColor : 'rgba(245, 237, 227, 0.3)'}
+          />
+          <Text style={[styles.swipeHintText, hasContext && { color: accentColor, opacity: 0.8 }]}>
+            {hasContext ? 'Context' : 'Next'}
+          </Text>
         </Animated.View>
 
         {/* Right FAB: next verse */}
@@ -742,6 +776,13 @@ const styles = StyleSheet.create({
     color: 'rgba(245, 237, 227, 0.35)',
     fontWeight: '500',
     letterSpacing: 1,
+  },
+  contextDot: {
+    width: 5,
+    height: 5,
+    borderRadius: 2.5,
+    marginBottom: 3,
+    opacity: 0.85,
   },
 });
 

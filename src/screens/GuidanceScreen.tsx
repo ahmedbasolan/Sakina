@@ -12,6 +12,7 @@ import ImmersiveBackground from '../components/ImmersiveBackground';
 import { GoldenMotes } from '../components/GoldenMotes';
 import GuidanceHeader from '../components/GuidanceHeader';
 import VerseLayer from '../components/VerseLayer';
+import ContextLayer from '../components/ContextLayer';
 import FloatingActionRow from '../components/FloatingActionRow';
 import ShareSheet from '../components/ShareSheet';
 import DisplayPreferencesModal from '../components/DisplayPreferencesModal';
@@ -62,10 +63,15 @@ const GuidanceScreen: React.FC = () => {
   const [isPrefsModalVisible, setIsPrefsModalVisible] = useState(false);
   const scrollY = useRef(new Animated.Value(0)).current;
   const [currentLayer, setCurrentLayer] = useState(0);
-  const totalLayers = 1; // verse only
 
   const [showReflection, setShowReflection] = useState(false);
   const hasShownReflection = useRef(false);
+
+  // Reset to verse layer whenever a new experience loads
+  useEffect(() => {
+    setCurrentLayer(0);
+    scrollY.setValue(0);
+  }, [experience?.content?.id]);
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('beforeRemove', (e: any) => {
@@ -88,9 +94,12 @@ const GuidanceScreen: React.FC = () => {
     navigation.goBack();
   };
 
-  const LAYER_TYPES: Array<'verse'> = [
-    'verse',
-  ];
+  const hasContext = !!(experience.content.whyThis || experience.angle?.angle);
+  const LAYER_TYPES: Array<'verse' | 'context'> = hasContext
+    ? ['verse', 'context']
+    : ['verse'];
+
+  const totalLayers = LAYER_TYPES.length;
 
   const {
     savedStates,
@@ -101,7 +110,7 @@ const GuidanceScreen: React.FC = () => {
     handleShare,
     preferences,
     updatePreference,
-  } = useGuidanceLogic(experience, mood, onNext, onSaveReflection, () => { }, 1);
+  } = useGuidanceLogic(experience, mood, onNext, onSaveReflection, () => { }, totalLayers);
 
   if (!experience) {
     return (
@@ -151,6 +160,7 @@ const GuidanceScreen: React.FC = () => {
             primaryLanguage={preferences.primaryLanguage}
             scrollY={scrollY}
             accentColor={(MoodColors[mood] || MoodColors.Calm).accent}
+            hasContext={hasContext}
             onNextVerse={() => {
               scrollY.setValue(0);
               onNext();
@@ -160,6 +170,17 @@ const GuidanceScreen: React.FC = () => {
             onSave={() => handleSave(0)}
             isSaved={!!savedStates[0]}
             audioKey={extractVerseKey(experience.content.source)}
+          />
+        )}
+
+        {currentLayer === 1 && hasContext && (
+          <ContextLayer
+            attribution={experience.angle?.angleSource || 'Scholarly Context'}
+            text={experience.content.whyThis || ''}
+            source={experience.content.source || ''}
+            angle={experience.angle?.angle}
+            angleSource={experience.angle?.angleSource}
+            scrollY={scrollY}
           />
         )}
       </LayerContainer>
