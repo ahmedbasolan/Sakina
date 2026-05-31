@@ -186,18 +186,25 @@ export default function App() {
     );
   }
 
+  // PostHogProvider is intentionally placed INSIDE NavigationContainer.
+  // PostHog's useNavigationTracker hook calls useNavigation() and useNavigationState()
+  // internally for automatic screen tracking.  Those hooks throw when called outside
+  // a navigator — placing PostHogProvider outside NavigationContainer was producing
+  // two console errors on every render.  The singleton `posthog` client (used in
+  // errorLoggingService and the global error handler above) is unaffected by provider
+  // position since it doesn't depend on React context.
   return (
-    <PostHogProvider client={posthog}>
-      <ThemeProvider>
-        <AppProvider>
-          <AuthProvider>
-            <NavigationContainer>
+    <ThemeProvider>
+      <AppProvider>
+        <AuthProvider>
+          <NavigationContainer>
+            <PostHogProvider client={posthog}>
               <AppContent />
-            </NavigationContainer>
-          </AuthProvider>
-        </AppProvider>
-      </ThemeProvider>
-    </PostHogProvider>
+            </PostHogProvider>
+          </NavigationContainer>
+        </AuthProvider>
+      </AppProvider>
+    </ThemeProvider>
   );
 }
 
