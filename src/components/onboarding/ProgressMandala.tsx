@@ -23,7 +23,7 @@ export function ProgressMandala({ progress, size = 48, color = Colors.accent.pri
   useEffect(() => {
     Animated.spring(animatedProgress, {
       toValue: progress,
-      useNativeDriver: true,
+      useNativeDriver: false, // SVG strokeDashoffset cannot use native driver
       damping: 15,
       stiffness: 100,
     }).start();

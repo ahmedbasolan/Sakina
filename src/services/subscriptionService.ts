@@ -251,7 +251,11 @@ export class SubscriptionService {
 
   async cancelSubscription(): Promise<boolean> {
     try {
-      // For now, cancel only affects willRenew (logical cancel)
+      // Write to Supabase first so cloud state is authoritative.
+      // Previously this only wrote locally — a reinstall or login from another
+      // device would restore the pre-cancellation state from Supabase.
+      await this.supabaseData.updateUserProfile({ will_renew: false }).catch(() => {});
+
       await dbQuery(async (db) => {
         await db.runAsync(
           `UPDATE user_subscription SET willRenew = 0, updatedAt = ? WHERE id = 'user_subscription'`,

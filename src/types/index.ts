@@ -25,6 +25,19 @@ export type PrayerContext =
   | 'isha' // Night/Bedtime
   | 'general'; // Any time
 
+// ─── Mood UI Config ────────────────────────────────────────────
+// Single canonical definition — previously duplicated in HomeScreen,
+// MoodButton, and SmartMoodGrid with no shared source.
+export interface MoodConfig {
+  id: Mood;
+  label: string;
+  sublabel: string;
+  color: string;
+  bgColor: string;
+  borderColor: string;
+  iconName: string;
+}
+
 // ─── Content Authenticity Types ────────────────────────────────
 // Hard gate: only these categories are allowed on the Guidance screen.
 export type PracticeSourceType =

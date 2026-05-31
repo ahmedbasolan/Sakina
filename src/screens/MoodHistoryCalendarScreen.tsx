@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { formatDateYMD } from '../utils/date';
 import { Colors } from '../theme/DesignSystem';
 import {
   View,
@@ -301,10 +302,7 @@ export default function MoodHistoryCalendarScreen({ onBack }: MoodHistoryCalenda
   const lastDay = new Date(currentMonth.year, currentMonth.month + 1, 0);
   const startingDayOfWeek = firstDay.getDay();
   const daysInMonth = lastDay.getDate();
-  const todayStr = (() => {
-    const d = new Date();
-    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-  })();
+  const todayStr = formatDateYMD();
 
   const calendarDays: (number | null)[] = [];
   for (let i = 0; i < startingDayOfWeek; i++) calendarDays.push(null);

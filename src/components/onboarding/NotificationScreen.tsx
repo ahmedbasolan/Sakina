@@ -23,6 +23,7 @@ import Svg, {
   LinearGradient as SvgGradient,
   Stop,
 } from 'react-native-svg';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useStaggerEntry } from '../../hooks/useStaggerEntry';
 import { AnimatedMandala } from '../AnimatedMandala';
 import { InteractiveStarfield } from './InteractiveStarfield';
@@ -71,9 +72,24 @@ interface Props {
   onSkip: () => void;
 }
 
+const PREVIEWS = [
+  {
+    label: 'Fajr',
+    time: '5:24 AM',
+    icon: '🌙',
+    verse: '"Verily, in the remembrance of Allah do hearts find rest."',
+  },
+  {
+    label: 'Maghrib',
+    time: '7:43 PM',
+    icon: '🌅',
+    verse: '"And He is with you wherever you are."',
+  },
+];
+
 export default function NotificationScreen({ isActive, onAllow, onSkip }: Props) {
-  // [0] icon, [1] title, [2] body, [3] allow btn, [4] skip btn, [5] chip
-  const s = useStaggerEntry(isActive, 6, { baseDelay: 250, stagger: 120 });
+  // [0] icon, [1] title, [2] body, [3] preview1, [4] preview2, [5] allow btn, [6] skip btn, [7] chip
+  const s = useStaggerEntry(isActive, 8, { baseDelay: 250, stagger: 110 });
 
   return (
     <View style={styles.container}>
@@ -101,24 +117,45 @@ export default function NotificationScreen({ isActive, onAllow, onSkip }: Props)
           A verse at Fajr. A reflection at Maghrib.{'\n'}
           Like a friend who remembers.
         </Animated.Text>
+
+        {/* Notification preview cards */}
+        <View style={styles.previewsWrap}>
+          {PREVIEWS.map((p, i) => (
+            <Animated.View key={p.label} style={[styles.previewCard, s[3 + i]]}>
+              <View style={styles.previewHeader}>
+                <Text style={styles.previewIcon}>{p.icon}</Text>
+                <Text style={styles.previewLabel}>{p.label}</Text>
+                <Text style={styles.previewTime}>{p.time}</Text>
+              </View>
+              <Text style={styles.previewVerse}>{p.verse}</Text>
+            </Animated.View>
+          ))}
+        </View>
       </View>
 
       {/* Buttons */}
       <View style={styles.bottomSection}>
-        <Animated.View style={[styles.btnWrap, s[3]]}>
+        <Animated.View style={[styles.btnWrap, s[5]]}>
           <TouchableOpacity style={styles.allowBtn} activeOpacity={0.8} onPress={onAllow}>
-            <Text style={styles.allowBtnText}>Yes, remind me</Text>
+            <LinearGradient
+              colors={['#E8C84A', '#B8860B']}
+              style={styles.allowBtnGradient}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+            >
+              <Text style={styles.allowBtnText}>Yes, remind me</Text>
+            </LinearGradient>
           </TouchableOpacity>
         </Animated.View>
 
-        <Animated.View style={[styles.skipWrap, s[4]]}>
+        <Animated.View style={[styles.skipWrap, s[6]]}>
           <TouchableOpacity style={styles.skipBtn} activeOpacity={0.7} onPress={onSkip}>
             <Text style={styles.skipBtnText}>Not now</Text>
           </TouchableOpacity>
         </Animated.View>
 
         {/* Chip */}
-        <Animated.View style={[styles.chip, s[5]]}>
+        <Animated.View style={[styles.chip, s[7]]}>
           <Text style={styles.chipText}>
             You can customize reminders anytime in settings
           </Text>
@@ -149,11 +186,16 @@ const styles = StyleSheet.create({
     height: 80,
     borderRadius: 40,
     borderWidth: 1.5,
-    borderColor: 'rgba(212, 175, 55, 0.3)',
-    backgroundColor: 'rgba(212, 175, 55, 0.05)',
+    borderColor: 'rgba(212, 175, 55, 0.5)',
+    backgroundColor: 'rgba(212, 175, 55, 0.08)',
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 28,
+    marginBottom: 20,
+    shadowColor: Colors.accent.primary,
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.35,
+    shadowRadius: 16,
+    elevation: 8,
   },
   title: {
     fontFamily: 'serif',
@@ -181,17 +223,25 @@ const styles = StyleSheet.create({
   },
   allowBtn: {
     width: '100%',
+    borderRadius: 28,
+    overflow: 'hidden',
+    shadowColor: '#C9A84C',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.5,
+    shadowRadius: 20,
+    elevation: 10,
+  },
+  allowBtnGradient: {
     height: 56,
-    borderRadius: 16,
-    backgroundColor: Colors.accent.primary,
+    borderRadius: 28,
     justifyContent: 'center',
     alignItems: 'center',
   },
   allowBtnText: {
     fontFamily: 'serif',
     fontSize: 16,
-    color: '#14100C',
-    letterSpacing: 0.5,
+    color: '#0D1B2A',
+    letterSpacing: 1.5,
     fontWeight: '600',
   },
   skipWrap: {
@@ -202,8 +252,51 @@ const styles = StyleSheet.create({
   },
   skipBtnText: {
     fontSize: 14,
-    color: 'rgba(245, 237, 227, 0.35)',
+    color: 'rgba(245, 237, 227, 0.45)',
     letterSpacing: 0.3,
+  },
+  previewsWrap: {
+    width: '100%',
+    gap: 10,
+    marginTop: 28,
+  },
+  previewCard: {
+    backgroundColor: 'rgba(255, 255, 255, 0.04)',
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: 'rgba(212, 175, 55, 0.15)',
+    borderLeftWidth: 3,
+    borderLeftColor: Colors.accent.primary,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    gap: 6,
+  },
+  previewHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  previewIcon: {
+    fontSize: 14,
+  },
+  previewLabel: {
+    fontSize: 13,
+    color: Colors.accent.primary,
+    fontWeight: '600',
+    letterSpacing: 0.5,
+    flex: 1,
+  },
+  previewTime: {
+    fontSize: 12,
+    color: 'rgba(245, 237, 227, 0.4)',
+    letterSpacing: 0.3,
+  },
+  previewVerse: {
+    fontSize: 13,
+    color: 'rgba(245, 237, 227, 0.65)',
+    fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
+    fontStyle: 'italic',
+    lineHeight: 20,
   },
   chip: {
     flexDirection: 'row',
@@ -213,7 +306,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 12,
     borderWidth: 1,
-    borderColor: 'rgba(201, 168, 76, 0.08)',
+    borderColor: 'rgba(201, 168, 76, 0.12)',
     width: '100%',
   },
   chipText: {

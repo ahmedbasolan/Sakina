@@ -2,7 +2,7 @@
 import { Mood } from '../types';
 
 export const APP_CONFIG = {
-  name: 'Guidance',
+  name: 'Sakina',
   version: '1.0.0',
   defaultLanguage: 'en',
   supportedLanguages: ['en', 'ar', 'ur', 'tr', 'id', 'ms'] as const,
@@ -44,11 +44,24 @@ export const API_CONFIG = {
 } as const;
 
 export const STORAGE_KEYS = {
+  // Auth & session
   auth: '@guidance_auth',
+  lastOpen: '@sakina_last_open',   // was @noor_last_open — migration handled in HomeScreen
+
+  // User preferences & location
   preferences: '@guidance_preferences',
   location: '@guidance_location',
-  onboarding: '@guidance_onboarding_complete',
+
+  // Onboarding
+  onboarding: '@onboarding_complete',
+  onboardingMood: '@onboarding_mood',
+  onboardingGoal: '@onboarding_prayer_goal',
+
+  // Content cache
   moodHistory: '@guidance_mood_history',
+  dailyVerse: '@daily_verse',
+  dailyHadith: '@daily_hadith',
+  backgroundTheme: '@quietheart_background_theme',
 } as const;
 
 export const FREEMIUM_LIMITS = {

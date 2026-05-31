@@ -7,13 +7,14 @@ import {
   FlatList,
   Dimensions,
   Animated,
+  ActivityIndicator,
   Platform,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { BlurView } from 'expo-blur';
 import Svg, { Path } from 'react-native-svg';
-import { quranContent } from '../data/quranData';
 import { Content, Mood } from '../types';
+import { dbQuery } from '../database/schema';
 
 const { width } = Dimensions.get('window');
 
@@ -47,8 +48,23 @@ const MOOD_COLORS: Record<Mood, string> = {
  * Browse all Quranic verses in the app, filterable by mood.
  * Premium dark design with glassmorphic cards.
  */
+// Row shape returned by the SQLite GROUP_CONCAT query
+interface QuranRow {
+  id: string;
+  type: string;
+  primaryText: string;
+  arabicText: string | null;
+  transliteration: string | null;
+  englishTranslation: string;
+  source: string;
+  whyThis: string;
+  moods_csv: string; // comma-separated moods from GROUP_CONCAT
+}
+
 export default function QuranLibraryScreen({ navigation }: { navigation: any }) {
   const [selectedMood, setSelectedMood] = useState<Mood | 'All'>('All');
+  const [quranVerses, setQuranVerses] = useState<Content[]>([]);
+  const [loading, setLoading] = useState(true);
   const fadeAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
@@ -57,11 +73,39 @@ export default function QuranLibraryScreen({ navigation }: { navigation: any }) 
       duration: 600,
       useNativeDriver: true,
     }).start();
-  }, []);
 
-  // Filter only Quran content
-  const quranVerses = useMemo(() => {
-    return quranContent.filter((c: Content) => c.type === 'Quran');
+    // Load Quran content from SQLite instead of the static quranData.ts module.
+    // quranData.ts (10,681 lines) was previously parsed synchronously at bundle
+    // load time, blocking the JS thread before the first render. Now it is seeded
+    // into SQLite during initializeDatabase() and read here on demand.
+    dbQuery(async (db) => {
+      const rows = await db.getAllAsync<QuranRow>(`
+        SELECT
+          c.id, c.type, c.primaryText, c.arabicText, c.transliteration,
+          c.englishTranslation, c.source, c.whyThis,
+          GROUP_CONCAT(cm.mood, ',') AS moods_csv
+        FROM content c
+        INNER JOIN content_moods cm ON c.id = cm.contentId
+        WHERE c.type = 'Quran'
+        GROUP BY c.id
+        ORDER BY c.source ASC
+      `);
+
+      return rows.map((row): Content => ({
+        id: row.id,
+        type: row.type as Content['type'],
+        primaryText: row.primaryText,
+        arabicText: row.arabicText ?? undefined,
+        transliteration: row.transliteration ?? undefined,
+        englishTranslation: row.englishTranslation,
+        source: row.source,
+        whyThis: row.whyThis,
+        moods: row.moods_csv ? (row.moods_csv.split(',') as Mood[]) : [],
+      }));
+    })
+      .then(setQuranVerses)
+      .catch((err) => console.error('[QuranLibrary] Failed to load from SQLite:', err))
+      .finally(() => setLoading(false));
   }, []);
 
   // Group by surah
@@ -70,7 +114,7 @@ export default function QuranLibraryScreen({ navigation }: { navigation: any }) 
     return quranVerses.filter((v: Content) => v.moods.includes(selectedMood));
   }, [selectedMood, quranVerses]);
 
-  // Organize by surah for section display
+  // Organise by surah for section display
   const groupedBySurah = useMemo(() => {
     const groups: Record<string, Content[]> = {};
     filteredVerses.forEach((v: Content) => {
@@ -80,7 +124,6 @@ export default function QuranLibraryScreen({ navigation }: { navigation: any }) 
       if (!groups[surah]) groups[surah] = [];
       groups[surah].push(v);
     });
-
     return Object.entries(groups)
       .sort(([a], [b]) => a.localeCompare(b))
       .map(([surah, verses]) => ({ surah, verses }));
@@ -138,20 +181,27 @@ export default function QuranLibraryScreen({ navigation }: { navigation: any }) 
         />
 
         {/* Verse List */}
-        <FlatList
-          data={groupedBySurah}
-          keyExtractor={(item) => item.surah}
-          contentContainerStyle={styles.listContent}
-          showsVerticalScrollIndicator={false}
-          renderItem={({ item: group }) => (
-            <View style={styles.surahGroup}>
-              <Text style={styles.surahHeader}>{group.surah}</Text>
-              {group.verses.map((verse) => (
-                <VerseCard key={verse.id} verse={verse} />
-              ))}
-            </View>
-          )}
-        />
+        {loading ? (
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size="large" color="#D4A574" />
+            <Text style={styles.loadingText}>Loading verses…</Text>
+          </View>
+        ) : (
+          <FlatList
+            data={groupedBySurah}
+            keyExtractor={(item) => item.surah}
+            contentContainerStyle={styles.listContent}
+            showsVerticalScrollIndicator={false}
+            renderItem={({ item: group }) => (
+              <View style={styles.surahGroup}>
+                <Text style={styles.surahHeader}>{group.surah}</Text>
+                {group.verses.map((verse) => (
+                  <VerseCard key={verse.id} verse={verse} />
+                ))}
+              </View>
+            )}
+          />
+        )}
       </LinearGradient>
     </View>
   );
@@ -410,5 +460,17 @@ const styles = StyleSheet.create({
     color: 'rgba(229, 221, 213, 0.3)',
     textAlign: 'center',
     marginTop: 4,
+  },
+  loadingContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 16,
+    paddingBottom: 80,
+  },
+  loadingText: {
+    fontSize: 14,
+    color: 'rgba(229, 221, 213, 0.45)',
+    fontStyle: 'italic',
   },
 });

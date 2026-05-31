@@ -24,17 +24,23 @@ export function VerseOfTheDay({ dailyVerse, fadeAnim, slideAnim }: VerseOfTheDay
           <Text style={styles.verseBadgeStar}>★</Text>
         </View>
 
-        {/* Arabic */}
-        <Text style={styles.verseArabic}>{dailyVerse.arabic}</Text>
+        {/* Arabic — only render if non-empty to avoid orphaned whitespace */}
+        {!!dailyVerse.arabic && (
+          <Text style={styles.verseArabic}>{dailyVerse.arabic}</Text>
+        )}
 
         {/* Ornament divider */}
         <Text style={styles.ornamentStar}>✦</Text>
 
         {/* Translation */}
-        <Text style={styles.verseTranslation}>{dailyVerse.translation}</Text>
+        <Text style={styles.verseTranslation}>
+          {dailyVerse.translation || 'Translation not available'}
+        </Text>
 
         {/* Reference */}
-        <Text style={styles.verseRef}>— {dailyVerse.ref}</Text>
+        {!!dailyVerse.ref && (
+          <Text style={styles.verseRef}>— {dailyVerse.ref}</Text>
+        )}
 
         {/* Gold bottom line */}
         <LinearGradient colors={['transparent', '#C9A84C60', 'transparent']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={styles.verseBorderLineBottom} />

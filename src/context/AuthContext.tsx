@@ -1,7 +1,9 @@
 import React, { createContext, useContext, useEffect, useState, useRef } from 'react';
 import { Session, User } from '@supabase/supabase-js';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { AuthService } from '../services/authService';
 import { SupabaseDataService } from '../services/supabaseDataService';
+import { STORAGE_KEYS } from '../constants';
 
 interface AuthContextType {
   user: User | null;
@@ -29,6 +31,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const currentSession = await authService.getCurrentSession();
         setSession(currentSession);
         setUser(currentSession?.user ?? null);
+
+        // Fix: if no Supabase session, check whether the user already completed
+        // onboarding as a guest. Without this, every cold restart drops them back
+        // to the onboarding flow because isGuest is initialised to false.
+        if (!currentSession) {
+          const onboardingDone = await AsyncStorage.getItem(STORAGE_KEYS.onboarding);
+          if (onboardingDone === 'true') {
+            setIsGuest(true);
+          }
+        }
       } catch (error) {
         console.error('Error checking auth session:', error);
       } finally {

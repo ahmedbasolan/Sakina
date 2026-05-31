@@ -1,18 +1,8 @@
 import React, { useRef, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Animated, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { Mood } from '../../types';
+import { Mood, MoodConfig } from '../../types';
 import { Colors } from '../../theme/DesignSystem';
-
-interface MoodConfig {
-  id: Mood;
-  label: string;
-  sublabel: string;
-  color: string;
-  bgColor: string;
-  borderColor: string;
-  iconName: string;
-}
 
 interface MoodButtonProps {
   mood: MoodConfig;
@@ -33,15 +23,30 @@ export function MoodButton({ mood, isChecked, isRecentlySelected, onPress, animD
     ]).start();
   }, []);
 
+  // Store the loop animation so we can stop it on unmount.
+  // Without this, the infinite native-driver loop fires callbacks into an
+  // already-unmounted component (e.g. after navigation away from HomeScreen).
+  const glowLoopRef = useRef<{ stop: () => void } | null>(null);
+
   useEffect(() => {
     if (isChecked) {
-      Animated.loop(
+      const loop = Animated.loop(
         Animated.sequence([
           Animated.timing(glowAnim, { toValue: 1, duration: 1200, useNativeDriver: true }),
           Animated.timing(glowAnim, { toValue: 0, duration: 1200, useNativeDriver: true }),
         ])
-      ).start();
+      );
+      loop.start();
+      glowLoopRef.current = loop;
+    } else {
+      glowLoopRef.current?.stop();
+      glowLoopRef.current = null;
+      glowAnim.setValue(0);
     }
+    return () => {
+      glowLoopRef.current?.stop();
+      glowLoopRef.current = null;
+    };
   }, [isChecked]);
 
   const handlePress = () => {
@@ -66,6 +71,10 @@ export function MoodButton({ mood, isChecked, isRecentlySelected, onPress, animD
             borderColor: isChecked ? mood.color + '60' : mood.borderColor,
           },
         ]}
+        accessibilityRole="button"
+        accessibilityLabel={`${mood.label} — ${mood.sublabel}`}
+        accessibilityHint="Double tap to receive spiritual guidance for this mood"
+        accessibilityState={{ selected: isChecked }}
       >
         {/* Ambient glow */}
         <Animated.View

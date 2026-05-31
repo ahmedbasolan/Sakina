@@ -48,8 +48,12 @@ export interface SupabaseUserProfile {
 
 // ── Service ─────────────────────────────────────────────────────────
 
+const SYNC_BATCH_SIZE = 50; // rows per flush — caps JS-thread block time
+
 export class SupabaseDataService {
     private static instance: SupabaseDataService;
+    // Prevents two concurrent syncPendingHistory runs from double-uploading rows.
+    private isSyncing = false;
 
     static getInstance(): SupabaseDataService {
         if (!SupabaseDataService.instance) {
@@ -62,12 +66,15 @@ export class SupabaseDataService {
 
     // ── Auth helpers ────────────────────────────────────────────────
 
-    /** Returns the current user ID, or null if guest/not logged in. */
+    /**
+     * Returns the current user ID from the cached local session.
+     * Uses getSession() (reads from AsyncStorage/memory) rather than getUser()
+     * (makes a network request on every call) — avoids 13+ round-trips per
+     * guidance session.
+     */
     async getUserId(): Promise<string | null> {
-        const {
-            data: { user },
-        } = await supabase.auth.getUser();
-        return user?.id ?? null;
+        const { data: { session } } = await supabase.auth.getSession();
+        return session?.user?.id ?? null;
     }
 
     /** Returns true if a user is logged in (not guest mode). */
@@ -154,63 +161,87 @@ export class SupabaseDataService {
      * the next online write.
      */
     async syncPendingHistory(): Promise<void> {
-        const userId = await this.getUserId();
-        if (!userId) return; // nothing to sync for guests
+        // Concurrency guard — two callers (e.g. back-to-back successful writes
+        // on reconnect) must not both SELECT the same pending rows and
+        // double-insert them into Supabase.
+        if (this.isSyncing) return;
+        this.isSyncing = true;
 
-        // 1. Read all locally-queued rows
-        const pendingRows = await dbQuery(async (db) => {
-            return db.getAllAsync<{
-                id: string;
-                contentId: string;
-                angleId: string;
-                mood: string;
-                timestamp: number;
-            }>(
-                `SELECT id, contentId, angleId, mood, timestamp
-                 FROM user_history
-                 WHERE pending_sync = 1
-                 ORDER BY timestamp ASC`,
-            );
-        });
+        try {
+            const userId = await this.getUserId();
+            if (!userId) return;
 
-        if (pendingRows.length === 0) return;
+            // 1. Read up to SYNC_BATCH_SIZE queued rows.
+            //    A LIMIT prevents fetching hundreds of rows into memory and
+            //    then making hundreds of sequential round-trips in one shot.
+            const pendingRows = await dbQuery(async (db) => {
+                return db.getAllAsync<{
+                    id: string;
+                    contentId: string;
+                    angleId: string;
+                    mood: string;
+                    timestamp: number;
+                }>(
+                    `SELECT id, contentId, angleId, mood, timestamp
+                     FROM user_history
+                     WHERE pending_sync = 1
+                     ORDER BY timestamp ASC
+                     LIMIT ${SYNC_BATCH_SIZE}`,
+                );
+            });
 
-        // 2. Upload each row; collect IDs of those that succeeded
-        const syncedIds: string[] = [];
-        for (const row of pendingRows) {
-            const { error } = await supabase.from('user_history').insert({
+            if (pendingRows.length === 0) return;
+
+            // 2. Batch insert — one network call instead of N.
+            const supabaseRows = pendingRows.map((row) => ({
                 user_id: userId,
                 content_id: row.contentId,
                 angle_id: row.angleId,
                 mood: row.mood,
-                // Preserve the original timestamp so calendar/streak stay accurate
                 created_at: new Date(row.timestamp).toISOString(),
-            });
+            }));
+
+            const { error } = await supabase.from('user_history').insert(supabaseRows);
+
             if (error) {
-                console.warn(
-                    `[SupabaseDataService] Pending sync failed for row ${row.id}:`,
-                    error.message,
-                );
-                // Leave pending_sync = 1 — will retry on the next online write
+                // Batch failed — fall back to row-by-row so partial success is possible.
+                const syncedIds: string[] = [];
+                for (const row of pendingRows) {
+                    const { error: rowErr } = await supabase.from('user_history').insert({
+                        user_id: userId,
+                        content_id: row.contentId,
+                        angle_id: row.angleId,
+                        mood: row.mood,
+                        created_at: new Date(row.timestamp).toISOString(),
+                    });
+                    if (!rowErr) syncedIds.push(row.id);
+                    else console.warn(`[Sync] Row ${row.id} failed:`, rowErr.message);
+                }
+                if (syncedIds.length > 0) {
+                    await dbQuery(async (db) => {
+                        const ph = syncedIds.map(() => '?').join(',');
+                        await db.runAsync(
+                            `UPDATE user_history SET pending_sync = 0 WHERE id IN (${ph})`,
+                            syncedIds,
+                        );
+                    });
+                }
+                console.log(`[Sync] Batch failed; synced ${syncedIds.length}/${pendingRows.length} rows individually`);
             } else {
-                syncedIds.push(row.id);
+                // 3. Batch succeeded — clear all flags in one query.
+                const ids = pendingRows.map((r) => r.id);
+                await dbQuery(async (db) => {
+                    const ph = ids.map(() => '?').join(',');
+                    await db.runAsync(
+                        `UPDATE user_history SET pending_sync = 0 WHERE id IN (${ph})`,
+                        ids,
+                    );
+                });
+                console.log(`[Sync] Uploaded ${pendingRows.length} pending rows`);
             }
+        } finally {
+            this.isSyncing = false;
         }
-
-        if (syncedIds.length === 0) return;
-
-        // 3. Clear the flag only for rows we successfully uploaded
-        await dbQuery(async (db) => {
-            const placeholders = syncedIds.map(() => '?').join(',');
-            await db.runAsync(
-                `UPDATE user_history SET pending_sync = 0 WHERE id IN (${placeholders})`,
-                syncedIds,
-            );
-        });
-
-        console.log(
-            `[SupabaseDataService] Synced ${syncedIds.length} / ${pendingRows.length} pending history entries`,
-        );
     }
 
     /**
@@ -373,7 +404,17 @@ export class SupabaseDataService {
                 return { migratedCount: 0 };
             }
 
-            const alreadyMigrated = (existingCount ?? 0) > 0;
+            // alreadyMigrated only when EVERY local row is in Supabase.
+            // > 0 incorrectly blocked re-runs after a partial batch failure,
+            // permanently orphaning the remaining rows.
+            const localHistoryCount = await dbQuery(async (db) => {
+                const r = await db.getFirstAsync<{ cnt: number }>(
+                    'SELECT COUNT(*) as cnt FROM user_history',
+                );
+                return r?.cnt ?? 0;
+            });
+            const alreadyMigrated =
+                localHistoryCount === 0 || (existingCount ?? 0) >= localHistoryCount;
 
             // 1. Migrate user_history (only if this is a fresh account)
             const localHistory = await dbQuery(async (db) => {
@@ -404,9 +445,9 @@ export class SupabaseDataService {
                     if (error) {
                         console.error('[Migration] History batch insert error:', error.message);
                         historyInsertSucceeded = false;
-                        break; // Stop on first failure — avoids orphaning later batches in a
-                               // state where Supabase has some rows but idempotency check would
-                               // skip all remaining rows on next login.
+                        // Continue remaining batches — partial success is better than none.
+                        // The updated alreadyMigrated check above lets the next login resume
+                        // from where this left off rather than skipping everything.
                     } else {
                         migratedCount += batch.length;
                     }
@@ -629,13 +670,16 @@ export class SupabaseDataService {
      * Optionally filters/prioritizes by prayer context if provided.
      */
     async fetchContentByMood(mood: Mood, prayerContext?: PrayerContext): Promise<any[]> {
+        // Limit to 50 rows — the rotation engine only uses the top 3 candidates,
+        // so fetching the entire table is wasteful as content grows.
         const query = supabase
             .from('content_angles')
             .select(`
                 *,
                 content:content_id (*)
             `)
-            .eq('mood', mood);
+            .eq('mood', mood)
+            .limit(50);
 
         const { data, error } = await query;
 

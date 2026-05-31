@@ -1,36 +1,22 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback, useMemo, memo } from 'react';
 import {
   View,
   Text,
   TouchableOpacity,
   StyleSheet,
   Animated,
-  LayoutAnimation,
   Platform,
-  UIManager,
   Dimensions,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { Mood } from '../../types';
+import { Mood, MoodConfig } from '../../types';
 import { Colors } from '../../theme/DesignSystem';
 import { getMoodsForTime } from '../../utils/moodTimeMapping';
 
-if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
-  UIManager.setLayoutAnimationEnabledExperimental(true);
-}
-
 const { width } = Dimensions.get('window');
 const CARD_WIDTH = (width - 48 - 12) / 2;
+const EXPAND_DURATION = 280;
 
-interface MoodConfig {
-  id: Mood;
-  label: string;
-  sublabel: string;
-  color: string;
-  bgColor: string;
-  borderColor: string;
-  iconName: string;
-}
 
 interface SmartMoodGridProps {
   moodConfigs: MoodConfig[];
@@ -39,7 +25,13 @@ interface SmartMoodGridProps {
   onMoodPress: (mood: Mood) => void;
 }
 
-function SmartMoodCard({
+// ── SmartMoodCard ─────────────────────────────────────────────────────────────
+// memo: only re-renders when mood object ref, isChecked, or onPress changes.
+// The parent passes stable onPress refs (useCallback keyed on mood.id) so
+// memo's shallow comparison holds — card never re-renders from an unrelated
+// HomeScreen state update.
+
+const SmartMoodCard = memo(function SmartMoodCard({
   mood,
   isChecked,
   onPress,
@@ -77,15 +69,18 @@ function SmartMoodCard({
     }
   }, [isChecked]);
 
-  const handlePress = () => {
+  const handlePress = useCallback(() => {
     Animated.sequence([
       Animated.spring(scaleAnim, { toValue: 0.92, friction: 3, useNativeDriver: true }),
       Animated.spring(scaleAnim, { toValue: 1, friction: 4, useNativeDriver: true }),
     ]).start();
     onPress();
-  };
+  }, [onPress]);
 
-  const glowOpacity = glowAnim.interpolate({ inputRange: [0, 1], outputRange: [0, 0.18] });
+  const glowOpacity = useMemo(
+    () => glowAnim.interpolate({ inputRange: [0, 1], outputRange: [0, 0.18] }),
+    [],
+  );
 
   return (
     <Animated.View style={[styles.cardWrapper, { transform: [{ scale: scaleAnim }] }]}>
@@ -132,20 +127,41 @@ function SmartMoodCard({
       </TouchableOpacity>
     </Animated.View>
   );
-}
+});
 
-export function SmartMoodGrid({ moodConfigs, selectedMood, checkedInToday, onMoodPress }: SmartMoodGridProps) {
+// ── SmartMoodGrid ─────────────────────────────────────────────────────────────
+
+export const SmartMoodGrid = memo(function SmartMoodGrid({
+  moodConfigs,
+  selectedMood,
+  checkedInToday,
+  onMoodPress,
+}: SmartMoodGridProps) {
   const [expanded, setExpanded] = useState(false);
-  const timeMoods = getMoodsForTime();
+  const expandAnim = useRef(new Animated.Value(0)).current;
 
-  const visibleMoods = expanded
-    ? moodConfigs
-    : moodConfigs.filter((m) => timeMoods.includes(m.id));
+  // Compute time-based moods once per mount — getMoodsForTime reads the clock
+  // and does array filtering; calling it on every render is wasteful.
+  const timeMoods = useMemo(() => getMoodsForTime(), []);
 
-  const toggleExpand = () => {
-    LayoutAnimation.configureNext(LayoutAnimation.create(300, 'easeInEaseOut', 'opacity'));
-    setExpanded(!expanded);
-  };
+  const visibleMoods = expanded ? moodConfigs : moodConfigs.filter((m) => timeMoods.includes(m.id));
+
+  // Stable per-mood onPress callbacks so SmartMoodCard memo holds.
+  // Re-created only if moodConfigs or onMoodPress changes.
+  const pressHandlers = useMemo(
+    () => Object.fromEntries(moodConfigs.map((m) => [m.id, () => onMoodPress(m.id)])),
+    [moodConfigs, onMoodPress],
+  );
+
+  const toggleExpand = useCallback(() => {
+    const toValue = expanded ? 0 : 1;
+    Animated.timing(expandAnim, {
+      toValue,
+      duration: EXPAND_DURATION,
+      useNativeDriver: true,
+    }).start();
+    setExpanded((prev) => !prev);
+  }, [expanded]);
 
   return (
     <View>
@@ -155,7 +171,7 @@ export function SmartMoodGrid({ moodConfigs, selectedMood, checkedInToday, onMoo
             key={mood.id}
             mood={mood}
             isChecked={selectedMood === mood.id}
-            onPress={() => onMoodPress(mood.id)}
+            onPress={pressHandlers[mood.id]}
             index={idx}
           />
         ))}
@@ -172,7 +188,7 @@ export function SmartMoodGrid({ moodConfigs, selectedMood, checkedInToday, onMoo
       </TouchableOpacity>
     </View>
   );
-}
+});
 
 const styles = StyleSheet.create({
   grid: {

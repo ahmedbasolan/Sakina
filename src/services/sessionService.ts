@@ -6,6 +6,12 @@ export class SessionService {
   private static instance: SessionService;
   private currentSession: UserSession | null = null;
   private isLoaded: boolean = false;
+  // Async mutex: serialises concurrent startGuidanceSession / useNextRefresh
+  // calls so the read-modify-write on the counter is always atomic from the
+  // caller's perspective. Without this, two rapid taps both read the same
+  // counter value before either write completes, permanently granting one
+  // extra free session per race.
+  private operationLock: Promise<void> = Promise.resolve();
 
   static getInstance(): SessionService {
     if (!SessionService.instance) {
@@ -110,16 +116,24 @@ export class SessionService {
   }
 
   async startGuidanceSession(isPremium: boolean): Promise<boolean> {
-    if (!this.currentSession) return false;
-    if (this.canStartGuidanceSession(isPremium)) {
-      this.currentSession.guidanceSessionsUsed++;
-      this.currentSession.nextRefreshesRemaining = isPremium
-        ? 999
-        : FREEMIUM_LIMITS.nextRefreshesPerSession;
-      await this.saveSession();
-      return true;
+    let release!: () => void;
+    const prev = this.operationLock;
+    this.operationLock = new Promise((r) => { release = r; });
+    await prev;
+    try {
+      if (!this.currentSession) return false;
+      if (this.canStartGuidanceSession(isPremium)) {
+        this.currentSession.guidanceSessionsUsed++;
+        this.currentSession.nextRefreshesRemaining = isPremium
+          ? 999
+          : FREEMIUM_LIMITS.nextRefreshesPerSession;
+        await this.saveSession();
+        return true;
+      }
+      return false;
+    } finally {
+      release();
     }
-    return false;
   }
 
   canUseNextRefresh(isPremium: boolean): boolean {
@@ -129,13 +143,21 @@ export class SessionService {
   }
 
   async useNextRefresh(isPremium: boolean): Promise<boolean> {
-    if (!this.currentSession) return false;
-    if (this.canUseNextRefresh(isPremium)) {
-      this.currentSession.nextRefreshesRemaining--;
-      await this.saveSession();
-      return true;
+    let release!: () => void;
+    const prev = this.operationLock;
+    this.operationLock = new Promise((r) => { release = r; });
+    await prev;
+    try {
+      if (!this.currentSession) return false;
+      if (this.canUseNextRefresh(isPremium)) {
+        this.currentSession.nextRefreshesRemaining--;
+        await this.saveSession();
+        return true;
+      }
+      return false;
+    } finally {
+      release();
     }
-    return false;
   }
 
   getRemainingSessions(isPremium: boolean): number {

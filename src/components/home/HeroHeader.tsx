@@ -1,21 +1,20 @@
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Animated } from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, Animated, Platform } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Colors } from '../../theme/DesignSystem';
 import { Ionicons } from '@expo/vector-icons';
 import { AnimatedMandala } from '../AnimatedMandala';
 import { TwinklingStar } from './TwinklingStar';
 
+// Reduced from 8 to 4 — each TwinklingStar runs its own Animated.loop.
+// 8 simultaneous loops caused a 30–80ms frame-budget miss at mount on mid-range Android.
 const starPositions = [
-  { x: 0.08, y: 0.12, delay: 0, size: 2 },
+  { x: 0.08, y: 0.12, delay: 0,   size: 2 },
   { x: 0.88, y: 0.08, delay: 400, size: 2 },
-  { x: 0.20, y: 0.35, delay: 800, size: 1.5 },
-  { x: 0.75, y: 0.28, delay: 1200, size: 2.5 },
+  { x: 0.75, y: 0.28, delay: 700, size: 2.5 },
   { x: 0.50, y: 0.18, delay: 200, size: 1.5 },
-  { x: 0.95, y: 0.45, delay: 1600, size: 2 },
-  { x: 0.05, y: 0.60, delay: 600, size: 1.5 },
-  { x: 0.92, y: 0.72, delay: 1000, size: 2 },
 ];
+
 
 interface HeroHeaderProps {
   fadeAnim: Animated.Value;
@@ -27,6 +26,23 @@ interface HeroHeaderProps {
 export function HeroHeader({ fadeAnim, slideAnim, onSettingsPress, greeting }: HeroHeaderProps) {
   const insets = useSafeAreaInsets();
 
+  // ── Entrance animation (runs once on mount, inside header only) ──
+  const entranceBismillahAnim = useRef(new Animated.Value(0)).current;
+  const entranceOverlayAnim = useRef(new Animated.Value(1)).current;
+  const [entranceDone, setEntranceDone] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      // Bismillah fades in → holds → overlay fades out
+      Animated.sequence([
+        Animated.timing(entranceBismillahAnim, { toValue: 1, duration: 700, useNativeDriver: true }),
+        Animated.delay(1400),
+        Animated.timing(entranceOverlayAnim, { toValue: 0, duration: 800, useNativeDriver: true }),
+      ]).start(() => setEntranceDone(true));
+    }, 150);
+    return () => clearTimeout(timer);
+  }, []);
+
   return (
     <View style={styles.heroHeader}>
       {/* Ambient glow orb */}
@@ -37,16 +53,16 @@ export function HeroHeader({ fadeAnim, slideAnim, onSettingsPress, greeting }: H
         <TwinklingStar key={i} x={s.x} y={s.y} delay={s.delay} size={s.size} />
       ))}
 
-      {/* Animated Mandala - outer */}
+      {/* Animated Mandala - outer (clockwise) */}
       <View style={styles.mandalaOuter} pointerEvents="none">
         <AnimatedMandala size={220} color={Colors.accent.primary} opacity={0.35} />
       </View>
-      {/* Animated Mandala - inner (counter-rotates) */}
+      {/* Animated Mandala - inner (counter-clockwise) */}
       <View style={styles.mandalaInner} pointerEvents="none">
         <AnimatedMandala size={160} color={Colors.accent.primary} opacity={0.25} direction="ccw" />
       </View>
 
-      {/* Top bar */}
+      {/* Top bar — normal content */}
       <Animated.View
         style={[
           styles.heroTopBar,
@@ -58,21 +74,35 @@ export function HeroHeader({ fadeAnim, slideAnim, onSettingsPress, greeting }: H
           <Text style={styles.heroTitle}>Assalamu Alaikum</Text>
         </View>
 
-        {/* Notification bell — top right */}
+        {/* Settings icon */}
         <TouchableOpacity
           style={styles.notifBell}
           onPress={onSettingsPress}
           accessibilityRole="button"
-          accessibilityLabel="Notifications"
+          accessibilityLabel="Settings"
           hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
         >
-          <Ionicons name="notifications-outline" size={20} color={Colors.accent.primary} />
-          <View style={styles.notifDot} />
+          <Ionicons name="settings-outline" size={20} color={Colors.accent.primary} />
         </TouchableOpacity>
       </Animated.View>
 
-      {/* Bismillah */}
+      {/* Bismillah — always visible below top bar */}
       <Text style={styles.bismillah}>بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</Text>
+
+      {/* ── Entrance overlay (constrained to header bounds) ─────── */}
+      {!entranceDone && (
+        <Animated.View
+          style={[styles.entranceOverlay, { opacity: entranceOverlayAnim }]}
+          pointerEvents="none"
+        >
+          <Animated.View style={[styles.entranceSlot, { opacity: entranceBismillahAnim }]}>
+            <Text style={styles.entranceBismillah}>بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</Text>
+            <Text style={styles.entranceBismillahSub}>
+              In the name of Allah, the Most Gracious, the Most Merciful
+            </Text>
+          </Animated.View>
+        </Animated.View>
+      )}
     </View>
   );
 }
@@ -93,7 +123,6 @@ const styles = StyleSheet.create({
     borderRadius: 200,
     backgroundColor: Colors.accent.primary,
     opacity: 0.08,
-    filter: 'blur(80px)',
   },
   mandalaOuter: {
     position: 'absolute',
@@ -135,23 +164,50 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: 'rgba(46, 211, 198, 0.08)',
+    backgroundColor: 'rgba(212, 175, 55, 0.08)',
+    borderWidth: 1,
+    borderColor: 'rgba(212, 175, 55, 0.15)',
     justifyContent: 'center',
     alignItems: 'center',
-  },
-  notifDot: {
-    position: 'absolute',
-    top: 10,
-    right: 10,
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: '#F87171',
   },
   bismillah: {
     fontSize: 20,
     color: 'rgba(245, 237, 227, 0.4)',
     marginTop: 20,
     fontFamily: 'Amiri-Regular',
+  },
+
+  /* ── Entrance overlay ──────────────────────────────────────── */
+  entranceOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    // No background — stars and mandala show through
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 10,
+  },
+  entranceSlot: {
+    position: 'absolute',
+    left: 24,
+    right: 24,
+    alignItems: 'center',
+  },
+  entranceBismillah: {
+    fontSize: 28,
+    color: Colors.accent.primary,
+    textAlign: 'center',
+    letterSpacing: 1,
+    marginBottom: 10,
+    textShadowColor: 'rgba(212, 175, 55, 0.55)',
+    textShadowOffset: { width: 0, height: 0 },
+    textShadowRadius: 16,
+  },
+  entranceBismillahSub: {
+    fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
+    fontSize: 12,
+    color: 'rgba(245, 237, 227, 0.38)',
+    textAlign: 'center',
+    fontStyle: 'italic',
+    letterSpacing: 0.3,
+    lineHeight: 18,
   },
 });

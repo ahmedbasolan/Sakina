@@ -1,6 +1,7 @@
 declare module '@env' {
   export const SUPABASE_URL: string;
   export const SUPABASE_ANON_KEY: string;
+  export const POSTHOG_API_KEY: string;
   export const QURAN_API_CLIENT_ID: string;
   export const QURAN_API_CLIENT_SECRET: string;
   export const QURAN_API_ENDPOINT: string;
