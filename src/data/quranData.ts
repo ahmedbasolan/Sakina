@@ -24,7 +24,7 @@ const quranContentData: Content[] = [
     englishTranslation: 'And surely the Hereafter is better for you than the first.',
     source: 'Surah Ad-Duha 93:4',
     audioKey: '93:4',
-    whyThis: '',
+    whyThis: 'When you feel crushed by the weight of this life, this verse reorients you: everything you are enduring now is temporary, and what lies ahead with Allah is incomparably better. Ibn Kathir notes that this was a direct reassurance to the Prophet ﷺ — and by extension to every believer — that their striving is never in vain.',
     moods: ['Overwhelmed'],
   },
   {
@@ -36,7 +36,7 @@ const quranContentData: Content[] = [
     englishTranslation: 'So indeed, with the hardship is ease. Indeed, with the hardship is ease.',
     source: 'Surah Ash-Sharh 94:5-6',
     audioKey: '94:5-6',
-    whyThis: '',
+    whyThis: 'The scholars of Arabic grammar note that "the hardship" (al-usr) uses the definite article both times — it is the same hardship — while "ease" (yusr) is indefinite each time, meaning multiple different eases accompany every single hardship. Ibn Masud (RA) reportedly said: "One hardship cannot overcome two eases." [Tafsir Ibn Kathir, Surah Al-Inshirah]',
     moods: ['Overwhelmed'],
   },
   {
@@ -68,7 +68,7 @@ const quranContentData: Content[] = [
       'Allah does not burden a soul beyond its capacity. It will have what it has earned, and against it what it has earned. Our Lord, do not take us to task if we forget or err. Our Lord, do not lay upon us a burden like that which You laid on those before us. Our Lord, do not burden us with what we have no strength to bear. Pardon us, forgive us, and have mercy on us. You are our Protector, so help us against the disbelieving people.',
     source: 'Surah Al-Baqarah 2:286',
     audioKey: '2:286',
-    whyThis: '',
+    whyThis: 'This verse closes Surah Al-Baqarah and is one of the most comforting passages in the Quran. The Prophet ﷺ said: "Whoever recites the last two verses of Surah Al-Baqarah at night, they will suffice him." [Bukhari 5009] The opening line is a divine guarantee: you will never be asked to carry more than you can bear.',
     moods: ['Overwhelmed'],
   },
   {
@@ -102,7 +102,7 @@ const quranContentData: Content[] = [
       'After the Battle of Uhud, the believers were warned that their enemies had regrouped against them. But instead of being afraid, their faith only grew stronger — and they declared: "Allah is enough for us; He is the best One to rely on."',
     source: 'Surah Ali Imran 3:173',
     audioKey: '3:173',
-    whyThis: '',
+    whyThis: 'When threatened with overwhelming opposition after Uhud, the companions responded not with fear but with increased faith and this declaration. "Hasbunallah wa ni\'mal wakeel" — Allah is enough for us, and He is the best Disposer of affairs — is a statement the Prophet Ibrahim (AS) also made when thrown into the fire. [Bukhari 4563]',
     moods: ['Overwhelmed'],
   },
   {
@@ -114,7 +114,7 @@ const quranContentData: Content[] = [
     englishTranslation: 'And that there is nothing for man except what he strives for.',
     source: 'Surah An-Najm 53:39',
     audioKey: '53:39',
-    whyThis: '',
+    whyThis: 'This verse grounds us in divine justice: your effort is the measure of your reward. Nothing is wasted. Ibn Kathir explains that this verse establishes the principle that every person is accountable for what they personally strive toward — both in this life and in the account before Allah.',
     moods: ['Overwhelmed'],
   },
   {
@@ -126,7 +126,7 @@ const quranContentData: Content[] = [
     englishTranslation: 'And when I am ill, it is He who cures me.',
     source: "Surah Ash-Shu'ara 26:80",
     audioKey: '26:80',
-    whyThis: '',
+    whyThis: 'This is part of the prayer of Ibrahim (AS), who attributed illness to himself but cure solely to Allah — a model of how believers speak about their condition: owning their vulnerability while trusting that only Allah holds the power to heal, whether that healing is physical, emotional, or spiritual.',
     moods: ['Overwhelmed'],
   },
   {
@@ -142,7 +142,7 @@ const quranContentData: Content[] = [
       'Allah is the Protecting Guardian of those who believe. He brings them out from darkness into light. And those who disbelieve — their guardians are the evil ones, who bring them out from light into darkness. Those are the companions of the Fire; they will abide therein forever.',
     source: 'Surah Al-Baqarah 2:257',
     audioKey: '2:257',
-    whyThis: '',
+    whyThis: 'The word "wali" here means more than a friend — it is a guardian and protector with authority. When you feel overwhelmed and directionless, this verse reminds you that Allah Himself is actively guiding you out of every darkness. The journey from darkness to light is not something you do alone; Allah initiates it.',
     moods: ['Overwhelmed'],
   },
   {
@@ -157,7 +157,7 @@ const quranContentData: Content[] = [
       'And if they turn away, then know that Allah is your Protector. Excellent is the Protector, and Excellent is the Helper.',
     source: 'Surah Al-Anfal 8:40',
     audioKey: '8:40',
-    whyThis: '',
+    whyThis: 'When people abandon you or refuse your call, this verse redirects your reliance — Allah is your Mawla (Protector and Master), and He is Ni\'mal Mawla (excellent as a Protector) and Ni\'mal Naseer (excellent as a Helper). No human loss is a loss when Allah remains your guardian.',
     moods: ['Overwhelmed'],
   },
   {
@@ -193,7 +193,7 @@ const quranContentData: Content[] = [
       'The messengers of Allah replied to those who threatened them: "Why would we not trust in Allah, when He has already guided us? We will patiently endure whatever harm you cause us. Whoever truly trusts — let them place their trust in Allah alone."',
     source: 'Surah Ibrahim 14:12',
     audioKey: '14:12',
-    whyThis: '',
+    whyThis: 'The messengers of Allah said this while being actively threatened and harmed. Their tawakkul was not passive — it was a declaration made under pressure. The verse shows that true reliance on Allah is what allows a believer to bear harm with patience rather than collapse under it.',
     moods: ['Overwhelmed'],
   },
   {
@@ -209,7 +209,7 @@ const quranContentData: Content[] = [
       'The believers are only those who, when Allah is mentioned, their hearts become fearful; and when His verses are recited to them, it increases them in faith; and upon their Lord they put their trust.',
     source: 'Surah Al-Anfal 8:2',
     audioKey: '8:2',
-    whyThis: '',
+    whyThis: 'This verse defines the believer by three inner signs: a heart that responds to the mention of Allah, faith that grows with every verse heard, and trust placed entirely in the Lord. If you feel overwhelmed, returning to these three — dhikr, Quran, and tawakkul — is the path the verse itself prescribes.',
     moods: ['Overwhelmed'],
   },
   {
@@ -225,7 +225,7 @@ const quranContentData: Content[] = [
       'Say, "He is the Most Gracious; we believe in Him, and upon Him we put our trust. So you will know who is in clear error."',
     source: 'Surah Al-Mulk 67:29',
     audioKey: '67:29',
-    whyThis: '',
+    whyThis: 'This verse pairs belief with tawakkul as a single declaration: "we believe in Him, and upon Him we put our trust." The two cannot be separated. Naming Allah as "Al-Rahman" (the Most Gracious) here is deliberate — your trust is placed in the One whose mercy encompasses everything.',
     moods: ['Overwhelmed'],
   },
   {
@@ -241,7 +241,7 @@ const quranContentData: Content[] = [
       'And put your trust in the Ever-Living, the One Who does not die, and glorify with His praise. And sufficient is He, regarding the sins of His slaves, as All-Aware.',
     source: 'Surah Al-Furqan 25:58',
     audioKey: '25:58',
-    whyThis: '',
+    whyThis: 'Every person you have ever trusted will eventually die. This verse commands you to place your deepest trust in the only One who is Al-Hayy (the Ever-Living) — the One who will never cease to exist, never abandon His promise, and never stop being aware of you and your sins.',
     moods: ['Overwhelmed'],
   },
   {
@@ -259,7 +259,7 @@ const quranContentData: Content[] = [
       'They said, "Are you indeed Yusuf?" He said, "I am Yusuf, and this is my brother. Indeed, Allah has been gracious to us. Indeed, he who fears Allah and is patient — then indeed, Allah does not allow the reward of the good-doers to be lost."',
     source: 'Surah Yusuf 12:90',
     audioKey: '12:90',
-    whyThis: '',
+    whyThis: 'Yusuf (AS) was thrown into a well, enslaved, and imprisoned — yet decades later he stood as a minister of Egypt and reunited with his family. His own words confirm the principle: taqwa (God-consciousness) plus sabr (patient perseverance) guarantees that nothing of your reward will be lost with Allah.',
     moods: ['Overwhelmed'],
   },
   {
@@ -275,7 +275,7 @@ const quranContentData: Content[] = [
       'And obey Allah and His Messenger, and do not dispute, lest you lose courage and your strength departs. And be patient; indeed, Allah is with the patient ones.',
     source: 'Surah Al-Anfal 8:46',
     audioKey: '8:46',
-    whyThis: '',
+    whyThis: 'This verse was revealed in the context of battle, but its lesson is universal: internal disputes drain strength more than any external enemy. Unity, obedience, and patience are the foundation of resilience. The promise "Allah is with the patient ones" (ma\'a al-sabireen) is a statement of active divine companionship.',
     moods: ['Overwhelmed'],
   },
   {
@@ -289,7 +289,7 @@ const quranContentData: Content[] = [
       'Unquestionably, for the allies of Allah there will be no fear upon them, nor will they grieve.',
     source: 'Surah Yunus 10:62',
     audioKey: '10:62',
-    whyThis: '',
+    whyThis: 'The Quran defines "awliya Allah" (allies of Allah) in the very next verse (10:63): those who believe and are mindful of Him. This is not an exclusive rank for saints — it is available to every sincere believer. And the promise is absolute: no fear of the future, no grief over the past.',
     moods: ['Overwhelmed'],
   },
 
@@ -303,7 +303,7 @@ const quranContentData: Content[] = [
     englishTranslation: 'Your Lord has not forsaken you, nor is He displeased.',
     source: 'Surah Ad-Duha 93:3',
     audioKey: '93:3',
-    whyThis: '"Your Lord has not forsaken you, nor is He displeased." [Quran 93:3]',
+    whyThis: 'The word "wadda\'aka" (forsaken you) uses the past tense, indicating a completed, settled fact — not a conditional. Allah is not saying "I will not forsake you if..."; He is stating it as a permanent truth. Ibn Kathir notes this verse came when the Prophet ﷺ feared Allah had abandoned him, and it reestablished certainty where doubt had crept in. [Tafsir Ibn Kathir, Surah Ad-Duha]',
     moods: ['Sad'],
   },
   {
@@ -351,7 +351,7 @@ const quranContentData: Content[] = [
       'And We will surely test you with something of fear and hunger and a loss of wealth and lives and fruits, but give good tidings to the patient — those who, when disaster strikes them, say, "Indeed, we belong to Allah, and indeed to Him we will return."',
     source: 'Surah Al-Baqarah 2:155-156',
     audioKey: '2:155-156',
-    whyThis: '',
+    whyThis: 'Allah does not merely permit hardship — He announces in advance that it will come. This verse transforms suffering from something random into something known and anticipated by Allah. The formula "Inna lillahi wa inna ilayhi raji\'un" is not just a phrase for death; it is the believer\'s response to every calamity. The Prophet ﷺ called it a "consolation" (aza) that no one before this ummah received. [Muslim 918]',
     moods: ['Sad'],
   },
   {
@@ -367,7 +367,7 @@ const quranContentData: Content[] = [
       'He is the One Who created the heavens and the earth in six periods, then He rose over the Throne. He knows what penetrates into the earth and what comes forth from it, and what descends from the heaven and what ascends therein. And He is with you wherever you are. And Allah, of what you do, is All-Seeing.',
     source: 'Surah Al-Hadid 57:4',
     audioKey: '57:4',
-    whyThis: '',
+    whyThis: 'The phrase "He is with you wherever you are" (wa huwa ma\'akum ayna ma kuntum) is one of the most direct statements of divine companionship in the Quran. No matter how isolated or unseen you feel, Allah is present with you — watching, knowing, and aware of every detail of your situation.',
     moods: ['Sad', 'Lonely'],
   },
   {
@@ -379,7 +379,7 @@ const quranContentData: Content[] = [
     englishTranslation: 'So indeed, with the hardship is ease.',
     source: 'Surah Ash-Sharh 94:5',
     audioKey: '94:5',
-    whyThis: '',
+    whyThis: 'The word "ma\'a" means "with" — not "after." Ease is not waiting at the end of your hardship; it accompanies it, present in the same moment. This is a promise of relief that is already arriving, even when you cannot see it yet.',
     moods: ['Sad'],
   },
   {
@@ -393,7 +393,7 @@ const quranContentData: Content[] = [
       'And do not weaken, and do not grieve, for you will be superior if you are believers.',
     source: 'Surah Ali Imran 3:139',
     audioKey: '3:139',
-    whyThis: '',
+    whyThis: 'This verse was revealed after the Muslims suffered losses at the Battle of Uhud — a moment of genuine grief and doubt. Allah did not tell them to pretend the pain away; He acknowledged their state and then forbade them from letting it become paralysis. Belief itself is the source of their ultimate elevation.',
     moods: ['Sad'],
   },
   {
@@ -427,7 +427,7 @@ const quranContentData: Content[] = [
       'And remember the Man of the Fish — Prophet Yunus — when he departed in anger, thinking he would not be held to account. Then, from the depths of darkness, he cried out: "There is no god except You; glory be to You. Indeed, I have been among the wrongdoers."',
     source: 'Surah Al-Anbiya 21:87',
     audioKey: '21:87',
-    whyThis: '',
+    whyThis: 'The Prophet ﷺ said: "The supplication of Dhun-Nun (Yunus) in the belly of the whale — no Muslim ever calls upon Allah with it in any matter except that Allah responds to them." [Tirmidhi 3505, graded hasan] Acknowledging your own shortcomings before making du\'a is itself a key to answered prayer.',
     moods: ['Sad'],
   },
   {
@@ -443,7 +443,7 @@ const quranContentData: Content[] = [
       'Our Lord, do not let our hearts deviate after You have guided us, and grant us from Yourself mercy. Indeed, You are the Bestower.',
     source: 'Surah Ali Imran 3:8',
     audioKey: '3:8',
-    whyThis: '',
+    whyThis: 'The Prophet ﷺ would frequently say "Ya Muqallib al-qulub, thabbit qalbi \'ala dinik" (O Turner of hearts, keep my heart firm on Your religion). When asked about it, he said the heart is between the fingers of Allah and He turns it as He wills. [Tirmidhi 3522] This du\'a is the believer\'s acknowledgment that steadfastness itself is a gift from Allah.',
     moods: ['Sad'],
   },
   {
@@ -459,7 +459,7 @@ const quranContentData: Content[] = [
       'And your Lord said, "Call upon Me; I will respond to you." Indeed, those who are too proud to worship Me will enter Hell in humiliation.',
     source: 'Surah Ghafir 40:60',
     audioKey: '40:60',
-    whyThis: '"And your Lord said: Call upon Me; I will respond to you." [Quran 40:60]',
+    whyThis: 'Allah directly commands du\'a with an attached promise of response — "ud\'uni astajib lakum" (call upon Me; I will respond). This is not a general encouragement; it is a binding divine statement. The scholars note that the response may come in the form of exactly what was asked, something better, or protection from a harm you did not know was coming. [Tafsir As-Sa\'di, Surah Ghafir]',
     moods: ['Sad', 'Overwhelmed'],
   },
   {
@@ -475,7 +475,7 @@ const quranContentData: Content[] = [
       'Say, "O My slaves who believe, fear your Lord. For those who do good in this world is good, and the earth of Allah is spacious. Only the patient will be paid their reward without account."',
     source: 'Surah Az-Zumar 39:10',
     audioKey: '39:10',
-    whyThis: '"Only the patient will be paid their reward without account." [Quran 39:10]',
+    whyThis: 'Every other reward in the Quran is described with some measure or scale. But patience is uniquely described as rewarded "without account" (bighayri hisab) — meaning beyond calculation. Ibn Kathir explains this is because the value of sabr is simply too great to be quantified. [Tafsir Ibn Kathir, Surah Az-Zumar]',
     moods: ['Sad'],
   },
   {
@@ -488,7 +488,7 @@ const quranContentData: Content[] = [
       'And be patient, for indeed Allah does not allow the reward of the good-doers to be lost.',
     source: 'Surah Hud 11:115',
     audioKey: '11:115',
-    whyThis: '',
+    whyThis: 'The word "yudi\'u" means to cause something to be lost or wasted — and Allah is explicitly denying He does this. Every act of goodness, every moment of sabr, every tear shed in private is recorded and preserved. Nothing you have done in sincerity will be forgotten.',
     moods: ['Sad'],
   },
   {
@@ -504,7 +504,7 @@ const quranContentData: Content[] = [
       'Say, "O My slaves who have transgressed against themselves, do not despair of the mercy of Allah. Indeed, Allah forgives all sins. Indeed, He is the Oft-Forgiving, the Most Merciful." And turn to your Lord and submit to Him before the punishment comes upon you; then you will not be helped.',
     source: 'Surah Az-Zumar 39:53-54',
     audioKey: '39:53-54',
-    whyThis: '',
+    whyThis: 'Ibn Abbas (RA) said this is the most hope-giving verse in the entire Quran. Allah addresses those who have "transgressed against themselves" — not minor sinners, but those who believe their sins are too great. The response is an unconditional declaration: "Indeed, Allah forgives all sins." No exception is listed. [Tafsir Ibn Kathir, Surah Az-Zumar]',
     moods: ['Sad'],
   },
 
@@ -522,7 +522,7 @@ const quranContentData: Content[] = [
       'Those who spend in ease and hardship, and who restrain their anger and pardon the people — and Allah loves the good-doers.',
     source: 'Surah Ali Imran 3:134',
     audioKey: '3:134',
-    whyThis: '"Those who restrain their anger and pardon the people — and Allah loves the good-doers." [Quran 3:134]',
+    whyThis: 'The word "kadhimeen" (those who restrain anger) implies swallowing anger rather than venting it — an active, effortful act. The Prophet ﷺ said: "The strong person is not the one who can overpower others; the strong person is the one who controls themselves when angry." [Bukhari 6114] Allah loving the muhsineen (good-doers) is the reward for that strength.',
     moods: ['Angry'],
   },
   {
@@ -538,7 +538,7 @@ const quranContentData: Content[] = [
       'Not equal are the good deed and the bad deed. Repel evil by that which is better, and thereupon the one between whom and you there was enmity will become as though he was a devoted friend.',
     source: 'Surah Fussilat 41:34',
     audioKey: '41:34',
-    whyThis: '"Repel evil by that which is better, and thereupon the one between whom and you there was enmity will become as though he was a devoted friend." [Quran 41:34]',
+    whyThis: 'The Quran here promises a remarkable transformation: responding to enmity with excellence (ihsan) can turn an enemy into "ka-annahu waliyyun hameem" — as if he were a close, devoted friend. This is not wishful thinking; it is a divine observation about human nature and the power of consistent goodness to disarm hostility.',
     moods: ['Angry'],
   },
   {
@@ -550,7 +550,7 @@ const quranContentData: Content[] = [
     englishTranslation: 'Hold to forgiveness, enjoin what is good, and turn away from the ignorant.',
     source: "Surah Al-A'raf 7:199",
     audioKey: '7:199',
-    whyThis: '"Hold to forgiveness, enjoin what is good, and turn away from the ignorant." [Quran 7:199]',
+    whyThis: 'This verse was revealed to the Prophet ﷺ as a character guideline for dealing with people. "Khudh al-\'afw" means adopt a habit of pardoning easily, not grudgingly. Turning away from the ignorant ("a\'rid \'ani l-jahileen") is not passive avoidance — it is a dignified refusal to descend to the level of provocation.',
     moods: ['Angry'],
   },
   {
@@ -579,7 +579,7 @@ const quranContentData: Content[] = [
       'And whoever is patient and forgives — indeed, that is surely of the matters requiring determination.',
     source: 'Surah Ash-Shura 42:43',
     audioKey: '42:43',
-    whyThis: '',
+    whyThis: 'The Quran acknowledges that "azm al-umur" (matters of true determination) are rare and difficult. Forgiving when you have the right to retaliate is placed in this category — above mere patience alone. It is one of the highest spiritual acts, and one of the hardest for the nafs to accept.',
     moods: ['Angry'],
   },
   {
@@ -595,7 +595,7 @@ const quranContentData: Content[] = [
       'So by mercy from Allah, you dealt gently with them. And if you had been rude and harsh in heart, they would have dispersed from around you. So pardon them, ask forgiveness for them, and consult them in the matter. Then when you have decided, put your trust in Allah. Indeed, Allah loves those who put their trust in Him.',
     source: 'Surah Ali Imran 3:159',
     audioKey: '3:159',
-    whyThis: '',
+    whyThis: 'This verse was revealed after the Battle of Uhud — when some companions had disobeyed the Prophet\'s ﷺ command and caused military disaster. Even then, the Prophet ﷺ was instructed to pardon, seek forgiveness for them, and consult them. Gentleness and forgiveness are not weakness; they are what holds communities together.',
     moods: ['Angry'],
   },
   {
@@ -613,7 +613,7 @@ const quranContentData: Content[] = [
       'Those among you who have been blessed with wealth and goodness should not swear to stop helping their relatives, the poor, and those who sacrificed for Allah\'s cause. Rather, forgive and let it go. Would you not love for Allah to forgive you? And Allah is Oft-Forgiving, Most Merciful.',
     source: 'Surah An-Nur 24:22',
     audioKey: '24:22',
-    whyThis: '',
+    whyThis: 'This verse was revealed about Abu Bakr (RA), who swore to stop financially supporting a relative after that person had spread slander against his daughter Aisha (RA). Allah\'s response was to ask: "Would you not love for Allah to forgive you?" The question is rhetorical — and personal. Forgiving those who wrong us unlocks Allah\'s forgiveness for us.',
     moods: ['Angry', 'Sad'],
   },
   {
@@ -663,7 +663,7 @@ const quranContentData: Content[] = [
       'O you who believe, indeed among your spouses and your children are enemies to you, so beware of them. But if you pardon, overlook, and forgive, then indeed Allah is Oft-Forgiving, Most Merciful.',
     source: 'Surah At-Taghabun 64:14',
     audioKey: '64:14',
-    whyThis: '',
+    whyThis: 'This verse addresses a painful reality: sometimes the source of anger and hurt is the people closest to us. The command to pardon, overlook, and forgive is immediately followed by a reminder of Allah\'s own forgiveness — connecting our act of forgiving others to receiving Allah\'s forgiveness for ourselves.',
     moods: ['Angry'],
   },
   {
@@ -679,7 +679,7 @@ const quranContentData: Content[] = [
       'If you disclose a good deed or conceal it, or pardon an evil, then indeed Allah is Oft-Pardoning, All-Powerful.',
     source: 'Surah An-Nisa 4:149',
     audioKey: '4:149',
-    whyThis: '',
+    whyThis: 'The verse ends with two of Allah\'s names: "Afuwwan" (Oft-Pardoning) and "Qadira" (All-Powerful). Allah is not forgiving because He lacks the power to punish — He is forgiving despite having all power. When we pardon others, we imitate one of His attributes, and He responds with His own pardon toward us.',
     moods: ['Angry'],
   },
   {
@@ -697,7 +697,7 @@ const quranContentData: Content[] = [
       'Tell the believers: forgive those who do not fear the consequences of their actions before Allah — so that He may repay each group for what they have earned. Leave justice to Him.',
     source: 'Surah Al-Jathiyah 45:14',
     audioKey: '45:14',
-    whyThis: '',
+    whyThis: 'This verse instructs believers to forgive those who do not fear the consequences of their actions — people who wrong others without accountability. The reason given is that Allah Himself will repay each group for what they earned. Forgiving is not letting injustice go unanswered; it is leaving the answer to Allah.',
     moods: ['Angry'],
   },
 
@@ -749,7 +749,7 @@ const quranContentData: Content[] = [
       'And those who, when they commit an immorality or wrong themselves, remember Allah and seek forgiveness for their sins — and who can forgive sins except Allah? — and do not persist in what they did while they know.',
     source: 'Surah Ali Imran 3:135',
     audioKey: '3:135',
-    whyThis: '',
+    whyThis: 'This verse describes the people of taqwa — and it describes them not as people who never sin, but as people who, when they sin, immediately remember Allah and seek forgiveness. The key criterion is not sinlessness; it is not persisting. Repentance itself is part of what makes a righteous believer.',
     moods: ['Guilty'],
   },
   {
@@ -783,7 +783,7 @@ const quranContentData: Content[] = [
       'And when your Lord proclaimed, "If you are thankful, I will surely increase you; but if you are ungrateful, indeed My punishment is surely severe."',
     source: 'Surah Ibrahim 14:7',
     audioKey: '14:7',
-    whyThis: '',
+    whyThis: 'This is a divine guarantee, not a suggestion: gratitude is a mechanism for increase. The word "la-azidannakum" uses the lam of emphasis and the nun of emphasis together — meaning Allah is absolutely, certainly guaranteeing the increase. Gratitude is not just a feeling; it is a lever for more blessings from Allah.',
     moods: ['Grateful', 'Hopeful'],
   },
   {
@@ -797,7 +797,7 @@ const quranContentData: Content[] = [
       'And if you should count the favors of Allah, you could not enumerate them. Indeed, Allah is Oft-Forgiving, Most Merciful.',
     source: 'Surah An-Nahl 16:18',
     audioKey: '16:18',
-    whyThis: '',
+    whyThis: 'The same statement appears in Surah Ibrahim (14:34) in a context of human ingratitude. Here it is followed by Allah\'s names: Oft-Forgiving and Most Merciful — because even in our inability to fully acknowledge His blessings, He is forgiving. Gratitude does not have to be perfect; it simply has to be sincere.',
     moods: ['Grateful'],
   },
   {
@@ -873,10 +873,10 @@ const quranContentData: Content[] = [
     primaryText: "niʿ'matan min ʿindinā kadhālika najzī man shakara",
     arabicText: 'نِّعْمَةًۭ مِّنْ عِندِنَا ۚ كَذَٰلِكَ نَجْزِى مَن شَكَرَ ﴿35﴾',
     transliteration: "niʿ'matan min ʿindinā kadhālika najzī man shakara",
-    englishTranslation: 'As a favor from Us. Thus do We reward the one who is grateful.',
+    englishTranslation: '[We saved them] as a favor from Us. Thus do We reward whoever is grateful.',
     source: 'Surah Al-Qamar 54:35',
     audioKey: '54:35',
-    whyThis: '"Thus do We reward the one who is grateful." [Quran 54:35]',
+    whyThis: 'This verse concludes the account of the people of Lut (AS) — those who believed were saved as a direct favor from Allah, specifically because of their gratitude. The verse establishes a principle: divine rescue and divine blessing are the reward for shukr. Gratitude is not just a feeling; it is a condition that attracts Allah\'s intervention.',
     moods: ['Grateful'],
   },
   {
@@ -908,7 +908,7 @@ const quranContentData: Content[] = [
       'What would Allah do with your punishment if you are grateful and believe? And Allah is All-Appreciative, All-Knowing.',
     source: 'Surah An-Nisa 4:147',
     audioKey: '4:147',
-    whyThis: '',
+    whyThis: 'Allah asks rhetorically: what would He gain from punishing a grateful, believing heart? He is Al-Shakir (All-Appreciative) — meaning He recognizes and rewards even the smallest act of gratitude. Belief combined with sincere thankfulness is a shield; it gives Allah no reason to punish, and every reason to give more.',
     moods: ['Grateful'],
   },
   {
@@ -990,7 +990,7 @@ const quranContentData: Content[] = [
       'O you who believe, be steadfast and patient and constant, and fear Allah so that you may be successful.',
     source: 'Surah Ali Imran 3:200',
     audioKey: '3:200',
-    whyThis: '',
+    whyThis: 'The verse uses three words in sequence: "isbiru" (be patient in your own hardship), "sabiru" (be resilient against others), and "rabitu" (remain firm and constant). These are three levels of endurance — this verse calls you to all three at once. Success (falah) is the promised destination for those who hold all three together.',
     moods: ['Tired'],
   },
   {
@@ -1008,7 +1008,7 @@ const quranContentData: Content[] = [
       'Say: "Act! For Allah will see your deeds, and so will His Prophet and the believers. Then you will be returned to the One who knows all things — the hidden and the visible — and He will inform you of everything you used to do."',
     source: 'Surah At-Tawbah 9:105',
     audioKey: '9:105',
-    whyThis: '',
+    whyThis: 'This verse was revealed to motivate believers to act rather than wait passively. Allah, His Messenger ﷺ, and the believers are all witnesses to your deeds — then you return to Allah who knows the unseen and the visible. Your efforts are not going unnoticed; they are being witnessed at multiple levels.',
     moods: ['Tired'],
   },
   {
@@ -1171,7 +1171,7 @@ const quranContentData: Content[] = [
       'Within a few years. To Allah belongs the command before and after. And that day the believers will rejoice in the help of Allah. He helps whom He wills. And He is the All-Mighty, the Most Merciful.',
     source: 'Surah Ar-Rum 30:4-5',
     audioKey: '30:4-5',
-    whyThis: '',
+    whyThis: 'When the Romans were defeated and the situation looked hopeless, the Quran predicted their comeback victory "within a few years" — and it came to pass. This verse is a reminder that Allah holds all command before and after every event. What looks like a final defeat is often only a turning point.',
     moods: ['Hopeful'],
   },
   {
@@ -1189,7 +1189,7 @@ const quranContentData: Content[] = [
       'Those who gave their lives for Allah\'s cause are alive with their Lord — rejoicing in what He has given them. They are delighted for the believers still living on earth: that they, too, will have no fear, nor will they grieve.',
     source: 'Surah Ali Imran 3:170',
     audioKey: '3:170',
-    whyThis: '',
+    whyThis: 'The martyrs in Allah\'s cause are described as alive, rejoicing, and actively sending good news to those still on earth. This verse is a reminder that what appears to be loss in this life is often a gain that cannot yet be seen. The joy of those who have returned to Allah is real, and so is the promise awaiting every sincere believer.',
     moods: ['Grateful'],
   },
   {
@@ -1223,7 +1223,7 @@ const quranContentData: Content[] = [
       'Allah sent the angels at the Battle of Badr only as good news, and to put your hearts at ease — for victory comes from no one but Allah. Indeed, Allah is All-Mighty, All-Wise.',
     source: 'Surah Al-Anfal 8:10',
     audioKey: '8:10',
-    whyThis: '',
+    whyThis: 'Before the Battle of Badr, Allah sent a calming rain and a sense of tranquility to the believers to help them sleep and recover. This verse reminds us that divine reassurance — sakinah — is real and tangible. Victory and peace both come from Allah alone; our part is to receive them with trust.',
     moods: ['Calm'],
   },
   {
@@ -1241,7 +1241,7 @@ const quranContentData: Content[] = [
       'At the Battle of Hunayn, when the believers initially panicked and fled, Allah sent down His tranquility upon His Prophet and upon the believers. He sent down forces they could not see, and turned the tide against the disbelievers — that is how He repays those who reject faith.',
     source: 'Surah At-Tawbah 9:26',
     audioKey: '9:26',
-    whyThis: '',
+    whyThis: 'At Hunayn, the believers initially scattered due to overconfidence. Yet Allah sent His sakinah (tranquility) and unseen armies to restore them. This shows that calm and steadiness in difficult moments are not something we manufacture — they are gifts that Allah descends upon those who turn back to Him.',
     moods: ['Calm'],
   },
   {
@@ -1259,7 +1259,7 @@ const quranContentData: Content[] = [
       'Even if you do not help the Prophet Muhammad ﷺ — Allah already helped him. When the disbelievers of Makkah drove him out, he hid in a cave with his companion Abu Bakr and told him: "Do not grieve; Allah is with us." Then Allah sent down His tranquility upon him, supported him with unseen forces, and made the word of the disbelievers the lowest — while the word of Allah remains the highest. And Allah is All-Mighty, All-Wise.',
     source: 'Surah At-Tawbah 9:40',
     audioKey: '9:40',
-    whyThis: '',
+    whyThis: 'In the cave of Thawr, the Prophet ﷺ told Abu Bakr (RA) not to grieve — because Allah was with them. Allah responded by sending His sakinah and unseen support. This moment, among the most dangerous the Prophet ﷺ faced, became the model for every believer: when you say "Allah is with us," trust it completely.',
     moods: ['Calm'],
   },
   {
@@ -1275,7 +1275,7 @@ const quranContentData: Content[] = [
       'The ability to respond to evil with good — this quality is granted only to those who are truly patient; only to those whom Allah has blessed with an immense fortune of character.',
     source: 'Surah Fussilat 41:35',
     audioKey: '41:35',
-    whyThis: '',
+    whyThis: 'The verse makes clear that responding to harm with goodness is not a natural human reflex — it is a special quality that Allah grants. It is described as a "great fortune" (hazz azeem), placing it among the highest of character traits. Anger is natural; choosing ihsan in response to harm is divine.',
     moods: ['Angry'],
   },
   {
@@ -1291,7 +1291,7 @@ const quranContentData: Content[] = [
       'And the example of those who spend their wealth seeking the pleasure of Allah and assuring their souls, is like a garden on a height: heavy rain falls on it, and it yields its harvest double. And if heavy rain does not fall on it, then a drizzle is sufficient. And Allah, of what you do, is All-Seeing.',
     source: 'Surah Al-Baqarah 2:265',
     audioKey: '2:265',
-    whyThis: '',
+    whyThis: 'The garden on a height receives either heavy rain or light drizzle — either way, it produces. This parable describes the person whose giving is sincere: regardless of how much they are able to give, their effort is fruitful. Even small acts of generosity done with a pure heart yield their full reward.',
     moods: ['Tired', 'Grateful'],
   },
 
@@ -1340,7 +1340,7 @@ const quranContentData: Content[] = [
     englishTranslation: 'Indeed, with the hardship is ease.',
     source: 'Surah Ash-Sharh 94:6',
     audioKey: '94:6',
-    whyThis: '',
+    whyThis: 'Allah repeats this promise twice in consecutive verses (94:5 and 94:6) for emphasis. The scholars note that the repetition is not redundant — it is strengthening the certainty of the relief. When Allah says something twice, it is to leave no doubt in the heart of the listener that ease is truly coming.',
     moods: ['Hopeful'],
   },
   {
@@ -1437,7 +1437,7 @@ const quranContentData: Content[] = [
       'Those who believe, and whose hearts find satisfaction in the remembrance of Allah. Verily, in the remembrance of Allah do hearts find satisfaction.',
     source: "Surah Ar-Ra'd 13:28",
     audioKey: '13:28',
-    whyThis: '"Verily, in the remembrance of Allah do hearts find satisfaction." [Quran 13:28]',
+    whyThis: 'The word "tatma\'innu" means to settle, to become still and completely at rest — not just momentary comfort but lasting peace. The Quran identifies dhikr (remembrance of Allah) as the one substance that produces this effect in the heart. Ibn al-Qayyim wrote that the heart cannot find its true rest in anything else, no matter what else it tries. [Madarij al-Salikin]',
     moods: ['Calm', 'Lonely'],
   },
   {
@@ -1530,7 +1530,7 @@ const quranContentData: Content[] = [
       'Or, Who responds to the distressed one when he calls upon Him and removes the evil, and makes you inheritors of the earth? Is there any god with Allah? Little do you remember.',
     source: 'Surah An-Naml 27:62',
     audioKey: '27:62',
-    whyThis: '',
+    whyThis: 'The word "mudhtar" (the distressed one) refers specifically to someone in a state of desperate need — a person who has no other option and no other door. This verse singles out precisely that person as the one Allah responds to. Your desperation is not a barrier to being heard; it is the very state in which Allah\'s response is most certain.',
     moods: ['Overwhelmed'],
   },
   {
@@ -1564,7 +1564,7 @@ const quranContentData: Content[] = [
       'Say, "Never will anything befall us except what Allah has decreed for us; He is our Protector." And upon Allah let the believers put their trust.',
     source: 'Surah At-Tawbah 9:51',
     audioKey: '9:51',
-    whyThis: '"Never will anything befall us except what Allah has decreed for us; He is our Protector." [Quran 9:51]',
+    whyThis: 'This declaration — "lan yusibanana illa ma kataba Allahu lana" (nothing will befall us except what Allah has written for us) — turns the believer\'s relationship to fear upside down. What you are afraid of can only happen if Allah has already written it. And if He has written it, He is also your Mawla (Protector) who will carry you through it.',
     moods: ['Overwhelmed'],
   },
   {
@@ -1614,7 +1614,7 @@ const quranContentData: Content[] = [
       'Allah was truly pleased with the believers when they pledged their loyalty to the Prophet Muhammad ﷺ at Hudaybiyyah, beneath a tree. He knew the sincerity in their hearts; so He sent down tranquility upon them, and rewarded them with a victory that was soon to come.',
     source: 'Surah Al-Fath 48:18',
     audioKey: '48:18',
-    whyThis: '',
+    whyThis: 'At Hudaybiyyah, the companions pledged their lives to the Prophet ﷺ beneath a tree. Allah responded to the sincerity He saw in their hearts by sending sakinah (tranquility) upon them and promising a near victory. Sincerity of heart draws tranquility from Allah — and the victory that follows belongs to Him to give.',
     moods: ['Calm'],
   },
   {
@@ -1630,7 +1630,7 @@ const quranContentData: Content[] = [
       'O you who believe, enter into Islam completely, and do not follow the footsteps of Satan. Indeed, he is to you a clear enemy.',
     source: 'Surah Al-Baqarah 2:208',
     audioKey: '2:208',
-    whyThis: '',
+    whyThis: 'The word "silm" in this verse means both Islam and peace — they share the same Arabic root. Entering Islam "kaffah" (completely) means living in wholeness and integration, not compartmentalizing faith. When you surrender your whole self to Allah, the internal conflict that creates anxiety diminishes and real peace is possible.',
     moods: ['Calm'],
   },
   {
@@ -1664,7 +1664,7 @@ const quranContentData: Content[] = [
       'The righteous — those whose souls the angels take gently, while they are in a state of goodness — the angels greet them, saying: "Peace be upon you. Enter Paradise, as a reward for the good you used to do."',
     source: 'Surah An-Nahl 16:32',
     audioKey: '16:32',
-    whyThis: '',
+    whyThis: 'The moment of death is described here as entirely peaceful for the righteous — the angels greet them with salam. This verse is a reminder that the life you build now shapes the manner in which you will leave it. A heart at peace in this life is being prepared for a peaceful return to Allah.',
     moods: ['Calm'],
   },
   {
@@ -1704,7 +1704,7 @@ const quranContentData: Content[] = [
       'For the righteous — those destined for Paradise — there is nothing but peace; a greeting of "Salam."',
     source: "Surah Al-Waqi'ah 56:91",
     audioKey: '56:91',
-    whyThis: '',
+    whyThis: 'On the Day of Judgment, when the companions of the right hand receive their books, they are met with salam — pure peace. This is the ultimate destination of every striving believer: not only freedom from punishment, but the gift of divine peace itself as their welcome.',
     moods: ['Calm'],
   },
 
@@ -1729,7 +1729,7 @@ const quranContentData: Content[] = [
     englishTranslation: 'So which of the favors of your Lord would you deny?',
     source: 'Surah Ar-Rahman 55:13',
     audioKey: '55:13',
-    whyThis: '',
+    whyThis: 'This rhetorical question is repeated 31 times throughout Surah Ar-Rahman — addressed to both humans and jinn. Each repetition follows a description of a divine blessing. The repetition is an invitation to pause and acknowledge, not a rebuke. It asks: of all that you have been given, what is there to deny?',
     moods: ['Grateful'],
   },
 
@@ -1762,7 +1762,7 @@ const quranContentData: Content[] = [
       'And from His mercy, He made for you the night and the day, that you may rest therein and that you may seek from His bounty, and so that you may be grateful.',
     source: 'Surah Al-Qasas 28:73',
     audioKey: '28:73',
-    whyThis: '',
+    whyThis: 'The alternation of night and day is described here as an act of mercy — rest and work, stillness and activity, both designed for you. Even the rhythms of nature are framed as a reason for gratitude. This verse invites you to see the most ordinary parts of your day as deliberate gifts from a merciful Lord.',
     moods: ['Grateful'],
   },
   {
@@ -1775,7 +1775,7 @@ const quranContentData: Content[] = [
       'So remember Me; I will remember you. And be grateful to Me, and do not be ungrateful to Me.',
     source: 'Surah Al-Baqarah 2:152',
     audioKey: '2:152',
-    whyThis: '"So remember Me; I will remember you. And be grateful to Me, and do not be ungrateful to Me." [Quran 2:152]',
+    whyThis: '"Udhkuruni adhkurkum" — remember Me, and I will remember you. This is a remarkable divine reciprocity: Allah promises to remember you in response to your remembering Him. The Prophet ﷺ said that Allah said: "If he remembers Me within himself, I remember him within Myself; and if he remembers Me in a gathering, I remember him in a better gathering." [Bukhari 7405]',
     moods: ['Grateful', 'Lonely'],
   },
   {
@@ -1791,7 +1791,7 @@ const quranContentData: Content[] = [
       'And when My servants ask you concerning Me, indeed I am near. I respond to the invocation of the supplicant when he calls upon Me. So let them respond to Me and believe in Me, that they may be rightly guided.',
     source: 'Surah Al-Baqarah 2:186',
     audioKey: '2:186',
-    whyThis: '"Indeed I am near. I respond to the invocation of the supplicant when he calls upon Me." [Quran 2:186]',
+    whyThis: 'This verse was placed by Allah immediately within the verses about Ramadan — a deliberate signal that du\'a and closeness to Allah are at the heart of worship. "Fa-inni qarib" (Indeed I am near) uses no intermediary: Allah speaks in the first person, directly, without "say." Ibn Kathir notes this was to emphasize the immediacy and personal nature of Allah\'s closeness to every servant who calls. [Tafsir Ibn Kathir, Surah Al-Baqarah]',
     moods: ['Overwhelmed', 'Sad', 'Lonely'],
   },
 
@@ -1806,7 +1806,7 @@ const quranContentData: Content[] = [
       'Prophet Musa (Moses) — when Allah gave him the mission to confront Pharaoh — prayed: "My Lord, open up my heart for me, and make my task easy."',
     source: 'Surah Taha 20:25-26',
     audioKey: '20:25-26',
-    whyThis: '',
+    whyThis: 'Musa (AS) was given one of the most daunting missions in history — to stand before Pharaoh — yet his first response was to make du\'a for an open heart and easy task. This is a model for every believer who feels overwhelmed by what lies ahead: begin with du\'a, ask Allah to prepare you internally before you engage externally.',
     moods: ['Overwhelmed'],
   },
   {
@@ -1824,7 +1824,7 @@ const quranContentData: Content[] = [
       'A believing man from Pharaoh\'s own people — who had been hiding his faith — stood up and warned them: "You will remember what I am telling you. As for me, I entrust my affair entirely to Allah. Indeed, Allah sees all that His servants do."',
     source: 'Surah Ghafir 40:44',
     audioKey: '40:44',
-    whyThis: '',
+    whyThis: 'A man who had hidden his faith in the court of Pharaoh finally spoke up, warned his people, and then said: "I entrust my affair to Allah." He did what was required of him — spoke truth — then released the outcome. This is the practical meaning of tawakkul: act with what you have, then place the results with Allah.',
     moods: ['Overwhelmed'],
   },
   {
@@ -1840,7 +1840,7 @@ const quranContentData: Content[] = [
       'O you who believe, seek help through patience and prayer. Indeed, Allah is with the patient.',
     source: 'Surah Al-Baqarah 2:153',
     audioKey: '2:153',
-    whyThis: '',
+    whyThis: 'The Prophet ﷺ would turn to prayer whenever something distressed him. [Abu Dawud 1319] This verse prescribes a two-part remedy for difficulty: sabr (patient endurance) and salah (prayer). Together they form the believer\'s toolkit for every hardship — one internal, one relational — and the promise is that Allah\'s company (ma\'iyyah) accompanies those who hold to both.',
     moods: ['Overwhelmed', 'Lonely'],
   },
   {
@@ -1856,7 +1856,7 @@ const quranContentData: Content[] = [
       'Indeed, those who say, "Our Lord is Allah," and then remain steadfast — the angels will descend upon them, saying, "Do not fear and do not grieve, but receive the glad tidings of Paradise which you were promised."',
     source: 'Surah Fussilat 41:30',
     audioKey: '41:30',
-    whyThis: '',
+    whyThis: 'The angels descend on those who combine two things: the declaration of faith and istiqamah (steadfastness). The angels address both emotions at once — "Do not fear" (for the future) and "do not grieve" (over the past). This verse is a direct divine response to anxiety and sadness, delivered by the angels to every sincere believer.',
     moods: ['Sad', 'Overwhelmed', 'Lonely'],
   },
   {
@@ -1906,7 +1906,7 @@ const quranContentData: Content[] = [
       'And whatever you have of favor, it is from Allah. Then when adversity touches you, to Him you cry for help.',
     source: 'Surah An-Nahl 16:53',
     audioKey: '16:53',
-    whyThis: '',
+    whyThis: 'This verse gently points out a pattern: every blessing comes from Allah, yet when hardship comes, humans instinctively cry out to Him — acknowledging in difficulty what they often forget in ease. The verse invites awareness: maintain the connection with Allah in times of gratitude, not only in times of need.',
     moods: ['Grateful'],
   },
   {
@@ -1924,7 +1924,7 @@ const quranContentData: Content[] = [
       'The people of Paradise will say: "It is Allah who, by His grace, has settled us in the eternal Home. No tiredness touches us here; no exhaustion reaches us."',
     source: 'Surah Fatir 35:35',
     audioKey: '35:35',
-    whyThis: '',
+    whyThis: 'The people of Paradise describe their state by what is absent: no fatigue, no weariness. This is the final destination — a place where the exhaustion of this world has a complete and permanent end. When you feel drained by this life, this verse reminds you that all of that effort is building toward a rest that never ends.',
     moods: ['Overwhelmed'],
   },
   {
@@ -1982,7 +1982,7 @@ const quranContentData: Content[] = [
       'And to Him belongs whatever dwells in the night and the day. And He is the All-Hearing, the All-Knowing.',
     source: "Surah Al-An'am 6:13",
     audioKey: '6:13',
-    whyThis: '',
+    whyThis: 'Everything that exists — in every moment of every night and every day — belongs to Allah and is known to Him. "Al-Sami\'" (All-Hearing) and "Al-\'Alim" (All-Knowing) are paired here as a reminder: your whispered prayers in the night and your silent struggles in the day are fully heard and fully known by Allah.',
     moods: ['Calm'],
   },
   {
@@ -2080,7 +2080,7 @@ const quranContentData: Content[] = [
       'And those who strive for Us, We will surely guide them to Our ways. And indeed, Allah is with the good-doers.',
     source: 'Surah Al-Ankabut 29:69',
     audioKey: '29:69',
-    whyThis: '"Those who strive for Us, We will surely guide them to Our ways. And indeed, Allah is with the good-doers." [Quran 29:69]',
+    whyThis: 'The promise of guidance is tied to striving — "alladhina jahadu fina" (those who strive for Our sake). Guidance is not given all at once; it is given in proportion to effort. The verse uses "lanahdiyannahum" with the lam of certainty and the nun of emphasis — a doubly emphatic guarantee that those who make the effort will be shown the way.',
     moods: ['Tired', 'Hopeful'],
   },
   {
@@ -2110,7 +2110,7 @@ const quranContentData: Content[] = [
       'And conceal your speech or proclaim it. Indeed, He is the All-Knower of what is in the hearts.',
     source: 'Surah Al-Mulk 67:13',
     audioKey: '67:13',
-    whyThis: '',
+    whyThis: 'Whether you speak your pain aloud or carry it silently inside, Allah knows it. "Dhat al-sudur" (what is in the chests) refers to what is most deeply buried — the thoughts, fears, and grief that are never voiced. You do not need to perfectly articulate your pain to Allah; He already knows it completely.',
     moods: ['Sad', 'Overwhelmed'],
   },
 
@@ -2130,7 +2130,7 @@ const quranContentData: Content[] = [
       'After revelation had paused for a time — and the Prophet Muhammad ﷺ feared he had been abandoned — Allah swore by the morning light and the still of night, reassuring him: "Your Lord has not left you, nor does He dislike you. What is coming is far better than what has passed; and your Lord will give you so much, that you will be completely satisfied."',
     source: 'Surah Ad-Duha 93:1-5',
     audioKey: '93:1-5',
-    whyThis: '',
+    whyThis: 'Ibn Kathir records that Surah Ad-Duha was revealed after revelation paused for a period, during which the Prophet ﷺ was deeply distressed. Allah swore by the morning light — a symbol of radiance — and the still night — a symbol of calm — that He had not abandoned nor displeased His prophet. Every promise in this surah was fulfilled in the Prophet\'s ﷺ life. [Tafsir Ibn Kathir, Surah Ad-Duha]',
     moods: ['Sad', 'Overwhelmed'],
   },
   {
@@ -2146,7 +2146,7 @@ const quranContentData: Content[] = [
       'Did We not relieve your heart for you [Prophet], and remove the burden that weighed so heavily on your back, and raise your reputation high? So truly where there is hardship there is also ease; truly where there is hardship there is also ease. The moment you are freed [of one task] work on, and turn to your Lord for everything.',
     source: 'Surah Al-Inshirah 94:1-8 (Complete)',
     audioKey: '94:1-8',
-    whyThis: '',
+    whyThis: 'This entire surah is a divine accounting of what Allah had already done for the Prophet ﷺ: opened his chest, removed his burden, raised his name — before giving the promise of ease. The lesson is that Allah\'s help often begins with what He has already given you, which you may not have noticed. Count the gifts already present before you despair of what is yet to come.',
     moods: ['Overwhelmed'],
   },
   {
@@ -2164,7 +2164,7 @@ const quranContentData: Content[] = [
       'Prophet Musa (Moses) — nervous before his mission to confront Pharaoh — prayed: "My Lord, open up my heart for me; make my task easy; and remove the difficulty from my speech, so that people can understand what I say."',
     source: 'Surah Taha 20:25-28',
     audioKey: '20:25-28',
-    whyThis: '',
+    whyThis: 'Musa (AS) asked for three things before his mission: an open heart, ease in his task, and clarity in speech. He knew that the internal barriers — fear, confusion, inadequacy — were the real obstacles, not the external challenge itself. This du\'a is the believer\'s prayer before any daunting task.',
     moods: ['Overwhelmed'],
   },
   {
@@ -2180,7 +2180,7 @@ const quranContentData: Content[] = [
       '[To the righteous it will be said], "O reassured soul, return to your Lord, well-pleased and pleasing [to Him], and enter among My [righteous] servants, and enter My Paradise."',
     source: 'Surah Al-Fajr 89:27-30',
     audioKey: '89:27-30',
-    whyThis: '',
+    whyThis: 'The "nafs al-mutma\'inna" (reassured soul) is the soul that has found rest through its connection to Allah. It is invited to return to its Lord in a state of mutual contentment — it is pleased with Allah, and Allah is pleased with it. This is the highest state of peace available to any soul, and it is addressed to the believer.',
     moods: ['Calm', 'Grateful'],
   },
   {
@@ -2286,7 +2286,7 @@ const quranContentData: Content[] = [
     englishTranslation: 'And in the heaven is your provision and what you are promised.',
     source: 'Surah Adh-Dhariyat 51:22',
     audioKey: '51:22',
-    whyThis: '',
+    whyThis: 'Your rizq (provision) is not generated by your effort alone — it is decreed in the heavens and sent down. Effort is the means through which it reaches you, but the source and the amount are with Allah. This verse reframes anxiety about sustenance: it is already written, and Allah is already bringing it to you.',
     moods: ['Overwhelmed'],
   },
   {
@@ -2302,7 +2302,7 @@ const quranContentData: Content[] = [
       'And there is no creature on earth but that upon Allah is its provision. And He knows its dwelling place and its place of storage. All is in a clear record.',
     source: 'Surah Hud 11:6',
     audioKey: '11:6',
-    whyThis: '',
+    whyThis: 'Every creature — not just humans — has its provision as a divine responsibility upon Allah. He knows where each creature lives, where its provision is stored, and how it will reach it. If He provides for the worm deep in the earth and the fish at the bottom of the sea, He will provide for you.',
     moods: ['Overwhelmed', 'Grateful'],
   },
   // Day 3: Halal vs. Haram
@@ -2319,7 +2319,7 @@ const quranContentData: Content[] = [
       'O mankind, eat from whatever is on earth that is lawful and good, and do not follow the footsteps of Satan. Indeed, he is to you a clear enemy.',
     source: 'Surah Al-Baqarah 2:168',
     audioKey: '2:168',
-    whyThis: '',
+    whyThis: 'The command to eat what is halal and tayyib (lawful and good) is addressed to all mankind — not just believers. The pairing of halal with tayyib is significant: something can be technically permissible but still not spiritually or physically wholesome. This verse calls us to seek provision that nourishes both body and soul.',
     moods: ['Overwhelmed', 'Hopeful'],
   },
   // Day 4: Tawakkul ≠ Laziness
@@ -2336,7 +2336,7 @@ const quranContentData: Content[] = [
       'And He will provide for him from where he does not expect. And whoever puts his trust upon Allah, then He is sufficient for him. Indeed, Allah will accomplish His purpose. Allah has already set for everything a measure.',
     source: 'Surah At-Talaq 65:3',
     audioKey: '65:3',
-    whyThis: '',
+    whyThis: 'The phrase "min haythu la yahtasib" (from where he does not expect) means Allah\'s provision often comes through doors you have not thought to knock on. Tawakkul does not mean waiting passively; it means acting with what you have while being open to receiving from sources you could not have planned for.',
     moods: ['Overwhelmed', 'Hopeful'],
   },
   // Day 5: The Scarcity Trap
@@ -2353,7 +2353,7 @@ const quranContentData: Content[] = [
       'And how many a creature does not carry its own provision. Allah provides for it and for you. And He is the All-Hearer, the All-Knower.',
     source: 'Surah Al-Ankabut 29:60',
     audioKey: '29:60',
-    whyThis: '',
+    whyThis: 'Many creatures have no ability to store or plan their food — yet they are sustained. Allah provides for them directly, and He provides for you too. The verse pairs His provision with two names: Al-Sami\' (All-Hearing) and Al-\'Alim (All-Knowing) — He hears your need and knows exactly what you require.',
     moods: ['Overwhelmed'],
   },
   // Day 6: Contentment (Qana'ah)
@@ -2370,7 +2370,7 @@ const quranContentData: Content[] = [
       'And We will surely test you with something of fear and hunger and a loss of wealth and lives and fruits, but give good tidings to the patient, who, when disaster strikes them, say, "Indeed we belong to Allah, and indeed to Him we will return."',
     source: 'Surah Al-Baqarah 2:155-156',
     audioKey: '2:155-156',
-    whyThis: '',
+    whyThis: 'Tests in provision — fear and hunger and financial loss — are listed here not as punishments but as grounds for good tidings (bushra) to the patient. The patient person says "Inna lillahi wa inna ilayhi raji\'un," returning to the foundational truth: I belong to Allah, and everything I have belongs to Him. Loss is not defeat for one who holds this truth.',
     moods: ['Sad', 'Hopeful'],
   },
   // Day 7: Barakah > Amount
@@ -2387,7 +2387,7 @@ const quranContentData: Content[] = [
       'And if only the people of the cities had believed and feared Allah, We would have opened upon them blessings from the heaven and the earth; but they denied, so We seized them for what they used to earn.',
     source: "Surah Al-A'raf 7:96",
     audioKey: '7:96',
-    whyThis: '',
+    whyThis: 'This verse establishes a direct link between taqwa (God-consciousness) and barakah (blessing). "Blessings from the heaven and the earth" refers to rain, crops, health, safety, and abundance — both spiritual and material. The inverse is equally true: iman and taqwa unlock a level of provision that no amount of worldly strategy can replicate.',
     moods: ['Hopeful', 'Grateful'],
   },
   // Day 8: Give to Receive
@@ -2404,7 +2404,7 @@ const quranContentData: Content[] = [
       'The example of those who spend their wealth in the way of Allah is like a grain which grows seven ears; in each ear is a hundred grains. And Allah gives manifold to whom He wills. And Allah is All-Encompassing, All-Knowing.',
     source: 'Surah Al-Baqarah 2:261',
     audioKey: '2:261',
-    whyThis: '',
+    whyThis: 'One grain becomes 700 in this parable — a 700-fold return on spending for Allah\'s sake. The Prophet ﷺ confirmed that Allah multiplies the reward of spending in His cause many times over. [Bukhari 1410] Giving from your provision is not a loss; according to this verse and the sunnah, it is the highest-return investment available to a believer.',
     moods: ['Hopeful', 'Tired'],
   },
   // Day 9: Tie Your Camel (Part 2)
@@ -2421,7 +2421,7 @@ const quranContentData: Content[] = [
       'He is the One Who made the earth subservient for you; so walk in its paths and eat of His provision, and to Him is the resurrection.',
     source: 'Surah Al-Mulk 67:15',
     audioKey: '67:15',
-    whyThis: '',
+    whyThis: 'The word "dhalul" means tamed, gentle, compliant — Allah made the earth submissive for human movement and use. This verse commands action: "fa-mshoo" (walk in its paths). Seeking your provision by moving and working is itself part of the divine design. Tawakkul is not inaction; it is moving while trusting the Provider.',
     moods: ['Tired', 'Hopeful'],
   },
   // Day 10: The Dua for Rizq
@@ -2440,7 +2440,7 @@ const quranContentData: Content[] = [
       'Prophet Ibrahim (Abraham) — after leaving his wife Hajar and infant son Ismail in the barren desert of Makkah, near the Sacred Ka\'bah — prayed: "Our Lord, I have settled some of my family in a valley with no crops, near Your Holy House, so they may establish prayer. Make people\'s hearts drawn to them; and provide them with fruits, so they may give thanks."',
     source: 'Surah Ibrahim 14:37',
     audioKey: '14:37',
-    whyThis: '',
+    whyThis: 'Ibrahim (AS) left his family in a barren valley with no crops, no water, no infrastructure — and made du\'a for provision. Today Makkah is one of the most visited places on earth. His du\'a for his family\'s sustenance was answered across centuries. This verse shows that genuine du\'a for rizq, rooted in tawakkul, is fulfilled by Allah even in the most unlikely circumstances.',
     moods: ['Hopeful', 'Overwhelmed'],
   },
 
@@ -2455,7 +2455,7 @@ const quranContentData: Content[] = [
       'The mutual rivalry for piling up (the good things of this world) diverts you (from the more serious things), until you visit the graves.',
     source: 'Surah At-Takathur 102:1-2',
     audioKey: '102:1-2',
-    whyThis: '',
+    whyThis: 'The word "alhakum" means to preoccupy or distract to the point of neglect. The race to accumulate wealth, status, and possessions keeps people occupied until death arrives. This surah is a wake-up call: the competition you are absorbed in will end at the grave, but what you bring with you will not.',
     moods: ['Overwhelmed'],
   },
   // Day 14: Living with Barakah
@@ -2472,7 +2472,7 @@ const quranContentData: Content[] = [
       'That Allah may reward them according to the best of what they did, and increase them from His bounty. And Allah provides for whom He wills without measure.',
     source: 'Surah An-Nur 24:38',
     audioKey: '24:38',
-    whyThis: '',
+    whyThis: 'Allah does not reward merely according to what you did, but according to the best of what you did. Then He adds to that from His own bounty, without any measure or limit. This verse is for those who feel their deeds are too few or too weak: your best effort is what Allah takes as the standard, and His generosity completes the rest.',
     moods: ['Grateful'],
   },
   {
