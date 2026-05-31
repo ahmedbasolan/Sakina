@@ -6,7 +6,6 @@ import {
   View,
   Text,
   Animated,
-  LayoutAnimation,
   Platform,
   UIManager,
 } from 'react-native';
@@ -19,6 +18,7 @@ import {
   ScheherazadeNew_700Bold,
 } from '@expo-google-fonts/scheherazade-new';
 import { MaterialCommunityIcons as MCIIcons, Ionicons } from '@expo/vector-icons';
+import { PostHogProvider } from 'posthog-react-native';
 import MainNavigator from './src/navigation/MainNavigator';
 import ErrorBoundary from './src/components/ErrorBoundary';
 import { initializeDatabase } from './src/database/schema';
@@ -27,6 +27,35 @@ import { NavigationContainer } from '@react-navigation/native';
 import { AppProvider } from './src/context/AppContext';
 import { AuthProvider } from './src/context/AuthContext';
 import { ThemeProvider, useTheme } from './src/context/ThemeContext';
+import posthog from './src/config/posthog';
+
+// ── Global error handlers ─────────────────────────────────────────────────
+// Capture unhandled JS errors and promise rejections before they silently vanish.
+const _globalHandler = ErrorUtils.getGlobalHandler();
+ErrorUtils.setGlobalHandler((error, isFatal) => {
+  posthog.capture('$exception', {
+    $exception_message: error?.message,
+    $exception_stack: error?.stack,
+    isFatal,
+    source: 'global_error_handler',
+  });
+  _globalHandler(error, isFatal);
+});
+
+// Unhandled promise rejections (React Native surfaces these as warnings by default)
+if (typeof global.HermesInternal !== 'undefined') {
+  // Hermes engine: rejections flow through ErrorUtils — already handled above
+} else {
+  // JSC engine fallback
+  const originalUnhandled = (global as any).onunhandledrejection;
+  (global as any).onunhandledrejection = (event: any) => {
+    posthog.capture('$exception', {
+      $exception_message: String(event?.reason),
+      source: 'unhandled_promise_rejection',
+    });
+    originalUnhandled?.(event);
+  };
+}
 
 function AppContent() {
   const { isDark } = useTheme();
@@ -144,7 +173,7 @@ export default function App() {
             <Text style={styles.loadingIcon}>✦</Text>
           </Animated.View>
 
-          <Text style={styles.loadingTitle}>Quiet Heart</Text>
+          <Text style={styles.loadingTitle}>Sakina</Text>
           <Text style={styles.loadingSubtitle}>Preparing your spiritual journey</Text>
 
           <View style={styles.loadingDots}>
@@ -158,15 +187,17 @@ export default function App() {
   }
 
   return (
-    <ThemeProvider>
-      <AppProvider>
-        <AuthProvider>
-          <NavigationContainer>
-            <AppContent />
-          </NavigationContainer>
-        </AuthProvider>
-      </AppProvider>
-    </ThemeProvider>
+    <PostHogProvider client={posthog}>
+      <ThemeProvider>
+        <AppProvider>
+          <AuthProvider>
+            <NavigationContainer>
+              <AppContent />
+            </NavigationContainer>
+          </AuthProvider>
+        </AppProvider>
+      </ThemeProvider>
+    </PostHogProvider>
   );
 }
 

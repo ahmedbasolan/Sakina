@@ -1,23 +1,26 @@
 {
   "expo": {
-    "name": "islamic-guidance-app",
+    "name": "Sakina",
     "slug": "islamic-guidance-app",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
-    "userInterfaceStyle": "light",
+    "userInterfaceStyle": "dark",
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
       "backgroundColor": "#040D1A"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "infoPlist": {
+        "UIUserInterfaceStyle": "Dark"
+      }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "backgroundColor": "#040D1A"
       },
       "permissions": [
         "android.permission.RECORD_AUDIO",
@@ -38,7 +41,8 @@
       "policy": "appVersion"
     },
     "updates": {
-      "url": "https://u.expo.dev/48691805-9833-4c4d-a8a6-c6bf5a054f1a"
+      "url": "https://u.expo.dev/48691805-9833-4c4d-a8a6-c6bf5a054f1a",
+      "fallbackToCacheTimeout": 3000
     }
   }
 }
