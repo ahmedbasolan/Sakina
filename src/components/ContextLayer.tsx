@@ -10,6 +10,10 @@ interface ContextLayerProps {
   attribution: string;
   text: string;
   source: string;
+  /** Mood-specific framing from ContentAngle.angle — shown as "For Your Heart" */
+  angle?: string;
+  /** Source citation for the angle (e.g. "Tafsir Ibn Kathir") */
+  angleSource?: string;
   scrollY?: Animated.Value;
 }
 
@@ -92,30 +96,40 @@ function QuoteOrnament({ color }: { color: string }) {
   );
 }
 
-const ContextLayer: React.FC<ContextLayerProps> = ({ attribution, text, source, scrollY }) => {
+const ContextLayer: React.FC<ContextLayerProps> = ({ attribution, text, source, angle, angleSource, scrollY }) => {
   const insets = useSafeAreaInsets();
   const { understand, matters } = useMemo(() => splitIntoSections(text), [text]);
   const sourceLabel = useMemo(() => extractSourceLabel(text, source), [text, source]);
   const propheticQuote = useMemo(() => extractPropheticQuote(matters || text), [matters, text]);
 
   // Staggered fade-in for sections
-  const fadeAnim1 = useRef(new Animated.Value(0)).current;
-  const fadeAnim2 = useRef(new Animated.Value(0)).current;
+  const fadeAnim1  = useRef(new Animated.Value(0)).current;
+  const fadeAnim2  = useRef(new Animated.Value(0)).current;
+  const fadeAnim3  = useRef(new Animated.Value(0)).current;
   const slideAnim1 = useRef(new Animated.Value(12)).current;
   const slideAnim2 = useRef(new Animated.Value(12)).current;
+  const slideAnim3 = useRef(new Animated.Value(12)).current;
 
   useEffect(() => {
+    fadeAnim1.setValue(0);  slideAnim1.setValue(12);
+    fadeAnim2.setValue(0);  slideAnim2.setValue(12);
+    fadeAnim3.setValue(0);  slideAnim3.setValue(12);
+
     Animated.sequence([
       Animated.parallel([
-        Animated.timing(fadeAnim1, { toValue: 1, duration: 500, useNativeDriver: true }),
+        Animated.timing(fadeAnim1,  { toValue: 1, duration: 500, useNativeDriver: true }),
         Animated.timing(slideAnim1, { toValue: 0, duration: 500, useNativeDriver: true }),
       ]),
       Animated.parallel([
-        Animated.timing(fadeAnim2, { toValue: 1, duration: 500, useNativeDriver: true }),
+        Animated.timing(fadeAnim2,  { toValue: 1, duration: 500, useNativeDriver: true }),
         Animated.timing(slideAnim2, { toValue: 0, duration: 500, useNativeDriver: true }),
       ]),
+      Animated.parallel([
+        Animated.timing(fadeAnim3,  { toValue: 1, duration: 400, useNativeDriver: true }),
+        Animated.timing(slideAnim3, { toValue: 0, duration: 400, useNativeDriver: true }),
+      ]),
     ]).start();
-  }, []);
+  }, [text, angle]);
 
   const cleanText = (t: string) =>
     t
@@ -225,6 +239,47 @@ const ContextLayer: React.FC<ContextLayerProps> = ({ attribution, text, source, 
             <Text style={styles.sourceText}>{sourceLabel}</Text>
           </View>
         </Animated.View>
+
+        {/* Section 3: For Your Heart — mood-specific framing from ContentAngle */}
+        {angle ? (
+          <Animated.View
+            style={[
+              styles.section,
+              styles.heartSection,
+              { opacity: fadeAnim3, transform: [{ translateY: slideAnim3 }] },
+            ]}
+          >
+            <View style={styles.heartDivider}>
+              <View style={styles.heartDividerLine} />
+              <View style={[styles.heartDividerDiamond, { backgroundColor: Colors.accent.primary + '55' }]} />
+              <View style={styles.heartDividerLine} />
+            </View>
+
+            <View style={styles.sectionHeader}>
+              <MaterialCommunityIcons name="heart-outline" size={16} color={Colors.accent.primary} />
+              <Text style={[styles.sectionLabel, { color: Colors.accent.primary }]}>FOR YOUR HEART</Text>
+            </View>
+
+            <View style={[styles.textCard, styles.heartCard]}>
+              <Text style={[styles.bodyText, styles.heartText]}>{angle}</Text>
+              {angleSource ? (
+                <Text style={styles.heartSource}>— {angleSource}</Text>
+              ) : null}
+            </View>
+          </Animated.View>
+        ) : null}
+
+        {/* Nav hints */}
+        <Animated.View style={[styles.navHints, { opacity: fadeAnim3 }]}>
+          <View style={styles.navHintItem}>
+            <MaterialCommunityIcons name="chevron-down" size={14} color="rgba(245,237,227,0.2)" />
+            <Text style={styles.navHintText}>Verse</Text>
+          </View>
+          <View style={styles.navHintItem}>
+            <MaterialCommunityIcons name="chevron-up" size={14} color="rgba(245,237,227,0.2)" />
+            <Text style={styles.navHintText}>Next</Text>
+          </View>
+        </Animated.View>
       </Animated.ScrollView>
     </View>
   );
@@ -308,6 +363,64 @@ const styles = StyleSheet.create({
     marginTop: Spacing.md,
     letterSpacing: 0.5,
     opacity: 0.7,
+  },
+
+  /* ── For Your Heart section ── */
+  heartSection: {
+    marginTop: Spacing.xl,
+  },
+  heartDivider: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.md,
+    marginBottom: Spacing.xl,
+  },
+  heartDividerLine: {
+    flex: 1,
+    height: StyleSheet.hairlineWidth,
+    backgroundColor: 'rgba(245, 237, 227, 0.08)',
+  },
+  heartDividerDiamond: {
+    width: 5,
+    height: 5,
+    borderRadius: 1,
+    transform: [{ rotate: '45deg' }],
+  },
+  heartCard: {
+    backgroundColor: 'rgba(212, 175, 55, 0.05)',
+    borderColor: 'rgba(212, 175, 55, 0.1)',
+  },
+  heartText: {
+    fontStyle: 'italic',
+    opacity: 0.88,
+  },
+  heartSource: {
+    fontSize: 11,
+    color: Colors.accent.primary,
+    opacity: 0.6,
+    fontWeight: '500',
+    marginTop: Spacing.md,
+    letterSpacing: 0.4,
+  },
+
+  /* ── Nav hints ── */
+  navHints: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingHorizontal: Spacing.sm,
+    paddingTop: Spacing.lg,
+    paddingBottom: Spacing.md,
+  },
+  navHintItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+  navHintText: {
+    fontSize: 10,
+    color: 'rgba(245, 237, 227, 0.22)',
+    fontWeight: '500',
+    letterSpacing: 1,
   },
 
   /* ── Source ── */
