@@ -127,5 +127,20 @@ export const runMigrationSteps = async (db: SQLite.SQLiteDatabase): Promise<void
     }
   });
 
+  // user_preferences: autoPlayAudio (opt-in recitation auto-play)
+  await runStep('user_preferences.autoPlayAudio', async () => {
+    if (!(await hasColumn('user_preferences', 'autoPlayAudio'))) {
+      console.log('[Migration] Adding autoPlayAudio to user_preferences...');
+      await db.execAsync(
+        `ALTER TABLE user_preferences ADD COLUMN autoPlayAudio INTEGER NOT NULL DEFAULT 0`,
+      );
+    }
+  });
+
+  // Steps 13 & 14 (bookmarked_verses, quran_cache) are intentionally omitted here.
+  // Both tables are declared in tables.ts with CREATE TABLE IF NOT EXISTS and are
+  // created by createTables() — which always runs before runMigrationSteps(). A
+  // migration step would be dead code on every path (fresh install and upgrade).
+
   console.log('[Migration] All steps completed successfully');
 };

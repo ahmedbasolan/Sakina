@@ -24,6 +24,11 @@ import { Colors, Spacing, Typography, BorderRadius } from '../theme/DesignSystem
 interface AudioPlayerButtonProps {
   verseKey: string;
   size?: number;
+  /** Glyph/wave-bar height. Defaults to size * 0.45. Set this to match sibling
+   *  icons when the button sits in a compact action bar. */
+  iconSize?: number;
+  /** When true, start recitation once per verse as soon as it mounts/changes. */
+  autoPlay?: boolean;
   color?: string;
   showLabel?: boolean;
   isLocked?: boolean;
@@ -43,16 +48,83 @@ export default function AudioPlayerButton(props: AudioPlayerButtonProps) {
   return <AudioPlayerButtonInternal {...props} />;
 }
 
+// ── Sound wave bars — replaces the old icon when playing ─────────────────────
+// Three bars with different heights and cycle durations give an organic,
+// calm feel. Heights animate on the JS thread (useNativeDriver: false) but
+// the update rate is slow so it stays smooth without frame drops.
+const WaveBars = React.memo(function WaveBars({
+  height,
+  color,
+}: {
+  height: number;
+  color: string;
+}) {
+  const barMaxH = height;
+  const barW    = Math.max(2.5, height * 0.22);
+
+  const b1 = useRef(new Animated.Value(barMaxH * 0.28)).current;
+  const b2 = useRef(new Animated.Value(barMaxH * 0.72)).current;
+  const b3 = useRef(new Animated.Value(barMaxH * 0.48)).current;
+
+  useEffect(() => {
+    const loop = (anim: Animated.Value, lo: number, hi: number, dur: number) =>
+      Animated.loop(
+        Animated.sequence([
+          Animated.timing(anim, { toValue: hi, duration: dur, useNativeDriver: false }),
+          Animated.timing(anim, { toValue: lo, duration: dur, useNativeDriver: false }),
+        ]),
+      );
+
+    const a1 = loop(b1, barMaxH * 0.18, barMaxH,        740);
+    const a2 = loop(b2, barMaxH * 0.42, barMaxH,        1010);
+    const a3 = loop(b3, barMaxH * 0.18, barMaxH * 0.88, 630);
+
+    a1.start();
+    a2.start();
+    a3.start();
+
+    return () => { a1.stop(); a2.stop(); a3.stop(); };
+  }, [barMaxH]);
+
+  return (
+    <View
+      style={{
+        flexDirection: 'row',
+        alignItems: 'flex-end',
+        gap: barW * 0.7,
+        height: barMaxH,
+      }}
+    >
+      {([b1, b2, b3] as Animated.Value[]).map((anim, i) => (
+        <Animated.View
+          key={i}
+          style={{
+            width: barW,
+            height: anim,
+            borderRadius: barW / 2,
+            backgroundColor: color,
+          }}
+        />
+      ))}
+    </View>
+  );
+});
+
 function AudioPlayerButtonInternal({
   verseKey,
   size = 48,
+  iconSize,
+  autoPlay = false,
   color = Colors.accent.primary,
   showLabel = true,
   isLocked = false,
   style,
   containerStyle,
 }: AudioPlayerButtonProps) {
-  const pulseAnim = useRef(new Animated.Value(1)).current;
+  // Visual glyph height — explicit iconSize wins, else the historical 45% of size.
+  const iconPx = iconSize ?? size * 0.45;
+  // Glow ring breathing — slow, calm opacity cycle instead of scale pulse
+  const glowAnim = useRef(new Animated.Value(0)).current;
 
   const [fallbackIndex, setFallbackIndex] = useState(0);
   const [currentVerseIndex, setCurrentVerseIndex] = useState(0);
@@ -67,8 +139,24 @@ function AudioPlayerButtonInternal({
 
   const isPlaying = status?.playing || false;
   const isBuffering = status?.isBuffering || false;
-  const progress =
-    status?.duration && status.duration > 0 ? (status.currentTime || 0) / status.duration : 0;
+
+  // Auto-play: start recitation once per verseKey when `autoPlay` is enabled.
+  // The caller decides *when* to enable it — VerseLayer waits for the verse-reveal
+  // animation to settle — so this only needs a short cushion before playing.
+  // A ref guard prevents re-firing on re-render or fighting a manual pause.
+  const autoPlayedKeyRef = useRef<string | null>(null);
+  useEffect(() => {
+    if (!autoPlay || isLocked) return;
+    if (autoPlayedKeyRef.current === verseKey) return;
+    autoPlayedKeyRef.current = verseKey;
+    const t = setTimeout(() => {
+      try { player.play(); } catch { /* player not ready — ignore */ }
+    }, 150);
+    return () => clearTimeout(t);
+    // player intentionally omitted from deps (stable per uri; mirrors this file's
+    // other effects) so the timer keys only on verse/enable change.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [autoPlay, isLocked, verseKey]);
 
   // Handle fallback if audio fails to load
   useEffect(() => {
@@ -91,33 +179,22 @@ function AudioPlayerButtonInternal({
     }
   }, [fallbackIndex]);
 
-  // Pulse animation for playing state
+  // Glow breathing — outer ring fades 0.3 → 1.0 → 0.3 over 1800 ms each direction.
+  // No scale: purely opacity so there is no layout jank and it feels meditative.
   useEffect(() => {
     let animation: Animated.CompositeAnimation | null = null;
     if (isPlaying) {
       animation = Animated.loop(
         Animated.sequence([
-          Animated.timing(pulseAnim, {
-            toValue: 1.1,
-            duration: 800,
-            useNativeDriver: true,
-          }),
-          Animated.timing(pulseAnim, {
-            toValue: 1,
-            duration: 800,
-            useNativeDriver: true,
-          }),
+          Animated.timing(glowAnim, { toValue: 1,   duration: 1800, useNativeDriver: true }),
+          Animated.timing(glowAnim, { toValue: 0.3, duration: 1800, useNativeDriver: true }),
         ]),
       );
       animation.start();
     } else {
-      pulseAnim.setValue(1);
+      Animated.timing(glowAnim, { toValue: 0, duration: 300, useNativeDriver: true }).start();
     }
-    return () => {
-      if (animation) {
-        animation.stop();
-      }
-    };
+    return () => { if (animation) animation.stop(); };
   }, [isPlaying]);
 
   // Handle verse transition or finished playback
@@ -180,7 +257,23 @@ function AudioPlayerButtonInternal({
       }
       accessibilityRole="button"
     >
-      <Animated.View style={{ transform: [{ scale: pulseAnim }] }}>
+      {/* Outer glow ring — breathes slowly when playing, invisible when idle */}
+      <View style={{ alignItems: 'center', justifyContent: 'center' }}>
+        <Animated.View
+          pointerEvents="none"
+          style={{
+            position: 'absolute',
+            width: size + 16,
+            height: size + 16,
+            borderRadius: (size + 16) / 2,
+            borderWidth: 1.5,
+            borderColor: `${color}55`,
+            backgroundColor: `${color}0D`,
+            opacity: glowAnim,
+          }}
+        />
+
+        {/* Button circle */}
         <View
           style={[
             styles.button,
@@ -188,43 +281,26 @@ function AudioPlayerButtonInternal({
               width: size,
               height: size,
               borderRadius: size / 2,
-              borderColor: isPlaying ? color : Colors.glass.border,
-              backgroundColor: isPlaying ? `${color}15` : Colors.glass.light,
+              borderColor: isPlaying ? `${color}55` : Colors.glass.border,
+              backgroundColor: isPlaying ? `${color}12` : Colors.glass.light,
             },
             containerStyle,
           ]}
         >
           {isBuffering ? (
             <ActivityIndicator size="small" color={color} />
+          ) : isPlaying ? (
+            // Wave bars replace the pause icon for a calm, visual audio cue
+            <WaveBars height={iconPx} color={displayColor} />
           ) : (
             <Ionicons
-              name={isPlaying ? 'pause' : 'volume-low'}
-              size={size * 0.45}
-              color={isPlaying ? color : isLocked ? Colors.text.muted : Colors.text.secondary}
-            />
-          )}
-
-          {/* Circular progress */}
-          {!isLocked && isPlaying && progress > 0 && (
-            <View
-              style={[
-                styles.progressRing,
-                {
-                  width: size + 4,
-                  height: size + 4,
-                  borderRadius: (size + 4) / 2,
-                  borderColor: color,
-                  borderRightColor: 'transparent',
-                  borderBottomColor: progress > 0.25 ? color : 'transparent',
-                  borderLeftColor: progress > 0.5 ? color : 'transparent',
-                  borderTopColor: progress > 0.75 ? color : 'transparent',
-                  transform: [{ rotate: `${progress * 360}deg` }],
-                },
-              ]}
+              name="volume-medium"
+              size={iconPx}
+              color={isLocked ? Colors.text.muted : Colors.text.secondary}
             />
           )}
         </View>
-      </Animated.View>
+      </View>
 
       {showLabel && (
         <Text
@@ -277,9 +353,5 @@ const styles = StyleSheet.create({
     fontSize: Typography.sizes.small,
     fontWeight: '600',
     alignSelf: 'center',
-  },
-  progressRing: {
-    position: 'absolute',
-    borderWidth: 2,
   },
 });

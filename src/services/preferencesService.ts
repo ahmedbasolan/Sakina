@@ -6,6 +6,7 @@ export class PreferencesService {
   private preferences: UserPreferences = {
     primaryLanguage: 'english',
     showTransliteration: true,
+    autoPlayAudio: false,
   };
   private isLoaded: boolean = false;
 
@@ -37,6 +38,7 @@ export class PreferencesService {
         this.preferences = {
           primaryLanguage: prefs.primaryLanguage as LanguagePreference,
           showTransliteration: prefs.showTransliteration === 1,
+          autoPlayAudio: prefs.autoPlayAudio === 1,
         };
       } else {
         await this.savePreferences(this.preferences);
@@ -51,9 +53,9 @@ export class PreferencesService {
     try {
       await dbQuery(async (db) => {
         await db.runAsync(
-          `INSERT OR REPLACE INTO user_preferences (id, primaryLanguage, showTransliteration) 
-           VALUES ('user_preferences', ?, ?)`,
-          [prefs.primaryLanguage, prefs.showTransliteration ? 1 : 0],
+          `INSERT OR REPLACE INTO user_preferences (id, primaryLanguage, showTransliteration, autoPlayAudio)
+           VALUES ('user_preferences', ?, ?, ?)`,
+          [prefs.primaryLanguage, prefs.showTransliteration ? 1 : 0, prefs.autoPlayAudio ? 1 : 0],
         );
       });
     } catch (error) {

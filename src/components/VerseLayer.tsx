@@ -1,7 +1,6 @@
-import React, { useMemo, useEffect, useRef, useState } from 'react';
-import { StyleSheet, View, Text, Dimensions, Animated, TouchableOpacity } from 'react-native';
+import React, { useMemo, useEffect, useRef, useState, useCallback } from 'react';
+import { StyleSheet, View, Text, Animated, TouchableOpacity, Platform } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-const { height } = Dimensions.get('window');
 import Svg, { Path, Circle as SvgCircle, G } from 'react-native-svg';
 import { BlurView } from 'expo-blur';
 import { Colors, Spacing, Typography, BorderRadius } from '../theme/DesignSystem';
@@ -9,23 +8,32 @@ import { Ionicons } from '@expo/vector-icons';
 import { HapticsService } from '../services/hapticsService';
 import ArabicText from './ArabicText';
 import AudioPlayerButton from './AudioPlayerButton';
+import { useReduceMotion } from '../hooks/useReduceMotion';
 
 /* ─── Subtle Geometric Ornament ──────────────────────────────── */
 function GeometricOrnament({ size, color }: { size: number; color: string }) {
   const breatheAnim = useRef(new Animated.Value(0)).current;
   const rotateAnim = useRef(new Animated.Value(0)).current;
+  const reduceMotion = useReduceMotion();
 
   useEffect(() => {
-    Animated.loop(
+    if (reduceMotion) return; // static ornament when reduce-motion is on
+    const breatheLoop = Animated.loop(
       Animated.sequence([
         Animated.timing(breatheAnim, { toValue: 1, duration: 3000, useNativeDriver: true }),
         Animated.timing(breatheAnim, { toValue: 0, duration: 3000, useNativeDriver: true }),
       ]),
-    ).start();
-    Animated.loop(
+    );
+    const rotateLoop = Animated.loop(
       Animated.timing(rotateAnim, { toValue: 1, duration: 90000, useNativeDriver: true }),
-    ).start();
-  }, []);
+    );
+    breatheLoop.start();
+    rotateLoop.start();
+    return () => {
+      breatheLoop.stop();
+      rotateLoop.stop();
+    };
+  }, [reduceMotion]);
 
   const opacity = breatheAnim.interpolate({ inputRange: [0, 1], outputRange: [0.03, 0.06] });
   const scale = breatheAnim.interpolate({ inputRange: [0, 1], outputRange: [0.98, 1.02] });
@@ -71,148 +79,7 @@ function parseReference(ref: string): { surahName: string; verseRef: string } {
   return { surahName: ref, verseRef: '' };
 }
 
-/* ─── Expandable Actions FAB ────────────────────────────────── */
-function ActionsFAB({
-  accentColor,
-  onShare,
-  onSave,
-  isSaved,
-  audioKey,
-}: {
-  accentColor: string;
-  onShare: () => void;
-  onSave: () => void;
-  isSaved: boolean;
-  audioKey?: string;
-}) {
-  const [expanded, setExpanded] = useState(false);
-  const expandAnim = useRef(new Animated.Value(0)).current;
-
-  const toggle = () => {
-    HapticsService.impactAsync('LIGHT');
-    const toValue = expanded ? 0 : 1;
-    Animated.spring(expandAnim, {
-      toValue,
-      damping: 18,
-      stiffness: 200,
-      useNativeDriver: true,
-    }).start();
-    setExpanded(!expanded);
-  };
-
-  // Each action button slides up from the FAB
-  const actionTranslate = (index: number) =>
-    expandAnim.interpolate({
-      inputRange: [0, 1],
-      outputRange: [0, -(index + 1) * 52],
-    });
-
-  const actionOpacity = expandAnim.interpolate({
-    inputRange: [0, 0.4, 1],
-    outputRange: [0, 0, 1],
-  });
-
-  const actionScale = expandAnim.interpolate({
-    inputRange: [0, 0.5, 1],
-    outputRange: [0.5, 0.8, 1],
-  });
-
-  // Rotate the toggle icon
-  const iconRotate = expandAnim.interpolate({
-    inputRange: [0, 1],
-    outputRange: ['0deg', '45deg'],
-  });
-
-  type RegularAction = {
-    isAudio?: false;
-    icon: React.ComponentProps<typeof Ionicons>['name'];
-    color: string;
-    onPress: () => void;
-  };
-  type AudioAction = {
-    isAudio: true;
-    icon: React.ComponentProps<typeof Ionicons>['name'];
-    color: string;
-    onPress: () => void;
-    audioKey: string;
-  };
-  type ActionItem = RegularAction | AudioAction;
-
-  const actions: ActionItem[] = [
-    {
-      icon: isSaved ? 'heart' : 'heart-outline',
-      color: isSaved ? Colors.status.error : Colors.text.primary,
-      onPress: () => { HapticsService.impactAsync('LIGHT'); onSave(); },
-    },
-    ...(audioKey ? [{
-      icon: 'volume-medium-outline' as React.ComponentProps<typeof Ionicons>['name'],
-      color: Colors.text.primary,
-      onPress: () => { }, // Audio handled by AudioPlayerButton
-      isAudio: true as const,
-      audioKey,
-    }] : []),
-    {
-      icon: 'share-outline',
-      color: Colors.text.primary,
-      onPress: () => { HapticsService.impactAsync('LIGHT'); onShare(); },
-    },
-  ];
-
-  return (
-    <View style={styles.fabContainer}>
-      {/* Expanded action buttons */}
-      {actions.map((action, i) => (
-        <Animated.View
-          key={i}
-          style={[
-            styles.fabActionWrapper,
-            {
-              transform: [
-                { translateY: actionTranslate(i) },
-                { scale: actionScale },
-              ],
-              opacity: actionOpacity,
-            },
-          ]}
-          pointerEvents={expanded ? 'auto' : 'none'}
-        >
-          {'isAudio' in action && action.isAudio ? (
-            <BlurView intensity={30} tint="dark" style={styles.fabAction}>
-              <AudioPlayerButton
-                verseKey={action.audioKey}
-                size={22}
-                color={Colors.accent.primary}
-                showLabel={false}
-                containerStyle={styles.fabActionInner}
-              />
-            </BlurView>
-          ) : (
-            <TouchableOpacity
-              onPress={action.onPress}
-              activeOpacity={0.7}
-            >
-              <BlurView intensity={30} tint="dark" style={styles.fabAction}>
-                <Ionicons name={action.icon} size={20} color={action.color} />
-              </BlurView>
-            </TouchableOpacity>
-          )}
-        </Animated.View>
-      ))}
-
-      {/* Main toggle button */}
-      <TouchableOpacity
-        onPress={toggle}
-        activeOpacity={0.8}
-      >
-        <BlurView intensity={30} tint="dark" style={styles.fabMain}>
-          <Animated.View style={{ transform: [{ rotate: iconRotate }] }}>
-            <Ionicons name="add" size={24} color={Colors.text.primary} />
-          </Animated.View>
-        </BlurView>
-      </TouchableOpacity>
-    </View>
-  );
-}
+/* ActionsFAB removed — replaced by cinema-mode tap-to-reveal bar in VerseLayer */
 
 /* ─── VerseLayer ────────────────────────────────────────────── */
 interface VerseLayerProps {
@@ -229,6 +96,8 @@ interface VerseLayerProps {
   onSave?: () => void;
   isSaved?: boolean;
   audioKey?: string;
+  /** Auto-play recitation when this verse opens (driven by user preference). */
+  autoPlayAudio?: boolean;
   /** When true the swipe-up hint pulses persistently to signal a context layer is available */
   hasContext?: boolean;
 }
@@ -270,12 +139,16 @@ const VerseLayer: React.FC<VerseLayerProps> = ({
   onSave,
   isSaved = false,
   audioKey,
+  autoPlayAudio = false,
   hasContext = false,
 }) => {
   const insets = useSafeAreaInsets();
   const { surahName, verseRef } = useMemo(() => parseReference(reference), [reference]);
 
-  // Swipe hint — pulses gently when a context layer is available, fades once otherwise
+  const reduceMotion = useReduceMotion();
+
+  // Swipe hint — pulses gently when a context layer is available, fades once otherwise.
+  // When reduce-motion is on the hint appears at a static opacity instead of pulsing.
   const swipeHintOpacity = useRef(new Animated.Value(0)).current;
   const hintLoopRef = useRef<Animated.CompositeAnimation | null>(null);
 
@@ -285,18 +158,23 @@ const VerseLayer: React.FC<VerseLayerProps> = ({
 
     const timer = setTimeout(() => {
       if (hasContext) {
-        // Fade in, then breathe continuously so users notice it
-        Animated.timing(swipeHintOpacity, { toValue: 1, duration: 600, useNativeDriver: true }).start(() => {
-          hintLoopRef.current = Animated.loop(
-            Animated.sequence([
-              Animated.timing(swipeHintOpacity, { toValue: 0.35, duration: 1400, useNativeDriver: true }),
-              Animated.timing(swipeHintOpacity, { toValue: 1,    duration: 1400, useNativeDriver: true }),
-            ]),
-          );
-          hintLoopRef.current.start();
-        });
+        if (reduceMotion) {
+          // Static hint — no loop, just a stable opacity
+          Animated.timing(swipeHintOpacity, { toValue: 0.7, duration: 400, useNativeDriver: true }).start();
+        } else {
+          // Fade in, then breathe continuously so users notice it
+          Animated.timing(swipeHintOpacity, { toValue: 1, duration: 600, useNativeDriver: true }).start(() => {
+            hintLoopRef.current = Animated.loop(
+              Animated.sequence([
+                Animated.timing(swipeHintOpacity, { toValue: 0.35, duration: 1400, useNativeDriver: true }),
+                Animated.timing(swipeHintOpacity, { toValue: 1,    duration: 1400, useNativeDriver: true }),
+              ]),
+            );
+            hintLoopRef.current.start();
+          });
+        }
       } else {
-        // No context — show once and fade out
+        // No context — show once and fade out (same regardless of reduce-motion)
         Animated.sequence([
           Animated.timing(swipeHintOpacity, { toValue: 0.55, duration: 600, useNativeDriver: true }),
           Animated.delay(2500),
@@ -309,7 +187,7 @@ const VerseLayer: React.FC<VerseLayerProps> = ({
       clearTimeout(timer);
       hintLoopRef.current?.stop();
     };
-  }, [hasContext]);
+  }, [hasContext, reduceMotion]);
 
   const formattedTranslation = useMemo(() => formatTranslation(translation), [translation]);
 
@@ -325,6 +203,66 @@ const VerseLayer: React.FC<VerseLayerProps> = ({
   const transSlide = useRef(new Animated.Value(10)).current;
   const refOpacity = useRef(new Animated.Value(0)).current;
   const [revealComplete, setRevealComplete] = useState(false);
+
+  // Gesture discovery hint — "→ swipe right · ↑ context" — fades in briefly
+  // on each new verse then disappears so it doesn't clutter the immersive view.
+  const hintsOpacity = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    hintsOpacity.setValue(0);
+    const t = setTimeout(() => {
+      Animated.sequence([
+        Animated.timing(hintsOpacity, { toValue: 0.85, duration: 600, useNativeDriver: true }),
+        Animated.delay(1800),
+        Animated.timing(hintsOpacity, { toValue: 0, duration: 700, useNativeDriver: true }),
+      ]).start();
+    }, 1600);
+    return () => clearTimeout(t);
+  }, [arabic]);
+
+  // ── Cinema-mode tap-to-reveal controls ────────────────────────
+  // Default: fully immersive (no UI chrome). A single tap anywhere on the
+  // verse reveals the action bar. It auto-dismisses after 3.5 s of inactivity,
+  // or immediately on a second tap.
+  const [controlsVisible, setControlsVisible] = useState(false);
+  const controlsAnim = useRef(new Animated.Value(0)).current;
+  const hideTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // Track whether the user is mid-scroll so we don't toggle on scroll-end
+  const isScrollingRef = useRef(false);
+
+  const hideControls = useCallback(() => {
+    if (hideTimerRef.current) clearTimeout(hideTimerRef.current);
+    Animated.timing(controlsAnim, { toValue: 0, duration: 260, useNativeDriver: true })
+      .start(() => setControlsVisible(false));
+  }, [controlsAnim]);
+
+  const showControls = useCallback(() => {
+    if (hideTimerRef.current) clearTimeout(hideTimerRef.current);
+    setControlsVisible(true);
+    Animated.spring(controlsAnim, { toValue: 1, damping: 20, stiffness: 220, useNativeDriver: true }).start();
+    hideTimerRef.current = setTimeout(hideControls, 3500);
+  }, [controlsAnim, hideControls]);
+
+  // skipReveal must be defined before handleContentTap (hoisted here)
+  const skipRevealRef = useRef<() => void>(() => {});
+
+  // Called from ScrollView onTouchEnd — skip verse reveal AND toggle controls
+  const handleContentTap = useCallback(() => {
+    skipRevealRef.current();
+    if (isScrollingRef.current) return; // ignore scroll-end touches
+    if (controlsVisible) {
+      hideControls();
+    } else {
+      showControls();
+    }
+  }, [controlsVisible, showControls, hideControls]);
+
+  // Reset controls when a new verse loads
+  useEffect(() => {
+    setControlsVisible(false);
+    controlsAnim.setValue(0);
+    if (hideTimerRef.current) clearTimeout(hideTimerRef.current);
+  }, [arabic, translation]);
 
   useEffect(() => {
     arabicOpacity.setValue(0);
@@ -371,13 +309,17 @@ const VerseLayer: React.FC<VerseLayerProps> = ({
     refOpacity.setValue(1);
     setRevealComplete(true);
   };
+  // Keep ref in sync so handleContentTap can call the latest skipReveal
+  skipRevealRef.current = skipReveal;
 
   return (
     <View
       style={[
         styles.container,
         {
-          paddingTop: Math.max(insets.top + Spacing.sm, height * 0.01),
+          // The GuidanceHeader above is in the flex flow and already clears the
+          // safe area — so VerseLayer only needs a small gap, not another inset.
+          paddingTop: Spacing.sm,
           paddingBottom: Math.max(insets.bottom + Spacing.sm, Spacing.lg),
         },
       ]}
@@ -389,7 +331,10 @@ const VerseLayer: React.FC<VerseLayerProps> = ({
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
         scrollEventThrottle={16}
-        onTouchEnd={skipReveal}
+        onTouchEnd={handleContentTap}
+        onScrollBeginDrag={() => { isScrollingRef.current = true; }}
+        onScrollEndDrag={() => { isScrollingRef.current = false; }}
+        onMomentumScrollEnd={() => { isScrollingRef.current = false; }}
         onScroll={
           scrollY
             ? Animated.event([{ nativeEvent: { contentOffset: { y: scrollY } } }], {
@@ -481,52 +426,120 @@ const VerseLayer: React.FC<VerseLayerProps> = ({
         )}
       </Animated.ScrollView>
 
-      {/* ── Footer: FABs on edges, swipe hint centered ── */}
+      {/* ── Footer: context hint always visible, action bar tap-to-reveal ── */}
       <View style={styles.footer}>
-        {/* Left FAB: expandable actions */}
-        <View style={styles.fabLeft}>
-          {onShare && onSave && (
-            <ActionsFAB
-              accentColor={accentColor}
-              onShare={onShare}
-              onSave={onSave}
-              isSaved={isSaved}
-              audioKey={audioKey}
-            />
-          )}
-        </View>
 
-        {/* Center: swipe up hint */}
-        <Animated.View style={[styles.swipeHintCenter, { opacity: swipeHintOpacity }]}>
-          {hasContext && (
-            <View style={[styles.contextDot, { backgroundColor: accentColor }]} />
-          )}
-          <Ionicons
-            name="chevron-up"
-            size={18}
-            color={hasContext ? accentColor : 'rgba(245, 237, 227, 0.3)'}
-          />
-          <Text style={[styles.swipeHintText, hasContext && { color: accentColor, opacity: 0.8 }]}>
-            {hasContext ? 'Context' : 'Next'}
-          </Text>
+        {/* Tap-to-reveal action bar — slides up on tap, auto-hides after 3.5s */}
+        <Animated.View
+          pointerEvents={controlsVisible ? 'box-none' : 'none'}
+          style={[
+            styles.actionBar,
+            {
+              opacity: controlsAnim,
+              transform: [{
+                translateY: controlsAnim.interpolate({
+                  inputRange: [0, 1],
+                  outputRange: [20, 0],
+                }),
+              }],
+            },
+          ]}
+        >
+          <BlurView intensity={65} tint="dark" style={styles.actionBarInner}>
+            {/* Save */}
+            {onSave && (
+              <TouchableOpacity
+                onPress={() => { HapticsService.impactAsync('LIGHT'); onSave(); showControls(); }}
+                activeOpacity={0.7}
+                style={styles.actionBtn}
+                hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                accessibilityRole="button"
+                accessibilityLabel={isSaved ? 'Remove from saved' : 'Save verse'}
+              >
+                <Ionicons
+                  name={isSaved ? 'heart' : 'heart-outline'}
+                  size={22}
+                  color={isSaved ? accentColor : 'rgba(245, 237, 227, 0.8)'}
+                />
+              </TouchableOpacity>
+            )}
+
+            {/* Audio — iconSize matches the 22px sibling icons; style resets the
+                standalone vertical margin so it sits flush in the compact bar. */}
+            {audioKey && (
+              <View style={styles.actionBtn}>
+                <AudioPlayerButton
+                  verseKey={audioKey}
+                  size={34}
+                  iconSize={22}
+                  // Only auto-play once the staged verse reveal has settled
+                  // (revealComplete), so recitation never starts mid-animation.
+                  autoPlay={autoPlayAudio && revealComplete}
+                  color="rgba(245, 237, 227, 0.8)"
+                  showLabel={false}
+                  containerStyle={styles.audioBtnInner}
+                  style={styles.audioBtnReset}
+                />
+              </View>
+            )}
+
+            {/* Share */}
+            {onShare && (
+              <TouchableOpacity
+                onPress={() => { HapticsService.impactAsync('LIGHT'); onShare(); }}
+                activeOpacity={0.7}
+                style={styles.actionBtn}
+                hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                accessibilityRole="button"
+                accessibilityLabel="Share verse"
+              >
+                <Ionicons name="share-outline" size={22} color="rgba(245, 237, 227, 0.8)" />
+              </TouchableOpacity>
+            )}
+
+            {/* Next verse (button kept for backward-compat; swipe-right is now the primary gesture) */}
+            {onNextVerse && (
+              <>
+                <View style={styles.actionDivider} />
+                <TouchableOpacity
+                  onPress={() => { HapticsService.impactAsync('LIGHT'); onNextVerse(); }}
+                  activeOpacity={0.7}
+                  style={styles.actionBtn}
+                  hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                  accessibilityRole="button"
+                  accessibilityLabel="Next verse"
+                >
+                  <Ionicons name="arrow-forward" size={22} color={accentColor} />
+                </TouchableOpacity>
+              </>
+            )}
+          </BlurView>
         </Animated.View>
 
-        {/* Right FAB: next verse */}
-        <View style={styles.fabRight}>
-          {onNextVerse && (
-            <TouchableOpacity
-              onPress={() => {
-                HapticsService.impactAsync('LIGHT');
-                onNextVerse();
-              }}
-              activeOpacity={0.8}
-            >
-              <BlurView intensity={30} tint="dark" style={styles.nextFab}>
-                <Ionicons name="arrow-forward" size={22} color={Colors.text.primary} />
-              </BlurView>
-            </TouchableOpacity>
+        {/* Gesture hint row — brief one-shot discovery aid, then disappears */}
+        <Animated.View style={[styles.gestureHintsRow, { opacity: hintsOpacity }]}>
+          <View style={styles.gestureHintItem}>
+            <Ionicons name="arrow-forward" size={11} color="rgba(245,237,227,0.38)" />
+            <Text style={styles.gestureHintText}>next verse</Text>
+          </View>
+          {hasContext && (
+            <>
+              <View style={styles.gestureHintSep} />
+              <View style={styles.gestureHintItem}>
+                <Ionicons name="arrow-up" size={11} color="rgba(245,237,227,0.38)" />
+                <Text style={styles.gestureHintText}>context</Text>
+              </View>
+            </>
           )}
-        </View>
+        </Animated.View>
+
+        {/* Persistent ambient pip — pulses when a context layer is available */}
+        {hasContext && (
+          <Animated.View style={[styles.swipeHintCenter, { opacity: swipeHintOpacity }]}>
+            <View style={[styles.contextDot, { backgroundColor: accentColor }]} />
+          </Animated.View>
+        )}
+
       </View>
     </View>
   );
@@ -548,10 +561,12 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     alignItems: 'center',
-    justifyContent: 'center',
+    // Top-align so the verse sits up near the header instead of floating in the
+    // vertical centre (which left a large gap under the title).
+    justifyContent: 'flex-start',
     flexGrow: 1,
-    paddingTop: 100, // padding for floating header
-    paddingBottom: 140, // padding for floating footer
+    paddingTop: Spacing.xxl, // modest clearance below the in-flow header
+    paddingBottom: 140, // clearance for the floating action bar
   },
 
   /* ── Reference at top ── */
@@ -703,85 +718,84 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
+    alignItems: 'center',
+    paddingBottom: Spacing.lg,
+    gap: 10,
+  },
+
+  /* ── Tap-to-reveal action bar ── */
+  actionBar: {
+    width: '82%',
+    borderRadius: 36,
+    overflow: 'hidden',
+    // Slightly more visible border so the pill reads as a distinct surface
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.16)',
+  },
+  actionBarInner: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-evenly',
-    paddingHorizontal: Spacing.xl,
-    paddingBottom: Spacing.lg,
-    minHeight: 64,
+    justifyContent: 'center',
+    // Reduced height — was 13, now 8 so the pill feels compact and light
+    paddingVertical: 8,
+    paddingHorizontal: 8,
   },
-  fabLeft: {
-    width: 60,
+  actionBtn: {
+    flex: 1,
     alignItems: 'center',
+    justifyContent: 'center',
+    minHeight: 40,
   },
-  fabRight: {
-    width: 60,
+  audioBtnInner: {
+    backgroundColor: 'transparent',
+    // No circle border in the compact action bar — the wave bars carry the visual weight
+    borderWidth: 0,
+  },
+  audioBtnReset: {
+    marginVertical: 0,
+  },
+  actionDivider: {
+    width: StyleSheet.hairlineWidth,
+    height: 22,
+    backgroundColor: 'rgba(255, 255, 255, 0.15)',
+    marginHorizontal: 4,
+  },
+
+  /* ── Gesture discovery hints ── */
+  gestureHintsRow: {
+    flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
+    gap: Spacing.md,
+    paddingBottom: 2,
   },
+  gestureHintItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+  gestureHintText: {
+    fontSize: 10,
+    color: 'rgba(245,237,227,0.38)',
+    letterSpacing: 0.8,
+    fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
+  },
+  gestureHintSep: {
+    width: 1,
+    height: 10,
+    backgroundColor: 'rgba(245,237,227,0.12)',
+  },
+
+  /* ── Ambient context pip (pulses when a context layer is available) ── */
   swipeHintCenter: {
     alignItems: 'center',
     justifyContent: 'center',
-    paddingBottom: 0,
-  },
-
-  /* ── Glass FABs ── */
-  fabContainer: {
-    alignItems: 'center',
-    justifyContent: 'flex-end',
-  },
-  fabActionWrapper: {
-    position: 'absolute',
-    bottom: 0,
-  },
-  fabActionInner: {
-    backgroundColor: 'transparent',
-    borderWidth: 0,
-  },
-  fabAction: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: 'rgba(255, 235, 210, 0.08)',
-    borderWidth: 1,
-    borderColor: 'rgba(255, 235, 210, 0.1)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    overflow: 'hidden',
-  },
-  fabMain: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    backgroundColor: 'rgba(255, 235, 210, 0.1)',
-    borderWidth: 1,
-    borderColor: 'rgba(255, 235, 210, 0.15)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    overflow: 'hidden',
-  },
-  nextFab: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    backgroundColor: 'rgba(255, 235, 210, 0.1)',
-    borderWidth: 1,
-    borderColor: 'rgba(255, 235, 210, 0.15)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    overflow: 'hidden',
-  },
-
-  swipeHintText: {
-    fontSize: 10,
-    color: 'rgba(245, 237, 227, 0.35)',
-    fontWeight: '500',
-    letterSpacing: 1,
+    paddingBottom: 4,
   },
   contextDot: {
     width: 5,
     height: 5,
     borderRadius: 2.5,
-    marginBottom: 3,
     opacity: 0.85,
   },
 });

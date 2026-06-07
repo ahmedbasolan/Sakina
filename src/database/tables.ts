@@ -191,7 +191,8 @@ export const tableDefinitions: TableDefinition[] = [
     sql: `CREATE TABLE IF NOT EXISTS user_preferences (
       id TEXT PRIMARY KEY DEFAULT 'user_preferences',
       primaryLanguage TEXT NOT NULL DEFAULT 'english',
-      showTransliteration INTEGER NOT NULL DEFAULT 1
+      showTransliteration INTEGER NOT NULL DEFAULT 1,
+      autoPlayAudio INTEGER NOT NULL DEFAULT 0
     );`,
   },
   {
@@ -199,6 +200,28 @@ export const tableDefinitions: TableDefinition[] = [
     sql: `CREATE TABLE IF NOT EXISTS kv_store (
       key TEXT PRIMARY KEY,
       value TEXT NOT NULL
+    );`,
+  },
+  {
+    // Verses bookmarked from the Surah Reader screen.
+    name: 'bookmarked_verses',
+    sql: `CREATE TABLE IF NOT EXISTS bookmarked_verses (
+      id TEXT PRIMARY KEY,
+      surahNumber INTEGER NOT NULL,
+      verseNumber INTEGER NOT NULL,
+      arabicText TEXT NOT NULL,
+      translation TEXT NOT NULL,
+      surahName TEXT NOT NULL,
+      bookmarkedAt INTEGER NOT NULL
+    );`,
+  },
+  {
+    // Per-surah verse cache from alquran.cloud. JSON blob, TTL = 7 days.
+    name: 'quran_cache',
+    sql: `CREATE TABLE IF NOT EXISTS quran_cache (
+      surahNumber INTEGER PRIMARY KEY,
+      data TEXT NOT NULL,
+      cachedAt INTEGER NOT NULL
     );`,
   },
 ];

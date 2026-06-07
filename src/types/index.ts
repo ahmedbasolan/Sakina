@@ -170,6 +170,25 @@ export interface SpecialEditionBundle {
   isNiche?: boolean; // e.g. Hajj
 }
 
+/**
+ * Emotional register of a journey. Drives the immersive step experience:
+ * - 'refuge'   → calm, slow reveal, no streak pressure, "you showed up" framing
+ * - 'momentum' → progress celebration, streak emphasis, "keep going" framing
+ * Defaults from `theme` when unset (Sad/grief → refuge, Hopeful → momentum).
+ */
+export type PathTone = 'refuge' | 'momentum';
+
+/**
+ * A named segment of a longer journey. Lets the UI frame the horizon as the
+ * current phase ("Week 1 — Foundations · Day 3 of 7") instead of an
+ * overwhelming "Day 3 of 90" for long recovery/habit paths.
+ */
+export interface PathPhase {
+  label: string; // e.g. "Week 1 — Foundations"
+  startDay: number; // inclusive, 1-based
+  endDay: number; // inclusive
+}
+
 export interface SpiritualPath {
   id: string;
   title: string;
@@ -178,6 +197,8 @@ export interface SpiritualPath {
   theme: Mood; // Starting mood
   target: string; // Target spiritual state
   dailySteps: PathStep[];
+  tone?: PathTone; // Emotional register (defaults from `theme`)
+  phases?: PathPhase[]; // Optional chunking for long journeys
   isPremium?: boolean; // Included in subscription
   isSpecialEdition?: boolean; // Part of a one-time purchase bundle
   bundleId?: string; // Reference to SpecialEditionBundle
@@ -220,6 +241,8 @@ export type LanguagePreference = 'english' | 'arabic';
 export interface UserPreferences {
   primaryLanguage: LanguagePreference;
   showTransliteration: boolean;
+  /** Auto-play recitation when a verse opens. Opt-in (default false). */
+  autoPlayAudio: boolean;
 }
 
 export type BackgroundThemeCategory =
