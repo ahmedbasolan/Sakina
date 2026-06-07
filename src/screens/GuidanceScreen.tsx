@@ -7,7 +7,9 @@ import {
   StatusBar,
   TouchableOpacity,
   Animated,
+  PanResponder,
 } from 'react-native';
+import { HapticsService } from '../services/hapticsService';
 import ImmersiveBackground from '../components/ImmersiveBackground';
 import { GoldenMotes } from '../components/GoldenMotes';
 import GuidanceHeader from '../components/GuidanceHeader';
@@ -16,13 +18,16 @@ import ContextLayer from '../components/ContextLayer';
 import FloatingActionRow from '../components/FloatingActionRow';
 import ShareSheet from '../components/ShareSheet';
 import DisplayPreferencesModal from '../components/DisplayPreferencesModal';
+import BackgroundThemePicker from '../components/BackgroundThemePicker';
+import { backgroundThemeService } from '../services/backgroundThemeService';
 import LayerContainer from '../components/LayerContainer';
+import LayerPager from '../components/LayerPager';
 import { useGuidanceLogic } from '../hooks/useGuidanceLogic';
 import { Colors, Spacing, Typography, MoodColors } from '../theme/DesignSystem';
+import { extractVerseKey } from '../utils';
 import { logServiceError } from '../services/errorLoggingService';
 
 import { useRoute, useNavigation } from '@react-navigation/native';
-import { ReflectionPrompt } from '../components/ReflectionPrompt';
 import { useAppContext } from '../context/AppContext';
 import { SubscriptionService } from '../services/subscriptionService';
 
@@ -61,38 +66,49 @@ const GuidanceScreen: React.FC = () => {
   const onBack = () => navigation.goBack();
 
   const [isPrefsModalVisible, setIsPrefsModalVisible] = useState(false);
+  const [isThemePickerVisible, setIsThemePickerVisible] = useState(false);
+  const [selectedThemeId, setSelectedThemeId] = useState<string | null>(null);
+  const [selectedThemeUri, setSelectedThemeUri] = useState<string | null>(null);
+  const [selectedThemeName, setSelectedThemeName] = useState<string | null>(null);
+
+  const refreshSelectedTheme = React.useCallback(async () => {
+    if (!isPremium) return;
+    const t = await backgroundThemeService.getSelectedTheme();
+    setSelectedThemeId(t?.id ?? null);
+    setSelectedThemeUri(t?.imageUri ?? null);
+    setSelectedThemeName(t?.name ?? null);
+  }, [isPremium]);
+
+  useEffect(() => { refreshSelectedTheme(); }, [refreshSelectedTheme]);
+
   const scrollY = useRef(new Animated.Value(0)).current;
   const [currentLayer, setCurrentLayer] = useState(0);
 
-  const [showReflection, setShowReflection] = useState(false);
-  const hasShownReflection = useRef(false);
+  // Ref so the PanResponder (created once) can read the latest layer index
+  const currentLayerRef = useRef(currentLayer);
+  useEffect(() => { currentLayerRef.current = currentLayer; }, [currentLayer]);
+
+  // Swipe right → next verse (only on the verse layer, layer 0).
+  // Uses a horizontal-dominant threshold so it never conflicts with
+  // LayerContainer's vertical-swipe gesture or the ScrollView inside VerseLayer.
+  const swipeResponder = useRef(
+    PanResponder.create({
+      onMoveShouldSetPanResponder: (_, g) =>
+        Math.abs(g.dx) > Math.abs(g.dy) * 1.5 && Math.abs(g.dx) > 20,
+      onPanResponderRelease: (_, g) => {
+        if (g.dx > 50 && currentLayerRef.current === 0) {
+          HapticsService.impactAsync('LIGHT');
+          onNext();
+        }
+      },
+    }),
+  ).current;
 
   // Reset to verse layer whenever a new experience loads
   useEffect(() => {
     setCurrentLayer(0);
     scrollY.setValue(0);
   }, [experience?.content?.id]);
-
-  useEffect(() => {
-    const unsubscribe = navigation.addListener('beforeRemove', (e: any) => {
-      if (hasShownReflection.current) return;
-      e.preventDefault();
-      hasShownReflection.current = true;
-      setShowReflection(true);
-    });
-    return unsubscribe;
-  }, [navigation]);
-
-  const handleReflectionSave = async (text: string) => {
-    await onSaveReflection(text);
-    setShowReflection(false);
-    navigation.goBack();
-  };
-
-  const handleReflectionSkip = () => {
-    setShowReflection(false);
-    navigation.goBack();
-  };
 
   const hasContext = !!(experience.content.whyThis || experience.angle?.angle);
   const LAYER_TYPES: Array<'verse' | 'context'> = hasContext
@@ -132,12 +148,32 @@ const GuidanceScreen: React.FC = () => {
   };
 
   return (
-    <ImmersiveBackground mood={mood} isPremium={isPremium}>
+    <ImmersiveBackground
+      mood={mood}
+      isPremium={isPremium}
+      imageUri={selectedThemeUri ?? undefined}
+      selfManageTheme={false}
+    >
       <GoldenMotes />
       <StatusBar barStyle="light-content" translucent backgroundColor="transparent" />
 
-      {/* Full-bleed layer container */}
-      <View style={StyleSheet.absoluteFill}>
+      {/* Header in the flex flow (same pattern as PathTopBar in PathStepScreen).
+          On the verse layer GuidanceHeader renders without the CONTEXT/PRACTICE
+          label so it stays compact. On non-verse layers the label shows and the
+          content below it starts with proper clearance — no more content buried
+          under the floating overlay. */}
+      <GuidanceHeader
+        mood={mood}
+        islamicTerm={islamicTerm}
+        onBack={onBack}
+        onOptionsPress={() => setIsPrefsModalVisible(true)}
+        activeIndex={currentLayer}
+        totalCards={totalLayers}
+        scrollY={scrollY}
+      />
+
+      {/* Layer content — wrapped in swipe-right detector for "next verse" gesture */}
+      <View style={styles.gestureWrap} {...swipeResponder.panHandlers}>
         <LayerContainer
           currentLayer={currentLayer}
           totalLayers={totalLayers}
@@ -150,54 +186,63 @@ const GuidanceScreen: React.FC = () => {
             }
           }}
         >
-        {currentLayer === 0 && (
-          <VerseLayer
-            arabic={experience.content.arabicText || ''}
-            translation={experience.content.translation || experience.content.englishTranslation}
-            reference={experience.content.source || ''}
-            transliteration={experience.content.transliteration}
-            showTransliteration={preferences.showTransliteration}
-            primaryLanguage={preferences.primaryLanguage}
-            scrollY={scrollY}
-            accentColor={(MoodColors[mood] || MoodColors.Calm).accent}
-            hasContext={hasContext}
-            onNextVerse={() => {
-              scrollY.setValue(0);
-              onNext();
-              setCurrentLayer(0);
-            }}
-            onShare={handleShareVerse}
-            onSave={() => handleSave(0)}
-            isSaved={!!savedStates[0]}
-            audioKey={extractVerseKey(experience.content.source)}
-          />
-        )}
+          {currentLayer === 0 && (
+            <VerseLayer
+              arabic={experience.content.arabicText || ''}
+              translation={experience.content.translation || experience.content.englishTranslation}
+              reference={experience.content.source || ''}
+              transliteration={experience.content.transliteration}
+              showTransliteration={preferences.showTransliteration}
+              autoPlayAudio={preferences.autoPlayAudio}
+              primaryLanguage={preferences.primaryLanguage}
+              scrollY={scrollY}
+              accentColor={(MoodColors[mood] || MoodColors.Calm).accent}
+              hasContext={hasContext}
+              onNextVerse={() => {
+                scrollY.setValue(0);
+                onNext();
+                setCurrentLayer(0);
+              }}
+              onShare={handleShareVerse}
+              onSave={() => handleSave(0)}
+              isSaved={!!savedStates[0]}
+              audioKey={extractVerseKey(experience.content.source)}
+            />
+          )}
 
-        {currentLayer === 1 && hasContext && (
-          <ContextLayer
-            attribution={experience.angle?.angleSource || 'Scholarly Context'}
-            text={experience.content.whyThis || ''}
-            source={experience.content.source || ''}
-            angle={experience.angle?.angle}
-            angleSource={experience.angle?.angleSource}
-            scrollY={scrollY}
-          />
-        )}
-      </LayerContainer>
+          {currentLayer === 1 && hasContext && (
+            <ContextLayer
+              attribution={experience.angle?.angleSource || 'Scholarly Context'}
+              text={experience.content.whyThis || ''}
+              source={experience.content.source || ''}
+              angle={experience.angle?.angle}
+              angleSource={experience.angle?.angleSource}
+              scrollY={scrollY}
+              topInset={Spacing.lg}
+            />
+          )}
+        </LayerContainer>
       </View>
 
-      {/* Floating Header Overlay */}
-      <View style={[styles.floatingHeader, { zIndex: 100 }]} pointerEvents="box-none">
-        <GuidanceHeader
-          mood={mood}
-          islamicTerm={islamicTerm}
-          onBack={onBack}
-          onOptionsPress={() => setIsPrefsModalVisible(true)}
-          activeIndex={currentLayer}
-          totalCards={totalLayers}
-          scrollY={scrollY}
-        />
-      </View>
+      {/* Tappable layer nav — prev/next buttons + dot track. Replaces the old
+          purely-decorative swipe hint so users can navigate without swiping. */}
+      <LayerPager
+        total={totalLayers}
+        current={currentLayer}
+        labels={LAYER_TYPES.map((t) =>
+          t === 'verse' ? 'Verse' : t === 'context' ? 'Context' : t,
+        )}
+        accentColor={(MoodColors[mood] || MoodColors.Calm).accent}
+        onLayerChange={(idx) => {
+          scrollY.setValue(0);
+          setCurrentLayer(idx);
+        }}
+        onNextVerse={() => {
+          scrollY.setValue(0);
+          onNext();
+          setCurrentLayer(0);
+        }}
+      />
 
       {/* FloatingActionRow — verse-action buttons only; not shown on context layer */}
       {currentLayer !== 0 && LAYER_TYPES[currentLayer] !== 'context' && (
@@ -230,24 +275,29 @@ const GuidanceScreen: React.FC = () => {
         onClose={() => setIsPrefsModalVisible(false)}
         preferences={preferences}
         onUpdatePreference={updatePreference}
+        isPremium={isPremium}
+        selectedThemeName={selectedThemeName}
+        onOpenBackgroundPicker={() => {
+          setIsPrefsModalVisible(false);
+          setIsThemePickerVisible(true);
+        }}
       />
 
-      <ReflectionPrompt
-        visible={showReflection}
-        onSave={handleReflectionSave}
-        onSkip={handleReflectionSkip}
+      <BackgroundThemePicker
+        isVisible={isThemePickerVisible}
+        onClose={() => { setIsThemePickerVisible(false); refreshSelectedTheme(); }}
+        isPremium={isPremium}
+        selectedThemeId={selectedThemeId}
+        onSelectTheme={async (themeId) => {
+          await backgroundThemeService.setSelectedTheme(themeId);
+          await refreshSelectedTheme();
+        }}
       />
+
     </ImmersiveBackground>
   );
 };
 
-function extractVerseKey(source: string): string {
-  const match = source.match(/(\d+):(\d+(?:-\d+)?)/);
-  if (match) {
-    return match[1] + ':' + match[2];
-  }
-  return '1:1';
-}
 
 const styles = StyleSheet.create({
   container: {
@@ -265,11 +315,8 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     letterSpacing: 0.5,
   },
-  floatingHeader: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
+  gestureWrap: {
+    flex: 1,
   },
   floatingFooter: {
     position: 'absolute',

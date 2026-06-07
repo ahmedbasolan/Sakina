@@ -20,9 +20,6 @@ import Icon from '../components/Icon';
 import { refreshContentOnly } from '../database/schema';
 import { SubscriptionService } from '../services/subscriptionService';
 import { SupabaseDataService } from '../services/supabaseDataService';
-import { backgroundThemeService } from '../services/backgroundThemeService';
-import BackgroundThemePicker from '../components/BackgroundThemePicker';
-import { BackgroundTheme } from '../types';
 import { Colors } from '../theme/DesignSystem';
 
 type SettingsNavProp = CompositeNavigationProp<
@@ -83,19 +80,14 @@ export default function SettingsScreen() {
   const [reflectionCount, setReflectionCount] = useState(0);
   const [totalSessions, setTotalSessions] = useState(0);
   const [isPremium, setIsPremium] = useState(false);
-  const [selectedTheme, setSelectedTheme] = useState<BackgroundTheme | null>(null);
-  const [isThemePickerVisible, setIsThemePickerVisible] = useState(false);
 
   React.useEffect(() => {
     loadStats();
-    loadThemePreferences();
+    loadPremiumStatus();
   }, []);
 
-  const loadThemePreferences = async () => {
-    const isPrem = SubscriptionService.getInstance().isPremium();
-    setIsPremium(isPrem);
-    const theme = await backgroundThemeService.getSelectedTheme();
-    setSelectedTheme(theme);
+  const loadPremiumStatus = () => {
+    setIsPremium(SubscriptionService.getInstance().isPremium());
   };
 
   const loadStats = async () => {
@@ -213,12 +205,6 @@ export default function SettingsScreen() {
             toggleValue={isPremium}
             onToggle={handleTogglePremium}
           />
-          <SettingRow
-            label="Background Theme"
-            icon="✨"
-            value={selectedTheme?.name || 'Default'}
-            onPress={() => setIsThemePickerVisible(true)}
-          />
           <SettingRow label="Daily Reminders" icon="🔔" onPress={onNavigateToDailyReminders} />
           <SettingRow
             label="Translation Source"
@@ -321,19 +307,6 @@ export default function SettingsScreen() {
           <Text style={styles.footerSubtext}>Refining the soul, one verse at a time.</Text>
         </View>
       </ScrollView>
-
-      <BackgroundThemePicker
-        isVisible={isThemePickerVisible}
-        isPremium={isPremium}
-        selectedThemeId={selectedTheme?.id || null}
-        onClose={() => setIsThemePickerVisible(false)}
-        onSelectTheme={async (themeId) => {
-          await backgroundThemeService.setSelectedTheme(themeId);
-          const theme = await backgroundThemeService.getSelectedTheme();
-          setSelectedTheme(theme);
-          setIsThemePickerVisible(false);
-        }}
-      />
     </View>
   );
 }
@@ -362,7 +335,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 12,
     fontWeight: '600',
-    color: '#2ED3C6',
+    color: Colors.accent.primary,
     letterSpacing: 1.5,
     marginBottom: 8,
     marginTop: 16,

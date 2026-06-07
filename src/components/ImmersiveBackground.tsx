@@ -2,56 +2,156 @@ import React, { useState, useEffect } from 'react';
 import { StyleSheet, View, ImageBackground } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { MoodColors } from '../theme/DesignSystem';
-import { Mood } from '../types';
+import { Mood, PathTone } from '../types';
 import { backgroundThemeService } from '../services/backgroundThemeService';
+import { TwinklingStar } from './TwinklingStar';
+import { AnimatedMandala } from './AnimatedMandala';
+import { useReduceMotion } from '../hooks/useReduceMotion';
+
+/** Fixed star positions for the free-user journey atmosphere.
+ *  x/y expressed as percentage strings so layout scales with any screen size
+ *  and survives orientation changes without a module-level Dimensions snapshot. */
+const JOURNEY_STARS = [
+  { x: '7%',  y: '8%',  size: 1.5, delay: 0,    duration: 2800 },
+  { x: '88%', y: '7%',  size: 2,   delay: 600,  duration: 3400 },
+  { x: '73%', y: '18%', size: 1.2, delay: 1100, duration: 2500 },
+  { x: '17%', y: '24%', size: 1.8, delay: 400,  duration: 3100 },
+  { x: '52%', y: '11%', size: 1,   delay: 900,  duration: 2700 },
+  { x: '36%', y: '30%', size: 1.3, delay: 200,  duration: 3000 },
+];
 
 interface ImmersiveBackgroundProps {
   children: React.ReactNode;
   theme?: 'sand' | 'ocean' | 'dawn';
   mood?: Mood;
   imageUri?: string;
+  /** When false, the parent fully controls the premium theme image via `imageUri`
+   *  and this component does NOT read the saved theme itself. Defaults to true so
+   *  every other screen keeps auto-showing the user's selected theme. Set false on
+   *  screens (e.g. Guidance) that drive live theme changes through `imageUri`,
+   *  otherwise the stale mount-time read would mask a switch back to Default. */
+  selfManageTheme?: boolean;
   overlayOpacity?: number;
   isPremium?: boolean;
+  /** Journey accent color (e.g. path identity color). Switches the base to the
+   *  shared navy world and washes it with this hue so each journey keeps its
+   *  identity inside the immersive step experience. */
+  accentColor?: string;
+  /** Emotional register — tunes glow intensity and vignette depth. */
+  tone?: PathTone;
 }
+
+// Shared navy base, matching PathsScreen / PathDetailScreen.
+const NAVY_GRADIENT = ['#0A1321', '#0C1A2E'];
 
 const ImmersiveBackground: React.FC<ImmersiveBackgroundProps> = ({
   children,
   theme = 'sand',
   mood,
   imageUri,
+  selfManageTheme = true,
   overlayOpacity = 0.4,
   isPremium = false,
+  accentColor,
+  tone = 'momentum',
 }) => {
   const [selectedThemeUri, setSelectedThemeUri] = useState<string | null>(null);
+  // Resolved once here so the 6 TwinklingStars don't each subscribe independently.
+  const reduceMotion = useReduceMotion();
 
   useEffect(() => {
-    if (isPremium) {
+    if (selfManageTheme && isPremium) {
+      // Reset to null when no theme is selected so clearing it (Default) reverts
+      // the background instead of keeping the previously-read image.
       backgroundThemeService.getSelectedTheme().then((t) => {
-        if (t) setSelectedThemeUri(t.imageUri);
+        setSelectedThemeUri(t ? t.imageUri : null);
       });
     }
-  }, [isPremium]);
+  }, [isPremium, selfManageTheme]);
 
   const moodStyle = mood ? MoodColors[mood] : null;
 
-  // Priority: explicit imageUri > premium selected theme > mood image (premium only)
+  // Journey screen: accentColor passed, no mood.
+  const isJourney = !!accentColor && !moodStyle;
+
+  // Priority: explicit imageUri > self-managed premium theme > mood image (premium only)
   const finalImageUri = imageUri
-    || (isPremium && selectedThemeUri)
+    || (selfManageTheme && isPremium && selectedThemeUri)
     || (isPremium && moodStyle?.image)
     || null;
 
-  const finalGradient = moodStyle
-    ? moodStyle.gradient
-    : theme === 'ocean'
-      ? ['#12100E', '#1A1814']
-      : theme === 'dawn'
-        ? ['#1A1210', '#241A18']
-        : ['#14100C', '#241E19'];
+  // Free users on mood-based guidance screens get no premium image.
+  // Use the same navy-base + accent-wash approach as journey screens so the
+  // whole immersive surface shares one consistent dark foundation. Premium users
+  // who have a nature image keep the full mood gradient (it underlies the image).
+  const freeMoodScreen = !!moodStyle && !isPremium && !finalImageUri;
+
+  // Accent used for the top glow wash (journey identity OR mood accent for free users).
+  const washAccent = accentColor ?? (freeMoodScreen ? moodStyle?.accent : undefined);
+
+  const finalGradient = (isJourney || freeMoodScreen)
+    ? NAVY_GRADIENT
+    : moodStyle
+      ? moodStyle.gradient     // premium mood screens — image will overlay this
+      : theme === 'ocean'
+        ? ['#12100E', '#1A1814']
+        : theme === 'dawn'
+          ? ['#1A1210', '#241A18']
+          : ['#14100C', '#241E19'];
+
+  // Refuge = calmer/dimmer; momentum = a touch more alive.
+  const glowAlpha = tone === 'refuge' ? '12' : '20';
+  const vignetteBottom = tone === 'refuge' ? 'rgba(0,0,0,0.92)' : 'rgba(0,0,0,0.85)';
+
+  // Show atmospheric particles for free users on any immersive screen (journey
+  // or guidance) — not for premium users who have a nature image instead.
+  const showAtmosphere = (isJourney || freeMoodScreen) && !finalImageUri;
+
+  // Star tint: gold for journeys, the mood's own accent color for guidance.
+  const starColor = moodStyle
+    ? `${moodStyle.accent}B3`   // 70% opacity of the mood accent
+    : 'rgba(212, 175, 55, 0.7)';
 
   return (
     <View style={styles.container}>
-      {/* Base theme gradient — always shown */}
+      {/* Base gradient — always shown */}
       <LinearGradient colors={finalGradient as any} style={StyleSheet.absoluteFill} />
+
+      {/* Accent wash — journey identity color or mood accent, fades from top */}
+      {washAccent && !finalImageUri && (
+        <LinearGradient
+          colors={[`${washAccent}${glowAlpha}`, 'transparent']}
+          start={{ x: 0.5, y: 0 }}
+          end={{ x: 0.5, y: 0.65 }}
+          style={StyleSheet.absoluteFill}
+        />
+      )}
+
+      {/* Atmospheric stars + faint mandala — free users, no premium image.
+          Stars tint to the mood/journey accent so the atmosphere feels intentional. */}
+      {showAtmosphere && (
+        <>
+          {JOURNEY_STARS.map((s, i) => (
+            <TwinklingStar
+              key={i}
+              x={s.x}
+              y={s.y}
+              size={s.size}
+              delay={s.delay}
+              duration={s.duration}
+              color={starColor}
+              reduceMotionOverride={reduceMotion}
+            />
+          ))}
+          <View style={styles.mandalaWrap} pointerEvents="none">
+            <AnimatedMandala
+              size={280}
+              opacity={0.035}
+              color={washAccent ?? '#D4AF37'}
+            />
+          </View>
+        </>
+      )}
 
       {/* Nature image layer — premium only */}
       {finalImageUri && (
@@ -65,7 +165,7 @@ const ImmersiveBackground: React.FC<ImmersiveBackgroundProps> = ({
 
       {/* Depth and readability overlays */}
       <LinearGradient
-        colors={['rgba(0,0,0,0.8)', 'transparent', 'rgba(0,0,0,0.9)']}
+        colors={['rgba(0,0,0,0.8)', 'transparent', vignetteBottom]}
         style={StyleSheet.absoluteFill}
       />
 
@@ -83,6 +183,12 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#000',
+  },
+  mandalaWrap: {
+    position: 'absolute',
+    top: -60,
+    right: -80,
+    zIndex: 0,
   },
 });
 

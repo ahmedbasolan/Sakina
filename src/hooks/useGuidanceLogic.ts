@@ -6,6 +6,19 @@ import { PreferencesService } from '../services/preferencesService';
 import { GuidanceExperience, Mood, UserPreferences } from '../types';
 import { dbQuery } from '../database/schema';
 
+// ─── Helper: parse "Surah Al-Baqarah 2:255" → surah metadata ─────────────────
+function parseQuranSource(
+  source: string,
+): { surahName: string; surahNumber: number; verseNumber: number } | null {
+  const m = source.match(/^Surah\s+(.+?)\s+(\d+):(\d+)/);
+  if (!m) return null;
+  return {
+    surahName: m[1],
+    surahNumber: parseInt(m[2], 10),
+    verseNumber: parseInt(m[3], 10),
+  };
+}
+
 export const useGuidanceLogic = (
   experience: GuidanceExperience,
   mood: Mood,
@@ -28,6 +41,7 @@ export const useGuidanceLogic = (
   const [preferences, setPreferences] = useState<UserPreferences>({
     primaryLanguage: 'english',
     showTransliteration: true,
+    autoPlayAudio: false,
   });
   const [remainingRefreshes, setRemainingRefreshes] = useState(3);
 
@@ -37,6 +51,11 @@ export const useGuidanceLogic = (
   const nextButtonOpacity = useRef(new Animated.Value(0)).current;
   const scrollY = useRef(new Animated.Value(0)).current;
   const scrollViewRef = useRef<any>(null);
+
+  // Reset heart state whenever a new piece of content loads
+  useEffect(() => {
+    setSavedStates({});
+  }, [experience?.content?.id]);
 
   useEffect(() => {
     setRemainingRefreshes(freemiumService.getRemainingRefreshes());
@@ -65,6 +84,10 @@ export const useGuidanceLogic = (
 
     HapticsService.impactAsync('LIGHT');
 
+    // If the source is a Quran verse we also mirror to bookmarked_verses so
+    // it appears in LibraryScreen's "Saved Verses" tab alongside SurahReader bookmarks.
+    const quranInfo = parseQuranSource(experience.content.source || '');
+
     try {
       if (newSaved) {
         const id = `${experience.content.id}_${experience.angle.id}_${Date.now()}`;
@@ -74,6 +97,24 @@ export const useGuidanceLogic = (
                          VALUES (?, ?, ?, ?, ?, ?)`,
             [id, experience.content.id, experience.angle.id, mood, '', Date.now()],
           );
+          if (quranInfo) {
+            // Deterministic ID (no timestamp) so re-saving the same verse stays idempotent
+            const bmId = `bv_guidance_${quranInfo.surahNumber}_${quranInfo.verseNumber}`;
+            await db.runAsync(
+              `INSERT OR IGNORE INTO bookmarked_verses
+                 (id, surahNumber, verseNumber, arabicText, translation, surahName, bookmarkedAt)
+               VALUES (?, ?, ?, ?, ?, ?, ?)`,
+              [
+                bmId,
+                quranInfo.surahNumber,
+                quranInfo.verseNumber,
+                experience.content.arabicText || '',
+                experience.content.englishTranslation || '',
+                quranInfo.surahName,
+                Date.now(),
+              ],
+            );
+          }
           return null;
         });
       } else {
@@ -82,6 +123,10 @@ export const useGuidanceLogic = (
             experience.content.id,
             experience.angle.id,
           ]);
+          if (quranInfo) {
+            const bmId = `bv_guidance_${quranInfo.surahNumber}_${quranInfo.verseNumber}`;
+            await db.runAsync(`DELETE FROM bookmarked_verses WHERE id = ?`, [bmId]);
+          }
           return null;
         });
       }
