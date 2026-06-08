@@ -104,7 +104,8 @@ export const tableDefinitions: TableDefinition[] = [
       date TEXT NOT NULL,
       guidanceSessionsUsed INTEGER NOT NULL DEFAULT 0,
       nextRefreshesRemaining INTEGER NOT NULL DEFAULT 3,
-      lastResetTime INTEGER NOT NULL
+      lastResetTime INTEGER NOT NULL,
+      windowKey TEXT
     );`,
   },
   {

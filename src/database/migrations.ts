@@ -142,5 +142,13 @@ export const runMigrationSteps = async (db: SQLite.SQLiteDatabase): Promise<void
   // created by createTables() — which always runs before runMigrationSteps(). A
   // migration step would be dead code on every path (fresh install and upgrade).
 
+  // user_sessions: windowKey (per-prayer-window refresh reset)
+  await runStep('user_sessions.windowKey', async () => {
+    if (!(await hasColumn('user_sessions', 'windowKey'))) {
+      console.log('[Migration] Adding windowKey to user_sessions...');
+      await db.execAsync(`ALTER TABLE user_sessions ADD COLUMN windowKey TEXT`);
+    }
+  });
+
   console.log('[Migration] All steps completed successfully');
 };
