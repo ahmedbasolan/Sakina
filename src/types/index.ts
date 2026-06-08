@@ -127,9 +127,10 @@ export interface SavedReflection {
 export interface UserSession {
   id: string;
   date: string; // YYYY-MM-DD format
-  guidanceSessionsUsed: number;
+  guidanceSessionsUsed: number; // legacy (daily-session cap removed); retained for back-compat
   nextRefreshesRemaining: number;
   lastResetTime: number;
+  windowKey?: string; // `${YYYY-MM-DD}:${PrayerContext}` — resets refreshes per prayer window
 }
 
 export interface FreemiumLimits {
