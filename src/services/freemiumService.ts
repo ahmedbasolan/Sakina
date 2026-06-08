@@ -115,10 +115,15 @@ export class FreemiumService {
   }
 
   /**
-   * Unified saved-item count for the free cap. A guidance Quran-save writes to
-   * BOTH saved_reflections and bookmarked_verses (mirror row id `bv_guidance_*`),
-   * so we count all reflections plus only the non-mirror bookmarks — a single
+   * Saved-item count for the free cap (spec §3.1). Counts ONLY saved guidance
+   * reflections + bookmarked verses. A guidance Quran-save writes to BOTH
+   * saved_reflections and bookmarked_verses (mirror row id `bv_guidance_*`), so we
+   * count all saved_reflections plus only the non-mirror bookmarks — a single
    * saved verse counts once.
+   *
+   * Free-form journal entries (the `reflections` table) are intentionally NOT
+   * counted: a person's own writing/journaling is never capped — only "saved"
+   * library content is.
    */
   private async getSavedItemsCount(): Promise<number> {
     return dbQuery(async (db) => {
