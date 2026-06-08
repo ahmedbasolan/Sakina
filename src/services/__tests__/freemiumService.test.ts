@@ -51,11 +51,11 @@ jest.mock('../subscriptionService', () => ({
 
 jest.mock('../../constants', () => ({
   FREEMIUM_LIMITS: {
-    dailyGuidanceSessions: 2,
-    nextRefreshesPerSession: 3,
-    maxSavedItems: 10,
-    rotationHistoryDays: 7,
+    refreshesPerPrayerWindow: 3,
+    maxSavedItems: 30,
+    rotationHistoryDays: 30,
   },
+  isMercyMood: jest.fn(() => false),
 }));
 
 describe('FreemiumService', () => {
@@ -244,16 +244,27 @@ describe('FreemiumService', () => {
   });
 
   describe('Save Items', () => {
-    it('should allow saving for premium users', async () => {
+    it('always allows saving for premium users', async () => {
       mockSubscriptionService.isPremium.mockReturnValue(true);
-      const result = await service.canSaveItem();
-      expect(result).toBe(true);
+      expect(await service.canSaveItem()).toBe(true);
     });
 
-    it('should not allow saving for free users', async () => {
+    it('allows saving for free users under the cap', async () => {
       mockSubscriptionService.isPremium.mockReturnValue(false);
-      const result = await service.canSaveItem();
-      expect(result).toBe(false);
+      const { dbQuery } = require('../../database/schema');
+      dbQuery.mockImplementationOnce((op: any) =>
+        op({ getFirstAsync: jest.fn().mockResolvedValue({ n: 5 }) }),
+      );
+      expect(await service.canSaveItem()).toBe(true);
+    });
+
+    it('blocks saving for free users at the cap', async () => {
+      mockSubscriptionService.isPremium.mockReturnValue(false);
+      const { dbQuery } = require('../../database/schema');
+      dbQuery.mockImplementationOnce((op: any) =>
+        op({ getFirstAsync: jest.fn().mockResolvedValue({ n: 30 }) }),
+      );
+      expect(await service.canSaveItem()).toBe(false);
     });
   });
 
