@@ -71,16 +71,19 @@ export const FREEMIUM_LIMITS = {
   rotationHistoryDays: 30,
 } as const;
 
+// Keyed by the capitalized `Mood` union (NOT lowercase) so lookups like
+// MOOD_COLORS[mood] resolve — and aligned to the canonical MoodColors accents
+// in DesignSystem so mood dots/tags match the Home grid across every screen.
 export const MOOD_COLORS = {
-  overwhelmed: '#E87C5F',
-  sad: '#6B8EBF',
-  angry: '#E85F5F',
-  tired: '#9CA3AF',
-  lonely: '#F59E0B',
-  grateful: '#4ADE80',
-  hopeful: '#6BCB77',
-  guilty: '#DC2626',
-  calm: '#2ED3C6',
+  Overwhelmed: '#818CF8',
+  Sad: '#94A3B8',
+  Angry: '#FB923C',
+  Tired: '#D6D3D1',
+  Lonely: '#C084FC',
+  Grateful: '#FBBF24',
+  Hopeful: '#22D3EE',
+  Guilty: '#A3A3A3',
+  Calm: '#34D399',
 } as const;
 
 export const MOOD_ISLAMIC_TERMS = {
