@@ -67,7 +67,7 @@ export const STORAGE_KEYS = {
 export const FREEMIUM_LIMITS = {
   dailyGuidanceSessions: 2,
   nextRefreshesPerSession: 3,
-  maxSavedItems: 0,
+  maxSavedItems: 30,
   rotationHistoryDays: 30,
 } as const;
 

@@ -2,6 +2,7 @@ import { UserSession, FreemiumLimits, PaywallType, SubscriptionState } from '../
 import { SessionService } from './sessionService';
 import { SubscriptionService } from './subscriptionService';
 import { FREEMIUM_LIMITS } from '../constants';
+import { dbQuery } from '../database/schema';
 
 const PREMIUM_LIMITS: FreemiumLimits = {
   dailyGuidanceSessions: Infinity,
@@ -108,7 +109,25 @@ export class FreemiumService {
   }
 
   async canSaveItem(): Promise<boolean> {
-    return this.isPremium();
+    if (this.isPremium()) return true;
+    const count = await this.getSavedItemsCount();
+    return count < FREEMIUM_LIMITS.maxSavedItems;
+  }
+
+  /**
+   * Unified saved-item count for the free cap. A guidance Quran-save writes to
+   * BOTH saved_reflections and bookmarked_verses (mirror row id `bv_guidance_*`),
+   * so we count all reflections plus only the non-mirror bookmarks — a single
+   * saved verse counts once.
+   */
+  private async getSavedItemsCount(): Promise<number> {
+    return dbQuery(async (db) => {
+      const row = await db.getFirstAsync<{ n: number }>(
+        `SELECT (SELECT COUNT(*) FROM saved_reflections)
+              + (SELECT COUNT(*) FROM bookmarked_verses WHERE id NOT LIKE 'bv_guidance_%') AS n`,
+      );
+      return row?.n ?? 0;
+    });
   }
 
   getHoursUntilReset(): number {
