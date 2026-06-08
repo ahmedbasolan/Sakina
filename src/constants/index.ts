@@ -102,6 +102,22 @@ export const getMoodIslamicTerm = (mood: Mood): string => {
   return MOOD_ISLAMIC_TERMS[mood] || '';
 };
 
+/**
+ * The six "heavy" moods. When the active guidance mood is one of these, limits
+ * lift and no upgrade prompt appears (the mercy rule — see spec §4). The list is
+ * a moral decision, not a tuning knob: when in doubt, mercy.
+ */
+export const MERCY_MOODS: ReadonlySet<Mood> = new Set<Mood>([
+  'Overwhelmed', // Tawakkul
+  'Sad',         // Sabr
+  'Lonely',      // Wasl
+  'Guilty',      // Tawbah — sacred; never gate repentance
+  'Angry',       // Ihsan
+  'Tired',       // Quwwah
+]);
+
+export const isMercyMood = (mood: Mood): boolean => MERCY_MOODS.has(mood);
+
 export const getMoodDisplay = (mood: Mood): string => {
   const term = getMoodIslamicTerm(mood);
   return term.charAt(0) + term.slice(1).toLowerCase();
