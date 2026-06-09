@@ -134,8 +134,7 @@ export interface UserSession {
 }
 
 export interface FreemiumLimits {
-  dailyGuidanceSessions: number;
-  nextRefreshesPerSession: number;
+  refreshesPerPrayerWindow: number;
   maxSavedItems: number;
   rotationHistoryDays: number;
 }

@@ -1,6 +1,7 @@
 import { dbQuery } from '../database/schema';
 import { UserSession } from '../types';
 import { FREEMIUM_LIMITS } from '../constants';
+import PrayerTimesService from './prayerTimesService';
 
 export class SessionService {
   private static instance: SessionService;
@@ -48,7 +49,7 @@ export class SessionService {
         id: `session_${Date.now()}`,
         date: new Date().toISOString().split('T')[0],
         guidanceSessionsUsed: 0,
-        nextRefreshesRemaining: isPremium ? 999 : FREEMIUM_LIMITS.nextRefreshesPerSession,
+        nextRefreshesRemaining: isPremium ? 999 : FREEMIUM_LIMITS.refreshesPerPrayerWindow,
         lastResetTime: Date.now(),
       };
     }
@@ -61,7 +62,7 @@ export class SessionService {
       id: sessionId,
       date: today,
       guidanceSessionsUsed: 0,
-      nextRefreshesRemaining: isPremium ? 999 : FREEMIUM_LIMITS.nextRefreshesPerSession,
+      nextRefreshesRemaining: isPremium ? 999 : FREEMIUM_LIMITS.refreshesPerPrayerWindow,
       lastResetTime: Date.now(),
     };
 
@@ -74,7 +75,7 @@ export class SessionService {
             sessionId,
             today,
             0,
-            isPremium ? 999 : FREEMIUM_LIMITS.nextRefreshesPerSession,
+            isPremium ? 999 : FREEMIUM_LIMITS.refreshesPerPrayerWindow,
             Date.now(),
           ],
         );
@@ -86,19 +87,41 @@ export class SessionService {
     }
   }
 
+  /** `${YYYY-MM-DD}:${PrayerContext}` — the bucket refreshes belong to. */
+  private async resolveWindowKey(): Promise<string> {
+    const today = new Date().toISOString().split('T')[0];
+    const context = await PrayerTimesService.getInstance().getCurrentPrayerContext();
+    return `${today}:${context}`;
+  }
+
+  /**
+   * Resets the free refresh allowance when the prayer window changes. Premium is
+   * kept effectively unlimited (999). Safe to call repeatedly; only writes on change.
+   */
+  async syncWindow(isPremium: boolean): Promise<void> {
+    if (!this.currentSession) return;
+    const key = await this.resolveWindowKey();
+    if (this.currentSession.windowKey !== key) {
+      this.currentSession.windowKey = key;
+      this.currentSession.nextRefreshesRemaining = isPremium
+        ? 999
+        : FREEMIUM_LIMITS.refreshesPerPrayerWindow;
+      await this.saveSession();
+    }
+  }
+
   async saveSession(): Promise<void> {
     if (this.currentSession) {
       try {
         await dbQuery(async (db) => {
           await db.runAsync(
-            `
-            UPDATE user_sessions 
-            SET guidanceSessionsUsed = ?, nextRefreshesRemaining = ?
-            WHERE id = ?
-          `,
+            `UPDATE user_sessions
+             SET guidanceSessionsUsed = ?, nextRefreshesRemaining = ?, windowKey = ?
+             WHERE id = ?`,
             [
               this.currentSession!.guidanceSessionsUsed,
               this.currentSession!.nextRefreshesRemaining,
+              this.currentSession!.windowKey ?? null,
               this.currentSession!.id,
             ],
           );
@@ -109,47 +132,33 @@ export class SessionService {
     }
   }
 
-  canStartGuidanceSession(isPremium: boolean): boolean {
-    if (!this.currentSession) return false;
-    if (isPremium) return true;
-    return this.currentSession.guidanceSessionsUsed < FREEMIUM_LIMITS.dailyGuidanceSessions;
+  canStartGuidanceSession(_isPremium: boolean): boolean {
+    // Daily-session cap removed — guidance is always available; refreshes are
+    // limited per prayer window instead.
+    return !!this.currentSession;
   }
 
   async startGuidanceSession(isPremium: boolean): Promise<boolean> {
-    let release!: () => void;
-    const prev = this.operationLock;
-    this.operationLock = new Promise((r) => { release = r; });
-    await prev;
-    try {
-      if (!this.currentSession) return false;
-      if (this.canStartGuidanceSession(isPremium)) {
-        this.currentSession.guidanceSessionsUsed++;
-        this.currentSession.nextRefreshesRemaining = isPremium
-          ? 999
-          : FREEMIUM_LIMITS.nextRefreshesPerSession;
-        await this.saveSession();
-        return true;
-      }
-      return false;
-    } finally {
-      release();
-    }
+    if (!this.currentSession) return false;
+    await this.syncWindow(isPremium); // ensure the window's allowance is current
+    return true;
   }
 
-  canUseNextRefresh(isPremium: boolean): boolean {
+  canUseNextRefresh(isPremium: boolean, mercyActive: boolean = false): boolean {
     if (!this.currentSession) return false;
-    if (isPremium) return true;
+    if (isPremium || mercyActive) return true;
     return this.currentSession.nextRefreshesRemaining > 0;
   }
 
-  async useNextRefresh(isPremium: boolean): Promise<boolean> {
+  async useNextRefresh(isPremium: boolean, mercyActive: boolean = false): Promise<boolean> {
     let release!: () => void;
     const prev = this.operationLock;
     this.operationLock = new Promise((r) => { release = r; });
     await prev;
     try {
       if (!this.currentSession) return false;
-      if (this.canUseNextRefresh(isPremium)) {
+      if (isPremium || mercyActive) return true; // unlimited — no decrement
+      if (this.currentSession.nextRefreshesRemaining > 0) {
         this.currentSession.nextRefreshesRemaining--;
         await this.saveSession();
         return true;
@@ -160,18 +169,9 @@ export class SessionService {
     }
   }
 
-  getRemainingSessions(isPremium: boolean): number {
+  getRemainingRefreshes(isPremium: boolean, mercyActive: boolean = false): number {
     if (!this.currentSession) return 0;
-    if (isPremium) return Infinity;
-    return Math.max(
-      0,
-      FREEMIUM_LIMITS.dailyGuidanceSessions - this.currentSession.guidanceSessionsUsed,
-    );
-  }
-
-  getRemainingRefreshes(isPremium: boolean): number {
-    if (!this.currentSession) return 0;
-    if (isPremium) return Infinity;
+    if (isPremium || mercyActive) return Infinity;
     return Math.max(0, this.currentSession.nextRefreshesRemaining);
   }
 
@@ -181,7 +181,7 @@ export class SessionService {
 
   resetRefreshesToLimit() {
     if (this.currentSession) {
-      this.currentSession.nextRefreshesRemaining = FREEMIUM_LIMITS.nextRefreshesPerSession;
+      this.currentSession.nextRefreshesRemaining = FREEMIUM_LIMITS.refreshesPerPrayerWindow;
     }
   }
 }
