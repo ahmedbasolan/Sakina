@@ -36,6 +36,7 @@ const SupportSakinaScreen: React.FC = () => {
   const insets = useSafeAreaInsets();
   const reduceMotion = useReduceMotion();
   const freemium = FreemiumService.getInstance();
+  const pricing = freemium.getPricing();
 
   const enter = useRef(new Animated.Value(0)).current;
 
@@ -108,10 +109,12 @@ const SupportSakinaScreen: React.FC = () => {
             onPress={handleSupport}
             activeOpacity={0.85}
             accessibilityRole="button"
-            accessibilityLabel="Start a 7-day free trial"
+            accessibilityLabel={`Start a ${pricing.trialDays}-day free trial`}
           >
-            <Text style={styles.ctaText}>Start 7-day free trial</Text>
+            <Text style={styles.ctaText}>Start {pricing.trialDays}-day free trial</Text>
           </TouchableOpacity>
+
+          <Text style={styles.priceNote}>Then ${pricing.yearlyUSD}/year · cancel anytime</Text>
 
           <TouchableOpacity
             style={styles.later}
@@ -188,6 +191,13 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     letterSpacing: Typography.letterSpacing.normal,
     color: Colors.background.primary,
+  },
+  priceNote: {
+    fontFamily: Typography.fonts.latin,
+    fontSize: Typography.sizes.small,
+    color: Colors.text.muted,
+    textAlign: 'center',
+    marginTop: Spacing.md,
   },
   later: {
     marginTop: Spacing.lg,

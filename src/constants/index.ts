@@ -46,7 +46,7 @@ export const API_CONFIG = {
 export const STORAGE_KEYS = {
   // Auth & session
   auth: '@guidance_auth',
-  lastOpen: '@sakina_last_open',   // was @noor_last_open — migration handled in HomeScreen
+  lastOpen: '@sakina_last_open', // was @noor_last_open — migration handled in HomeScreen
 
   // User preferences & location
   preferences: '@guidance_preferences',
@@ -113,11 +113,11 @@ export const getMoodIslamicTerm = (mood: Mood): string => {
  */
 export const MERCY_MOODS: ReadonlySet<Mood> = new Set<Mood>([
   'Overwhelmed', // Tawakkul
-  'Sad',         // Sabr
-  'Lonely',      // Wasl
-  'Guilty',      // Tawbah — sacred; never gate repentance
-  'Angry',       // Ihsan
-  'Tired',       // Quwwah
+  'Sad', // Sabr
+  'Lonely', // Wasl
+  'Guilty', // Tawbah — sacred; never gate repentance
+  'Angry', // Ihsan
+  'Tired', // Quwwah
 ]);
 
 export const isMercyMood = (mood: Mood): boolean => MERCY_MOODS.has(mood);
@@ -141,6 +141,16 @@ export const ERROR_MESSAGES = {
   server: 'Server error. Please try again later.',
   auth: 'Authentication error. Please sign in again.',
   unknown: 'An unexpected error occurred. Please try again.',
+} as const;
+
+// Subscription price — the single display source (spec §7 "dynamic price").
+// Placeholder values until Phase 3 wires real StoreKit/RevenueCat store-localized
+// prices; the UI reads these via freemiumService.getPricing() so the swap is
+// one place. trialDays is the peak-offered free trial (spec §6).
+export const SUBSCRIPTION_PRICING = {
+  monthlyUSD: 4.99,
+  yearlyUSD: 39.99,
+  trialDays: 7,
 } as const;
 
 export const SPECIAL_EDITION_PRICING = {
