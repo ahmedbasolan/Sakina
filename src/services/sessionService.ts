@@ -192,6 +192,7 @@ export class SessionService {
   resetRefreshesToLimit() {
     if (this.currentSession) {
       this.currentSession.nextRefreshesRemaining = FREEMIUM_LIMITS.refreshesPerPrayerWindow;
+      this.currentSession.windowKey = undefined; // force re-association on next syncWindow
     }
   }
 }
