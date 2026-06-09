@@ -1,6 +1,12 @@
 import { FreemiumService } from '../freemiumService';
 
 // Mock the dependencies
+jest.mock('../../data/staticPaths', () => ({
+  SPECIAL_EDITION_BUNDLES: [
+    { id: 'bundle-1', includesPremiumTrial: true },
+  ],
+}));
+
 jest.mock('../../database/schema', () => ({
   getDatabase: jest.fn(),
   dbQuery: jest.fn((op) =>
@@ -19,8 +25,8 @@ jest.mock('../sessionService', () => ({
       startGuidanceSession: jest.fn(() => Promise.resolve(true)),
       canUseNextRefresh: jest.fn(() => true),
       useNextRefresh: jest.fn(() => Promise.resolve(true)),
-      getRemainingSessions: jest.fn(() => 2),
       getRemainingRefreshes: jest.fn(() => 3),
+      syncWindow: jest.fn(() => Promise.resolve()),
       getCurrentSession: jest.fn(() => ({
         guidanceSessionsUsed: 0,
         nextRefreshesRemaining: 3,
@@ -65,17 +71,48 @@ describe('FreemiumService', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    
-    // Reset singleton instance
-    (FreemiumService as any).instance = null;
-    service = FreemiumService.getInstance();
 
-    // Get mock instances
+    // Build fresh mock objects and wire them into getInstance() BEFORE the
+    // FreemiumService singleton is created. The service captures the returned
+    // object in its class-field initialiser, so both the service and these
+    // local variables end up pointing at the same object.
     const { SessionService } = require('../sessionService');
-    mockSessionService = SessionService.getInstance();
+    mockSessionService = {
+      initialize: jest.fn(),
+      canStartGuidanceSession: jest.fn(() => true),
+      startGuidanceSession: jest.fn(() => Promise.resolve(true)),
+      canUseNextRefresh: jest.fn(() => true),
+      useNextRefresh: jest.fn(() => Promise.resolve(true)),
+      getRemainingRefreshes: jest.fn(() => 3),
+      syncWindow: jest.fn(() => Promise.resolve()),
+      getCurrentSession: jest.fn(() => ({
+        guidanceSessionsUsed: 0,
+        nextRefreshesRemaining: 3,
+      })),
+      saveSession: jest.fn(() => Promise.resolve()),
+      resetRefreshesToLimit: jest.fn(),
+    };
+    SessionService.getInstance.mockReturnValue(mockSessionService);
 
     const { SubscriptionService } = require('../subscriptionService');
-    mockSubscriptionService = SubscriptionService.getInstance();
+    mockSubscriptionService = {
+      initialize: jest.fn(() => Promise.resolve()),
+      isPremium: jest.fn(() => false),
+      getSubscriptionState: jest.fn(() => ({
+        tier: 'free',
+        unlockedBundleIds: [],
+      })),
+      purchaseBundle: jest.fn(() => Promise.resolve(true)),
+      startTrial: jest.fn(() => Promise.resolve(true)),
+      activatePremium: jest.fn(() => Promise.resolve(true)),
+      resetToFreeTier: jest.fn(() => Promise.resolve()),
+      cancelSubscription: jest.fn(() => Promise.resolve(true)),
+    };
+    SubscriptionService.getInstance.mockReturnValue(mockSubscriptionService);
+
+    // Reset singleton instance and create fresh FreemiumService
+    (FreemiumService as any).instance = null;
+    service = FreemiumService.getInstance();
   });
 
   describe('Singleton Pattern', () => {
@@ -157,42 +194,27 @@ describe('FreemiumService', () => {
         tier: 'free',
         unlockedBundleIds: [],
       });
-      
-      // Mock the static paths data
-      jest.mock('../../data/staticPaths', () => ({
-        SPECIAL_EDITION_BUNDLES: [
-          { id: 'bundle-1', includesPremiumTrial: true },
-        ],
-      }));
-      
+
       await service.purchaseBundle('bundle-1');
-      
+
       expect(mockSubscriptionService.startTrial).toHaveBeenCalled();
     });
   });
 
   describe('Limits', () => {
-    it('should return correct limits for free tier', () => {
+    it('returns free-tier limits', () => {
       const limits = service.getCurrentLimits();
-      expect(limits.dailyGuidanceSessions).toBe(2);
-      expect(limits.nextRefreshesPerSession).toBe(3);
-      expect(limits.maxSavedItems).toBe(10);
-      expect(limits.rotationHistoryDays).toBe(7);
+      expect(limits.refreshesPerPrayerWindow).toBe(3);
+      expect(limits.maxSavedItems).toBe(30);
+      expect(limits.rotationHistoryDays).toBe(30);
     });
 
-    it('should return unlimited limits for premium tier', () => {
+    it('returns unlimited limits for premium', () => {
       mockSubscriptionService.isPremium.mockReturnValue(true);
-      
       const limits = service.getCurrentLimits();
-      expect(limits.dailyGuidanceSessions).toBe(Infinity);
-      expect(limits.nextRefreshesPerSession).toBe(Infinity);
+      expect(limits.refreshesPerPrayerWindow).toBe(Infinity);
       expect(limits.maxSavedItems).toBe(Infinity);
       expect(limits.rotationHistoryDays).toBe(90);
-    });
-
-    it('should get limits alias', () => {
-      const limits = service.getLimits();
-      expect(limits).toEqual(service.getCurrentLimits());
     });
   });
 
@@ -218,21 +240,24 @@ describe('FreemiumService', () => {
 
     it('should use next refresh', async () => {
       mockSessionService.useNextRefresh.mockResolvedValue(true);
-      
+
       const result = await service.useNextRefresh();
-      
+
       expect(result).toBe(true);
-      expect(mockSessionService.useNextRefresh).toHaveBeenCalledWith(false);
+      expect(mockSessionService.useNextRefresh).toHaveBeenCalledWith(false, false);
     });
 
-    it('should get remaining sessions', () => {
-      mockSessionService.getRemainingSessions.mockReturnValue(2);
-      expect(service.getRemainingSessions()).toBe(2);
-    });
-
-    it('should get remaining refreshes', () => {
+    it('passes non-mercy by default for remaining refreshes', () => {
       mockSessionService.getRemainingRefreshes.mockReturnValue(3);
       expect(service.getRemainingRefreshes()).toBe(3);
+      expect(mockSessionService.getRemainingRefreshes).toHaveBeenCalledWith(false, false);
+    });
+
+    it('passes mercy=true for a heavy mood', () => {
+      const { isMercyMood } = require('../../constants');
+      isMercyMood.mockReturnValue(true);
+      service.getRemainingRefreshes('Sad' as any);
+      expect(mockSessionService.getRemainingRefreshes).toHaveBeenCalledWith(false, true);
     });
 
     it('should get session info', () => {
@@ -275,65 +300,29 @@ describe('FreemiumService', () => {
       expect(hours).toBeLessThanOrEqual(24);
     });
 
-    it('should return 0 when at midnight', () => {
-      // Mock Date to be midnight
-      const mockDate = new Date();
-      mockDate.setHours(0, 0, 0, 0);
-      jest.spyOn(global, 'Date').mockImplementation(() => mockDate as any);
-      
+    it('should return 24 when at midnight', () => {
+      // Pin the system clock to midnight using fake timers so that both
+      // `new Date()` and `new Date(now)` inside getHoursUntilReset() see the
+      // same frozen time.
+      const midnight = new Date();
+      midnight.setHours(0, 0, 0, 0);
+      jest.useFakeTimers({ now: midnight });
+
       const hours = service.getHoursUntilReset();
       expect(hours).toBe(24);
-      
-      jest.restoreAllMocks();
+
+      jest.useRealTimers();
     });
   });
 
   describe('Paywall Detection', () => {
-    it('should return null when premium', () => {
+    it('returns null (comfort-flow paywall removed — peaks-only model)', () => {
+      expect(service.getPaywallType()).toBeNull();
+    });
+
+    it('returns null when premium', () => {
       mockSubscriptionService.isPremium.mockReturnValue(true);
-      
-      const paywall = service.getPaywallType();
-      expect(paywall).toBeNull();
-    });
-
-    it('should return null when under limits', () => {
-      mockSessionService.getCurrentSession.mockReturnValue({
-        guidanceSessionsUsed: 1,
-        nextRefreshesRemaining: 2,
-      });
-      
-      const paywall = service.getPaywallType();
-      expect(paywall).toBeNull();
-    });
-
-    it('should return daily_limit paywall when session limit reached', () => {
-      mockSessionService.getCurrentSession.mockReturnValue({
-        guidanceSessionsUsed: 2,
-        nextRefreshesRemaining: 1,
-      });
-      
-      const paywall = service.getPaywallType();
-      expect(paywall).toEqual({
-        type: 'daily_limit',
-        remainingTime: expect.any(Number),
-      });
-    });
-
-    it('should return refresh_limit paywall when refresh limit reached', () => {
-      mockSessionService.getCurrentSession.mockReturnValue({
-        guidanceSessionsUsed: 1,
-        nextRefreshesRemaining: 0,
-      });
-      
-      const paywall = service.getPaywallType();
-      expect(paywall).toEqual({ type: 'refresh_limit' });
-    });
-
-    it('should return null when no session', () => {
-      mockSessionService.getCurrentSession.mockReturnValue(null);
-      
-      const paywall = service.getPaywallType();
-      expect(paywall).toBeNull();
+      expect(service.getPaywallType()).toBeNull();
     });
   });
 

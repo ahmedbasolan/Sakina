@@ -1,12 +1,12 @@
-import { UserSession, FreemiumLimits, PaywallType, SubscriptionState } from '../types';
+import { UserSession, FreemiumLimits, PaywallType, SubscriptionState, Mood } from '../types';
 import { SessionService } from './sessionService';
 import { SubscriptionService } from './subscriptionService';
-import { FREEMIUM_LIMITS } from '../constants';
+import { FREEMIUM_LIMITS, isMercyMood } from '../constants';
 import { dbQuery } from '../database/schema';
+import { SPECIAL_EDITION_BUNDLES } from '../data/staticPaths';
 
 const PREMIUM_LIMITS: FreemiumLimits = {
-  dailyGuidanceSessions: Infinity,
-  nextRefreshesPerSession: Infinity,
+  refreshesPerPrayerWindow: Infinity,
   maxSavedItems: Infinity,
   rotationHistoryDays: 90,
 };
@@ -64,7 +64,6 @@ export class FreemiumService {
   async purchaseBundle(bundleId: string): Promise<boolean> {
     const success = await this.subscriptionService.purchaseBundle(bundleId);
     if (success) {
-      const { SPECIAL_EDITION_BUNDLES } = await import('../data/staticPaths');
       const bundle = SPECIAL_EDITION_BUNDLES.find((b) => b.id === bundleId);
       if (
         bundle?.includesPremiumTrial &&
@@ -92,20 +91,25 @@ export class FreemiumService {
     return this.sessionService.startGuidanceSession(this.isPremium());
   }
 
-  canUseNextRefresh(): boolean {
-    return this.sessionService.canUseNextRefresh(this.isPremium());
+  /** Refresh the per-prayer-window allowance (call when guidance loads). */
+  async syncPrayerWindow(): Promise<void> {
+    await this.sessionService.syncWindow(this.isPremium());
   }
 
-  async useNextRefresh(): Promise<boolean> {
-    return this.sessionService.useNextRefresh(this.isPremium());
+  canUseNextRefresh(mood?: Mood): boolean {
+    return this.sessionService.canUseNextRefresh(this.isPremium(), this.mercy(mood));
   }
 
-  getRemainingSessions(): number {
-    return this.sessionService.getRemainingSessions(this.isPremium());
+  async useNextRefresh(mood?: Mood): Promise<boolean> {
+    return this.sessionService.useNextRefresh(this.isPremium(), this.mercy(mood));
   }
 
-  getRemainingRefreshes(): number {
-    return this.sessionService.getRemainingRefreshes(this.isPremium());
+  getRemainingRefreshes(mood?: Mood): number {
+    return this.sessionService.getRemainingRefreshes(this.isPremium(), this.mercy(mood));
+  }
+
+  private mercy(mood?: Mood): boolean {
+    return mood ? isMercyMood(mood) : false;
   }
 
   async canSaveItem(): Promise<boolean> {
@@ -145,17 +149,9 @@ export class FreemiumService {
   }
 
   getPaywallType(): PaywallType | null {
-    const session = this.sessionService.getCurrentSession();
-    if (!session || this.isPremium()) return null;
-
-    if (session.guidanceSessionsUsed >= FREEMIUM_LIMITS.dailyGuidanceSessions) {
-      return { type: 'daily_limit', remainingTime: this.getHoursUntilReset() };
-    }
-
-    if (session.nextRefreshesRemaining <= 0) {
-      return { type: 'refresh_limit' };
-    }
-
+    // Comfort-flow paywalls removed (spec §8). The in-flow limit is a gentle
+    // resting point handled in the UI; upgrade asks live at peaks via
+    // shouldOfferUpgrade() (Phase 2). Always null here.
     return null;
   }
 
