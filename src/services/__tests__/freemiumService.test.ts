@@ -1,5 +1,4 @@
 import { FreemiumService } from '../freemiumService';
-import { Mood } from '../../types';
 
 // Mock the dependencies
 jest.mock('../../data/staticPaths', () => ({
