@@ -139,15 +139,6 @@ export class FreemiumService {
     });
   }
 
-  getHoursUntilReset(): number {
-    const now = new Date();
-    const tomorrow = new Date(now);
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    tomorrow.setHours(0, 0, 0, 0);
-    const diffMs = tomorrow.getTime() - now.getTime();
-    return Math.max(0, Math.floor(diffMs / (1000 * 60 * 60)));
-  }
-
   getPaywallType(): PaywallType | null {
     // Comfort-flow paywalls removed (spec §8). The in-flow limit is a gentle
     // resting point handled in the UI; upgrade asks live at peaks via
@@ -186,10 +177,6 @@ export class FreemiumService {
   async restorePurchase(): Promise<boolean> {
     await new Promise((resolve) => setTimeout(resolve, 1500));
     return this.activatePremium('monthly');
-  }
-
-  getLimits(): FreemiumLimits {
-    return this.getCurrentLimits();
   }
 
   getSessionInfo(): UserSession | null {

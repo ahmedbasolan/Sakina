@@ -1,4 +1,5 @@
 import { FreemiumService } from '../freemiumService';
+import { Mood } from '../../types';
 
 // Mock the dependencies
 jest.mock('../../data/staticPaths', () => ({
@@ -20,6 +21,7 @@ jest.mock('../../database/schema', () => ({
 jest.mock('../sessionService', () => ({
   SessionService: {
     getInstance: jest.fn(() => ({
+      // Shape only — beforeEach rebuilds this object and wires it via mockReturnValue before each test.
       initialize: jest.fn(),
       canStartGuidanceSession: jest.fn(() => true),
       startGuidanceSession: jest.fn(() => Promise.resolve(true)),
@@ -236,6 +238,7 @@ describe('FreemiumService', () => {
     it('should check if can use next refresh', () => {
       mockSessionService.canUseNextRefresh.mockReturnValue(true);
       expect(service.canUseNextRefresh()).toBe(true);
+      expect(mockSessionService.canUseNextRefresh).toHaveBeenCalledWith(false, false);
     });
 
     it('should use next refresh', async () => {
@@ -256,7 +259,7 @@ describe('FreemiumService', () => {
     it('passes mercy=true for a heavy mood', () => {
       const { isMercyMood } = require('../../constants');
       isMercyMood.mockReturnValue(true);
-      service.getRemainingRefreshes('Sad' as any);
+      service.getRemainingRefreshes('Sad');
       expect(mockSessionService.getRemainingRefreshes).toHaveBeenCalledWith(false, true);
     });
 
@@ -290,28 +293,6 @@ describe('FreemiumService', () => {
         op({ getFirstAsync: jest.fn().mockResolvedValue({ n: 30 }) }),
       );
       expect(await service.canSaveItem()).toBe(false);
-    });
-  });
-
-  describe('Time Calculations', () => {
-    it('should calculate hours until reset correctly', () => {
-      const hours = service.getHoursUntilReset();
-      expect(hours).toBeGreaterThanOrEqual(0);
-      expect(hours).toBeLessThanOrEqual(24);
-    });
-
-    it('should return 24 when at midnight', () => {
-      // Pin the system clock to midnight using fake timers so that both
-      // `new Date()` and `new Date(now)` inside getHoursUntilReset() see the
-      // same frozen time.
-      const midnight = new Date();
-      midnight.setHours(0, 0, 0, 0);
-      jest.useFakeTimers({ now: midnight });
-
-      const hours = service.getHoursUntilReset();
-      expect(hours).toBe(24);
-
-      jest.useRealTimers();
     });
   });
 
