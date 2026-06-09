@@ -31,12 +31,14 @@ import { logServiceError } from '../services/errorLoggingService';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import { useAppContext } from '../context/AppContext';
 import { SubscriptionService } from '../services/subscriptionService';
+import { FreemiumService } from '../services/freemiumService';
 
 const GuidanceScreen: React.FC = () => {
   const route = useRoute<any>();
   const navigation = useNavigation<any>();
   const { rotationEngine } = useAppContext();
   const isPremium = SubscriptionService.getInstance().isPremium();
+  const freemium = FreemiumService.getInstance();
 
   const { experience, mood, islamicTerm } = route.params;
 
@@ -47,7 +49,11 @@ const GuidanceScreen: React.FC = () => {
         navigation.setParams({ experience: nextExp });
       }
     } catch (error) {
-      logServiceError('GuidanceScreen', 'handleNext', error instanceof Error ? error : new Error(String(error)));
+      logServiceError(
+        'GuidanceScreen',
+        'handleNext',
+        error instanceof Error ? error : new Error(String(error)),
+      );
     }
   };
 
@@ -60,7 +66,11 @@ const GuidanceScreen: React.FC = () => {
         reflection,
       );
     } catch (error) {
-      logServiceError('GuidanceScreen', 'handleSaveReflection', error instanceof Error ? error : new Error(String(error)));
+      logServiceError(
+        'GuidanceScreen',
+        'handleSaveReflection',
+        error instanceof Error ? error : new Error(String(error)),
+      );
     }
   };
 
@@ -80,14 +90,18 @@ const GuidanceScreen: React.FC = () => {
     setSelectedThemeName(t?.name ?? null);
   }, [isPremium]);
 
-  useEffect(() => { refreshSelectedTheme(); }, [refreshSelectedTheme]);
+  useEffect(() => {
+    refreshSelectedTheme();
+  }, [refreshSelectedTheme]);
 
   const scrollY = useRef(new Animated.Value(0)).current;
   const [currentLayer, setCurrentLayer] = useState(0);
 
   // Ref so the PanResponder (created once) can read the latest layer index
   const currentLayerRef = useRef(currentLayer);
-  useEffect(() => { currentLayerRef.current = currentLayer; }, [currentLayer]);
+  useEffect(() => {
+    currentLayerRef.current = currentLayer;
+  }, [currentLayer]);
 
   // Ref to the hook's gated advance fn, kept fresh so the once-created
   // PanResponder always calls the current closure (mirrors currentLayerRef).
@@ -116,9 +130,7 @@ const GuidanceScreen: React.FC = () => {
   }, [experience?.content?.id]);
 
   const hasContext = !!(experience.content.whyThis || experience.angle?.angle);
-  const LAYER_TYPES: Array<'verse' | 'context'> = hasContext
-    ? ['verse', 'context']
-    : ['verse'];
+  const LAYER_TYPES: Array<'verse' | 'context'> = hasContext ? ['verse', 'context'] : ['verse'];
 
   const totalLayers = LAYER_TYPES.length;
 
@@ -134,10 +146,25 @@ const GuidanceScreen: React.FC = () => {
     requestNext,
     isResting,
     dismissResting,
-  } = useGuidanceLogic(experience, mood, onNext, onSaveReflection, () => { }, totalLayers);
+  } = useGuidanceLogic(experience, mood, onNext, onSaveReflection, totalLayers);
 
   // Keep the PanResponder's ref pointed at the latest gated advance fn.
-  useEffect(() => { requestNextRef.current = requestNext; }, [requestNext]);
+  useEffect(() => {
+    requestNextRef.current = requestNext;
+  }, [requestNext]);
+
+  // The positive-mood pause is a peak (spec §8): when the rest point appears the
+  // gate may add a single soft support line. Decide + record once per appearance.
+  const [offerSupportAtRest, setOfferSupportAtRest] = useState(false);
+  useEffect(() => {
+    if (isResting) {
+      const willOffer = freemium.shouldOfferUpgrade('positive_pause');
+      if (willOffer) freemium.recordUpgradeAsk('positive_pause');
+      setOfferSupportAtRest(willOffer);
+    } else {
+      setOfferSupportAtRest(false);
+    }
+  }, [isResting]);
 
   if (!experience) {
     return (
@@ -240,9 +267,7 @@ const GuidanceScreen: React.FC = () => {
       <LayerPager
         total={totalLayers}
         current={currentLayer}
-        labels={LAYER_TYPES.map((t) =>
-          t === 'verse' ? 'Verse' : t === 'context' ? 'Context' : t,
-        )}
+        labels={LAYER_TYPES.map((t) => (t === 'verse' ? 'Verse' : t === 'context' ? 'Context' : t))}
         accentColor={(MoodColors[mood] || MoodColors.Calm).accent}
         onLayerChange={(idx) => {
           scrollY.setValue(0);
@@ -296,7 +321,10 @@ const GuidanceScreen: React.FC = () => {
 
       <BackgroundThemePicker
         isVisible={isThemePickerVisible}
-        onClose={() => { setIsThemePickerVisible(false); refreshSelectedTheme(); }}
+        onClose={() => {
+          setIsThemePickerVisible(false);
+          refreshSelectedTheme();
+        }}
         isPremium={isPremium}
         selectedThemeId={selectedThemeId}
         onSelectTheme={async (themeId) => {
@@ -312,13 +340,19 @@ const GuidanceScreen: React.FC = () => {
         <RestingPoint
           onDismiss={dismissResting}
           accentColor={(MoodColors[mood] || MoodColors.Calm).accent}
+          onSupport={
+            offerSupportAtRest
+              ? () => {
+                  dismissResting();
+                  navigation.navigate('Support');
+                }
+              : undefined
+          }
         />
       )}
-
     </ImmersiveBackground>
   );
 };
-
 
 const styles = StyleSheet.create({
   container: {

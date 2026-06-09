@@ -1,11 +1,13 @@
-import React, { useState, useMemo, useEffect } from 'react';
-import { Alert, Share, Dimensions } from 'react-native';
+import React, { useState, useMemo, useRef } from 'react';
+import { Share, Dimensions, View, PanResponder } from 'react-native';
+import { HapticsService } from '../services/hapticsService';
 const { height } = Dimensions.get('window');
 import { SpiritualPath, PathStep, UserPathProgress, GuidanceExperience } from '../types';
 import { PathsService } from '../services/pathsService';
 import ImmersiveBackground from '../components/ImmersiveBackground';
 import PathTopBar from '../components/PathTopBar';
 import LayerContainer from '../components/LayerContainer';
+import LayerPager from '../components/LayerPager';
 import VerseLayer from '../components/VerseLayer';
 import ContextLayer from '../components/ContextLayer';
 import PracticeLayer, { PracticeStepData } from '../components/PracticeLayer';
@@ -13,9 +15,12 @@ import ReflectionLayer from '../components/ReflectionLayer';
 import FloatingActionRow from '../components/FloatingActionRow';
 import PathCompletionCelebration from '../components/PathCompletionCelebration';
 import { SubscriptionService } from '../services/subscriptionService';
+import { FreemiumService } from '../services/freemiumService';
 import { logServiceError } from '../services/errorLoggingService';
+import { useAppContext } from '../context/AppContext';
 
 import { useRoute, useNavigation } from '@react-navigation/native';
+import { extractVerseKey } from '../utils';
 
 interface PathStepScreenProps {
   path: SpiritualPath;
@@ -33,28 +38,102 @@ export const PathStepScreen: React.FC = () => {
   const route = useRoute<any>();
   const navigation = useNavigation<any>();
   const pathsService = PathsService.getInstance();
+  const { rotationEngine } = useAppContext();
   const isPremium = SubscriptionService.getInstance().isPremium();
+  const freemium = FreemiumService.getInstance();
 
-  const { path, step, userProgress, guidanceExperience } = route.params;
+  const { path, step, userProgress, guidanceExperience, accentColor: accentParam } = route.params;
+
+  // Journey identity color (passed from PathDetailScreen) + emotional register.
+  const accentColor: string = accentParam || '#D4AF37';
+  const tone =
+    path.tone || (path.theme === 'Sad' || path.theme === 'Angry' ? 'refuge' : 'momentum');
+
+  // Phase label for long, chunked journeys (e.g. "Week 1 — Foundations").
+  const phaseLabel = path.phases?.find(
+    (p: { startDay: number; endDay: number }) => step.day >= p.startDay && step.day <= p.endDay,
+  )?.label;
 
   const onBack = () => navigation.goBack();
 
-  const onCompleteStep = async (pathId: string, day: number) => {
+  /**
+   * Persist this day's completion, then either carry the user straight into the
+   * next day's lesson (keeping the immersive flow / momentum) or return to the
+   * journey. Advancing uses navigation.replace so the back stack doesn't fill
+   * up with completed steps.
+   */
+  const completeAndAdvance = async (toNext: boolean) => {
+    const day = step.day;
     const updatedProgress: UserPathProgress = {
       ...userProgress,
-      completedDays: [...userProgress.completedDays, day],
+      completedDays: userProgress.completedDays.includes(day)
+        ? userProgress.completedDays
+        : [...userProgress.completedDays, day],
       currentDay: day + 1,
       isCompleted: day >= path.duration,
       completedAt: day >= path.duration ? Date.now() : undefined,
     };
     await pathsService.saveProgress(updatedProgress);
-    // Refresh params for next step if needed or navigate back
+
+    if (toNext && !updatedProgress.isCompleted) {
+      const nextStep = pathsService.getCurrentStep(path.id, updatedProgress);
+      if (nextStep) {
+        try {
+          const experience = await rotationEngine.getGuidanceForStep(
+            nextStep.contentId,
+            nextStep.angleId,
+          );
+          if (experience) {
+            navigation.replace('PathStep', {
+              path,
+              step: nextStep,
+              userProgress: updatedProgress,
+              guidanceExperience: experience,
+              accentColor,
+            });
+            return;
+          }
+        } catch (error) {
+          logServiceError(
+            'PathStepScreen',
+            'completeAndAdvance',
+            error instanceof Error ? error : new Error(String(error)),
+          );
+        }
+      }
+    }
+    // Path complete, no next step, or content failed to load → back to journey.
     navigation.goBack();
   };
   const [currentLayerIndex, setCurrentLayerIndex] = useState(0);
   const [isSaved, setIsSaved] = useState(false);
   const [showCelebration, setShowCelebration] = useState(false);
+  // Journey-end peak: whether to surface the gentle "support the mission" line
+  // in the completion celebration. Decided once (gate + cooldown) on finish.
+  const [offerUpgrade, setOfferUpgrade] = useState(false);
+
+  // Swipe right → advance to the next layer (mirrors swipe-up on LayerContainer).
+  // Uses functional state update so it never reads stale currentLayerIndex.
+  const swipeResponder = useRef(
+    PanResponder.create({
+      onMoveShouldSetPanResponder: (_, g) =>
+        Math.abs(g.dx) > Math.abs(g.dy) * 1.5 && Math.abs(g.dx) > 20,
+      onPanResponderRelease: (_, g) => {
+        if (g.dx > 50) {
+          setCurrentLayerIndex((prev) => {
+            const next = Math.min(prev + 1, layerTypes.length - 1);
+            if (next !== prev) HapticsService.impactAsync('LIGHT');
+            return next;
+          });
+        }
+      },
+    }),
+  ).current;
   const [reflectionWritten, setReflectionWritten] = useState(false);
+  // Snapshot of progress with TODAY already appended — passed to the modal so
+  // the ring/streak/next-day preview reflect the step just completed, not the
+  // stale route.params snapshot (which is missing the current day).
+  const [celebrationProgress, setCelebrationProgress] = useState(userProgress);
 
   const layerTypes: LayerType[] = ['verse', 'context', 'practice', 'reflection'];
   const currentLayerType = layerTypes[currentLayerIndex];
@@ -67,7 +146,11 @@ export const PathStepScreen: React.FC = () => {
       try {
         return JSON.parse(angle.practiceSteps);
       } catch (e) {
-        logServiceError('PathStepScreen', 'parsePracticeSteps', e instanceof Error ? e : new Error(String(e)));
+        logServiceError(
+          'PathStepScreen',
+          'parsePracticeSteps',
+          e instanceof Error ? e : new Error(String(e)),
+        );
       }
     }
 
@@ -101,27 +184,61 @@ export const PathStepScreen: React.FC = () => {
         message: `${guidanceExperience.content.englishTranslation}\n\n— ${guidanceExperience.content.source}\nReflect more on Guidance App.`,
       });
     } catch (error) {
-      logServiceError('PathStepScreen', 'handleShare', error instanceof Error ? error : new Error(String(error)));
+      logServiceError(
+        'PathStepScreen',
+        'handleShare',
+        error instanceof Error ? error : new Error(String(error)),
+      );
     }
   };
 
   const handleComplete = (reflection: string) => {
-    // Track if user wrote a reflection
     if (reflection && reflection.trim().length > 0) {
       setReflectionWritten(true);
     }
-    // Show celebration modal instead of immediately completing
+    // Build the updated snapshot eagerly so the celebration modal shows
+    // today's day as already complete (correct %, streak, next-day preview).
+    const day = step.day;
+    const updatedForModal: typeof userProgress = {
+      ...userProgress,
+      completedDays: userProgress.completedDays.includes(day)
+        ? userProgress.completedDays
+        : [...userProgress.completedDays, day],
+      currentDay: day + 1,
+      isCompleted: day >= path.duration,
+    };
+    setCelebrationProgress(updatedForModal);
+
+    // Journey-end is a "peak" (spec §8): if the gate allows, offer a single soft
+    // support line. Check before recording (recording flips the gate off).
+    if (updatedForModal.isCompleted) {
+      const willOffer = freemium.shouldOfferUpgrade('journey_complete');
+      if (willOffer) freemium.recordUpgradeAsk('journey_complete');
+      setOfferUpgrade(willOffer);
+    } else {
+      setOfferUpgrade(false);
+    }
+
     setShowCelebration(true);
   };
 
+  // Primary action: complete today and continue into the next day's lesson.
   const handleCelebrationContinue = () => {
     setShowCelebration(false);
-    onCompleteStep(path.id, step.day);
+    completeAndAdvance(true);
   };
 
+  // Secondary action (and backdrop tap): complete today but return to the journey.
   const handleCelebrationClose = () => {
     setShowCelebration(false);
-    onCompleteStep(path.id, step.day);
+    completeAndAdvance(false);
+  };
+
+  // Journey-end peak: persist completion, then open the gentle Support screen.
+  const handleCelebrationSupport = async () => {
+    setShowCelebration(false);
+    await completeAndAdvance(false); // save the finished journey + return to it
+    navigation.navigate('Support');
   };
 
   const renderLayer = () => {
@@ -132,6 +249,11 @@ export const PathStepScreen: React.FC = () => {
             arabic={guidanceExperience.content.arabicText || ''}
             translation={guidanceExperience.content.englishTranslation}
             reference={guidanceExperience.content.source || ''}
+            accentColor={accentColor}
+            onShare={handleShare}
+            onSave={() => setIsSaved(!isSaved)}
+            isSaved={isSaved}
+            audioKey={extractVerseKey(guidanceExperience.content.source || '')}
           />
         );
       case 'context':
@@ -140,15 +262,19 @@ export const PathStepScreen: React.FC = () => {
             attribution="Insightful Context"
             text={guidanceExperience.angle.angle}
             source={guidanceExperience.content.whyThis || 'Islamic Guidance'}
+            accentColor={accentColor}
           />
         );
       case 'practice':
-        return <PracticeLayer steps={practiceSteps} onCheckAll={() => { }} />;
+        return (
+          <PracticeLayer steps={practiceSteps} onCheckAll={() => {}} accentColor={accentColor} />
+        );
       case 'reflection':
         return (
           <ReflectionLayer
             prompt={guidanceExperience.angle.reflection || 'How did this impact you today?'}
             onComplete={handleComplete}
+            accentColor={accentColor}
           />
         );
       default:
@@ -157,39 +283,56 @@ export const PathStepScreen: React.FC = () => {
   };
 
   return (
-    <ImmersiveBackground theme="sand" isPremium={isPremium}>
+    <ImmersiveBackground accentColor={accentColor} tone={tone} isPremium={isPremium}>
       <PathTopBar
         currentDay={step.day}
         totalDays={path.duration}
-        onSettingsPress={() => Alert.alert('Customize', 'Background selector coming soon.')}
+        completedDays={userProgress.completedDays.length}
+        accentColor={accentColor}
+        phaseLabel={phaseLabel}
         onBack={onBack}
       />
 
-      <LayerContainer
-        currentLayer={currentLayerIndex}
-        totalLayers={layerTypes.length}
-        onLayerChange={setCurrentLayerIndex}
-      >
-        {renderLayer()}
-      </LayerContainer>
+      <View style={{ flex: 1 }} {...swipeResponder.panHandlers}>
+        <LayerContainer
+          currentLayer={currentLayerIndex}
+          totalLayers={layerTypes.length}
+          onLayerChange={setCurrentLayerIndex}
+        >
+          {renderLayer()}
+        </LayerContainer>
+      </View>
 
-      <FloatingActionRow
-        layerType={currentLayerType}
-        onShare={handleShare}
-        onSave={() => setIsSaved(!isSaved)}
-        isSaved={isSaved}
-        onCheckAll={() => Alert.alert('Barakah!', 'You have completed all items.')}
-        onSaveReflection={() => Alert.alert('Saved', 'Your reflection has been saved as a draft.')}
+      <LayerPager
+        total={layerTypes.length}
+        current={currentLayerIndex}
+        labels={['Verse', 'Context', 'Practice', 'Reflection']}
+        accentColor={accentColor}
+        onLayerChange={setCurrentLayerIndex}
       />
+
+      {/* Verse, practice, and reflection layers own their controls (cinema-mode
+          bar / check toggles / save-skip). Only the context layer lacks its own
+          action surface, so the floating row is reserved for it. */}
+      {currentLayerType === 'context' && (
+        <FloatingActionRow
+          layerType={currentLayerType}
+          onShare={handleShare}
+          onSave={() => setIsSaved(!isSaved)}
+          isSaved={isSaved}
+        />
+      )}
 
       <PathCompletionCelebration
         visible={showCelebration}
         path={path}
         step={step}
-        userProgress={userProgress}
+        userProgress={celebrationProgress}
         reflectionWritten={reflectionWritten}
+        accentColor={accentColor}
         onContinue={handleCelebrationContinue}
         onClose={handleCelebrationClose}
+        onSupport={offerUpgrade ? handleCelebrationSupport : undefined}
       />
     </ImmersiveBackground>
   );

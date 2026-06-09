@@ -46,7 +46,7 @@ const experience: any = {
 };
 
 const render = (mood: Mood, onNext: () => void) =>
-  renderHook(() => useGuidanceLogic(experience, mood, onNext, jest.fn(), jest.fn(), 1));
+  renderHook(() => useGuidanceLogic(experience, mood, onNext, jest.fn(), 1));
 
 describe('useGuidanceLogic — refresh gating', () => {
   let freemium: any;

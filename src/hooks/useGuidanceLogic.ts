@@ -24,7 +24,6 @@ export const useGuidanceLogic = (
   mood: Mood,
   onNext: () => void,
   onSaveReflection: (reflection: string) => void,
-  onShowPaywall: (type: 'refresh_limit' | 'daily_limit' | 'saved_limit') => void,
   cardsCount: number,
 ) => {
   const [savedStates, setSavedStates] = useState<Record<number, boolean>>({});
