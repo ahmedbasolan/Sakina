@@ -146,6 +146,18 @@ export interface PaywallType {
   context?: string; // Additional context for the paywall
 }
 
+/**
+ * A "peak" — a moment of positive affect/accomplishment where a single, gentle
+ * upgrade ask may appear (spec §8). The upgrade ask NEVER appears in the comfort
+ * flow; only at these peaks, gated by `freemiumService.shouldOfferUpgrade`.
+ */
+export type PeakContext =
+  | 'journey_complete' // finished a journey
+  | 'streak_milestone' // a consistency milestone (used gently)
+  | 'theme_pick' // chose a background theme
+  | 'support_screen' // the dedicated "Support Sakina" screen
+  | 'positive_pause'; // the positive-mood resting point (at most one soft line)
+
 export interface SubscriptionState {
   tier: SubscriptionTier;
   type?: SubscriptionType;

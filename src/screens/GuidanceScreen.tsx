@@ -22,6 +22,7 @@ import BackgroundThemePicker from '../components/BackgroundThemePicker';
 import { backgroundThemeService } from '../services/backgroundThemeService';
 import LayerContainer from '../components/LayerContainer';
 import LayerPager from '../components/LayerPager';
+import RestingPoint from '../components/RestingPoint';
 import { useGuidanceLogic } from '../hooks/useGuidanceLogic';
 import { Colors, Spacing, Typography, MoodColors } from '../theme/DesignSystem';
 import { extractVerseKey } from '../utils';
@@ -88,6 +89,10 @@ const GuidanceScreen: React.FC = () => {
   const currentLayerRef = useRef(currentLayer);
   useEffect(() => { currentLayerRef.current = currentLayer; }, [currentLayer]);
 
+  // Ref to the hook's gated advance fn, kept fresh so the once-created
+  // PanResponder always calls the current closure (mirrors currentLayerRef).
+  const requestNextRef = useRef<() => void>(() => {});
+
   // Swipe right → next verse (only on the verse layer, layer 0).
   // Uses a horizontal-dominant threshold so it never conflicts with
   // LayerContainer's vertical-swipe gesture or the ScrollView inside VerseLayer.
@@ -98,7 +103,7 @@ const GuidanceScreen: React.FC = () => {
       onPanResponderRelease: (_, g) => {
         if (g.dx > 50 && currentLayerRef.current === 0) {
           HapticsService.impactAsync('LIGHT');
-          onNext();
+          requestNextRef.current();
         }
       },
     }),
@@ -126,7 +131,13 @@ const GuidanceScreen: React.FC = () => {
     handleShare,
     preferences,
     updatePreference,
+    requestNext,
+    isResting,
+    dismissResting,
   } = useGuidanceLogic(experience, mood, onNext, onSaveReflection, () => { }, totalLayers);
+
+  // Keep the PanResponder's ref pointed at the latest gated advance fn.
+  useEffect(() => { requestNextRef.current = requestNext; }, [requestNext]);
 
   if (!experience) {
     return (
@@ -181,7 +192,7 @@ const GuidanceScreen: React.FC = () => {
             scrollY.setValue(0);
             setCurrentLayer(layerIndex);
             if (layerIndex >= totalLayers) {
-              onNext();
+              requestNext();
               setCurrentLayer(0);
             }
           }}
@@ -200,7 +211,7 @@ const GuidanceScreen: React.FC = () => {
               hasContext={hasContext}
               onNextVerse={() => {
                 scrollY.setValue(0);
-                onNext();
+                requestNext();
                 setCurrentLayer(0);
               }}
               onShare={handleShareVerse}
@@ -239,7 +250,7 @@ const GuidanceScreen: React.FC = () => {
         }}
         onNextVerse={() => {
           scrollY.setValue(0);
-          onNext();
+          requestNext();
           setCurrentLayer(0);
         }}
       />
@@ -293,6 +304,16 @@ const GuidanceScreen: React.FC = () => {
           await refreshSelectedTheme();
         }}
       />
+
+      {/* Gentle resting point once the window's free refreshes are spent.
+          Mercy moods & premium never reach here (the hook gate grants them
+          unlimited). Dismiss returns to the saved reflections. */}
+      {isResting && (
+        <RestingPoint
+          onDismiss={dismissResting}
+          accentColor={(MoodColors[mood] || MoodColors.Calm).accent}
+        />
+      )}
 
     </ImmersiveBackground>
   );
