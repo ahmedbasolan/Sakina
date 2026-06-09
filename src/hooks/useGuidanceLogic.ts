@@ -58,13 +58,14 @@ export const useGuidanceLogic = (
   }, [experience?.content?.id]);
 
   useEffect(() => {
-    setRemainingRefreshes(freemiumService.getRemainingRefreshes());
-    const initPrefs = async () => {
+    const init = async () => {
+      await freemiumService.syncPrayerWindow();
+      setRemainingRefreshes(freemiumService.getRemainingRefreshes(mood));
       const prefs = await preferencesService.initialize();
       setPreferences(prefs);
     };
-    initPrefs();
-  }, []);
+    init();
+  }, [mood]);
 
   const updatePreference = async (newPrefs: Partial<UserPreferences>) => {
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
