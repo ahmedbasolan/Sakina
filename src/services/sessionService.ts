@@ -2,7 +2,7 @@ import { dbQuery } from '../database/schema';
 import { UserSession } from '../types';
 import { FREEMIUM_LIMITS } from '../constants';
 import PrayerTimesService from './prayerTimesService';
-import { todayYMD } from '../utils/date';
+import { formatDateYMD } from '../utils/date';
 
 export class SessionService {
   private static instance: SessionService;
@@ -32,7 +32,7 @@ export class SessionService {
 
   async loadUserSession(isPremium: boolean): Promise<void> {
     try {
-      const today = new Date().toISOString().split('T')[0];
+      const today = formatDateYMD();
       const session = await dbQuery(async (db) => {
         return (await db.getFirstAsync(`SELECT * FROM user_sessions WHERE date = ?`, [
           today,
@@ -48,7 +48,7 @@ export class SessionService {
       console.log('Error loading user session:', error);
       this.currentSession = {
         id: `session_${Date.now()}`,
-        date: new Date().toISOString().split('T')[0],
+        date: formatDateYMD(),
         guidanceSessionsUsed: 0,
         nextRefreshesRemaining: isPremium ? 999 : FREEMIUM_LIMITS.refreshesPerPrayerWindow,
         lastResetTime: Date.now(),
@@ -57,7 +57,7 @@ export class SessionService {
   }
 
   async createNewSession(isPremium: boolean): Promise<void> {
-    const today = new Date().toISOString().split('T')[0];
+    const today = formatDateYMD();
     const sessionId = `session_${Date.now()}`;
     const newSession: UserSession = {
       id: sessionId,
@@ -90,7 +90,7 @@ export class SessionService {
 
   /** `${YYYY-MM-DD}:${PrayerContext}` — the bucket refreshes belong to. */
   private async resolveWindowKey(): Promise<string> {
-    const today = todayYMD();
+    const today = formatDateYMD();
     const context = await PrayerTimesService.getInstance().getCurrentPrayerContext();
     return `${today}:${context}`;
   }
