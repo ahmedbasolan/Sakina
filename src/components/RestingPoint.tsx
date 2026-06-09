@@ -6,9 +6,16 @@
  * only at peaks (spec §8). Premium and mercy moods never reach this screen.
  */
 import React, { useEffect, useRef } from 'react';
-import { Animated, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Animated, StyleSheet, Text, TouchableOpacity } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Animations, BorderRadius, Colors, Elevation, Spacing, Typography } from '../theme/DesignSystem';
+import {
+  Animations,
+  BorderRadius,
+  Colors,
+  Elevation,
+  Spacing,
+  Typography,
+} from '../theme/DesignSystem';
 import { useReduceMotion } from '../hooks/useReduceMotion';
 import { SakinaLantern } from './SakinaLantern';
 
@@ -17,9 +24,19 @@ interface Props {
   onDismiss: () => void;
   /** Mood accent for the single CTA; falls back to brand gold. */
   accentColor?: string;
+  /**
+   * Optional, gated "support the mission" line (spec §8 — the positive-mood
+   * pause may carry at most a single soft, dismissible line). Only the parent's
+   * shouldOfferUpgrade gate decides whether this is provided.
+   */
+  onSupport?: () => void;
 }
 
-const RestingPoint: React.FC<Props> = ({ onDismiss, accentColor = Colors.accent.primary }) => {
+const RestingPoint: React.FC<Props> = ({
+  onDismiss,
+  accentColor = Colors.accent.primary,
+  onSupport,
+}) => {
   const insets = useSafeAreaInsets();
   const reduceMotion = useReduceMotion();
   const enter = useRef(new Animated.Value(0)).current;
@@ -42,7 +59,14 @@ const RestingPoint: React.FC<Props> = ({ onDismiss, accentColor = Colors.accent.
 
   return (
     <Animated.View
-      style={[styles.backdrop, { opacity: enter, paddingBottom: insets.bottom + Spacing.xl, paddingTop: insets.top + Spacing.xl }]}
+      style={[
+        styles.backdrop,
+        {
+          opacity: enter,
+          paddingBottom: insets.bottom + Spacing.xl,
+          paddingTop: insets.top + Spacing.xl,
+        },
+      ]}
       accessibilityViewIsModal
     >
       <Animated.View style={[styles.card, { transform: [{ translateY }] }]}>
@@ -51,8 +75,8 @@ const RestingPoint: React.FC<Props> = ({ onDismiss, accentColor = Colors.accent.
         <Text style={styles.title}>A moment to rest</Text>
 
         <Text style={styles.body}>
-          You&apos;ve received three reflections. Sit with them — they&apos;re saved for you.
-          Return after your next prayer, in shaa Allah.
+          You&apos;ve received three reflections. Sit with them — they&apos;re saved for you. Return
+          after your next prayer, in shaa Allah.
         </Text>
 
         <TouchableOpacity
@@ -64,6 +88,18 @@ const RestingPoint: React.FC<Props> = ({ onDismiss, accentColor = Colors.accent.
         >
           <Text style={[styles.ctaText, { color: accentColor }]}>Stay with these</Text>
         </TouchableOpacity>
+
+        {onSupport && (
+          <TouchableOpacity
+            style={styles.support}
+            onPress={onSupport}
+            activeOpacity={0.7}
+            accessibilityRole="button"
+            accessibilityLabel="Support Sakina"
+          >
+            <Text style={styles.supportText}>Support Sakina</Text>
+          </TouchableOpacity>
+        )}
       </Animated.View>
     </Animated.View>
   );
@@ -118,6 +154,16 @@ const styles = StyleSheet.create({
     fontFamily: Typography.fonts.latin,
     fontSize: Typography.sizes.body,
     fontWeight: '600',
+    letterSpacing: Typography.letterSpacing.normal,
+  },
+  support: {
+    marginTop: Spacing.md,
+    paddingVertical: Spacing.xs,
+  },
+  supportText: {
+    fontFamily: Typography.fonts.latin,
+    fontSize: Typography.sizes.small,
+    color: Colors.text.muted,
     letterSpacing: Typography.letterSpacing.normal,
   },
 });

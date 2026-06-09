@@ -26,7 +26,9 @@ export type RootStackParamList = {
   MoodSelection: undefined;
   PrayerTimes: undefined;
   QuranLibrary: { surahNumber?: number } | undefined;
+  SurahReader: { surahNumber: number; surahName: string; surahArabic: string; verseCount: number };
   Settings: undefined;
+  Support: undefined;
 };
 
 export type AuthStackParamList = {
