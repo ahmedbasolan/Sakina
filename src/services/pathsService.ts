@@ -12,35 +12,12 @@ export class PathsService {
     return PathsService.instance;
   }
 
-  getAllPaths(isPremium: boolean = false, unlockedBundleIds: string[] = []): SpiritualPath[] {
-    const premiumIds = [
-      'path_marriage_seeker',
-      'path_wrong_marriage',
-      'path_forced_marriage',
-      'path_parent_healing',
-      'path_two_worlds',
-      'path_hope_after_crisis',
-      'path_addiction_recovery',
-      'path_grief_loss',
-      'path_screen_detox',
-      'path_death_awareness',
-      'path_tawbah_intensive',
-      'path_quran_connection',
-      'path_prayer_leadership',
-      'path_leaving_haram_job',
-      'path_career_choice',
-    ];
-
-    return STATIC_SPIRITUAL_PATHS.filter((path) => {
-      // If it's a Special Edition, only show if unlocked
-      if (path.isSpecialEdition) {
-        return path.bundleId && unlockedBundleIds.includes(path.bundleId);
-      }
-
-      // Show if it's a free path or one of the premium paths we're exposing
-      if (!path.isPremium) return true;
-      return premiumIds.includes(path.id);
-    });
+  getAllPaths(_isPremium: boolean = false, _unlockedBundleIds: string[] = []): SpiritualPath[] {
+    // Free-core model (spec §5): every journey's text is free, distress journeys
+    // included. The paid layer is the enhanced edition (audio/PDF), gated at the
+    // content level in a later phase — not by hiding the journey here.
+    // `_isPremium` / `_unlockedBundleIds` are reserved for early-access windows (§6).
+    return STATIC_SPIRITUAL_PATHS;
   }
 
   getAvailablePaths(isPremium: boolean, unlockedBundleIds: string[] = []): SpiritualPath[] {
