@@ -57,15 +57,21 @@ export const useGuidanceLogic = (
     setSavedStates({});
   }, [experience?.content?.id]);
 
+  // Sync the per-prayer-window allowance, then reflect the (mercy-aware) remaining
+  // count. Re-runs if the active mood changes in-session; syncPrayerWindow is
+  // idempotent (only writes when the window actually changed).
   useEffect(() => {
-    const init = async () => {
+    const syncRefreshes = async () => {
       await freemiumService.syncPrayerWindow();
       setRemainingRefreshes(freemiumService.getRemainingRefreshes(mood));
-      const prefs = await preferencesService.initialize();
-      setPreferences(prefs);
     };
-    init();
+    syncRefreshes();
   }, [mood]);
+
+  // One-time: load user preferences (not mood-dependent).
+  useEffect(() => {
+    preferencesService.initialize().then(setPreferences);
+  }, []);
 
   const updatePreference = async (newPrefs: Partial<UserPreferences>) => {
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
