@@ -2,6 +2,7 @@ import { dbQuery } from '../database/schema';
 import { UserSession } from '../types';
 import { FREEMIUM_LIMITS } from '../constants';
 import PrayerTimesService from './prayerTimesService';
+import { todayYMD } from '../utils/date';
 
 export class SessionService {
   private static instance: SessionService;
@@ -89,7 +90,7 @@ export class SessionService {
 
   /** `${YYYY-MM-DD}:${PrayerContext}` — the bucket refreshes belong to. */
   private async resolveWindowKey(): Promise<string> {
-    const today = new Date().toISOString().split('T')[0];
+    const today = todayYMD();
     const context = await PrayerTimesService.getInstance().getCurrentPrayerContext();
     return `${today}:${context}`;
   }
@@ -97,16 +98,25 @@ export class SessionService {
   /**
    * Resets the free refresh allowance when the prayer window changes. Premium is
    * kept effectively unlimited (999). Safe to call repeatedly; only writes on change.
+   * Acquires operationLock so the read-modify-write can't interleave with useNextRefresh.
    */
   async syncWindow(isPremium: boolean): Promise<void> {
-    if (!this.currentSession) return;
-    const key = await this.resolveWindowKey();
-    if (this.currentSession.windowKey !== key) {
-      this.currentSession.windowKey = key;
-      this.currentSession.nextRefreshesRemaining = isPremium
-        ? 999
-        : FREEMIUM_LIMITS.refreshesPerPrayerWindow;
-      await this.saveSession();
+    let release!: () => void;
+    const prev = this.operationLock;
+    this.operationLock = new Promise((r) => { release = r; });
+    await prev;
+    try {
+      if (!this.currentSession) return;
+      const key = await this.resolveWindowKey();
+      if (this.currentSession.windowKey !== key) {
+        this.currentSession.windowKey = key;
+        this.currentSession.nextRefreshesRemaining = isPremium
+          ? 999
+          : FREEMIUM_LIMITS.refreshesPerPrayerWindow;
+        await this.saveSession();
+      }
+    } finally {
+      release();
     }
   }
 
