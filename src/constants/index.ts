@@ -70,6 +70,11 @@ export const FREEMIUM_LIMITS = {
   rotationHistoryDays: 30,
 } as const;
 
+// Upgrade-ask cooldown (spec §8): at most one peak ask per this window, so the
+// app never nags. Paired with a "no same peak type twice in a row" rule in
+// freemiumService.shouldOfferUpgrade.
+export const UPGRADE_ASK_COOLDOWN_MS = 3 * 24 * 60 * 60 * 1000; // 3 days
+
 // Keyed by the capitalized `Mood` union (NOT lowercase) so lookups like
 // MOOD_COLORS[mood] resolve — and aligned to the canonical MoodColors accents
 // in DesignSystem so mood dots/tags match the Home grid across every screen.

@@ -1,9 +1,10 @@
-import { UserSession, FreemiumLimits, PaywallType, SubscriptionState, Mood } from '../types';
+import { UserSession, FreemiumLimits, PaywallType, SubscriptionState, Mood, PeakContext } from '../types';
 import { SessionService } from './sessionService';
 import { SubscriptionService } from './subscriptionService';
-import { FREEMIUM_LIMITS, isMercyMood } from '../constants';
+import { FREEMIUM_LIMITS, isMercyMood, UPGRADE_ASK_COOLDOWN_MS } from '../constants';
 import { dbQuery } from '../database/schema';
 import { SPECIAL_EDITION_BUNDLES } from '../data/staticPaths';
+import { loadUpgradeAsk, saveUpgradeAsk, UpgradeAskState } from './upgradeAskStore';
 
 const PREMIUM_LIMITS: FreemiumLimits = {
   refreshesPerPrayerWindow: Infinity,
@@ -20,6 +21,10 @@ export class FreemiumService {
   // polling every 50 ms on the JS thread. Previously the busy-wait approach
   // held the event loop and could delay time-critical animations on slow devices.
   private initPromise: Promise<void> | null = null;
+  // In-memory mirror of the persisted peaks-only upgrade-ask cooldown (spec §8).
+  // Loaded once at init so shouldOfferUpgrade() can stay synchronous for callers
+  // in render/handlers; recordUpgradeAsk() updates this and persists.
+  private upgradeAsk: UpgradeAskState = { lastAskAt: 0, lastContext: null };
 
   static getInstance(): FreemiumService {
     if (!FreemiumService.instance) {
@@ -37,6 +42,8 @@ export class FreemiumService {
     this.initPromise = (async () => {
       await this.subscriptionService.initialize();
       await this.sessionService.initialize(this.isPremium());
+      const savedAsk = await loadUpgradeAsk();
+      if (savedAsk) this.upgradeAsk = savedAsk;
       this.isLoaded = true;
     })();
 
@@ -142,8 +149,29 @@ export class FreemiumService {
   getPaywallType(): PaywallType | null {
     // Comfort-flow paywalls removed (spec §8). The in-flow limit is a gentle
     // resting point handled in the UI; upgrade asks live at peaks via
-    // shouldOfferUpgrade() (Phase 2). Always null here.
+    // shouldOfferUpgrade(). Always null here.
     return null;
+  }
+
+  /**
+   * Peaks-only upgrade gate (spec §8). The single decision point every peak
+   * (journey completion, theme pick, Support screen, …) consults before showing
+   * an upgrade ask. Returns false for premium, and enforces two anti-nag rules:
+   *   1. at most one ask per UPGRADE_ASK_COOLDOWN_MS, and
+   *   2. never the same peak type twice in a row.
+   * Synchronous: reads the in-memory cooldown loaded at init.
+   */
+  shouldOfferUpgrade(context: PeakContext): boolean {
+    if (this.isPremium()) return false;
+    if (Date.now() - this.upgradeAsk.lastAskAt < UPGRADE_ASK_COOLDOWN_MS) return false;
+    if (this.upgradeAsk.lastContext === context) return false;
+    return true;
+  }
+
+  /** Record that an upgrade ask was shown at a peak, starting the cooldown. */
+  async recordUpgradeAsk(context: PeakContext): Promise<void> {
+    this.upgradeAsk = { lastAskAt: Date.now(), lastContext: context };
+    await saveUpgradeAsk(this.upgradeAsk);
   }
 
   async startTrial(): Promise<boolean> {

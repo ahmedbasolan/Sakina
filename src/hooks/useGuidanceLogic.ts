@@ -44,6 +44,11 @@ export const useGuidanceLogic = (
     autoPlayAudio: false,
   });
   const [remainingRefreshes, setRemainingRefreshes] = useState(3);
+  // Gentle "resting point": true once a free user has spent the window's
+  // refresh allowance. The screen reads this to show a calm pause instead of
+  // silently doing nothing. Mercy moods & premium never reach it (the service
+  // grants unlimited there). Cleared on a new window/mood or by dismissResting.
+  const [isResting, setIsResting] = useState(false);
 
   const freemiumService = FreemiumService.getInstance();
   const preferencesService = PreferencesService.getInstance();
@@ -63,7 +68,9 @@ export const useGuidanceLogic = (
   useEffect(() => {
     const syncRefreshes = async () => {
       await freemiumService.syncPrayerWindow();
-      setRemainingRefreshes(freemiumService.getRemainingRefreshes(mood));
+      const remaining = freemiumService.getRemainingRefreshes(mood);
+      setRemainingRefreshes(remaining);
+      if (remaining > 0) setIsResting(false); // new window/mood reopened the door
     };
     syncRefreshes();
   }, [mood]);
@@ -162,12 +169,31 @@ export const useGuidanceLogic = (
     setIsShareSheetVisible(true);
   };
 
+  // Single gated entry point for advancing to the next piece of guidance.
+  // Atomically spends one refresh (the service no-ops the decrement for premium
+  // and mercy moods). If the allowance is gone, we stop at a resting point
+  // instead of fetching. Returns whether we advanced.
+  const requestNext = async (): Promise<boolean> => {
+    const allowed = await freemiumService.useNextRefresh(mood);
+    if (!allowed) {
+      setIsResting(true);
+      return false;
+    }
+    setRemainingRefreshes(freemiumService.getRemainingRefreshes(mood));
+    onNext();
+    return true;
+  };
+
+  const dismissResting = () => setIsResting(false);
+
   const handlePrimaryAction = async () => {
     HapticsService.notificationAsync('SUCCESS');
     if (reflectionText.trim()) {
       onSaveReflection(reflectionText);
     }
-    onNext();
+    const advanced = await requestNext();
+    if (!advanced) return; // resting — don't reset scroll/buttons
+
     setActiveIndex(0);
 
     if (scrollViewRef.current) {
@@ -219,6 +245,9 @@ export const useGuidanceLogic = (
     shareContent,
     activeIndex,
     remainingRefreshes,
+    isResting,
+    requestNext,
+    dismissResting,
     nextButtonScale,
     nextButtonOpacity,
     scrollY,

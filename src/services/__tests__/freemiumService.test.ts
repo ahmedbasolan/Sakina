@@ -63,6 +63,12 @@ jest.mock('../../constants', () => ({
     rotationHistoryDays: 30,
   },
   isMercyMood: jest.fn(() => false),
+  UPGRADE_ASK_COOLDOWN_MS: 3 * 24 * 60 * 60 * 1000, // 3 days
+}));
+
+jest.mock('../upgradeAskStore', () => ({
+  loadUpgradeAsk: jest.fn(() => Promise.resolve(null)),
+  saveUpgradeAsk: jest.fn(() => Promise.resolve()),
 }));
 
 describe('FreemiumService', () => {
@@ -114,6 +120,12 @@ describe('FreemiumService', () => {
     // Reset singleton instance and create fresh FreemiumService
     (FreemiumService as any).instance = null;
     service = FreemiumService.getInstance();
+  });
+
+  // Always restore real timers so a test that enables fake timers can't leak
+  // into the next one (even if it throws before its own cleanup).
+  afterEach(() => {
+    jest.useRealTimers();
   });
 
   describe('Singleton Pattern', () => {
@@ -303,6 +315,54 @@ describe('FreemiumService', () => {
     it('returns null when premium', () => {
       mockSubscriptionService.isPremium.mockReturnValue(true);
       expect(service.getPaywallType()).toBeNull();
+    });
+  });
+
+  describe('Upgrade ask (peaks-only, cooldown — spec §8)', () => {
+    it('offers an upgrade to a fresh free user at a peak', () => {
+      expect(service.shouldOfferUpgrade('journey_complete')).toBe(true);
+    });
+
+    it('never offers to premium users', () => {
+      mockSubscriptionService.isPremium.mockReturnValue(true);
+      expect(service.shouldOfferUpgrade('journey_complete')).toBe(false);
+    });
+
+    it('stays silent within the cooldown window after an ask', async () => {
+      await service.recordUpgradeAsk('support_screen');
+      expect(service.shouldOfferUpgrade('journey_complete')).toBe(false);
+    });
+
+    it('persists the ask so the cooldown survives an app reload', async () => {
+      const { saveUpgradeAsk } = require('../upgradeAskStore');
+      await service.recordUpgradeAsk('theme_pick');
+      expect(saveUpgradeAsk).toHaveBeenCalledWith(
+        expect.objectContaining({ lastContext: 'theme_pick' }),
+      );
+    });
+
+    it('after cooldown, offers a different peak but never the same type twice in a row', async () => {
+      jest.useFakeTimers();
+      jest.setSystemTime(new Date('2026-06-09T00:00:00Z'));
+      await service.recordUpgradeAsk('journey_complete');
+
+      jest.setSystemTime(new Date('2026-06-13T00:00:00Z')); // +4 days, past the 3-day cooldown
+      expect(service.shouldOfferUpgrade('journey_complete')).toBe(false); // same type in a row
+      expect(service.shouldOfferUpgrade('support_screen')).toBe(true); // a different peak is fine
+
+      jest.useRealTimers();
+    });
+
+    it('loads persisted cooldown state on initialize', async () => {
+      const { loadUpgradeAsk } = require('../upgradeAskStore');
+      loadUpgradeAsk.mockResolvedValueOnce({
+        lastAskAt: Date.now(),
+        lastContext: 'support_screen',
+      });
+
+      await service.initialize();
+
+      expect(service.shouldOfferUpgrade('journey_complete')).toBe(false);
     });
   });
 
