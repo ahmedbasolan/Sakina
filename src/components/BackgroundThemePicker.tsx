@@ -27,6 +27,8 @@ interface BackgroundThemePickerProps {
     isPremium: boolean;
     selectedThemeId: string | null;
     onSelectTheme: (themeId: string | null) => void;
+    /** User-initiated upgrade intent (tapped a locked theme → "Upgrade Now"). */
+    onUpgrade?: () => void;
 }
 
 const BackgroundThemePicker: React.FC<BackgroundThemePickerProps> = ({
@@ -35,6 +37,7 @@ const BackgroundThemePicker: React.FC<BackgroundThemePickerProps> = ({
     isPremium,
     selectedThemeId,
     onSelectTheme,
+    onUpgrade,
 }) => {
     const [activeCategory, setActiveCategory] = useState<BackgroundThemeCategory | 'all'>('all');
 
@@ -49,7 +52,7 @@ const BackgroundThemePicker: React.FC<BackgroundThemePickerProps> = ({
                 'Nature background themes are available for premium members to enhance your spiritual sanctuary.',
                 [
                     { text: 'Later', style: 'cancel' },
-                    { text: 'Upgrade Now', onPress: () => console.log('Navigate to upgrade') }
+                    { text: 'Upgrade Now', onPress: () => onUpgrade?.() }
                 ]
             );
             return;

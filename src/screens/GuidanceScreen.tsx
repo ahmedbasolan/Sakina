@@ -331,6 +331,10 @@ const GuidanceScreen: React.FC = () => {
           await backgroundThemeService.setSelectedTheme(themeId);
           await refreshSelectedTheme();
         }}
+        onUpgrade={() => {
+          setIsThemePickerVisible(false);
+          navigation.navigate('Support');
+        }}
       />
 
       {/* Gentle resting point once the window's free refreshes are spent.

@@ -2,9 +2,7 @@ import { FreemiumService } from '../freemiumService';
 
 // Mock the dependencies
 jest.mock('../../data/staticPaths', () => ({
-  SPECIAL_EDITION_BUNDLES: [
-    { id: 'bundle-1', includesPremiumTrial: true },
-  ],
+  SPECIAL_EDITION_BUNDLES: [{ id: 'bundle-1', includesPremiumTrial: true }],
 }));
 
 jest.mock('../../database/schema', () => ({
@@ -64,6 +62,7 @@ jest.mock('../../constants', () => ({
   },
   isMercyMood: jest.fn(() => false),
   UPGRADE_ASK_COOLDOWN_MS: 3 * 24 * 60 * 60 * 1000, // 3 days
+  SUBSCRIPTION_PRICING: { monthlyUSD: 4.99, yearlyUSD: 39.99, trialDays: 7 },
 }));
 
 jest.mock('../upgradeAskStore', () => ({
@@ -139,7 +138,7 @@ describe('FreemiumService', () => {
   describe('Initialization', () => {
     it('should initialize subscription and session services', async () => {
       await service.initialize();
-      
+
       expect(mockSubscriptionService.initialize).toHaveBeenCalled();
       expect(mockSessionService.initialize).toHaveBeenCalledWith(false);
     });
@@ -147,7 +146,7 @@ describe('FreemiumService', () => {
     it('should not initialize twice', async () => {
       await service.initialize();
       await service.initialize();
-      
+
       expect(mockSubscriptionService.initialize).toHaveBeenCalledTimes(1);
       expect(mockSessionService.initialize).toHaveBeenCalledTimes(1);
     });
@@ -155,9 +154,9 @@ describe('FreemiumService', () => {
     it('should wait for initialization', async () => {
       const initPromise = service.initialize();
       const waitPromise = service.waitForInitialization();
-      
+
       await Promise.all([initPromise, waitPromise]);
-      
+
       expect(mockSubscriptionService.initialize).toHaveBeenCalled();
     });
   });
@@ -187,16 +186,16 @@ describe('FreemiumService', () => {
         tier: 'free',
         unlockedBundleIds: ['bundle-1'],
       });
-      
+
       expect(service.hasUnlockedBundle('bundle-1')).toBe(true);
       expect(service.hasUnlockedBundle('bundle-2')).toBe(false);
     });
 
     it('should purchase bundle successfully', async () => {
       mockSubscriptionService.purchaseBundle.mockResolvedValue(true);
-      
+
       const result = await service.purchaseBundle('bundle-1');
-      
+
       expect(result).toBe(true);
       expect(mockSubscriptionService.purchaseBundle).toHaveBeenCalledWith('bundle-1');
     });
@@ -239,9 +238,9 @@ describe('FreemiumService', () => {
 
     it('should start guidance session', async () => {
       mockSessionService.startGuidanceSession.mockResolvedValue(true);
-      
+
       const result = await service.startGuidanceSession();
-      
+
       expect(result).toBe(true);
       expect(mockSessionService.startGuidanceSession).toHaveBeenCalledWith(false);
     });
@@ -277,7 +276,7 @@ describe('FreemiumService', () => {
     it('should get session info', () => {
       const session = { guidanceSessionsUsed: 1, nextRefreshesRemaining: 2 };
       mockSessionService.getCurrentSession.mockReturnValue(session);
-      
+
       expect(service.getSessionInfo()).toEqual(session);
     });
   });
@@ -315,6 +314,15 @@ describe('FreemiumService', () => {
     it('returns null when premium', () => {
       mockSubscriptionService.isPremium.mockReturnValue(true);
       expect(service.getPaywallType()).toBeNull();
+    });
+  });
+
+  describe('Pricing (single display source — spec §7)', () => {
+    it('exposes positive monthly/yearly prices and a trial length', () => {
+      const pricing = service.getPricing();
+      expect(pricing.monthlyUSD).toBeGreaterThan(0);
+      expect(pricing.yearlyUSD).toBeGreaterThan(0);
+      expect(pricing.trialDays).toBeGreaterThan(0);
     });
   });
 
@@ -373,9 +381,9 @@ describe('FreemiumService', () => {
         guidanceSessionsUsed: 1,
         nextRefreshesRemaining: 3,
       });
-      
+
       const result = await service.startTrial();
-      
+
       expect(result).toBe(true);
       expect(mockSubscriptionService.startTrial).toHaveBeenCalled();
       expect(mockSessionService.saveSession).toHaveBeenCalled();
@@ -387,9 +395,9 @@ describe('FreemiumService', () => {
         guidanceSessionsUsed: 1,
         nextRefreshesRemaining: 3,
       });
-      
+
       const result = await service.activatePremium('monthly');
-      
+
       expect(result).toBe(true);
       expect(mockSubscriptionService.activatePremium).toHaveBeenCalledWith('monthly');
       expect(mockSessionService.saveSession).toHaveBeenCalled();
@@ -401,18 +409,18 @@ describe('FreemiumService', () => {
         guidanceSessionsUsed: 1,
         nextRefreshesRemaining: 3,
       });
-      
+
       const result = await service.activatePremium('yearly');
-      
+
       expect(result).toBe(true);
       expect(mockSubscriptionService.activatePremium).toHaveBeenCalledWith('yearly');
     });
 
     it('should reset to free tier', async () => {
       mockSubscriptionService.resetToFreeTier.mockResolvedValue();
-      
+
       await service.resetToFreeTier();
-      
+
       expect(mockSubscriptionService.resetToFreeTier).toHaveBeenCalled();
       expect(mockSessionService.resetRefreshesToLimit).toHaveBeenCalled();
       expect(mockSessionService.saveSession).toHaveBeenCalled();
@@ -420,9 +428,9 @@ describe('FreemiumService', () => {
 
     it('should cancel subscription', async () => {
       mockSubscriptionService.cancelSubscription.mockResolvedValue(true);
-      
+
       const result = await service.cancelSubscription();
-      
+
       expect(result).toBe(true);
       expect(mockSubscriptionService.cancelSubscription).toHaveBeenCalled();
     });
@@ -433,9 +441,9 @@ describe('FreemiumService', () => {
         guidanceSessionsUsed: 1,
         nextRefreshesRemaining: 3,
       });
-      
+
       const result = await service.restorePurchase();
-      
+
       expect(result).toBe(true);
       expect(mockSubscriptionService.activatePremium).toHaveBeenCalledWith('monthly');
     });

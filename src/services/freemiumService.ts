@@ -1,7 +1,19 @@
-import { UserSession, FreemiumLimits, PaywallType, SubscriptionState, Mood, PeakContext } from '../types';
+import {
+  UserSession,
+  FreemiumLimits,
+  PaywallType,
+  SubscriptionState,
+  Mood,
+  PeakContext,
+} from '../types';
 import { SessionService } from './sessionService';
 import { SubscriptionService } from './subscriptionService';
-import { FREEMIUM_LIMITS, isMercyMood, UPGRADE_ASK_COOLDOWN_MS } from '../constants';
+import {
+  FREEMIUM_LIMITS,
+  isMercyMood,
+  UPGRADE_ASK_COOLDOWN_MS,
+  SUBSCRIPTION_PRICING,
+} from '../constants';
 import { dbQuery } from '../database/schema';
 import { SPECIAL_EDITION_BUNDLES } from '../data/staticPaths';
 import { loadUpgradeAsk, saveUpgradeAsk, UpgradeAskState } from './upgradeAskStore';
@@ -88,6 +100,15 @@ export class FreemiumService {
 
   getCurrentLimits(): FreemiumLimits {
     return this.isPremium() ? { ...PREMIUM_LIMITS } : { ...FREEMIUM_LIMITS };
+  }
+
+  /**
+   * Single display-price source (spec §7 "dynamic price"). The UI reads prices
+   * ONLY through here, so Phase 3 can swap these placeholders for real
+   * StoreKit/RevenueCat store-localized prices in one place.
+   */
+  getPricing(): { monthlyUSD: number; yearlyUSD: number; trialDays: number } {
+    return SUBSCRIPTION_PRICING;
   }
 
   canStartGuidanceSession(): boolean {
