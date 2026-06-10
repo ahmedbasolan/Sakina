@@ -48,6 +48,15 @@ export const useGuidanceLogic = (
   // silently doing nothing. Mercy moods & premium never reach it (the service
   // grants unlimited there). Cleared on a new window/mood or by dismissResting.
   const [isResting, setIsResting] = useState(false);
+  // Tracks whether the user has already seen and dismissed the resting point
+  // for this prayer window. Prevents the modal from re-appearing every time
+  // they press "next verse" after dismissal. Reset when a new window opens.
+  const hasRestingBeenDismissed = useRef(false);
+  // True only after the resting point has been explicitly dismissed. Used by
+  // the screen to hide "next verse" — distinct from remainingRefreshes === 0
+  // so the button still appears when entering a spent window for the first time
+  // (pressing it should trigger the resting point, not silently do nothing).
+  const [isWindowExhausted, setIsWindowExhausted] = useState(false);
 
   const freemiumService = FreemiumService.getInstance();
   const preferencesService = PreferencesService.getInstance();
@@ -69,7 +78,11 @@ export const useGuidanceLogic = (
       await freemiumService.syncPrayerWindow();
       const remaining = freemiumService.getRemainingRefreshes(mood);
       setRemainingRefreshes(remaining);
-      if (remaining > 0) setIsResting(false); // new window/mood reopened the door
+      if (remaining > 0) {
+        setIsResting(false);
+        setIsWindowExhausted(false);
+        hasRestingBeenDismissed.current = false; // new window reopens the gate
+      }
     };
     syncRefreshes();
   }, [mood]);
@@ -175,7 +188,11 @@ export const useGuidanceLogic = (
   const requestNext = async (): Promise<boolean> => {
     const allowed = await freemiumService.useNextRefresh(mood);
     if (!allowed) {
-      setIsResting(true);
+      // Only show the resting point the first time per window; subsequent
+      // presses after dismissal are silently swallowed (modal won't re-appear).
+      if (!hasRestingBeenDismissed.current) {
+        setIsResting(true);
+      }
       return false;
     }
     setRemainingRefreshes(freemiumService.getRemainingRefreshes(mood));
@@ -183,7 +200,11 @@ export const useGuidanceLogic = (
     return true;
   };
 
-  const dismissResting = () => setIsResting(false);
+  const dismissResting = () => {
+    hasRestingBeenDismissed.current = true;
+    setIsWindowExhausted(true);
+    setIsResting(false);
+  };
 
   const handlePrimaryAction = async () => {
     HapticsService.notificationAsync('SUCCESS');
@@ -245,6 +266,7 @@ export const useGuidanceLogic = (
     activeIndex,
     remainingRefreshes,
     isResting,
+    isWindowExhausted,
     requestNext,
     dismissResting,
     nextButtonScale,

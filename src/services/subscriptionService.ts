@@ -177,13 +177,13 @@ export class SubscriptionService {
    */
   private async syncFromCustomerInfo(info: CustomerInfo): Promise<void> {
     const isActive = revenueCat.isEntitlementActive(info);
-    const entitlement = info.entitlements.active['premium'];
+    const entitlement = revenueCat.getActiveEntitlement(info);
 
     const tier: SubscriptionTier = isActive ? 'premium' : 'free';
     const type: SubscriptionType | undefined = isActive
       ? entitlement?.periodType === 'trial'
         ? 'trial'
-        : 'yearly'
+        : await revenueCat.resolveDurationType(entitlement?.productIdentifier)
       : undefined;
     const subscriptionEndDate = entitlement?.expirationDate
       ? new Date(entitlement.expirationDate).getTime()

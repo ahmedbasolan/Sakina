@@ -78,6 +78,8 @@ jest.mock('../revenueCatService', () => ({
     getPricing: jest.fn(() => Promise.resolve(null)),
     purchasePackage: jest.fn(() => Promise.resolve({ success: false, customerInfo: null })),
     restorePurchases: jest.fn(() => Promise.resolve({ entitlements: { active: {} } })),
+    resolveDurationType: jest.fn(() => Promise.resolve('yearly')),
+    isYearlyTrialEligible: jest.fn(() => Promise.resolve(true)),
   },
 }));
 

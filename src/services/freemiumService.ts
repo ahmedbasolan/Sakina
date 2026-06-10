@@ -40,7 +40,16 @@ export class FreemiumService {
   private upgradeAsk: UpgradeAskState = { lastAskAt: 0, lastContext: null };
   // Store-localized prices fetched from RC offerings during init.
   // Falls back to SUBSCRIPTION_PRICING constants when RC is unavailable.
-  private rcPricing: { monthlyUSD: number; yearlyUSD: number; trialDays: number } | null = null;
+  // `monthlyPrice`/`yearlyPrice` are the display strings ("$4.99", "€4,99")
+  // carrying the correct currency symbol; the *USD numbers are kept for math
+  // (savings %, per-month equivalent).
+  private rcPricing: {
+    monthlyUSD: number;
+    yearlyUSD: number;
+    monthlyPrice: string;
+    yearlyPrice: string;
+    trialDays: number;
+  } | null = null;
 
   static getInstance(): FreemiumService {
     if (!FreemiumService.instance) {
@@ -66,6 +75,8 @@ export class FreemiumService {
           this.rcPricing = {
             monthlyUSD: p.monthlyPriceAmount,
             yearlyUSD: p.yearlyPriceAmount,
+            monthlyPrice: p.monthlyPrice,
+            yearlyPrice: p.yearlyPrice,
             trialDays: p.trialDays,
           };
         }
@@ -121,8 +132,22 @@ export class FreemiumService {
    * RC when available (fetched during init), falling back to the static
    * SUBSCRIPTION_PRICING constants when RC is offline or not yet loaded.
    */
-  getPricing(): { monthlyUSD: number; yearlyUSD: number; trialDays: number } {
-    return this.rcPricing ?? SUBSCRIPTION_PRICING;
+  getPricing(): {
+    monthlyUSD: number;
+    yearlyUSD: number;
+    monthlyPrice: string;
+    yearlyPrice: string;
+    trialDays: number;
+  } {
+    if (this.rcPricing) return this.rcPricing;
+    // RC offline / not yet loaded — fall back to the static USD constants,
+    // synthesising display strings with a dollar sign (correct for the
+    // default store, swapped for the store-localized string once RC loads).
+    return {
+      ...SUBSCRIPTION_PRICING,
+      monthlyPrice: `$${SUBSCRIPTION_PRICING.monthlyUSD}`,
+      yearlyPrice: `$${SUBSCRIPTION_PRICING.yearlyUSD}`,
+    };
   }
 
   canStartGuidanceSession(): boolean {
