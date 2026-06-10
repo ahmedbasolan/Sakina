@@ -9,10 +9,11 @@
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
-      "backgroundColor": "#040D1A"
+      "backgroundColor": "#07111E"
     },
     "ios": {
       "supportsTablet": true,
+      "bundleIdentifier": "com.lelahmed.sakina",
       "infoPlist": {
         "UIUserInterfaceStyle": "Dark"
       }
@@ -26,12 +27,12 @@
         "android.permission.RECORD_AUDIO",
         "android.permission.MODIFY_AUDIO_SETTINGS"
       ],
-      "package": "com.lelahmed.islamicguidanceapp"
+      "package": "com.lelahmed.sakina"
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "plugins": ["expo-font", "expo-audio", "expo-sqlite", "expo-asset", "expo-notifications"],
+    "plugins": ["expo-font", "expo-audio", "expo-sqlite", "expo-asset", "expo-notifications", "react-native-purchases"],
     "extra": {
       "eas": {
         "projectId": "48691805-9833-4c4d-a8a6-c6bf5a054f1a"

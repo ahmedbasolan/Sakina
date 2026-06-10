@@ -14,6 +14,7 @@ import {
   UPGRADE_ASK_COOLDOWN_MS,
   SUBSCRIPTION_PRICING,
 } from '../constants';
+import { revenueCat } from './revenueCatService';
 import { dbQuery } from '../database/schema';
 import { SPECIAL_EDITION_BUNDLES } from '../data/staticPaths';
 import { loadUpgradeAsk, saveUpgradeAsk, UpgradeAskState } from './upgradeAskStore';
@@ -37,6 +38,9 @@ export class FreemiumService {
   // Loaded once at init so shouldOfferUpgrade() can stay synchronous for callers
   // in render/handlers; recordUpgradeAsk() updates this and persists.
   private upgradeAsk: UpgradeAskState = { lastAskAt: 0, lastContext: null };
+  // Store-localized prices fetched from RC offerings during init.
+  // Falls back to SUBSCRIPTION_PRICING constants when RC is unavailable.
+  private rcPricing: { monthlyUSD: number; yearlyUSD: number; trialDays: number } | null = null;
 
   static getInstance(): FreemiumService {
     if (!FreemiumService.instance) {
@@ -56,6 +60,16 @@ export class FreemiumService {
       await this.sessionService.initialize(this.isPremium());
       const savedAsk = await loadUpgradeAsk();
       if (savedAsk) this.upgradeAsk = savedAsk;
+      // Pre-fetch RC offering prices so getPricing() can be synchronous.
+      revenueCat.getPricing().then((p) => {
+        if (p) {
+          this.rcPricing = {
+            monthlyUSD: p.monthlyPriceAmount,
+            yearlyUSD: p.yearlyPriceAmount,
+            trialDays: p.trialDays,
+          };
+        }
+      }).catch(() => {});
       this.isLoaded = true;
     })();
 
@@ -103,12 +117,12 @@ export class FreemiumService {
   }
 
   /**
-   * Single display-price source (spec §7 "dynamic price"). The UI reads prices
-   * ONLY through here, so Phase 3 can swap these placeholders for real
-   * StoreKit/RevenueCat store-localized prices in one place.
+   * Single display-price source (spec §7). Returns store-localized prices from
+   * RC when available (fetched during init), falling back to the static
+   * SUBSCRIPTION_PRICING constants when RC is offline or not yet loaded.
    */
   getPricing(): { monthlyUSD: number; yearlyUSD: number; trialDays: number } {
-    return SUBSCRIPTION_PRICING;
+    return this.rcPricing ?? SUBSCRIPTION_PRICING;
   }
 
   canStartGuidanceSession(): boolean {
@@ -224,8 +238,12 @@ export class FreemiumService {
   }
 
   async restorePurchase(): Promise<boolean> {
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-    return this.activatePremium('monthly');
+    const ok = await this.subscriptionService.restorePurchases();
+    if (ok) {
+      this.sessionService.getCurrentSession()!.nextRefreshesRemaining = 999;
+      await this.sessionService.saveSession();
+    }
+    return ok;
   }
 
   getSessionInfo(): UserSession | null {
