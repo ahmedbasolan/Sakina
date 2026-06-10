@@ -105,7 +105,7 @@ const styles = StyleSheet.create({
   },
   verseRef: {
     fontSize: 12,
-    color: 'rgba(245, 237, 227, 0.5)',
+    color: 'rgba(245, 237, 227, 0.70)',
     textAlign: 'center',
     fontStyle: 'italic',
   },

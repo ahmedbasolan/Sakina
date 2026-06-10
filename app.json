@@ -32,7 +32,7 @@
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "plugins": ["expo-font", "expo-audio", "expo-sqlite", "expo-asset", "expo-notifications", "react-native-purchases"],
+    "plugins": ["expo-font", "expo-audio", "expo-sqlite", "expo-asset", "expo-notifications"],
     "extra": {
       "eas": {
         "projectId": "48691805-9833-4c4d-a8a6-c6bf5a054f1a"

@@ -16,6 +16,32 @@ export interface PrayerTimings {
   Isha: string;
 }
 
+export type TimeFormat = '12h' | '24h';
+
+/**
+ * Formats a prayer time for display. Strips any trailing timezone suffix the
+ * Aladhan API appends (e.g. "05:24 (BST)" → "05:24"), then renders in the
+ * requested clock format ("19:07" for 24h, "7:07 PM" for 12h).
+ */
+export const formatPrayerTime = (time?: string | null, format: TimeFormat = '24h'): string => {
+  const clean = (time ?? '').split(' ')[0]; // drop "(BST)" style suffix
+  if (format === '24h' || !clean.includes(':')) return clean;
+
+  const [hStr, m] = clean.split(':');
+  let h = parseInt(hStr, 10);
+  if (Number.isNaN(h)) return clean;
+  const period = h >= 12 ? 'PM' : 'AM';
+  h = h % 12 || 12;
+  return `${h}:${m} ${period}`;
+};
+
+/** Formats minutes-remaining into a compact "2h 15m" / "45m" countdown. */
+export const formatCountdown = (minutes: number): string => {
+  const h = Math.floor(minutes / 60);
+  const m = minutes % 60;
+  return h > 0 ? `${h}h ${m}m` : `${m}m`;
+};
+
 export interface PrayerTimesData {
   timings: PrayerTimings;
   date: {

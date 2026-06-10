@@ -12,6 +12,7 @@ import {
   Share,
   Linking,
   Platform,
+  Clipboard,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -56,6 +57,13 @@ const FONTS = [
   },
   { id: 'sans', name: 'Outfit Sans', family: Platform.OS === 'ios' ? 'Avenir' : 'sans-serif' },
 ];
+
+/** Parse "Surah Ar-Rum 30:4-5" → { name: "Ar-Rum", ref: "30:4-5" } */
+function parseSource(src: string): { name: string; ref: string } {
+  const match = src.match(/^Surah\s+(.+?)\s+(\d+:\d+(?:-\d+)?)$/);
+  if (match) return { name: match[1], ref: match[2] };
+  return { name: src, ref: '' };
+}
 
 const ShareSheet = ({ isVisible, onClose, content }: ShareSheetProps) => {
   const slideAnim = useRef(new Animated.Value(SCREEN_HEIGHT)).current;
@@ -121,12 +129,22 @@ const ShareSheet = ({ isVisible, onClose, content }: ShareSheetProps) => {
         const url = `sms:&body=${encodeURIComponent(shareText)}`;
         const canOpen = await Linking.canOpenURL(url);
         if (canOpen) return Linking.openURL(url);
+      } else if (action === 'instagram') {
+        // Instagram doesn't support pre-filled text — open the app and let the user paste
+        const url = 'instagram://app';
+        const canOpen = await Linking.canOpenURL(url);
+        if (canOpen) {
+          Clipboard.setString(shareText);
+          return Linking.openURL(url);
+        }
+      } else if (action === 'copy_text') {
+        Clipboard.setString(shareText);
+        onClose();
+        return;
       }
 
-      // Fallback
-      await Share.share({
-        message: shareText,
-      });
+      // Fallback: system share sheet
+      await Share.share({ message: shareText });
     } catch (error) {
       console.error('Share error:', error);
     } finally {
@@ -178,6 +196,15 @@ const ShareSheet = ({ isVisible, onClose, content }: ShareSheetProps) => {
     ? 'rgba(31, 41, 55, 0.7)'
     : 'rgba(255, 255, 255, 0.8)';
 
+  const parsedSource = parseSource(content.source);
+
+  // Cap English lines based on how many other content types are visible —
+  // prevents overflow when long verses + Arabic + transliteration are all on.
+  const englishMaxLines =
+    showArabic && showTransliteration ? 4
+    : showArabic ? 5
+    : 7;
+
   return (
     <Modal visible={isVisible} transparent animationType="none" onRequestClose={onClose}>
       <View style={styles.overlay}>
@@ -209,27 +236,29 @@ const ShareSheet = ({ isVisible, onClose, content }: ShareSheetProps) => {
               end={{ x: 1, y: 1 }}
               style={styles.previewCard}
             >
+              {/* ── Card top: app branding ── */}
               <View style={styles.cardHeader}>
-                <Text style={[styles.moodLabel, { color: subTextColor }]}>SPIRITUAL GUIDANCE</Text>
+                <Ionicons name="moon-outline" size={11} color={subTextColor} style={{ opacity: 0.65, marginRight: 5 }} />
+                <Text style={[styles.moodLabel, { color: subTextColor }]}>Sakina app</Text>
               </View>
 
-              <View style={styles.cardDecoration}>
-                <Text style={[styles.sparkleIcon, { color: subTextColor }]}>✦</Text>
-              </View>
-
+              {/* ── Verse content ── */}
               <View style={styles.quoteContainer}>
                 {showArabic && content.arabicText && (
                   <Text
                     style={[styles.previewArabic, { color: textColor }]}
-                    numberOfLines={3}
+                    numberOfLines={showEnglish ? 4 : 6}
                     adjustsFontSizeToFit={true}
-                    minimumFontScale={0.6}
+                    minimumFontScale={0.65}
                   >
                     {content.arabicText}
                   </Text>
                 )}
                 {showTransliteration && content.transliteration && (
-                  <Text style={[styles.previewTransliteration, { color: subTextColor }]}>
+                  <Text
+                    style={[styles.previewTransliteration, { color: subTextColor }]}
+                    numberOfLines={2}
+                  >
                     {content.transliteration}
                   </Text>
                 )}
@@ -243,35 +272,32 @@ const ShareSheet = ({ isVisible, onClose, content }: ShareSheetProps) => {
                         fontStyle: selectedFont.id === 'serif' ? 'italic' : 'normal',
                       },
                     ]}
-                    numberOfLines={0}
+                    numberOfLines={englishMaxLines}
                     adjustsFontSizeToFit={true}
-                    minimumFontScale={0.5}
+                    minimumFontScale={0.65}
                   >
                     "{content.text}"
                   </Text>
                 )}
               </View>
 
+              {/* ── Card bottom: surah name + verse ref ── */}
               <View style={styles.previewFooter}>
-                <Text style={[styles.previewSource, { color: subTextColor }]}>
-                  {content.source.toUpperCase()}
+                <Text style={[styles.previewSurahName, { color: textColor }]}>
+                  {parsedSource.name.toUpperCase()}
                 </Text>
-                <View style={styles.sakinaLogoContainer}>
-                  <Ionicons
-                    name="book-outline"
-                    size={12}
-                    color={subTextColor}
-                    style={{ opacity: 0.7 }}
-                  />
-                  <Text style={[styles.brandName, { color: subTextColor }]}>QUIET HEART</Text>
-                </View>
+                {parsedSource.ref !== '' && (
+                  <Text style={[styles.previewVerseRef, { color: subTextColor }]}>
+                    {parsedSource.ref}
+                  </Text>
+                )}
               </View>
             </LinearGradient>
 
             {/* PERSONALIZE - COLORS */}
             <View style={styles.personalizeSection}>
               <View style={styles.sectionHeader}>
-                <Text style={styles.sectionTitle}>CONTENT REFINEMENT</Text>
+                <Text style={styles.sectionTitle}>Show</Text>
                 <Ionicons name="options-outline" size={16} color={Colors.accent.primary} />
               </View>
 
@@ -314,7 +340,7 @@ const ShareSheet = ({ isVisible, onClose, content }: ShareSheetProps) => {
               </View>
 
               <View style={[styles.sectionHeader, { marginTop: 24 }]}>
-                <Text style={styles.sectionTitle}>STYLE & THEME</Text>
+                <Text style={styles.sectionTitle}>Style</Text>
                 <Ionicons name="color-palette-outline" size={16} color="rgba(255,255,255,0.5)" />
               </View>
 
@@ -381,17 +407,28 @@ const ShareSheet = ({ isVisible, onClose, content }: ShareSheetProps) => {
                   color="#25D366"
                   label="WhatsApp"
                 />
-                <SocialTarget name="telegram" icon="paper-plane" color="#5EAADE" label="Telegram" />
-                <SocialTarget name="more" icon="ellipsis-horizontal" color="#1A1A1A" label="More" />
+                <SocialTarget
+                  name="telegram"
+                  icon="send"
+                  color="#2AABEE"
+                  label="Telegram"
+                />
+                <SocialTarget
+                  name="instagram"
+                  icon="camera"
+                  color="#E1306C"
+                  label="Instagram"
+                />
+                <SocialTarget name="more" icon="ellipsis-horizontal" color="#3A3A3C" label="More" />
               </ScrollView>
             </View>
 
             {/* ACTION LIST */}
             <View style={styles.actionSection}>
               <ActionRow
-                label="Copy Link"
-                icon="link-outline"
-                onPress={() => handleAction('copy_link')}
+                label="Copy Text"
+                icon="copy-outline"
+                onPress={() => handleAction('copy_text')}
               />
               <ActionRow
                 label="Save Image"
@@ -438,7 +475,7 @@ const styles = StyleSheet.create({
   },
   previewCard: {
     width: '100%',
-    aspectRatio: 0.8,
+    aspectRatio: 1.05,
     borderRadius: 24,
     padding: 24,
     paddingVertical: 32,
@@ -453,21 +490,15 @@ const styles = StyleSheet.create({
   },
   cardHeader: {
     width: '100%',
+    flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
   },
   moodLabel: {
-    fontSize: 12,
+    fontSize: 11,
     fontWeight: '600',
-    letterSpacing: 1,
-    textTransform: 'uppercase',
-    opacity: 0.7,
-  },
-  cardDecoration: {
-    marginBottom: 8,
-  },
-  sparkleIcon: {
-    fontSize: 24,
-    opacity: 0.8,
+    letterSpacing: 0.5,
+    opacity: 0.65,
   },
   quoteContainer: {
     flex: 1,
@@ -499,25 +530,20 @@ const styles = StyleSheet.create({
   previewFooter: {
     alignItems: 'center',
     width: '100%',
-    marginTop: 12,
+    marginTop: 8,
+    gap: 3,
   },
-  previewSource: {
+  previewSurahName: {
+    fontSize: 13,
+    fontWeight: '700',
+    letterSpacing: 2.5,
+    opacity: 0.9,
+  },
+  previewVerseRef: {
     fontSize: 11,
-    fontWeight: '700',
-    letterSpacing: 2,
-    marginBottom: 12,
-    opacity: 0.8,
-  },
-  sakinaLogoContainer: {
-    flexDirection: 'column',
-    alignItems: 'center',
-    gap: 4,
-  },
-  brandName: {
-    fontSize: 9,
-    fontWeight: '700',
-    letterSpacing: 2,
-    marginTop: 2,
+    fontWeight: '500',
+    letterSpacing: 1.5,
+    opacity: 0.65,
   },
   // Personalize Section
   personalizeSection: {
@@ -531,10 +557,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 4,
   },
   sectionTitle: {
-    color: 'rgba(255,255,255,0.6)',
-    fontSize: 11,
-    fontWeight: '700',
-    letterSpacing: 1,
+    color: 'rgba(255,255,255,0.55)',
+    fontSize: 12,
+    fontWeight: '600',
+    letterSpacing: 0.3,
   },
   themeSelector: {
     flexDirection: 'row',

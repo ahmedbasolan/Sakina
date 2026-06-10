@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import { getSpiritualWindowName } from '../utils/prayerContext';
+import { formatPrayerTime, formatCountdown } from '../services/prayerTimesService';
 import { Colors } from '../theme/DesignSystem';
 import {
   View,
@@ -35,28 +36,26 @@ const { width } = Dimensions.get('window');
 
 /* ─── Constants ──────────────────────────────────────────────── */
 
+// Colors aligned with MoodColors in DesignSystem.ts (GuidanceScreen source of truth)
+// so the accent colour a user sees on the card matches the immersive background they enter.
 const moodConfigs: MoodConfig[] = [
-  { id: 'Grateful',    label: 'GRATEFUL',    sublabel: 'Shukr',   color: '#34D399', bgColor: '#0C2214', borderColor: '#1A4A20', iconName: 'heart' },
-  { id: 'Hopeful',     label: 'HOPEFUL',     sublabel: 'Amal',    color: '#FBBF24', bgColor: '#1A1608', borderColor: '#3D3010', iconName: 'sunny' },
-  { id: 'Calm',        label: 'PEACEFUL',    sublabel: 'Sukoon',  color: '#60A5FA', bgColor: '#0C1A2E', borderColor: '#1E3A5F', iconName: 'water' },
-  { id: 'Overwhelmed', label: 'OVERWHELMED', sublabel: 'Ghamm',   color: '#14B8A6', bgColor: '#0C1E1E', borderColor: '#1A3A3A', iconName: 'layers' },
-  { id: 'Tired',       label: 'TIRED',       sublabel: "Ta'ab",   color: '#9CA3AF', bgColor: '#14161A', borderColor: '#2A2E34', iconName: 'moon' },
-  { id: 'Lonely',      label: 'LONELY',      sublabel: 'Wahshah', color: '#A78BFA', bgColor: '#180E2E', borderColor: '#3D1E6A', iconName: 'person' },
-  { id: 'Sad',         label: 'SAD',         sublabel: 'Huzn',    color: '#60A5FA', bgColor: '#0C1526', borderColor: '#1A3050', iconName: 'rainy' },
-  { id: 'Angry',       label: 'ANGRY',       sublabel: 'Ghadab',  color: '#F87171', bgColor: '#1E0C0C', borderColor: '#4A1A1A', iconName: 'flame' },
+  { id: 'Grateful',    label: 'GRATEFUL',    sublabel: 'Shukr',   color: '#FBBF24', bgColor: '#451A03', borderColor: '#78350F', iconName: 'heart' },
+  { id: 'Hopeful',     label: 'HOPEFUL',     sublabel: 'Amal',    color: '#22D3EE', bgColor: '#083344', borderColor: '#155E75', iconName: 'sunny' },
+  { id: 'Calm',        label: 'PEACEFUL',    sublabel: 'Sukoon',  color: '#34D399', bgColor: '#064E3B', borderColor: '#065F46', iconName: 'water' },
+  { id: 'Overwhelmed', label: 'OVERWHELMED', sublabel: 'Ghamm',   color: '#818CF8', bgColor: '#0F172A', borderColor: '#1E1B4B', iconName: 'layers' },
+  { id: 'Tired',       label: 'TIRED',       sublabel: "Ta'ab",   color: '#D6D3D1', bgColor: '#1C1917', borderColor: '#292524', iconName: 'moon' },
+  { id: 'Lonely',      label: 'LONELY',      sublabel: 'Wahshah', color: '#C084FC', bgColor: '#2E1065', borderColor: '#4C1D95', iconName: 'person' },
+  { id: 'Sad',         label: 'SAD',         sublabel: 'Huzn',    color: '#94A3B8', bgColor: '#1E293B', borderColor: '#334155', iconName: 'rainy' },
+  { id: 'Angry',       label: 'ANGRY',       sublabel: 'Ghadab',  color: '#FB923C', bgColor: '#1A0F0A', borderColor: '#2D1610', iconName: 'flame' },
 ];
 
 /* ─── Helpers ────────────────────────────────────────────────── */
 
-function getGreeting(streakDays?: number, lastOpenDate?: string | null): string {
+// Short time-of-day caption shown above the "Assalamu Alaikum" greeting in the
+// hero. Kept brief so it reads cleanly as an uppercase eyebrow.
+function getTimeGreeting(): string {
   const h = new Date().getHours();
-  if (lastOpenDate) {
-    const daysSince = Math.floor((Date.now() - new Date(lastOpenDate).getTime()) / 86400000);
-    if (daysSince >= 3) return 'Welcome back. This door is always open.';
-  }
-  if (streakDays && streakDays >= 7) return `${streakDays} days of showing up for your soul`;
-  if (h < 4)  return "You're awake. Allah is with you.";
-  if (h < 5)  return 'Peace be upon you';
+  if (h < 5)  return 'Peace be with you';
   if (h < 12) return 'Good Morning';
   if (h < 17) return 'Good Afternoon';
   return 'Good Evening';
@@ -92,13 +91,13 @@ const QuillIcon = React.memo(function QuillIcon({ size, color }: { size: number;
    ═══════════════════════════════════════════════════════════════ */
 
 export default function HomeScreen({ navigation }: { navigation: any }) {
-  const { setSelectedMood, rotationEngine, setStreakCount } = useAppContext();
+  const { setSelectedMood, rotationEngine, setStreakCount, timeFormat } = useAppContext();
   const insets = useSafeAreaInsets();
 
   // ── All data loading delegated to useHomeData ─────────────────
   const {
     prayerContext,
-    fajrTime,
+    nextPrayer,
     showLocationModal, setShowLocationModal,
     loadPrayerData,
     currentCity, currentCountry,
@@ -109,7 +108,6 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
     localSelectedMood, setLocalSelectedMood,
     activePath,
     dailyVerse,
-    lastOpenDate,
     refreshing,
     handleRefresh,
   } = useHomeData({ setStreakCount });
@@ -176,10 +174,7 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
     ? Math.round((activePath.currentDay / activePath.totalDays) * 100)
     : 0;
 
-  const greeting = useMemo(
-    () => getGreeting(streakDays, lastOpenDate),
-    [streakDays, lastOpenDate],
-  );
+  const greeting = useMemo(() => getTimeGreeting(), []);
 
   const lastCheckinLabel = useMemo(() => {
     if (!lastCheckin) return '';
@@ -241,14 +236,8 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
           <View style={styles.moodSection}>
             <View style={styles.sectionHeader}>
               <Text style={styles.sectionHeaderTitle}>How Is Your Heart?</Text>
-              <TouchableOpacity
-                onPress={() => navigation.navigate('MoodSelection')}
-                style={styles.seeAllButton}
-              >
-                <Text style={styles.seeAllText}>See all</Text>
-                <Ionicons name="chevron-forward" size={11} color="#8BA4BF" />
-              </TouchableOpacity>
             </View>
+            <Text style={styles.sectionSubtitle}>Tap your mood to receive a personalised verse</Text>
 
             {/* Last check-in pill */}
             {lastCheckin && (() => {
@@ -287,6 +276,26 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
           </View>
 
           {/* ═══ SACRED JOURNEY ══════════════════════════════════ */}
+          {!activePath && (
+            <View style={styles.journeySection}>
+              <TouchableOpacity
+                style={styles.journeyDiscoveryCard}
+                onPress={() => navigation.navigate('Journeys')}
+                activeOpacity={0.85}
+              >
+                <View style={styles.journeyDiscoveryLeft}>
+                  <View style={styles.journeyDiscoveryIcon}>
+                    <Ionicons name="compass-outline" size={22} color={Colors.accent.primary} />
+                  </View>
+                  <View style={styles.journeyDiscoveryText}>
+                    <Text style={styles.journeyDiscoveryTitle}>Start a Guided Journey</Text>
+                    <Text style={styles.journeyDiscoverySub}>Build salah, dhikr & reflection habits, step by step</Text>
+                  </View>
+                </View>
+                <Ionicons name="chevron-forward" size={16} color="#6B8EAE" />
+              </TouchableOpacity>
+            </View>
+          )}
           {activePath && (
             <View style={styles.journeySection}>
               <View style={styles.sectionHeader}>
@@ -308,7 +317,7 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
                   style={[styles.journeyCard, { borderColor: '#262214' }]}
                 >
                   <View style={styles.journeyMandala} pointerEvents="none">
-                    <AnimatedMandala size={180} color={activePath.color} opacity={0.12} />
+                    <AnimatedMandala size={180} color={activePath.color} opacity={0.24} />
                   </View>
 
                   <View style={styles.journeyCardTop}>
@@ -324,7 +333,7 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
                         )}
                       </View>
                     </View>
-                    <Ionicons name="chevron-forward" size={16} color="#4A6480" style={{ marginTop: 2 }} />
+                    <Ionicons name="chevron-forward" size={16} color="#6B8EAE" style={{ marginTop: 2 }} />
                   </View>
 
                   <View style={styles.progressBarTrack}>
@@ -350,15 +359,19 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
             <View style={styles.quickActionsRow}>
               <TouchableOpacity
                 style={[styles.quickCard, { backgroundColor: '#0F2236', borderColor: '#1E3A5F' }]}
-                onPress={() => navigation.navigate('MoodHistory')}
+                onPress={() => navigation.navigate('PrayerTimes')}
                 activeOpacity={0.85}
               >
                 <View style={[styles.quickCardIcon, { backgroundColor: '#0A1828', borderColor: '#1A3A5A' }]}>
                   <PrayerArchIcon size={18} color="#60A5FA" />
                 </View>
-                <Text style={styles.quickCardTitle}>FAJR PRAYER</Text>
-                <Text style={[styles.quickCardValue, { color: '#60A5FA' }]}>{fajrTime || '5:23 AM'}</Text>
-                <Text style={styles.quickCardSub}>Tomorrow</Text>
+                <Text style={styles.quickCardTitle}>PRAYER TIMES</Text>
+                <Text style={[styles.quickCardValue, { color: '#60A5FA' }]}>
+                  {nextPrayer ? `${nextPrayer.name} ${formatPrayerTime(nextPrayer.time, timeFormat)}` : 'View all'}
+                </Text>
+                <Text style={styles.quickCardSub}>
+                  {nextPrayer ? `in ${formatCountdown(nextPrayer.minutesRemaining)}` : 'Today'}
+                </Text>
               </TouchableOpacity>
 
               <TouchableOpacity
@@ -411,6 +424,54 @@ const styles = StyleSheet.create({
     fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
     letterSpacing: 1.5,
     fontWeight: '700',
+  },
+  sectionSubtitle: {
+    fontSize: 12,
+    color: 'rgba(176, 196, 215, 0.65)',
+    letterSpacing: 0.2,
+    marginBottom: 14,
+    marginTop: -4,
+  },
+  journeyDiscoveryCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: 'rgba(201, 168, 76, 0.05)',
+    borderRadius: 16,
+    padding: 16,
+    borderWidth: 1,
+    borderColor: 'rgba(201, 168, 76, 0.14)',
+  },
+  journeyDiscoveryLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 14,
+    flex: 1,
+  },
+  journeyDiscoveryIcon: {
+    width: 44,
+    height: 44,
+    borderRadius: 12,
+    backgroundColor: 'rgba(201, 168, 76, 0.08)',
+    borderWidth: 1,
+    borderColor: 'rgba(201, 168, 76, 0.18)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  journeyDiscoveryText: {
+    flex: 1,
+  },
+  journeyDiscoveryTitle: {
+    fontSize: 15,
+    color: '#F0E6D3',
+    fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
+    fontWeight: '600',
+    marginBottom: 3,
+  },
+  journeyDiscoverySub: {
+    fontSize: 12,
+    color: 'rgba(176, 196, 215, 0.65)',
+    lineHeight: 17,
   },
   seeAllButton: { flexDirection: 'row', alignItems: 'center', gap: 4 },
   seeAllText: {
@@ -506,7 +567,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
   },
-  journeyDayText: { fontSize: 12, color: '#4A6480' },
+  journeyDayText: { fontSize: 12, color: '#6B8EAE' },
   journeyPctText: {
     fontSize: 11,
     fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
@@ -535,5 +596,5 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
   },
   quickCardValue: { fontSize: 13, marginTop: 4, fontWeight: '600' },
-  quickCardSub: { fontSize: 11, color: '#4A6480', marginTop: 2 },
+  quickCardSub: { fontSize: 11, color: '#6B8EAE', marginTop: 2 },
 });

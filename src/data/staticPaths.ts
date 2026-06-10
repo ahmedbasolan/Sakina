@@ -240,12 +240,13 @@ export const STATIC_SPIRITUAL_PATHS: SpiritualPath[] = [
         isCompleted: false,
       },
     ],
+    tone: 'momentum',
   },
   {
     id: 'path_depression_iman',
     title: 'Depression vs. Low Iman',
     description: 'Untangling deep emotional distress from spiritual worth.',
-    duration: 21,
+    duration: 14,
     theme: 'Sad',
     target: 'Spiritual Validation',
     isPremium: false,
@@ -261,6 +262,7 @@ export const STATIC_SPIRITUAL_PATHS: SpiritualPath[] = [
         isCompleted: false,
       },
     ],
+    tone: 'refuge',
   },
   {
     id: 'path_salah_transformation',
@@ -342,6 +344,7 @@ export const STATIC_SPIRITUAL_PATHS: SpiritualPath[] = [
         isCompleted: false,
       },
     ],
+    tone: 'momentum',
   },
 
   // --- PREMIUM (Marriage & Relationships) ---
@@ -349,18 +352,19 @@ export const STATIC_SPIRITUAL_PATHS: SpiritualPath[] = [
     id: 'path_marriage_seeker',
     title: 'Marriage Seeker',
     description: 'Preparing your heart and character for the gift of marriage.',
-    duration: 21,
+    duration: 14,
     theme: 'Hopeful',
     target: 'Mawadda (Love)',
     isPremium: true,
     dailySteps: [],
+    tone: 'momentum',
   },
   {
     id: 'path_wrong_marriage',
     title: 'The Wrong Marriage?',
     description:
       'A 30-day decision framework for those married under pressure or struggling with deep regret.',
-    duration: 30,
+    duration: 14,
     theme: 'Sad',
     target: 'Clarity & Peace',
     isPremium: true,
@@ -376,6 +380,7 @@ export const STATIC_SPIRITUAL_PATHS: SpiritualPath[] = [
         isCompleted: false,
       },
     ],
+    tone: 'refuge',
   },
   {
     id: 'path_forced_marriage',
@@ -397,26 +402,29 @@ export const STATIC_SPIRITUAL_PATHS: SpiritualPath[] = [
         isCompleted: false,
       },
     ],
+    tone: 'momentum',
   },
   {
     id: 'path_parent_healing',
     title: 'Healing from Toxic Family',
     description: 'Birr al-Walidayn while protecting your soul.',
-    duration: 21,
+    duration: 14,
     theme: 'Angry',
     target: 'Healthy Boundaries',
     isPremium: true,
     dailySteps: [],
+    tone: 'refuge',
   },
   {
     id: 'path_two_worlds',
     title: 'Living in Two Worlds',
     description: 'Navigating Western identity and traditional expectations.',
-    duration: 21,
+    duration: 14,
     theme: 'Overwhelmed',
     target: 'Integrated Identity',
     isPremium: true,
     dailySteps: [],
+    tone: 'momentum',
   },
 
   // --- PREMIUM (Inner Peace & Crisis) ---
@@ -429,6 +437,7 @@ export const STATIC_SPIRITUAL_PATHS: SpiritualPath[] = [
     target: 'Hope',
     isPremium: true,
     dailySteps: [],
+    tone: 'refuge',
   },
   {
     id: 'path_addiction_recovery',
@@ -439,6 +448,12 @@ export const STATIC_SPIRITUAL_PATHS: SpiritualPath[] = [
     target: 'Freedom',
     isPremium: true,
     dailySteps: [],
+    tone: 'momentum',
+    phases: [
+      { label: 'Phase 1 — Stabilize', startDay: 1, endDay: 10 },
+      { label: 'Phase 2 — Rebuild', startDay: 11, endDay: 20 },
+      { label: 'Phase 3 — Sustain', startDay: 21, endDay: 30 },
+    ],
   },
   {
     id: 'path_grief_loss',
@@ -449,6 +464,7 @@ export const STATIC_SPIRITUAL_PATHS: SpiritualPath[] = [
     target: 'Sabr',
     isPremium: true,
     dailySteps: [],
+    tone: 'refuge',
   },
   {
     id: 'path_screen_detox',
@@ -459,6 +475,7 @@ export const STATIC_SPIRITUAL_PATHS: SpiritualPath[] = [
     target: 'Presence',
     isPremium: true,
     dailySteps: [],
+    tone: 'momentum',
   },
 
   // --- PREMIUM (Spiritual Development) ---
@@ -471,16 +488,18 @@ export const STATIC_SPIRITUAL_PATHS: SpiritualPath[] = [
     target: 'Zuhd',
     isPremium: true,
     dailySteps: [],
+    tone: 'refuge',
   },
   {
     id: 'path_tawbah_intensive',
     title: 'Tawbah Intensive',
     description: 'A 10-day deep dive into sincere repentance.',
-    duration: 10,
+    duration: 14,
     theme: 'Sad',
     target: 'Renewal',
     isPremium: true,
     dailySteps: [],
+    tone: 'refuge',
   },
   {
     id: 'path_quran_connection',
@@ -491,16 +510,24 @@ export const STATIC_SPIRITUAL_PATHS: SpiritualPath[] = [
     target: 'Suhba',
     isPremium: true,
     dailySteps: [],
+    tone: 'momentum',
+    phases: [
+      { label: 'Week 1 — Getting Started', startDay: 1, endDay: 7 },
+      { label: 'Week 2 — Building Rhythm', startDay: 8, endDay: 14 },
+      { label: 'Week 3 — Going Deeper', startDay: 15, endDay: 21 },
+      { label: 'Week 4 — Daily Companion', startDay: 22, endDay: 30 },
+    ],
   },
   {
     id: 'path_prayer_leadership',
     title: 'Prayer Leadership',
     description: 'Building confidence to lead your family and community in Salah.',
-    duration: 14,
+    duration: 7,
     theme: 'Hopeful',
     target: 'Confidence',
     isPremium: true,
     dailySteps: [],
+    tone: 'momentum',
   },
 
   // --- PREMIUM (Practical Life) ---
@@ -508,21 +535,23 @@ export const STATIC_SPIRITUAL_PATHS: SpiritualPath[] = [
     id: 'path_leaving_haram_job',
     title: 'Leaving Haram Job',
     description: 'Finding the courage to prioritize Halal rizq over security.',
-    duration: 14,
+    duration: 7,
     theme: 'Overwhelmed',
     target: 'Tawakkul',
     isPremium: true,
     dailySteps: [],
+    tone: 'momentum',
   },
   {
     id: 'path_career_choice',
     title: 'Career Choice',
     description: 'Aligning your professional path with your higher purpose.',
-    duration: 21,
+    duration: 14,
     theme: 'Overwhelmed',
     target: 'Barakah',
     isPremium: true,
     dailySteps: [],
+    tone: 'momentum',
   },
 
   // --- SPECIAL EDITION COLLECTIONS (Purchasable Bundles) ---
@@ -547,6 +576,12 @@ export const STATIC_SPIRITUAL_PATHS: SpiritualPath[] = [
         isCompleted: false,
       },
     ],
+    tone: 'momentum',
+    phases: [
+      { label: 'The First Ten — Mercy', startDay: 1, endDay: 10 },
+      { label: 'The Middle Ten — Forgiveness', startDay: 11, endDay: 20 },
+      { label: 'The Last Ten — Refuge from the Fire', startDay: 21, endDay: 30 },
+    ],
   },
   {
     id: 'path_breaking_free_90',
@@ -558,6 +593,12 @@ export const STATIC_SPIRITUAL_PATHS: SpiritualPath[] = [
     isSpecialEdition: true,
     bundleId: 'bundle_breaking_free',
     dailySteps: [],
+    tone: 'momentum',
+    phases: [
+      { label: 'Stage 1 — Detox', startDay: 1, endDay: 30 },
+      { label: 'Stage 2 — Rewire', startDay: 31, endDay: 60 },
+      { label: 'Stage 3 — Freedom', startDay: 61, endDay: 90 },
+    ],
   },
   {
     id: 'path_haram_relationships_exit',
@@ -569,5 +610,6 @@ export const STATIC_SPIRITUAL_PATHS: SpiritualPath[] = [
     isSpecialEdition: true,
     bundleId: 'bundle_haram_relationships',
     dailySteps: [],
+    tone: 'refuge',
   },
 ];

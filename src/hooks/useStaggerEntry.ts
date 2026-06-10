@@ -15,11 +15,14 @@
  */
 import { useRef, useEffect } from 'react';
 import { Animated, Easing } from 'react-native';
+import { Animations } from '../theme/DesignSystem';
 
+// Defaults come from the design system's stagger choreography token, so the
+// standard "every screen" entrance stays consistent and tunable in one place.
 const DEFAULT_OFFSET = 50;
-const DEFAULT_DURATION = 480;
-const DEFAULT_BASE_DELAY = 200;
-const DEFAULT_STAGGER = 100;
+const DEFAULT_DURATION = Animations.stagger.duration;
+const DEFAULT_BASE_DELAY = Animations.stagger.baseDelay;
+const DEFAULT_STAGGER = Animations.stagger.step;
 
 interface StaggerOptions {
   /** Delay before the first element starts animating (ms). Default 200. */

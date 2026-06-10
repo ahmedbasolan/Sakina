@@ -178,7 +178,7 @@ export const SmartMoodGrid = memo(function SmartMoodGrid({
       </View>
       <TouchableOpacity onPress={toggleExpand} style={styles.expandBtn}>
         <Text style={styles.expandText}>
-          {expanded ? 'Show less' : 'See all 8'}
+          {expanded ? 'Show less' : `See all ${moodConfigs.length}`}
         </Text>
         <Ionicons
           name={expanded ? 'chevron-up' : 'chevron-down'}

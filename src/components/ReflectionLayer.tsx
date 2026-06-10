@@ -23,6 +23,8 @@ interface ReflectionLayerProps {
   footerText?: string;
   requireText?: boolean;
   scrollY?: Animated.Value;
+  /** Journey identity color — themes the save button, focus, and selection. */
+  accentColor?: string;
 }
 
 const ReflectionLayer: React.FC<ReflectionLayerProps> = ({
@@ -32,6 +34,7 @@ const ReflectionLayer: React.FC<ReflectionLayerProps> = ({
   footerText = 'Your reflections are private and only you can see them.',
   requireText = true,
   scrollY,
+  accentColor = Colors.accent.secondary,
 }) => {
   const insets = useSafeAreaInsets();
   const [reflection, setReflection] = useState('');
@@ -106,6 +109,7 @@ const ReflectionLayer: React.FC<ReflectionLayerProps> = ({
         <Animated.View style={[
           styles.journalContainer,
           isFocused && styles.journalContainerFocused,
+          isFocused && { borderColor: accentColor + '40' },
           { opacity: fadeAnim },
         ]}>
           <TextInput
@@ -117,7 +121,7 @@ const ReflectionLayer: React.FC<ReflectionLayerProps> = ({
             onChangeText={setReflection}
             onFocus={() => setIsFocused(true)}
             onBlur={() => setIsFocused(false)}
-            selectionColor={Colors.accent.secondary}
+            selectionColor={accentColor}
             textAlignVertical="top"
           />
 
@@ -135,7 +139,7 @@ const ReflectionLayer: React.FC<ReflectionLayerProps> = ({
         <View style={styles.actionsArea}>
           {hasText ? (
             <TouchableOpacity
-              style={styles.saveButton}
+              style={[styles.saveButton, { backgroundColor: accentColor, shadowColor: accentColor }]}
               onPress={handleComplete}
               activeOpacity={0.8}
             >

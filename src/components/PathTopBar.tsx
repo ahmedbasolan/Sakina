@@ -8,19 +8,32 @@ interface PathTopBarProps {
   pathType?: 'droplet' | 'sun' | 'moon';
   currentDay: number;
   totalDays: number;
-  onSettingsPress: () => void;
+  /** Number of days actually completed — used for the progress bar and % label.
+   *  Defaults to currentDay-1 if omitted (backward-compatible). */
+  completedDays?: number;
+  onSettingsPress?: () => void;
   onBack: () => void;
+  /** Journey accent color — themes the progress fill to the path's identity. */
+  accentColor?: string;
+  /** Phase label for long, chunked journeys (e.g. "Week 1 — Foundations"). */
+  phaseLabel?: string;
 }
 
 const PathTopBar: React.FC<PathTopBarProps> = ({
   pathType = 'droplet',
   currentDay,
   totalDays,
+  completedDays,
   onSettingsPress,
   onBack,
+  accentColor = Colors.accent.primary,
+  phaseLabel,
 }) => {
   const insets = useSafeAreaInsets();
-  const progress = (currentDay / totalDays) * 100;
+  // Use completed-days count if provided; fall back to currentDay-1 so the bar
+  // matches the celebration modal's ring (both show achievement, not position).
+  const doneCount = completedDays ?? Math.max(currentDay - 1, 0);
+  const progress = (doneCount / totalDays) * 100;
 
   const getPathIcon = () => {
     switch (pathType) {
@@ -38,26 +51,44 @@ const PathTopBar: React.FC<PathTopBarProps> = ({
   return (
     <View style={[styles.container, { paddingTop: insets.top + Spacing.sm }]}>
       <View style={styles.leftAction}>
-        <TouchableOpacity onPress={onBack} style={styles.iconCircle} activeOpacity={0.7}>
+        <TouchableOpacity
+          onPress={onBack}
+          style={styles.iconCircle}
+          activeOpacity={0.7}
+          accessibilityRole="button"
+          accessibilityLabel="Go back"
+        >
           <Ionicons name="chevron-back" size={20} color={Colors.text.primary} />
         </TouchableOpacity>
       </View>
 
       <View style={styles.centerContent}>
         <Text style={styles.progressLabel}>
-          Day {currentDay}/{totalDays} — {Math.round(progress)}%
+          {phaseLabel
+            ? phaseLabel
+            : `Day ${currentDay}/${totalDays}${doneCount > 0 ? ` — ${Math.round(progress)}%` : ''}`}
         </Text>
         <View style={styles.progressBarWrapper}>
           <View style={styles.progressBarTrack}>
-            <View style={[styles.progressBarFill, { width: `${progress}%` }]} />
+            <View
+              style={[styles.progressBarFill, { width: `${progress}%`, backgroundColor: accentColor }]}
+            />
           </View>
         </View>
       </View>
 
       <View style={styles.rightAction}>
-        <TouchableOpacity onPress={onSettingsPress} style={styles.iconCircle} activeOpacity={0.7}>
-          <Ionicons name="options-outline" size={20} color={Colors.text.primary} />
-        </TouchableOpacity>
+        {onSettingsPress && (
+          <TouchableOpacity
+            onPress={onSettingsPress}
+            style={styles.iconCircle}
+            activeOpacity={0.7}
+            accessibilityRole="button"
+            accessibilityLabel="Journey settings"
+          >
+            <Ionicons name="options-outline" size={20} color={Colors.text.primary} />
+          </TouchableOpacity>
+        )}
       </View>
     </View>
   );

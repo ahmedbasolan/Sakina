@@ -1,6 +1,7 @@
 import React, { useRef, useEffect } from 'react';
 import { Animated, Dimensions } from 'react-native';
 import { Colors } from '../../theme/DesignSystem';
+import { useReduceMotion } from '../../hooks/useReduceMotion';
 
 const { width } = Dimensions.get('window');
 
@@ -13,8 +14,13 @@ interface TwinklingStarProps {
 
 export function TwinklingStar({ x, y, delay, size }: TwinklingStarProps) {
   const opacity = useRef(new Animated.Value(0.2)).current;
+  const reduceMotion = useReduceMotion();
 
   useEffect(() => {
+    if (reduceMotion) {
+      opacity.setValue(0.45);
+      return;
+    }
     const anim = Animated.loop(
       Animated.sequence([
         Animated.delay(delay),
@@ -24,7 +30,7 @@ export function TwinklingStar({ x, y, delay, size }: TwinklingStarProps) {
     );
     anim.start();
     return () => anim.stop();
-  }, []);
+  }, [reduceMotion]);
 
   return (
     <Animated.View

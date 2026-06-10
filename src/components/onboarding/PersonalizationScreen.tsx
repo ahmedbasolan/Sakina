@@ -86,7 +86,7 @@ export default function PersonalizationScreen({ isActive, onNext }: Props) {
   const [selectedGoal, setSelectedGoal] = useState<string | null>(null);
 
   // [0] title, [1] subtitle, [2] card0, [3] card1, [4] card2, [5] card3, [6] chip
-  const s = useStaggerEntry(isActive, 7, { baseDelay: 200, stagger: 90 });
+  const s = useStaggerEntry(isActive, 7);
 
   // Selection border animation per card
   const selectionAnims = useRef(
@@ -266,10 +266,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: 24,
+    paddingTop: height * 0.07,
   },
   title: {
     fontFamily: 'serif',
-    fontSize: 28,
+    fontSize: 26,
     color: '#F5EDE3',
     textAlign: 'center',
     letterSpacing: 0.3,
@@ -357,7 +358,7 @@ const styles = StyleSheet.create({
   },
   chipText: {
     fontSize: 13,
-    color: 'rgba(245, 237, 227, 0.55)',
+    color: 'rgba(245, 237, 227, 0.70)',
     letterSpacing: 0.3,
     flex: 1,
     textAlign: 'center',

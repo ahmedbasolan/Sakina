@@ -1,5 +1,5 @@
 /**
- * Screen 2: Welcome to Noor
+ * Screen 2: Welcome to Sakina
  *
  * Dark navy background (#07111E → #0C1A2E) with animated mandala
  * geometric web, twinkling gold stars, sparkle icon, and CTA.
@@ -19,6 +19,8 @@ import {
 import { LinearGradient } from 'expo-linear-gradient';
 import { useStaggerEntry } from '../../hooks/useStaggerEntry';
 import { InteractiveStarfield } from './InteractiveStarfield';
+import { SakinaLantern } from '../SakinaLantern';
+import { ShimmerButton } from '../ShimmerButton';
 
 const { width, height } = Dimensions.get('window');
 
@@ -53,14 +55,14 @@ interface Props {
 }
 
 const FEATURES = [
-  'A verse matched to how you feel, every day',
-  'Gentle reminders at Fajr and Maghrib',
-  'Track your heart\'s journey over time',
+  'A Quran verse matched to your mood — morning and evening guidance, every day',
+  'Guided Journeys to build salah, dhikr, and reflection habits — step by step',
+  'A private journal for your thoughts and gratitude — only you can read your entries',
 ];
 
 export default function WelcomeScreen({ isActive, onNext, onSkip }: Props) {
-  // [0] icon, [1] title, [2] subtitle, [3-5] features, [6] CTA, [7] skip
-  const s = useStaggerEntry(isActive, 8, { baseDelay: 300, stagger: 120 });
+  // [0] icon, [1] title, [2] subtitle, [3-5] features, [6] privacy chip, [7] CTA, [8] skip
+  const s = useStaggerEntry(isActive, 9);
 
   const glowAnim = useRef(new Animated.Value(0.08)).current;
 
@@ -90,15 +92,15 @@ export default function WelcomeScreen({ isActive, onNext, onSkip }: Props) {
       <View style={styles.contentArea}>
         {/* Hero Area grouping the Icon and Mandala perfectly centered */}
         <View style={styles.heroWrap}>
-          {/* Breathing gold glow */}
+          {/* Breathing gold glow behind the lantern */}
           <Animated.View
             style={[styles.breathingGlow, { opacity: glowAnim }]}
             pointerEvents="none"
           />
 
-          {/* Arabic calligraphy "سكينة" in gold ring */}
-          <Animated.View style={[styles.iconRing, s[0]]}>
-            <Text style={styles.calligraphyText}>سكينة</Text>
+          {/* Sakina lantern — the app's brand mark */}
+          <Animated.View style={s[0]}>
+            <SakinaLantern size={132} />
           </Animated.View>
         </View>
 
@@ -121,31 +123,26 @@ export default function WelcomeScreen({ isActive, onNext, onSkip }: Props) {
               <Text style={styles.featureText}>{text}</Text>
             </Animated.View>
           ))}
+
+          {/* Privacy note */}
+          <Animated.View style={[styles.privacyChip, s[6]]}>
+            <Text style={styles.privacyIcon}>🔒</Text>
+            <Text style={styles.privacyText}>
+              Your journal entries are private and never leave your device. Check-ins sync to your account when you sign in.
+            </Text>
+          </Animated.View>
         </View>
       </View>
 
       {/* Bottom section */}
       <View style={styles.bottomSection}>
         {/* CTA */}
-        <Animated.View style={[styles.ctaWrap, s[6]]}>
-          <TouchableOpacity
-            style={styles.ctaBtn}
-            activeOpacity={0.85}
-            onPress={onNext}
-          >
-            <LinearGradient
-              colors={['#E8C84A', '#B8860B']}
-              style={styles.ctaBtnGradient}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 1 }}
-            >
-              <Text style={styles.ctaText}>Begin Your Journey</Text>
-            </LinearGradient>
-          </TouchableOpacity>
+        <Animated.View style={[styles.ctaWrap, s[7]]}>
+          <ShimmerButton label="Begin Your Journey" onPress={onNext} height={58} />
         </Animated.View>
 
         {/* Skip button for power users */}
-        <Animated.View style={[styles.skipWrap, s[7]]}>
+        <Animated.View style={[styles.skipWrap, s[8]]}>
           <TouchableOpacity onPress={onSkip} hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}>
             <Text style={styles.skipText}>Skip onboarding</Text>
           </TouchableOpacity>
@@ -163,14 +160,14 @@ const styles = StyleSheet.create({
   heroWrap: {
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 28,
-    marginTop: 20,
+    marginBottom: 24,
+    marginTop: 8,
   },
   breathingGlow: {
     position: 'absolute',
-    width: 120,
-    height: 120,
-    borderRadius: 60,
+    width: 180,
+    height: 180,
+    borderRadius: 90,
     backgroundColor: '#D4AF37',
   },
   contentArea: {
@@ -179,30 +176,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 32,
     zIndex: 2,
-  },
-  iconRing: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    borderWidth: 1.5,
-    borderColor: 'rgba(201, 168, 76, 0.6)',
-    backgroundColor: 'rgba(201, 168, 76, 0.1)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    shadowColor: Colors.accent.primary,
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.6,
-    shadowRadius: 28,
-    elevation: 12,
-  },
-  calligraphyText: {
-    fontSize: 28,
-    color: Colors.accent.primary,
-    fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
-    textShadowColor: 'rgba(201, 168, 76, 0.8)',
-    textShadowOffset: { width: 0, height: 0 },
-    textShadowRadius: 14,
-    letterSpacing: 2,
   },
   title: {
     fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
@@ -251,6 +224,28 @@ const styles = StyleSheet.create({
     lineHeight: 20,
     flex: 1,
   },
+  privacyChip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    marginTop: 6,
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    borderRadius: 12,
+    backgroundColor: 'rgba(107, 142, 174, 0.08)',
+    borderWidth: 1,
+    borderColor: 'rgba(107, 142, 174, 0.18)',
+  },
+  privacyIcon: {
+    fontSize: 14,
+  },
+  privacyText: {
+    fontSize: 12,
+    color: 'rgba(176, 196, 215, 0.75)',
+    letterSpacing: 0.2,
+    lineHeight: 18,
+    flex: 1,
+  },
   bottomSection: {
     paddingHorizontal: 24,
     paddingBottom: height * 0.10,
@@ -260,35 +255,13 @@ const styles = StyleSheet.create({
   ctaWrap: {
     width: '100%',
   },
-  ctaBtn: {
-    borderRadius: 28,
-    overflow: 'hidden',
-    shadowColor: Colors.accent.primary,
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.5,
-    shadowRadius: 20,
-    elevation: 10,
-  },
-  ctaBtnGradient: {
-    height: 58,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: 28,
-  },
-  ctaText: {
-    fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
-    fontSize: 17,
-    letterSpacing: 1.5,
-    fontWeight: '600',
-    color: '#0C1A2E',
-  },
   skipWrap: {
     marginTop: 4,
     alignItems: 'center',
   },
   skipText: {
     fontSize: 14,
-    color: 'rgba(176, 196, 215, 0.4)',
+    color: 'rgba(176, 196, 215, 0.65)',
     letterSpacing: 0.5,
   },
 });

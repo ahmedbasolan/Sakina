@@ -32,20 +32,9 @@ const { width, height } = Dimensions.get('window');
 
 import { AnimatedMandala } from '../components/AnimatedMandala';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { getPathVisual } from '../constants/pathVisuals';
 
-const PATH_VISUALS: Record<string, { icon: keyof typeof MaterialCommunityIcons.glyphMap; color: string }> = {
-  path_salah_transformation: { icon: 'hands-pray', color: '#10B981' },
-  path_rizq_revolution: { icon: 'barley', color: '#D4AF37' },
-  path_depression_iman: { icon: 'sprout', color: '#818CF8' },
-  path_anxiety_tawakkul: { icon: 'feather', color: '#60A5FA' },
-  path_marriage_seeker: { icon: 'ring', color: '#F87171' },
-  path_guilt_tawbah: { icon: 'heart-plus', color: '#34D399' },
-  path_grateful_heart: { icon: 'star-four-points', color: '#FBBF24' },
-  path_wrong_marriage: { icon: 'handshake', color: '#A78BFA' },
-  path_forced_marriage: { icon: 'shield-alert-outline', color: '#F87171' },
-};
-
-const getVisual = (id: string) => PATH_VISUALS[id] || { icon: 'compass-outline' as any, color: '#D4AF37' };
+const getVisual = (id: string) => getPathVisual(id);
 
 const LessonCard = ({ step, visual, isCompleted, isCurrent, isLocked, isExpanded, onExpand, onMarkComplete }: any) => {
   const [experience, setExperience] = React.useState<any>(null);
@@ -222,7 +211,28 @@ export const PathDetailScreen: React.FC = () => {
       step: step,
       userProgress: progress,
       guidanceExperience: experience,
+      accentColor: visual.color,
     });
+  };
+
+  /** Renders a single LessonCard row — shared by flat and phase-grouped layouts. */
+  const renderStep = (step: (typeof path.dailySteps)[0]) => {
+    const isCompleted = completedSteps.some(cs => cs.day === step.day);
+    const isCurrent = userProgress ? step.day === userProgress.currentDay : step.day === 1;
+    const isLocked = userProgress ? step.day > userProgress.currentDay : step.day > 1;
+    return (
+      <LessonCard
+        key={step.id}
+        step={step}
+        visual={visual}
+        isCompleted={isCompleted}
+        isCurrent={isCurrent}
+        isLocked={isLocked}
+        isExpanded={expandedDay === step.day}
+        onExpand={() => setExpandedDay(expandedDay === step.day ? null : step.day)}
+        onMarkComplete={() => onMarkLessonComplete(step.day)}
+      />
+    );
   };
 
   return (
@@ -239,7 +249,7 @@ export const PathDetailScreen: React.FC = () => {
           <Ionicons name="chevron-back" size={20} color="#7B8FA1" />
           <Text style={styles.backText}>Journeys</Text>
         </TouchableOpacity>
-        <Text style={styles.topBarText}>★ NOOR</Text>
+        <Text style={styles.topBarText}>★ SAKINA</Text>
         <View style={styles.headerRight} />
       </View>
 
@@ -258,7 +268,7 @@ export const PathDetailScreen: React.FC = () => {
                 {totalDays}-DAY SACRED JOURNEY
               </Text>
               <Text style={[styles.heroTitle, { color: visual.color }]}>
-                {path.title.toUpperCase()}
+                {path.title}
               </Text>
               <Text style={styles.heroSubtitle}>
                 {path.target || path.theme}
@@ -297,29 +307,62 @@ export const PathDetailScreen: React.FC = () => {
             </View>
             
             <View style={styles.progressTexts}>
-              <Text style={styles.progressDayComplete}>Day {completedDays} complete</Text>
+              <Text style={styles.progressDayComplete}>
+                {completedDays === 0 ? 'Not started yet' : `Day ${completedDays} complete`}
+              </Text>
               <Text style={styles.progressDaysRem}>{remainingDays} days remaining</Text>
-              <View style={styles.progressDotsContainer}>
-                {Array.from({ length: totalDays }).map((_, i) => {
-                  const done = i < completedDays;
-                  const isCurrent = i === completedDays; // next upcoming day
-                  return (
-                    <View
-                      key={i}
-                      style={[
-                        styles.progressDot,
-                        {
-                          backgroundColor: done
-                            ? visual.color
-                            : isCurrent
-                              ? `${visual.color}55`
-                              : 'rgba(255,255,255,0.1)',
-                        },
-                      ]}
-                    />
-                  );
-                })}
-              </View>
+              {path.phases ? (
+                /* Tier-3 long paths: one labeled bar per phase */
+                <View style={styles.phaseBarsContainer}>
+                  {path.phases.map((phase) => {
+                    const phaseDays = phase.endDay - phase.startDay + 1;
+                    // Count days that actually fall inside this phase's range,
+                    // not an offset from a running total (which breaks when days
+                    // are completed out of order or phases are non-contiguous).
+                    const completedDaysArray = userProgress?.completedDays ?? [];
+                    const doneInPhase = completedDaysArray.filter(
+                      (d) => d >= phase.startDay && d <= phase.endDay,
+                    ).length;
+                    const pct = doneInPhase / phaseDays;
+                    return (
+                      <View key={phase.label} style={styles.phaseBarRow}>
+                        <Text style={styles.phaseBarLabel} numberOfLines={1}>
+                          {phase.label.split(' — ')[0]}
+                        </Text>
+                        <View style={styles.phaseBarTrack}>
+                          {/* Flex-split bar — works without pixel measurements */}
+                          <View style={[styles.phaseBarFill, { flex: Math.max(pct, 0.001), backgroundColor: visual.color }]} />
+                          <View style={{ flex: Math.max(1 - pct, 0.001) }} />
+                        </View>
+                        <Text style={[styles.phaseBarCount, { color: visual.color }]}>{doneInPhase}/{phaseDays}</Text>
+                      </View>
+                    );
+                  })}
+                </View>
+              ) : (
+                /* Short paths: individual day dots */
+                <View style={styles.progressDotsContainer}>
+                  {Array.from({ length: totalDays }).map((_, i) => {
+                    const done = i < completedDays;
+                    const isCurrent = i === completedDays;
+                    return (
+                      <View
+                        key={i}
+                        style={[
+                          styles.progressDot,
+                          {
+                            backgroundColor: done
+                              ? visual.color
+                              : isCurrent
+                                ? `${visual.color}55`
+                                : 'rgba(255,255,255,0.1)',
+                          },
+                        ]}
+                      />
+                    );
+                  })}
+                </View>
+              )}
             </View>
           </View>
         </View>
@@ -334,7 +377,7 @@ export const PathDetailScreen: React.FC = () => {
             >
               <View style={styles.todayCardLeft}>
                 <Text style={[styles.todayCardTitle, { color: '#F0E6D3' }]}>
-                  {nextStep.title.toUpperCase()}
+                  {nextStep.title}
                 </Text>
               </View>
               <View style={[styles.todayCardArrow, { backgroundColor: visual.color }]}>
@@ -348,25 +391,24 @@ export const PathDetailScreen: React.FC = () => {
         <View style={styles.lessonsSection}>
           <Text style={styles.sectionHeaderLabel}>ALL LESSONS</Text>
           <View style={styles.lessonsList}>
-            {path.dailySteps.map((step) => {
-              const isCompleted = completedSteps.some(cs => cs.day === step.day);
-              const isCurrent = userProgress ? step.day === userProgress.currentDay : step.day === 1;
-              const isLocked = userProgress ? step.day > userProgress.currentDay : step.day > 1;
-              
-              return (
-                <LessonCard
-                  key={step.id}
-                  step={step}
-                  visual={visual}
-                  isCompleted={isCompleted}
-                  isCurrent={isCurrent}
-                  isLocked={isLocked}
-                  isExpanded={expandedDay === step.day}
-                  onExpand={() => setExpandedDay(expandedDay === step.day ? null : step.day)}
-                  onMarkComplete={() => onMarkLessonComplete(step.day)}
-                />
-              );
-            })}
+            {path.phases ? (
+              /* Long paths: group steps under their phase header */
+              path.phases.map((phase) => (
+                <React.Fragment key={phase.label}>
+                  <View style={styles.phaseHeaderRow}>
+                    <View style={[styles.phaseHeaderDot, { backgroundColor: visual.color }]} />
+                    <Text style={[styles.phaseHeaderText, { color: visual.color }]}>{phase.label}</Text>
+                    <View style={styles.phaseHeaderLine} />
+                  </View>
+                  {path.dailySteps
+                    .filter(s => s.day >= phase.startDay && s.day <= phase.endDay)
+                    .map(renderStep)}
+                </React.Fragment>
+              ))
+            ) : (
+              /* Short paths: flat list */
+              path.dailySteps.map(renderStep)
+            )}
           </View>
         </View>
       </ScrollView>
@@ -549,6 +591,66 @@ const styles = StyleSheet.create({
   lessonsList: {
     paddingHorizontal: 24,
     gap: 12,
+  },
+
+  /* ── Phase bars (Tier-3 long paths) ── */
+  phaseBarsContainer: {
+    gap: 8,
+    marginTop: 4,
+  },
+  phaseBarRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  phaseBarLabel: {
+    fontSize: 10,
+    color: 'rgba(245,237,227,0.68)',
+    fontWeight: '600',
+    letterSpacing: 0.5,
+    width: 72,
+  },
+  phaseBarTrack: {
+    flex: 1,
+    height: 4,
+    borderRadius: 2,
+    backgroundColor: 'rgba(255,255,255,0.08)',
+    flexDirection: 'row',
+    overflow: 'hidden',
+  },
+  phaseBarFill: {
+    borderRadius: 2,
+  },
+  phaseBarCount: {
+    fontSize: 10,
+    fontWeight: '700',
+    width: 30,
+    textAlign: 'right',
+  },
+
+  /* ── Phase section headers (lesson list grouping) ── */
+  phaseHeaderRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    marginTop: 8,
+    marginBottom: 4,
+  },
+  phaseHeaderDot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+  },
+  phaseHeaderText: {
+    fontSize: 11,
+    fontWeight: '700',
+    letterSpacing: 1.2,
+    textTransform: 'uppercase',
+  },
+  phaseHeaderLine: {
+    flex: 1,
+    height: StyleSheet.hairlineWidth,
+    backgroundColor: 'rgba(255,255,255,0.08)',
   },
   lessonCardWrap: {
     borderRadius: 16,

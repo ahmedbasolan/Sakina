@@ -79,9 +79,11 @@ const LayerContainer: React.FC<LayerContainerProps> = ({
       onPanResponderRelease: (_, gestureState) => {
         const isQuickFlick = Math.abs(gestureState.vy) > VELOCITY_THRESHOLD;
         const isLongSwipe = Math.abs(gestureState.dy) > SWIPE_THRESHOLD;
+        const isLastLayer = currentLayerRef.current >= totalLayersRef.current - 1;
 
-        if (gestureState.dy < 0 && (isLongSwipe || isQuickFlick)) {
-          // Swipe up -> Next Layer (or past last layer)
+        if (gestureState.dy < 0 && (isLongSwipe || isQuickFlick) && !isLastLayer) {
+          // Swipe up -> Next Layer (guarded so we never advance past the last,
+          // which would render an undefined layer and blank the screen)
           HapticsService.impactAsync('LIGHT');
           animateTransition(-height * 0.4, () => {
             onLayerChange(currentLayerRef.current + 1);

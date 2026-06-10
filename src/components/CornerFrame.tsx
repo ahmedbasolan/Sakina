@@ -10,7 +10,7 @@ interface CornerFrameProps {
 }
 
 export function CornerFrame({
-  color = '#D4A574',
+  color = '#D4AF37',
   size = 24,
   thickness = 2,
   offset = -12,

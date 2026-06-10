@@ -1,43 +1,64 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import {
   View,
   Text,
   StyleSheet,
   ScrollView,
   TouchableOpacity,
-  Platform,
   ActivityIndicator,
   Alert,
+  Platform,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Colors, Spacing, BorderRadius } from '../theme/DesignSystem';
 import { getUserLocation, UserLocation } from '../services/locationStorage';
-import PrayerTimesService, { PrayerTimesData } from '../services/prayerTimesService';
+import PrayerTimesService, { PrayerTimesData, formatPrayerTime, TimeFormat } from '../services/prayerTimesService';
 import { LocationPickerModal } from '../components/LocationPickerModal';
 import NotificationService from '../services/notificationService';
+import { useSession } from '../context/AppContext';
+
+const SERIF = Platform.OS === 'ios' ? 'Georgia' : 'serif';
+
+// Each prayer's icon and a one-word descriptor for the row subtitle.
+const PRAYER_META: Record<string, { icon: keyof typeof Ionicons.glyphMap; label: string }> = {
+  Fajr: { icon: 'moon-outline', label: 'Dawn' },
+  Sunrise: { icon: 'partly-sunny-outline', label: 'Sunrise' },
+  Dhuhr: { icon: 'sunny-outline', label: 'Noon' },
+  Asr: { icon: 'sunny-outline', label: 'Afternoon' },
+  Maghrib: { icon: 'cloudy-night-outline', label: 'Sunset' },
+  Isha: { icon: 'moon-outline', label: 'Night' },
+};
 
 export default function PrayerTimesScreen({ navigation }: { navigation: any }) {
+  const insets = useSafeAreaInsets();
+  const service = useMemo(() => PrayerTimesService.getInstance(), []);
+  const { timeFormat, setTimeFormat } = useSession();
+
   const [location, setLocation] = useState<UserLocation | null>(null);
   const [prayerData, setPrayerData] = useState<PrayerTimesData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [showLocationPicker, setShowLocationPicker] = useState(false);
+  // Ticks every minute so the live countdown / next-prayer highlight stay fresh.
+  const [now, setNow] = useState(Date.now());
 
-  const fetchTimings = useCallback(async (loc: UserLocation) => {
-    setIsLoading(true);
-    try {
-      const service = PrayerTimesService.getInstance();
-      const data = await service.getTimingsByCity(loc.city, loc.country);
-      setPrayerData(data);
-
-      // Schedule notifications
-      const notifService = NotificationService.getInstance();
-      await notifService.schedulePrayerNotifications(data.timings, loc.city);
-    } catch (error: any) {
-      Alert.alert('Error', 'Failed to fetch prayer times. Please try again.');
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
+  const fetchTimings = useCallback(
+    async (loc: UserLocation) => {
+      setIsLoading(true);
+      try {
+        const data = await service.getTimingsByCity(loc.city, loc.country);
+        setPrayerData(data);
+        const notifService = NotificationService.getInstance();
+        await notifService.schedulePrayerNotifications(data.timings, loc.city);
+      } catch (error) {
+        Alert.alert('Error', 'Failed to fetch prayer times. Please try again.');
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [service],
+  );
 
   useEffect(() => {
     const init = async () => {
@@ -53,60 +74,103 @@ export default function PrayerTimesScreen({ navigation }: { navigation: any }) {
     init();
   }, [fetchTimings]);
 
+  useEffect(() => {
+    const id = setInterval(() => setNow(Date.now()), 60_000);
+    return () => clearInterval(id);
+  }, []);
+
   const handleLocationSelected = (newLocation: UserLocation) => {
     setLocation(newLocation);
     fetchTimings(newLocation);
   };
 
+  // Recomputed each minute (now is a dep) — getNextPrayerInfo reads the clock.
+  const nextInfo = useMemo(
+    () => (prayerData ? service.getNextPrayerInfo(prayerData.timings) : null),
+    [prayerData, service, now],
+  );
+  const countdown = nextInfo ? service.formatCountdown(nextInfo.minutesRemaining) : '';
+
   const prayerItems = prayerData
-    ? [
-        { name: 'Fajr', time: prayerData.timings.Fajr, type: 'Required' },
-        { name: 'Sunrise', time: prayerData.timings.Sunrise, type: 'Special' },
-        { name: 'Dhuhr', time: prayerData.timings.Dhuhr, type: 'Required' },
-        { name: 'Asr', time: prayerData.timings.Asr, type: 'Required' },
-        { name: 'Maghrib', time: prayerData.timings.Maghrib, type: 'Required' },
-        { name: 'Isha', time: prayerData.timings.Isha, type: 'Required' },
-      ]
+    ? (['Fajr', 'Sunrise', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'] as const).map((name) => ({
+        name,
+        time: prayerData.timings[name],
+      }))
     : [];
 
   return (
     <View style={styles.container}>
-      <LinearGradient colors={['#0B0F12', '#121A1F', '#0F1519']} style={styles.gradient}>
-        <View style={styles.header}>
-          <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-            <Ionicons name="arrow-back" size={24} color="#D4A574" />
+      <LinearGradient colors={['#07111E', '#0C1A2E', '#0F1519']} style={styles.gradient}>
+        {/* Header */}
+        <View style={[styles.header, { paddingTop: insets.top + Spacing.sm }]}>
+          <TouchableOpacity
+            onPress={() => navigation.goBack()}
+            style={styles.iconButton}
+            accessibilityRole="button"
+            accessibilityLabel="Go back"
+          >
+            <Ionicons name="chevron-back" size={22} color={Colors.accent.primary} />
           </TouchableOpacity>
+
           <View style={styles.titleContainer}>
             <Text style={styles.title}>Prayer Times</Text>
             {location && (
               <TouchableOpacity
                 style={styles.locationBadge}
                 onPress={() => setShowLocationPicker(true)}
+                accessibilityRole="button"
+                accessibilityLabel="Change location"
               >
-                <Ionicons name="location" size={12} color="#D4A574" />
+                <Ionicons name="location-outline" size={12} color={Colors.accent.primary} />
                 <Text style={styles.locationText}>
                   {location.city}, {location.country}
                 </Text>
+                <Ionicons name="chevron-down" size={11} color={Colors.accent.primary} />
               </TouchableOpacity>
             )}
           </View>
+
           <TouchableOpacity
-            style={styles.refreshButton}
+            style={styles.iconButton}
             onPress={() => location && fetchTimings(location)}
             disabled={isLoading || !location}
+            accessibilityRole="button"
+            accessibilityLabel="Refresh"
           >
-            <Ionicons name="refresh" size={24} color="#D4A574" />
+            <Ionicons name="refresh" size={20} color={Colors.accent.primary} />
           </TouchableOpacity>
         </View>
 
-        <ScrollView contentContainerStyle={styles.scrollContent}>
+        <ScrollView
+          contentContainerStyle={[styles.scrollContent, { paddingBottom: insets.bottom + Spacing.xxxl }]}
+          showsVerticalScrollIndicator={false}
+        >
           {isLoading ? (
             <View style={styles.loadingContainer}>
-              <ActivityIndicator size="large" color="#D4A574" />
-              <Text style={styles.loadingText}>Fetching sacred timings...</Text>
+              <ActivityIndicator size="large" color={Colors.accent.primary} />
+              <Text style={styles.loadingText}>Fetching sacred timings…</Text>
             </View>
           ) : prayerData ? (
             <>
+              {/* Next-prayer hero */}
+              {nextInfo && (
+                <LinearGradient
+                  colors={['#1A1408', '#0F1A2A']}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 1 }}
+                  style={styles.nextCard}
+                >
+                  <Text style={styles.nextLabel}>NEXT PRAYER</Text>
+                  <Text style={styles.nextName}>{nextInfo.name}</Text>
+                  <View style={styles.nextRow}>
+                    <Text style={styles.nextTime}>{formatPrayerTime(nextInfo.time, timeFormat)}</Text>
+                    <View style={styles.nextDot} />
+                    <Text style={styles.nextCountdown}>in {countdown}</Text>
+                  </View>
+                </LinearGradient>
+              )}
+
+              {/* Hijri / Gregorian date */}
               <View style={styles.dateCard}>
                 <Text style={styles.hijriDate}>
                   {prayerData.date.hijri.day} {prayerData.date.hijri.month.en}{' '}
@@ -115,41 +179,85 @@ export default function PrayerTimesScreen({ navigation }: { navigation: any }) {
                 <Text style={styles.gregorianDate}>{prayerData.date.readable}</Text>
               </View>
 
-              <View style={styles.card}>
-                {prayerItems.map((prayer, index) => (
-                  <View
-                    key={index}
-                    style={[styles.prayerRow, index === prayerItems.length - 1 && styles.lastRow]}
-                  >
-                    <View>
-                      <Text style={styles.prayerName}>{prayer.name}</Text>
-                      <Text style={styles.prayerType}>{prayer.type}</Text>
-                    </View>
-                    <Text style={styles.prayerTime}>{prayer.time}</Text>
-                  </View>
-                ))}
+              {/* 12h / 24h clock-format toggle */}
+              <View style={styles.formatToggleRow}>
+                <View style={styles.formatToggle}>
+                  {(['24h', '12h'] as TimeFormat[]).map((f) => {
+                    const active = timeFormat === f;
+                    return (
+                      <TouchableOpacity
+                        key={f}
+                        onPress={() => setTimeFormat(f)}
+                        style={[styles.formatOption, active && styles.formatOptionActive]}
+                        accessibilityRole="button"
+                        accessibilityState={{ selected: active }}
+                        accessibilityLabel={f === '24h' ? '24-hour clock' : '12-hour clock'}
+                      >
+                        <Text style={[styles.formatOptionText, active && styles.formatOptionTextActive]}>
+                          {f === '24h' ? '24H' : '12H'}
+                        </Text>
+                      </TouchableOpacity>
+                    );
+                  })}
+                </View>
               </View>
 
+              {/* Prayer list */}
+              <View style={styles.card}>
+                {prayerItems.map((prayer, index) => {
+                  const isNext = nextInfo?.name === prayer.name;
+                  const meta = PRAYER_META[prayer.name];
+                  return (
+                    <View
+                      key={prayer.name}
+                      style={[
+                        styles.prayerRow,
+                        index === prayerItems.length - 1 && styles.lastRow,
+                        isNext && styles.prayerRowActive,
+                      ]}
+                    >
+                      <View style={styles.prayerLeft}>
+                        <Ionicons
+                          name={meta.icon}
+                          size={18}
+                          color={isNext ? Colors.accent.primary : 'rgba(176, 196, 215, 0.6)'}
+                        />
+                        <View>
+                          <Text style={[styles.prayerName, isNext && styles.prayerNameActive]}>
+                            {prayer.name}
+                          </Text>
+                          <Text style={styles.prayerType}>{isNext ? `in ${countdown}` : meta.label}</Text>
+                        </View>
+                      </View>
+                      <Text style={[styles.prayerTime, isNext && styles.prayerTimeActive]}>
+                        {formatPrayerTime(prayer.time, timeFormat)}
+                      </Text>
+                    </View>
+                  );
+                })}
+              </View>
+
+              {/* Method / timezone */}
               <View style={styles.infoBox}>
-                <Ionicons
-                  name="information-circle-outline"
-                  size={20}
-                  color="#D4A574"
-                  style={{ marginRight: 8 }}
-                />
+                <Ionicons name="information-circle-outline" size={18} color={Colors.accent.primary} />
                 <Text style={styles.infoText}>
-                  Method: {prayerData.meta.method.name}. Timezone: {prayerData.meta.timezone}.
+                  {prayerData.meta.method.name} · {prayerData.meta.timezone}
+                </Text>
+              </View>
+
+              {/* Privacy note */}
+              <View style={styles.privacyRow}>
+                <Ionicons name="lock-closed-outline" size={13} color="rgba(176, 196, 215, 0.6)" />
+                <Text style={styles.privacyText}>
+                  Your location is set manually and stored only on this device.
                 </Text>
               </View>
             </>
           ) : (
             <View style={styles.errorContainer}>
-              <Ionicons name="location-outline" size={48} color="#9CA3AF" />
-              <Text style={styles.errorText}>No location selected</Text>
-              <TouchableOpacity
-                style={styles.retryButton}
-                onPress={() => setShowLocationPicker(true)}
-              >
+              <Ionicons name="location-outline" size={44} color="rgba(176, 196, 215, 0.6)" />
+              <Text style={styles.errorText}>No location set</Text>
+              <TouchableOpacity style={styles.retryButton} onPress={() => setShowLocationPicker(true)}>
                 <Text style={styles.retryButtonText}>Set Location</Text>
               </TouchableOpacity>
             </View>
@@ -167,87 +275,168 @@ export default function PrayerTimesScreen({ navigation }: { navigation: any }) {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  gradient: {
-    flex: 1,
-  },
+  container: { flex: 1 },
+  gradient: { flex: 1 },
+
   header: {
-    paddingTop: Platform.OS === 'ios' ? 60 : 40,
-    paddingHorizontal: 24,
-    paddingBottom: 20,
+    paddingHorizontal: Spacing.xl,
+    paddingBottom: Spacing.lg,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
   },
-  backButton: {
-    padding: 8,
+  iconButton: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: 'rgba(212, 175, 55, 0.08)',
+    borderWidth: 1,
+    borderColor: 'rgba(212, 175, 55, 0.15)',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   titleContainer: {
+    flex: 1,
     alignItems: 'center',
   },
   title: {
-    fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
-    fontSize: 24,
-    fontWeight: '700',
-    color: '#FFF5E9',
+    fontFamily: SERIF,
+    fontSize: 22,
+    color: Colors.text.primary,
+    letterSpacing: 0.3,
   },
   locationBadge: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(212, 165, 116, 0.1)',
-    paddingHorizontal: 8,
+    gap: 4,
+    backgroundColor: 'rgba(212, 175, 55, 0.10)',
+    paddingHorizontal: Spacing.sm,
     paddingVertical: 4,
-    borderRadius: 12,
-    marginTop: 4,
+    borderRadius: BorderRadius.md,
+    marginTop: 5,
     borderWidth: 1,
-    borderColor: 'rgba(212, 165, 116, 0.2)',
+    borderColor: 'rgba(212, 175, 55, 0.20)',
   },
   locationText: {
-    fontSize: 10,
-    color: '#D4A574',
+    fontSize: 11,
+    color: Colors.accent.primary,
     fontWeight: '600',
-    marginLeft: 4,
+    letterSpacing: 0.2,
   },
-  refreshButton: {
-    padding: 8,
-  },
+
   scrollContent: {
-    padding: 24,
+    paddingHorizontal: Spacing.xl,
+    paddingTop: Spacing.sm,
     flexGrow: 1,
   },
+
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 100,
+    marginTop: 120,
   },
   loadingText: {
-    marginTop: 16,
-    fontSize: 16,
-    color: 'rgba(229, 221, 213, 0.5)',
+    marginTop: Spacing.lg,
+    fontSize: 15,
+    color: Colors.text.muted,
     fontStyle: 'italic',
   },
+
+  // Next-prayer hero
+  nextCard: {
+    borderRadius: BorderRadius.xl,
+    padding: Spacing.xl,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: 'rgba(212, 175, 55, 0.22)',
+    marginBottom: Spacing.xl,
+  },
+  nextLabel: {
+    fontSize: 11,
+    letterSpacing: 2,
+    fontWeight: '700',
+    color: Colors.accent.primary,
+    marginBottom: Spacing.sm,
+  },
+  nextName: {
+    fontFamily: SERIF,
+    fontSize: 34,
+    color: Colors.text.primary,
+    letterSpacing: 0.5,
+    marginBottom: Spacing.sm,
+  },
+  nextRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.sm,
+  },
+  nextTime: {
+    fontSize: 15,
+    color: Colors.text.secondary,
+    fontWeight: '600',
+  },
+  nextDot: {
+    width: 4,
+    height: 4,
+    borderRadius: 2,
+    backgroundColor: 'rgba(176, 196, 215, 0.5)',
+  },
+  nextCountdown: {
+    fontSize: 15,
+    color: Colors.accent.primary,
+    fontWeight: '700',
+  },
+
   dateCard: {
     alignItems: 'center',
-    marginBottom: 24,
+    marginBottom: Spacing.xl,
   },
   hijriDate: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: '#D4A574',
-    marginBottom: 4,
+    fontFamily: SERIF,
+    fontSize: 18,
+    color: Colors.accent.primary,
+    marginBottom: 3,
   },
   gregorianDate: {
-    fontSize: 14,
-    color: 'rgba(229, 221, 213, 0.5)',
-    fontWeight: '500',
+    fontSize: 13,
+    color: Colors.text.muted,
+  },
+
+  formatToggleRow: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    marginBottom: Spacing.md,
+  },
+  formatToggle: {
+    flexDirection: 'row',
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderRadius: BorderRadius.full,
+    padding: 3,
+    borderWidth: 1,
+    borderColor: 'rgba(212, 175, 55, 0.18)',
+  },
+  formatOption: {
+    paddingHorizontal: Spacing.md,
+    paddingVertical: 5,
+    borderRadius: BorderRadius.full,
+  },
+  formatOptionActive: {
+    backgroundColor: Colors.accent.primary,
+  },
+  formatOptionText: {
+    fontSize: 12,
+    fontWeight: '700',
+    letterSpacing: 0.5,
+    color: Colors.text.muted,
+  },
+  formatOptionTextActive: {
+    color: '#0C1A2E',
   },
   card: {
     backgroundColor: 'rgba(255, 255, 255, 0.04)',
-    borderRadius: 24,
-    padding: 20,
+    borderRadius: BorderRadius.xl,
+    paddingHorizontal: Spacing.lg,
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.08)',
   },
@@ -255,65 +444,98 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: 16,
+    paddingVertical: Spacing.lg,
     borderBottomWidth: 1,
     borderBottomColor: 'rgba(255, 255, 255, 0.06)',
+    paddingHorizontal: Spacing.sm,
+    borderRadius: BorderRadius.md,
+  },
+  prayerRowActive: {
+    backgroundColor: 'rgba(212, 175, 55, 0.08)',
+    borderBottomColor: 'transparent',
   },
   lastRow: {
     borderBottomWidth: 0,
   },
+  prayerLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.md,
+  },
   prayerName: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#FFF5E9',
+    fontFamily: SERIF,
+    fontSize: 17,
+    color: Colors.text.primary,
     marginBottom: 2,
+  },
+  prayerNameActive: {
+    color: Colors.accent.primary,
   },
   prayerType: {
     fontSize: 12,
-    color: 'rgba(229, 221, 213, 0.4)',
-    fontWeight: '500',
+    color: Colors.text.muted,
   },
   prayerTime: {
-    fontSize: 18,
+    fontSize: 17,
     fontWeight: '700',
-    color: '#D4A574',
+    color: Colors.text.secondary,
   },
+  prayerTimeActive: {
+    color: Colors.accent.primary,
+  },
+
   infoBox: {
-    marginTop: 24,
-    padding: 16,
-    backgroundColor: 'rgba(212, 165, 116, 0.06)',
-    borderRadius: 16,
+    marginTop: Spacing.xl,
+    padding: Spacing.lg,
+    backgroundColor: 'rgba(212, 175, 55, 0.06)',
+    borderRadius: BorderRadius.lg,
     flexDirection: 'row',
     alignItems: 'center',
+    gap: Spacing.sm,
     borderWidth: 1,
-    borderColor: 'rgba(212, 165, 116, 0.1)',
+    borderColor: 'rgba(212, 175, 55, 0.10)',
   },
   infoText: {
     fontSize: 13,
-    color: 'rgba(229, 221, 213, 0.5)',
-    lineHeight: 18,
+    color: Colors.text.muted,
     flex: 1,
   },
+
+  privacyRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
+    marginTop: Spacing.lg,
+    paddingHorizontal: Spacing.md,
+  },
+  privacyText: {
+    fontSize: 12,
+    color: 'rgba(176, 196, 215, 0.6)',
+    textAlign: 'center',
+  },
+
   errorContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 60,
+    marginTop: 80,
   },
   errorText: {
-    marginTop: 12,
+    marginTop: Spacing.md,
     fontSize: 16,
-    color: 'rgba(229, 221, 213, 0.5)',
-    marginBottom: 24,
+    color: Colors.text.muted,
+    marginBottom: Spacing.xl,
   },
   retryButton: {
-    backgroundColor: '#D4A574',
-    paddingHorizontal: 24,
-    paddingVertical: 12,
-    borderRadius: 12,
+    backgroundColor: Colors.accent.primary,
+    paddingHorizontal: Spacing.xl,
+    paddingVertical: Spacing.md,
+    borderRadius: BorderRadius.md,
   },
   retryButtonText: {
-    color: '#FFF',
-    fontWeight: '600',
+    color: '#0C1A2E',
+    fontWeight: '700',
+    fontSize: 15,
   },
 });

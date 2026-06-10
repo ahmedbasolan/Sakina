@@ -36,7 +36,7 @@ const THEME_STORAGE_KEY = '@app_theme_mode';
 const darkOnboardingColors: OnboardingThemeColors = {
   textPrimary: '#F5EDE3',
   textSecondary: 'rgba(245, 237, 227, 0.72)',
-  textMuted: 'rgba(245, 237, 227, 0.38)',
+  textMuted: 'rgba(245, 237, 227, 0.60)',
   surface: 'rgba(255, 245, 220, 0.06)',
   border: 'rgba(255, 245, 220, 0.08)',
   ctaBg: Colors.accent.primary,
@@ -64,25 +64,25 @@ const lightOnboardingColors: OnboardingThemeColors = {
 };
 
 const darkOnboardingGradients: [string, string, string][] = [
-  ['#04090A', '#081912', '#04090A'],   // 1. Bismillah
-  ['#07111E', '#0C1A2E', '#07111E'],   // 2. Welcome
-  ['#07111E', '#0C1A2E', '#07111E'],   // 3. Heart Check-In
-  ['#06080E', '#0D1525', '#06080E'],   // 4. Personalization
-  ['#07111E', '#0C1A2E', '#07111E'],   // 5. First Guidance
+  ['#04090A', '#081912', '#04090A'],   // 0. Bismillah
+  ['#07111E', '#0C1A2E', '#07111E'],   // 1. Welcome
+  ['#07111E', '#0C1A2E', '#07111E'],   // 2. Heart Check-In
+  ['#06080E', '#0D1525', '#06080E'],   // 3. Personalization
+  ['#07111E', '#0C1A2E', '#07111E'],   // 4. First Guidance
+  ['#050A10', '#0A1525', '#050A10'],   // 5. Paywall
   ['#0A0408', '#1E0A10', '#0A0408'],   // 6. Notification
-  ['#04080F', '#09142A', '#04080F'],   // 7. Hold-to-Commit
-  ['#050A10', '#0A1525', '#050A10'],   // 8. Paywall
+  ['#04080F', '#09142A', '#04080F'],   // 7. Commit
 ];
 
 const lightOnboardingGradients: [string, string, string][] = [
-  ['#EFF5F1', '#E3EEE9', '#EFF5F1'],   // 1. Bismillah
-  ['#EDF1F7', '#E0EAF5', '#EDF1F7'],   // 2. Welcome
-  ['#EDF1F7', '#E0EAF5', '#EDF1F7'],   // 3. Heart Check-In
-  ['#F0EDF7', '#EAE0F2', '#F0EDF7'],   // 4. Personalization
-  ['#EDF1F7', '#E0EAF5', '#EDF1F7'],   // 5. First Guidance
+  ['#EFF5F1', '#E3EEE9', '#EFF5F1'],   // 0. Bismillah
+  ['#EDF1F7', '#E0EAF5', '#EDF1F7'],   // 1. Welcome
+  ['#EDF1F7', '#E0EAF5', '#EDF1F7'],   // 2. Heart Check-In
+  ['#F0EDF7', '#EAE0F2', '#F0EDF7'],   // 3. Personalization
+  ['#EDF1F7', '#E0EAF5', '#EDF1F7'],   // 4. First Guidance
+  ['#EAF0F6', '#DFE8F1', '#EAF0F6'],   // 5. Paywall
   ['#F7EDEE', '#F2E0E2', '#F7EDEE'],   // 6. Notification
-  ['#EEF1F7', '#E2EAF2', '#EEF1F7'],   // 7. Hold-to-Commit
-  ['#EAF0F6', '#DFE8F1', '#EAF0F6'],   // 8. Paywall
+  ['#EEF1F7', '#E2EAF2', '#EEF1F7'],   // 7. Commit
 ];
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);

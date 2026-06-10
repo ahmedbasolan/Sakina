@@ -35,6 +35,8 @@ interface PracticeLayerProps {
   steps: PracticeStepData[];
   onCheckAll: () => void;
   scrollY?: Animated.Value;
+  /** Journey identity color — used as the primary (physical action) accent. */
+  accentColor?: string;
 }
 
 const TYPE_COLORS: Record<PracticeStepData['type'], string> = {
@@ -260,10 +262,17 @@ const PracticeStepCard = ({
 };
 
 // ─── Main Component ────────────────────────────────────────────
-const PracticeLayer: React.FC<PracticeLayerProps> = ({ steps, onCheckAll, scrollY }) => {
+const PracticeLayer: React.FC<PracticeLayerProps> = ({ steps, onCheckAll, scrollY, accentColor }) => {
   const insets = useSafeAreaInsets();
   const [checkedIndexes, setCheckedIndexes] = useState<Set<number>>(new Set());
   const [expandedIndex, setExpandedIndex] = useState<number | null>(0);
+
+  // Physical (Sunnah action) takes the journey identity color; the other types
+  // keep their distinct hues so step types stay visually differentiated.
+  const typeColors: Record<PracticeStepData['type'], string> = {
+    ...TYPE_COLORS,
+    physical: accentColor || TYPE_COLORS.physical,
+  };
 
   // Entrance animation
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -328,7 +337,7 @@ const PracticeLayer: React.FC<PracticeLayerProps> = ({ steps, onCheckAll, scroll
             index={index}
             totalSteps={steps.length}
             checked={checkedIndexes.has(index)}
-            accentColor={TYPE_COLORS[step.type]}
+            accentColor={typeColors[step.type]}
             onToggleCheck={toggleCheck}
             isExpanded={expandedIndex === index}
             onToggleExpand={() => {

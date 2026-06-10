@@ -161,6 +161,9 @@ export default function CommitScreen({ isActive, onCommit }: Props) {
   const completionSlide = useRef(new Animated.Value(10)).current;
   const ringGlow = useRef(new Animated.Value(0)).current;
   const bgBrightness = useRef(new Animated.Value(0)).current;
+  // Micro-animation: instant pop + flash at the moment the hold completes
+  const ringPop = useRef(new Animated.Value(1)).current;
+  const successFlash = useRef(new Animated.Value(0)).current;
   const holdAnimRef = useRef<Animated.CompositeAnimation | null>(null);
   const holdTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -195,6 +198,8 @@ export default function CommitScreen({ isActive, onCommit }: Props) {
     completionSlide.setValue(10);
     ringGlow.setValue(0);
     bgBrightness.setValue(0);
+    ringPop.setValue(1);
+    successFlash.setValue(0);
     setIsComplete(false);
     setIsHolding(false);
     setBurstTrigger(false);
@@ -251,6 +256,18 @@ export default function CommitScreen({ isActive, onCommit }: Props) {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     setTimeout(() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium), 120);
     setTimeout(() => Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success), 280);
+
+    // ── Micro-animation: instant pop + flash at the exact completion moment ──
+    // Ring area bounces sharply (scale up then spring back) — felt immediately
+    Animated.sequence([
+      Animated.timing(ringPop, { toValue: 1.07, duration: 110, useNativeDriver: true }),
+      Animated.spring(ringPop, { toValue: 1, friction: 4, tension: 220, useNativeDriver: true }),
+    ]).start();
+    // White-gold flash washes the screen then fades — classic "success" feel
+    Animated.sequence([
+      Animated.timing(successFlash, { toValue: 0.55, duration: 80, useNativeDriver: true }),
+      Animated.timing(successFlash, { toValue: 0, duration: 380, useNativeDriver: true }),
+    ]).start();
 
     // Trigger particle burst
     setBurstTrigger(true);
@@ -310,6 +327,12 @@ export default function CommitScreen({ isActive, onCommit }: Props) {
         pointerEvents="none"
       />
 
+      {/* Micro-animation: white-gold success flash */}
+      <Animated.View
+        style={[StyleSheet.absoluteFill, { backgroundColor: '#FFF8E7', opacity: successFlash }]}
+        pointerEvents="none"
+      />
+
       {/* Mandala backdrop */}
       <View style={styles.mandalaWrap} pointerEvents="none">
         <AnimatedMandala size={360} color={Colors.accent.primary} opacity={0.06} />
@@ -326,6 +349,8 @@ export default function CommitScreen({ isActive, onCommit }: Props) {
 
       {/* Hold area */}
       <Animated.View style={[styles.holdAreaWrap, s[2]]}>
+        {/* ringPop lives on its own wrapper so it doesn't conflict with the stagger transform above */}
+        <Animated.View style={{ transform: [{ scale: ringPop }] }}>
         <View style={styles.particleContainer}>
           <Pressable
             onPressIn={handlePressIn}
@@ -437,6 +462,7 @@ export default function CommitScreen({ isActive, onCommit }: Props) {
             ))}
           </View>
         </View>
+        </Animated.View>
       </Animated.View>
 
       {/* Instruction / Completion */}
@@ -497,7 +523,7 @@ const styles = StyleSheet.create({
   },
   subtitle: {
     fontSize: 15,
-    color: 'rgba(245, 237, 227, 0.5)',
+    color: 'rgba(245, 237, 227, 0.70)',
     textAlign: 'center',
     lineHeight: 23,
     marginBottom: 36,
@@ -563,7 +589,7 @@ const styles = StyleSheet.create({
   },
   instruction: {
     fontSize: 14,
-    color: 'rgba(245, 237, 227, 0.4)',
+    color: 'rgba(245, 237, 227, 0.62)',
     textAlign: 'center',
     letterSpacing: 2,
     textTransform: 'uppercase',
@@ -599,7 +625,7 @@ const styles = StyleSheet.create({
   },
   chipText: {
     fontSize: 13,
-    color: 'rgba(245, 237, 227, 0.55)',
+    color: 'rgba(245, 237, 227, 0.68)',
     letterSpacing: 0.3,
     textAlign: 'center',
   },

@@ -1,9 +1,29 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Animated } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '../../theme/DesignSystem';
 import { CrescentIcon } from './CrescentIcon';
+
+const WEEK_LABELS = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
+
+function useWeekDots(streakDays: number) {
+  // Recomputed each render so a date change (midnight rollover) is picked up
+  // on the next render without needing an interval — useMemo then sees a new
+  // `today` value in its deps and recomputes.
+  const today = new Date().toDateString();
+  return useMemo(() => {
+    const todayDow = (new Date().getDay() + 6) % 7; // 0=Mon … 6=Sun
+    return WEEK_LABELS.map((label, i) => {
+      // How many calendar days ago did weekday-column `i` last occur?
+      // If i <= todayDow it was this week; if i > todayDow it was last week.
+      const daysAgo = i <= todayDow ? todayDow - i : todayDow - i + 7;
+      const active = daysAgo < Math.min(streakDays, 7);
+      const isToday = i === todayDow;
+      return { label, active, isToday };
+    });
+  }, [streakDays, today]);
+}
 
 interface StreakBarProps {
   streakDays: number;
@@ -13,6 +33,7 @@ interface StreakBarProps {
 }
 
 export function StreakBar({ streakDays, fadeAnim, slideAnim, onPress }: StreakBarProps) {
+  const weekDots = useWeekDots(streakDays);
   return (
     <Animated.View style={[styles.streakSection, { opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
       <TouchableOpacity activeOpacity={0.9} onPress={onPress}>
@@ -32,8 +53,17 @@ export function StreakBar({ streakDays, fadeAnim, slideAnim, onPress }: StreakBa
                 <>
                   <Text style={styles.streakText}>{streakDays}-Day Streak</Text>
                   <View style={styles.streakMoons}>
-                    {[...Array(7)].map((_, i) => (
-                      <View key={i} style={[styles.streakMoonDot, i < streakDays ? styles.streakMoonActive : null]} />
+                    {weekDots.map((dot, i) => (
+                      <View key={i} style={styles.streakDotCol}>
+                        <View style={[
+                          styles.streakMoonDot,
+                          dot.active && styles.streakMoonActive,
+                          dot.isToday && styles.streakDotToday,
+                        ]} />
+                        <Text style={[styles.streakDayLabel, dot.isToday && styles.streakDayLabelToday]}>
+                          {dot.label}
+                        </Text>
+                      </View>
                     ))}
                   </View>
                 </>
@@ -90,16 +120,33 @@ const styles = StyleSheet.create({
   },
   streakMoons: {
     flexDirection: 'row',
-    gap: 4,
+    gap: 6,
+  },
+  streakDotCol: {
+    alignItems: 'center',
+    gap: 3,
   },
   streakMoonDot: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
+    width: 7,
+    height: 7,
+    borderRadius: 4,
     backgroundColor: 'rgba(74, 222, 128, 0.2)',
   },
   streakMoonActive: {
-    backgroundColor: '#4ADE80',
+    backgroundColor: Colors.status.success,
+  },
+  streakDotToday: {
+    borderWidth: 1,
+    borderColor: Colors.status.success,
+  },
+  streakDayLabel: {
+    fontSize: 8,
+    fontWeight: '700',
+    color: `${Colors.status.success}59`,
+    letterSpacing: 0.3,
+  },
+  streakDayLabelToday: {
+    color: Colors.status.success,
   },
   streakRight: {
     flexDirection: 'row',
