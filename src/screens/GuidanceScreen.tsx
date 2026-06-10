@@ -145,8 +145,14 @@ const GuidanceScreen: React.FC = () => {
     updatePreference,
     requestNext,
     isResting,
+    isWindowExhausted,
     dismissResting,
   } = useGuidanceLogic(experience, mood, onNext, onSaveReflection, totalLayers);
+
+  // Hide "→ next verse" only after the resting point has been seen and dismissed.
+  // Before that point, even a spent window should show the button so pressing it
+  // triggers the resting point modal rather than silently doing nothing.
+  const canAdvance = isPremium || !isWindowExhausted;
 
   // Keep the PanResponder's ref pointed at the latest gated advance fn.
   useEffect(() => {
@@ -236,11 +242,15 @@ const GuidanceScreen: React.FC = () => {
               scrollY={scrollY}
               accentColor={(MoodColors[mood] || MoodColors.Calm).accent}
               hasContext={hasContext}
-              onNextVerse={() => {
-                scrollY.setValue(0);
-                requestNext();
-                setCurrentLayer(0);
-              }}
+              onNextVerse={
+                canAdvance
+                  ? () => {
+                      scrollY.setValue(0);
+                      requestNext();
+                      setCurrentLayer(0);
+                    }
+                  : undefined
+              }
               onShare={handleShareVerse}
               onSave={() => handleSave(0)}
               isSaved={!!savedStates[0]}
@@ -273,11 +283,15 @@ const GuidanceScreen: React.FC = () => {
           scrollY.setValue(0);
           setCurrentLayer(idx);
         }}
-        onNextVerse={() => {
-          scrollY.setValue(0);
-          requestNext();
-          setCurrentLayer(0);
-        }}
+        onNextVerse={
+          canAdvance
+            ? () => {
+                scrollY.setValue(0);
+                requestNext();
+                setCurrentLayer(0);
+              }
+            : undefined
+        }
       />
 
       {/* FloatingActionRow — verse-action buttons only; not shown on context layer */}
@@ -333,6 +347,10 @@ const GuidanceScreen: React.FC = () => {
         }}
         onUpgrade={() => {
           setIsThemePickerVisible(false);
+          // Tapping "Upgrade Now" on a locked theme is a peak (spec §8): record
+          // it so the theme-driven Support visit counts toward the anti-nag
+          // cooldown and won't be immediately followed by another peak ask.
+          freemium.recordUpgradeAsk('theme_pick');
           navigation.navigate('Support');
         }}
       />

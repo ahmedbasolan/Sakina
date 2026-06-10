@@ -19,6 +19,7 @@ const Purchases = {
   })),
   logIn: jest.fn(() => Promise.resolve({ customerInfo: {}, created: false })),
   logOut: jest.fn(() => Promise.resolve({ entitlements: { active: {} } })),
+  checkTrialOrIntroductoryPriceEligibility: jest.fn(() => Promise.resolve({})),
 };
 
 module.exports = {
@@ -35,6 +36,12 @@ module.exports = {
     THREE_MONTH: 'THREE_MONTH',
     SIX_MONTH: 'SIX_MONTH',
     TWO_MONTH: 'TWO_MONTH',
+  },
+  INTRO_ELIGIBILITY_STATUS: {
+    INTRO_ELIGIBILITY_STATUS_UNKNOWN: 0,
+    INTRO_ELIGIBILITY_STATUS_INELIGIBLE: 1,
+    INTRO_ELIGIBILITY_STATUS_ELIGIBLE: 2,
+    INTRO_ELIGIBILITY_STATUS_NO_INTRO_OFFER_EXISTS: 3,
   },
   CustomerInfo: {},
   PurchasesOffering: {},

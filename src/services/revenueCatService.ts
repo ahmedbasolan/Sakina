@@ -16,6 +16,7 @@ import Purchases, {
   PurchasesPackage,
   LOG_LEVEL,
   PACKAGE_TYPE,
+  INTRO_ELIGIBILITY_STATUS,
 } from 'react-native-purchases';
 import { Platform } from 'react-native';
 
@@ -68,9 +69,53 @@ class RevenueCatService {
     return Purchases.getCustomerInfo();
   }
 
-  /** True if the 'premium' entitlement is currently active. */
+  /** True if the Sakina Pro entitlement is currently active. */
   isEntitlementActive(info: CustomerInfo): boolean {
     return !!info.entitlements.active[RC_ENTITLEMENT_ID];
+  }
+
+  /** The active Sakina Pro entitlement (period type, expiry, etc.), or undefined. */
+  getActiveEntitlement(info: CustomerInfo) {
+    return info.entitlements.active[RC_ENTITLEMENT_ID];
+  }
+
+  /**
+   * Resolve a purchased product identifier to its billing duration by matching
+   * against the current offering's packages. RC's `periodType` describes the
+   * phase (trial/normal), not the duration — this is the reliable source for
+   * monthly-vs-yearly. Falls back to 'yearly' when the product can't be matched.
+   */
+  async resolveDurationType(productIdentifier?: string): Promise<'monthly' | 'yearly'> {
+    if (!productIdentifier) return 'yearly';
+    const offering = await this.getOffering();
+    const monthly = offering?.availablePackages.find(
+      (p) => p.packageType === PACKAGE_TYPE.MONTHLY,
+    );
+    return monthly?.product.identifier === productIdentifier ? 'monthly' : 'yearly';
+  }
+
+  /**
+   * Whether the user is eligible for the intro free trial on the yearly product.
+   * Returns false when there's no offering/product or the check fails — callers
+   * should then show a plain "Subscribe" CTA instead of promising a free trial
+   * (App Store guideline: don't offer a trial to ineligible users).
+   */
+  async isYearlyTrialEligible(): Promise<boolean> {
+    const offering = await this.getOffering();
+    const yearly = offering?.availablePackages.find(
+      (p) => p.packageType === PACKAGE_TYPE.ANNUAL,
+    );
+    const productId = yearly?.product.identifier;
+    if (!productId) return false;
+    try {
+      const result = await Purchases.checkTrialOrIntroductoryPriceEligibility([productId]);
+      return (
+        result[productId]?.status ===
+        INTRO_ELIGIBILITY_STATUS.INTRO_ELIGIBILITY_STATUS_ELIGIBLE
+      );
+    } catch {
+      return false;
+    }
   }
 
   /** Fetch the current RC offering and cache it. */
