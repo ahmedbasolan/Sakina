@@ -43,7 +43,7 @@ export const Colors = {
   text: {
     primary: '#F5EDE3', // Warm cream
     secondary: 'rgba(245, 237, 227, 0.7)',
-    muted: 'rgba(245, 237, 227, 0.35)',
+    muted: 'rgba(245, 237, 227, 0.60)',
   },
 
   background: {
@@ -205,9 +205,16 @@ export const Animations = {
     },
   },
   timing: {
+    micro: 120, // taps, tiny pulses (100–150ms band)
+    fast: 200, // small transitions / screen-to-screen fade
     normal: 400,
     slow: 600,
-    fast: 200,
+  },
+  /** Staggered entrance choreography (used by useStaggerEntry on every screen). */
+  stagger: {
+    baseDelay: 140, // delay before the first element reveals
+    step: 60, // delay added per successive element
+    duration: 480, // each element's fade/slide duration
   },
 };
 

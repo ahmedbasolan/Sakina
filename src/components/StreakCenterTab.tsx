@@ -5,7 +5,7 @@
  * Shows a flame icon with sustained ember glow and an initial flash-in
  * "spark" animation. An optional streak count badge can be passed in.
  *
- * Replaces the earlier mood-based NoorCenterTab per the Figma redesign.
+ * Replaced the earlier mood-based center tab.
  */
 import React, { useEffect, useRef } from 'react';
 import { View, Text, Animated, StyleSheet } from 'react-native';

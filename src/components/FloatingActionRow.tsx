@@ -1,5 +1,6 @@
 import React from 'react';
 import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
+import { BlurView } from 'expo-blur';
 import { Colors, Spacing, BorderRadius } from '../theme/DesignSystem';
 import { Ionicons } from '@expo/vector-icons';
 import { HapticsService } from '../services/hapticsService';
@@ -78,6 +79,9 @@ const FloatingActionRow: React.FC<FloatingActionRowProps> = ({
 
   return (
     <View style={styles.container}>
+      {/* Frosted-glass surface, clipped to the pill */}
+      <BlurView intensity={45} tint="dark" style={styles.blurFill} pointerEvents="none" />
+
       <TouchableOpacity
         style={styles.actionButton}
         onPress={() => handleAction(onShare)}
@@ -92,7 +96,8 @@ const FloatingActionRow: React.FC<FloatingActionRowProps> = ({
           <View style={styles.divider} />
           <AudioPlayerButton
             verseKey={audioKey!}
-            size={26}
+            size={30}
+            iconSize={20}
             color={Colors.accent.primary}
             showLabel={false}
             containerStyle={styles.audioButton}
@@ -112,12 +117,14 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'rgba(28, 22, 18, 0.92)',
+    // Subtle base fill so the shadow casts on iOS and the bar still reads if the
+    // BlurView is unavailable; the BlurView sits on top for the frost.
+    backgroundColor: 'rgba(28, 22, 18, 0.4)',
     borderRadius: BorderRadius.full,
     paddingVertical: Spacing.sm + 2,
     paddingHorizontal: Spacing.xl,
     borderWidth: 1,
-    borderColor: 'rgba(212, 175, 55, 0.12)',
+    borderColor: 'rgba(212, 175, 55, 0.14)',
     alignSelf: 'center',
     marginBottom: Spacing.xl,
     gap: Spacing.lg,
@@ -126,6 +133,13 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.35,
     shadowRadius: 12,
     elevation: 6,
+  },
+  // Clipped frosted surface with a translucent warm-dark tint over the blur.
+  blurFill: {
+    ...StyleSheet.absoluteFillObject,
+    borderRadius: BorderRadius.full,
+    overflow: 'hidden',
+    backgroundColor: 'rgba(28, 22, 18, 0.35)',
   },
   actionButton: {
     flexDirection: 'row',

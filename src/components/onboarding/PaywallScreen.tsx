@@ -40,7 +40,7 @@ interface Props {
 
 export default function PaywallScreen({ isActive, onComplete }: Props) {
   // [0] badge, [1] title, [2] subtitle, [3,4,5] features, [6] verse, [7] CTA, [8] skip
-  const s = useStaggerEntry(isActive, 9, { baseDelay: 300, stagger: 100 });
+  const s = useStaggerEntry(isActive, 9);
   const pulseAnim = useRef(new Animated.Value(1)).current;
 
   useEffect(() => {
@@ -157,9 +157,9 @@ const styles = StyleSheet.create({
   contentArea: {
     flex: 1,
     paddingHorizontal: 32,
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
     zIndex: 2,
-    paddingTop: height * 0.12,
+    paddingTop: height * 0.13,
   },
   badgeWrap: {
     flexDirection: 'row',
@@ -195,11 +195,11 @@ const styles = StyleSheet.create({
     paddingRight: 20,
   },
   featuresList: {
-    gap: 20,
+    gap: 18,
     marginBottom: 0,
   },
   verseCard: {
-    marginTop: 28,
+    marginTop: 22,
     paddingHorizontal: 20,
     paddingVertical: 18,
     borderRadius: 16,
@@ -229,7 +229,7 @@ const styles = StyleSheet.create({
   },
   verseRef: {
     fontSize: 11,
-    color: 'rgba(212, 175, 55, 0.5)',
+    color: 'rgba(212, 175, 55, 0.70)',
     letterSpacing: 0.5,
   },
   featureRow: {
@@ -259,7 +259,7 @@ const styles = StyleSheet.create({
   },
   featureDesc: {
     fontSize: 13,
-    color: 'rgba(245, 237, 227, 0.5)',
+    color: 'rgba(245, 237, 227, 0.70)',
     lineHeight: 18,
   },
   bottomSection: {
@@ -299,6 +299,6 @@ const styles = StyleSheet.create({
   },
   skipText: {
     fontSize: 15,
-    color: 'rgba(245, 237, 227, 0.5)',
+    color: 'rgba(245, 237, 227, 0.70)',
   },
 });

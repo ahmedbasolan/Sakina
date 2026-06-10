@@ -15,6 +15,15 @@ interface ContextLayerProps {
   /** Source citation for the angle (e.g. "Tafsir Ibn Kathir") */
   angleSource?: string;
   scrollY?: Animated.Value;
+  /** Journey identity color — themes the "For Your Heart" + source accents. */
+  accentColor?: string;
+  /**
+   * Override the top padding when the parent already renders a header in the
+   * flex flow (not absolute-positioned). When omitted the component falls back
+   * to `insets.top + Spacing.sm` — correct when it is rendered inside an
+   * absoluteFill container where the safe area hasn't been consumed yet.
+   */
+  topInset?: number;
 }
 
 /**
@@ -96,7 +105,7 @@ function QuoteOrnament({ color }: { color: string }) {
   );
 }
 
-const ContextLayer: React.FC<ContextLayerProps> = ({ attribution, text, source, angle, angleSource, scrollY }) => {
+const ContextLayer: React.FC<ContextLayerProps> = ({ attribution, text, source, angle, angleSource, scrollY, accentColor = Colors.accent.primary, topInset }) => {
   const insets = useSafeAreaInsets();
   const { understand, matters } = useMemo(() => splitIntoSections(text), [text]);
   const sourceLabel = useMemo(() => extractSourceLabel(text, source), [text, source]);
@@ -172,7 +181,9 @@ const ContextLayer: React.FC<ContextLayerProps> = ({ attribution, text, source, 
       style={[
         styles.container,
         {
-          paddingTop: Math.max(insets.top + Spacing.sm, height * 0.02),
+          paddingTop: topInset !== undefined
+            ? topInset
+            : Math.max(insets.top + Spacing.sm, height * 0.02),
           paddingBottom: Math.max(insets.bottom + Spacing.sm, Spacing.xl),
         },
       ]}
@@ -238,7 +249,7 @@ const ContextLayer: React.FC<ContextLayerProps> = ({ attribution, text, source, 
           <Animated.View style={[styles.sourceRow, { opacity: fadeAnim2 }]}>
             <View style={styles.sourceLine} />
             <View style={styles.sourceBadge}>
-              <MaterialCommunityIcons name="shield-check" size={13} color={Colors.accent.primary} />
+              <MaterialCommunityIcons name="shield-check" size={13} color={accentColor} />
               <Text style={styles.sourceText}>{sourceLabel}</Text>
             </View>
           </Animated.View>
@@ -255,13 +266,13 @@ const ContextLayer: React.FC<ContextLayerProps> = ({ attribution, text, source, 
           >
             <View style={styles.heartDivider}>
               <View style={styles.heartDividerLine} />
-              <View style={[styles.heartDividerDiamond, { backgroundColor: Colors.accent.primary + '55' }]} />
+              <View style={[styles.heartDividerDiamond, { backgroundColor: accentColor + '55' }]} />
               <View style={styles.heartDividerLine} />
             </View>
 
             <View style={styles.sectionHeader}>
-              <MaterialCommunityIcons name="heart-outline" size={16} color={Colors.accent.primary} />
-              <Text style={[styles.sectionLabel, { color: Colors.accent.primary }]}>FOR YOUR HEART</Text>
+              <MaterialCommunityIcons name="heart-outline" size={16} color={accentColor} />
+              <Text style={[styles.sectionLabel, { color: accentColor }]}>FOR YOUR HEART</Text>
             </View>
 
             <View style={[styles.textCard, styles.heartCard]}>
@@ -272,18 +283,6 @@ const ContextLayer: React.FC<ContextLayerProps> = ({ attribution, text, source, 
             </View>
           </Animated.View>
         ) : null}
-
-        {/* Nav hints */}
-        <Animated.View style={[styles.navHints, { opacity: fadeAnim3 }]}>
-          <View style={styles.navHintItem}>
-            <MaterialCommunityIcons name="chevron-down" size={14} color="rgba(245,237,227,0.2)" />
-            <Text style={styles.navHintText}>Verse</Text>
-          </View>
-          <View style={styles.navHintItem}>
-            <MaterialCommunityIcons name="chevron-up" size={14} color="rgba(245,237,227,0.2)" />
-            <Text style={styles.navHintText}>Next</Text>
-          </View>
-        </Animated.View>
       </Animated.ScrollView>
     </View>
   );
@@ -405,26 +404,6 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     marginTop: Spacing.md,
     letterSpacing: 0.4,
-  },
-
-  /* ── Nav hints ── */
-  navHints: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingHorizontal: Spacing.sm,
-    paddingTop: Spacing.lg,
-    paddingBottom: Spacing.md,
-  },
-  navHintItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-  },
-  navHintText: {
-    fontSize: 10,
-    color: 'rgba(245, 237, 227, 0.22)',
-    fontWeight: '500',
-    letterSpacing: 1,
   },
 
   /* ── Source ── */

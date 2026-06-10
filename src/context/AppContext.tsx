@@ -11,9 +11,13 @@
  *                    don't need to change.
  */
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { RotationEngine } from '../services/rotationEngine';
 import { FreemiumService } from '../services/freemiumService';
 import { Mood, GuidanceExperience } from '../types';
+import { TimeFormat } from '../services/prayerTimesService';
+
+const TIME_FORMAT_KEY = '@prayer_time_format';
 
 /* ─── Services Context (stable — never causes re-renders on mood change) ── */
 
@@ -57,6 +61,9 @@ interface SessionContextType {
   /** Current streak count — shared here so MainNavigator doesn't query SQLite directly. */
   streakCount: number;
   setStreakCount: (count: number) => void;
+  /** Clock format for prayer times ("12h" | "24h") — persisted, shared across screens. */
+  timeFormat: TimeFormat;
+  setTimeFormat: (format: TimeFormat) => void;
 }
 
 const SessionContext = createContext<SessionContextType | undefined>(undefined);
@@ -65,10 +72,23 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
   const [selectedMood, setSelectedMood] = useState<Mood | null>(null);
   const [currentExperience, setCurrentExperience] = useState<GuidanceExperience | null>(null);
   const [streakCount, setStreakCount] = useState(0);
+  const [timeFormat, setTimeFormatState] = useState<TimeFormat>('24h');
+
+  // Load the persisted clock-format preference once on mount.
+  useEffect(() => {
+    AsyncStorage.getItem(TIME_FORMAT_KEY).then((v) => {
+      if (v === '12h' || v === '24h') setTimeFormatState(v);
+    });
+  }, []);
+
+  const setTimeFormat = (format: TimeFormat) => {
+    setTimeFormatState(format);
+    AsyncStorage.setItem(TIME_FORMAT_KEY, format).catch(() => {});
+  };
 
   return (
     <SessionContext.Provider
-      value={{ selectedMood, setSelectedMood, currentExperience, setCurrentExperience, streakCount, setStreakCount }}
+      value={{ selectedMood, setSelectedMood, currentExperience, setCurrentExperience, streakCount, setStreakCount, timeFormat, setTimeFormat }}
     >
       {children}
     </SessionContext.Provider>

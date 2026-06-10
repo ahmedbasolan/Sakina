@@ -37,9 +37,10 @@ export function ProgressMandala({ progress, size = 48, color = Colors.accent.pri
 
   return (
     <View style={[styles.container, { width: size, height: size }]}>
-      {/* The rotating mathematical mandala inside */}
+      {/* The rotating mathematical mandala inside — boldened stroke + higher
+          opacity so the geometry actually reads inside the small ring. */}
       <View style={styles.mandalaWrap} pointerEvents="none">
-        <AnimatedMandala size={size * 0.85} color={color} opacity={0.6} />
+        <AnimatedMandala size={size * 0.92} color={color} opacity={1} strokeScale={4} />
       </View>
 
       {/* The dynamic sweeping outer progress ring */}

@@ -60,35 +60,38 @@ export const LocationPickerModal: React.FC<LocationPickerModalProps> = ({
 
   return (
     <Modal visible={visible} transparent animationType="fade">
-      <BlurView intensity={20} style={StyleSheet.absoluteFill}>
+      <BlurView intensity={24} tint="dark" style={StyleSheet.absoluteFill}>
         <KeyboardAvoidingView
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
           style={styles.modalContainer}
         >
           <View style={styles.content}>
-            <LinearGradient colors={['#0F766E', '#115E59']} style={styles.header}>
-              <Text style={styles.headerTitle}>Select Location</Text>
-              <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-                <Ionicons name="close" size={24} color="#FFF" />
+            <View style={styles.header}>
+              <View style={styles.headerLeft}>
+                <Ionicons name="location-outline" size={20} color="#D4AF37" />
+                <Text style={styles.headerTitle}>Set Location</Text>
+              </View>
+              <TouchableOpacity onPress={onClose} style={styles.closeButton} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+                <Ionicons name="close" size={22} color="rgba(245, 237, 227, 0.7)" />
               </TouchableOpacity>
-            </LinearGradient>
+            </View>
 
             <View style={styles.form}>
               <Text style={styles.description}>
-                Enter your city and country to fetch accurate prayer times. This information is
-                stored privately on your device.
+                Enter your city and country for accurate prayer times. This stays private and is
+                stored only on your device.
               </Text>
 
               <View style={styles.inputGroup}>
                 <Text style={styles.label}>City</Text>
                 <View style={styles.inputContainer}>
-                  <Ionicons name="business-outline" size={20} color="#0F766E" />
+                  <Ionicons name="business-outline" size={18} color="#D4AF37" />
                   <TextInput
                     style={styles.input}
                     placeholder="e.g. London"
                     value={city}
                     onChangeText={setCity}
-                    placeholderTextColor="#9CA3AF"
+                    placeholderTextColor="rgba(245, 237, 227, 0.35)"
                   />
                 </View>
               </View>
@@ -96,21 +99,26 @@ export const LocationPickerModal: React.FC<LocationPickerModalProps> = ({
               <View style={styles.inputGroup}>
                 <Text style={styles.label}>Country</Text>
                 <View style={styles.inputContainer}>
-                  <Ionicons name="earth-outline" size={20} color="#0F766E" />
+                  <Ionicons name="earth-outline" size={18} color="#D4AF37" />
                   <TextInput
                     style={styles.input}
                     placeholder="e.g. United Kingdom"
                     value={country}
                     onChangeText={setCountry}
-                    placeholderTextColor="#9CA3AF"
+                    placeholderTextColor="rgba(245, 237, 227, 0.35)"
                   />
                 </View>
               </View>
 
-              <TouchableOpacity onPress={handleSave} disabled={isLoading}>
-                <LinearGradient colors={['#D4A574', '#B88B58']} style={styles.saveButton}>
+              <TouchableOpacity onPress={handleSave} disabled={isLoading} activeOpacity={0.85}>
+                <LinearGradient
+                  colors={['#E8C84A', '#B8860B']}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 1 }}
+                  style={styles.saveButton}
+                >
                   {isLoading ? (
-                    <ActivityIndicator color="#0B4D49" />
+                    <ActivityIndicator color="#0C1A2E" />
                   ) : (
                     <Text style={styles.saveButtonText}>Save Location</Text>
                   )}
@@ -133,12 +141,14 @@ const styles = StyleSheet.create({
   },
   content: {
     width: '100%',
-    backgroundColor: '#FFF',
+    backgroundColor: '#0C1A2E',
     borderRadius: 24,
     overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: 'rgba(212, 175, 55, 0.18)',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: 0.2,
+    shadowOpacity: 0.4,
     shadowRadius: 20,
     elevation: 10,
   },
@@ -146,12 +156,20 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    padding: 20,
+    paddingHorizontal: 20,
+    paddingTop: 20,
+    paddingBottom: 4,
+  },
+  headerLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
   },
   headerTitle: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: '#FFF',
+    fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
+    fontSize: 19,
+    color: '#F5EDE3',
+    letterSpacing: 0.3,
   },
   closeButton: {
     padding: 4,
@@ -160,45 +178,48 @@ const styles = StyleSheet.create({
     padding: 24,
   },
   description: {
-    fontSize: 14,
-    color: '#6B7280',
+    fontSize: 13,
+    color: 'rgba(176, 196, 215, 0.75)',
     lineHeight: 20,
     marginBottom: 24,
   },
   inputGroup: {
-    marginBottom: 20,
+    marginBottom: 18,
   },
   label: {
-    fontSize: 14,
+    fontSize: 13,
     fontWeight: '600',
-    color: '#374151',
+    color: 'rgba(245, 237, 227, 0.7)',
+    letterSpacing: 0.3,
     marginBottom: 8,
   },
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#F9FAFB',
-    borderWidth: 1.5,
-    borderColor: '#E5E7EB',
+    gap: 10,
+    backgroundColor: 'rgba(255, 255, 255, 0.04)',
+    borderWidth: 1,
+    borderColor: 'rgba(212, 175, 55, 0.18)',
     borderRadius: 12,
     paddingHorizontal: 16,
     paddingVertical: 12,
   },
   input: {
     flex: 1,
-    marginLeft: 12,
     fontSize: 16,
-    color: '#1F2937',
+    color: '#F5EDE3',
   },
   saveButton: {
-    borderRadius: 12,
-    padding: 16,
+    borderRadius: 28,
+    paddingVertical: 16,
     alignItems: 'center',
     marginTop: 12,
   },
   saveButtonText: {
+    fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
     fontSize: 16,
     fontWeight: '700',
-    color: '#0B4D49',
+    letterSpacing: 1,
+    color: '#0C1A2E',
   },
 });

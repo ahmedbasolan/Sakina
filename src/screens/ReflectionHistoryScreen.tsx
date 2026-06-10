@@ -1,14 +1,5 @@
-/**
- * ReflectionHistoryScreen (Journal)
- *
- * Dark navy redesign matching the reference image:
- * Background: #07111E → #0C1A2E gradient
- * Twinkling gold stars, mandala backdrop, gold accents.
- * "BETWEEN YOU AND ALLAH" / "REFLECTIONS" title.
- * Privacy badge. Dark glass reflection cards.
- */
-import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { Colors } from '../theme/DesignSystem';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
+import { Colors, Spacing, BorderRadius, Typography, MoodColors } from '../theme/DesignSystem';
 import { logServiceError } from '../services/errorLoggingService';
 import {
   View,
@@ -24,133 +15,90 @@ import {
   KeyboardAvoidingView,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useNavigation } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { BlurView } from 'expo-blur';
 import { MaterialCommunityIcons, Ionicons } from '@expo/vector-icons';
-import Svg, { Path } from 'react-native-svg';
 import { AnimatedMandala } from '../components/AnimatedMandala';
+import { TwinklingStar } from '../components/TwinklingStar';
 import { dbQuery } from '../database/schema';
 
-const { width, height } = Dimensions.get('window');
+const { width } = Dimensions.get('window');
 
 const STARS = [
-  { x: 0.06, y: 0.04, s: 2.5, d: 0 },
-  { x: 0.91, y: 0.06, s: 2, d: 500 },
-  { x: 0.15, y: 0.14, s: 1.5, d: 250 },
-  { x: 0.83, y: 0.10, s: 2, d: 750 },
-  { x: 0.49, y: 0.07, s: 1.5, d: 100 },
-  { x: 0.94, y: 0.22, s: 2.5, d: 600 },
-  { x: 0.03, y: 0.32, s: 1.5, d: 350 },
+  { x: '6%',  y: '4%',  size: 2.5, delay: 0 },
+  { x: '91%', y: '6%',  size: 2,   delay: 500 },
+  { x: '15%', y: '14%', size: 1.5, delay: 250 },
+  { x: '83%', y: '10%', size: 2,   delay: 750 },
+  { x: '49%', y: '7%',  size: 1.5, delay: 100 },
+  { x: '94%', y: '22%', size: 2.5, delay: 600 },
+  { x: '3%',  y: '32%', size: 1.5, delay: 350 },
 ];
 
-const MOOD_COLORS: Record<string, string> = {
-  Grateful: '#34D399', Hopeful: '#FBBF24', Calm: '#22D3EE',
-  Overwhelmed: '#818CF8', Sad: '#60A5FA', Angry: '#F87171',
-  Lonely: '#A78BFA', Guilty: '#34D399', Tired: '#9CA3AF',
-};
+// Derived from the design-system source of truth so dot colors always match
+// the immersive screens the user is taken to.
+const MOOD_COLORS: Record<string, string> = Object.fromEntries(
+  Object.entries(MoodColors).map(([k, v]) => [k, v.accent])
+);
 
-const MOOD_ICONS: Record<string, string> = {
-  Grateful: 'heart', Hopeful: 'star', Calm: 'leaf',
-  Overwhelmed: 'alert-circle', Sad: 'water', Angry: 'flame',
-  Lonely: 'person', Guilty: 'refresh-circle', Tired: 'moon',
-};
 
-function TwinklingStar({ x, y, s: size, d: delay }: any) {
-  const opacity = useRef(new Animated.Value(0.15)).current;
-  useEffect(() => {
-    const anim = Animated.loop(
-      Animated.sequence([
-        Animated.delay(delay),
-        Animated.timing(opacity, { toValue: 0.85, duration: 1400, useNativeDriver: true }),
-        Animated.timing(opacity, { toValue: 0.15, duration: 1400, useNativeDriver: true }),
-      ])
-    );
-    anim.start();
-    return () => anim.stop();
-  }, []);
-  return (
-    <Animated.View
-      pointerEvents="none"
-      style={{
-        position: 'absolute',
-        left: x * width, top: y * height * 0.4,
-        width: size, height: size,
-        borderRadius: size / 2,
-        backgroundColor: Colors.accent.primary,
-        opacity, zIndex: 1,
-      }}
-    />
-  );
+const DAILY_PROMPTS = [
+  { before: 'What brought you', highlight: 'peace', after: 'today?' },
+  { before: 'What are you most', highlight: 'grateful', after: 'for right now?' },
+  { before: 'What is weighing on your', highlight: 'heart', after: 'today?' },
+  { before: 'Where do you need', highlight: 'sabr', after: 'this week?' },
+  { before: 'What are you asking', highlight: 'Allah', after: 'for right now?' },
+  { before: 'What moment gave you', highlight: 'hope', after: 'recently?' },
+  { before: 'What do you want to', highlight: 'let go', after: 'of today?' },
+];
+
+function getTodayPrompt() {
+  const start = new Date(new Date().getFullYear(), 0, 0);
+  const dayOfYear = Math.floor((+new Date() - +start) / 86400000);
+  return DAILY_PROMPTS[dayOfYear % DAILY_PROMPTS.length];
 }
 
-function ReflectionCard({ reflection, index }: { reflection: any; index: number }) {
-  const moodColor = reflection.mood ? (MOOD_COLORS[reflection.mood] || Colors.accent.primary) : Colors.accent.primary;
-  const moodIcon = reflection.mood ? (MOOD_ICONS[reflection.mood] || 'sparkles') : 'pen';
+// ── Entry row ────────────────────────────────────────────────────────
+function ReflectionCard({ reflection, index, isLast }: { reflection: any; index: number; isLast: boolean }) {
+  const moodColor = reflection.mood
+    ? (MOOD_COLORS[reflection.mood] || Colors.accent.primary)
+    : Colors.accent.primary;
   const fadeAnim = useRef(new Animated.Value(0)).current;
-  const slideAnim = useRef(new Animated.Value(20)).current;
+  const slideAnim = useRef(new Animated.Value(16)).current;
 
   useEffect(() => {
     Animated.parallel([
-      Animated.timing(fadeAnim, {
-        toValue: 1, duration: 450, delay: 80 + index * 70, useNativeDriver: true,
-      }),
-      Animated.spring(slideAnim, {
-        toValue: 0, friction: 8, tension: 80, delay: 80 + index * 70, useNativeDriver: true,
-      }),
+      Animated.timing(fadeAnim, { toValue: 1, duration: 400, delay: 60 + index * 60, useNativeDriver: true }),
+      Animated.timing(slideAnim, { toValue: 0, duration: 400, delay: 60 + index * 60, useNativeDriver: true }),
     ]).start();
   }, []);
 
   const formatDate = (ts: number | string) => {
     const d = new Date(ts);
-    return d.toLocaleDateString('en-US', { weekday: 'short', month: 'long', day: 'numeric' });
+    return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }).toUpperCase();
   };
 
   return (
     <Animated.View style={{ opacity: fadeAnim, transform: [{ translateY: slideAnim }] }}>
-      <BlurView intensity={12} tint="dark" style={styles.reflectionCard}>
-        <View style={[styles.cardAccentBar, { backgroundColor: moodColor }]} />
-        <View style={styles.cardBody}>
-          {/* Header row */}
-          <View style={styles.cardHeader}>
-            <View style={styles.cardHeaderLeft}>
-              <Text style={styles.cardTitle} numberOfLines={1}>
-                {reflection.title || 'Reflection'}
-              </Text>
-              <Text style={styles.cardDate}>{formatDate(reflection.createdAt || Date.now())}</Text>
-            </View>
-            {/* Mood icon top-right */}
-            {reflection.mood && (
-              <View style={[styles.moodBadge, { backgroundColor: `${moodColor}18`, borderColor: `${moodColor}30` }]}>
-                <Ionicons name={moodIcon as any} size={14} color={moodColor} />
-                <Text style={[styles.moodBadgeText, { color: moodColor }]}>{reflection.mood}</Text>
-              </View>
-            )}
+      <TouchableOpacity activeOpacity={0.7} style={styles.entryRow}>
+        <View style={[styles.entryDot, { backgroundColor: moodColor }]} />
+        <View style={styles.entryBody}>
+          <View style={styles.entryTop}>
+            <Text style={styles.entryTitle} numberOfLines={1}>
+              {reflection.title || 'Reflection'}
+            </Text>
+            <Text style={styles.entryDate}>{formatDate(reflection.createdAt || Date.now())}</Text>
           </View>
-
-          {/* Preview text */}
-          <Text style={styles.cardPreview} numberOfLines={3}>
+          <Text style={styles.entryPreview} numberOfLines={2}>
             {reflection.content || reflection.text || ''}
           </Text>
-
-          {/* Footer: verse link + chevron */}
-          <View style={styles.cardFooter}>
-            {reflection.verseRef ? (
-              <View style={styles.verseRef}>
-                <MaterialCommunityIcons name="book-open-variant" size={12} color="rgba(201,168,76,0.6)" />
-                <Text style={styles.verseRefText}>{reflection.verseRef}</Text>
-              </View>
-            ) : (
-              <View />
-            )}
-            <MaterialCommunityIcons name="chevron-right" size={16} color="rgba(201,168,76,0.35)" />
-          </View>
         </View>
-      </BlurView>
+      </TouchableOpacity>
+      {!isLast && <View style={styles.entrySep} />}
     </Animated.View>
   );
 }
 
+// ── New-reflection sheet ─────────────────────────────────────────────
 const SHEET_MOODS = [
   { id: 'Grateful',    label: 'GRATEFUL',    color: '#34D399', icon: 'heart' },
   { id: 'Hopeful',     label: 'HOPEFUL',     color: '#FBBF24', icon: 'sunny' },
@@ -162,7 +110,6 @@ const SHEET_MOODS = [
   { id: 'Angry',       label: 'ANGRY',       color: '#F87171', icon: 'flame' },
 ] as const;
 
-// New Reflection bottom sheet
 function NewReflectionModal({ visible, onClose, onSave }: {
   visible: boolean;
   onClose: () => void;
@@ -184,23 +131,14 @@ function NewReflectionModal({ visible, onClose, onSave }: {
 
   return (
     <Modal visible={visible} animationType="slide" transparent onRequestClose={onClose}>
-      {/* Backdrop */}
-      <TouchableOpacity
-        style={styles.sheetBackdrop}
-        activeOpacity={1}
-        onPress={onClose}
-      />
-
+      <TouchableOpacity style={styles.sheetBackdrop} activeOpacity={1} onPress={onClose} />
       <KeyboardAvoidingView
         style={styles.sheetWrap}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         pointerEvents="box-none"
       >
-        <View style={[styles.sheet, { paddingBottom: Math.max(insets.bottom, 16) + 8 }]}>
-          {/* Handle */}
+        <View style={[styles.sheet, { paddingBottom: Math.max(insets.bottom, Spacing.lg) + Spacing.sm }]}>
           <View style={styles.sheetHandle} />
-
-          {/* Header row: title + X close */}
           <View style={styles.sheetHeader}>
             <Text style={styles.sheetTitle}>NEW REFLECTION</Text>
             <TouchableOpacity
@@ -209,11 +147,10 @@ function NewReflectionModal({ visible, onClose, onSave }: {
               hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
               accessibilityLabel="Close"
             >
-              <Ionicons name="close" size={18} color="rgba(240,230,211,0.7)" />
+              <Ionicons name="close" size={18} color={Colors.text.secondary} />
             </TouchableOpacity>
           </View>
 
-          {/* Mood chip row */}
           <Text style={styles.sheetSectionLabel}>MOOD</Text>
           <ScrollView
             horizontal
@@ -230,8 +167,8 @@ function NewReflectionModal({ visible, onClose, onSave }: {
                   style={[
                     styles.moodChip,
                     {
-                      borderColor: active ? m.color : 'rgba(255,255,255,0.08)',
-                      backgroundColor: active ? `${m.color}16` : 'rgba(255,255,255,0.02)',
+                      borderColor: active ? m.color : Colors.glass.border,
+                      backgroundColor: active ? `${m.color}16` : Colors.glass.light,
                     },
                   ]}
                 >
@@ -244,28 +181,23 @@ function NewReflectionModal({ visible, onClose, onSave }: {
             })}
           </ScrollView>
 
-          {/* Title input */}
           <TextInput
             style={styles.sheetTitleInput}
             placeholder="TITLE…"
-            placeholderTextColor="rgba(240,230,211,0.35)"
+            placeholderTextColor={`${Colors.text.primary}38`}
             value={titleText}
             onChangeText={setTitleText}
           />
-
-          {/* Body input */}
           <TextInput
             style={styles.sheetBodyInput}
             placeholder="Write freely… this space is private, sacred, and only yours."
-            placeholderTextColor="rgba(176,196,215,0.35)"
+            placeholderTextColor={`${Colors.text.secondary}59`}
             value={bodyText}
             onChangeText={setBodyText}
             multiline
             textAlignVertical="top"
             autoFocus
           />
-
-          {/* Save button */}
           <TouchableOpacity
             onPress={handleSave}
             disabled={!bodyText.trim()}
@@ -280,12 +212,15 @@ function NewReflectionModal({ visible, onClose, onSave }: {
   );
 }
 
+// ── Screen ───────────────────────────────────────────────────────────
 export default function ReflectionHistoryScreen() {
-  const navigation = useNavigation<any>();
   const insets = useSafeAreaInsets();
   const [reflections, setReflections] = useState<any[]>([]);
   const [showModal, setShowModal] = useState(false);
   const headerOpacity = useRef(new Animated.Value(0)).current;
+  // Memoized with empty deps — re-evaluates only when the component unmounts
+  // and remounts (e.g. tab switch the next day), not on every state update.
+  const prompt = useMemo(() => getTodayPrompt(), []);
 
   useEffect(() => {
     Animated.timing(headerOpacity, { toValue: 1, duration: 600, useNativeDriver: true }).start();
@@ -324,7 +259,6 @@ export default function ReflectionHistoryScreen() {
 
   return (
     <View style={styles.container}>
-      {/* Dark navy gradient */}
       <LinearGradient
         colors={['#07111E', '#0C1A2E', '#0F1F30']}
         style={StyleSheet.absoluteFill}
@@ -332,77 +266,75 @@ export default function ReflectionHistoryScreen() {
         end={{ x: 0.5, y: 1 }}
       />
 
-      {/* Ambient glow orb */}
-      <View style={styles.glowOrb} pointerEvents="none" />
+      {STARS.map((s, i) => (
+        <TwinklingStar key={i} x={s.x} y={s.y} size={s.size} delay={s.delay} color={Colors.accent.primary} />
+      ))}
 
-      {/* Twinkling stars */}
-      {STARS.map((star, i) => <TwinklingStar key={i} {...star} />)}
-
-      {/* Mandala backdrop */}
       <View style={styles.mandalaWrap} pointerEvents="none">
-        <AnimatedMandala size={270} color={Colors.accent.primary} opacity={0.055} />
+        <AnimatedMandala size={270} color={Colors.accent.primary} opacity={0.12} />
       </View>
 
       {/* Header */}
-      <Animated.View style={[styles.header, { paddingTop: insets.top + 16, opacity: headerOpacity }]}>
+      <Animated.View style={[styles.header, { paddingTop: insets.top + Spacing.lg, opacity: headerOpacity }]}>
         <View style={styles.headerTop}>
           <View>
             <Text style={styles.headerPretitle}>BETWEEN YOU AND ALLAH</Text>
             <Text style={styles.headerTitle}>REFLECTIONS</Text>
           </View>
-          {/* Lock icon */}
           <View style={styles.headerLockCircle}>
             <MaterialCommunityIcons name="lock" size={18} color={Colors.accent.primary} />
           </View>
         </View>
-
-        {/* Privacy badge */}
         <BlurView intensity={10} tint="dark" style={styles.privacyBadge}>
-          <MaterialCommunityIcons name="lock" size={11} color="rgba(201,168,76,0.7)" />
+          <MaterialCommunityIcons name="lock" size={11} color={`${Colors.accent.primary}B3`} />
           <Text style={styles.privacyText}>Encrypted · Local only · Never shared</Text>
         </BlurView>
       </Animated.View>
 
-      {/* Reflection list */}
       <ScrollView
-        contentContainerStyle={[styles.listContent, { paddingBottom: insets.bottom + 110 }]}
+        contentContainerStyle={[styles.listContent, { paddingBottom: insets.bottom + Spacing.xxxl * 2 }]}
         showsVerticalScrollIndicator={false}
       >
-        {/* Write new CTA card (purple gradient per target) */}
+        {/* Daily prompt card */}
         <TouchableOpacity activeOpacity={0.85} onPress={() => setShowModal(true)}>
-          <BlurView intensity={12} tint="dark" style={styles.writeCard}>
+          <BlurView intensity={14} tint="dark" style={styles.promptCard}>
             <LinearGradient
-              colors={['rgba(167,139,250,0.16)', 'rgba(139,92,246,0.06)']}
-              style={[StyleSheet.absoluteFill, { borderRadius: 20 }]}
+              colors={[`${Colors.accent.primary}14`, `${Colors.accent.primary}06`]}
+              style={[StyleSheet.absoluteFill, { borderRadius: BorderRadius.xl }]}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 1 }}
             />
-            <View style={styles.writeCardInner}>
-              <View style={styles.writeIconCircle}>
-                <MaterialCommunityIcons name="pen-plus" size={22} color="#C4B5FD" />
-              </View>
-              <View style={styles.writeCardText}>
-                <Text style={styles.writeCardTitle}>WRITE A NEW REFLECTION</Text>
-                <Text style={styles.writeCardSub}>A private space, just for you</Text>
-              </View>
-              <MaterialCommunityIcons name="feather" size={18} color="rgba(196,181,253,0.6)" />
+            <Text style={styles.promptLabel}>REFLECT ON THIS</Text>
+            <Text style={styles.promptText}>
+              {prompt.before}{' '}
+              <Text style={styles.promptHighlight}>{prompt.highlight}</Text>
+              {' '}{prompt.after}
+            </Text>
+            <View style={styles.promptCTA}>
+              <MaterialCommunityIcons name="pen-plus" size={14} color={Colors.background.primary} />
+              <Text style={styles.promptCTAText}>Start Writing</Text>
             </View>
           </BlurView>
         </TouchableOpacity>
 
-        {/* Reflection cards */}
+        {/* Entry list */}
         {reflections.length === 0 ? (
           <View style={styles.emptyState}>
-            <MaterialCommunityIcons name="notebook-heart-outline" size={52} color="rgba(201,168,76,0.25)" />
+            <MaterialCommunityIcons name="notebook-heart-outline" size={52} color={`${Colors.accent.primary}40`} />
             <Text style={styles.emptyTitle}>Your journal is empty</Text>
             <Text style={styles.emptySub}>
               Every reflection is a step closer to Allah.{'\n'}Start writing today.
             </Text>
           </View>
         ) : (
-          reflections.map((r, i) => (
-            <ReflectionCard key={r.id || i} reflection={r} index={i} />
-          ))
+          <>
+            <Text style={styles.pastLabel}>PAST ENTRIES</Text>
+            <BlurView intensity={10} tint="dark" style={styles.entriesCard}>
+              {reflections.map((r, i) => (
+                <ReflectionCard key={r.id || i} reflection={r} index={i} isLast={i === reflections.length - 1} />
+              ))}
+            </BlurView>
+          </>
         )}
       </ScrollView>
 
@@ -416,152 +348,191 @@ export default function ReflectionHistoryScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#07111E' },
+  container: { flex: 1, backgroundColor: Colors.background.primary },
 
-  glowOrb: {
-    position: 'absolute',
-    width: 240, height: 240, borderRadius: 120,
-    backgroundColor: 'rgba(201,168,76,0.05)',
-    left: width / 2 - 120, top: 20,
-  },
   mandalaWrap: {
     position: 'absolute',
     left: width / 2 - 135, top: 15, zIndex: 0,
   },
 
-  header: { paddingHorizontal: 22, paddingBottom: 14, zIndex: 2 },
+  header: {
+    paddingHorizontal: Spacing.xl,
+    paddingBottom: Spacing.md,
+    zIndex: 2,
+  },
   headerTop: {
     flexDirection: 'row', justifyContent: 'space-between',
-    alignItems: 'flex-start', marginBottom: 14,
+    alignItems: 'flex-start', marginBottom: Spacing.md,
   },
   headerPretitle: {
-    fontSize: 10, color: 'rgba(201,168,76,0.6)',
-    letterSpacing: 2.5, marginBottom: 4,
-    fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
+    fontSize: Typography.sizes.detail - 2,
+    color: `${Colors.accent.primary}99`,
+    letterSpacing: 2.5, marginBottom: Spacing.xs,
+    fontFamily: Typography.fonts.serif,
   },
   headerTitle: {
-    fontSize: 28, color: '#F0E6D3',
-    fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
+    fontSize: Typography.sizes.hero,
+    color: Colors.text.primary,
+    fontFamily: Typography.fonts.serif,
     fontWeight: '700', letterSpacing: 1.2,
-    textShadowColor: 'rgba(201,168,76,0.2)',
+    textShadowColor: `${Colors.accent.primary}33`,
     textShadowOffset: { width: 0, height: 0 },
     textShadowRadius: 10,
   },
   headerLockCircle: {
-    width: 44, height: 44, borderRadius: 22,
-    backgroundColor: 'rgba(201,168,76,0.1)',
-    borderWidth: 1, borderColor: 'rgba(201,168,76,0.2)',
+    width: 44, height: 44, borderRadius: BorderRadius.full,
+    backgroundColor: `${Colors.accent.primary}1A`,
+    borderWidth: 1, borderColor: `${Colors.accent.primary}33`,
     alignItems: 'center', justifyContent: 'center',
   },
   privacyBadge: {
-    flexDirection: 'row', alignItems: 'center', gap: 6,
-    borderRadius: 10, overflow: 'hidden',
-    paddingHorizontal: 12, paddingVertical: 8,
-    backgroundColor: 'rgba(255,255,255,0.03)',
-    borderWidth: 1, borderColor: 'rgba(201,168,76,0.12)',
+    flexDirection: 'row', alignItems: 'center', gap: Spacing.sm,
+    borderRadius: BorderRadius.md, overflow: 'hidden',
+    paddingHorizontal: Spacing.md, paddingVertical: Spacing.sm,
+    backgroundColor: Colors.glass.light,
+    borderWidth: 1, borderColor: `${Colors.accent.primary}1F`,
     alignSelf: 'flex-start',
   },
   privacyText: {
-    fontSize: 11, color: 'rgba(201,168,76,0.6)',
+    fontSize: Typography.sizes.detail - 1,
+    color: `${Colors.accent.primary}99`,
     letterSpacing: 0.5,
   },
 
-  listContent: { paddingHorizontal: 18, paddingTop: 8, gap: 12 },
+  listContent: {
+    paddingHorizontal: Spacing.xl,
+    paddingTop: Spacing.sm,
+    gap: Spacing.lg,
+  },
 
-  // Write card (purple per target)
-  writeCard: {
-    borderRadius: 20, overflow: 'hidden',
-    borderWidth: 1, borderColor: 'rgba(167,139,250,0.25)',
-    marginBottom: 2,
+  // ── Prompt card ──────────────────────────────────────────────────
+  promptCard: {
+    borderRadius: BorderRadius.xl,
+    overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: `${Colors.accent.primary}30`,
+    padding: Spacing.xl,
+    gap: Spacing.md,
   },
-  writeCardInner: {
-    flexDirection: 'row', alignItems: 'center',
-    padding: 16, gap: 14,
-  },
-  writeIconCircle: {
-    width: 46, height: 46, borderRadius: 23,
-    backgroundColor: 'rgba(167,139,250,0.14)',
-    borderWidth: 1, borderColor: 'rgba(167,139,250,0.3)',
-    alignItems: 'center', justifyContent: 'center',
-  },
-  writeCardText: { flex: 1 },
-  writeCardTitle: {
-    fontSize: 12,
-    color: '#DDD0FF',
-    fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
+  promptLabel: {
+    fontSize: Typography.sizes.detail - 2,
+    color: `${Colors.accent.primary}99`,
+    letterSpacing: 2,
     fontWeight: '700',
-    letterSpacing: 1.5,
-    textTransform: 'uppercase',
   },
-  writeCardSub: {
-    fontSize: 12, color: 'rgba(196,181,253,0.55)', marginTop: 3,
+  promptText: {
+    fontFamily: Typography.fonts.serif,
+    fontSize: Typography.sizes.h2,
+    color: Colors.text.primary,
+    lineHeight: 30,
   },
-
-  // Reflection cards
-  reflectionCard: {
-    borderRadius: 18, overflow: 'hidden',
-    borderWidth: 1, borderColor: 'rgba(255,255,255,0.06)',
+  promptHighlight: {
+    color: Colors.accent.primary,
+    fontStyle: 'italic',
+  },
+  promptCTA: {
     flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.sm,
+    alignSelf: 'flex-start',
+    backgroundColor: Colors.accent.primary,
+    paddingHorizontal: Spacing.lg,
+    paddingVertical: Spacing.sm + 2,
+    borderRadius: BorderRadius.full,
+    marginTop: Spacing.xs,
   },
-  cardAccentBar: { width: 4 },
-  cardBody: { flex: 1, padding: 14 },
-  cardHeader: {
-    flexDirection: 'row', justifyContent: 'space-between',
-    alignItems: 'flex-start', marginBottom: 8,
-  },
-  cardHeaderLeft: { flex: 1, marginRight: 8 },
-  cardTitle: {
-    fontSize: 16, color: '#F0E6D3',
-    fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
-    fontWeight: '600', marginBottom: 2,
-  },
-  cardDate: { fontSize: 11, color: 'rgba(176,196,215,0.4)' },
-  moodBadge: {
-    flexDirection: 'row', alignItems: 'center', gap: 4,
-    paddingHorizontal: 8, paddingVertical: 4,
-    borderRadius: 10, borderWidth: 1,
-  },
-  moodBadgeText: { fontSize: 10, fontWeight: '700', letterSpacing: 0.5 },
-  cardPreview: {
-    fontSize: 13, color: 'rgba(176,196,215,0.65)',
-    lineHeight: 20, marginBottom: 10,
-  },
-  cardFooter: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  verseRef: { flexDirection: 'row', alignItems: 'center', gap: 5 },
-  verseRefText: {
-    fontSize: 11, color: 'rgba(201,168,76,0.55)',
-    fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
+  promptCTAText: {
+    fontSize: Typography.sizes.small,
+    fontWeight: '700',
+    color: Colors.background.primary,
+    letterSpacing: 0.3,
   },
 
-  // Empty state
-  emptyState: {
-    alignItems: 'center', paddingTop: 60, gap: 12,
+  // ── Entry list ───────────────────────────────────────────────────
+  pastLabel: {
+    fontSize: Typography.sizes.detail - 2,
+    color: Colors.text.muted,
+    letterSpacing: 2,
+    fontWeight: '700',
+    marginBottom: -Spacing.xs,
   },
+  entriesCard: {
+    borderRadius: BorderRadius.lg,
+    overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: Colors.glass.border,
+  },
+  entryRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: Spacing.md,
+    paddingHorizontal: Spacing.lg,
+    paddingVertical: Spacing.md,
+    backgroundColor: Colors.glass.light,
+  },
+  entryDot: {
+    width: 10, height: 10,
+    borderRadius: 5,
+    marginTop: 5,
+    flexShrink: 0,
+  },
+  entryBody: { flex: 1 },
+  entryTop: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: Spacing.xs,
+  },
+  entryTitle: {
+    fontFamily: Typography.fonts.serif,
+    fontSize: Typography.sizes.body,
+    color: Colors.text.primary,
+    fontWeight: '600',
+    flex: 1,
+    marginRight: Spacing.sm,
+  },
+  entryDate: {
+    fontSize: Typography.sizes.detail - 1,
+    color: Colors.text.muted,
+    letterSpacing: 0.3,
+  },
+  entryPreview: {
+    fontSize: Typography.sizes.small - 1,
+    color: Colors.text.secondary,
+    lineHeight: 20,
+  },
+  entrySep: {
+    height: 1,
+    backgroundColor: Colors.glass.border,
+    marginLeft: Spacing.lg + 10 + Spacing.md,
+  },
+
+  // ── Empty state ──────────────────────────────────────────────────
+  emptyState: { alignItems: 'center', paddingTop: 60, gap: Spacing.md },
   emptyTitle: {
-    fontSize: 19, color: 'rgba(240,230,211,0.6)',
-    fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
+    fontSize: Typography.sizes.h2 - 1,
+    color: `${Colors.text.primary}99`,
+    fontFamily: Typography.fonts.serif,
     fontWeight: '600',
   },
   emptySub: {
-    fontSize: 14, color: 'rgba(176,196,215,0.4)',
+    fontSize: Typography.sizes.small,
+    color: Colors.text.secondary,
     textAlign: 'center', lineHeight: 22,
   },
 
-  // Bottom sheet
+  // ── Bottom sheet ─────────────────────────────────────────────────
   sheetBackdrop: {
     ...StyleSheet.absoluteFillObject,
     backgroundColor: 'rgba(0,0,0,0.55)',
   },
-  sheetWrap: {
-    flex: 1,
-    justifyContent: 'flex-end',
-  },
+  sheetWrap: { flex: 1, justifyContent: 'flex-end' },
   sheet: {
-    backgroundColor: '#0C1A2E',
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 24,
-    paddingHorizontal: 20,
-    paddingTop: 10,
+    backgroundColor: Colors.background.secondary,
+    borderTopLeftRadius: BorderRadius.xxl,
+    borderTopRightRadius: BorderRadius.xxl,
+    paddingHorizontal: Spacing.xl,
+    paddingTop: Spacing.sm + 2,
     borderTopWidth: 1,
     borderLeftWidth: 1,
     borderRightWidth: 1,
@@ -574,92 +545,88 @@ const styles = StyleSheet.create({
   },
   sheetHandle: {
     alignSelf: 'center',
-    width: 44,
-    height: 4,
+    width: 44, height: 4,
     borderRadius: 2,
-    backgroundColor: 'rgba(255,255,255,0.18)',
-    marginBottom: 16,
+    backgroundColor: Colors.glass.heavy,
+    marginBottom: Spacing.lg,
   },
   sheetHeader: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginBottom: 20,
+    marginBottom: Spacing.xl,
   },
   sheetTitle: {
-    fontSize: 14,
-    color: '#F0E6D3',
-    fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
+    fontSize: Typography.sizes.small,
+    color: Colors.text.primary,
+    fontFamily: Typography.fonts.serif,
     fontWeight: '700',
     letterSpacing: 1.8,
   },
   sheetClose: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
-    backgroundColor: 'rgba(255,255,255,0.06)',
-    alignItems: 'center',
-    justifyContent: 'center',
+    width: 28, height: 28, borderRadius: 14,
+    backgroundColor: Colors.glass.light,
+    alignItems: 'center', justifyContent: 'center',
   },
   sheetSectionLabel: {
-    fontSize: 10,
-    color: 'rgba(176,196,215,0.55)',
+    fontSize: Typography.sizes.detail - 2,
+    color: Colors.text.muted,
     letterSpacing: 1.8,
     fontWeight: '700',
-    marginBottom: 10,
+    marginBottom: Spacing.sm,
   },
   moodChipsRow: {
-    gap: 8,
-    paddingRight: 4,
-    marginBottom: 20,
+    gap: Spacing.sm,
+    paddingRight: Spacing.xs,
+    marginBottom: Spacing.xl,
   },
   moodChip: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
-    paddingHorizontal: 12,
-    paddingVertical: 10,
-    borderRadius: 12,
+    gap: Spacing.sm,
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.sm + 2,
+    borderRadius: BorderRadius.md,
     borderWidth: 1,
   },
   moodChipLabel: {
-    fontSize: 10,
+    fontSize: Typography.sizes.detail - 2,
     fontWeight: '700',
     letterSpacing: 1,
-    fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
+    fontFamily: Typography.fonts.serif,
   },
   sheetTitleInput: {
-    fontSize: 14,
-    color: '#F0E6D3',
-    fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
+    fontSize: Typography.sizes.small,
+    color: Colors.text.primary,
+    fontFamily: Typography.fonts.serif,
     fontWeight: '700',
     letterSpacing: 1.2,
-    backgroundColor: 'rgba(255,255,255,0.03)',
+    backgroundColor: Colors.glass.light,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.06)',
-    borderRadius: 12,
-    paddingHorizontal: 14,
-    paddingVertical: 12,
-    marginBottom: 12,
+    borderColor: Colors.glass.border,
+    borderRadius: BorderRadius.md,
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.md,
+    marginBottom: Spacing.md,
   },
   sheetBodyInput: {
     minHeight: 140,
-    fontSize: 15,
-    color: 'rgba(240,230,211,0.9)',
+    fontSize: Typography.sizes.body - 1,
+    color: Colors.text.primary,
     lineHeight: 22,
-    backgroundColor: 'rgba(255,255,255,0.03)',
+    backgroundColor: Colors.glass.light,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.06)',
-    borderRadius: 12,
-    paddingHorizontal: 14,
-    paddingTop: 14,
-    paddingBottom: 14,
-    marginBottom: 16,
+    borderColor: Colors.glass.border,
+    borderRadius: BorderRadius.md,
+    paddingHorizontal: Spacing.md,
+    paddingTop: Spacing.md,
+    paddingBottom: Spacing.md,
+    marginBottom: Spacing.lg,
   },
   sheetSaveBtn: {
     backgroundColor: '#A78BFA',
-    borderRadius: 14,
-    paddingVertical: 14,
+    borderRadius: BorderRadius.md,
+    paddingVertical: Spacing.md + 2,
     alignItems: 'center',
     justifyContent: 'center',
     shadowColor: '#A78BFA',
@@ -669,7 +636,7 @@ const styles = StyleSheet.create({
     elevation: 6,
   },
   sheetSaveText: {
-    fontSize: 13,
+    fontSize: Typography.sizes.small - 1,
     color: '#1A0F2E',
     fontWeight: '700',
     letterSpacing: 1.4,

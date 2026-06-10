@@ -53,15 +53,17 @@ interface MoodOption {
   iconName: string;
 }
 
+// Colors aligned with MoodColors in DesignSystem.ts so onboarding cards
+// match the GuidanceScreen immersive background the user will see later.
 const MOODS: MoodOption[] = [
   {
     id: 'Grateful',
     label: 'GRATEFUL',
     sublabel: 'Shukr',
     giving: 'Verses to deepen your gratitude and multiply His blessings',
-    color: '#34D399',
-    bgColor: '#071A0F',
-    gradientColors: ['#0C2214', '#071A0F'],
+    color: '#FBBF24',
+    bgColor: '#451A03',
+    gradientColors: ['#3A1602', '#451A03'],
     iconName: 'heart',
   },
   {
@@ -69,9 +71,9 @@ const MOODS: MoodOption[] = [
     label: 'HOPEFUL',
     sublabel: 'Amal',
     giving: 'Reminders of Allah\'s promise — ease follows every hardship',
-    color: '#FBBF24',
-    bgColor: '#1A1608',
-    gradientColors: ['#221E08', '#1A1608'],
+    color: '#22D3EE',
+    bgColor: '#083344',
+    gradientColors: ['#062836', '#083344'],
     iconName: 'sunny',
   },
   {
@@ -79,9 +81,9 @@ const MOODS: MoodOption[] = [
     label: 'PEACEFUL',
     sublabel: 'Sukoon',
     giving: 'Reflections to sustain and deepen this blessed stillness',
-    color: '#60A5FA',
-    bgColor: '#071524',
-    gradientColors: ['#0C1A2E', '#071524'],
+    color: '#34D399',
+    bgColor: '#064E3B',
+    gradientColors: ['#053E2F', '#064E3B'],
     iconName: 'water',
   },
   {
@@ -89,9 +91,9 @@ const MOODS: MoodOption[] = [
     label: 'OVERWHELMED',
     sublabel: 'Ghamm',
     giving: 'He does not burden a soul beyond what it can bear',
-    color: '#14B8A6',
-    bgColor: '#071616',
-    gradientColors: ['#0C1E1E', '#071616'],
+    color: '#818CF8',
+    bgColor: '#0F172A',
+    gradientColors: ['#0B1220', '#0F172A'],
     iconName: 'layers',
   },
   {
@@ -99,9 +101,9 @@ const MOODS: MoodOption[] = [
     label: 'TIRED',
     sublabel: 'Ta\'ab',
     giving: 'Rest in His mercy — He sees every effort you make',
-    color: '#9CA3AF',
-    bgColor: '#0E1014',
-    gradientColors: ['#14161A', '#0E1014'],
+    color: '#D6D3D1',
+    bgColor: '#1C1917',
+    gradientColors: ['#161310', '#1C1917'],
     iconName: 'moon',
   },
   {
@@ -109,9 +111,9 @@ const MOODS: MoodOption[] = [
     label: 'LONELY',
     sublabel: 'Wahshah',
     giving: 'He is with you wherever you are — you are never alone',
-    color: '#A78BFA',
-    bgColor: '#120A22',
-    gradientColors: ['#180E2E', '#120A22'],
+    color: '#C084FC',
+    bgColor: '#2E1065',
+    gradientColors: ['#240C50', '#2E1065'],
     iconName: 'person',
   },
   {
@@ -120,8 +122,8 @@ const MOODS: MoodOption[] = [
     sublabel: 'Huzn',
     giving: 'Do not despair — the mercy of Allah has no limits',
     color: '#94A3B8',
-    bgColor: '#0A0E18',
-    gradientColors: ['#111520', '#0A0E18'],
+    bgColor: '#1E293B',
+    gradientColors: ['#172030', '#1E293B'],
     iconName: 'rainy',
   },
   {
@@ -129,9 +131,9 @@ const MOODS: MoodOption[] = [
     label: 'ANGRY',
     sublabel: 'Ghadab',
     giving: 'Find peace through His remembrance — hearts find rest',
-    color: '#F87171',
-    bgColor: '#180A0A',
-    gradientColors: ['#1E0C0C', '#180A0A'],
+    color: '#FB923C',
+    bgColor: '#1A0F0A',
+    gradientColors: ['#140C08', '#1A0F0A'],
     iconName: 'flame',
   },
 ];
@@ -148,7 +150,7 @@ export default function HeartCheckInScreen({ isActive, onNext }: Props) {
   const [activeIndex, setActiveIndex] = useState(0);
 
   // [0] arabic, [1] title, [2] subtitle, [3] carousel
-  const s = useStaggerEntry(isActive, 4, { baseDelay: 200, stagger: 100 });
+  const s = useStaggerEntry(isActive, 4);
 
   const scrollRef = useRef<ScrollView>(null);
   const cardScales = useRef(MOODS.map((_, i) => new Animated.Value(i === 0 ? 1 : 0.92))).current;

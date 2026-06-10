@@ -4,22 +4,20 @@
  * Smaller Kufi calligraphy revealed right-to-left with a gold
  * glow pen-tip effect. Clean layout with stagger-animated text.
  */
-import React, { useEffect, useRef } from 'react';
+import React from 'react';
 import { Colors } from '../../theme/DesignSystem';
 import {
   View,
   Image,
   StyleSheet,
   Animated,
-  Easing,
   Dimensions,
-  TouchableOpacity,
   Text,
 } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
 import { useStaggerEntry } from '../../hooks/useStaggerEntry';
 import { useTheme } from '../../context/ThemeContext';
 import { InteractiveStarfield } from './InteractiveStarfield';
+import { ShimmerButton } from '../ShimmerButton';
 
 const { width, height } = Dimensions.get('window');
 
@@ -43,24 +41,8 @@ interface Props {
 export default function BismillahScreen({ isActive, onNext }: Props) {
   const { onboardingColors: c } = useTheme();
 
-  const ctaPulse = useRef(new Animated.Value(1)).current;
-
   // Stagger for: [0] calligraphy container, [1] subtitle, [2] description, [3] CTA button
   const stagger = useStaggerEntry(isActive, 4, { baseDelay: 100, stagger: 80 });
-
-  useEffect(() => {
-    if (!isActive) return;
-
-    // CTA subtle pulse after reveal completes
-    setTimeout(() => {
-      Animated.loop(
-        Animated.sequence([
-          Animated.timing(ctaPulse, { toValue: 1.04, duration: 1000, useNativeDriver: true }),
-          Animated.timing(ctaPulse, { toValue: 1, duration: 1000, useNativeDriver: true }),
-        ])
-      ).start();
-    }, 3500);
-  }, [isActive]);
 
   return (
     <View style={styles.container}>
@@ -92,21 +74,8 @@ export default function BismillahScreen({ isActive, onNext }: Props) {
       </View>
 
       {/* CTA Button */}
-      <Animated.View style={[styles.ctaWrap, stagger[3], { transform: [{ scale: ctaPulse }] }]}>
-        <TouchableOpacity
-          style={styles.ctaBtn}
-          activeOpacity={0.85}
-          onPress={onNext}
-        >
-          <LinearGradient
-            colors={['#E8C84A', '#B8860B']}
-            style={styles.ctaBtnGradient}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 1 }}
-          >
-            <Text style={styles.ctaText}>Continue</Text>
-          </LinearGradient>
-        </TouchableOpacity>
+      <Animated.View style={[styles.ctaWrap, stagger[3]]}>
+        <ShimmerButton label="Continue" onPress={onNext} />
       </Animated.View>
     </View>
   );
@@ -154,27 +123,5 @@ const styles = StyleSheet.create({
   ctaWrap: {
     paddingHorizontal: 24,
     paddingBottom: height * 0.10,
-  },
-  ctaBtn: {
-    borderRadius: 28,
-    overflow: 'hidden',
-    shadowColor: '#C9A84C',
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.5,
-    shadowRadius: 20,
-    elevation: 10,
-  },
-  ctaBtnGradient: {
-    height: 56,
-    borderRadius: 28,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  ctaText: {
-    fontFamily: 'serif',
-    fontSize: 17,
-    letterSpacing: 1.5,
-    fontWeight: '600',
-    color: '#0D1B2A',
   },
 });

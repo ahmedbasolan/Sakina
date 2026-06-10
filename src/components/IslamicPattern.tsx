@@ -23,7 +23,7 @@ const INNER_R = CELL * 0.22; // inner radius
 
 /**
  * 8-pointed star: 16-point polygon alternating outer/inner radii.
- * Same maths as CelestialScreen's fivePointStar, but 8 points.
+ * 8-point star using alternating outer/inner radii.
  */
 function buildStarPath(cx: number, cy: number, outerR: number, innerR: number): string {
   const pts: string[] = [];

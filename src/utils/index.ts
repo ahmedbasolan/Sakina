@@ -47,21 +47,6 @@ export const getPlatformValue = <T>(iosValue: T, androidValue: T): T => {
 };
 
 // ── Mood Utilities ───────────────────────────────────────────────────────
-export const getMoodColor = (mood: Mood): string => {
-  const colors: Record<Mood, string> = {
-    Overwhelmed: '#E87C5F',
-    Sad: '#6B8EBF',
-    Angry: '#E85F5F',
-    Tired: '#9CA3AF',
-    Lonely: '#F59E0B',
-    Grateful: '#4ADE80',
-    Hopeful: '#6BCB77',
-    Guilty: '#DC2626',
-    Calm: '#2ED3C6',
-  };
-  return colors[mood] || '#2ED3C6';
-};
-
 export const getMoodIcon = (mood: Mood): string => {
   const icons: Record<Mood, string> = {
     Overwhelmed: 'weather-windy',
@@ -104,6 +89,19 @@ export const isValidPassword = (password: string): boolean => {
 
 export const isEmpty = (value: any): boolean => {
   return value === null || value === undefined || value === '';
+};
+
+// ── Quran Utilities ──────────────────────────────────────────────────────
+
+/**
+ * Extract a verse key (e.g. "2:255") from a source string like
+ * "Surah Al-Baqarah 2:255" or "30:4-5".
+ * Used to build audio URLs for Quranic recitation.
+ */
+export const extractVerseKey = (source: string): string => {
+  const match = source.match(/(\d+):(\d+(?:-\d+)?)/);
+  if (match) return `${match[1]}:${match[2]}`;
+  return '';
 };
 
 // ── String Utilities ─────────────────────────────────────────────────────

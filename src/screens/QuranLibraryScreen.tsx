@@ -8,47 +8,43 @@ import {
   Dimensions,
   Animated,
   ActivityIndicator,
-  Platform,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { BlurView } from 'expo-blur';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Svg, { Path } from 'react-native-svg';
+import { Colors, Spacing, BorderRadius, Typography } from '../theme/DesignSystem';
 import { Content, Mood } from '../types';
 import { dbQuery } from '../database/schema';
+import { AnimatedMandala } from '../components/AnimatedMandala';
+import { TwinklingStar } from '../components/TwinklingStar';
 
 const { width } = Dimensions.get('window');
 
+const STARS = [
+  { x: '8%',  y: '4%',  size: 2,   delay: 200 },
+  { x: '88%', y: '6%',  size: 1.5, delay: 700 },
+  { x: '25%', y: '12%', size: 2.5, delay: 400 },
+  { x: '72%', y: '9%',  size: 1.5, delay: 0   },
+];
+
 const ALL_MOODS: Mood[] = [
-  'Overwhelmed',
-  'Sad',
-  'Angry',
-  'Tired',
-  'Lonely',
-  'Grateful',
-  'Hopeful',
-  'Guilty',
-  'Calm',
+  'Overwhelmed', 'Sad', 'Angry', 'Tired',
+  'Lonely', 'Grateful', 'Hopeful', 'Guilty', 'Calm',
 ];
 
 const MOOD_COLORS: Record<Mood, string> = {
   Overwhelmed: '#14B8A6',
-  Sad: '#60A5FA',
-  Angry: '#F87171',
-  Tired: '#9CA3AF',
-  Lonely: '#A78BFA',
-  Grateful: '#34D399',
-  Hopeful: '#FBBF24',
-  Guilty: '#818CF8',
-  Calm: '#22D3EE',
+  Sad:         '#60A5FA',
+  Angry:       '#F87171',
+  Tired:       '#9CA3AF',
+  Lonely:      '#A78BFA',
+  Grateful:    '#34D399',
+  Hopeful:     '#FBBF24',
+  Guilty:      '#818CF8',
+  Calm:        '#22D3EE',
 };
 
-/**
- * QURAN LIBRARY SCREEN
- *
- * Browse all Quranic verses in the app, filterable by mood.
- * Premium dark design with glassmorphic cards.
- */
-// Row shape returned by the SQLite GROUP_CONCAT query
 interface QuranRow {
   id: string;
   type: string;
@@ -58,26 +54,108 @@ interface QuranRow {
   englishTranslation: string;
   source: string;
   whyThis: string;
-  moods_csv: string; // comma-separated moods from GROUP_CONCAT
+  moods_csv: string;
+}
+
+function MoodChip({
+  mood,
+  isSelected,
+  count,
+  onPress,
+}: {
+  mood: Mood | 'All';
+  isSelected: boolean;
+  count: number;
+  onPress: () => void;
+}) {
+  const dotColor = mood === 'All' ? Colors.accent.primary : MOOD_COLORS[mood as Mood];
+
+  return (
+    <TouchableOpacity
+      onPress={onPress}
+      activeOpacity={0.75}
+      style={[styles.chip, isSelected && { borderColor: dotColor, backgroundColor: `${dotColor}18` }]}
+    >
+      <View style={[styles.chipDot, { backgroundColor: dotColor }]} />
+      <Text style={[styles.chipLabel, isSelected && { color: Colors.text.primary }]}>
+        {mood}
+      </Text>
+      <Text style={[styles.chipCount, isSelected && { color: dotColor }]}>
+        {count}
+      </Text>
+    </TouchableOpacity>
+  );
+}
+
+function VerseCard({ verse }: { verse: Content }) {
+  const [expanded, setExpanded] = useState(false);
+
+  return (
+    <TouchableOpacity activeOpacity={0.88} onPress={() => setExpanded(!expanded)}>
+      <BlurView intensity={12} tint="dark" style={styles.card}>
+        <View style={styles.cardInner}>
+          <Text style={styles.cardSource}>{verse.source.toUpperCase()}</Text>
+
+          {verse.arabicText ? (
+            <Text style={styles.cardArabic} numberOfLines={expanded ? undefined : 2}>
+              {verse.arabicText}
+            </Text>
+          ) : null}
+
+          <Text style={styles.cardTranslation} numberOfLines={expanded ? undefined : 3}>
+            {verse.englishTranslation}
+          </Text>
+
+          <View style={styles.cardMoodRow}>
+            {verse.moods.map((mood) => (
+              <View
+                key={mood}
+                style={[
+                  styles.moodTag,
+                  { backgroundColor: `${MOOD_COLORS[mood]}18`, borderColor: `${MOOD_COLORS[mood]}35` },
+                ]}
+              >
+                <View style={[styles.moodTagDot, { backgroundColor: MOOD_COLORS[mood] }]} />
+                <Text style={[styles.moodTagText, { color: MOOD_COLORS[mood] }]}>{mood}</Text>
+              </View>
+            ))}
+          </View>
+
+          {expanded && verse.whyThis ? (
+            <View style={styles.whySection}>
+              <Text style={styles.whyLabel}>WHY THIS VERSE</Text>
+              <Text style={styles.whyText}>{verse.whyThis}</Text>
+            </View>
+          ) : null}
+
+          <View style={styles.chevronRow}>
+            <Svg width={16} height={16} viewBox="0 0 24 24">
+              <Path
+                d={expanded ? 'M18 15l-6-6-6 6' : 'M6 9l6 6 6-6'}
+                stroke={Colors.text.muted}
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                fill="none"
+              />
+            </Svg>
+          </View>
+        </View>
+      </BlurView>
+    </TouchableOpacity>
+  );
 }
 
 export default function QuranLibraryScreen({ navigation }: { navigation: any }) {
+  const insets = useSafeAreaInsets();
   const [selectedMood, setSelectedMood] = useState<Mood | 'All'>('All');
   const [quranVerses, setQuranVerses] = useState<Content[]>([]);
   const [loading, setLoading] = useState(true);
   const fadeAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
-    Animated.timing(fadeAnim, {
-      toValue: 1,
-      duration: 600,
-      useNativeDriver: true,
-    }).start();
+    Animated.timing(fadeAnim, { toValue: 1, duration: 600, useNativeDriver: true }).start();
 
-    // Load Quran content from SQLite instead of the static quranData.ts module.
-    // quranData.ts (10,681 lines) was previously parsed synchronously at bundle
-    // load time, blocking the JS thread before the first render. Now it is seeded
-    // into SQLite during initializeDatabase() and read here on demand.
     dbQuery(async (db) => {
       const rows = await db.getAllAsync<QuranRow>(`
         SELECT
@@ -108,17 +186,14 @@ export default function QuranLibraryScreen({ navigation }: { navigation: any }) 
       .finally(() => setLoading(false));
   }, []);
 
-  // Group by surah
   const filteredVerses = useMemo(() => {
     if (selectedMood === 'All') return quranVerses;
-    return quranVerses.filter((v: Content) => v.moods.includes(selectedMood));
+    return quranVerses.filter((v) => v.moods.includes(selectedMood));
   }, [selectedMood, quranVerses]);
 
-  // Organise by surah for section display
   const groupedBySurah = useMemo(() => {
     const groups: Record<string, Content[]> = {};
-    filteredVerses.forEach((v: Content) => {
-      // Extract surah name from source like "Surah Al-Baqarah 2:255"
+    filteredVerses.forEach((v) => {
       const match = v.source.match(/^Surah\s+(.+?)\s+\d/);
       const surah = match ? match[1] : 'Other';
       if (!groups[surah]) groups[surah] = [];
@@ -132,345 +207,293 @@ export default function QuranLibraryScreen({ navigation }: { navigation: any }) 
   const moodCounts = useMemo(() => {
     const counts: Record<string, number> = { All: quranVerses.length };
     ALL_MOODS.forEach((mood) => {
-      counts[mood] = quranVerses.filter((v: Content) => v.moods.includes(mood)).length;
+      counts[mood] = quranVerses.filter((v) => v.moods.includes(mood)).length;
     });
     return counts;
   }, [quranVerses]);
 
   return (
     <View style={styles.container}>
-      <LinearGradient colors={['#0B0F12', '#121A1F', '#0F1519']} style={styles.gradient}>
-        {/* Header */}
-        <Animated.View style={[styles.header, { opacity: fadeAnim }]}>
-          <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-            <Svg width={24} height={24} viewBox="0 0 24 24">
-              <Path
-                d="M19 12H5M12 19l-7-7 7-7"
-                stroke="#D4A574"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                fill="none"
-              />
-            </Svg>
-          </TouchableOpacity>
-          <View>
-            <Text style={styles.headerTitle}>Quran Library</Text>
-            <Text style={styles.headerSubtitle}>
-              {filteredVerses.length} verses
-              {selectedMood !== 'All' ? ` · ${selectedMood}` : ''}
-            </Text>
-          </View>
-        </Animated.View>
+      <LinearGradient
+        colors={['#07111E', '#0C1A2E', '#0F1F30']}
+        style={StyleSheet.absoluteFill}
+        start={{ x: 0.5, y: 0 }}
+        end={{ x: 0.5, y: 1 }}
+      />
 
-        {/* Mood Filter Chips */}
-        <FlatList
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          data={['All', ...ALL_MOODS] as (Mood | 'All')[]}
-          keyExtractor={(item) => item}
-          contentContainerStyle={styles.filterContainer}
-          renderItem={({ item }) => (
-            <MoodChip
-              mood={item}
-              isSelected={selectedMood === item}
-              count={moodCounts[item] || 0}
-              onPress={() => setSelectedMood(item)}
+      <View style={styles.glowOrb} pointerEvents="none" />
+
+      {STARS.map((star, i) => (
+        <TwinklingStar key={i} x={star.x} y={star.y} size={star.size} delay={star.delay} color={Colors.accent.primary} />
+      ))}
+
+      <View style={styles.mandalaWrap} pointerEvents="none">
+        <AnimatedMandala size={260} color={Colors.accent.primary} opacity={0.10} />
+      </View>
+
+      <Animated.View style={[styles.header, { paddingTop: insets.top + Spacing.lg }, { opacity: fadeAnim }]}>
+        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+          <Svg width={20} height={20} viewBox="0 0 24 24">
+            <Path
+              d="M19 12H5M12 19l-7-7 7-7"
+              stroke={Colors.accent.primary}
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              fill="none"
             />
-          )}
-        />
+          </Svg>
+        </TouchableOpacity>
 
-        {/* Verse List */}
-        {loading ? (
-          <View style={styles.loadingContainer}>
-            <ActivityIndicator size="large" color="#D4A574" />
-            <Text style={styles.loadingText}>Loading verses…</Text>
-          </View>
-        ) : (
-          <FlatList
-            data={groupedBySurah}
-            keyExtractor={(item) => item.surah}
-            contentContainerStyle={styles.listContent}
-            showsVerticalScrollIndicator={false}
-            renderItem={({ item: group }) => (
-              <View style={styles.surahGroup}>
-                <Text style={styles.surahHeader}>{group.surah}</Text>
-                {group.verses.map((verse) => (
-                  <VerseCard key={verse.id} verse={verse} />
-                ))}
-              </View>
-            )}
+        <View>
+          <Text style={styles.headerPretitle}>SACRED WORDS</Text>
+          <Text style={styles.headerTitle}>Quran Library</Text>
+          <Text style={styles.headerSub}>
+            {filteredVerses.length} verse{filteredVerses.length !== 1 ? 's' : ''}
+            {selectedMood !== 'All' ? ` · ${selectedMood}` : ''}
+          </Text>
+        </View>
+      </Animated.View>
+
+      <FlatList
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        data={(['All', ...ALL_MOODS] as (Mood | 'All')[])}
+        keyExtractor={(item) => item}
+        contentContainerStyle={styles.chipRail}
+        renderItem={({ item }) => (
+          <MoodChip
+            mood={item}
+            isSelected={selectedMood === item}
+            count={moodCounts[item] || 0}
+            onPress={() => setSelectedMood(item)}
           />
         )}
-      </LinearGradient>
+      />
+
+      {loading ? (
+        <View style={styles.loadingWrap}>
+          <ActivityIndicator size="large" color={Colors.accent.primary} />
+          <Text style={styles.loadingText}>Loading verses…</Text>
+        </View>
+      ) : (
+        <FlatList
+          style={styles.verseList}
+          data={groupedBySurah}
+          keyExtractor={(item) => item.surah}
+          contentContainerStyle={[styles.listContent, { paddingBottom: insets.bottom + Spacing.xxxl }]}
+          showsVerticalScrollIndicator={false}
+          renderItem={({ item: group }) => (
+            <View style={styles.surahGroup}>
+              <Text style={styles.surahHeader}>{group.surah}</Text>
+              {group.verses.map((verse) => (
+                <VerseCard key={verse.id} verse={verse} />
+              ))}
+            </View>
+          )}
+        />
+      )}
     </View>
   );
 }
 
-function MoodChip({
-  mood,
-  isSelected,
-  count,
-  onPress,
-}: {
-  mood: Mood | 'All';
-  isSelected: boolean;
-  count: number;
-  onPress: () => void;
-}) {
-  const color = mood === 'All' ? '#D4A574' : MOOD_COLORS[mood as Mood];
-
-  return (
-    <TouchableOpacity onPress={onPress} activeOpacity={0.8}>
-      {isSelected ? (
-        <View
-          style={[
-            styles.chipSelected,
-            {
-              backgroundColor: color,
-              shadowColor: color,
-              shadowOffset: { width: 0, height: 4 },
-              shadowOpacity: 0.4,
-              shadowRadius: 8,
-              elevation: 6,
-            },
-          ]}
-        >
-          <Text style={styles.chipTextSelected}>
-            {mood} ({count})
-          </Text>
-        </View>
-      ) : (
-        <View style={styles.chipUnselected}>
-          <Text style={[styles.chipText, { color: 'rgba(229, 221, 213, 0.7)' }]}>{mood}</Text>
-        </View>
-      )}
-    </TouchableOpacity>
-  );
-}
-
-function VerseCard({ verse }: { verse: Content }) {
-  const [expanded, setExpanded] = useState(false);
-
-  return (
-    <TouchableOpacity activeOpacity={0.9} onPress={() => setExpanded(!expanded)}>
-      <View style={styles.verseCard}>
-        <BlurView intensity={12} tint="dark" style={styles.verseBlur}>
-          <View style={styles.verseInner}>
-            {/* Source / reference */}
-            <Text style={styles.verseSource}>{verse.source}</Text>
-
-            {/* Arabic text */}
-            {verse.arabicText && (
-              <Text style={styles.verseArabic} numberOfLines={expanded ? undefined : 2}>
-                {verse.arabicText}
-              </Text>
-            )}
-
-            {/* Translation */}
-            <Text style={styles.verseTranslation} numberOfLines={expanded ? undefined : 3}>
-              {verse.englishTranslation}
-            </Text>
-
-            {/* Mood tags */}
-            <View style={styles.moodTags}>
-              {verse.moods.map((mood) => (
-                <View
-                  key={mood}
-                  style={[
-                    styles.moodTag,
-                    {
-                      backgroundColor: `${MOOD_COLORS[mood]}20`,
-                      borderColor: `${MOOD_COLORS[mood]}40`,
-                    },
-                  ]}
-                >
-                  <Text style={[styles.moodTagText, { color: MOOD_COLORS[mood] }]}>{mood}</Text>
-                </View>
-              ))}
-            </View>
-
-            {/* Expanded content */}
-            {expanded && verse.whyThis ? (
-              <View style={styles.expandedSection}>
-                <Text style={styles.whyThisLabel}>Why This Verse</Text>
-                <Text style={styles.whyThisText}>{verse.whyThis}</Text>
-              </View>
-            ) : null}
-
-            {/* Expand indicator */}
-            <Text style={styles.expandHint}>{expanded ? 'Tap to collapse' : 'Tap to expand'}</Text>
-          </View>
-        </BlurView>
-      </View>
-    </TouchableOpacity>
-  );
-}
-
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
+  container: { flex: 1, backgroundColor: Colors.background.primary },
+
+  glowOrb: {
+    position: 'absolute',
+    width: 220,
+    height: 220,
+    borderRadius: 110,
+    backgroundColor: Colors.accent.glow,
+    left: width / 2 - 110,
+    top: 30,
   },
-  gradient: {
-    flex: 1,
+  mandalaWrap: {
+    position: 'absolute',
+    left: width / 2 - 130,
+    top: 20,
+    zIndex: 0,
   },
+
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingTop: Platform.OS === 'ios' ? 60 : 40,
-    paddingHorizontal: 24,
-    paddingBottom: 16,
-    gap: 16,
+    paddingHorizontal: Spacing.xl,
+    paddingBottom: Spacing.lg,
+    gap: Spacing.md,
+    zIndex: 2,
   },
   backButton: {
     width: 44,
     height: 44,
-    borderRadius: 22,
-    backgroundColor: 'rgba(255, 255, 255, 0.06)',
+    borderRadius: BorderRadius.full,
+    backgroundColor: Colors.glass.light,
+    borderWidth: 1,
+    borderColor: Colors.glass.border,
     alignItems: 'center',
     justifyContent: 'center',
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.08)',
+  },
+  headerPretitle: {
+    fontSize: 10,
+    color: `${Colors.accent.primary}99`,
+    letterSpacing: 2.5,
+    marginBottom: 2,
+    fontFamily: Typography.fonts.serif,
   },
   headerTitle: {
-    fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
-    fontSize: 24,
+    fontFamily: Typography.fonts.serif,
+    fontSize: Typography.sizes.h1,
     fontWeight: '700',
-    color: '#FFF5E9',
+    color: Colors.text.primary,
+    letterSpacing: 0.5,
   },
-  headerSubtitle: {
-    fontSize: 13,
-    color: 'rgba(229, 221, 213, 0.5)',
+  headerSub: {
+    fontSize: Typography.sizes.detail,
+    color: Colors.text.muted,
     marginTop: 2,
   },
-  filterContainer: {
-    paddingHorizontal: 24,
-    paddingBottom: 16,
-    gap: 8,
+
+  chipRail: {
+    paddingHorizontal: Spacing.xl,
+    paddingBottom: Spacing.md,
+    gap: Spacing.sm,
+    zIndex: 2,
   },
-  chipSelected: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 20,
-  },
-  chipTextSelected: {
-    fontSize: 13,
-    fontWeight: '700',
-    color: '#0B0F12',
-  },
-  chipUnselected: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 20,
-    backgroundColor: 'rgba(255, 255, 255, 0.06)',
+  chip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    height: 44,
+    paddingHorizontal: Spacing.md,
+    borderRadius: BorderRadius.full,
+    backgroundColor: Colors.glass.light,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.08)',
+    borderColor: Colors.glass.border,
+    gap: Spacing.xs,
   },
-  chipText: {
-    fontSize: 13,
+  chipDot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+  },
+  chipLabel: {
+    fontSize: Typography.sizes.small,
     fontWeight: '600',
+    color: Colors.text.muted,
+    letterSpacing: 0.3,
   },
+  chipCount: {
+    fontSize: Typography.sizes.detail,
+    fontWeight: '700',
+    color: Colors.text.muted,
+    letterSpacing: 0.3,
+  },
+
+  verseList: { flex: 1 },
   listContent: {
-    paddingHorizontal: 24,
-    paddingBottom: 120,
+    paddingHorizontal: Spacing.xl,
+    paddingTop: Spacing.xs,
   },
   surahGroup: {
-    marginBottom: 24,
+    marginBottom: Spacing.xxl,
   },
   surahHeader: {
-    fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
-    fontSize: 18,
+    fontFamily: Typography.fonts.serif,
+    fontSize: Typography.sizes.h2,
     fontWeight: '700',
-    color: '#D4A574',
-    marginBottom: 12,
-    paddingLeft: 4,
+    color: Colors.accent.primary,
+    marginBottom: Spacing.md,
+    paddingLeft: Spacing.xs,
   },
-  verseCard: {
-    borderRadius: 16,
+
+  card: {
+    borderRadius: BorderRadius.lg,
     overflow: 'hidden',
-    marginBottom: 12,
+    marginBottom: Spacing.md,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.06)',
+    borderColor: Colors.glass.border,
   },
-  verseBlur: {
-    borderRadius: 16,
-    overflow: 'hidden',
+  cardInner: {
+    padding: Spacing.lg,
+    backgroundColor: Colors.glass.light,
+    gap: Spacing.sm,
   },
-  verseInner: {
-    padding: 16,
-    backgroundColor: 'rgba(255, 255, 255, 0.02)',
-    gap: 10,
-  },
-  verseSource: {
-    fontSize: 12,
+  cardSource: {
+    fontSize: 11,
     fontWeight: '700',
-    color: 'rgba(212, 165, 116, 0.8)',
-    letterSpacing: 0.5,
-    textTransform: 'uppercase',
+    color: `${Colors.accent.primary}CC`,
+    letterSpacing: 0.8,
   },
-  verseArabic: {
+  cardArabic: {
+    fontFamily: Typography.fonts.arabic,
     fontSize: 20,
-    color: '#FFF5E9',
+    color: Colors.text.primary,
     textAlign: 'right',
-    lineHeight: 36,
-    fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
+    lineHeight: 38,
   },
-  verseTranslation: {
-    fontSize: 14,
-    color: 'rgba(229, 221, 213, 0.75)',
+  cardTranslation: {
+    fontSize: Typography.sizes.small,
+    color: Colors.text.secondary,
     lineHeight: 22,
     fontStyle: 'italic',
   },
-  moodTags: {
+  cardMoodRow: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 6,
-    marginTop: 4,
+    gap: Spacing.xs,
+    marginTop: Spacing.xs,
   },
   moodTag: {
-    paddingHorizontal: 10,
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: Spacing.sm,
     paddingVertical: 4,
-    borderRadius: 10,
+    borderRadius: BorderRadius.sm,
     borderWidth: 1,
+    gap: 5,
+  },
+  moodTagDot: {
+    width: 5,
+    height: 5,
+    borderRadius: 3,
   },
   moodTagText: {
     fontSize: 11,
     fontWeight: '600',
   },
-  expandedSection: {
-    marginTop: 8,
-    paddingTop: 12,
+  whySection: {
+    marginTop: Spacing.xs,
+    paddingTop: Spacing.md,
     borderTopWidth: 1,
-    borderTopColor: 'rgba(255, 255, 255, 0.06)',
+    borderTopColor: Colors.glass.border,
+    gap: Spacing.xs,
   },
-  whyThisLabel: {
-    fontSize: 12,
+  whyLabel: {
+    fontSize: 11,
     fontWeight: '700',
-    color: '#D4A574',
-    marginBottom: 6,
-    letterSpacing: 0.5,
+    color: `${Colors.accent.primary}CC`,
+    letterSpacing: 0.8,
   },
-  whyThisText: {
-    fontSize: 14,
-    color: 'rgba(229, 221, 213, 0.7)',
+  whyText: {
+    fontSize: Typography.sizes.small,
+    color: Colors.text.secondary,
     lineHeight: 22,
   },
-  expandHint: {
-    fontSize: 11,
-    color: 'rgba(229, 221, 213, 0.3)',
-    textAlign: 'center',
-    marginTop: 4,
+  chevronRow: {
+    alignItems: 'center',
+    paddingTop: Spacing.xs,
   },
-  loadingContainer: {
+
+  loadingWrap: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 16,
-    paddingBottom: 80,
+    gap: Spacing.lg,
+    paddingBottom: Spacing.xxxl,
   },
   loadingText: {
-    fontSize: 14,
-    color: 'rgba(229, 221, 213, 0.45)',
+    fontSize: Typography.sizes.small,
+    color: Colors.text.muted,
     fontStyle: 'italic',
   },
 });

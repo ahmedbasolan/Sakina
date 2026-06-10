@@ -40,16 +40,19 @@ interface MoodVisual {
   icon: keyof typeof MaterialCommunityIcons.glyphMap;
 }
 
+// bg + text aligned to the canonical MoodColors accents (DesignSystem) so a
+// mood reads as the same colour here as on the Home grid and everywhere else.
+// (`light` is currently unused; left in place for the interface.)
 const MOOD_VISUALS: Record<Mood, MoodVisual> = {
-  Overwhelmed: { bg: '#6366F1', light: '#EEF2FF', text: '#818CF8', icon: 'weather-windy' },
-  Sad: { bg: '#3B82F6', light: '#EFF6FF', text: '#60A5FA', icon: 'weather-pouring' },
-  Angry: { bg: '#EF4444', light: '#FEF2F2', text: '#F87171', icon: 'fire' },
-  Tired: { bg: '#6B7280', light: '#F9FAFB', text: '#9CA3AF', icon: 'power-sleep' },
-  Lonely: { bg: '#14B8A6', light: '#F0FDFA', text: '#2DD4BF', icon: 'heart-half-full' },
-  Grateful: { bg: '#10B981', light: '#F0FDF4', text: '#34D399', icon: 'hand-heart' },
-  Hopeful: { bg: '#F59E0B', light: '#FFFBEB', text: '#FBB740', icon: 'white-balance-sunny' },
-  Calm: { bg: '#34D399', light: '#ECFDF5', text: '#6EE7B7', icon: 'leaf' },
-  Guilty: { bg: '#818CF8', light: '#EEF2FF', text: '#A5B4FC', icon: 'refresh' },
+  Overwhelmed: { bg: '#818CF8', light: '#EEF2FF', text: '#818CF8', icon: 'weather-windy' },
+  Sad: { bg: '#94A3B8', light: '#EFF6FF', text: '#94A3B8', icon: 'weather-pouring' },
+  Angry: { bg: '#FB923C', light: '#FEF2F2', text: '#FB923C', icon: 'fire' },
+  Tired: { bg: '#D6D3D1', light: '#F9FAFB', text: '#D6D3D1', icon: 'power-sleep' },
+  Lonely: { bg: '#C084FC', light: '#F0FDFA', text: '#C084FC', icon: 'heart-half-full' },
+  Grateful: { bg: '#FBBF24', light: '#F0FDF4', text: '#FBBF24', icon: 'hand-heart' },
+  Hopeful: { bg: '#22D3EE', light: '#FFFBEB', text: '#22D3EE', icon: 'white-balance-sunny' },
+  Calm: { bg: '#34D399', light: '#ECFDF5', text: '#34D399', icon: 'leaf' },
+  Guilty: { bg: '#A3A3A3', light: '#EEF2FF', text: '#A3A3A3', icon: 'refresh' },
 };
 
 const getMoodVisual = (mood: string): MoodVisual => MOOD_VISUALS[mood as Mood] || MOOD_VISUALS.Calm;
@@ -521,7 +524,7 @@ export default function MoodHistoryCalendarScreen({ onBack }: MoodHistoryCalenda
                   activeOpacity={0.7}
                   hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
                 >
-                  <MaterialCommunityIcons name="close" size={20} color="#4A6480" />
+                  <MaterialCommunityIcons name="close" size={20} color="#6B8EAE" />
                 </TouchableOpacity>
               </View>
 
@@ -723,7 +726,7 @@ const styles = StyleSheet.create({
   },
   loadingText: {
     fontSize: 14,
-    color: '#4A6480',
+    color: '#6B8EAE',
     fontWeight: '500',
   },
 
@@ -843,7 +846,7 @@ const styles = StyleSheet.create({
   },
   heroStatLabel: {
     fontSize: 12,
-    color: '#4A6480',
+    color: '#6B8EAE',
   },
   heroStatValue: {
     fontSize: 14,
@@ -856,7 +859,7 @@ const styles = StyleSheet.create({
   },
   quoteText: {
     fontSize: 12,
-    color: '#4A6480',
+    color: '#6B8EAE',
     fontStyle: 'italic',
     textAlign: 'center',
     lineHeight: 18,
@@ -975,7 +978,7 @@ const styles = StyleSheet.create({
   },
   legendText: {
     fontSize: 11,
-    color: '#4A6480',
+    color: '#6B8EAE',
     fontWeight: '500',
   },
 
@@ -1011,7 +1014,7 @@ const styles = StyleSheet.create({
   },
   moodBadgeSub: {
     fontSize: 12,
-    color: '#4A6480',
+    color: '#6B8EAE',
     fontWeight: '500',
   },
 
@@ -1028,7 +1031,7 @@ const styles = StyleSheet.create({
   entryTime: {
     fontSize: 12,
     fontWeight: '600',
-    color: '#4A6480',
+    color: '#6B8EAE',
   },
   entryMoodDot: {
     width: 8,
@@ -1084,7 +1087,7 @@ const styles = StyleSheet.create({
   },
   noDataText: {
     fontSize: 13,
-    color: '#4A6480',
+    color: '#6B8EAE',
     textAlign: 'center',
     marginVertical: 16,
   },

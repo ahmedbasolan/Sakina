@@ -6,6 +6,7 @@
 import React, { useEffect, useRef, useMemo } from 'react';
 import { Animated, ViewStyle } from 'react-native';
 import { Colors } from '../theme/DesignSystem';
+import { useReduceMotion } from '../hooks/useReduceMotion';
 
 interface TwinklingStarProps {
   x: string | number;
@@ -14,6 +15,13 @@ interface TwinklingStarProps {
   color?: string;
   delay?: number;
   duration?: number;
+  /**
+   * Optional pre-resolved reduce-motion value from a parent that already called
+   * `useReduceMotion()`. When provided, the star skips its own hook call,
+   * avoiding N parallel `AccessibilityInfo` subscriptions when many stars
+   * are rendered by the same parent.
+   */
+  reduceMotionOverride?: boolean;
 }
 
 function TwinklingStarInner({
@@ -23,8 +31,12 @@ function TwinklingStarInner({
   color = Colors.accent.secondary,
   delay = 0,
   duration,
+  reduceMotionOverride,
 }: TwinklingStarProps) {
   const opacity = useRef(new Animated.Value(0.2)).current;
+  // Only call the hook if the parent hasn't already resolved the value.
+  const hookValue = useReduceMotion();
+  const reduceMotion = reduceMotionOverride ?? hookValue;
 
   // Randomise duration per star for natural variation
   const dur = useMemo(
@@ -33,6 +45,11 @@ function TwinklingStarInner({
   );
 
   useEffect(() => {
+    if (reduceMotion) {
+      // Static mid-opacity dot — visible but not blinking
+      opacity.setValue(0.45);
+      return;
+    }
     const loop = Animated.loop(
       Animated.sequence([
         Animated.delay(delay),
@@ -50,7 +67,7 @@ function TwinklingStarInner({
     );
     loop.start();
     return () => loop.stop();
-  }, [delay, dur]);
+  }, [delay, dur, reduceMotion]);
 
   const style = useMemo<ViewStyle>(
     () => ({
