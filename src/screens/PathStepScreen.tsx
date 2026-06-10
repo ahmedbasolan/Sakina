@@ -69,7 +69,9 @@ export const PathStepScreen: React.FC = () => {
       completedDays: userProgress.completedDays.includes(day)
         ? userProgress.completedDays
         : [...userProgress.completedDays, day],
-      currentDay: day + 1,
+      // Never move backward: revisiting/finishing an earlier day must not roll
+      // the user's current position back and re-lock days they'd already reached.
+      currentDay: Math.max(userProgress.currentDay, day + 1),
       isCompleted: day >= path.duration,
       completedAt: day >= path.duration ? Date.now() : undefined,
     };
@@ -204,7 +206,7 @@ export const PathStepScreen: React.FC = () => {
       completedDays: userProgress.completedDays.includes(day)
         ? userProgress.completedDays
         : [...userProgress.completedDays, day],
-      currentDay: day + 1,
+      currentDay: Math.max(userProgress.currentDay, day + 1),
       isCompleted: day >= path.duration,
     };
     setCelebrationProgress(updatedForModal);

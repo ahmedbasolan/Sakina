@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useState, useCallback } from 'react';
 import {
   View,
   Text,
@@ -9,7 +9,6 @@ import {
   Animated,
   Platform,
   Alert,
-  ActivityIndicator,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import Svg, {
@@ -22,7 +21,7 @@ import Svg, {
 import { logServiceError } from '../services/errorLoggingService';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useRoute, useNavigation } from '@react-navigation/native';
+import { useRoute, useNavigation, useFocusEffect } from '@react-navigation/native';
 
 import { UserPathProgress } from '../types';
 import { PathsService } from '../services/pathsService';
@@ -36,32 +35,33 @@ import { getPathVisual } from '../constants/pathVisuals';
 
 const getVisual = (id: string) => getPathVisual(id);
 
-const LessonCard = ({ step, visual, isCompleted, isCurrent, isLocked, isExpanded, onExpand, onMarkComplete }: any) => {
-  const [experience, setExperience] = React.useState<any>(null);
-  const { rotationEngine } = useAppContext();
-
-  React.useEffect(() => {
-    if (isExpanded && !experience) {
-      rotationEngine.getGuidanceForStep(step.contentId, step.angleId)
-        .then(setExperience)
-        .catch((error) => logServiceError('PathDetailScreen', 'loadGuidanceExperience', error instanceof Error ? error : new Error(String(error))));
-    }
-  }, [isExpanded, experience, rotationEngine, step]);
+/**
+ * A single day in the journey timeline. Tapping an unlocked row opens that day's
+ * immersive lesson directly — there is no inline "mark complete". Completion only
+ * ever happens by going through the lesson, which keeps progress single-sourced.
+ */
+const LessonRow = ({ step, visual, isCompleted, isCurrent, isLocked, onPress }: any) => {
+  const trailing = isLocked
+    ? <Ionicons name="lock-closed" size={16} color="rgba(255,255,255,0.12)" />
+    : <Ionicons name="chevron-forward" size={18} color={isCurrent ? visual.color : 'rgba(255,255,255,0.3)'} />;
 
   return (
-    <View style={[styles.lessonCardWrap, { borderColor: visual.color }]}>
-      <TouchableOpacity 
-        style={styles.lessonCardHeader} 
-        onPress={onExpand}
-        disabled={isLocked}
-        activeOpacity={0.7}
-      >
+    <TouchableOpacity
+      style={[
+        styles.lessonCardWrap,
+        { borderColor: isCurrent ? visual.color : 'rgba(255,255,255,0.07)' },
+      ]}
+      onPress={onPress}
+      disabled={isLocked}
+      activeOpacity={0.7}
+    >
+      <View style={styles.lessonCardHeader}>
         <View style={[
           styles.lessonCheck,
-          { 
+          {
             borderColor: isLocked ? 'rgba(255,255,255,0.1)' : visual.color,
-            backgroundColor: isCompleted ? visual.color : 'transparent'
-          }
+            backgroundColor: isCompleted ? visual.color : 'transparent',
+          },
         ]}>
           {isCompleted ? (
             <Ionicons name="checkmark" size={14} color="#000" />
@@ -70,49 +70,15 @@ const LessonCard = ({ step, visual, isCompleted, isCurrent, isLocked, isExpanded
           )}
         </View>
         <View style={styles.lessonInfo}>
-          <Text style={[styles.lessonDay, { color: isLocked ? 'rgba(255,255,255,0.2)' : visual.color }]}>DAY {step.day}</Text>
+          <Text style={[styles.lessonDay, { color: isLocked ? 'rgba(255,255,255,0.2)' : visual.color }]}>
+            DAY {step.day}{isCurrent ? ' · CURRENT' : ''}
+          </Text>
           <Text style={[styles.lessonTitle, isLocked && { color: 'rgba(255,255,255,0.3)' }]}>{step.title}</Text>
           <Text style={styles.lessonSource}>{step.focus}</Text>
         </View>
-        {isLocked ? (
-          <Ionicons name="lock-closed" size={16} color="rgba(255,255,255,0.1)" />
-        ) : (
-          <Ionicons name={isExpanded ? "chevron-up" : "chevron-down"} size={20} color="rgba(255,255,255,0.3)" />
-        )}
-      </TouchableOpacity>
-
-      {isExpanded && (
-        <View style={styles.lessonExpandedContent}>
-          {experience ? (
-            <>
-              <View style={styles.verseBox}>
-                <Text style={styles.arabicText}>{experience.content.arabicText || experience.angle.angleArabicText}</Text>
-                <Text style={styles.verseSource}>— {experience.content.source || step.focus}</Text>
-              </View>
-              
-              <View style={styles.starDivider}>
-                <View style={styles.dividerLine} />
-                <Ionicons name="star" size={12} color={visual.color} style={styles.dividerStar} />
-                <View style={styles.dividerLine} />
-              </View>
-              
-              <Text style={styles.englishText}>
-                {experience.content.englishTranslation || experience.angle.angle}
-              </Text>
-              
-              {!isCompleted && isCurrent && (
-                <TouchableOpacity style={[styles.markCompleteBtn, { borderColor: visual.color }]} onPress={onMarkComplete}>
-                  <Ionicons name="checkmark" size={16} color={visual.color} />
-                  <Text style={[styles.markCompleteText, { color: visual.color }]}>MARK COMPLETE</Text>
-                </TouchableOpacity>
-              )}
-            </>
-          ) : (
-            <ActivityIndicator size="small" color={visual.color} style={{ marginVertical: 20 }} />
-          )}
-        </View>
-      )}
-    </View>
+        {trailing}
+      </View>
+    </TouchableOpacity>
   );
 };
 
@@ -126,17 +92,24 @@ export const PathDetailScreen: React.FC = () => {
   const { pathId } = route.params;
   const path = pathsService.getPathById(pathId);
   const [userProgress, setUserProgress] = useState<UserPathProgress | undefined>();
-  const [expandedDay, setExpandedDay] = useState<number | null>(null);
 
   const scrollY = useRef(new Animated.Value(0)).current;
 
-  useEffect(() => {
-    const loadProgress = async () => {
-      const progress = await pathsService.loadProgress(pathId);
-      setUserProgress(progress || undefined);
-    };
-    loadProgress();
-  }, [pathId]);
+  // Reload on every focus (not just mount) so the ring, dots and Continue label
+  // refresh when the user returns from completing a lesson in PathStepScreen.
+  // (Previously this only ran on mount, so completing the immersive flow left the
+  // progress here stale — the bug where only inline "mark complete" updated it.)
+  useFocusEffect(
+    useCallback(() => {
+      let active = true;
+      pathsService.loadProgress(pathId).then((progress) => {
+        if (active) setUserProgress(progress || undefined);
+      });
+      return () => {
+        active = false;
+      };
+    }, [pathId]),
+  );
 
   if (!path) return null;
 
@@ -155,50 +128,25 @@ export const PathDetailScreen: React.FC = () => {
 
   const completedSteps = userProgress ? pathsService.getCompletedSteps(path.id, userProgress) : [];
 
-  const onStartPath = async () => {
-    const newProgress: UserPathProgress = {
-      pathId: path.id,
-      currentDay: 1,
-      startDate: Date.now(),
-      completedDays: [],
-      isCompleted: false,
-    };
-    await pathsService.saveProgress(newProgress);
-    setUserProgress(newProgress);
-    navigateToPathStep(newProgress);
-  };
-
-  const onMarkLessonComplete = async (day: number) => {
-    // If no progress yet, seed fresh progress starting at this day.
-    const base: UserPathProgress = userProgress || {
-      pathId: path.id,
-      currentDay: 1,
-      startDate: Date.now(),
-      completedDays: [],
-      isCompleted: false,
-    };
-
-    // No-op if already marked complete.
-    if (base.completedDays.includes(day)) return;
-
-    const isNowComplete = day >= path.duration;
-    const updatedProgress: UserPathProgress = {
-      ...base,
-      completedDays: [...base.completedDays, day].sort((a, b) => a - b),
-      // Clamp to path.duration so the "Today's Lesson" tile doesn't stay pinned
-      // to the last day after completion (nextStepDay = Math.min(currentDay, totalDays)
-      // would otherwise always resolve to the final day instead of a complete state).
-      currentDay: isNowComplete ? path.duration : Math.max(base.currentDay, day + 1),
-      isCompleted: isNowComplete,
-      completedAt: isNowComplete ? Date.now() : base.completedAt,
-    };
-    await pathsService.saveProgress(updatedProgress);
-    setUserProgress(updatedProgress);
-  };
-
-  const navigateToPathStep = async (progress: UserPathProgress) => {
-    const step = pathsService.getCurrentStep(path.id, progress);
-    if (!step) return;
+  /**
+   * Open a specific day's immersive lesson. Seeds fresh progress on first start
+   * so tapping "Begin · Day 1" works before a journey has any saved progress.
+   * Completion itself is owned by PathStepScreen; we just refresh on return via
+   * the focus effect above.
+   */
+  const openDay = async (step: (typeof path.dailySteps)[0]) => {
+    let progress = userProgress;
+    if (!progress) {
+      progress = {
+        pathId: path.id,
+        currentDay: 1,
+        startDate: Date.now(),
+        completedDays: [],
+        isCompleted: false,
+      };
+      await pathsService.saveProgress(progress);
+      setUserProgress(progress);
+    }
 
     const experience = await rotationEngine.getGuidanceForStep(step.contentId, step.angleId);
     if (!experience) {
@@ -207,30 +155,28 @@ export const PathDetailScreen: React.FC = () => {
     }
 
     navigation.navigate('PathStep', {
-      path: path,
-      step: step,
+      path,
+      step,
       userProgress: progress,
       guidanceExperience: experience,
       accentColor: visual.color,
     });
   };
 
-  /** Renders a single LessonCard row — shared by flat and phase-grouped layouts. */
+  /** Renders a single day row — shared by flat and phase-grouped layouts. */
   const renderStep = (step: (typeof path.dailySteps)[0]) => {
     const isCompleted = completedSteps.some(cs => cs.day === step.day);
     const isCurrent = userProgress ? step.day === userProgress.currentDay : step.day === 1;
     const isLocked = userProgress ? step.day > userProgress.currentDay : step.day > 1;
     return (
-      <LessonCard
+      <LessonRow
         key={step.id}
         step={step}
         visual={visual}
         isCompleted={isCompleted}
         isCurrent={isCurrent}
         isLocked={isLocked}
-        isExpanded={expandedDay === step.day}
-        onExpand={() => setExpandedDay(expandedDay === step.day ? null : step.day)}
-        onMarkComplete={() => onMarkLessonComplete(step.day)}
+        onPress={() => openDay(step)}
       />
     );
   };
@@ -367,13 +313,16 @@ export const PathDetailScreen: React.FC = () => {
           </View>
         </View>
 
-        {/* Today's Lesson — hidden once the path is fully complete */}
+        {/* Primary action — Begin (fresh) or Continue (in-progress). Hidden once
+            the path is fully complete. This is the one-tap resume affordance. */}
         {nextStep && !userProgress?.isCompleted && (
           <View style={styles.todaySection}>
-            <Text style={styles.sectionHeaderLabel}>TODAY · DAY {nextStepDay}</Text>
-            <TouchableOpacity 
+            <Text style={styles.sectionHeaderLabel}>
+              {completedDays === 0 ? 'BEGIN' : 'CONTINUE'} · DAY {nextStepDay}
+            </Text>
+            <TouchableOpacity
               style={[styles.todayCard, { borderColor: visual.color }]}
-              onPress={userProgress ? () => navigateToPathStep(userProgress) : onStartPath}
+              onPress={() => openDay(nextStep)}
             >
               <View style={styles.todayCardLeft}>
                 <Text style={[styles.todayCardTitle, { color: '#F0E6D3' }]}>
@@ -693,63 +642,6 @@ const styles = StyleSheet.create({
   lessonSource: {
     fontSize: 13,
     color: '#7B8FA1',
-  },
-  lessonExpandedContent: {
-    paddingHorizontal: 20,
-    paddingBottom: 24,
-  },
-  verseBox: {
-    backgroundColor: 'rgba(15,25,40,0.5)',
-    borderRadius: 12,
-    padding: 16,
-    alignItems: 'center',
-    marginBottom: 20,
-  },
-  arabicText: {
-    fontFamily: Platform.OS === 'ios' ? 'Amiri-Bold' : 'serif',
-    fontSize: 26,
-    color: '#F0E6D3',
-    lineHeight: 48,
-    textAlign: 'center',
-    marginBottom: 12,
-  },
-  verseSource: {
-    fontSize: 13,
-    color: '#7B8FA1',
-  },
-  starDivider: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 20,
-  },
-  dividerLine: {
-    flex: 1,
-    height: 1,
-    backgroundColor: 'rgba(255,255,255,0.1)',
-  },
-  dividerStar: {
-    marginHorizontal: 16,
-  },
-  englishText: {
-    fontSize: 15,
-    color: '#F0E6D3',
-    lineHeight: 24,
-    textAlign: 'left',
-    marginBottom: 24,
-  },
-  markCompleteBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 14,
-    borderRadius: 12,
-    borderWidth: 1,
-    gap: 8,
-  },
-  markCompleteText: {
-    fontSize: 12,
-    fontWeight: '700',
-    letterSpacing: 1,
   },
 });
 
