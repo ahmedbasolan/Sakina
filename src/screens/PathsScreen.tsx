@@ -13,16 +13,15 @@
  *   outside so it renders correctly
  */
 import React, { useState, useEffect, useRef } from 'react';
-import { Colors } from '../theme/DesignSystem';
+import { Colors, Spacing, BorderRadius, Typography } from '../theme/DesignSystem';
 import {
   View,
   Text,
   StyleSheet,
-  ScrollView,
+  FlatList,
   TouchableOpacity,
   Dimensions,
   Animated,
-  Platform,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
@@ -83,7 +82,7 @@ function JourneyCard({ path, index, isActive, userProgress, onPress }: JourneyCa
   }, []);
 
   // ── Real progress from UserPathProgress ──
-  const totalDays = path.duration || 14;
+  const totalDays = path.duration || 7;
   const completedDays = userProgress?.completedDays.length ?? 0;
   const progress = totalDays > 0 ? Math.round((completedDays / totalDays) * 100) : 0;
 
@@ -187,7 +186,7 @@ export default function PathsScreen() {
     }, 0);
 
   const stats = [
-    { label: 'Paths', value: PATHS.length.toString(), color: '#D4AF37' },
+    { label: 'Paths', value: PATHS.length.toString(), color: Colors.accent.primary },
     { label: 'Active', value: activeCount.toString(), color: '#34D399' },
     { label: 'Days left', value: daysLeft > 0 ? daysLeft.toString() : '—', color: '#60A5FA' },
   ];
@@ -217,45 +216,43 @@ export default function PathsScreen() {
           <Text style={styles.headerPretitle}>GUIDED PROGRAMS</Text>
           <Text style={styles.headerTitle}>Sacred Journeys</Text>
           <Text style={styles.headerSub}>
-            14-day curated paths for lasting spiritual transformation.
+            Curated paths for lasting spiritual transformation.
           </Text>
         </View>
       </Animated.View>
 
       {/* ── Content ──────────────────────────────────────────── */}
-      <ScrollView
+      <FlatList
         style={styles.scrollView}
-        contentContainerStyle={[styles.content, { paddingBottom: insets.bottom + 100 }]}
+        data={PATHS}
+        keyExtractor={(item) => item.id}
         showsVerticalScrollIndicator={false}
-      >
-        {/* Stats bar */}
-        <Animated.View style={[styles.statsRow, { opacity: headerFade }]}>
-          {stats.map((stat) => (
-            <BlurView key={stat.label} intensity={12} tint="dark" style={styles.statCard}>
-              <Text style={[styles.statValue, { color: stat.color }]}>{stat.value}</Text>
-              <Text style={styles.statLabel}>{stat.label}</Text>
-            </BlurView>
-          ))}
-        </Animated.View>
-
-        {/* Journey cards */}
-        <View style={styles.cardsColumn}>
-          {PATHS.map((path, index) => {
-            const userProgress = userProgressList.find((p) => p.pathId === path.id);
-            const isActive = !!userProgress && !userProgress.isCompleted;
-            return (
-              <JourneyCard
-                key={path.id}
-                path={path}
-                index={index}
-                isActive={isActive}
-                userProgress={userProgress}
-                onPress={() => onPathSelected(path.id)}
-              />
-            );
-          })}
-        </View>
-      </ScrollView>
+        contentContainerStyle={[styles.content, { paddingBottom: insets.bottom + 100 }]}
+        ItemSeparatorComponent={() => <View style={{ height: Spacing.lg }} />}
+        ListHeaderComponent={
+          <Animated.View style={[styles.statsRow, { opacity: headerFade }]}>
+            {stats.map((stat) => (
+              <BlurView key={stat.label} intensity={12} tint="dark" style={styles.statCard}>
+                <Text style={[styles.statValue, { color: stat.color }]}>{stat.value}</Text>
+                <Text style={styles.statLabel}>{stat.label}</Text>
+              </BlurView>
+            ))}
+          </Animated.View>
+        }
+        renderItem={({ item, index }) => {
+          const userProgress = userProgressList.find((p) => p.pathId === item.id);
+          const isActive = !!userProgress && !userProgress.isCompleted;
+          return (
+            <JourneyCard
+              path={item}
+              index={index}
+              isActive={isActive}
+              userProgress={userProgress}
+              onPress={() => onPathSelected(item.id)}
+            />
+          );
+        }}
+      />
     </View>
   );
 }
@@ -266,8 +263,8 @@ const styles = StyleSheet.create({
 
   /* ── Header ── */
   header: {
-    paddingHorizontal: 24,
-    paddingBottom: 20,
+    paddingHorizontal: Spacing.xl,
+    paddingBottom: Spacing.lg,
     zIndex: 2,
     overflow: 'hidden',
     // Height driven by text content
@@ -293,24 +290,24 @@ const styles = StyleSheet.create({
     zIndex: 1,
   },
   topBarText: {
-    fontSize: 12,
-    color: '#D4AF37',
+    fontSize: Typography.sizes.detail,
+    color: Colors.accent.primary,
     letterSpacing: 2,
     fontWeight: '700',
     textAlign: 'center',
-    marginBottom: 20,
+    marginBottom: Spacing.lg,
   },
   headerPretitle: {
     fontSize: 10,
     color: 'rgba(201,168,76,0.8)',
     letterSpacing: 2.5,
-    fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
+    fontFamily: Typography.fonts.serif,
     marginBottom: 6,
   },
   headerTitle: {
     fontSize: 30,
-    color: '#F0E6D3',
-    fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
+    color: Colors.text.primary,
+    fontFamily: Typography.fonts.serif,
     fontWeight: '400',
     letterSpacing: 0.3,
     marginBottom: 6,
@@ -326,17 +323,17 @@ const styles = StyleSheet.create({
 
   /* ── Scroll content ── */
   scrollView: { flex: 1, zIndex: 2 },
-  content: { paddingHorizontal: 20, paddingTop: 12 },
+  content: { paddingHorizontal: Spacing.xl, paddingTop: Spacing.md },
 
   /* ── Stats bar ── */
   statsRow: {
     flexDirection: 'row',
-    gap: 12,
-    marginBottom: 24,
+    gap: Spacing.md,
+    marginBottom: Spacing.xl,
   },
   statCard: {
     flex: 1,
-    borderRadius: 12,
+    borderRadius: BorderRadius.md,
     overflow: 'hidden',
     paddingVertical: 18,
     alignItems: 'center',
@@ -345,19 +342,16 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255,255,255,0.02)',
   },
   statValue: {
-    fontSize: 24,
+    fontSize: Typography.sizes.h1,
     fontWeight: '400',
-    marginBottom: 4,
-    fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
+    marginBottom: Spacing.xs,
+    fontFamily: Typography.fonts.serif,
   },
   statLabel: {
     fontSize: 11,
     color: '#6B8EAE',
     letterSpacing: 0.5,
   },
-
-  /* ── Cards ── */
-  cardsColumn: { gap: 16 },
 
   /* Active-card mandala — outside BlurView so overflow:hidden doesn't clip */
   cardMandalaWrap: {
@@ -368,25 +362,25 @@ const styles = StyleSheet.create({
   },
 
   journeyCard: {
-    borderRadius: 16,
+    borderRadius: BorderRadius.lg,
     overflow: 'hidden',
     borderWidth: 1,
     borderColor: 'rgba(255,255,255,0.08)',
   },
   journeyCardInner: {
-    padding: 16,
+    padding: Spacing.lg,
     backgroundColor: 'rgba(15,25,40,0.6)',
   },
   journeyTop: {
     flexDirection: 'row',
     alignItems: 'flex-start',
-    gap: 16,
-    marginBottom: 12,
+    gap: Spacing.lg,
+    marginBottom: Spacing.md,
   },
   journeyIcon: {
     width: 48,
     height: 48,
-    borderRadius: 16,
+    borderRadius: BorderRadius.lg,
     borderWidth: 1,
     alignItems: 'center',
     justifyContent: 'center',
@@ -400,30 +394,30 @@ const styles = StyleSheet.create({
   journeyPathLabel: {
     fontSize: 10,
     letterSpacing: 2,
-    fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
+    fontFamily: Typography.fonts.serif,
     fontWeight: '700',
   },
   journeyTitle: {
     fontSize: 19,
-    fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
+    fontFamily: Typography.fonts.serif,
     fontWeight: '400',
     letterSpacing: 0.5,
     marginBottom: 2,
   },
   journeyTheme: {
-    fontSize: 12,
+    fontSize: Typography.sizes.detail,
     color: '#7B8FA1',
   },
   journeyDescription: {
     fontSize: 13,
     color: '#7B8FA1',
     lineHeight: 20,
-    marginBottom: 16,
+    marginBottom: Spacing.lg,
   },
   progressSection: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
+    gap: Spacing.md,
   },
   progressTrack: {
     flex: 1,
@@ -437,7 +431,7 @@ const styles = StyleSheet.create({
     borderRadius: 2,
   },
   journeyPct: {
-    fontSize: 12,
+    fontSize: Typography.sizes.detail,
     fontWeight: '700',
     letterSpacing: 0.5,
     minWidth: 36,
