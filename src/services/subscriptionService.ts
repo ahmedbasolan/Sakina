@@ -1,6 +1,15 @@
+/**
+ * SubscriptionService — wraps RevenueCat for all purchase / entitlement work.
+ *
+ * RC is the source of truth for subscription state. Local SQLite is a cache
+ * for offline reads; Supabase is updated so the server side stays in sync.
+ * Phase 3 replaces the old local-only flow with real App Store purchases.
+ */
 import { dbQuery } from '../database/schema';
 import { SubscriptionState, SubscriptionTier, SubscriptionType } from '../types';
 import { SupabaseDataService } from './supabaseDataService';
+import { revenueCat } from './revenueCatService';
+import { CustomerInfo } from 'react-native-purchases';
 
 export class SubscriptionService {
   private static instance: SubscriptionService;
@@ -15,44 +24,219 @@ export class SubscriptionService {
     return SubscriptionService.instance;
   }
 
-  private constructor() { }
+  private constructor() {}
 
   async initialize(): Promise<void> {
     if (this.isLoaded) return;
-    await this.loadSubscriptionState();
+
+    // Configure RC (safe to call multiple times — no-ops after first call).
+    revenueCat.configure();
+
+    try {
+      const info = await revenueCat.getCustomerInfo();
+      await this.syncFromCustomerInfo(info);
+    } catch {
+      // Offline or RC unavailable — fall back to the local cache.
+      await this.loadFromLocalCache();
+    }
+
     this.isLoaded = true;
   }
 
-  async loadSubscriptionState(): Promise<void> {
+  isPremium(): boolean {
+    return this.subscriptionState?.tier === 'premium' && !!this.subscriptionState.isActive;
+  }
+
+  getSubscriptionState(): SubscriptionState | null {
+    return this.subscriptionState;
+  }
+
+  /** Purchase the monthly or yearly subscription. */
+  async activatePremium(type: SubscriptionType): Promise<boolean> {
     try {
-      // 1. Try Supabase first if logged in
-      const profile = await this.supabaseData.getUserProfile();
-      if (profile) {
-        this.subscriptionState = {
-          tier: (profile.subscription_tier || 'free') as SubscriptionTier,
-          type: profile.subscription_type as SubscriptionType,
-          subscriptionEndDate: profile.subscription_end ? new Date(profile.subscription_end).getTime() : undefined,
-          isActive: Boolean(profile.is_active),
-          willRenew: true, // Simplified for now
-          unlockedBundleIds: profile.unlocked_bundles || [],
-        };
-
-        // Date checks
-        if (this.subscriptionState.subscriptionEndDate && Date.now() > this.subscriptionState.subscriptionEndDate) {
-          await this.resetToFreeTier();
-        }
-        return;
+      const pkgType = type === 'yearly' ? 'yearly' : 'monthly';
+      const { success, customerInfo } = await revenueCat.purchasePackage(pkgType);
+      if (success && customerInfo) {
+        await this.syncFromCustomerInfo(customerInfo);
       }
+      return success;
+    } catch (error) {
+      console.error('Error activating premium:', error);
+      return false;
+    }
+  }
 
-      // 2. Fallback to local SQLite.
-      // NOTE: Do NOT call any method that itself uses dbQuery (e.g. resetToFreeTier)
-      // from inside this callback — dbQuery is not re-entrant. We read state here,
-      // then apply any reset *after* the dbQuery block below.
+  /**
+   * Start the free trial. The trial period is defined on the yearly product in
+   * App Store Connect — purchasing the yearly package will automatically present
+   * the trial sheet to the user if they're eligible.
+   */
+  async startTrial(): Promise<boolean> {
+    return this.activatePremium('yearly');
+  }
+
+  /** Restore purchases (required by App Store / Play Store guidelines). */
+  async restorePurchases(): Promise<boolean> {
+    try {
+      const info = await revenueCat.restorePurchases();
+      await this.syncFromCustomerInfo(info);
+      return this.isPremium();
+    } catch (error) {
+      console.error('Error restoring purchases:', error);
+      return false;
+    }
+  }
+
+  /** Purchase a special-edition bundle (still local — bundles not in RC yet). */
+  async purchaseBundle(bundleId: string): Promise<boolean> {
+    try {
+      const currentBundles = this.subscriptionState?.unlockedBundleIds || [];
+      if (currentBundles.includes(bundleId)) return true;
+      const newBundles = [...currentBundles, bundleId];
+
+      await this.supabaseData.updateUserProfile({ unlocked_bundles: newBundles }).catch(() => {});
+      await dbQuery(async (db) => {
+        await db.runAsync(
+          `UPDATE user_subscription SET unlockedBundleIds = ?, updatedAt = ? WHERE id = 'user_subscription'`,
+          [JSON.stringify(newBundles), Date.now()],
+        );
+      });
+      if (this.subscriptionState) {
+        this.subscriptionState.unlockedBundleIds = newBundles;
+      }
+      return true;
+    } catch (error) {
+      console.error('Error purchasing bundle:', error);
+      return false;
+    }
+  }
+
+  async cancelSubscription(): Promise<boolean> {
+    // Users cancel via the App Store / Play Store settings — there is no API call
+    // for this on the client side. RC will automatically detect the cancellation
+    // and stop renewing the entitlement. We just mark willRenew=false locally.
+    try {
+      // Supabase profile has no will_renew field — cancellation is tracked locally only.
+      await dbQuery(async (db) => {
+        await db.runAsync(
+          `UPDATE user_subscription SET willRenew = 0, updatedAt = ? WHERE id = 'user_subscription'`,
+          [Date.now()],
+        );
+      });
+      if (this.subscriptionState) {
+        this.subscriptionState.willRenew = false;
+      }
+      return true;
+    } catch (error) {
+      console.error('Error cancelling subscription:', error);
+      return false;
+    }
+  }
+
+  async resetToFreeTier(): Promise<void> {
+    try {
+      await this.supabaseData.updateUserProfile({
+        subscription_tier: 'free',
+        subscription_type: null,
+        subscription_end: null,
+        is_active: false,
+      }).catch(() => {});
+
+      await dbQuery(async (db) => {
+        await db.runAsync(
+          `UPDATE user_subscription
+           SET tier = 'free', type = NULL, trialEndDate = NULL,
+               subscriptionEndDate = NULL, isActive = 0, willRenew = 0, updatedAt = ?
+           WHERE id = 'user_subscription'`,
+          [Date.now()],
+        );
+      });
+
+      if (this.subscriptionState) {
+        this.subscriptionState = {
+          ...this.subscriptionState,
+          tier: 'free',
+          type: undefined,
+          trialEndDate: undefined,
+          subscriptionEndDate: undefined,
+          isActive: false,
+          willRenew: false,
+        };
+      }
+    } catch (error) {
+      console.error('Error resetting to free tier:', error);
+    }
+  }
+
+  // ─── Private helpers ──────────────────────────────────────────────────────
+
+  /**
+   * Build local SubscriptionState from RC CustomerInfo, then persist it to
+   * SQLite and Supabase so the rest of the app (offline reads, server-side) is
+   * always consistent with the store.
+   */
+  private async syncFromCustomerInfo(info: CustomerInfo): Promise<void> {
+    const isActive = revenueCat.isEntitlementActive(info);
+    const entitlement = info.entitlements.active['premium'];
+
+    const tier: SubscriptionTier = isActive ? 'premium' : 'free';
+    const type: SubscriptionType | undefined = isActive
+      ? entitlement?.periodType === 'trial'
+        ? 'trial'
+        : 'yearly'
+      : undefined;
+    const subscriptionEndDate = entitlement?.expirationDate
+      ? new Date(entitlement.expirationDate).getTime()
+      : undefined;
+
+    const currentBundles = this.subscriptionState?.unlockedBundleIds ?? [];
+
+    this.subscriptionState = {
+      tier,
+      type,
+      subscriptionEndDate,
+      isActive,
+      willRenew: isActive,
+      unlockedBundleIds: currentBundles,
+    };
+
+    // Persist to local cache.
+    await dbQuery(async (db) => {
+      const existing = await db.getFirstAsync(
+        `SELECT id FROM user_subscription WHERE id = 'user_subscription' LIMIT 1`,
+      );
+      if (existing) {
+        await db.runAsync(
+          `UPDATE user_subscription
+           SET tier = ?, type = ?, subscriptionEndDate = ?, isActive = ?, willRenew = ?, updatedAt = ?
+           WHERE id = 'user_subscription'`,
+          [tier, type ?? null, subscriptionEndDate ?? null, isActive ? 1 : 0, isActive ? 1 : 0, Date.now()],
+        );
+      } else {
+        await db.runAsync(
+          `INSERT INTO user_subscription (id, tier, type, subscriptionEndDate, isActive, willRenew, createdAt, updatedAt)
+           VALUES ('user_subscription', ?, ?, ?, ?, ?, ?, ?)`,
+          [tier, type ?? null, subscriptionEndDate ?? null, isActive ? 1 : 0, isActive ? 1 : 0, Date.now(), Date.now()],
+        );
+      }
+    }).catch(() => {});
+
+    // Sync to Supabase (fire-and-forget).
+    this.supabaseData.updateUserProfile({
+      subscription_tier: tier,
+      subscription_type: type ?? null,
+      subscription_end: subscriptionEndDate ? new Date(subscriptionEndDate).toISOString() : null,
+      is_active: isActive,
+    }).catch(() => {});
+  }
+
+  /** Load subscription state from local SQLite (offline fallback). */
+  private async loadFromLocalCache(): Promise<void> {
+    try {
       const row = await dbQuery(async (db) => {
-        let result = await db.getFirstAsync(`
-          SELECT * FROM user_subscription WHERE id = 'user_subscription' LIMIT 1
-        `);
-
+        let result = await db.getFirstAsync(
+          `SELECT * FROM user_subscription WHERE id = 'user_subscription' LIMIT 1`,
+        );
         if (!result) {
           await db.runAsync(
             `INSERT INTO user_subscription (id, tier, isActive, willRenew, createdAt, updatedAt) VALUES (?, ?, ?, ?, ?, ?)`,
@@ -75,201 +259,10 @@ export class SubscriptionService {
           willRenew: Boolean(row.willRenew),
           unlockedBundleIds: row.unlockedBundleIds ? JSON.parse(row.unlockedBundleIds) : [],
         };
-
-        const now = Date.now();
-        const trialExpired =
-          this.subscriptionState.trialEndDate && now > this.subscriptionState.trialEndDate;
-        const subExpired =
-          this.subscriptionState.subscriptionEndDate &&
-          now > this.subscriptionState.subscriptionEndDate;
-        if (trialExpired || subExpired) {
-          await this.resetToFreeTier();
-        }
       }
     } catch (error) {
-      console.error('Error loading subscription state:', error);
+      console.error('Error loading subscription from local cache:', error);
       this.subscriptionState = { tier: 'free', isActive: false, willRenew: false };
-    }
-  }
-
-  async resetToFreeTier(): Promise<void> {
-    try {
-      const profile = await this.supabaseData.getUserProfile();
-      if (profile) {
-        await this.supabaseData.updateUserProfile({
-          subscription_tier: 'free',
-          subscription_type: null,
-          subscription_end: null,
-          is_active: false,
-        });
-      }
-
-      await dbQuery(async (db) => {
-        await db.runAsync(
-          `UPDATE user_subscription 
-           SET tier = 'free', type = NULL, trialEndDate = NULL, 
-               subscriptionEndDate = NULL, isActive = 0, willRenew = 0, updatedAt = ?
-           WHERE id = 'user_subscription'`,
-          [Date.now()],
-        );
-      });
-
-      if (this.subscriptionState) {
-        this.subscriptionState = {
-          ...this.subscriptionState,
-          tier: 'free',
-          type: undefined,
-          trialEndDate: undefined,
-          subscriptionEndDate: undefined,
-          isActive: false,
-          willRenew: false,
-        };
-      }
-    } catch (error) {
-      console.error('Error deactivating subscription:', error);
-    }
-  }
-
-  getSubscriptionState(): SubscriptionState | null {
-    return this.subscriptionState;
-  }
-
-  isPremium(): boolean {
-    return this.subscriptionState?.tier === 'premium' && this.subscriptionState.isActive;
-  }
-
-  async purchaseBundle(bundleId: string): Promise<boolean> {
-    try {
-      const currentBundles = this.subscriptionState?.unlockedBundleIds || [];
-      if (currentBundles.includes(bundleId)) return true;
-
-      const newBundles = [...currentBundles, bundleId];
-
-      const profile = await this.supabaseData.getUserProfile();
-      if (profile) {
-        await this.supabaseData.updateUserProfile({ unlocked_bundles: newBundles });
-      }
-
-      await dbQuery(async (db) => {
-        await db.runAsync(
-          `UPDATE user_subscription SET unlockedBundleIds = ?, updatedAt = ? WHERE id = 'user_subscription'`,
-          [JSON.stringify(newBundles), Date.now()],
-        );
-      });
-
-      if (this.subscriptionState) {
-        this.subscriptionState.unlockedBundleIds = newBundles;
-      }
-      return true;
-    } catch (error) {
-      console.error('Error purchasing bundle:', error);
-      return false;
-    }
-  }
-
-  async startTrial(): Promise<boolean> {
-    try {
-      const trialEndDate = Date.now() + 7 * 24 * 60 * 60 * 1000;
-
-      const profile = await this.supabaseData.getUserProfile();
-      if (profile) {
-        await this.supabaseData.updateUserProfile({
-          subscription_tier: 'premium',
-          subscription_type: 'trial',
-          subscription_end: new Date(trialEndDate).toISOString(),
-          is_active: true,
-        });
-      }
-
-      await dbQuery(async (db) => {
-        await db.runAsync(
-          `UPDATE user_subscription 
-           SET tier = 'premium', type = 'trial', trialEndDate = ?, isActive = 1, updatedAt = ?
-           WHERE id = 'user_subscription'`,
-          [trialEndDate, Date.now()],
-        );
-      });
-
-      if (this.subscriptionState) {
-        this.subscriptionState = {
-          ...this.subscriptionState,
-          tier: 'premium',
-          type: 'trial',
-          trialEndDate,
-          isActive: true,
-        };
-      }
-      return true;
-    } catch (error) {
-      console.error('Error starting trial:', error);
-      return false;
-    }
-  }
-
-  async activatePremium(type: SubscriptionType): Promise<boolean> {
-    try {
-      const now = Date.now();
-      const subscriptionEndDate = type === 'yearly' ? now + 365 * 24 * 60 * 60 * 1000 : now + 30 * 24 * 60 * 60 * 1000;
-
-      const profile = await this.supabaseData.getUserProfile();
-      if (profile) {
-        await this.supabaseData.updateUserProfile({
-          subscription_tier: 'premium',
-          subscription_type: type,
-          subscription_end: new Date(subscriptionEndDate).toISOString(),
-          is_active: true,
-        });
-      }
-
-      await dbQuery(async (db) => {
-        await db.runAsync(
-          `UPDATE user_subscription 
-           SET tier = 'premium', type = ?, trialEndDate = NULL, 
-               subscriptionEndDate = ?, isActive = 1, willRenew = 1, updatedAt = ?
-           WHERE id = 'user_subscription'`,
-          [type, subscriptionEndDate, now],
-        );
-      });
-
-      if (this.subscriptionState) {
-        this.subscriptionState = {
-          ...this.subscriptionState,
-          tier: 'premium',
-          type,
-          trialEndDate: undefined,
-          subscriptionEndDate,
-          isActive: true,
-          willRenew: true,
-        };
-      }
-      return true;
-    } catch (error) {
-      console.error('Error activating premium:', error);
-      return false;
-    }
-  }
-
-  async cancelSubscription(): Promise<boolean> {
-    try {
-      // Write to Supabase first so cloud state is authoritative.
-      // Previously this only wrote locally — a reinstall or login from another
-      // device would restore the pre-cancellation state from Supabase.
-      await this.supabaseData.updateUserProfile({ will_renew: false }).catch(() => {});
-
-      await dbQuery(async (db) => {
-        await db.runAsync(
-          `UPDATE user_subscription SET willRenew = 0, updatedAt = ? WHERE id = 'user_subscription'`,
-          [Date.now()],
-        );
-      });
-
-      if (this.subscriptionState) {
-        this.subscriptionState.willRenew = false;
-      }
-      return true;
-    } catch (error) {
-      console.error('Error cancelling subscription:', error);
-      return false;
     }
   }
 }

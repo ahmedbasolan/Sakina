@@ -8,4 +8,8 @@ module.exports = {
   // Haste module-naming collisions from the duplicated trees.
   modulePathIgnorePatterns: ['<rootDir>/.claude/'],
   testPathIgnorePatterns: ['/node_modules/', '<rootDir>/.claude/'],
+  moduleNameMapper: {
+    // react-native-purchases requires native code unavailable in Jest.
+    '^react-native-purchases$': '<rootDir>/__mocks__/react-native-purchases.js',
+  },
 };

@@ -70,6 +70,17 @@ jest.mock('../upgradeAskStore', () => ({
   saveUpgradeAsk: jest.fn(() => Promise.resolve()),
 }));
 
+jest.mock('../revenueCatService', () => ({
+  revenueCat: {
+    configure: jest.fn(),
+    getCustomerInfo: jest.fn(() => Promise.resolve({ entitlements: { active: {} } })),
+    isEntitlementActive: jest.fn(() => false),
+    getPricing: jest.fn(() => Promise.resolve(null)),
+    purchasePackage: jest.fn(() => Promise.resolve({ success: false, customerInfo: null })),
+    restorePurchases: jest.fn(() => Promise.resolve({ entitlements: { active: {} } })),
+  },
+}));
+
 describe('FreemiumService', () => {
   let service: FreemiumService;
   let mockSessionService: any;
@@ -111,6 +122,7 @@ describe('FreemiumService', () => {
       purchaseBundle: jest.fn(() => Promise.resolve(true)),
       startTrial: jest.fn(() => Promise.resolve(true)),
       activatePremium: jest.fn(() => Promise.resolve(true)),
+      restorePurchases: jest.fn(() => Promise.resolve(true)),
       resetToFreeTier: jest.fn(() => Promise.resolve()),
       cancelSubscription: jest.fn(() => Promise.resolve(true)),
     };
@@ -435,8 +447,8 @@ describe('FreemiumService', () => {
       expect(mockSubscriptionService.cancelSubscription).toHaveBeenCalled();
     });
 
-    it('should restore purchase', async () => {
-      mockSubscriptionService.activatePremium.mockResolvedValue(true);
+    it('should restore purchase via RC and unlock session', async () => {
+      mockSubscriptionService.restorePurchases.mockResolvedValue(true);
       mockSessionService.getCurrentSession.mockReturnValue({
         guidanceSessionsUsed: 1,
         nextRefreshesRemaining: 3,
@@ -445,7 +457,8 @@ describe('FreemiumService', () => {
       const result = await service.restorePurchase();
 
       expect(result).toBe(true);
-      expect(mockSubscriptionService.activatePremium).toHaveBeenCalledWith('monthly');
+      expect(mockSubscriptionService.restorePurchases).toHaveBeenCalled();
+      expect(mockSessionService.saveSession).toHaveBeenCalled();
     });
   });
 });
