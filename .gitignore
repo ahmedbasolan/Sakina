@@ -45,3 +45,29 @@ build/
 
 # Script output files
 scripts/output/
+
+# Local agent / editor tooling (installed per-developer, often via symlinks —
+# not part of the app and breaks the EAS archive on Windows)
+/skills/
+.claude/
+.agents/
+.agent/
+.claire/
+.codebuddy/
+.codex/
+.continue/
+.cursor/
+.gemini/
+.github/prompts/
+.github/hooks/
+.kiro/
+.opencode/
+.qoder/
+.roo/
+.trae/
+.windsurf/
+.vscode/
+skills-lock.json
+
+# Test / coverage artifacts
+coverage/
