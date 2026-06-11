@@ -13,6 +13,7 @@
  */
 
 import { useState, useEffect, useCallback } from 'react';
+import { AppState } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { formatDateYMD, subtractDays } from '../utils/date';
 import { Colors } from '../theme/DesignSystem';
@@ -73,6 +74,9 @@ export function useHomeData({ setStreakCount }: UseHomeDataOptions) {
   // ── Content state ─────────────────────────────────────────────────────────
   const [activePath, setActivePath] = useState<ActivePath | null>(null);
   const [refreshing, setRefreshing] = useState(false);
+  // Minute-resolution clock for labels derived from "now" (greeting,
+  // "Xm ago"). Bumped every 60s and on every return to the foreground.
+  const [now, setNow] = useState(() => Date.now());
   // Sync fallback renders immediately; async getDailyVerse() replaces it with
   // the history-deduplicated version once AsyncStorage is ready.
   const [dailyVerse, setDailyVerse] = useState<DailyVerse>(getDailyVerseSync());
@@ -102,7 +106,13 @@ export function useHomeData({ setStreakCount }: UseHomeDataOptions) {
       updatePrayerStatus(data.timings);
       if (data.timings.Fajr) setFajrTime(data.timings.Fajr);
 
-      await NotificationService.getInstance().scheduleSpiritualReminders(data.timings);
+      // Re-schedule both notification categories from today's fresh timings.
+      // This also flushes stale pending notifications left over from previous
+      // days (the cause of prayer alerts firing at the wrong time after the
+      // device slept through them).
+      const notifications = NotificationService.getInstance();
+      await notifications.scheduleSpiritualReminders(data.timings);
+      await notifications.schedulePrayerNotifications(data.timings, city);
     } catch (error) {
       logServiceError('useHomeData', 'loadPrayerData', error instanceof Error ? error : new Error(String(error)));
     } finally {
@@ -222,6 +232,29 @@ export function useHomeData({ setStreakCount }: UseHomeDataOptions) {
     return () => clearInterval(interval);
   }, [prayerTimings, updatePrayerStatus]);
 
+  // ── Foreground re-sync + minute tick ─────────────────────────────────────
+  // JS timers are suspended while the app is backgrounded, so everything
+  // computed from "now" (greeting, spiritual window, countdowns, daily verse,
+  // streak, stale pending notifications) is wrong by the time the user comes
+  // back hours later. Reload it all whenever the app returns to the
+  // foreground, and tick `now` each minute for time-derived labels.
+  useEffect(() => {
+    const subscription = AppState.addEventListener('change', (state) => {
+      if (state !== 'active') return;
+      setNow(Date.now());
+      loadPrayerData();
+      loadStreakData();
+      loadActivePath();
+      checkTodayMood();
+      getDailyVerse().then(setDailyVerse).catch(() => {});
+    });
+    const tick = setInterval(() => setNow(Date.now()), 60_000);
+    return () => {
+      subscription.remove();
+      clearInterval(tick);
+    };
+  }, [loadPrayerData, loadStreakData, loadActivePath, checkTodayMood]);
+
   // ── Exposed interface ─────────────────────────────────────────────────────
 
   return {
@@ -250,6 +283,7 @@ export function useHomeData({ setStreakCount }: UseHomeDataOptions) {
     activePath,
     dailyVerse,
     lastOpenDate,
+    now,
 
     // Refresh
     refreshing,

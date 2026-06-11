@@ -22,6 +22,7 @@ import { LocationPickerModal } from '../components/LocationPickerModal';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { AnimatedMandala } from '../components/AnimatedMandala';
 import { logServiceError } from '../services/errorLoggingService';
+import { HapticsService } from '../services/hapticsService';
 import {
   HeroHeader,
   VerseOfTheDay,
@@ -110,6 +111,7 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
     dailyVerse,
     refreshing,
     handleRefresh,
+    now,
   } = useHomeData({ setStreakCount });
 
   // ── View-layer animations (stay here — not data concerns) ─────
@@ -130,10 +132,15 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
   const handleMoodTap = useCallback(async (moodId: Mood) => {
     if (isHandlingTap.current) return;
     isHandlingTap.current = true;
+    // Instant response BEFORE the async guidance fetch — a tap from someone
+    // in distress must never feel dead while the content loads. The
+    // selection is reverted if the fetch fails.
+    const previousMood = localSelectedMood;
+    setLocalSelectedMood(moodId);
+    HapticsService.impactAsync('LIGHT');
     try {
       const experience = await rotationEngine.getGuidance(moodId);
       if (experience) {
-        setLocalSelectedMood(moodId);
         setSelectedMood(moodId);
         setCheckedInToday(true);
         navigation.navigate('Guidance', {
@@ -142,14 +149,16 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
           islamicTerm: moodConfigs.find((m) => m.id === moodId)?.label || moodId,
         });
       } else {
+        setLocalSelectedMood(previousMood);
         logServiceError('HomeScreen', 'handleMoodTap', new Error(`getGuidance returned null for mood: ${moodId}`));
       }
     } catch (error) {
+      setLocalSelectedMood(previousMood);
       logServiceError('HomeScreen', 'handleMoodTap', error instanceof Error ? error : new Error(String(error)));
     } finally {
       isHandlingTap.current = false;
     }
-  }, [navigation, rotationEngine, setSelectedMood, setLocalSelectedMood, setCheckedInToday]);
+  }, [navigation, rotationEngine, setSelectedMood, setLocalSelectedMood, setCheckedInToday, localSelectedMood]);
 
   const navigateToTimedGuidance = useCallback(async () => {
     const mood = localSelectedMood || 'Calm';
@@ -174,11 +183,13 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
     ? Math.round((activePath.currentDay / activePath.totalDays) * 100)
     : 0;
 
-  const greeting = useMemo(() => getTimeGreeting(), []);
+  // `now` ticks each minute and on foreground resume, so these stay current
+  // (previously they were computed once per mount and went stale overnight).
+  const greeting = useMemo(() => getTimeGreeting(), [now]);
 
   const lastCheckinLabel = useMemo(() => {
     if (!lastCheckin) return '';
-    const diff = Date.now() - lastCheckin.timestamp;
+    const diff = now - lastCheckin.timestamp;
     const minutes = Math.floor(diff / 60000);
     if (minutes < 2) return 'just now';
     if (minutes < 60) return `${minutes}m ago`;
@@ -186,7 +197,7 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
     if (hours < 24) return `${hours}h ago`;
     const days = Math.floor(hours / 24);
     return days === 1 ? 'yesterday' : `${days} days ago`;
-  }, [lastCheckin?.timestamp]);
+  }, [lastCheckin?.timestamp, now]);
 
   /* ─── Render ─────────────────────────────────────────────────── */
 
@@ -382,9 +393,9 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
                 <View style={[styles.quickCardIcon, { backgroundColor: '#120A20', borderColor: '#2A1040' }]}>
                   <QuillIcon size={18} color="#C084FC" />
                 </View>
-                <Text style={styles.quickCardTitle}>REFLECT</Text>
+                <Text style={styles.quickCardTitle}>JOURNAL</Text>
                 <Text style={[styles.quickCardValue, { color: '#C084FC' }]}>Write today</Text>
-                <Text style={styles.quickCardSub}>Journal</Text>
+                <Text style={styles.quickCardSub}>Private to you</Text>
               </TouchableOpacity>
             </View>
           </View>
