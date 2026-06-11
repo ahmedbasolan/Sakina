@@ -18,6 +18,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Mood } from '../types';
+import { moodLabel } from '../constants';
 import {
   moodHistoryService,
   MoodDayEntry,
@@ -399,7 +400,7 @@ export default function MoodHistoryCalendarScreen({ onBack }: MoodHistoryCalenda
                       <View style={styles.heroStatRow}>
                         <Text style={styles.heroStatLabel}>Top Mood</Text>
                         <Text style={[styles.heroStatValue, { color: '#7DD3FC' }]} numberOfLines={1}>
-                          {stats.mostCommonMood ? stats.mostCommonMood.substring(0, 9) : '—'}
+                          {stats.mostCommonMood ? moodLabel(stats.mostCommonMood).substring(0, 9) : '—'}
                         </Text>
                       </View>
                       <View style={styles.heroStatRow}>
@@ -505,7 +506,7 @@ export default function MoodHistoryCalendarScreen({ onBack }: MoodHistoryCalenda
               {(Object.keys(MOOD_VISUALS) as Mood[]).map((mood) => (
                 <View key={mood} style={styles.legendItem}>
                   <View style={[styles.legendDot, { backgroundColor: MOOD_VISUALS[mood].bg }]} />
-                  <Text style={styles.legendText}>{mood}</Text>
+                  <Text style={styles.legendText}>{moodLabel(mood)}</Text>
                 </View>
               ))}
             </View>
@@ -549,7 +550,7 @@ export default function MoodHistoryCalendarScreen({ onBack }: MoodHistoryCalenda
                       />
                     </View>
                     <View>
-                      <Text style={styles.moodBadgeLabel}>{dayDetail.mood}</Text>
+                      <Text style={styles.moodBadgeLabel}>{moodLabel(dayDetail.mood)}</Text>
                       <Text style={styles.moodBadgeSub}>
                         {dayDetail.entries.length} session
                         {dayDetail.entries.length !== 1 ? 's' : ''}
@@ -571,7 +572,7 @@ export default function MoodHistoryCalendarScreen({ onBack }: MoodHistoryCalenda
                         <Text
                           style={[styles.entryMoodLabel, { color: getMoodVisual(entry.mood).text }]}
                         >
-                          {entry.mood}
+                          {moodLabel(entry.mood)}
                         </Text>
                       </View>
 
@@ -624,7 +625,7 @@ export default function MoodHistoryCalendarScreen({ onBack }: MoodHistoryCalenda
                     <View key={mood} style={styles.distRow}>
                       <View style={styles.distLabelRow}>
                         <View style={[styles.distDot, { backgroundColor: visual.bg }]} />
-                        <Text style={styles.distMood}>{mood}</Text>
+                        <Text style={styles.distMood}>{moodLabel(mood)}</Text>
                         <Text style={[styles.distCount, { color: visual.text }]}>
                           {count} ({percentage}%)
                         </Text>
