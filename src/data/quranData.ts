@@ -10676,6 +10676,81 @@ const quranContentAnglesData: ContentAngle[] = [
     ]),
     reflection: 'What would change if you believed your repentance caused Allah to be "happy"?',
   },
+
+  // === SALAH TRANSFORMATION JOURNEY ANGLES ===
+  // Referenced by step_salah_1..7 in staticPaths.ts. These must live in the
+  // local seed: path steps resolve angles offline-first, and the cloud
+  // fallback is unavailable without a network connection.
+  {
+    id: 'q_angle_salah_1',
+    contentId: 'quran_23_1',
+    mood: 'Calm',
+    angle: 'Ibn Rajab: "Khushu is when the heart feels awe before Allah\'s greatness and the limbs submit in stillness" [Jami\' al-Ulum wal-Hikam]',
+    action: 'Pause 30 seconds before your next prayer and ask yourself: "Who am I about to stand before?"',
+    actionHowTo: 'Perform wudu with full attention to each step, acknowledging the spiritual purification.',
+    actionReward: 'Success is guaranteed for those who find Khushu. [Quran 23:1-2]',
+    reflection: 'What distracted you most in today\'s prayers? Identify the top 3 distractions.',
+  },
+  {
+    id: 'q_angle_salah_2',
+    contentId: 'quran_7_31',
+    mood: 'Calm',
+    angle: 'Prophet ﷺ said: "When any one of you stands to pray, he is conversing with his Lord" [Bukhari 531]',
+    action: 'Choose a clean, quiet spot for next prayer and arrive 2 minutes early.',
+    actionHowTo: 'Use siwak/brush teeth before wudu and wear clean clothes as a sign of respect.',
+    actionReward: 'Taking adornment for prayer is a sign of honoring the meeting with Allah.',
+    reflection: 'How did preparing intentionally change your prayer experience?',
+  },
+  {
+    id: 'q_angle_salah_3',
+    contentId: 'quran_29_45',
+    mood: 'Calm',
+    angle: 'Ibn al-Qayyim: "When you say \'Allahu Akbar,\' you declare that Allah is greater than everything occupying your mind"',
+    action: 'Raise hands for takbir slowly and pause 3 seconds before opening dua.',
+    actionHowTo: 'Mentally "drop" all worldly concerns at the moment of the opening Takbir.',
+    actionReward: 'The remembrance of Allah is the greatest shield. [Quran 29:45]',
+    reflection: 'Did you truly believe Allah was greater than your worries when you said the takbir?',
+  },
+  {
+    id: 'q_angle_salah_4',
+    contentId: 'quran_2_45',
+    mood: 'Calm',
+    angle: 'Hadith Qudsi: Allah says "I have divided the prayer between Myself and My servant into two halves... When the servant says \'Alhamdulillahi rabbil aalameen,\' Allah says \'My servant has praised Me\'" [Muslim 395]',
+    action: 'Learn the meaning of each line of Fatihah and pause briefly after each phrase.',
+    actionHowTo: 'Imagine Allah responding to each line you recite in the conversation of Fatihah.',
+    actionReward: 'Prayer is the ultimate source of help for the humbly submissive. [Quran 2:45]',
+    reflection: 'Which phrase of Fatihah resonated most today? Why?',
+  },
+  {
+    id: 'q_angle_salah_5',
+    contentId: 'quran_22_77',
+    mood: 'Calm',
+    angle: 'Prophet ﷺ said: "The worst thief is one who steals from his prayer by not completing its bowing and prostration" [Ahmad 22136]',
+    action: 'Hold stillness in ruku for at least 3 slow tasbeeh.',
+    actionHowTo: 'Ensure your back is straight in ruku and forehead/nose are firmly on the ground in sujood.',
+    actionReward: 'Bowing and prostrating are acts that draw the believer closest to their Lord.',
+    reflection: 'Did you rush through any positions today? Which one and why?',
+  },
+  {
+    id: 'q_angle_salah_6',
+    contentId: 'quran_14_40',
+    mood: 'Calm',
+    angle: 'The Prophet ﷺ would make specific dua between positions: "Rabbana wa lakal hamd" and "Rabbighfir li" between sujood [Abu Dawud 874]',
+    action: 'Consciously recite the transition prayers and the dua between the two sujood.',
+    actionHowTo: 'Say "Rabbighfir li" (My Lord, forgive me) twice minimum while sitting between prostrations.',
+    actionReward: 'Steadfastness in prayer is a gift from Allah as seen in the dua of Ibrahim (AS).',
+    reflection: 'How does asking for forgiveness between prostrations change your focus?',
+  },
+  {
+    id: 'q_angle_salah_7',
+    contentId: 'quran_29_45',
+    mood: 'Calm',
+    angle: 'Prophet ﷺ never left prayer without post-salah dhikr: Istighfar (3x), Ayat al-Kursi, and Tasbih 33-33-34 [Bukhari 844]',
+    action: 'Perform the full post-prayer dhikr routine after your final salam.',
+    actionHowTo: 'Stay seated for 2 minutes in reflection after completing the dhikr.',
+    actionReward: 'Prayer prevents immorality and wrongdoing when sealed with remembrance.',
+    reflection: 'How has your prayer changed over 7 days? What will you maintain?',
+  },
 ];
 
 export { quranContent, quranContentAnglesData as quranContentAngles };

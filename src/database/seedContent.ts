@@ -21,17 +21,28 @@
  * IDEMPOTENT: early-returns if rows already exist (safe on every launch).
  */
 
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import type { Content, ContentAngle } from '../types';
 
+// Bump whenever quranData.ts gains new rows. Existing installs skip the
+// seeder once content exists, so without a version bump they would never
+// receive later additions (this is how the Salah Transformation angles went
+// missing for already-seeded devices). Every insert below is
+// INSERT OR IGNORE, so a version-triggered re-run is idempotent and cheap.
+const SEED_VERSION = 2;
+const SEED_VERSION_KEY = '@sakina_seed_version';
+
 export async function seedQuranContent(db: any): Promise<void> {
-  // Fast path: if any Quran content already exists, skip entirely.
-  // Covers online users who synced from Supabase and fresh-version users.
+  // Fast path: if Quran content already exists AND it came from this seed
+  // version (or newer), skip entirely. Covers online users who synced from
+  // Supabase and fresh-version users.
   const existing = (await db.getFirstAsync(
     `SELECT COUNT(*) as count FROM content WHERE type = 'Quran'`,
   )) as { count: number } | null;
-  if (existing && existing.count > 0) return;
+  const seededVersion = Number((await AsyncStorage.getItem(SEED_VERSION_KEY)) ?? '0');
+  if (existing && existing.count > 0 && seededVersion >= SEED_VERSION) return;
 
-  console.log('[Seed] Quran content tables empty — seeding from local data…');
+  console.log('[Seed] Seeding Quran content from local data (seed v' + SEED_VERSION + ')…');
 
   // ── Dynamic require ─────────────────────────────────────────────────────
   // This is the key: require() here, NOT at the top of this file.
@@ -115,6 +126,8 @@ export async function seedQuranContent(db: any): Promise<void> {
       );
     }
   });
+
+  await AsyncStorage.setItem(SEED_VERSION_KEY, String(SEED_VERSION));
 
   console.log(
     `[Seed] Done — ${quranContent.length} verses, ${quranContentAngles.length} angles` +
