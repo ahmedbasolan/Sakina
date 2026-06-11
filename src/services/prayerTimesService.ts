@@ -42,6 +42,33 @@ export const formatCountdown = (minutes: number): string => {
   return h > 0 ? `${h}h ${m}m` : `${m}m`;
 };
 
+// ── Calculation-method mapping ──────────────────────────────────────────────
+// Region-appropriate Aladhan calculation methods, keyed by normalised country
+// name. IDs verified against https://api.aladhan.com/v1/methods. Countries
+// not listed fall back to Muslim World League (3) — the most widely accepted
+// general method. (Previously everything used ISNA (2), a North-America
+// convention that produces noticeably wrong times in the Gulf.)
+const METHOD_BY_COUNTRY: Record<string, number> = {
+  uae: 8, 'united arab emirates': 8, oman: 8, bahrain: 8, yemen: 8, // Gulf Region
+  'saudi arabia': 4, ksa: 4, // Umm Al-Qura, Makkah
+  kuwait: 9,
+  qatar: 10,
+  egypt: 5, // Egyptian General Authority
+  pakistan: 1, india: 1, bangladesh: 1, afghanistan: 1, // Karachi
+  turkey: 13, 'türkiye': 13, // Diyanet
+  singapore: 11,
+  france: 12,
+  russia: 14,
+  malaysia: 17, // JAKIM
+  indonesia: 20, // KEMENAG
+  tunisia: 18, algeria: 19, morocco: 21, jordan: 23,
+  usa: 2, 'united states': 2, us: 2, canada: 2, // ISNA
+};
+
+export function getCalculationMethodForCountry(country: string): number {
+  return METHOD_BY_COUNTRY[country.trim().toLowerCase()] ?? 3;
+}
+
 export interface PrayerTimesData {
   timings: PrayerTimings;
   date: {
@@ -81,16 +108,20 @@ class PrayerTimesService {
   public async getTimingsByCity(
     city: string,
     country: string,
-    method: number = 2,
+    method?: number,
   ): Promise<PrayerTimesData> {
+    // Region-appropriate default unless the caller explicitly overrides.
+    const resolvedMethod = method ?? getCalculationMethodForCountry(country);
     // Use local calendar date (not UTC) so users in UTC+4/+5 don't see
     // yesterday's prayer times for several hours after local midnight.
+    // Cache keys include the method so a mapping change can never serve
+    // times computed with a different convention.
     const today = formatDateYMD();
-    const cacheKey = `@prayer_timings_${city}_${country}_${today}`;
+    const cacheKey = `@prayer_timings_${city}_${country}_m${resolvedMethod}_${today}`;
     // Cross-day fallback key — stores the most recently successful response
     // regardless of date, so first-launch / day-rollover with no connectivity
     // still has something to show rather than a complete blank.
-    const fallbackKey = `@prayer_timings_${city}_${country}_fallback`;
+    const fallbackKey = `@prayer_timings_${city}_${country}_m${resolvedMethod}_fallback`;
 
     try {
       // 1. Serve today's cached data if available
@@ -100,7 +131,7 @@ class PrayerTimesService {
       // 2. Fetch with exponential back-off retry (3 attempts, up to 8s max)
       const data = await withRetry(
         async () => {
-          const response = await axios.get(this.BASE_URL, { params: { city, country, method } });
+          const response = await axios.get(this.BASE_URL, { params: { city, country, method: resolvedMethod } });
           if (response.data.code === 200) return response.data.data;
           throw new Error(response.data.status || 'Failed to fetch prayer times');
         },

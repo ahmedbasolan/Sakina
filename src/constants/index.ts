@@ -1,6 +1,26 @@
 // Centralized constants for the application
 import { Mood } from '../types';
 
+/**
+ * Canonical display names for internal Mood ids. The stored id 'Calm' renders
+ * as "Peaceful" (paired with Sukoon) everywhere in the UI — never show the
+ * raw id to users. Keep stored ids untouched: they live in user history rows.
+ */
+export const MOOD_LABELS: Record<Mood, string> = {
+  Grateful: 'Grateful',
+  Hopeful: 'Hopeful',
+  Calm: 'Peaceful',
+  Overwhelmed: 'Overwhelmed',
+  Tired: 'Tired',
+  Lonely: 'Lonely',
+  Sad: 'Sad',
+  Angry: 'Angry',
+  Guilty: 'Guilty',
+};
+
+/** Display label for a mood id; falls back to the raw value for unknowns. */
+export const moodLabel = (mood: string): string => MOOD_LABELS[mood as Mood] ?? mood;
+
 export const APP_CONFIG = {
   name: 'Sakina',
   version: '1.0.0',

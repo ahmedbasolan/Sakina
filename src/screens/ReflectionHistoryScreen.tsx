@@ -279,7 +279,7 @@ export default function ReflectionHistoryScreen() {
         <View style={styles.headerTop}>
           <View>
             <Text style={styles.headerPretitle}>BETWEEN YOU AND ALLAH</Text>
-            <Text style={styles.headerTitle}>REFLECTIONS</Text>
+            <Text style={styles.headerTitle}>JOURNAL</Text>
           </View>
           <View style={styles.headerLockCircle}>
             <MaterialCommunityIcons name="lock" size={18} color={Colors.accent.primary} />
