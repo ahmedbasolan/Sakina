@@ -41,8 +41,10 @@ const getVisual = (id: string) => getPathVisual(id);
  * ever happens by going through the lesson, which keeps progress single-sourced.
  */
 const LessonRow = ({ step, visual, isCompleted, isCurrent, isLocked, onPress }: any) => {
+  // time-outline (not a padlock): these rows unlock with tomorrow's day, and
+  // a padlock reads as "premium-gated" in a freemium app.
   const trailing = isLocked
-    ? <Ionicons name="lock-closed" size={16} color="rgba(255,255,255,0.12)" />
+    ? <Ionicons name="time-outline" size={16} color="rgba(255,255,255,0.12)" />
     : <Ionicons name="chevron-forward" size={18} color={isCurrent ? visual.color : 'rgba(255,255,255,0.3)'} />;
 
   return (
@@ -150,7 +152,16 @@ export const PathDetailScreen: React.FC = () => {
 
     const experience = await rotationEngine.getGuidanceForStep(step.contentId, step.angleId);
     if (!experience) {
-      Alert.alert('Content Not Available', 'Could not load content for this step.');
+      // Near-unreachable now that all path angles ship in the local seed,
+      // but keep a warm, recoverable message for the network-only edge.
+      Alert.alert(
+        'A Moment of Patience',
+        "This day's guidance couldn't be loaded. Please check your connection and try again, in shaa Allah.",
+        [
+          { text: 'Not Now', style: 'cancel' },
+          { text: 'Try Again', onPress: () => openDay(step) },
+        ],
+      );
       return;
     }
 
