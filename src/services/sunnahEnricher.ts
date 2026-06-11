@@ -98,8 +98,8 @@ export class SunnahEnricher {
   private inferActionType(
     angle: ContentAngle,
     contentType: ContentType | string,
-  ): string | undefined {
-    if (['Dua', 'Dhikr', 'Sunnah Practice'].includes(contentType)) {
+  ): ContentType | undefined {
+    if (contentType === 'Dua' || contentType === 'Dhikr' || contentType === 'Sunnah Practice') {
       return contentType;
     }
     if (angle.actionArabicText) return 'Dua';
