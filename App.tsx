@@ -39,14 +39,14 @@ ErrorUtils.setGlobalHandler((error, isFatal) => {
   posthog.capture('$exception', {
     $exception_message: error?.message,
     $exception_stack: error?.stack,
-    isFatal,
+    isFatal: isFatal ?? false,
     source: 'global_error_handler',
   });
   _globalHandler(error, isFatal);
 });
 
 // Unhandled promise rejections (React Native surfaces these as warnings by default)
-if (typeof global.HermesInternal !== 'undefined') {
+if (typeof (global as any).HermesInternal !== 'undefined') {
   // Hermes engine: rejections flow through ErrorUtils — already handled above
 } else {
   // JSC engine fallback

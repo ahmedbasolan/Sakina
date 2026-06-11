@@ -26,9 +26,9 @@ import type { Content, ContentAngle } from '../types';
 export async function seedQuranContent(db: any): Promise<void> {
   // Fast path: if any Quran content already exists, skip entirely.
   // Covers online users who synced from Supabase and fresh-version users.
-  const existing = await db.getFirstAsync<{ count: number }>(
+  const existing = (await db.getFirstAsync(
     `SELECT COUNT(*) as count FROM content WHERE type = 'Quran'`,
-  );
+  )) as { count: number } | null;
   if (existing && existing.count > 0) return;
 
   console.log('[Seed] Quran content tables empty — seeding from local data…');

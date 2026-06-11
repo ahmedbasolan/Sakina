@@ -95,6 +95,7 @@ export interface ContentAngle {
   actionWhyThisWorks?: string;
   practiceSteps?: string; // JSON array of structured practice steps
   reflection?: string; // Maps to "Reflection Prompt"
+  relevanceScore?: number; // From content_moods join — drives rotation scoring
   contentType?: ContentType;
   actionType?: ContentType;
   content?: Content;
