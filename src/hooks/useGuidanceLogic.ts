@@ -22,7 +22,7 @@ function parseQuranSource(
 export const useGuidanceLogic = (
   experience: GuidanceExperience,
   mood: Mood,
-  onNext: () => void,
+  onNext: () => void | boolean | Promise<void | boolean>,
   onSaveReflection: (reflection: string) => void,
   cardsCount: number,
 ) => {
@@ -181,23 +181,40 @@ export const useGuidanceLogic = (
     setIsShareSheetVisible(true);
   };
 
+  // Serialises requestNext so a double-tap can't fetch or spend twice.
+  const isAdvancing = useRef(false);
+
   // Single gated entry point for advancing to the next piece of guidance.
-  // Atomically spends one refresh (the service no-ops the decrement for premium
-  // and mercy moods). If the allowance is gone, we stop at a resting point
-  // instead of fetching. Returns whether we advanced.
+  // Order matters: sync the window, check the allowance, FETCH, and only
+  // spend a refresh once a new experience was actually delivered. The old
+  // spend-then-fetch order consumed the allowance even when the fetch
+  // failed, leaving the user with a silently swallowed tap. Returns whether
+  // we advanced.
   const requestNext = async (): Promise<boolean> => {
-    const allowed = await freemiumService.useNextRefresh(mood);
-    if (!allowed) {
-      // Only show the resting point the first time per window; subsequent
-      // presses after dismissal are silently swallowed (modal won't re-appear).
-      if (!hasRestingBeenDismissed.current) {
-        setIsResting(true);
+    if (isAdvancing.current) return false;
+    isAdvancing.current = true;
+    try {
+      // Idempotent — picks up a new prayer window if one opened mid-session.
+      await freemiumService.syncPrayerWindow();
+      if (freemiumService.getRemainingRefreshes(mood) <= 0) {
+        // Only show the resting point the first time per window; subsequent
+        // presses after dismissal are silently swallowed (modal won't re-appear).
+        if (!hasRestingBeenDismissed.current) {
+          setIsResting(true);
+        }
+        return false;
       }
-      return false;
+
+      const delivered = (await onNext()) !== false;
+      if (!delivered) return false;
+
+      // Spends one refresh (the service no-ops for premium and mercy moods).
+      await freemiumService.useNextRefresh(mood);
+      setRemainingRefreshes(freemiumService.getRemainingRefreshes(mood));
+      return true;
+    } finally {
+      isAdvancing.current = false;
     }
-    setRemainingRefreshes(freemiumService.getRemainingRefreshes(mood));
-    onNext();
-    return true;
   };
 
   const dismissResting = () => {

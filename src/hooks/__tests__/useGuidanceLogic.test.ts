@@ -73,8 +73,10 @@ describe('useGuidanceLogic — refresh gating', () => {
     expect(result.current.isResting).toBe(false);
   });
 
-  it('does NOT advance and enters resting state when denied', async () => {
-    freemium.useNextRefresh.mockResolvedValue(false);
+  it('does NOT advance and enters resting state when the window is spent', async () => {
+    // New contract: denial is a zero allowance checked BEFORE fetching;
+    // useNextRefresh is never reached, so the allowance can't go negative.
+    freemium.getRemainingRefreshes.mockReturnValue(0);
     const { result } = render('Calm', onNext);
 
     await act(async () => {
@@ -82,11 +84,27 @@ describe('useGuidanceLogic — refresh gating', () => {
     });
 
     expect(onNext).not.toHaveBeenCalled();
+    expect(freemium.useNextRefresh).not.toHaveBeenCalled();
     expect(result.current.isResting).toBe(true);
   });
 
+  it('does NOT spend a refresh when the fetch fails to deliver', async () => {
+    // A failed onNext used to consume the allowance and silently do nothing
+    // (the "swallowed tap"). Now the refresh is only spent on delivery.
+    onNext.mockResolvedValue(false);
+    const { result } = render('Calm', onNext);
+
+    await act(async () => {
+      await result.current.requestNext();
+    });
+
+    expect(onNext).toHaveBeenCalledTimes(1);
+    expect(freemium.useNextRefresh).not.toHaveBeenCalled();
+    expect(result.current.isResting).toBe(false);
+  });
+
   it('dismissResting clears the resting state', async () => {
-    freemium.useNextRefresh.mockResolvedValue(false);
+    freemium.getRemainingRefreshes.mockReturnValue(0);
     const { result } = render('Calm', onNext);
 
     await act(async () => {

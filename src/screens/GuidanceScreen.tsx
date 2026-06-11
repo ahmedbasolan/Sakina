@@ -42,11 +42,15 @@ const GuidanceScreen: React.FC = () => {
 
   const { experience, mood, islamicTerm } = route.params;
 
-  const onNext = async () => {
+  // Returns whether a new experience was actually delivered, so the caller
+  // (useGuidanceLogic.requestNext) only spends a refresh on success — a
+  // failed fetch used to consume the allowance and silently do nothing.
+  const onNext = async (): Promise<boolean> => {
     try {
       const nextExp = await rotationEngine.getGuidance(mood);
       if (nextExp) {
         navigation.setParams({ experience: nextExp });
+        return true;
       }
     } catch (error) {
       logServiceError(
@@ -55,6 +59,8 @@ const GuidanceScreen: React.FC = () => {
         error instanceof Error ? error : new Error(String(error)),
       );
     }
+    HapticsService.notificationAsync('WARNING');
+    return false;
   };
 
   const onSaveReflection = async (reflection: string) => {
