@@ -58,10 +58,17 @@ class RevenueCatService {
   /** Call once at app start (before any other RC methods). */
   configure(userId?: string | null) {
     if (this.configured) return;
-    const apiKey = Platform.OS === 'ios' ? IOS_API_KEY : ANDROID_API_KEY;
-    if (__DEV__) Purchases.setLogLevel(LOG_LEVEL.DEBUG);
-    Purchases.configure({ apiKey, appUserID: userId ?? null });
-    this.configured = true;
+    try {
+      const apiKey = Platform.OS === 'ios' ? IOS_API_KEY : ANDROID_API_KEY;
+      Purchases.configure({ apiKey, appUserID: userId ?? null });
+      if (__DEV__) Purchases.setLogLevel(LOG_LEVEL.DEBUG);
+      this.configured = true;
+    } catch (error) {
+      // Leave `configured` false so the next call can retry. Callers fall
+      // back to the local subscription cache when RC is unavailable, so a
+      // failed configure must never take the app down with it.
+      console.warn('[RevenueCat] configure failed:', error);
+    }
   }
 
   /** Fetch the customer's current entitlement info from RC (cached locally). */

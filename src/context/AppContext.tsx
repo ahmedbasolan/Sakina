@@ -35,7 +35,12 @@ export function ServicesProvider({ children }: { children: React.ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    freemiumService.initialize().then(() => setIsLoading(false));
+    // `finally` so a subscription/RC initialization failure can never leave
+    // the app stuck on the loading state — free-tier defaults still work.
+    freemiumService
+      .initialize()
+      .catch((error) => console.warn('[ServicesProvider] freemium init failed:', error))
+      .finally(() => setIsLoading(false));
   }, []);
 
   return (

@@ -29,10 +29,9 @@ export class SubscriptionService {
   async initialize(): Promise<void> {
     if (this.isLoaded) return;
 
-    // Configure RC (safe to call multiple times — no-ops after first call).
-    revenueCat.configure();
-
     try {
+      // Configure RC (safe to call multiple times — no-ops after first call).
+      revenueCat.configure();
       const info = await revenueCat.getCustomerInfo();
       await this.syncFromCustomerInfo(info);
     } catch {
