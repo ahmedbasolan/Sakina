@@ -9,7 +9,7 @@ import {
   Alert,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useNavigation, CompositeNavigationProp } from '@react-navigation/native';
+import { useNavigation, useFocusEffect, CompositeNavigationProp } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import { useAuth } from '../context/AuthContext';
@@ -81,10 +81,15 @@ export default function SettingsScreen() {
   const [totalSessions, setTotalSessions] = useState(0);
   const [isPremium, setIsPremium] = useState(false);
 
-  React.useEffect(() => {
-    loadStats();
-    loadPremiumStatus();
-  }, []);
+  // Reload on every focus (not just mount) so the stats and subscription
+  // state are fresh after navigating back from Mood History, Journal, or
+  // the Support screen.
+  useFocusEffect(
+    React.useCallback(() => {
+      loadStats();
+      loadPremiumStatus();
+    }, []),
+  );
 
   const loadPremiumStatus = () => {
     setIsPremium(SubscriptionService.getInstance().isPremium());
@@ -136,19 +141,27 @@ export default function SettingsScreen() {
     );
   };
 
-  const handleTogglePremium = async (value: boolean) => {
+  const [restoring, setRestoring] = useState(false);
+
+  // Required by App Store / Play Store guidelines: users who reinstall or
+  // switch devices must be able to recover an active subscription.
+  const handleRestorePurchases = async () => {
+    if (restoring) return;
+    setRestoring(true);
     try {
       const subService = SubscriptionService.getInstance();
-      if (value) {
-        // Mock a monthly subscription activation for debug purposes
-        await subService.activatePremium('monthly');
-      } else {
-        await subService.resetToFreeTier();
-      }
+      const restored = await subService.restorePurchases();
       setIsPremium(subService.isPremium());
+      if (restored) {
+        Alert.alert('Purchases Restored', 'Your Sakina Pro subscription is active. Welcome back!');
+      } else {
+        Alert.alert('Nothing to Restore', 'We could not find an active subscription for this store account.');
+      }
     } catch (error) {
-      logServiceError('SettingsScreen', 'togglePremium', error instanceof Error ? error : new Error(String(error)));
-      Alert.alert('Error', 'Could not update subscription state.');
+      logServiceError('SettingsScreen', 'restorePurchases', error instanceof Error ? error : new Error(String(error)));
+      Alert.alert('Error', 'Could not restore purchases. Please check your connection and try again.');
+    } finally {
+      setRestoring(false);
     }
   };
 
@@ -196,15 +209,23 @@ export default function SettingsScreen() {
           </TouchableOpacity>
         </View>
 
-        <Text style={styles.sectionTitle}>PREFERENCES</Text>
+        <Text style={styles.sectionTitle}>SAKINA PRO</Text>
         <View style={styles.section}>
           <SettingRow
-            label="Premium Features"
-            icon="💎"
-            showToggle={true}
-            toggleValue={isPremium}
-            onToggle={handleTogglePremium}
+            label="Support Sakina"
+            icon="💛"
+            value={isPremium ? 'Pro · Active' : undefined}
+            onPress={() => navigation.navigate('Support')}
           />
+          <SettingRow
+            label={restoring ? 'Restoring…' : 'Restore Purchases'}
+            icon="💳"
+            onPress={handleRestorePurchases}
+          />
+        </View>
+
+        <Text style={styles.sectionTitle}>PREFERENCES</Text>
+        <View style={styles.section}>
           <SettingRow label="Daily Reminders" icon="🔔" onPress={onNavigateToDailyReminders} />
           <SettingRow
             label="Translation Source"
