@@ -620,30 +620,35 @@ const styles = StyleSheet.create({
   },
 
   /* ── Arabic Primary ── */
+  // lineHeight ≥ ~2.1× the font size: Amiri-Quran's harakat sit far above and
+  // below the baseline, and a tighter line box clips them (unreadable tashkeel).
   arabic: {
     fontSize: 24,
-    lineHeight: 48,
+    lineHeight: 50,
     color: Colors.text.primary,
     textAlign: 'center',
   },
   arabicCompact: {
     fontSize: 20,
-    lineHeight: 40,
+    lineHeight: 42,
     color: Colors.text.primary,
     textAlign: 'center',
   },
 
   /* ── Arabic Secondary ── */
+  // Solid warm gold (#EDD9A3, the SurahReader's verse colour) at full opacity:
+  // the Qur'an text is never decoration, so even when English leads it must be
+  // fully legible. The old 55%-alpha cream read as patchy, broken strokes.
   arabicSecondary: {
-    fontSize: 20,
-    lineHeight: 40,
-    color: 'rgba(245, 237, 227, 0.55)',
+    fontSize: 22,
+    lineHeight: 46,
+    color: '#EDD9A3',
     textAlign: 'center',
   },
   arabicSecondaryCompact: {
-    fontSize: 17,
-    lineHeight: 34,
-    color: 'rgba(245, 237, 227, 0.55)',
+    fontSize: 19,
+    lineHeight: 40,
+    color: '#EDD9A3',
     textAlign: 'center',
   },
 
@@ -683,7 +688,9 @@ const styles = StyleSheet.create({
     fontFamily: Typography.fonts.serif,
     fontSize: 13,
     lineHeight: 20,
-    color: 'rgba(245, 237, 227, 0.45)',
+    // 0.62 keeps it clearly secondary to the translation while staying
+    // readable — 0.45 fell below comfortable contrast on the navy ground.
+    color: 'rgba(245, 237, 227, 0.62)',
     textAlign: 'center',
     fontStyle: 'italic',
     marginTop: Spacing.md,

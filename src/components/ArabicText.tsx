@@ -36,9 +36,11 @@ const styles = StyleSheet.create({
     lineHeight: 44,
     fontFamily: Typography.fonts.arabic,
     paddingHorizontal: 6,
-    textShadowColor: 'rgba(46, 211, 198, 0.3)',
-    textShadowOffset: { width: 0, height: 0 },
-    textShadowRadius: 10,
+    // Room for Amiri-Quran's deep harakat on the last line — RN clips glyphs
+    // at the Text bounds, which cut off marks below the baseline.
+    paddingVertical: 8,
+    // No textShadow: the old teal glow (legacy palette) bled through the
+    // strokes at reduced alpha and made the script look patchy.
   },
   verseOrnament: {
     fontSize: Typography.sizes.hero - 6,
