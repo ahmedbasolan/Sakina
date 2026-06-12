@@ -23,6 +23,9 @@ import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { AnimatedMandala } from '../components/AnimatedMandala';
 import { logServiceError } from '../services/errorLoggingService';
 import { HapticsService } from '../services/hapticsService';
+import { FreemiumService } from '../services/freemiumService';
+import { isMercyMood } from '../constants';
+import { getCachedGuidance, setCachedGuidance } from '../services/windowGuidanceCache';
 import {
   HeroHeader,
   VerseOfTheDay,
@@ -128,6 +131,29 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
   // ── Double-tap guard (view concern — prevents two nav pushes) ─
   const isHandlingTap = useRef(false);
 
+  // Window-aware guidance fetch shared by the mood grid and the timed card.
+  // Free, non-mercy moods get ONE fresh verse per prayer window from Home;
+  // re-taps inside the same window return that delivered verse (it's "saved
+  // for you", as the resting point promises). Fresh verses beyond the first
+  // flow only through GuidanceScreen's gated refresh budget — without this,
+  // re-tapping a mood minted unlimited verses and bypassed the resting point.
+  const fetchWindowGuidance = useCallback(async (moodId: Mood) => {
+    const freemium = FreemiumService.getInstance();
+    await freemium.syncPrayerWindow();
+    const windowKey = freemium.getSessionInfo()?.windowKey;
+    const gated = !freemium.isPremium() && !isMercyMood(moodId) && !!windowKey;
+
+    if (gated) {
+      const cached = await getCachedGuidance(windowKey!, moodId);
+      if (cached) return cached;
+    }
+    const experience = await rotationEngine.getGuidance(moodId);
+    if (experience && gated) {
+      await setCachedGuidance(windowKey!, moodId, experience);
+    }
+    return experience;
+  }, [rotationEngine]);
+
   // ── Mood tap ───────────────────────────────────────────────────
   const handleMoodTap = useCallback(async (moodId: Mood) => {
     if (isHandlingTap.current) return;
@@ -139,7 +165,7 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
     setLocalSelectedMood(moodId);
     HapticsService.impactAsync('LIGHT');
     try {
-      const experience = await rotationEngine.getGuidance(moodId);
+      const experience = await fetchWindowGuidance(moodId);
       if (experience) {
         setSelectedMood(moodId);
         setCheckedInToday(true);
@@ -158,12 +184,12 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
     } finally {
       isHandlingTap.current = false;
     }
-  }, [navigation, rotationEngine, setSelectedMood, setLocalSelectedMood, setCheckedInToday, localSelectedMood]);
+  }, [navigation, fetchWindowGuidance, setSelectedMood, setLocalSelectedMood, setCheckedInToday, localSelectedMood]);
 
   const navigateToTimedGuidance = useCallback(async () => {
     const mood = localSelectedMood || 'Calm';
     try {
-      const experience = await rotationEngine.getGuidance(mood);
+      const experience = await fetchWindowGuidance(mood);
       if (experience) {
         navigation.navigate('Guidance', {
           experience,
@@ -174,7 +200,7 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
     } catch (error) {
       logServiceError('HomeScreen', 'navigateToTimedGuidance', error instanceof Error ? error : new Error(String(error)));
     }
-  }, [localSelectedMood, prayerContext, navigation, rotationEngine]);
+  }, [localSelectedMood, prayerContext, navigation, fetchWindowGuidance]);
 
   // ── Derived display values ─────────────────────────────────────
 
