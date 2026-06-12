@@ -60,7 +60,7 @@ describe('useGuidanceLogic — refresh gating', () => {
     onNext = jest.fn();
   });
 
-  it('consumes a refresh (passing mood) and advances when allowed', async () => {
+  it('consumes a refresh and advances when allowed', async () => {
     freemium.useNextRefresh.mockResolvedValue(true);
     const { result } = render('Calm', onNext);
 
@@ -68,7 +68,7 @@ describe('useGuidanceLogic — refresh gating', () => {
       await result.current.requestNext();
     });
 
-    expect(freemium.useNextRefresh).toHaveBeenCalledWith('Calm');
+    expect(freemium.useNextRefresh).toHaveBeenCalledTimes(1);
     expect(onNext).toHaveBeenCalledTimes(1);
     expect(result.current.isResting).toBe(false);
   });

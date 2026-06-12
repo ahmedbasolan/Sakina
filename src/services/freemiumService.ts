@@ -3,14 +3,12 @@ import {
   FreemiumLimits,
   PaywallType,
   SubscriptionState,
-  Mood,
   PeakContext,
 } from '../types';
 import { SessionService } from './sessionService';
 import { SubscriptionService } from './subscriptionService';
 import {
   FREEMIUM_LIMITS,
-  isMercyMood,
   UPGRADE_ASK_COOLDOWN_MS,
   SUBSCRIPTION_PRICING,
 } from '../constants';
@@ -163,20 +161,21 @@ export class FreemiumService {
     await this.sessionService.syncWindow(this.isPremium());
   }
 
-  canUseNextRefresh(mood?: Mood): boolean {
-    return this.sessionService.canUseNextRefresh(this.isPremium(), this.mercy(mood));
+  // The refresh budget applies uniformly to every mood (owner decision,
+  // 2026-06-12): the former MERCY_MOODS exemption made 5 of the 8 home moods
+  // effectively unlimited. The check-in verse itself stays free per window for
+  // every mood — only "show me another" is budgeted — so a heavy heart is
+  // still always met with guidance.
+  canUseNextRefresh(): boolean {
+    return this.sessionService.canUseNextRefresh(this.isPremium());
   }
 
-  async useNextRefresh(mood?: Mood): Promise<boolean> {
-    return this.sessionService.useNextRefresh(this.isPremium(), this.mercy(mood));
+  async useNextRefresh(): Promise<boolean> {
+    return this.sessionService.useNextRefresh(this.isPremium());
   }
 
-  getRemainingRefreshes(mood?: Mood): number {
-    return this.sessionService.getRemainingRefreshes(this.isPremium(), this.mercy(mood));
-  }
-
-  private mercy(mood?: Mood): boolean {
-    return mood ? isMercyMood(mood) : false;
+  getRemainingRefreshes(): number {
+    return this.sessionService.getRemainingRefreshes(this.isPremium());
   }
 
   async canSaveItem(): Promise<boolean> {

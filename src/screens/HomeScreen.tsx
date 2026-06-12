@@ -24,7 +24,6 @@ import { AnimatedMandala } from '../components/AnimatedMandala';
 import { logServiceError } from '../services/errorLoggingService';
 import { HapticsService } from '../services/hapticsService';
 import { FreemiumService } from '../services/freemiumService';
-import { isMercyMood } from '../constants';
 import { getCachedGuidance, setCachedGuidance } from '../services/windowGuidanceCache';
 import {
   HeroHeader,
@@ -132,7 +131,7 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
   const isHandlingTap = useRef(false);
 
   // Window-aware guidance fetch shared by the mood grid and the timed card.
-  // Free, non-mercy moods get ONE fresh verse per prayer window from Home;
+  // Free users get ONE fresh verse per mood per prayer window from Home;
   // re-taps inside the same window return that delivered verse (it's "saved
   // for you", as the resting point promises). Fresh verses beyond the first
   // flow only through GuidanceScreen's gated refresh budget — without this,
@@ -141,7 +140,7 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
     const freemium = FreemiumService.getInstance();
     await freemium.syncPrayerWindow();
     const windowKey = freemium.getSessionInfo()?.windowKey;
-    const gated = !freemium.isPremium() && !isMercyMood(moodId) && !!windowKey;
+    const gated = !freemium.isPremium() && !!windowKey;
 
     if (gated) {
       const cached = await getCachedGuidance(windowKey!, moodId);
