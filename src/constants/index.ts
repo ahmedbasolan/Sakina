@@ -127,9 +127,12 @@ export const getMoodIslamicTerm = (mood: Mood): string => {
 };
 
 /**
- * The six "heavy" moods. When the active guidance mood is one of these, limits
- * lift and no upgrade prompt appears (the mercy rule — see spec §4). The list is
- * a moral decision, not a tuning knob: when in doubt, mercy.
+ * The six "heavy" moods. Historically these lifted the refresh limit entirely
+ * (the mercy rule, spec §4), but that made 5 of the 8 home moods unlimited, so
+ * since 2026-06-12 the per-window budget applies to every mood and this set is
+ * no longer consulted by the refresh gate. What remains of the mercy ethos:
+ * every mood's check-in verse is free each prayer window, and the limit is a
+ * gentle resting point, never a hard paywall. Kept for tone/copy decisions.
  */
 export const MERCY_MOODS: ReadonlySet<Mood> = new Set<Mood>([
   'Overwhelmed', // Tawakkul

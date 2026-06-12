@@ -2,8 +2,10 @@
  * RestingPoint — the gentle pause a free user meets after spending a prayer
  * window's three guidance refreshes (spec §3.2). It is a *resting point*, not a
  * paywall: kind copy, the reassurance that what they received is saved, and a
- * single calm way back. No price prompt ever appears here — upgrade asks live
- * only at peaks (spec §8). Premium and mercy moods never reach this screen.
+ * single calm way back. No price ever appears here — but a quiet, gold
+ * "Support Sakina" line sits beneath the CTA (owner decision) so anyone who
+ * wants more never has to hunt for the upgrade path. Premium never reaches
+ * this screen.
  */
 import React, { useEffect, useRef } from 'react';
 import { Animated, StyleSheet, Text, TouchableOpacity } from 'react-native';
@@ -25,9 +27,9 @@ interface Props {
   /** Mood accent for the single CTA; falls back to brand gold. */
   accentColor?: string;
   /**
-   * Optional, gated "support the mission" line (spec §8 — the positive-mood
-   * pause may carry at most a single soft, dismissible line). Only the parent's
-   * shouldOfferUpgrade gate decides whether this is provided.
+   * Opens the Support Sakina (upgrade) screen. Always provided by the
+   * guidance screen — the line is a permanent, quiet affordance, not a
+   * cooldown-gated ask.
    */
   onSupport?: () => void;
   /**
@@ -170,7 +172,9 @@ const styles = StyleSheet.create({
   supportText: {
     fontFamily: Typography.fonts.latin,
     fontSize: Typography.sizes.small,
-    color: Colors.text.muted,
+    // Brand gold (not the mood accent): findable as the upgrade path while
+    // staying visibly lighter than the primary CTA above it.
+    color: Colors.accent.primary,
     letterSpacing: Typography.letterSpacing.normal,
   },
 });

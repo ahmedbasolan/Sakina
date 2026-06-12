@@ -262,7 +262,7 @@ describe('FreemiumService', () => {
     it('should check if can use next refresh', () => {
       mockSessionService.canUseNextRefresh.mockReturnValue(true);
       expect(service.canUseNextRefresh()).toBe(true);
-      expect(mockSessionService.canUseNextRefresh).toHaveBeenCalledWith(false, false);
+      expect(mockSessionService.canUseNextRefresh).toHaveBeenCalledWith(false);
     });
 
     it('should use next refresh', async () => {
@@ -271,20 +271,16 @@ describe('FreemiumService', () => {
       const result = await service.useNextRefresh();
 
       expect(result).toBe(true);
-      expect(mockSessionService.useNextRefresh).toHaveBeenCalledWith(false, false);
+      expect(mockSessionService.useNextRefresh).toHaveBeenCalledWith(false);
     });
 
-    it('passes non-mercy by default for remaining refreshes', () => {
+    it('budgets every mood the same — no mercy exemption (owner decision)', () => {
+      // The former MERCY_MOODS bypass passed mercy=true for heavy moods,
+      // granting unlimited refreshes in 5 of the 8 home moods. The gate is
+      // now mood-blind: only premium status reaches the session service.
       mockSessionService.getRemainingRefreshes.mockReturnValue(3);
       expect(service.getRemainingRefreshes()).toBe(3);
-      expect(mockSessionService.getRemainingRefreshes).toHaveBeenCalledWith(false, false);
-    });
-
-    it('passes mercy=true for a heavy mood', () => {
-      const { isMercyMood } = require('../../constants');
-      isMercyMood.mockReturnValue(true);
-      service.getRemainingRefreshes('Sad');
-      expect(mockSessionService.getRemainingRefreshes).toHaveBeenCalledWith(false, true);
+      expect(mockSessionService.getRemainingRefreshes).toHaveBeenCalledWith(false);
     });
 
     it('should get session info', () => {

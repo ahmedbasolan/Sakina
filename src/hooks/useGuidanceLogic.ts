@@ -42,15 +42,15 @@ export const useGuidanceLogic = (
     showTransliteration: true,
     autoPlayAudio: false,
   });
-  // Initialized synchronously from the service so mercy moods/premium read
-  // Infinity on first render (no flash of budget dots before the async sync).
+  // Initialized synchronously from the service so premium reads Infinity on
+  // first render (no flash of budget dots before the async sync).
   const [remainingRefreshes, setRemainingRefreshes] = useState(() =>
-    FreemiumService.getInstance().getRemainingRefreshes(mood),
+    FreemiumService.getInstance().getRemainingRefreshes(),
   );
   // Gentle "resting point": true once a free user has spent the window's
   // refresh allowance. The screen reads this to show a calm pause instead of
-  // silently doing nothing. Mercy moods & premium never reach it (the service
-  // grants unlimited there). Cleared on a new window/mood or by dismissResting.
+  // silently doing nothing. Premium never reaches it (the service grants
+  // unlimited there). Cleared on a new window/mood or by dismissResting.
   const [isResting, setIsResting] = useState(false);
   // Tracks whether the user has already seen and dismissed the resting point
   // for this prayer window. Prevents the modal from re-appearing every time
@@ -74,13 +74,13 @@ export const useGuidanceLogic = (
     setSavedStates({});
   }, [experience?.content?.id]);
 
-  // Sync the per-prayer-window allowance, then reflect the (mercy-aware) remaining
-  // count. Re-runs if the active mood changes in-session; syncPrayerWindow is
+  // Sync the per-prayer-window allowance, then reflect the remaining count.
+  // Re-runs if the active mood changes in-session; syncPrayerWindow is
   // idempotent (only writes when the window actually changed).
   useEffect(() => {
     const syncRefreshes = async () => {
       await freemiumService.syncPrayerWindow();
-      const remaining = freemiumService.getRemainingRefreshes(mood);
+      const remaining = freemiumService.getRemainingRefreshes();
       setRemainingRefreshes(remaining);
       if (remaining > 0) {
         setIsResting(false);
@@ -200,7 +200,7 @@ export const useGuidanceLogic = (
     try {
       // Idempotent — picks up a new prayer window if one opened mid-session.
       await freemiumService.syncPrayerWindow();
-      if (freemiumService.getRemainingRefreshes(mood) <= 0) {
+      if (freemiumService.getRemainingRefreshes() <= 0) {
         // Only show the resting point the first time per window; subsequent
         // presses after dismissal are silently swallowed (modal won't re-appear).
         if (!hasRestingBeenDismissed.current) {
@@ -212,9 +212,9 @@ export const useGuidanceLogic = (
       const delivered = (await onNext()) !== false;
       if (!delivered) return false;
 
-      // Spends one refresh (the service no-ops for premium and mercy moods).
-      await freemiumService.useNextRefresh(mood);
-      setRemainingRefreshes(freemiumService.getRemainingRefreshes(mood));
+      // Spends one refresh (the service no-ops for premium).
+      await freemiumService.useNextRefresh();
+      setRemainingRefreshes(freemiumService.getRemainingRefreshes());
       return true;
     } finally {
       isAdvancing.current = false;

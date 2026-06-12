@@ -32,7 +32,6 @@ import { useRoute, useNavigation } from '@react-navigation/native';
 import { useAppContext } from '../context/AppContext';
 import { SubscriptionService } from '../services/subscriptionService';
 import { FreemiumService } from '../services/freemiumService';
-import { isMercyMood } from '../constants';
 import { setCachedGuidance } from '../services/windowGuidanceCache';
 import PrayerTimesService, { formatPrayerTime } from '../services/prayerTimesService';
 import { getUserLocation } from '../services/locationStorage';
@@ -57,7 +56,7 @@ const GuidanceScreen: React.FC = () => {
         // Keep the window cache pointing at the latest delivered verse so a
         // Home re-tap re-enters here, not the window's first verse.
         const windowKey = freemium.getSessionInfo()?.windowKey;
-        if (windowKey && !isPremium && !isMercyMood(mood)) {
+        if (windowKey && !isPremium) {
           setCachedGuidance(windowKey, mood, nextExp).catch(() => {});
         }
         return true;
@@ -175,19 +174,6 @@ const GuidanceScreen: React.FC = () => {
   useEffect(() => {
     requestNextRef.current = requestNext;
   }, [requestNext]);
-
-  // The positive-mood pause is a peak (spec §8): when the rest point appears the
-  // gate may add a single soft support line. Decide + record once per appearance.
-  const [offerSupportAtRest, setOfferSupportAtRest] = useState(false);
-  useEffect(() => {
-    if (isResting) {
-      const willOffer = freemium.shouldOfferUpgrade('positive_pause');
-      if (willOffer) freemium.recordUpgradeAsk('positive_pause');
-      setOfferSupportAtRest(willOffer);
-    } else {
-      setOfferSupportAtRest(false);
-    }
-  }, [isResting]);
 
   // Concrete return moment for the resting card ("Maghrib · 7:02 PM"). Timings
   // come from the day's cache, so this resolves instantly offline; any failure
@@ -317,7 +303,7 @@ const GuidanceScreen: React.FC = () => {
 
       {/* Window budget — three quiet dots that dim as refreshes are spent, so
           the resting point arrives expected rather than as a wall. Hidden for
-          premium and mercy moods (their allowance is Infinity). */}
+          premium (its allowance is Infinity). */}
       {Number.isFinite(remainingRefreshes) && (
         <View
           style={styles.budgetRow}
@@ -424,21 +410,18 @@ const GuidanceScreen: React.FC = () => {
       />
 
       {/* Gentle resting point once the window's free refreshes are spent.
-          Mercy moods & premium never reach here (the hook gate grants them
-          unlimited). Dismiss returns to the saved reflections. */}
+          Premium never reaches here (the hook gate grants it unlimited).
+          The Support Sakina line is always present (owner decision): a new or
+          returning user should find the upgrade path without hunting for it. */}
       {isResting && (
         <RestingPoint
           onDismiss={dismissResting}
           returnAfter={returnAfter}
           accentColor={(MoodColors[mood] || MoodColors.Calm).accent}
-          onSupport={
-            offerSupportAtRest
-              ? () => {
-                  dismissResting();
-                  navigation.navigate('Support');
-                }
-              : undefined
-          }
+          onSupport={() => {
+            dismissResting();
+            navigation.navigate('Support');
+          }}
         />
       )}
     </ImmersiveBackground>
