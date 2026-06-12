@@ -42,7 +42,11 @@ export const useGuidanceLogic = (
     showTransliteration: true,
     autoPlayAudio: false,
   });
-  const [remainingRefreshes, setRemainingRefreshes] = useState(3);
+  // Initialized synchronously from the service so mercy moods/premium read
+  // Infinity on first render (no flash of budget dots before the async sync).
+  const [remainingRefreshes, setRemainingRefreshes] = useState(() =>
+    FreemiumService.getInstance().getRemainingRefreshes(mood),
+  );
   // Gentle "resting point": true once a free user has spent the window's
   // refresh allowance. The screen reads this to show a calm pause instead of
   // silently doing nothing. Mercy moods & premium never reach it (the service

@@ -30,12 +30,19 @@ interface Props {
    * shouldOfferUpgrade gate decides whether this is provided.
    */
   onSupport?: () => void;
+  /**
+   * Concrete return moment, e.g. "Maghrib · 7:02 PM". When absent the copy
+   * falls back to the generic "your next prayer" — never block the pause on
+   * prayer-time availability.
+   */
+  returnAfter?: string | null;
 }
 
 const RestingPoint: React.FC<Props> = ({
   onDismiss,
   accentColor = Colors.accent.primary,
   onSupport,
+  returnAfter,
 }) => {
   const insets = useSafeAreaInsets();
   const reduceMotion = useReduceMotion();
@@ -75,8 +82,8 @@ const RestingPoint: React.FC<Props> = ({
         <Text style={styles.title}>A moment to rest</Text>
 
         <Text style={styles.body}>
-          You&apos;ve received three reflections. Sit with them — they&apos;re saved for you. Return
-          after your next prayer, in shaa Allah.
+          You&apos;ve received this window&apos;s reflections. Sit with them — they&apos;re saved in
+          your Mood History. Return after {returnAfter || 'your next prayer'}, in shaa Allah.
         </Text>
 
         <TouchableOpacity

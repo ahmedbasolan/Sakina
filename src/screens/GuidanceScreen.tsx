@@ -32,11 +32,15 @@ import { useRoute, useNavigation } from '@react-navigation/native';
 import { useAppContext } from '../context/AppContext';
 import { SubscriptionService } from '../services/subscriptionService';
 import { FreemiumService } from '../services/freemiumService';
+import { isMercyMood } from '../constants';
+import { setCachedGuidance } from '../services/windowGuidanceCache';
+import PrayerTimesService, { formatPrayerTime } from '../services/prayerTimesService';
+import { getUserLocation } from '../services/locationStorage';
 
 const GuidanceScreen: React.FC = () => {
   const route = useRoute<any>();
   const navigation = useNavigation<any>();
-  const { rotationEngine } = useAppContext();
+  const { rotationEngine, timeFormat } = useAppContext();
   const isPremium = SubscriptionService.getInstance().isPremium();
   const freemium = FreemiumService.getInstance();
 
@@ -50,6 +54,12 @@ const GuidanceScreen: React.FC = () => {
       const nextExp = await rotationEngine.getGuidance(mood);
       if (nextExp) {
         navigation.setParams({ experience: nextExp });
+        // Keep the window cache pointing at the latest delivered verse so a
+        // Home re-tap re-enters here, not the window's first verse.
+        const windowKey = freemium.getSessionInfo()?.windowKey;
+        if (windowKey && !isPremium && !isMercyMood(mood)) {
+          setCachedGuidance(windowKey, mood, nextExp).catch(() => {});
+        }
         return true;
       }
     } catch (error) {
@@ -153,6 +163,7 @@ const GuidanceScreen: React.FC = () => {
     isResting,
     isWindowExhausted,
     dismissResting,
+    remainingRefreshes,
   } = useGuidanceLogic(experience, mood, onNext, onSaveReflection, totalLayers);
 
   // Hide "→ next verse" only after the resting point has been seen and dismissed.
@@ -177,6 +188,32 @@ const GuidanceScreen: React.FC = () => {
       setOfferSupportAtRest(false);
     }
   }, [isResting]);
+
+  // Concrete return moment for the resting card ("Maghrib · 7:02 PM"). Timings
+  // come from the day's cache, so this resolves instantly offline; any failure
+  // just leaves the generic "your next prayer" copy.
+  const [returnAfter, setReturnAfter] = useState<string | null>(null);
+  useEffect(() => {
+    if (!isResting) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const location = await getUserLocation();
+        if (!location) return;
+        const prayerService = PrayerTimesService.getInstance();
+        const data = await prayerService.getTimingsByCity(location.city, location.country);
+        const next = prayerService.getNextPrayerInfo(data.timings);
+        if (!cancelled) {
+          setReturnAfter(`${next.name} · ${formatPrayerTime(next.time, timeFormat)}`);
+        }
+      } catch {
+        // generic copy fallback
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [isResting, timeFormat]);
 
   if (!experience) {
     return (
@@ -278,6 +315,31 @@ const GuidanceScreen: React.FC = () => {
         </LayerContainer>
       </View>
 
+      {/* Window budget — three quiet dots that dim as refreshes are spent, so
+          the resting point arrives expected rather than as a wall. Hidden for
+          premium and mercy moods (their allowance is Infinity). */}
+      {Number.isFinite(remainingRefreshes) && (
+        <View
+          style={styles.budgetRow}
+          pointerEvents="none"
+          accessible
+          accessibilityLabel={`${remainingRefreshes} more ${remainingRefreshes === 1 ? 'reflection' : 'reflections'} this prayer window`}
+        >
+          {Array.from({ length: 3 }).map((_, i) => (
+            <View
+              key={i}
+              style={[
+                styles.budgetDot,
+                i < remainingRefreshes && {
+                  backgroundColor: (MoodColors[mood] || MoodColors.Calm).accent,
+                  opacity: 0.85,
+                },
+              ]}
+            />
+          ))}
+        </View>
+      )}
+
       {/* Tappable layer nav — prev/next buttons + dot track. Replaces the old
           purely-decorative swipe hint so users can navigate without swiping. */}
       <LayerPager
@@ -367,6 +429,7 @@ const GuidanceScreen: React.FC = () => {
       {isResting && (
         <RestingPoint
           onDismiss={dismissResting}
+          returnAfter={returnAfter}
           accentColor={(MoodColors[mood] || MoodColors.Calm).accent}
           onSupport={
             offerSupportAtRest
@@ -408,6 +471,18 @@ const styles = StyleSheet.create({
     right: 0,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  budgetRow: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    gap: Spacing.sm,
+    paddingTop: Spacing.xs,
+  },
+  budgetDot: {
+    width: Spacing.xs,
+    height: Spacing.xs,
+    borderRadius: Spacing.xs / 2,
+    backgroundColor: 'rgba(245, 237, 227, 0.18)', // matches LayerPager's idle dots
   },
 });
 
