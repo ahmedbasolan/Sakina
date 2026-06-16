@@ -154,13 +154,14 @@ class NotificationService {
     // 1. Tahajjud Reminder (fajr_pre) - 1 hour before Fajr
     const fajrTime = this.parseTime(timings.Fajr);
     const tahajjudDate = new Date();
-    // Use total-minutes arithmetic so setHours never receives a negative hour
-    // (e.g. Fajr at 00:30 → tahajjud at 23:30 previous day via setHours(-1,30)
-    // would move the date backwards and fail the > new Date() guard).
+    // Wrap into [0,1440) so an hour-before-Fajr that crosses midnight (e.g. Fajr
+    // 00:30 → 23:30) maps to a valid same-day wall-clock. Plain subtraction here
+    // produced negative minutes → setHours(-1,-30), which moved the date backwards
+    // and silently failed the > new Date() guard, dropping the reminder entirely.
     const fajrTotalMinutes = fajrTime.hours * 60 + fajrTime.minutes;
-    const tahajjudTotalMinutes = fajrTotalMinutes - 60;
+    const tahajjudTotalMinutes = (((fajrTotalMinutes - 60) % 1440) + 1440) % 1440;
     tahajjudDate.setHours(
-      Math.floor(tahajjudTotalMinutes / 60) % 24,
+      Math.floor(tahajjudTotalMinutes / 60),
       tahajjudTotalMinutes % 60,
       0,
       0,

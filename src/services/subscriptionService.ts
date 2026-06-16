@@ -50,19 +50,14 @@ export class SubscriptionService {
     return this.subscriptionState;
   }
 
-  /** Purchase the monthly or yearly subscription. */
+  /** Purchase the monthly or yearly subscription. Returns false on user-cancel; throws on store/config errors. */
   async activatePremium(type: SubscriptionType): Promise<boolean> {
-    try {
-      const pkgType = type === 'yearly' ? 'yearly' : 'monthly';
-      const { success, customerInfo } = await revenueCat.purchasePackage(pkgType);
-      if (success && customerInfo) {
-        await this.syncFromCustomerInfo(customerInfo);
-      }
-      return success;
-    } catch (error) {
-      console.error('Error activating premium:', error);
-      return false;
+    const pkgType = type === 'yearly' ? 'yearly' : 'monthly';
+    const { success, customerInfo } = await revenueCat.purchasePackage(pkgType);
+    if (success && customerInfo) {
+      await this.syncFromCustomerInfo(customerInfo);
     }
+    return success;
   }
 
   /**
@@ -74,16 +69,11 @@ export class SubscriptionService {
     return this.activatePremium('yearly');
   }
 
-  /** Restore purchases (required by App Store / Play Store guidelines). */
+  /** Restore purchases (required by App Store / Play Store guidelines). Throws on failure. */
   async restorePurchases(): Promise<boolean> {
-    try {
-      const info = await revenueCat.restorePurchases();
-      await this.syncFromCustomerInfo(info);
-      return this.isPremium();
-    } catch (error) {
-      console.error('Error restoring purchases:', error);
-      return false;
-    }
+    const info = await revenueCat.restorePurchases();
+    await this.syncFromCustomerInfo(info);
+    return this.isPremium();
   }
 
   /** Purchase a special-edition bundle (still local — bundles not in RC yet). */

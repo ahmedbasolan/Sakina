@@ -142,6 +142,10 @@ class PrayerTimesService {
       // 3. Persist today's data + update cross-day fallback
       await AsyncStorage.setItem(cacheKey, JSON.stringify(data));
       await AsyncStorage.setItem(fallbackKey, JSON.stringify(data));
+      // Drop previous days' per-date caches so AsyncStorage doesn't accumulate
+      // one stale entry per city/method/day forever. Today's keys and the
+      // cross-day fallback keys are preserved.
+      this.pruneStaleTimingCaches(today).catch(() => {});
       return data;
     } catch (error: any) {
       logNetworkError(this.BASE_URL, 'GET', error instanceof Error ? error : new Error(String(error)), { city, country });
@@ -155,6 +159,22 @@ class PrayerTimesService {
 
       throw new Error(error.message || 'Network error fetching prayer times');
     }
+  }
+
+  /**
+   * Remove `@prayer_timings_*` caches from previous days. Keeps any key for
+   * `today` and the date-less `_fallback` keys (the offline safety net). Best
+   * effort — failures here must never affect the prayer-times fetch.
+   */
+  private async pruneStaleTimingCaches(today: string): Promise<void> {
+    const keys = await AsyncStorage.getAllKeys();
+    const stale = keys.filter(
+      (k) =>
+        k.startsWith('@prayer_timings_') &&
+        !k.endsWith('_fallback') &&
+        !k.endsWith(`_${today}`),
+    );
+    if (stale.length) await AsyncStorage.multiRemove(stale);
   }
 
   /**

@@ -117,7 +117,7 @@ const RestingPoint: React.FC<Props> = ({
 const styles = StyleSheet.create({
   backdrop: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: Colors.overlay,
+    backgroundColor: 'rgba(4, 13, 26, 0.96)', // Increased backdrop opacity for a deep, focused resting state
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: Spacing.xl,
