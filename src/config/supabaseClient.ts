@@ -20,42 +20,71 @@ const supabaseAnonKey = SUPABASE_ANON_KEY || '';
 
 // expo-secure-store is capped at 2 KB per key (iOS Keychain limit).
 // Supabase sessions exceed that, so we chunk large values across numbered keys.
+// Write order: chunks first, sentinel last (atomic-ish — sentinel is the commit point).
+// Delete order: chunks first, sentinel last (sentinel is the pointer; lose it last).
 const CHUNK_SIZE = 1800;
 
 const SecureStorage = {
   getItem: async (key: string): Promise<string | null> => {
-    const chunk0 = await SecureStore.getItemAsync(key);
-    if (chunk0 === null) return null;
-    // Single-chunk fast path (most keys are small)
-    if (!chunk0.startsWith('__chunked__')) return chunk0;
-    const count = parseInt(chunk0.replace('__chunked__', ''), 10);
-    const parts: string[] = [];
-    for (let i = 0; i < count; i++) {
-      parts.push((await SecureStore.getItemAsync(`${key}_chunk_${i}`)) ?? '');
-    }
-    return parts.join('');
+    const meta = await SecureStore.getItemAsync(key);
+    if (meta === null) return null;
+    if (!meta.startsWith('__chunked__')) return meta;
+    const count = parseInt(meta.replace('__chunked__', ''), 10);
+    // Malformed sentinel (count NaN) — treat as missing rather than returning ''.
+    if (isNaN(count) || count <= 0) return null;
+    const chunkValues = await Promise.all(
+      Array.from({ length: count }, (_, i) => SecureStore.getItemAsync(`${key}_chunk_${i}`)),
+    );
+    // If any chunk is missing the session is corrupt — signal absence so auth re-authenticates cleanly.
+    if (chunkValues.some((c) => c === null)) return null;
+    return chunkValues.join('');
   },
+
   setItem: async (key: string, value: string): Promise<void> => {
+    // Clean up any previously-chunked value stored at this key before writing
+    // the new value, so stale chunk keys never linger in the Keychain.
+    const existing = await SecureStore.getItemAsync(key);
+    if (existing?.startsWith('__chunked__')) {
+      const oldCount = parseInt(existing.replace('__chunked__', ''), 10);
+      if (!isNaN(oldCount) && oldCount > 0) {
+        await Promise.all(
+          Array.from({ length: oldCount }, (_, i) =>
+            SecureStore.deleteItemAsync(`${key}_chunk_${i}`),
+          ),
+        );
+      }
+    }
+
     if (value.length <= CHUNK_SIZE) {
       await SecureStore.setItemAsync(key, value);
       return;
     }
+
     const chunks: string[] = [];
     for (let i = 0; i < value.length; i += CHUNK_SIZE) {
       chunks.push(value.slice(i, i + CHUNK_SIZE));
     }
-    await SecureStore.setItemAsync(key, `__chunked__${chunks.length}`);
+    // Write all chunks first; only write the sentinel after all chunks succeed.
+    // This way a partial failure leaves no sentinel, so getItem returns null
+    // (clean re-auth) rather than a corrupt partial token.
     await Promise.all(chunks.map((c, i) => SecureStore.setItemAsync(`${key}_chunk_${i}`, c)));
+    await SecureStore.setItemAsync(key, `__chunked__${chunks.length}`);
   },
+
   removeItem: async (key: string): Promise<void> => {
     const meta = await SecureStore.getItemAsync(key);
-    await SecureStore.deleteItemAsync(key);
     if (meta?.startsWith('__chunked__')) {
       const count = parseInt(meta.replace('__chunked__', ''), 10);
-      await Promise.all(
-        Array.from({ length: count }, (_, i) => SecureStore.deleteItemAsync(`${key}_chunk_${i}`)),
-      );
+      if (!isNaN(count) && count > 0) {
+        // Delete chunks first; only remove the sentinel after all chunks are gone.
+        await Promise.all(
+          Array.from({ length: count }, (_, i) =>
+            SecureStore.deleteItemAsync(`${key}_chunk_${i}`),
+          ),
+        );
+      }
     }
+    await SecureStore.deleteItemAsync(key);
   },
 };
 
