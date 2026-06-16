@@ -44,6 +44,7 @@ export class ReflectionRepository {
     mood: Mood,
     reflection: string,
   ): Promise<void> {
+    const safeReflection = reflection.slice(0, 1000);
     await dbQuery(async (db) => {
       await db.runAsync(
         `INSERT INTO saved_reflections
@@ -54,7 +55,7 @@ export class ReflectionRepository {
           contentId,
           angleId,
           mood,
-          reflection,
+          safeReflection,
           Date.now(),
         ],
       );

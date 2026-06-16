@@ -239,12 +239,16 @@ export class SubscriptionService {
       });
 
       if (row) {
+        const validTiers: SubscriptionTier[] = ['free', 'premium'];
+        const validTypes: Array<SubscriptionType | undefined> = ['monthly', 'yearly', 'trial', undefined];
+        const tier: SubscriptionTier = validTiers.includes(row.tier) ? row.tier : 'free';
+        const rawType: SubscriptionType | undefined = validTypes.includes(row.type) ? row.type : undefined;
         this.subscriptionState = {
-          tier: row.tier as SubscriptionTier,
-          type: row.type as SubscriptionType,
+          tier,
+          type: rawType,
           trialEndDate: row.trialEndDate,
           subscriptionEndDate: row.subscriptionEndDate,
-          isActive: Boolean(row.isActive),
+          isActive: tier === 'premium' && Boolean(row.isActive),
           willRenew: Boolean(row.willRenew),
           unlockedBundleIds: row.unlockedBundleIds ? JSON.parse(row.unlockedBundleIds) : [],
         };

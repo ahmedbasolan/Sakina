@@ -55,12 +55,15 @@ export async function getDailyHadith(): Promise<HadithContent> {
     try {
       // Fetching a random hadith from Bukhari (Book 1) as an example.
       // Adjust endpoints based on the actual Sunnah.com API documentation.
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 10000);
       const response = await fetch('https://sunnah.com/api/v2/collections/bukhari/books/1/hadiths?limit=10', {
         headers: {
           'x-api-key': SUNNAH_API_KEY,
           'Accept': 'application/json'
-        }
-      });
+        },
+        signal: controller.signal,
+      }).finally(() => clearTimeout(timeout));
       
       if (response.ok) {
         const data = await response.json();
