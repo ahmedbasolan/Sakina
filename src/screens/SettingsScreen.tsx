@@ -23,6 +23,7 @@ import { refreshContentOnly } from '../database/schema';
 import { SubscriptionService } from '../services/subscriptionService';
 import { SupabaseDataService } from '../services/supabaseDataService';
 import { Colors, Spacing, Typography, BorderRadius } from '../theme/DesignSystem';
+import { getAnalyticsConsent, setAnalyticsConsent } from '../config/posthog';
 
 type SettingsNavProp = CompositeNavigationProp<
   StackNavigationProp<RootStackParamList, 'Settings'>,
@@ -97,6 +98,7 @@ export default function SettingsScreen() {
     React.useCallback(() => {
       loadStats();
       loadPremiumStatus();
+      getAnalyticsConsent().then(setAnalyticsEnabled).catch(() => {});
     }, []),
   );
 
@@ -150,6 +152,7 @@ export default function SettingsScreen() {
     );
   };
 
+  const [analyticsEnabled, setAnalyticsEnabled] = useState(true);
   const [restoring, setRestoring] = useState(false);
 
   // Required by App Store / Play Store guidelines: users who reinstall or
@@ -245,6 +248,16 @@ export default function SettingsScreen() {
 
         <Text style={styles.sectionTitle}>DATA & PRIVACY</Text>
         <View style={styles.section}>
+          <SettingRow
+            label="Share Crash Reports"
+            icon="analytics-outline"
+            showToggle={true}
+            toggleValue={analyticsEnabled}
+            onToggle={async (val) => {
+              setAnalyticsEnabled(val);
+              await setAnalyticsConsent(val);
+            }}
+          />
           <SettingRow label="Reset App Content" icon="refresh-outline" onPress={handleContentReset} />
           <SettingRow
             label="Clear Mood History"

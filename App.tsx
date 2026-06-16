@@ -30,7 +30,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { AppProvider } from './src/context/AppContext';
 import { AuthProvider } from './src/context/AuthContext';
 import { ThemeProvider, useTheme } from './src/context/ThemeContext';
-import posthog from './src/config/posthog';
+import posthog, { loadAnalyticsConsent } from './src/config/posthog';
 
 // ── Global error handlers ─────────────────────────────────────────────────
 // Capture unhandled JS errors and promise rejections before they silently vanish.
@@ -160,6 +160,7 @@ export default function App() {
     const initializeApp = async () => {
       try {
         await initializeDatabase();
+        await loadAnalyticsConsent();
         setIsInitialized(true);
       } catch (error) {
         console.error('Database initialization failed:', error);
