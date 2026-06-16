@@ -1,8 +1,8 @@
 import React, { useRef, useEffect } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Animated, Platform } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Animated } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Mood, MoodConfig } from '../../types';
-import { Colors } from '../../theme/DesignSystem';
+import { Colors, Typography } from '../../theme/DesignSystem';
 
 interface MoodButtonProps {
   mood: MoodConfig;
@@ -150,7 +150,7 @@ const styles = StyleSheet.create({
   moodSublabel: {
     fontSize: 11,
     fontWeight: '500',
-    fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
+    fontFamily: Typography.fonts.serif,
     fontStyle: 'italic',
   },
   checkedBadge: {

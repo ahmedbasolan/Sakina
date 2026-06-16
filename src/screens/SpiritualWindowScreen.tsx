@@ -15,6 +15,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { RootStackParamList } from '../navigation/types';
 import { spiritualWindowsData, defaultSpiritualWindow } from '../data/spiritualWindows';
 import { logServiceError } from '../services/errorLoggingService';
+import { Typography, Spacing } from '../theme/DesignSystem';
 
 type Props = StackScreenProps<RootStackParamList, 'SpiritualWindow'>;
 
@@ -247,7 +248,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 20,
+    paddingHorizontal: Spacing.xl,
     paddingBottom: 20,
   },
   closeBtn: {
@@ -258,7 +259,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     letterSpacing: 2,
     textTransform: 'uppercase',
-    fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
+    fontFamily: Typography.fonts.serif,
   },
   contentContainer: {
     flex: 1,
@@ -271,7 +272,7 @@ const styles = StyleSheet.create({
   stepTitle: {
     fontSize: 28,
     color: '#FFF',
-    fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
+    fontFamily: Typography.fonts.serif,
     textAlign: 'center',
     marginBottom: 20,
     lineHeight: 34,

@@ -6,7 +6,7 @@
  * Selection saves to AsyncStorage and auto-advances after 800ms.
  */
 import React, { useEffect, useRef, useState, useCallback } from 'react';
-import { Colors } from '../../theme/DesignSystem';
+import { Colors, Typography } from '../../theme/DesignSystem';
 import {
   View,
   Text,
@@ -14,7 +14,6 @@ import {
   Animated,
   Dimensions,
   TouchableOpacity,
-  Platform,
   ScrollView,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
@@ -341,12 +340,12 @@ const styles = StyleSheet.create({
   arabicTitle: {
     fontSize: 20,
     color: 'rgba(201,168,76,0.78)',
-    fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
+    fontFamily: Typography.fonts.serif,
     marginBottom: 6,
     letterSpacing: 1,
   },
   title: {
-    fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
+    fontFamily: Typography.fonts.serif,
     fontSize: 26,
     color: '#F0E6D3',
     textAlign: 'center',
@@ -406,7 +405,7 @@ const styles = StyleSheet.create({
   },
   moodSublabel: {
     fontSize: 13,
-    fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
+    fontFamily: Typography.fonts.serif,
     letterSpacing: 0.5,
     opacity: 0.65,
     marginBottom: 20,
@@ -419,7 +418,7 @@ const styles = StyleSheet.create({
   },
   givingText: {
     fontSize: 14,
-    fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
+    fontFamily: Typography.fonts.serif,
     fontStyle: 'italic',
     textAlign: 'center',
     lineHeight: 22,

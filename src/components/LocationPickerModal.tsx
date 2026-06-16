@@ -14,6 +14,7 @@ import {
 import { BlurView } from 'expo-blur';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
+import { Colors, Spacing, Typography, BorderRadius } from '../theme/DesignSystem';
 import { saveUserLocation, UserLocation } from '../services/locationStorage';
 import PrayerTimesService from '../services/prayerTimesService';
 
@@ -68,7 +69,7 @@ export const LocationPickerModal: React.FC<LocationPickerModalProps> = ({
           <View style={styles.content}>
             <View style={styles.header}>
               <View style={styles.headerLeft}>
-                <Ionicons name="location-outline" size={20} color="#D4AF37" />
+                <Ionicons name="location-outline" size={20} color={Colors.accent.primary} />
                 <Text style={styles.headerTitle}>Set Location</Text>
               </View>
               <TouchableOpacity onPress={onClose} style={styles.closeButton} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
@@ -85,7 +86,7 @@ export const LocationPickerModal: React.FC<LocationPickerModalProps> = ({
               <View style={styles.inputGroup}>
                 <Text style={styles.label}>City</Text>
                 <View style={styles.inputContainer}>
-                  <Ionicons name="business-outline" size={18} color="#D4AF37" />
+                  <Ionicons name="business-outline" size={18} color={Colors.accent.primary} />
                   <TextInput
                     style={styles.input}
                     placeholder="e.g. London"
@@ -99,7 +100,7 @@ export const LocationPickerModal: React.FC<LocationPickerModalProps> = ({
               <View style={styles.inputGroup}>
                 <Text style={styles.label}>Country</Text>
                 <View style={styles.inputContainer}>
-                  <Ionicons name="earth-outline" size={18} color="#D4AF37" />
+                  <Ionicons name="earth-outline" size={18} color={Colors.accent.primary} />
                   <TextInput
                     style={styles.input}
                     placeholder="e.g. United Kingdom"
@@ -118,7 +119,7 @@ export const LocationPickerModal: React.FC<LocationPickerModalProps> = ({
                   style={styles.saveButton}
                 >
                   {isLoading ? (
-                    <ActivityIndicator color="#0C1A2E" />
+                    <ActivityIndicator color={Colors.background.secondary} />
                   ) : (
                     <Text style={styles.saveButtonText}>Save Location</Text>
                   )}
@@ -137,15 +138,15 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 24,
+    padding: Spacing.xl,
   },
   content: {
     width: '100%',
-    backgroundColor: '#0C1A2E',
-    borderRadius: 24,
+    backgroundColor: Colors.background.secondary,
+    borderRadius: BorderRadius.xxl,
     overflow: 'hidden',
     borderWidth: 1,
-    borderColor: 'rgba(212, 175, 55, 0.18)',
+    borderColor: Colors.accent.muted,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 10 },
     shadowOpacity: 0.4,
@@ -156,70 +157,70 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 20,
-    paddingTop: 20,
-    paddingBottom: 4,
+    paddingHorizontal: Spacing.xl,
+    paddingTop: Spacing.xl,
+    paddingBottom: Spacing.xs,
   },
   headerLeft: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
+    gap: Spacing.sm,
   },
   headerTitle: {
-    fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
-    fontSize: 19,
-    color: '#F5EDE3',
+    fontFamily: Typography.fonts.serif,
+    fontSize: Typography.sizes.h2,
+    color: Colors.text.primary,
     letterSpacing: 0.3,
   },
   closeButton: {
-    padding: 4,
+    padding: Spacing.xs,
   },
   form: {
-    padding: 24,
+    padding: Spacing.xl,
   },
   description: {
-    fontSize: 13,
-    color: 'rgba(176, 196, 215, 0.75)',
+    fontSize: Typography.sizes.small,
+    color: Colors.text.secondary,
     lineHeight: 20,
-    marginBottom: 24,
+    marginBottom: Spacing.xl,
   },
   inputGroup: {
-    marginBottom: 18,
+    marginBottom: Spacing.lg,
   },
   label: {
-    fontSize: 13,
+    fontSize: Typography.sizes.small,
     fontWeight: '600',
-    color: 'rgba(245, 237, 227, 0.7)',
+    color: Colors.text.secondary,
     letterSpacing: 0.3,
-    marginBottom: 8,
+    marginBottom: Spacing.sm,
   },
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 10,
+    gap: Spacing.sm,
     backgroundColor: 'rgba(255, 255, 255, 0.04)',
     borderWidth: 1,
-    borderColor: 'rgba(212, 175, 55, 0.18)',
-    borderRadius: 12,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
+    borderColor: Colors.accent.muted,
+    borderRadius: BorderRadius.md,
+    paddingHorizontal: Spacing.lg,
+    paddingVertical: Spacing.md,
   },
   input: {
     flex: 1,
-    fontSize: 16,
-    color: '#F5EDE3',
+    fontSize: Typography.sizes.body,
+    color: Colors.text.primary,
   },
   saveButton: {
-    borderRadius: 28,
-    paddingVertical: 16,
+    borderRadius: BorderRadius.full,
+    paddingVertical: Spacing.lg,
     alignItems: 'center',
-    marginTop: 12,
+    marginTop: Spacing.md,
   },
   saveButtonText: {
-    fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
-    fontSize: 16,
+    fontFamily: Typography.fonts.serif,
+    fontSize: Typography.sizes.body,
     fontWeight: '700',
     letterSpacing: 1,
-    color: '#0C1A2E',
+    color: Colors.background.secondary,
   },
 });

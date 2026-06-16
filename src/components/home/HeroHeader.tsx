@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Animated, Easing, Platform } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Animated, Easing } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Colors } from '../../theme/DesignSystem';
+import { Colors, Typography } from '../../theme/DesignSystem';
 import { Ionicons } from '@expo/vector-icons';
 import { AnimatedMandala } from '../AnimatedMandala';
 import { TwinklingStar } from './TwinklingStar';
@@ -140,7 +140,7 @@ const styles = StyleSheet.create({
     marginBottom: 6,
   },
   greetingTitle: {
-    fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
+    fontFamily: Typography.fonts.serif,
     fontSize: 26,
     color: '#F0E6D3',
     letterSpacing: 0.3,
@@ -149,7 +149,7 @@ const styles = StyleSheet.create({
     textShadowRadius: 12,
   },
   bismillah: {
-    fontFamily: 'Amiri-Regular',
+    fontFamily: Typography.fonts.arabic,
     fontSize: 24,
     lineHeight: 44,
     color: 'rgba(245, 237, 227, 0.62)',

@@ -12,6 +12,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation, useFocusEffect, CompositeNavigationProp } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
+import { LinearGradient } from 'expo-linear-gradient';
+import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../context/AuthContext';
 import { RootStackParamList, MainTabParamList } from '../navigation/types';
 import { logServiceError } from '../services/errorLoggingService';
@@ -20,7 +22,7 @@ import Icon from '../components/Icon';
 import { refreshContentOnly } from '../database/schema';
 import { SubscriptionService } from '../services/subscriptionService';
 import { SupabaseDataService } from '../services/supabaseDataService';
-import { Colors } from '../theme/DesignSystem';
+import { Colors, Spacing, Typography, BorderRadius } from '../theme/DesignSystem';
 
 type SettingsNavProp = CompositeNavigationProp<
   StackNavigationProp<RootStackParamList, 'Settings'>,
@@ -50,7 +52,14 @@ const SettingRow = ({
 }: SettingRowProps) => (
   <TouchableOpacity style={styles.row} onPress={onPress} activeOpacity={onPress ? 0.7 : 1}>
     <View style={styles.rowLeft}>
-      {icon && <Text style={styles.rowIcon}>{icon}</Text>}
+      {icon && (
+        <Ionicons
+          name={icon as any}
+          size={17}
+          color="rgba(240, 220, 190, 0.55)"
+          style={styles.rowIconGap}
+        />
+      )}
       <Text style={[styles.rowLabel, isDestructive && styles.destructiveText]}>{label}</Text>
     </View>
     <View style={styles.rowRight}>
@@ -59,11 +68,11 @@ const SettingRow = ({
         <Switch
           value={toggleValue}
           onValueChange={onToggle}
-          trackColor={{ false: '#3e3e3e', true: Colors.accent.primary }}
+          trackColor={{ false: 'rgba(255, 255, 255, 0.12)', true: Colors.accent.primary }}
           thumbColor="#f4f3f4"
         />
       ) : onPress ? (
-        <Text style={styles.chevron}>›</Text>
+        <Ionicons name="chevron-forward" size={16} color="rgba(255, 255, 255, 0.2)" />
       ) : null}
     </View>
   </TouchableOpacity>
@@ -166,8 +175,8 @@ export default function SettingsScreen() {
   };
 
   return (
-    <View style={styles.container}>
-      <View style={[styles.header, { paddingTop: Math.max(insets.top, 20) }]}>
+    <LinearGradient colors={['#07111E', '#0C1A2E', '#0F1519']} style={styles.container}>
+      <View style={[styles.header, { paddingTop: Math.max(insets.top, Spacing.xl) }]}>
         <Text style={styles.headerTitle}>Profile</Text>
       </View>
 
@@ -213,33 +222,33 @@ export default function SettingsScreen() {
         <View style={styles.section}>
           <SettingRow
             label="Support Sakina"
-            icon="💛"
+            icon="heart-outline"
             value={isPremium ? 'Pro · Active' : undefined}
             onPress={() => navigation.navigate('Support')}
           />
           <SettingRow
             label={restoring ? 'Restoring…' : 'Restore Purchases'}
-            icon="💳"
+            icon="card-outline"
             onPress={handleRestorePurchases}
           />
         </View>
 
         <Text style={styles.sectionTitle}>PREFERENCES</Text>
         <View style={styles.section}>
-          <SettingRow label="Daily Reminders" icon="🔔" onPress={onNavigateToDailyReminders} />
+          <SettingRow label="Daily Reminders" icon="notifications-outline" onPress={onNavigateToDailyReminders} />
           <SettingRow
             label="Translation Source"
-            icon="📖"
+            icon="book-outline"
             value="Sahih International"
           />
         </View>
 
         <Text style={styles.sectionTitle}>DATA & PRIVACY</Text>
         <View style={styles.section}>
-          <SettingRow label="Reset App Content" icon="🔄" onPress={handleContentReset} />
+          <SettingRow label="Reset App Content" icon="refresh-outline" onPress={handleContentReset} />
           <SettingRow
             label="Clear Mood History"
-            icon="🗑️"
+            icon="trash-outline"
             isDestructive={true}
             onPress={() =>
               Alert.alert(
@@ -266,25 +275,25 @@ export default function SettingsScreen() {
               )
             }
           />
-          <SettingRow label="Privacy Policy" icon="🛡️" onPress={() => Alert.alert('Privacy Policy', 'Your data is stored locally on your device. We do not share your personal information with third parties.')} />
+          <SettingRow label="Privacy Policy" icon="shield-checkmark-outline" onPress={() => Alert.alert('Privacy Policy', 'Your data is stored locally on your device. We do not share your personal information with third parties.')} />
         </View>
 
         <Text style={styles.sectionTitle}>SUPPORT</Text>
         <View style={styles.section}>
-          <SettingRow label="Send Feedback" icon="✉️" onPress={() => Alert.alert('Coming Soon', 'Feedback feature will be available in the next update.')} />
-          <SettingRow label="Help Center" icon="❓" onPress={() => Alert.alert('Coming Soon', 'Help center will be available in the next update.')} />
-          <SettingRow label="Contact Us" icon="📧" onPress={() => Alert.alert('Contact', 'Email us at support@sakinaapp.com')} />
-          <SettingRow label="Rate App" icon="⭐" onPress={() => Alert.alert('Coming Soon', 'App Store rating will be available after launch.')} />
+          <SettingRow label="Send Feedback" icon="mail-outline" onPress={() => Alert.alert('Coming Soon', 'Feedback feature will be available in the next update.')} />
+          <SettingRow label="Help Center" icon="help-circle-outline" onPress={() => Alert.alert('Coming Soon', 'Help center will be available in the next update.')} />
+          <SettingRow label="Contact Us" icon="chatbox-outline" onPress={() => Alert.alert('Contact', 'Email us at support@sakinaapp.com')} />
+          <SettingRow label="Rate App" icon="star-outline" onPress={() => Alert.alert('Coming Soon', 'App Store rating will be available after launch.')} />
         </View>
 
         <Text style={styles.sectionTitle}>ACCOUNT</Text>
         <View style={styles.section}>
           {user ? (
             <>
-              <SettingRow label="Email" value={user.email ?? 'No email'} icon="📧" />
+              <SettingRow label="Email" value={user.email ?? 'No email'} icon="mail-outline" />
               <SettingRow
                 label="Sign Out"
-                icon="🚪"
+                icon="log-out-outline"
                 isDestructive={true}
                 onPress={() => {
                   Alert.alert('Sign Out', 'Are you sure you want to sign out?', [
@@ -297,7 +306,7 @@ export default function SettingsScreen() {
           ) : (
             <SettingRow
               label="Sign In / Create Account"
-              icon="👤"
+              icon="person-outline"
               onPress={() => {
                 Alert.alert('Sign In', 'Exit guest mode to sign in or create an account?', [
                   { text: 'Cancel', style: 'cancel' },
@@ -312,7 +321,7 @@ export default function SettingsScreen() {
         <View style={styles.section}>
           <SettingRow
             label="Sources & Attribution"
-            icon="📚"
+            icon="library-outline"
             onPress={() => {
               Alert.alert(
                 'Sources & Attribution',
@@ -320,7 +329,7 @@ export default function SettingsScreen() {
               );
             }}
           />
-          <SettingRow label="App Version" icon="ℹ️" value="1.0.0" />
+          <SettingRow label="App Version" icon="information-circle-outline" value="1.0.0" />
         </View>
 
         <View style={styles.footer}>
@@ -328,24 +337,25 @@ export default function SettingsScreen() {
           <Text style={styles.footerSubtext}>Refining the soul, one verse at a time.</Text>
         </View>
       </ScrollView>
-    </View>
+    </LinearGradient>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#14100C',
   },
   header: {
-    paddingHorizontal: 24,
-    paddingBottom: 20,
-    backgroundColor: '#1C1612',
+    paddingHorizontal: Spacing.xl,
+    paddingBottom: Spacing.xl,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255, 255, 255, 0.05)',
   },
   headerTitle: {
     fontSize: 28,
     fontWeight: '700',
-    color: '#F5EDE3',
+    color: Colors.text.primary,
+    fontFamily: Typography.fonts.serif,
   },
   scrollView: {
     flex: 1,
@@ -362,11 +372,11 @@ const styles = StyleSheet.create({
     marginTop: 16,
   },
   section: {
-    backgroundColor: '#241E19',
-    borderRadius: 16,
+    backgroundColor: 'rgba(255, 255, 255, 0.04)',
+    borderRadius: BorderRadius.xl,
     overflow: 'hidden',
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.05)',
+    borderColor: 'rgba(255, 255, 255, 0.08)',
   },
   row: {
     flexDirection: 'row',
@@ -381,15 +391,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
-  rowIcon: {
-    fontSize: 15,
-    marginRight: 10,
+  rowIconGap: {
+    marginRight: Spacing.sm,
     width: 20,
-    textAlign: 'center',
   },
   rowLabel: {
     fontSize: 16,
-    color: '#F5EDE3',
+    color: Colors.text.primary,
   },
   destructiveText: {
     color: '#FF4D4D',
@@ -403,30 +411,25 @@ const styles = StyleSheet.create({
     color: 'rgba(255, 255, 255, 0.4)',
     marginRight: 8,
   },
-  chevron: {
-    fontSize: 20,
-    color: 'rgba(255, 255, 255, 0.2)',
-    marginTop: -2,
-  },
   // Stats
   statsRow: {
     flexDirection: 'row',
-    gap: 10,
-    marginBottom: 16,
+    gap: Spacing.md,
+    marginBottom: Spacing.lg,
   },
   statCard: {
     flex: 1,
-    backgroundColor: '#241E19',
-    borderRadius: 16,
-    padding: 16,
+    backgroundColor: 'rgba(255, 255, 255, 0.04)',
+    borderRadius: BorderRadius.xl,
+    padding: Spacing.lg,
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.05)',
+    borderColor: 'rgba(255, 255, 255, 0.08)',
   },
   statValue: {
     fontSize: 24,
     fontWeight: '700',
-    color: '#F5EDE3',
+    color: Colors.text.primary,
     marginBottom: 2,
   },
   statLabel: {

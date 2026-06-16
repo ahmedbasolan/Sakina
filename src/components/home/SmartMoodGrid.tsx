@@ -5,12 +5,11 @@ import {
   TouchableOpacity,
   StyleSheet,
   Animated,
-  Platform,
   Dimensions,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Mood, MoodConfig } from '../../types';
-import { Colors } from '../../theme/DesignSystem';
+import { Colors, Typography } from '../../theme/DesignSystem';
 import { getMoodsForTime } from '../../utils/moodTimeMapping';
 
 const { width } = Dimensions.get('window');
@@ -231,7 +230,7 @@ const styles = StyleSheet.create({
   },
   cardSublabel: {
     fontSize: 11,
-    fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
+    fontFamily: Typography.fonts.serif,
     fontStyle: 'italic',
     marginTop: 2,
   },

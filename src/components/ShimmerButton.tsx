@@ -20,10 +20,9 @@ import {
   View,
   ViewStyle,
   StyleProp,
-  Platform,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Colors } from '../theme/DesignSystem';
+import { Colors, Typography } from '../theme/DesignSystem';
 import { useReduceMotion } from '../hooks/useReduceMotion';
 
 interface Props {
@@ -149,7 +148,7 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   label: {
-    fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
+    fontFamily: Typography.fonts.serif,
     fontSize: 17,
     letterSpacing: 1.5,
     fontWeight: '600',

@@ -7,19 +7,18 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   Alert,
-  Platform,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Colors, Spacing, BorderRadius } from '../theme/DesignSystem';
+import { Colors, Spacing, BorderRadius, Typography } from '../theme/DesignSystem';
 import { getUserLocation, UserLocation } from '../services/locationStorage';
 import PrayerTimesService, { PrayerTimesData, formatPrayerTime, TimeFormat } from '../services/prayerTimesService';
 import { LocationPickerModal } from '../components/LocationPickerModal';
 import NotificationService from '../services/notificationService';
 import { useSession } from '../context/AppContext';
 
-const SERIF = Platform.OS === 'ios' ? 'Georgia' : 'serif';
+const SERIF = Typography.fonts.serif;
 
 // Each prayer's icon and a one-word descriptor for the row subtitle.
 const PRAYER_META: Record<string, { icon: keyof typeof Ionicons.glyphMap; label: string }> = {
@@ -288,10 +287,6 @@ const styles = StyleSheet.create({
   iconButton: {
     width: 44,
     height: 44,
-    borderRadius: 22,
-    backgroundColor: 'rgba(212, 175, 55, 0.08)',
-    borderWidth: 1,
-    borderColor: 'rgba(212, 175, 55, 0.15)',
     justifyContent: 'center',
     alignItems: 'center',
   },

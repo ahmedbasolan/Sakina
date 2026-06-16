@@ -16,7 +16,8 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Colors, BorderRadius } from '../theme/DesignSystem';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Colors, BorderRadius, Spacing, Typography } from '../theme/DesignSystem';
 
 const { height: SCREEN_HEIGHT, width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -66,6 +67,7 @@ function parseSource(src: string): { name: string; ref: string } {
 }
 
 const ShareSheet = ({ isVisible, onClose, content }: ShareSheetProps) => {
+  const insets = useSafeAreaInsets();
   const slideAnim = useRef(new Animated.Value(SCREEN_HEIGHT)).current;
   const fadeAnim = useRef(new Animated.Value(0)).current;
 
@@ -438,8 +440,8 @@ const ShareSheet = ({ isVisible, onClose, content }: ShareSheetProps) => {
               />
             </View>
 
-            {/* ADDS EXTRA SPACE FOR HOME INDICATOR */}
-            <View style={{ height: 40 }} />
+            {/* Home indicator clearance */}
+            <View style={{ height: insets.bottom + Spacing.xl }} />
           </ScrollView>
         </Animated.View>
       </View>
@@ -457,7 +459,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.background.secondary,
     borderTopLeftRadius: BorderRadius.xxl,
     borderTopRightRadius: BorderRadius.xxl,
-    paddingHorizontal: 20,
+    paddingHorizontal: Spacing.xl,
     maxHeight: SCREEN_HEIGHT * 0.92,
     width: '100%',
   },
@@ -510,7 +512,7 @@ const styles = StyleSheet.create({
     fontSize: 22,
     textAlign: 'center',
     marginBottom: 8,
-    fontFamily: Platform.OS === 'ios' ? 'Amiri-Regular' : 'serif',
+    fontFamily: Typography.fonts.arabic,
     lineHeight: 32,
   },
   previewTransliteration: {
@@ -596,7 +598,7 @@ const styles = StyleSheet.create({
   },
   fontChipSelected: {
     borderColor: Colors.accent.primary,
-    backgroundColor: 'rgba(46, 211, 198, 0.1)',
+    backgroundColor: Colors.accent.muted,
   },
   fontChipText: {
     color: 'rgba(255,255,255,0.6)',
@@ -621,8 +623,8 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(255,255,255,0.1)',
   },
   filterChipActive: {
-    backgroundColor: 'rgba(46, 211, 198, 0.1)',
-    borderColor: 'rgba(46, 211, 198, 0.4)',
+    backgroundColor: Colors.accent.muted,
+    borderColor: Colors.accent.primary,
   },
   filterChipText: {
     fontSize: 10,
@@ -661,8 +663,10 @@ const styles = StyleSheet.create({
   },
   // Actions
   actionSection: {
-    backgroundColor: '#1A1A1A',
+    backgroundColor: 'rgba(255,255,255,0.04)',
     borderRadius: 16,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.07)',
     overflow: 'hidden',
   },
   actionRow: {

@@ -1,5 +1,5 @@
 import React, { useMemo, useEffect, useRef, useState, useCallback } from 'react';
-import { StyleSheet, View, Text, Animated, TouchableOpacity, Platform } from 'react-native';
+import { StyleSheet, View, Text, Animated, TouchableOpacity } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Svg, { Path, Circle as SvgCircle, G } from 'react-native-svg';
 import { BlurView } from 'expo-blur';
@@ -785,7 +785,7 @@ const styles = StyleSheet.create({
     fontSize: 10,
     color: 'rgba(245,237,227,0.38)',
     letterSpacing: 0.8,
-    fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
+    fontFamily: Typography.fonts.serif,
   },
   gestureHintSep: {
     width: 1,

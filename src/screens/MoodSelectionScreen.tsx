@@ -6,7 +6,7 @@
  * Dark navy background, twinkling stars, animated mandala, from reference image.
  */
 import React, { useEffect, useRef, useState } from 'react';
-import { Colors } from '../theme/DesignSystem';
+import { Colors, Spacing, Typography } from '../theme/DesignSystem';
 import {
   View,
   Text,
@@ -16,7 +16,6 @@ import {
   Dimensions,
   Animated,
   StatusBar,
-  Platform,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -25,7 +24,7 @@ import Svg, { Path } from 'react-native-svg';
 import { AnimatedMandala } from '../components/AnimatedMandala';
 
 const { width, height } = Dimensions.get('window');
-const CARD_WIDTH = (width - 48 - 12) / 2;
+const CARD_WIDTH = (width - Spacing.xl * 2 - 12) / 2;
 
 // Star positions scattered across the dark background
 const STARS = [
@@ -282,7 +281,10 @@ export default function MoodSelectionScreen({ navigation }: any) {
 
       {/* Header */}
       <Animated.View style={[styles.header, { paddingTop: insets.top + 12, opacity: headerOpacity }]}>
-        <TouchableOpacity style={styles.backBtn} onPress={() => navigation.goBack()}>
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+        >
           <Svg width={22} height={22} viewBox="0 0 24 24" fill="none">
             <Path
               d="M19 12H5M12 19l-7-7 7-7"
@@ -358,14 +360,6 @@ const styles = StyleSheet.create({
     zIndex: 2,
   },
   backBtn: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: 'rgba(201,168,76,0.1)',
-    borderWidth: 1,
-    borderColor: 'rgba(201,168,76,0.2)',
-    alignItems: 'center',
-    justifyContent: 'center',
     marginBottom: 20,
   },
   headerCenter: {
@@ -377,12 +371,12 @@ const styles = StyleSheet.create({
     letterSpacing: 2.5,
     textTransform: 'uppercase',
     marginBottom: 6,
-    fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
+    fontFamily: Typography.fonts.serif,
   },
   headerTitle: {
     fontSize: 26,
     color: '#F0E6D3',
-    fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
+    fontFamily: Typography.fonts.serif,
     fontWeight: '700',
     letterSpacing: 1.5,
     marginBottom: 10,
@@ -405,7 +399,7 @@ const styles = StyleSheet.create({
   },
 
   grid: {
-    paddingHorizontal: 18,
+    paddingHorizontal: Spacing.xl,
     paddingTop: 8,
     zIndex: 2,
   },
@@ -430,7 +424,7 @@ const styles = StyleSheet.create({
     top: 12,
     right: 14,
     fontSize: 13,
-    fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
+    fontFamily: Typography.fonts.serif,
     opacity: 0.8,
   },
   iconCircle: {
@@ -448,7 +442,7 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     letterSpacing: 1.2,
     marginBottom: 4,
-    fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
+    fontFamily: Typography.fonts.serif,
   },
   moodDesc: {
     fontSize: 11,

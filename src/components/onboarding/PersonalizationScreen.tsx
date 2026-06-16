@@ -6,7 +6,7 @@
  * All elements use shared stagger animation.
  */
 import React, { useEffect, useRef, useState, useCallback } from 'react';
-import { Colors } from '../../theme/DesignSystem';
+import { Colors, Typography } from '../../theme/DesignSystem';
 import {
   View,
   Text,
@@ -14,7 +14,6 @@ import {
   Animated,
   Dimensions,
   TouchableOpacity,
-  Platform,
 } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -327,7 +326,7 @@ const styles = StyleSheet.create({
   },
   cardDesc: {
     fontSize: 11,
-    fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
+    fontFamily: Typography.fonts.serif,
     fontStyle: 'italic',
     textAlign: 'center',
     lineHeight: 16,

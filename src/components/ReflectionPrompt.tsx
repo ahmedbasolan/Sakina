@@ -10,7 +10,7 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
-import { Colors } from '../theme/DesignSystem';
+import { Colors, Typography } from '../theme/DesignSystem';
 
 const { height } = Dimensions.get('window');
 
@@ -109,7 +109,7 @@ const styles = StyleSheet.create({
     paddingBottom: 40,
   },
   prompt: {
-    fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
+    fontFamily: Typography.fonts.serif,
     fontSize: 18,
     color: Colors.text.secondary,
     textAlign: 'center',

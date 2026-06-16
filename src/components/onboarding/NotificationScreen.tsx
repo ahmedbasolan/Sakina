@@ -6,7 +6,7 @@
  * All elements use shared stagger animation.
  */
 import React, { useEffect, useRef } from 'react';
-import { Colors } from '../../theme/DesignSystem';
+import { Colors, Typography } from '../../theme/DesignSystem';
 import {
   View,
   Text,
@@ -14,7 +14,6 @@ import {
   Animated,
   Dimensions,
   TouchableOpacity,
-  Platform,
 } from 'react-native';
 import Svg, {
   Path,
@@ -332,7 +331,7 @@ const styles = StyleSheet.create({
   previewVerse: {
     fontSize: 13,
     color: 'rgba(245, 237, 227, 0.65)',
-    fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
+    fontFamily: Typography.fonts.serif,
     fontStyle: 'italic',
     lineHeight: 20,
   },

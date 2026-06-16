@@ -38,7 +38,7 @@ import { ProgressMandala } from '../components/onboarding/ProgressMandala';
 import { touchEmitter } from '../components/onboarding/InteractiveStarfield';
 import { useTheme } from '../context/ThemeContext';
 import { useAuth } from '../context/AuthContext';
-import { Animations } from '../theme/DesignSystem';
+import { Animations, Spacing } from '../theme/DesignSystem';
 
 const TOTAL_SCREENS = 7;
 const SWIPE_THRESHOLD = 50;
@@ -328,8 +328,8 @@ const styles = StyleSheet.create({
   // --- Header ---
   headerRow: {
     position: 'absolute',
-    left: 20,
-    right: 20,
+    left: Spacing.xl,
+    right: Spacing.xl,
     zIndex: 10,
     flexDirection: 'row',
     alignItems: 'center',
@@ -342,8 +342,6 @@ const styles = StyleSheet.create({
   backBtn: {
     width: 36,
     height: 36,
-    borderRadius: 18,
-    backgroundColor: 'rgba(255, 245, 220, 0.06)',
     justifyContent: 'center',
     alignItems: 'center',
   },
