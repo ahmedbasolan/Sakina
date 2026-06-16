@@ -74,7 +74,6 @@ const SupportSakinaScreen: React.FC = () => {
   const insets = useSafeAreaInsets();
   const reduceMotion = useReduceMotion();
   const freemium = FreemiumService.getInstance();
-  const pricing = freemium.getPricing();
 
   const [selectedPlan, setSelectedPlan] = useState<Plan>('yearly');
   const [loading, setLoading] = useState(false);
@@ -83,6 +82,10 @@ const SupportSakinaScreen: React.FC = () => {
   // for first-time users on the common path. Returning users who used their
   // trial flip to false and see a plain "Subscribe" CTA (App Store guideline).
   const [trialEligible, setTrialEligible] = useState(true);
+  // Pricing — initialise from freemium (may be static fallback on cold start),
+  // then refresh from RC offerings on mount so the correct store-localized
+  // price is always shown before the user taps the CTA.
+  const [pricing, setPricingState] = useState(() => freemium.getPricing());
 
   const enter = useRef(new Animated.Value(0)).current;
 
@@ -92,6 +95,20 @@ const SupportSakinaScreen: React.FC = () => {
       .isYearlyTrialEligible()
       .then((eligible) => {
         if (!cancelled) setTrialEligible(eligible);
+      })
+      .catch(() => {});
+    revenueCat
+      .getPricing()
+      .then((p) => {
+        if (!cancelled && p) {
+          setPricingState({
+            monthlyUSD: p.monthlyPriceAmount,
+            yearlyUSD: p.yearlyPriceAmount,
+            monthlyPrice: p.monthlyPrice,
+            yearlyPrice: p.yearlyPrice,
+            trialDays: p.trialDays,
+          });
+        }
       })
       .catch(() => {});
     return () => {

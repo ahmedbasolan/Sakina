@@ -20,7 +20,6 @@ const EXPAND_DURATION = 280;
 interface SmartMoodGridProps {
   moodConfigs: MoodConfig[];
   selectedMood: Mood | null;
-  checkedInToday: boolean;
   onMoodPress: (mood: Mood) => void;
 }
 
@@ -133,7 +132,6 @@ const SmartMoodCard = memo(function SmartMoodCard({
 export const SmartMoodGrid = memo(function SmartMoodGrid({
   moodConfigs,
   selectedMood,
-  checkedInToday,
   onMoodPress,
 }: SmartMoodGridProps) {
   const [expanded, setExpanded] = useState(false);

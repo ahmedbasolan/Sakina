@@ -46,6 +46,11 @@ export interface RCPricing {
 class RevenueCatService {
   private static instance: RevenueCatService;
   private configured = false;
+  // Set to true when configure() fails due to the native module being absent
+  // (Expo Go, simulator without a dev build, etc.). Once flagged we stop
+  // retrying — the module won't appear at runtime — and all purchase methods
+  // return graceful no-ops instead of throwing SDK errors.
+  private nativeUnavailable = false;
   private cachedOffering: PurchasesOffering | null = null;
 
   static getInstance(): RevenueCatService {
@@ -55,24 +60,34 @@ class RevenueCatService {
     return RevenueCatService.instance;
   }
 
+  /** True only when the native module is present and Purchases is configured. */
+  get isReady(): boolean {
+    return this.configured;
+  }
+
   /** Call once at app start (before any other RC methods). */
   configure(userId?: string | null) {
-    if (this.configured) return;
+    if (this.configured || this.nativeUnavailable) return;
     try {
       const apiKey = Platform.OS === 'ios' ? IOS_API_KEY : ANDROID_API_KEY;
       Purchases.configure({ apiKey, appUserID: userId ?? null });
       if (__DEV__) Purchases.setLogLevel(LOG_LEVEL.DEBUG);
       this.configured = true;
-    } catch (error) {
-      // Leave `configured` false so the next call can retry. Callers fall
-      // back to the local subscription cache when RC is unavailable, so a
-      // failed configure must never take the app down with it.
-      console.warn('[RevenueCat] configure failed:', error);
+    } catch (error: any) {
+      const msg: string = error?.message ?? String(error);
+      if (msg.includes('Native module') || msg.includes('RNPurchases') || msg.includes('not found')) {
+        this.nativeUnavailable = true;
+        console.warn('[RevenueCat] Native module unavailable — purchases require a dev/production build, not Expo Go.');
+      } else {
+        console.warn('[RevenueCat] configure failed:', error);
+      }
     }
   }
 
   /** Fetch the customer's current entitlement info from RC (cached locally). */
   async getCustomerInfo(): Promise<CustomerInfo> {
+    this.configure();
+    if (!this.configured) throw new Error('RevenueCat native module not available');
     return Purchases.getCustomerInfo();
   }
 
@@ -93,7 +108,8 @@ class RevenueCatService {
    * monthly-vs-yearly. Falls back to 'yearly' when the product can't be matched.
    */
   async resolveDurationType(productIdentifier?: string): Promise<'monthly' | 'yearly'> {
-    if (!productIdentifier) return 'yearly';
+    this.configure();
+    if (!this.configured || !productIdentifier) return 'yearly';
     const offering = await this.getOffering();
     const monthly = offering?.availablePackages.find(
       (p) => p.packageType === PACKAGE_TYPE.MONTHLY,
@@ -108,6 +124,8 @@ class RevenueCatService {
    * (App Store guideline: don't offer a trial to ineligible users).
    */
   async isYearlyTrialEligible(): Promise<boolean> {
+    this.configure();
+    if (!this.configured) return false;
     const offering = await this.getOffering();
     const yearly = offering?.availablePackages.find(
       (p) => p.packageType === PACKAGE_TYPE.ANNUAL,
@@ -127,6 +145,8 @@ class RevenueCatService {
 
   /** Fetch the current RC offering and cache it. */
   async getOffering(): Promise<PurchasesOffering | null> {
+    this.configure();
+    if (!this.configured) return null;
     if (this.cachedOffering) return this.cachedOffering;
     const offerings = await Purchases.getOfferings();
     this.cachedOffering = offerings.current;
@@ -158,16 +178,19 @@ class RevenueCatService {
     };
   }
 
-  /** Purchase a subscription package. Throws if user cancels. */
+  /** Purchase a subscription package. Returns false on user-cancel; throws on all other failures. */
   async purchasePackage(type: RCPackageType): Promise<{
     success: boolean;
     customerInfo: CustomerInfo | null;
   }> {
+    this.configure();
+    if (!this.configured) return { success: false, customerInfo: null };
     const offering = await this.getOffering();
-    if (!offering) return { success: false, customerInfo: null };
-
+    // No offering = RC misconfiguration or network failure — throw so the caller
+    // can show an alert rather than silently re-enabling the button.
+    if (!offering) throw new Error('No subscription offerings available. Please check your connection and try again.');
     const pkg = this.findPackage(offering, type);
-    if (!pkg) return { success: false, customerInfo: null };
+    if (!pkg) throw new Error(`The ${type} package was not found. Please contact support.`);
 
     try {
       const { customerInfo } = await Purchases.purchasePackage(pkg);
@@ -180,16 +203,22 @@ class RevenueCatService {
 
   /** Restore previous purchases (required by App Store guidelines). */
   async restorePurchases(): Promise<CustomerInfo> {
+    this.configure();
+    if (!this.configured) throw new Error('RevenueCat native module not available');
     return Purchases.restorePurchases();
   }
 
   /** Associate the RC anonymous ID with a known user. Call on sign-in. */
   async logIn(userId: string): Promise<void> {
+    this.configure();
+    if (!this.configured) return;
     await Purchases.logIn(userId);
   }
 
   /** Revert to anonymous ID on sign-out. */
   async logOut(): Promise<void> {
+    this.configure();
+    if (!this.configured) return;
     await Purchases.logOut();
   }
 

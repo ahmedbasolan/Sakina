@@ -15,7 +15,8 @@
       "supportsTablet": true,
       "bundleIdentifier": "com.lelahmed.sakina",
       "infoPlist": {
-        "UIUserInterfaceStyle": "Dark"
+        "UIUserInterfaceStyle": "Dark",
+        "ITSAppUsesNonExemptEncryption": false
       }
     },
     "android": {

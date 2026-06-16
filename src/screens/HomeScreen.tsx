@@ -297,7 +297,6 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
             <SmartMoodGrid
               moodConfigs={moodConfigs}
               selectedMood={localSelectedMood}
-              checkedInToday={checkedInToday}
               onMoodPress={handleMoodTap}
             />
 

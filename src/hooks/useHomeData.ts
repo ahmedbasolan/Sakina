@@ -136,13 +136,19 @@ export function useHomeData({ setStreakCount }: UseHomeDataOptions) {
   const checkTodayMood = useCallback(async () => {
     try {
       const { moodHistoryService } = await import('../services/moodHistoryService');
-      const stats = await moodHistoryService.getStats();
-      setCheckedInToday(stats.currentStreak > 0 && stats.totalDaysTracked > 0);
 
+      // "Checked in today" must reflect whether TODAY actually has an entry —
+      // not the streak. getStats keeps currentStreak > 0 through a one-day grace
+      // period (yesterday still counts), so deriving this from the streak wrongly
+      // marked a fresh morning as already-checked-in and suppressed the
+      // check-in banner. Read today's detail directly instead.
       const todayStr = formatDateYMD();
       const detail = await moodHistoryService.getDayDetail(todayStr);
-      if (detail && detail.entries.length > 0) {
-        const last = detail.entries[0];
+      const didCheckInToday = !!(detail && detail.entries.length > 0);
+      setCheckedInToday(didCheckInToday);
+
+      if (didCheckInToday) {
+        const last = detail!.entries[0];
         setLastCheckin({ moodId: last.mood, timestamp: last.timestamp });
         setLocalSelectedMood(last.mood);
       } else {

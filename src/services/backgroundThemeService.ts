@@ -33,6 +33,22 @@ export const BACKGROUND_THEMES: BackgroundTheme[] = [
             'https://images.unsplash.com/photo-1495616811223-4d98c6e9c869?auto=format&fit=crop&q=90&w=3840',
         isPremium: true,
     },
+    {
+        id: 'sky_starry_galaxy',
+        name: 'Starry Galaxy',
+        category: 'sky',
+        imageUri:
+            'https://images.unsplash.com/photo-1419242902214-272b3f66ee7a?auto=format&fit=crop&q=90&w=3840',
+        isPremium: true,
+    },
+    {
+        id: 'sky_pastel_clouds',
+        name: 'Pastel Clouds',
+        category: 'sky',
+        imageUri:
+            'https://images.unsplash.com/photo-1532978379173-523e16f3740f?auto=format&fit=crop&q=90&w=3840',
+        isPremium: true,
+    },
 
     // ─── Mountains ───────────────────────────────────────────────
     {
@@ -59,6 +75,22 @@ export const BACKGROUND_THEMES: BackgroundTheme[] = [
             'https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&q=90&w=3840',
         isPremium: true,
     },
+    {
+        id: 'mountain_sunrise_peak',
+        name: 'Sunrise Peak',
+        category: 'mountains',
+        imageUri:
+            'https://images.unsplash.com/photo-1454496522488-7a8e488e8606?auto=format&fit=crop&q=90&w=3840',
+        isPremium: true,
+    },
+    {
+        id: 'mountain_lake_reflection',
+        name: 'Lake Reflection',
+        category: 'mountains',
+        imageUri:
+            'https://images.unsplash.com/photo-1465919292275-c60ad49da6a4?auto=format&fit=crop&q=90&w=3840',
+        isPremium: true,
+    },
 
     // ─── Nature & Forests ────────────────────────────────────────
     {
@@ -82,7 +114,23 @@ export const BACKGROUND_THEMES: BackgroundTheme[] = [
         name: 'Autumn Forest',
         category: 'nature',
         imageUri:
-            'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=90&w=3840',
+            'https://images.unsplash.com/photo-1473448912268-2022ce9509d8?auto=format&fit=crop&q=90&w=3840',
+        isPremium: true,
+    },
+    {
+        id: 'nature_sunbeams_forest',
+        name: 'Sunlit Woods',
+        category: 'nature',
+        imageUri:
+            'https://images.unsplash.com/photo-1502082553048-f009c37129b9?auto=format&fit=crop&q=90&w=3840',
+        isPremium: true,
+    },
+    {
+        id: 'nature_bamboo_grove',
+        name: 'Bamboo Grove',
+        category: 'nature',
+        imageUri:
+            'https://images.unsplash.com/photo-1504618223053-559bdef9dd5a?auto=format&fit=crop&q=90&w=3840',
         isPremium: true,
     },
 
@@ -111,6 +159,22 @@ export const BACKGROUND_THEMES: BackgroundTheme[] = [
             'https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&q=90&w=3840',
         isPremium: true,
     },
+    {
+        id: 'landscape_green_tea_fields',
+        name: 'Tea Gardens',
+        category: 'landscapes',
+        imageUri:
+            'https://images.unsplash.com/photo-1531259683007-016a7b628fc3?auto=format&fit=crop&q=90&w=3840',
+        isPremium: true,
+    },
+    {
+        id: 'landscape_sunset_valley',
+        name: 'Sunset Valley',
+        category: 'landscapes',
+        imageUri:
+            'https://images.unsplash.com/photo-1472214222541-d510753a49f4?auto=format&fit=crop&q=90&w=3840',
+        isPremium: true,
+    },
 
     // ─── Ocean & Water ───────────────────────────────────────────
     {
@@ -129,6 +193,22 @@ export const BACKGROUND_THEMES: BackgroundTheme[] = [
             'https://images.unsplash.com/photo-1507400492013-162706c8c05e?auto=format&fit=crop&q=90&w=3840',
         isPremium: true,
     },
+    {
+        id: 'ocean_wooden_pier',
+        name: 'Wooden Pier',
+        category: 'ocean',
+        imageUri:
+            'https://images.unsplash.com/photo-1433832597046-4f10e10ac764?auto=format&fit=crop&q=90&w=3840',
+        isPremium: true,
+    },
+    {
+        id: 'ocean_sunset_beach',
+        name: 'Sunset Beach',
+        category: 'ocean',
+        imageUri:
+            'https://images.unsplash.com/photo-1475924156734-496f6cac6ec1?auto=format&fit=crop&q=90&w=3840',
+        isPremium: true,
+    },
 
     // ─── Animals ─────────────────────────────────────────────────
     {
@@ -145,6 +225,22 @@ export const BACKGROUND_THEMES: BackgroundTheme[] = [
         category: 'animals',
         imageUri:
             'https://images.unsplash.com/photo-1484406566174-437a62a26b03?auto=format&fit=crop&q=90&w=3840',
+        isPremium: true,
+    },
+    {
+        id: 'animals_majestic_swan',
+        name: 'Swan in Mist',
+        category: 'animals',
+        imageUri:
+            'https://images.unsplash.com/photo-1508215885820-4585e56135c8?auto=format&fit=crop&q=90&w=3840',
+        isPremium: true,
+    },
+    {
+        id: 'animals_half_dome_deer',
+        name: 'Valley Deer',
+        category: 'animals',
+        imageUri:
+            'https://images.unsplash.com/photo-1472396961693-142e6e269027?auto=format&fit=crop&q=90&w=3840',
         isPremium: true,
     },
 ];
