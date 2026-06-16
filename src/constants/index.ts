@@ -180,8 +180,8 @@ export const SUBSCRIPTION_PRICING = {
 // be reachable on any auto-renewable subscription screen). Fill these in with
 // the hosted pages — the paywall hides a link whose URL is still empty.
 export const LEGAL_URLS = {
-  terms: '', // e.g. 'https://sakina.app/terms'
-  privacy: '', // e.g. 'https://sakina.app/privacy'
+  terms: 'https://ahmedbasolan.github.io/sakina-legal/terms.html',
+  privacy: 'https://ahmedbasolan.github.io/sakina-legal/privacy.html',
 } as const;
 
 export const SPECIAL_EDITION_PRICING = {
