@@ -1,9 +1,9 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Animated, Platform } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Animated } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { PrayerContext } from '../../types';
-import { Colors } from '../../theme/DesignSystem';
+import { Colors, Typography } from '../../theme/DesignSystem';
 import { getSpiritualWindowName, getSpiritualActionText } from '../../utils/prayerContext';
 
 /** Maps each of the 8 prayer contexts to a semantically appropriate Ionicons icon. */
@@ -93,7 +93,7 @@ const styles = StyleSheet.create({
     marginBottom: 6,
   },
   bannerTitle: {
-    fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
+    fontFamily: Typography.fonts.serif,
     fontSize: 19,
     color: '#F5EDE3',
     letterSpacing: 0.3,

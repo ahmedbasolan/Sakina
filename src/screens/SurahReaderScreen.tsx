@@ -1,41 +1,43 @@
 /**
- * SurahReaderScreen
+ * SurahReaderScreen — Immersive one-verse-at-a-time Quran reader.
  *
- * Renders a full surah verse-by-verse, fetching from alquran.cloud and
- * caching in SQLite (quran_cache, TTL = 7 days). Saves reading progress
- * to kv_store so the user can resume from where they left off. Each verse
- * has a one-tap bookmark that writes to bookmarked_verses.
- *
- * Aesthetic: midnight-navy background, Amiri Arabic text in warm cream,
- * English translation in muted steel, gold accent throughout.
+ * Layout: header + resume banner → scrollable verse card (CornerFrame,
+ * Arabic, divider, translation) + Context accordion →
+ * fixed bottom pill (Save · Share · Audio) + prev/next navigation.
  */
-import React, {
-  useState, useEffect, useCallback, useRef,
-} from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import {
-  View, Text, StyleSheet, FlatList, TouchableOpacity,
+  View, Text, StyleSheet, TouchableOpacity,
   ActivityIndicator, Animated, Platform,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { BlurView } from 'expo-blur';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Ionicons } from '@expo/vector-icons';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Svg, { Path } from 'react-native-svg';
-import { Colors, Spacing, BorderRadius, Typography } from '../theme/DesignSystem';
+import { Colors, Spacing, BorderRadius, Typography, Animations } from '../theme/DesignSystem';
 import { dbQuery } from '../database/schema';
 import {
   getCachedSurah,
   fetchAndCacheSurah,
   QuranVerse,
 } from '../services/quranService';
+import { CornerFrame } from '../components/CornerFrame';
+import ArabicText from '../components/ArabicText';
+import AudioPlayerButton from '../components/AudioPlayerButton';
+import ShareSheet from '../components/ShareSheet';
+import { HapticsService } from '../services/hapticsService';
+import { StackScreenProps } from '@react-navigation/stack';
+import { RootStackParamList } from '../navigation/types';
 
 // ─── types ────────────────────────────────────────────────────────────────────
 
-// Alias so existing code inside this file continues to use `Verse`
 type Verse = QuranVerse;
 
 export interface ReadingProgress {
   surahNumber: number;
-  verseIndex: number;   // 0-based FlatList index
+  verseIndex: number;
   surahName: string;
   timestamp: number;
 }
@@ -43,6 +45,16 @@ export interface ReadingProgress {
 // ─── constants ────────────────────────────────────────────────────────────────
 
 const PROGRESS_KEY = 'quran_reading_progress';
+const GOLD = Colors.accent.primary;
+
+interface TafsirEntry {
+  text: string;
+  source: string;
+}
+
+// Module-level tafsir cache — null = "fetched but no clean content" (sentinel to
+// prevent repeated network calls for dense-isnad verses).
+const tafsirCache = new Map<string, TafsirEntry | null>();
 
 // ─── DB helpers ───────────────────────────────────────────────────────────────
 
@@ -101,305 +113,334 @@ async function removeBookmark(surahNumber: number, verseNumber: number): Promise
   });
 }
 
-// ─── VerseItem ────────────────────────────────────────────────────────────────
+// Patterns that mark a sentence as a hadith chain / attribution — not insight.
+// A sentence matching any of these is dropped entirely.
+const CHAIN_PATTERNS = [
+  // "recorded/narrated/reported [that|from|this|it|with|in his]"
+  /\b(recorded|narrated|reported)\s+(that|from|this|it|with|in\s+his)\b/i,
+  // "mentioned by/that/from/this" and "mentioned, this/that"
+  /\bmentioned[,\s]+(by|that|from|this|it)\b/i,
+  // "it was/is recorded/narrated/reported/said/mentioned"
+  /\bit\s+(was|is)\s+(recorded|narrated|reported|said|mentioned)\b/i,
+  // named person/companion + "said that/this/it" — e.g. "Ibn Abbas said that"
+  // (excludes "Allah said" which is interpretive, not attribution)
+  /\b(?!Allah\b)\w[\w'-]+\s+said\s+(that|this|it|he|she)\b/i,
+  // Prophet attribution: "the Prophet ... said" within 30 chars
+  /\bthe\s+Prophet\b.{0,30}\bsaid\b/i,
+  // hadith compilers and authentication scholars — always attribution when named
+  /\b(Al-Bukhari|Al-Muslim|Imam Ahmad|Ibn Jarir|At-Tirmidhi|Abu Dawud|An-Nasa'i|Ibn Majah|Al-Hakim|Ibn Hibban|Al-Bayhaqi|Ibn Khuzaymah)\b/i,
+  // authentication rulings
+  /\b(Sahih|Hasan|Da'if)\s+(according|by|to|chain|with)\b/i,
+  /\bit\s+is\s+(Sahih|Hasan|Da'if)\b/i,
+  // first-person narrator dialogue
+  /\bI\s+(answered|replied|told|asked|said)\b/i,
+  // third-person attributed speech marker
+  /\b(She|He)\s+said[,\s]/i,
+  // chain / isnad keywords
+  /\bchain\s+of\s+(narration|transmission|report)\b/i,
+  /\b(sanad|isnad)\b/i,
+  // triple-from isnad
+  /\bfrom\s+\w+,?\s+from\s+\w+,?\s+from\b/i,
+  // radi Allahu anhu markers
+  /\bAllah\s+be\s+pleased\s+with\s+(him|her|them)\b/i,
+  // authentication criteria language
+  /\bcriteria\s+of\b/i,
+];
 
-const VerseItem = React.memo(function VerseItem({
-  verse,
-  surahNumber,
-  surahName,
-  initialBookmarked,
-  onBookmarkChange,
-}: {
-  verse: Verse;
-  surahNumber: number;
-  surahName: string;
-  initialBookmarked: boolean;
-  onBookmarkChange: (verseNumber: number, bookmarked: boolean) => void;
-}) {
-  const [bookmarked, setBookmarked] = useState(initialBookmarked);
-  const bmAnim = useRef(new Animated.Value(initialBookmarked ? 1 : 0)).current;
+// Max sentences to show; never cuts mid-sentence.
+const MAX_SENTENCES = 3;
 
-  const handleBookmark = useCallback(async () => {
-    const next = !bookmarked;
-    setBookmarked(next);
-    Animated.spring(bmAnim, {
-      toValue: next ? 1 : 0,
-      damping: 14,
-      stiffness: 200,
-      useNativeDriver: true,
-    }).start();
-    onBookmarkChange(verse.numberInSurah, next);
-    if (next) {
-      await addBookmark(verse, surahNumber, surahName);
-    } else {
-      await removeBookmark(surahNumber, verse.numberInSurah);
+function splitSentences(text: string): string[] {
+  // Split on period/!/? followed by whitespace and an uppercase letter or quote.
+  // Safe for engines without lookbehind.
+  const raw = text.replace(/\s+/g, ' ').trim();
+  const parts: string[] = [];
+  let start = 0;
+  for (let i = 0; i < raw.length - 1; i++) {
+    const ch = raw[i];
+    if ((ch === '.' || ch === '!' || ch === '?') && /\s/.test(raw[i + 1])) {
+      const next = raw.slice(i + 1).trimStart();
+      if (/^[A-Z"']/.test(next)) {
+        parts.push(raw.slice(start, i + 1).trim());
+        start = i + 1;
+      }
     }
-  }, [bookmarked, verse, surahNumber, surahName, onBookmarkChange]);
+  }
+  const last = raw.slice(start).trim();
+  if (last) parts.push(last);
+  return parts.filter(s => s.length > 20);
+}
 
-  const bmScale = bmAnim.interpolate({
-    inputRange: [0, 0.5, 1],
-    outputRange: [1, 1.35, 1],
-  });
+function isChainSentence(s: string): boolean {
+  return CHAIN_PATTERNS.some(re => re.test(s));
+}
 
-  return (
-    <View style={vStyles.container}>
-      <View style={vStyles.topRow}>
-        {/* Verse number medallion */}
-        <View style={vStyles.numBadge}>
-          <MaterialCommunityIcons
-            name="star-four-points"
-            size={9}
-            color={Colors.accent.primary}
-            style={vStyles.numStar}
-          />
-          <Text style={vStyles.numText}>{verse.numberInSurah}</Text>
-        </View>
+function compactTafsir(text: string): string {
+  const sentences = splitSentences(text);
+  const clean = sentences.filter(s => !isChainSentence(s));
 
-        {/* Bookmark */}
-        <Animated.View style={{ transform: [{ scale: bmScale }] }}>
-          <TouchableOpacity
-            onPress={handleBookmark}
-            hitSlop={{ top: 10, right: 10, bottom: 10, left: 10 }}
-            activeOpacity={0.7}
-          >
-            <MaterialCommunityIcons
-              name={bookmarked ? 'bookmark' : 'bookmark-outline'}
-              size={20}
-              color={bookmarked ? Colors.accent.primary : 'rgba(201,168,76,0.28)'}
-            />
-          </TouchableOpacity>
-        </Animated.View>
-      </View>
+  const picked: string[] = [];
+  for (const s of clean) {
+    if (picked.length >= MAX_SENTENCES) break;
+    picked.push(s);
+  }
 
-      {/* Arabic */}
-      <Text style={vStyles.arabic}>{verse.arabic}</Text>
+  return picked.join(' ');
+}
 
-      {/* Translation */}
-      <Text style={vStyles.translation}>{verse.translation}</Text>
-
-      {/* Ornamental divider */}
-      <View style={vStyles.divider}>
-        <MaterialCommunityIcons
-          name="star-four-points"
-          size={7}
-          color="rgba(201,168,76,0.18)"
-        />
-      </View>
-    </View>
-  );
-});
-
-const vStyles = StyleSheet.create({
-  container: {
-    paddingHorizontal: Spacing.xl,
-    paddingTop: Spacing.xl,
-    paddingBottom: Spacing.md,
-  },
-  topRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: Spacing.md,
-  },
-  numBadge: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: 'rgba(201,168,76,0.09)',
-    borderWidth: 1,
-    borderColor: 'rgba(201,168,76,0.22)',
-    alignItems: 'center',
-    justifyContent: 'center',
-    position: 'relative',
-  },
-  numStar: {
-    position: 'absolute',
-    top: 5,
-    opacity: 0.55,
-  },
-  numText: {
-    fontSize: 11,
-    fontWeight: '700',
-    color: Colors.accent.primary,
-    marginTop: 8,
-  },
-  arabic: {
-    fontFamily: Typography.fonts.arabic,
-    fontSize: 22,
-    color: '#EDD9A3',
-    textAlign: 'right',
-    lineHeight: 44,
-    marginBottom: Spacing.sm,
-  },
-  translation: {
-    fontSize: 14,
-    color: 'rgba(176,196,215,0.72)',
-    lineHeight: 24,
-    fontStyle: 'italic',
-    letterSpacing: 0.1,
-  },
-  divider: {
-    alignItems: 'center',
-    marginTop: Spacing.lg,
-  },
-});
+async function fetchTafsir(surahNumber: number, verseNumber: number): Promise<TafsirEntry | null> {
+  const key = `${surahNumber}:${verseNumber}`;
+  if (tafsirCache.has(key)) return tafsirCache.get(key) ?? null;
+  try {
+    // Ibn Kathir tafsir (id 169) from quran.com API v4
+    const res = await fetch(
+      `https://api.quran.com/api/v4/tafsirs/169/by_ayah/${surahNumber}:${verseNumber}`,
+    );
+    if (!res.ok) return null; // network error — don't cache, allow retry
+    const json = await res.json();
+    const html: string | undefined = json?.tafsir?.text;
+    if (!html) { tafsirCache.set(key, null); return null; }
+    // Strip HTML tags then decode common entities
+    const text = html
+      .replace(/<[^>]+>/g, '')
+      .replace(/&amp;/g, '&')
+      .replace(/&lt;/g, '<')
+      .replace(/&gt;/g, '>')
+      .replace(/&quot;/g, '"')
+      .replace(/&#39;|&apos;/g, "'")
+      .replace(/&rsquo;|&lsquo;/g, "'")
+      .replace(/&rdquo;|&ldquo;/g, '"')
+      .replace(/&ndash;/g, '–')
+      .replace(/&mdash;/g, '—')
+      .replace(/&nbsp;/g, ' ')
+      .replace(/&#(\d+);/g, (_, c) => String.fromCharCode(Number(c)))
+      .replace(/&#x([0-9a-f]+);/gi, (_, h) => String.fromCharCode(parseInt(h, 16)))
+      .replace(/\s+/g, ' ')
+      .trim();
+    if (!text) { tafsirCache.set(key, null); return null; }
+    const compact = compactTafsir(text);
+    if (!compact) { tafsirCache.set(key, null); return null; }
+    const entry: TafsirEntry = { text: compact, source: 'Ibn Kathir · quran.com' };
+    tafsirCache.set(key, entry);
+    return entry;
+  } catch {
+    return null;
+  }
+}
 
 // ─── SurahReaderScreen ────────────────────────────────────────────────────────
 
-export default function SurahReaderScreen({
-  route,
-  navigation,
-}: {
-  route: any;
-  navigation: any;
-}) {
+type Props = StackScreenProps<RootStackParamList, 'SurahReader'>;
+
+export default function SurahReaderScreen({ route, navigation }: Props) {
   const insets = useSafeAreaInsets();
-  const { surahNumber, surahName, surahArabic, verseCount } = route.params as {
-    surahNumber: number;
-    surahName: string;
-    surahArabic: string;
-    verseCount: number;
-  };
+  const { surahNumber, surahName, surahArabic, verseCount } = route.params;
 
   const [verses, setVerses] = useState<Verse[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [currentIndex, setCurrentIndex] = useState(0);
   const [bookmarkedSet, setBookmarkedSet] = useState<Set<number>>(new Set());
   const [resumeIndex, setResumeIndex] = useState<number | null>(null);
 
-  const listRef = useRef<FlatList<Verse>>(null);
+  // Reflection accordion
+  const [reflectionOpen, setReflectionOpen] = useState(false);
+  const [tafsirEntry, setTafsirEntry] = useState<TafsirEntry | null>(null);
+  const [tafsirLoading, setTafsirLoading] = useState(false);
+  const tafsirGenRef = useRef(0);
+  const chevronAnim = useRef(new Animated.Value(0)).current;
+  const reflectionBodyAnim = useRef(new Animated.Value(0)).current;
+
+  // Share sheet
+  const [shareVisible, setShareVisible] = useState(false);
+  const [shareContent, setShareContent] = useState({
+    text: '', source: '', arabicText: '', transliteration: '',
+  });
+
+  // Card entrance animations
+  const cardOpacity = useRef(new Animated.Value(0)).current;
+  const cardSlide = useRef(new Animated.Value(20)).current;
   const headerFade = useRef(new Animated.Value(0)).current;
-  const visibleIndexRef = useRef(0);
-  const progressTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  // Viewability config must be stable (can't be recreated each render)
-  const viewabilityConfig = useRef({ itemVisiblePercentThreshold: 60 }).current;
-  const onViewableItemsChanged = useRef(
-    ({ viewableItems }: { viewableItems: Array<{ index: number | null }> }) => {
-      if (viewableItems.length > 0 && viewableItems[0].index !== null) {
-        visibleIndexRef.current = viewableItems[0].index;
-      }
-    },
-  ).current;
+  // Stable ref so the progress timer always reads the latest index
+  const currentIndexRef = useRef(currentIndex);
+  useEffect(() => { currentIndexRef.current = currentIndex; }, [currentIndex]);
 
-  // Load data on mount
+  // Mount: fade header, load data
   useEffect(() => {
     Animated.timing(headerFade, {
       toValue: 1,
-      duration: 500,
+      duration: Animations.timing.slow,
       useNativeDriver: true,
     }).start();
     loadAll();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Progress auto-save every 3 seconds while reading.
-  // Always register cleanup so the interval is cleared even if verses arrive
-  // asynchronously after mount (prevents timer leak on fast unmount).
+  // Auto-save progress every 3 s
   useEffect(() => {
-    if (verses.length === 0) return () => {}; // explicit cleanup on early return
-    progressTimerRef.current = setInterval(() => {
-      // Save at any visible index (including 0 = first verse) so short surahs
-      // that fit on one screen still record progress.
+    if (verses.length === 0) return () => {};
+    const timer = setInterval(() => {
       saveProgress({
         surahNumber,
-        verseIndex: visibleIndexRef.current,
+        verseIndex: currentIndexRef.current,
         surahName,
         timestamp: Date.now(),
       }).catch(() => {});
     }, 3000);
-    return () => {
-      if (progressTimerRef.current) {
-        clearInterval(progressTimerRef.current);
-        progressTimerRef.current = null;
-      }
-    };
+    return () => clearInterval(timer);
   }, [verses.length, surahNumber, surahName]);
+
+  // Animate card in + reset reflection state on each verse change
+  useEffect(() => {
+    cardOpacity.setValue(0);
+    cardSlide.setValue(16);
+    Animated.parallel([
+      Animated.timing(cardOpacity, {
+        toValue: 1,
+        duration: Animations.timing.normal,
+        useNativeDriver: true,
+      }),
+      Animated.timing(cardSlide, {
+        toValue: 0,
+        duration: Animations.timing.normal,
+        useNativeDriver: true,
+      }),
+    ]).start();
+
+    // Cancel any in-flight tafsir fetch from the previous verse
+    tafsirGenRef.current += 1;
+    setReflectionOpen(false);
+    setTafsirEntry(null);
+    setTafsirLoading(false);
+    chevronAnim.setValue(0);
+    reflectionBodyAnim.setValue(0);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentIndex]);
+
+  const toggleReflection = useCallback(async () => {
+    const next = !reflectionOpen;
+    setReflectionOpen(next);
+    HapticsService.impactAsync('LIGHT');
+
+    Animated.parallel([
+      Animated.timing(chevronAnim, {
+        toValue: next ? 1 : 0,
+        duration: 260,
+        useNativeDriver: true,
+      }),
+      Animated.timing(reflectionBodyAnim, {
+        toValue: next ? 1 : 0,
+        duration: next ? 320 : 160,
+        useNativeDriver: true,
+      }),
+    ]).start();
+
+    if (next && !tafsirEntry && verses.length > 0) {
+      const v = verses[currentIndex];
+      const gen = ++tafsirGenRef.current;
+      setTafsirLoading(true);
+      const entry = await fetchTafsir(surahNumber, v.numberInSurah);
+      setTafsirLoading(false);
+      if (tafsirGenRef.current === gen) {
+        setTafsirEntry(entry);
+      }
+    }
+  // chevronAnim + reflectionBodyAnim are stable Animated.Value refs — omitted
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [reflectionOpen, tafsirEntry, verses, currentIndex, surahNumber]);
 
   const loadAll = async () => {
     setLoading(true);
     setError(null);
-    // Local flag so the catch block doesn't rely on stale closure state
     let hasCached = false;
     try {
-      // 1. Fetch bookmarks and progress concurrently with cache lookup
-      //    so VerseItems mount with correct initialBookmarked on first render
       const [cached, bms, prog] = await Promise.all([
         getCachedSurah(surahNumber),
         loadBookmarksForSurah(surahNumber),
         loadReadingProgress(),
       ]);
-
       hasCached = !!cached;
-
-      // 2. Apply all pre-loaded state before showing content
       setBookmarkedSet(bms);
       if (prog && prog.surahNumber === surahNumber && prog.verseIndex >= 0) {
         setResumeIndex(prog.verseIndex);
       }
-
       if (cached) {
         setVerses(cached);
         setLoading(false);
       }
-
-      // 3. Fetch from API if cache was missing
       if (!cached) {
         const fresh = await fetchAndCacheSurah(surahNumber);
         setVerses(fresh);
         setLoading(false);
       }
-    } catch (e) {
-      // Use local flag — never read React state from an async closure
-      if (!hasCached) {
-        setError('Could not load surah. Please check your connection.');
-      }
+    } catch {
+      if (!hasCached) setError('Could not load surah. Please check your connection.');
       setLoading(false);
     }
   };
 
   const handleResume = useCallback(() => {
-    if (resumeIndex !== null && listRef.current) {
-      listRef.current.scrollToIndex({ index: resumeIndex, animated: true });
-    }
+    if (resumeIndex !== null) setCurrentIndex(resumeIndex);
     setResumeIndex(null);
   }, [resumeIndex]);
 
-  const dismissResume = useCallback(() => setResumeIndex(null), []);
+  const handlePrev = useCallback(() => {
+    if (currentIndex > 0) {
+      HapticsService.impactAsync('LIGHT');
+      setCurrentIndex((i) => i - 1);
+    }
+  }, [currentIndex]);
 
-  const handleBookmarkChange = useCallback(
-    (verseNumber: number, bookmarked: boolean) => {
-      setBookmarkedSet((prev) => {
-        const next = new Set(prev);
-        if (bookmarked) next.add(verseNumber); else next.delete(verseNumber);
-        return next;
-      });
-    },
-    [],
-  );
+  const handleNext = useCallback(() => {
+    if (verses.length > 0 && currentIndex < verses.length - 1) {
+      HapticsService.impactAsync('LIGHT');
+      setCurrentIndex((i) => i + 1);
+    }
+  }, [currentIndex, verses.length]);
 
-  const renderVerse = useCallback(
-    ({ item }: { item: Verse }) => (
-      <VerseItem
-        verse={item}
-        surahNumber={surahNumber}
-        surahName={surahName}
-        initialBookmarked={bookmarkedSet.has(item.numberInSurah)}
-        onBookmarkChange={handleBookmarkChange}
-      />
-    ),
-    // bookmarkedSet intentionally omitted: VerseItem manages its own state after mount
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [surahNumber, surahName, handleBookmarkChange],
-  );
+  const handleBookmark = useCallback(async () => {
+    if (!verses.length) return;
+    const v = verses[currentIndex];
+    const wasBookmarked = bookmarkedSet.has(v.numberInSurah);
+    HapticsService.impactAsync('LIGHT');
+    setBookmarkedSet((prev) => {
+      const next = new Set(prev);
+      if (wasBookmarked) next.delete(v.numberInSurah);
+      else next.add(v.numberInSurah);
+      return next;
+    });
+    if (wasBookmarked) {
+      await removeBookmark(surahNumber, v.numberInSurah);
+    } else {
+      await addBookmark(v, surahNumber, surahName);
+    }
+  }, [verses, currentIndex, bookmarkedSet, surahNumber, surahName]);
 
-  const keyExtractor = useCallback(
-    (item: Verse) => item.numberInSurah.toString(),
-    [],
-  );
+  const handleShare = useCallback(() => {
+    if (!verses.length) return;
+    const v = verses[currentIndex];
+    setShareContent({
+      text: v.translation,
+      source: `Surah ${surahName} ${surahNumber}:${v.numberInSurah}`,
+      arabicText: v.arabic,
+      transliteration: '',
+    });
+    setShareVisible(true);
+    HapticsService.impactAsync('LIGHT');
+  }, [verses, currentIndex, surahName, surahNumber]);
 
-  // Surah 9 (At-Tawbah) has no Bismillah by scholarly consensus
-  const showBismillah = surahNumber !== 9;
+  const verse = verses[currentIndex] ?? null;
+  const isBookmarked = verse ? bookmarkedSet.has(verse.numberInSurah) : false;
+  const showBismillah = surahNumber !== 9 && currentIndex === 0;
+  const audioKey = verse ? `${surahNumber}:${verse.numberInSurah}` : undefined;
+  const atStart = currentIndex === 0;
+  const atEnd = !verses.length || currentIndex >= verses.length - 1;
+
+  const chevronDeg = chevronAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: ['0deg', '180deg'],
+  });
 
   return (
     <View style={styles.container}>
@@ -410,22 +451,22 @@ export default function SurahReaderScreen({
         end={{ x: 0.5, y: 1 }}
       />
 
-      {/* ── Header ────────────────────────────────────────────────── */}
+      {/* ── Header ─────────────────────────────────────────────────── */}
       <Animated.View
         style={[
           styles.header,
-          { paddingTop: insets.top + Spacing.md, opacity: headerFade },
+          { paddingTop: insets.top + Spacing.lg, opacity: headerFade },
         ]}
       >
         <TouchableOpacity
           onPress={() => navigation.goBack()}
           style={styles.backBtn}
-          hitSlop={{ top: 8, right: 8, bottom: 8, left: 8 }}
+          hitSlop={{ top: 12, right: 12, bottom: 12, left: 12 }}
         >
           <Svg width={20} height={20} viewBox="0 0 24 24">
             <Path
               d="M19 12H5M12 19l-7-7 7-7"
-              stroke={Colors.accent.primary}
+              stroke={GOLD}
               strokeWidth="2"
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -440,20 +481,13 @@ export default function SurahReaderScreen({
           <Text style={styles.headerSub}>{verseCount} verses</Text>
         </View>
 
-        {/* Surah number badge */}
-        <View style={styles.numBadge}>
-          <Text style={styles.numBadgeText}>{surahNumber}</Text>
-        </View>
+        <Text style={styles.numBadgeText}>{surahNumber}</Text>
       </Animated.View>
 
-      {/* ── Resume banner ─────────────────────────────────────────── */}
+      {/* ── Resume banner ──────────────────────────────────────────── */}
       {resumeIndex !== null && verses.length > resumeIndex && (
         <View style={styles.resumeBanner}>
-          <MaterialCommunityIcons
-            name="bookmark-check"
-            size={16}
-            color={Colors.accent.primary}
-          />
+          <MaterialCommunityIcons name="bookmark-check" size={16} color={GOLD} />
           <Text style={styles.resumeText}>
             Continue from verse {verses[resumeIndex]?.numberInSurah}
           </Text>
@@ -461,32 +495,35 @@ export default function SurahReaderScreen({
             <TouchableOpacity onPress={handleResume} style={styles.resumeBtn}>
               <Text style={styles.resumeBtnText}>Jump there</Text>
             </TouchableOpacity>
-            <TouchableOpacity onPress={dismissResume} hitSlop={{ top: 8, right: 8, bottom: 8, left: 8 }}>
+            <TouchableOpacity
+              onPress={() => setResumeIndex(null)}
+              hitSlop={{ top: 8, right: 8, bottom: 8, left: 8 }}
+            >
               <MaterialCommunityIcons
                 name="close"
                 size={14}
-                color="rgba(201,168,76,0.45)"
+                color="rgba(212,175,55,0.45)"
               />
             </TouchableOpacity>
           </View>
         </View>
       )}
 
-      {/* ── Loading ───────────────────────────────────────────────── */}
-      {loading && verses.length === 0 && (
-        <View style={styles.loadingWrap}>
-          <ActivityIndicator size="large" color={Colors.accent.primary} />
+      {/* ── Loading ────────────────────────────────────────────────── */}
+      {loading && (
+        <View style={styles.centeredFlex}>
+          <ActivityIndicator size="large" color={GOLD} />
           <Text style={styles.loadingText}>Loading surah…</Text>
         </View>
       )}
 
       {/* ── Error ─────────────────────────────────────────────────── */}
-      {error && verses.length === 0 && (
-        <View style={styles.errorWrap}>
+      {!loading && !!error && (
+        <View style={styles.centeredFlex}>
           <MaterialCommunityIcons
             name="wifi-off"
             size={52}
-            color="rgba(201,168,76,0.25)"
+            color="rgba(212,175,55,0.25)"
           />
           <Text style={styles.errorTitle}>No Connection</Text>
           <Text style={styles.errorSub}>{error}</Text>
@@ -496,35 +533,220 @@ export default function SurahReaderScreen({
         </View>
       )}
 
-      {/* ── Verses ────────────────────────────────────────────────── */}
-      {verses.length > 0 && (
-        <FlatList
-          ref={listRef}
-          data={verses}
-          keyExtractor={keyExtractor}
-          renderItem={renderVerse}
+      {/* ── Verse + Reflection ────────────────────────────────────── */}
+      {!loading && !error && !!verse && (
+        <Animated.ScrollView
+          style={styles.scroll}
+          contentContainerStyle={[
+            styles.scrollContent,
+            { paddingBottom: insets.bottom + 180 },
+          ]}
           showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ paddingBottom: insets.bottom + 100 }}
-          onViewableItemsChanged={onViewableItemsChanged}
-          viewabilityConfig={viewabilityConfig}
-          onScrollToIndexFailed={() => {}}
-          initialNumToRender={12}
-          maxToRenderPerBatch={12}
-          windowSize={6}
-          ListHeaderComponent={
-            showBismillah ? (
-              <View style={styles.bismillahBlock}>
-                <Text style={styles.bismillahArabic}>
+        >
+          {/* ── Verse card ── */}
+          <Animated.View
+            style={[
+              styles.card,
+              { opacity: cardOpacity, transform: [{ translateY: cardSlide }] },
+            ]}
+          >
+            <CornerFrame color={GOLD} size={18} thickness={1.5} offset={12} />
+
+            {/* Reference */}
+            <View style={styles.refRow}>
+              <MaterialCommunityIcons
+                name="star-four-points"
+                size={9}
+                color={GOLD}
+                style={{ opacity: 0.65 }}
+              />
+              <Text style={styles.refText}>
+                {surahName} · {surahNumber}:{verse.numberInSurah}
+              </Text>
+              <MaterialCommunityIcons
+                name="star-four-points"
+                size={9}
+                color={GOLD}
+                style={{ opacity: 0.65 }}
+              />
+            </View>
+
+            {/* Bismillah for first verse */}
+            {showBismillah && (
+              <View style={styles.bismillahRow}>
+                <Text style={styles.bismillahText}>
                   بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ
                 </Text>
-                <Text style={styles.bismillahLatin}>
-                  In the name of Allah, the Most Gracious, the Most Merciful
-                </Text>
               </View>
-            ) : null
-          }
-        />
+            )}
+
+            {/* Arabic */}
+            <ArabicText text={verse.arabic} style={styles.arabic} />
+
+            {/* Divider */}
+            <View style={styles.divider}>
+              <View style={styles.dividerLine} />
+              <View style={styles.dividerDiamond} />
+              <View style={styles.dividerLine} />
+            </View>
+
+            {/* Translation */}
+            <Text style={styles.translation}>
+              "{verse.translation}"
+            </Text>
+          </Animated.View>
+
+          {/* ── Reflection accordion ── */}
+          <View style={styles.reflectionWrap}>
+            <TouchableOpacity
+              style={styles.reflectionHeader}
+              onPress={toggleReflection}
+              activeOpacity={0.75}
+            >
+              <View style={styles.reflectionHeaderLeft}>
+                <Ionicons name="book-outline" size={16} color={GOLD} />
+                <Text style={styles.reflectionLabel}>Context</Text>
+              </View>
+              <Animated.View style={{ transform: [{ rotate: chevronDeg }] }}>
+                <Ionicons
+                  name="chevron-down"
+                  size={16}
+                  color="rgba(212,175,55,0.55)"
+                />
+              </Animated.View>
+            </TouchableOpacity>
+
+            {reflectionOpen && (
+              <Animated.View
+                style={[styles.reflectionBody, { opacity: reflectionBodyAnim }]}
+              >
+                {tafsirLoading ? (
+                  <ActivityIndicator
+                    size="small"
+                    color={GOLD}
+                    style={styles.tafsirSpinner}
+                  />
+                ) : tafsirEntry ? (
+                  <>
+                    <Text style={styles.reflectionText}>{tafsirEntry.text}</Text>
+                    <View style={styles.reflectionSourceRow}>
+                      <Text style={styles.reflectionSource}>{tafsirEntry.source}</Text>
+                    </View>
+                  </>
+                ) : (
+                  <Text style={styles.reflectionText}>{verse.translation}</Text>
+                )}
+              </Animated.View>
+            )}
+          </View>
+        </Animated.ScrollView>
       )}
+
+      {/* ── Fixed bottom: action pill + navigation ─────────────────── */}
+      {!loading && !error && !!verse && (
+        <View style={[styles.bottomArea, { paddingBottom: insets.bottom + Spacing.md }]}>
+
+          {/* Save · Share · Audio */}
+          <View style={styles.pill}>
+            <BlurView intensity={60} tint="dark" style={styles.pillInner}>
+
+              {/* Save */}
+              <TouchableOpacity
+                onPress={handleBookmark}
+                style={styles.pillBtn}
+                hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                accessibilityLabel={isBookmarked ? 'Remove bookmark' : 'Save verse'}
+              >
+                <Ionicons
+                  name={isBookmarked ? 'bookmark' : 'bookmark-outline'}
+                  size={22}
+                  color={isBookmarked ? GOLD : 'rgba(245,237,227,0.7)'}
+                />
+                <Text style={[styles.pillLabel, isBookmarked && styles.pillLabelActive]}>
+                  Save
+                </Text>
+              </TouchableOpacity>
+
+              <View style={styles.pillSep} />
+
+              {/* Share */}
+              <TouchableOpacity
+                onPress={handleShare}
+                style={styles.pillBtn}
+                hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                accessibilityLabel="Share verse"
+              >
+                <Ionicons name="share-outline" size={22} color="rgba(245,237,227,0.7)" />
+                <Text style={styles.pillLabel}>Share</Text>
+              </TouchableOpacity>
+
+              <View style={styles.pillSep} />
+
+              {/* Audio */}
+              {audioKey ? (
+                <View style={styles.pillBtn}>
+                  <AudioPlayerButton
+                    verseKey={audioKey}
+                    size={34}
+                    iconSize={22}
+                    color="rgba(245,237,227,0.7)"
+                    showLabel={false}
+                    containerStyle={styles.audioCtr}
+                    style={styles.audioWrap}
+                  />
+                  <Text style={styles.pillLabel}>Audio</Text>
+                </View>
+              ) : null}
+
+            </BlurView>
+          </View>
+
+          {/* ← verse counter → */}
+          <View style={styles.navRow}>
+            <TouchableOpacity
+              onPress={handlePrev}
+              disabled={atStart}
+              style={[styles.navBtn, atStart && styles.navBtnOff]}
+              hitSlop={{ top: 8, bottom: 8, left: 16, right: 16 }}
+            >
+              <Ionicons
+                name="chevron-back"
+                size={20}
+                color={atStart ? 'rgba(212,175,55,0.25)' : GOLD}
+              />
+            </TouchableOpacity>
+
+            <Text style={styles.navCounter}>
+              {verse.numberInSurah} / {verseCount}
+            </Text>
+
+            <TouchableOpacity
+              onPress={handleNext}
+              disabled={atEnd}
+              style={[styles.navBtn, atEnd && styles.navBtnOff]}
+              hitSlop={{ top: 8, bottom: 8, left: 16, right: 16 }}
+            >
+              <Ionicons
+                name="chevron-forward"
+                size={20}
+                color={atEnd ? 'rgba(212,175,55,0.25)' : GOLD}
+              />
+            </TouchableOpacity>
+          </View>
+
+        </View>
+      )}
+
+      <ShareSheet
+        isVisible={shareVisible}
+        onClose={() => setShareVisible(false)}
+        content={{
+          text: shareContent.text,
+          source: shareContent.source,
+          arabicText: shareContent.arabicText,
+          transliteration: shareContent.transliteration,
+        }}
+      />
     </View>
   );
 }
@@ -537,7 +759,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#07111E',
   },
 
-  // Header
+  // ── Header ──
   header: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -549,10 +771,6 @@ const styles = StyleSheet.create({
   backBtn: {
     width: 44,
     height: 44,
-    borderRadius: BorderRadius.full,
-    backgroundColor: 'rgba(255,255,255,0.06)',
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.08)',
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -579,40 +797,32 @@ const styles = StyleSheet.create({
     color: Colors.text.muted,
     letterSpacing: 0.3,
   },
-  numBadge: {
-    width: 44,
-    height: 44,
-    borderRadius: BorderRadius.full,
-    backgroundColor: 'rgba(201,168,76,0.1)',
-    borderWidth: 1,
-    borderColor: 'rgba(201,168,76,0.22)',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
   numBadgeText: {
+    width: 44,
+    textAlign: 'center',
     fontSize: 13,
-    fontWeight: '700',
-    color: Colors.accent.primary,
+    fontWeight: '600',
+    color: 'rgba(212,175,55,0.5)',
   },
 
-  // Resume banner
+  // ── Resume banner ──
   resumeBanner: {
     flexDirection: 'row',
     alignItems: 'center',
     marginHorizontal: Spacing.xl,
     marginBottom: Spacing.md,
     paddingHorizontal: Spacing.lg,
-    paddingVertical: Spacing.sm + 2,
-    backgroundColor: 'rgba(201,168,76,0.08)',
+    paddingVertical: Spacing.md,
+    backgroundColor: 'rgba(212,175,55,0.08)',
     borderRadius: BorderRadius.md,
     borderWidth: 1,
-    borderColor: 'rgba(201,168,76,0.22)',
+    borderColor: 'rgba(212,175,55,0.22)',
     gap: Spacing.sm,
   },
   resumeText: {
     flex: 1,
     fontSize: 13,
-    color: 'rgba(201,168,76,0.85)',
+    color: 'rgba(212,175,55,0.85)',
     fontWeight: '500',
   },
   resumeActions: {
@@ -623,44 +833,18 @@ const styles = StyleSheet.create({
   resumeBtn: {
     paddingHorizontal: Spacing.md,
     paddingVertical: 4,
-    backgroundColor: 'rgba(201,168,76,0.18)',
+    backgroundColor: 'rgba(212,175,55,0.18)',
     borderRadius: BorderRadius.sm,
   },
   resumeBtnText: {
     fontSize: 12,
     fontWeight: '700',
-    color: Colors.accent.primary,
+    color: GOLD,
     letterSpacing: 0.3,
   },
 
-  // Bismillah header
-  bismillahBlock: {
-    paddingHorizontal: Spacing.xl,
-    paddingTop: Spacing.lg,
-    paddingBottom: Spacing.xl,
-    alignItems: 'center',
-    borderBottomWidth: 1,
-    borderBottomColor: 'rgba(201,168,76,0.08)',
-    marginBottom: Spacing.sm,
-  },
-  bismillahArabic: {
-    fontFamily: Typography.fonts.arabic,
-    fontSize: 24,
-    color: '#EDD9A3',
-    textAlign: 'center',
-    lineHeight: 46,
-    marginBottom: Spacing.sm,
-  },
-  bismillahLatin: {
-    fontSize: 12,
-    color: 'rgba(176,196,215,0.5)',
-    textAlign: 'center',
-    fontStyle: 'italic',
-    letterSpacing: 0.2,
-  },
-
-  // Loading
-  loadingWrap: {
+  // ── Loading / error ──
+  centeredFlex: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
@@ -671,18 +855,9 @@ const styles = StyleSheet.create({
     color: Colors.text.muted,
     fontStyle: 'italic',
   },
-
-  // Error
-  errorWrap: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: Spacing.lg,
-    paddingHorizontal: Spacing.xxl,
-  },
   errorTitle: {
     fontSize: 20,
-    fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
+    fontFamily: Typography.fonts.serif,
     fontWeight: '700',
     color: 'rgba(240,230,211,0.6)',
   },
@@ -691,19 +866,247 @@ const styles = StyleSheet.create({
     color: Colors.text.muted,
     textAlign: 'center',
     lineHeight: 22,
+    paddingHorizontal: Spacing.xxl,
   },
   retryBtn: {
     paddingHorizontal: Spacing.xl,
     paddingVertical: Spacing.md,
-    backgroundColor: 'rgba(201,168,76,0.15)',
+    backgroundColor: 'rgba(212,175,55,0.15)',
     borderRadius: BorderRadius.full,
     borderWidth: 1,
-    borderColor: 'rgba(201,168,76,0.3)',
+    borderColor: 'rgba(212,175,55,0.3)',
   },
   retryText: {
     fontSize: 14,
     fontWeight: '700',
-    color: Colors.accent.primary,
+    color: GOLD,
     letterSpacing: 0.5,
+  },
+
+  // ── Scroll ──
+  scroll: {
+    flex: 1,
+  },
+  scrollContent: {
+    paddingHorizontal: Spacing.xl,
+    paddingTop: Spacing.lg,
+    gap: Spacing.lg,
+  },
+
+  // ── Verse card ──
+  card: {
+    backgroundColor: 'rgba(255,235,210,0.04)',
+    borderRadius: BorderRadius.xl,
+    borderWidth: 1,
+    borderColor: 'rgba(212,175,55,0.12)',
+    paddingHorizontal: Spacing.xl,
+    paddingVertical: Spacing.xxl,
+    alignItems: 'center',
+  },
+
+  // Reference row
+  refRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.sm,
+    marginBottom: Spacing.xxl,
+  },
+  refText: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: GOLD,
+    letterSpacing: 1.8,
+    opacity: 0.9,
+  },
+
+  // Bismillah
+  bismillahRow: {
+    alignSelf: 'stretch',
+    alignItems: 'center',
+    paddingBottom: Spacing.lg,
+    marginBottom: Spacing.xl,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: 'rgba(212,175,55,0.1)',
+  },
+  bismillahText: {
+    fontFamily: Typography.fonts.arabic,
+    fontSize: 20,
+    color: '#EDD9A3',
+    textAlign: 'center',
+    lineHeight: 40,
+    opacity: 0.6,
+  },
+
+  // Arabic
+  arabic: {
+    fontSize: 26,
+    lineHeight: 54,
+    color: '#EDD9A3',
+    textAlign: 'center',
+  },
+
+  // Divider
+  divider: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.md,
+    marginVertical: Spacing.xl,
+    width: '55%',
+  },
+  dividerLine: {
+    flex: 1,
+    height: StyleSheet.hairlineWidth,
+    backgroundColor: 'rgba(245,237,227,0.12)',
+  },
+  dividerDiamond: {
+    width: 5,
+    height: 5,
+    borderRadius: 1,
+    backgroundColor: 'rgba(212,175,55,0.5)',
+    transform: [{ rotate: '45deg' }],
+  },
+
+  // Translation
+  translation: {
+    fontFamily: Typography.fonts.serif,
+    fontSize: 16,
+    lineHeight: 28,
+    color: 'rgba(245,237,227,0.72)',
+    textAlign: 'center',
+    fontStyle: 'italic',
+    paddingHorizontal: Spacing.sm,
+  },
+
+  // ── Reflection accordion ──
+  reflectionWrap: {
+    backgroundColor: 'rgba(255,235,210,0.04)',
+    borderRadius: BorderRadius.lg,
+    borderWidth: 1,
+    borderColor: 'rgba(255,235,210,0.07)',
+    overflow: 'hidden',
+  },
+  reflectionHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: Spacing.lg,
+    paddingVertical: Spacing.md,
+  },
+  reflectionHeaderLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.sm,
+  },
+  reflectionLabel: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: GOLD,
+    letterSpacing: 1.4,
+    textTransform: 'uppercase',
+  },
+  reflectionBody: {
+    paddingHorizontal: Spacing.lg,
+    paddingTop: Spacing.xs,
+    paddingBottom: Spacing.lg,
+  },
+  reflectionText: {
+    fontFamily: Typography.fonts.serif,
+    fontSize: 15,
+    lineHeight: 26,
+    color: Colors.text.secondary,
+  },
+  tafsirSpinner: {
+    marginVertical: Spacing.lg,
+  },
+  reflectionSourceRow: {
+    marginTop: Spacing.md,
+    paddingTop: Spacing.sm,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: Colors.glass.border,
+    alignItems: 'flex-end',
+  },
+  reflectionSource: {
+    fontSize: Typography.sizes.detail,
+    color: GOLD,
+    opacity: 0.75,
+    letterSpacing: 0.4,
+  },
+
+  // ── Fixed bottom ──
+  bottomArea: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    paddingHorizontal: Spacing.xl,
+    gap: Spacing.sm,
+  },
+
+  // Action pill
+  pill: {
+    borderRadius: BorderRadius.full,
+    overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.1)',
+  },
+  pillInner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: Spacing.sm,
+    paddingHorizontal: Spacing.lg,
+  },
+  pillBtn: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: Spacing.xs,
+    minHeight: 44,
+  },
+  pillLabel: {
+    fontSize: 10,
+    color: 'rgba(245,237,227,0.5)',
+    letterSpacing: 0.6,
+    fontWeight: '600',
+  },
+  pillLabelActive: {
+    color: GOLD,
+  },
+  pillSep: {
+    width: StyleSheet.hairlineWidth,
+    height: 26,
+    backgroundColor: 'rgba(255,255,255,0.12)',
+    marginHorizontal: Spacing.xs,
+  },
+  audioCtr: {
+    backgroundColor: 'transparent',
+    borderWidth: 0,
+  },
+  audioWrap: {
+    marginVertical: 0,
+  },
+
+  // Navigation row
+  navRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: Spacing.xxl,
+  },
+  navBtn: {
+    width: 40,
+    height: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  navBtnOff: {
+    opacity: 0.35,
+  },
+  navCounter: {
+    fontSize: 13,
+    color: 'rgba(245,237,227,0.45)',
+    fontWeight: '600',
+    letterSpacing: 1,
+    minWidth: 70,
+    textAlign: 'center',
   },
 });

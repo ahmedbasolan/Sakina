@@ -55,6 +55,7 @@ const PathTopBar: React.FC<PathTopBarProps> = ({
           onPress={onBack}
           style={styles.iconCircle}
           activeOpacity={0.7}
+          hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
           accessibilityRole="button"
           accessibilityLabel="Go back"
         >
@@ -83,6 +84,7 @@ const PathTopBar: React.FC<PathTopBarProps> = ({
             onPress={onSettingsPress}
             style={styles.iconCircle}
             activeOpacity={0.7}
+            hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
             accessibilityRole="button"
             accessibilityLabel="Journey settings"
           >
@@ -118,17 +120,8 @@ const styles = StyleSheet.create({
   iconCircle: {
     width: 44,
     height: 44,
-    borderRadius: 22,
-    backgroundColor: '#1C1612',
-    borderWidth: 1,
-    borderColor: 'rgba(212, 175, 55, 0.12)',
     justifyContent: 'center',
     alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 2,
   },
   progressLabel: {
     fontSize: 10,

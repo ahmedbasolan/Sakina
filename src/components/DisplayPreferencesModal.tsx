@@ -6,9 +6,9 @@ import {
   TouchableOpacity,
   Modal,
   TouchableWithoutFeedback,
-  Platform,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Colors, Spacing, Typography, BorderRadius } from '../theme/DesignSystem';
 import { UserPreferences, LanguagePreference } from '../types';
 
@@ -44,6 +44,7 @@ const DisplayPreferencesModal: React.FC<DisplayPreferencesModalProps> = ({
   selectedThemeName,
   onOpenBackgroundPicker,
 }) => {
+  const insets = useSafeAreaInsets();
   const setLanguage = (lang: LanguagePreference) => onUpdatePreference({ primaryLanguage: lang });
 
   return (
@@ -51,7 +52,7 @@ const DisplayPreferencesModal: React.FC<DisplayPreferencesModalProps> = ({
       <TouchableWithoutFeedback onPress={onClose}>
         <View style={styles.overlay}>
           <TouchableWithoutFeedback>
-            <View style={styles.sheet}>
+            <View style={[styles.sheet, { paddingBottom: insets.bottom + Spacing.xl }]}>
               <View style={styles.header}>
                 <Text style={styles.title}>READING OPTIONS</Text>
                 <TouchableOpacity onPress={onClose} style={styles.closeButton}>
@@ -152,12 +153,11 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   sheet: {
-    backgroundColor: Colors.surfaceSheet,
+    backgroundColor: Colors.background.secondary,
     borderTopLeftRadius: BorderRadius.xxl,
     borderTopRightRadius: BorderRadius.xxl,
     paddingHorizontal: Spacing.xxl,
     paddingTop: Spacing.xl,
-    paddingBottom: Platform.OS === 'ios' ? 50 : Spacing.xxl,
   },
   header: {
     flexDirection: 'row',
@@ -178,7 +178,7 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.xxl,
   },
   sectionTitle: {
-    fontSize: Typography.sizes.detail - 1,
+    fontSize: Typography.sizes.detail,
     fontWeight: '700',
     color: Colors.text.secondary,
     letterSpacing: 1.5,
@@ -214,7 +214,7 @@ const styles = StyleSheet.create({
     borderColor: Colors.accent.primary,
   },
   optionText: {
-    fontSize: Typography.sizes.small - 3,
+    fontSize: Typography.sizes.detail,
     fontWeight: '700',
     color: Colors.text.secondary,
     letterSpacing: 1,
@@ -272,7 +272,7 @@ const styles = StyleSheet.create({
   },
   backgroundValue: {
     flex: 1,
-    fontSize: Typography.sizes.small - 2,
+    fontSize: Typography.sizes.detail,
     fontWeight: '600',
     color: Colors.text.primary,
     letterSpacing: 0.3,
@@ -304,7 +304,7 @@ const styles = StyleSheet.create({
     color: Colors.background.primary,
     fontWeight: '800',
     letterSpacing: 1,
-    fontSize: Typography.sizes.small - 1,
+    fontSize: Typography.sizes.small,
   },
 });
 

@@ -6,7 +6,7 @@ import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { BlurView } from 'expo-blur';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { Colors, Spacing, BorderRadius } from '../theme/DesignSystem';
+import { Spacing, BorderRadius } from '../theme/DesignSystem';
 import { useAuth } from '../context/AuthContext';
 import { useAppContext } from '../context/AppContext';
 
@@ -57,14 +57,6 @@ const TAB_ICONS: Record<string, { active: string; inactive: string }> = {
   Library: { active: 'book-open-variant', inactive: 'book-open-variant-outline' },
 };
 
-const TAB_LABELS: Record<string, string> = {
-  Home: 'Home',
-  Journeys: 'Paths',
-  Streak: 'Streak',
-  Journal: 'Journal',
-  Library: 'Library',
-};
-
 // ── Single animated tab item ─────────────────────────────────────────
 function TabItem({
   routeName,
@@ -93,18 +85,12 @@ function TabItem({
   const isStreak = routeName === 'Streak';
   const hasStreak = isStreak && typeof streakCount === 'number' && streakCount > 0;
 
-  // Static colors — icon name already switches on focus; color is a simple
-  // boolean switch so we keep useNativeDriver: true on all other animations.
   const iconColor = focused ? '#FFFFFF' : 'rgba(255,255,255,0.38)';
   const flameColor = focused ? '#F59E0B' : 'rgba(245,158,11,0.42)';
 
-  // Derived animated values — all useNativeDriver: true (transform/opacity only)
-  const iconScale = anim.interpolate({ inputRange: [0, 1], outputRange: [1, 1.18] });
-  const iconRise = anim.interpolate({ inputRange: [0, 1], outputRange: [0, -3] });
-  const highlightScale = anim.interpolate({ inputRange: [0, 1], outputRange: [0.6, 1] });
-  const highlightAlpha = anim.interpolate({ inputRange: [0, 0.35, 1], outputRange: [0, 0.55, 1] });
-  const labelAlpha = anim.interpolate({ inputRange: [0, 0.45, 1], outputRange: [0, 0, 1] });
-  const labelRise = anim.interpolate({ inputRange: [0, 1], outputRange: [8, 0] });
+  const iconScale = anim.interpolate({ inputRange: [0, 1], outputRange: [1, 1.15] });
+  const highlightScale = anim.interpolate({ inputRange: [0, 1], outputRange: [0.55, 1] });
+  const highlightAlpha = anim.interpolate({ inputRange: [0, 0.35, 1], outputRange: [0, 0.5, 1] });
 
   return (
     <TouchableOpacity
@@ -117,15 +103,6 @@ function TabItem({
       accessibilityRole="tab"
       accessibilityState={{ selected: focused }}
     >
-      {/* Floating label chip — pops above the pill */}
-      <Animated.View
-        style={[styles.labelChip, { opacity: labelAlpha, transform: [{ translateY: labelRise }] }]}
-        pointerEvents="none"
-      >
-        <Text style={styles.labelChipText}>{TAB_LABELS[routeName]}</Text>
-      </Animated.View>
-
-      {/* Icon area */}
       <View style={styles.iconArea}>
         {/* Highlight disc — scales in from centre */}
         <Animated.View
@@ -138,8 +115,8 @@ function TabItem({
           <View style={styles.highlightDisc} />
         </Animated.View>
 
-        {/* Icon — scales up and rises slightly */}
-        <Animated.View style={{ transform: [{ scale: iconScale }, { translateY: iconRise }] }}>
+        {/* Icon */}
+        <Animated.View style={{ transform: [{ scale: iconScale }] }}>
           <MaterialCommunityIcons
             name={iconName as any}
             size={22}
@@ -247,7 +224,7 @@ export default function MainNavigator() {
 
 // ── Styles ────────────────────────────────────────────────────────────
 const styles = StyleSheet.create({
-  // Outer wrapper — overflow visible so labels float above the pill
+  // Outer wrapper — overflow visible so the pill's drop shadow renders
   tabBarOuter: {
     position: 'absolute',
     left: 36,
@@ -255,9 +232,8 @@ const styles = StyleSheet.create({
     overflow: 'visible',
   },
 
-  // The floating pill — frosted glass. No overflow:hidden here so the floating
-  // labels can pop above it and the shadow still renders; the BlurView clips
-  // itself to the rounded shape.
+  // The floating pill — frosted glass. No overflow:hidden here so the shadow
+  // renders; the BlurView clips itself to the rounded shape.
   pill: {
     flexDirection: 'row',
     // Subtle base fill so iOS casts the shadow (a fully transparent view may not)
@@ -284,32 +260,12 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(10, 18, 28, 0.3)',
   },
 
-  // Each tab's touch target — fills pill height, overflows upward for label
+  // Each tab's touch target
   tabItem: {
     flex: 1,
     height: 60,
     alignItems: 'center',
     justifyContent: 'center',
-    overflow: 'visible',
-  },
-
-  // Floating label chip above the pill
-  labelChip: {
-    position: 'absolute',
-    top: -28,
-    alignSelf: 'center',
-    backgroundColor: 'rgba(12, 22, 38, 0.95)',
-    paddingHorizontal: Spacing.sm + 2,
-    paddingVertical: 3,
-    borderRadius: BorderRadius.sm,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.10)',
-  },
-  labelChipText: {
-    fontSize: 11,
-    fontWeight: '600',
-    color: Colors.text.primary,
-    letterSpacing: 0.4,
   },
 
   // Icon area — fixed size so animations don't affect sibling layout

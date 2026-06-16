@@ -7,7 +7,6 @@ import {
   ScrollView,
   Dimensions,
   Animated,
-  Platform,
   Alert,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -22,6 +21,7 @@ import { logServiceError } from '../services/errorLoggingService';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRoute, useNavigation, useFocusEffect } from '@react-navigation/native';
+import { Typography, Spacing } from '../theme/DesignSystem';
 
 import { UserPathProgress } from '../types';
 import { PathsService } from '../services/pathsService';
@@ -391,7 +391,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 20,
+    paddingHorizontal: Spacing.xl,
     marginBottom: 20,
     zIndex: 10,
   },
@@ -447,7 +447,7 @@ const styles = StyleSheet.create({
   },
   heroTitle: {
     fontSize: 26,
-    fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
+    fontFamily: Typography.fonts.serif,
     fontWeight: '400',
     marginBottom: 4,
   },
@@ -534,7 +534,7 @@ const styles = StyleSheet.create({
   },
   todayCardTitle: {
     fontSize: 18,
-    fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
+    fontFamily: Typography.fonts.serif,
     fontWeight: '400',
     letterSpacing: 0.5,
   },

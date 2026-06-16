@@ -6,7 +6,7 @@
  * Matches the reference image exactly.
  */
 import React, { useEffect, useRef } from 'react';
-import { Colors } from '../../theme/DesignSystem';
+import { Colors, Typography } from '../../theme/DesignSystem';
 import {
   View,
   Text,
@@ -14,7 +14,6 @@ import {
   Animated,
   Dimensions,
   TouchableOpacity,
-  Platform,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useStaggerEntry } from '../../hooks/useStaggerEntry';
@@ -178,7 +177,7 @@ const styles = StyleSheet.create({
     zIndex: 2,
   },
   title: {
-    fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
+    fontFamily: Typography.fonts.serif,
     fontSize: 30,
     color: '#F0E6D3',
     textAlign: 'center',

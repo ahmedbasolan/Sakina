@@ -58,6 +58,15 @@ translate to our stack — never paste web code.
   For SVG-prop animations (e.g. `Ionicons`/`react-native-svg` opacity), use
   `useNativeDriver: false`.
 
+**Navigation & icon indicators**
+- Bare icons only — never wrap back arrows, chevrons, or nav indicators in circular
+  containers (`borderRadius: full` + border + background). Circles on every icon
+  erode the immersive aesthetic. Use generous `hitSlop` (minimum 44 pt touch
+  target: `hitSlop={{ top:12, right:12, bottom:12, left:12 }}`) without adding
+  visual clutter.
+- Disabled nav icons use opacity or a muted color on the icon itself, not a
+  different container shape.
+
 **Lists & components**
 - Long lists use `FlatList`, never `ScrollView` + `.map`.
 - Memoize where it matters (`React.memo`, `useCallback`) to avoid re-render churn.

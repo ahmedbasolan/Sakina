@@ -6,7 +6,7 @@
  * Form elements use frosted glass styling with gold accents.
  */
 import React, { useState, useRef, useEffect } from 'react';
-import { Colors } from '../theme/DesignSystem';
+import { Colors, Spacing, Typography } from '../theme/DesignSystem';
 import {
   View,
   Text,
@@ -21,6 +21,7 @@ import {
   Alert,
   ActivityIndicator,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { AuthService } from '../services/authService';
 import { LinearGradient } from 'expo-linear-gradient';
 import Svg, {
@@ -177,6 +178,7 @@ export function LoginScreen({ navigation, onLogin }: AuthScreenProps) {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const insets = useSafeAreaInsets();
 
   const { enterGuestMode } = useAuth();
   const authService = AuthService.getInstance();
@@ -279,7 +281,7 @@ export function LoginScreen({ navigation, onLogin }: AuthScreenProps) {
     >
       <AuthBackground patternOpacity={patternPulse}>
         <ScrollView
-          contentContainerStyle={styles.scrollContent}
+          contentContainerStyle={[styles.scrollContent, { paddingTop: insets.top + Spacing.xl }]}
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
         >
@@ -426,6 +428,7 @@ export function SignUpScreen({ navigation, onSignUp }: AuthScreenProps) {
   const [showPassword, setShowPassword] = useState(false);
   const [agreeTerms, setAgreeTerms] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const insets = useSafeAreaInsets();
 
   const { enterGuestMode } = useAuth();
   const authService = AuthService.getInstance();
@@ -515,7 +518,7 @@ export function SignUpScreen({ navigation, onSignUp }: AuthScreenProps) {
     >
       <AuthBackground patternOpacity={patternPulse}>
         <ScrollView
-          contentContainerStyle={styles.scrollContent}
+          contentContainerStyle={[styles.scrollContent, { paddingTop: insets.top + Spacing.xl }]}
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
         >
@@ -820,7 +823,6 @@ const styles = StyleSheet.create({
   scrollContent: {
     flexGrow: 1,
     paddingHorizontal: 28,
-    paddingTop: Platform.OS === 'ios' ? 70 : 50,
     paddingBottom: 40,
   },
   // --- Header ---
@@ -841,7 +843,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(212, 175, 55, 0.08)',
   },
   heroTitle: {
-    fontFamily: 'serif',
+    fontFamily: Typography.fonts.serif,
     fontSize: 30,
     color: '#F5EDE3',
     textAlign: 'center',
@@ -849,7 +851,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   heroSubtitle: {
-    fontFamily: 'serif',
+    fontFamily: Typography.fonts.serif,
     fontSize: 15,
     color: 'rgba(245, 237, 227, 0.45)',
     textAlign: 'center',
@@ -915,7 +917,7 @@ const styles = StyleSheet.create({
     elevation: 0,
   },
   primaryBtnText: {
-    fontFamily: 'serif',
+    fontFamily: Typography.fonts.serif,
     fontSize: 16,
     fontWeight: '700',
     color: '#14100C',

@@ -6,7 +6,7 @@
  * Dark navy background, twinkling stars, AnimatedMandala, gold accents.
  */
 import React, { useEffect, useRef, useState } from 'react';
-import { Colors } from '../../theme/DesignSystem';
+import { Colors, Typography } from '../../theme/DesignSystem';
 import {
   View,
   Text,
@@ -14,7 +14,6 @@ import {
   Animated,
   Dimensions,
   TouchableOpacity,
-  Platform,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -251,7 +250,7 @@ const styles = StyleSheet.create({
   arabic: {
     fontSize: 26,
     color: '#F0E6D3',
-    fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
+    fontFamily: Typography.fonts.serif,
     textAlign: 'center',
     lineHeight: 46,
     marginBottom: 18,
@@ -276,7 +275,7 @@ const styles = StyleSheet.create({
   reference: {
     fontSize: 13,
     color: 'rgba(201,168,76,0.55)',
-    fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
+    fontFamily: Typography.fonts.serif,
     letterSpacing: 0.5,
   },
   bottomSection: {
@@ -313,7 +312,7 @@ const styles = StyleSheet.create({
     borderRadius: 28,
   },
   ctaText: {
-    fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
+    fontFamily: Typography.fonts.serif,
     fontSize: 17,
     letterSpacing: 1.5,
     fontWeight: '600',

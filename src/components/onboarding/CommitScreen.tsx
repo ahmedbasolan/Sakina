@@ -7,7 +7,7 @@
  * "Bismillah." fades in with warmth. Auto-advances after 2.2s.
  */
 import React, { useEffect, useRef, useState } from 'react';
-import { Colors } from '../../theme/DesignSystem';
+import { Colors, Typography } from '../../theme/DesignSystem';
 import {
   View,
   Text,
@@ -15,7 +15,6 @@ import {
   Animated,
   Dimensions,
   Pressable,
-  Platform,
 } from 'react-native';
 import Svg, {
   Path,
@@ -515,7 +514,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   title: {
-    fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
+    fontFamily: Typography.fonts.serif,
     fontSize: 26,
     color: '#F5EDE3',
     textAlign: 'center',
@@ -595,7 +594,7 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
   },
   completionText: {
-    fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
+    fontFamily: Typography.fonts.serif,
     fontSize: 26,
     color: Colors.accent.primary,
     textAlign: 'center',

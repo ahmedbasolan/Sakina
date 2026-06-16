@@ -8,7 +8,7 @@
  * Background: #07111E → #0C1A2E, twinkling stars, gold mandala.
  */
 import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
-import { Colors, Spacing, BorderRadius } from '../theme/DesignSystem';
+import { Colors, Spacing, BorderRadius, Typography } from '../theme/DesignSystem';
 import {
   View,
   Text,
@@ -18,7 +18,6 @@ import {
   TextInput,
   Dimensions,
   Animated,
-  Platform,
   ActivityIndicator,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -612,12 +611,12 @@ const styles = StyleSheet.create({
     color: 'rgba(201,168,76,0.6)',
     letterSpacing: 2.5,
     marginBottom: 3,
-    fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
+    fontFamily: Typography.fonts.serif,
   },
   headerTitle: {
     fontSize: 26,
     color: Colors.text.primary,
-    fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
+    fontFamily: Typography.fonts.serif,
     fontWeight: '700',
     letterSpacing: 0.5,
     marginBottom: 4,
@@ -766,7 +765,7 @@ const styles = StyleSheet.create({
     letterSpacing: 0.4,
   },
   savedCardArabic: {
-    fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
+    fontFamily: Typography.fonts.arabic,
     fontSize: 17,
     color: '#EDD9A3',
     textAlign: 'right',
@@ -851,7 +850,7 @@ const styles = StyleSheet.create({
   surahArabic: {
     fontSize: 17,
     color: 'rgba(201,168,76,0.75)',
-    fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
+    fontFamily: Typography.fonts.arabic,
     marginRight: 4,
   },
 
@@ -873,7 +872,7 @@ const styles = StyleSheet.create({
   emptyTitle: {
     fontSize: 18,
     color: 'rgba(240,230,211,0.55)',
-    fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
+    fontFamily: Typography.fonts.serif,
     fontWeight: '600',
   },
   emptySub: {

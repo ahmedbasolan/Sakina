@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { Colors } from '../../theme/DesignSystem';
+import { Colors, Typography } from '../../theme/DesignSystem';
 import {
   View,
   Text,
@@ -7,7 +7,6 @@ import {
   Animated,
   Dimensions,
   TouchableOpacity,
-  Platform,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
@@ -181,7 +180,7 @@ const styles = StyleSheet.create({
     letterSpacing: 1.5,
   },
   title: {
-    fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
+    fontFamily: Typography.fonts.serif,
     fontSize: 34,
     color: '#F5EDE3',
     lineHeight: 42,
@@ -212,7 +211,7 @@ const styles = StyleSheet.create({
   verseArabic: {
     fontSize: 18,
     color: Colors.accent.primary,
-    fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
+    fontFamily: Typography.fonts.serif,
     textAlign: 'center',
     opacity: 0.85,
     textShadowColor: 'rgba(212, 175, 55, 0.4)',
@@ -222,7 +221,7 @@ const styles = StyleSheet.create({
   verseTranslation: {
     fontSize: 13,
     color: 'rgba(245, 237, 227, 0.7)',
-    fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
+    fontFamily: Typography.fonts.serif,
     fontStyle: 'italic',
     textAlign: 'center',
     lineHeight: 20,
@@ -283,7 +282,7 @@ const styles = StyleSheet.create({
     borderRadius: 28,
   },
   ctaText: {
-    fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
+    fontFamily: Typography.fonts.serif,
     fontSize: 18,
     fontWeight: '600',
     color: '#0C1A2E',

@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, Animated } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Colors } from '../../theme/DesignSystem';
+import { Colors, Typography } from '../../theme/DesignSystem';
 import { DailyVerse } from '../../services/dailyVerseService';
 
 interface VerseOfTheDayProps {
@@ -86,7 +86,7 @@ const styles = StyleSheet.create({
     fontSize: 22,
     color: '#F5EDE3',
     textAlign: 'center',
-    fontFamily: 'Amiri-Regular',
+    fontFamily: Typography.fonts.arabic,
     lineHeight: 36,
     marginBottom: 16,
   },

@@ -8,9 +8,9 @@ import {
   Dimensions,
   Modal,
   Share,
-  Platform,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { Typography } from '../theme/DesignSystem';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { SpiritualPath, PathStep, UserPathProgress } from '../types';
@@ -620,7 +620,7 @@ const styles = StyleSheet.create({
     color: '#F0E6D3',
     marginBottom: 4,
     letterSpacing: -0.3,
-    fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
+    fontFamily: Typography.fonts.serif,
   },
   heroSubtitle: {
     fontSize: 14,
@@ -727,7 +727,7 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: '#F0E6D3',
     marginBottom: 4,
-    fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
+    fontFamily: Typography.fonts.serif,
   },
   nextDayFocus: {
     fontSize: 13,
@@ -747,7 +747,7 @@ const styles = StyleSheet.create({
   pathCompleteTitle: {
     fontSize: 20,
     fontWeight: '700',
-    fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
+    fontFamily: Typography.fonts.serif,
   },
   pathCompleteText: {
     fontSize: 13,

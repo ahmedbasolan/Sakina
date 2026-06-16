@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import { getSpiritualWindowName } from '../utils/prayerContext';
 import { formatPrayerTime, formatCountdown } from '../services/prayerTimesService';
-import { Colors } from '../theme/DesignSystem';
+import { Colors, Spacing, Typography } from '../theme/DesignSystem';
 import {
   View,
   Text,
@@ -10,7 +10,6 @@ import {
   ScrollView,
   Dimensions,
   Animated,
-  Platform,
   RefreshControl,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -284,7 +283,7 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
                   <View style={[styles.lastCheckinDot, { backgroundColor: lm.color }]} />
                   <Text style={[styles.lastCheckinText, { color: lm.color }]}>
                     Last check-in:{' '}
-                    <Text style={{ fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif' }}>
+                    <Text style={{ fontFamily: Typography.fonts.serif }}>
                       {lm.label}
                     </Text>
                     <Text style={{ opacity: 0.55 }}> · {lastCheckinLabel}</Text>
@@ -447,7 +446,7 @@ const styles = StyleSheet.create({
   gradient: { flex: 1 },
   scrollContent: { paddingBottom: 140 },
 
-  moodSection: { paddingHorizontal: 20, marginBottom: 20 },
+  moodSection: { paddingHorizontal: Spacing.xl, marginBottom: Spacing.xl },
   sectionHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -457,7 +456,7 @@ const styles = StyleSheet.create({
   sectionHeaderTitle: {
     fontSize: 15,
     color: '#F0E6D3',
-    fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
+    fontFamily: Typography.fonts.serif,
     letterSpacing: 1.5,
     fontWeight: '700',
   },
@@ -500,7 +499,7 @@ const styles = StyleSheet.create({
   journeyDiscoveryTitle: {
     fontSize: 15,
     color: '#F0E6D3',
-    fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
+    fontFamily: Typography.fonts.serif,
     fontWeight: '600',
     marginBottom: 3,
   },
@@ -513,7 +512,7 @@ const styles = StyleSheet.create({
   seeAllText: {
     fontSize: 11.5,
     color: '#8BA4BF',
-    fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
+    fontFamily: Typography.fonts.serif,
     letterSpacing: 0.5,
   },
 
@@ -540,12 +539,12 @@ const styles = StyleSheet.create({
   successText: {
     color: Colors.accent.primary,
     fontSize: 10,
-    fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
+    fontFamily: Typography.fonts.serif,
     letterSpacing: 0.8,
     opacity: 0.8,
   },
 
-  journeySection: { paddingHorizontal: 20, marginBottom: 20 },
+  journeySection: { paddingHorizontal: Spacing.xl, marginBottom: Spacing.xl },
   journeyCard: {
     borderRadius: 16,
     padding: 16,
@@ -577,14 +576,14 @@ const styles = StyleSheet.create({
   journeyPathLabel: {
     fontSize: 10,
     letterSpacing: 2,
-    fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
+    fontFamily: Typography.fonts.serif,
     marginBottom: 4,
     fontWeight: '700',
   },
   journeyTitle: {
     fontSize: 20,
     color: '#FFFFFF',
-    fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
+    fontFamily: Typography.fonts.serif,
     fontWeight: '500',
     letterSpacing: 0.5,
     marginBottom: 2,
@@ -606,12 +605,12 @@ const styles = StyleSheet.create({
   journeyDayText: { fontSize: 12, color: '#6B8EAE' },
   journeyPctText: {
     fontSize: 11,
-    fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
+    fontFamily: Typography.fonts.serif,
     fontWeight: '700',
     letterSpacing: 1,
   },
 
-  quickActionsSection: { paddingHorizontal: 20, marginBottom: 24 },
+  quickActionsSection: { paddingHorizontal: Spacing.xl, marginBottom: Spacing.xxl },
   quickActionsRow: { flexDirection: 'row', gap: 12 },
   quickCard: { flex: 1, borderRadius: 16, padding: 16, borderWidth: 1 },
   quickCardIcon: {
@@ -626,7 +625,7 @@ const styles = StyleSheet.create({
   quickCardTitle: {
     fontSize: 11,
     color: '#F0E6D3',
-    fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
+    fontFamily: Typography.fonts.serif,
     fontWeight: '700',
     letterSpacing: 1.4,
     textTransform: 'uppercase',
