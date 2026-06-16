@@ -2,11 +2,8 @@ declare module '@env' {
   export const SUPABASE_URL: string;
   export const SUPABASE_ANON_KEY: string;
   export const POSTHOG_API_KEY: string;
-  export const QURAN_API_CLIENT_ID: string;
-  export const QURAN_API_CLIENT_SECRET: string;
-  export const QURAN_API_ENDPOINT: string;
-  export const QURAN_API_ENV: string;
-  export const QURAN_API_TEST_CLIENT_ID: string;
-  export const QURAN_API_TEST_CLIENT_SECRET: string;
-  export const QURAN_API_TEST_ENDPOINT: string;
+  // QURAN_API OAuth2 credentials are intentionally excluded here.
+  // OAuth2 client_secrets are server-side credentials and must never be
+  // bundled into the app binary. Quran API calls must be proxied through
+  // a Supabase Edge Function that holds the secret server-side only.
 }
