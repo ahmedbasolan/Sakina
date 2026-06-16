@@ -103,18 +103,10 @@ export class FreemiumService {
     );
   }
 
-  async purchaseBundle(bundleId: string): Promise<boolean> {
-    const success = await this.subscriptionService.purchaseBundle(bundleId);
-    if (success) {
-      const bundle = SPECIAL_EDITION_BUNDLES.find((b) => b.id === bundleId);
-      if (
-        bundle?.includesPremiumTrial &&
-        this.subscriptionService.getSubscriptionState()?.tier === 'free'
-      ) {
-        await this.startTrial();
-      }
-    }
-    return success;
+  async purchaseBundle(_bundleId: string): Promise<boolean> {
+    // Bundles are not yet in RevenueCat — no payment flow exists. Throw so any
+    // accidental caller gets a clear error rather than silently granting access.
+    throw new Error('Bundle purchases are not available yet. Coming soon.');
   }
 
   getSubscriptionState(): SubscriptionState | null {

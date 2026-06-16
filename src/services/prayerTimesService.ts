@@ -117,11 +117,15 @@ class PrayerTimesService {
     // Cache keys include the method so a mapping change can never serve
     // times computed with a different convention.
     const today = formatDateYMD();
-    const cacheKey = `@prayer_timings_${city}_${country}_m${resolvedMethod}_${today}`;
+    // Normalize user-supplied city/country so special characters can't produce
+    // unexpected AsyncStorage keys or break the startsWith pruning logic.
+    const safeCity = city.replace(/[^a-zA-Z0-9\-]/g, '_').slice(0, 50);
+    const safeCountry = country.replace(/[^a-zA-Z0-9\-]/g, '_').slice(0, 10);
+    const cacheKey = `@prayer_timings_${safeCity}_${safeCountry}_m${resolvedMethod}_${today}`;
     // Cross-day fallback key — stores the most recently successful response
     // regardless of date, so first-launch / day-rollover with no connectivity
     // still has something to show rather than a complete blank.
-    const fallbackKey = `@prayer_timings_${city}_${country}_m${resolvedMethod}_fallback`;
+    const fallbackKey = `@prayer_timings_${safeCity}_${safeCountry}_m${resolvedMethod}_fallback`;
 
     try {
       // 1. Serve today's cached data if available
