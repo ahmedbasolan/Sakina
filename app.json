@@ -24,14 +24,25 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#040D1A"
       },
-      "permissions": ["android.permission.MODIFY_AUDIO_SETTINGS"],
-      "blockedPermissions": ["android.permission.RECORD_AUDIO"],
+      "permissions": [
+        "android.permission.MODIFY_AUDIO_SETTINGS"
+      ],
+      "blockedPermissions": [
+        "android.permission.RECORD_AUDIO"
+      ],
       "package": "com.lelahmed.sakina"
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "plugins": ["expo-font", "expo-audio", "expo-sqlite", "expo-asset", "expo-notifications"],
+    "plugins": [
+      "expo-font",
+      "expo-audio",
+      "expo-sqlite",
+      "expo-asset",
+      "expo-notifications",
+      "expo-secure-store"
+    ],
     "extra": {
       "eas": {
         "projectId": "48691805-9833-4c4d-a8a6-c6bf5a054f1a"

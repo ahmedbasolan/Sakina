@@ -50,7 +50,7 @@ export const validateName = (name: string): ValidationResult => {
     errors.push('Name must be at least 2 characters long');
   } else if (name.length > 50) {
     errors.push('Name must be less than 50 characters');
-  } else if (!/^[a-zA-Z\s]+$/.test(name)) {
+  } else if (!/^[\p{L}\s]+$/u.test(name)) {
     errors.push('Name can only contain letters and spaces');
   }
   
@@ -163,8 +163,7 @@ export const validateSignUpForm = (form: SignUpForm): ValidationResult => {
 export const sanitizeString = (input: string): string => {
   return input
     .trim()
-    .replace(/[<>]/g, '') // Remove potential HTML tags
-    .replace(/['"]/g, '') // Remove quotes
+    .replace(/[<>]/g, '') // Remove angle brackets (no DOM in RN, but defensive)
     .slice(0, 1000); // Limit length
 };
 

@@ -38,7 +38,9 @@ const _globalHandler = ErrorUtils.getGlobalHandler();
 ErrorUtils.setGlobalHandler((error, isFatal) => {
   posthog.capture('$exception', {
     $exception_message: error?.message,
-    $exception_stack: error?.stack,
+    // Stack traces are redacted in production to prevent accidental PII leakage
+    // (tokens or user data in local variables can surface in stack frames).
+    $exception_stack: __DEV__ ? error?.stack : undefined,
     isFatal: isFatal ?? false,
     source: 'global_error_handler',
   });
