@@ -10,6 +10,11 @@
  *
  * Consent: call `loadAnalyticsConsent()` once during app init, then use
  * `setAnalyticsConsent(bool)` from SettingsScreen to honor user choice.
+ *
+ * Default state is opted-OUT. PostHog starts disabled and is only enabled
+ * after loadAnalyticsConsent() resolves with a stored 'true' preference.
+ * This prevents the global error handler (wired at module load, before the
+ * async consent read completes) from firing events without consent.
  */
 import PostHog from 'posthog-react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -26,9 +31,12 @@ const API_KEY: string = (() => {
 
 const CONSENT_KEY = '@analytics_consent';
 
+// Start disabled — consent must be explicitly loaded before any events fire.
+// This covers the race window between module load (when error handlers are
+// installed) and the async loadAnalyticsConsent() call in app init.
 const posthog = new PostHog(API_KEY || 'phc_placeholder', {
   host: 'https://us.i.posthog.com',
-  disabled: __DEV__ && !API_KEY,
+  disabled: true,
   flushAt: 10,
   flushInterval: 10000,
 });
@@ -37,14 +45,16 @@ const posthog = new PostHog(API_KEY || 'phc_placeholder', {
 export async function loadAnalyticsConsent(): Promise<void> {
   try {
     const stored = await AsyncStorage.getItem(CONSENT_KEY);
-    // Default: opted in (crash reports only — no cross-app tracking / ATT scope)
-    if (stored === 'false') {
-      posthog.optOut();
-    } else {
+    // Only opt in when the user has explicitly agreed ('true' stored).
+    // null (first install, no preference set yet) stays opted out — the
+    // Settings toggle defaults to false and the user can enable it.
+    if (stored === 'true') {
       posthog.optIn();
+    } else {
+      posthog.optOut();
     }
   } catch {
-    // Leave default state on storage failure
+    // Storage failure — leave PostHog disabled (safe default).
   }
 }
 
@@ -58,13 +68,13 @@ export async function setAnalyticsConsent(enabled: boolean): Promise<void> {
   }
 }
 
-/** Read the stored consent value (defaults to true if not yet set). */
+/** Read the stored consent value (defaults to false if not yet set). */
 export async function getAnalyticsConsent(): Promise<boolean> {
   try {
     const stored = await AsyncStorage.getItem(CONSENT_KEY);
-    return stored !== 'false';
+    return stored === 'true';
   } catch {
-    return true;
+    return false;
   }
 }
 

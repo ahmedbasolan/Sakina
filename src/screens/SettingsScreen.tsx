@@ -152,7 +152,7 @@ export default function SettingsScreen() {
     );
   };
 
-  const [analyticsEnabled, setAnalyticsEnabled] = useState(true);
+  const [analyticsEnabled, setAnalyticsEnabled] = useState(false);
   const [restoring, setRestoring] = useState(false);
 
   // Required by App Store / Play Store guidelines: users who reinstall or
