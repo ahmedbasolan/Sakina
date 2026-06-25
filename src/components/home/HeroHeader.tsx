@@ -78,7 +78,7 @@ export function HeroHeader({ fadeAnim, slideAnim, onSettingsPress, greeting }: H
 
       {/* Greeting — time-of-day caption + salam, calm fade-in only (no slide) */}
       {!!greeting && (
-        <Animated.View style={[styles.greetingBlock, { opacity: greetingFade }]}>
+        <Animated.View style={[styles.greetingBlock, { opacity: greetingFade, marginTop: insets.top + 28 }]}>
           <Text style={styles.greetingCaption}>{greeting}</Text>
           <Text style={styles.greetingTitle}>Assalamu Alaikum</Text>
         </Animated.View>
@@ -96,8 +96,8 @@ export function HeroHeader({ fadeAnim, slideAnim, onSettingsPress, greeting }: H
 const styles = StyleSheet.create({
   heroHeader: {
     position: 'relative',
-    paddingTop: 60,
-    paddingBottom: 40,
+    paddingTop: 4,
+    paddingBottom: 24,
     alignItems: 'center',
   },
   mandalaOuter: {
@@ -127,7 +127,6 @@ const styles = StyleSheet.create({
   greetingBlock: {
     alignSelf: 'stretch',
     paddingHorizontal: 24,
-    marginTop: 44,
   },
   greetingCaption: {
     fontSize: 12,
@@ -155,7 +154,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     alignSelf: 'stretch',
     paddingHorizontal: 24,
-    marginTop: 28,
+    marginTop: 12,
     textShadowColor: 'rgba(212, 175, 55, 0.65)',
     textShadowOffset: { width: 0, height: 0 },
     textShadowRadius: 18,
