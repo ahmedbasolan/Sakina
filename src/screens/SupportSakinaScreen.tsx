@@ -199,7 +199,9 @@ const SupportSakinaScreen: React.FC = () => {
 
   const openLegal = (url: string) => {
     if (!url) return;
-    Linking.openURL(url).catch(() => {});
+    Linking.openURL(url).catch(() =>
+      Alert.alert('Could not open link', 'Please try again later.'),
+    );
   };
 
   return (

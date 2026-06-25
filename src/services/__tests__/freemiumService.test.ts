@@ -205,17 +205,18 @@ describe('FreemiumService', () => {
       expect(service.hasUnlockedBundle('bundle-2')).toBe(false);
     });
 
-    it('should purchase bundle successfully', async () => {
-      mockSubscriptionService.purchaseBundle.mockResolvedValue(true);
-
+    // Bundle purchases were intentionally disabled in commit 11a855e to block
+    // unvalidated grants — the old flow unlocked bundles (and auto-started a
+    // premium trial) without a validated RevenueCat payment. purchaseBundle is
+    // a stub until bundles ship through RevenueCat. These tests lock in that
+    // security behavior so the unvalidated-grant path cannot quietly come back.
+    it('refuses bundle purchases — no payment flow exists yet', async () => {
       const result = await service.purchaseBundle('bundle-1');
 
-      expect(result).toBe(true);
-      expect(mockSubscriptionService.purchaseBundle).toHaveBeenCalledWith('bundle-1');
+      expect(result).toBe(false);
     });
 
-    it('should start trial when bundle includes premium trial', async () => {
-      mockSubscriptionService.purchaseBundle.mockResolvedValue(true);
+    it('grants no premium trial when a bundle purchase is attempted', async () => {
       mockSubscriptionService.getSubscriptionState.mockReturnValue({
         tier: 'free',
         unlockedBundleIds: [],
@@ -223,7 +224,9 @@ describe('FreemiumService', () => {
 
       await service.purchaseBundle('bundle-1');
 
-      expect(mockSubscriptionService.startTrial).toHaveBeenCalled();
+      // No access without a validated payment: neither a bundle grant nor a trial.
+      expect(mockSubscriptionService.purchaseBundle).not.toHaveBeenCalled();
+      expect(mockSubscriptionService.startTrial).not.toHaveBeenCalled();
     });
   });
 

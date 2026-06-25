@@ -69,4 +69,33 @@ export class AuthService {
     const { error } = await supabase.auth.resetPasswordForEmail(email);
     if (error) throw error;
   }
+
+  /**
+   * Permanently deletes the current user's account and all associated data.
+   * Required by App Store Review Guidelines 5.1.1.
+   * Calls the delete-account Edge Function which uses service_role to cascade
+   * the deletion across all user tables.
+   */
+  async deleteAccount(): Promise<void> {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) throw new Error('Please sign in again to delete your account.');
+
+    // supabase.functions.invoke handles token refresh automatically, unlike a
+    // raw fetch which would send an expired access_token if getSession() returns
+    // a stale session.
+    const { error } = await supabase.functions.invoke('delete-account', {
+      method: 'POST',
+    });
+
+    if (error) throw new Error(`Account deletion failed: ${error.message}`);
+
+    // Clear local session only — the account no longer exists server-side so a
+    // global signOut round-trip would fail (user not found). scope:'local' skips
+    // the network call and just wipes the stored token.
+    try {
+      await supabase.auth.signOut({ scope: 'local' });
+    } catch {
+      // Best-effort: auth listener will still fire and clear local state.
+    }
+  }
 }

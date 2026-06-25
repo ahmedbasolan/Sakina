@@ -69,7 +69,7 @@ export default function PaywallScreen({ isActive, onComplete }: Props) {
       <InteractiveStarfield positions={STAR_POS} />
 
       <View style={styles.mandalaOuter} pointerEvents="none">
-        <AnimatedMandala size={400} color={Colors.accent.primary} opacity={0.03} />
+        <AnimatedMandala size={400} color={Colors.accent.primary} opacity={0.15} webLayers={2} />
       </View>
 
       <View style={styles.contentArea}>
@@ -149,8 +149,10 @@ const styles = StyleSheet.create({
   container: { flex: 1 },
   mandalaOuter: {
     position: 'absolute',
+    left: 0,
+    right: 0,
+    alignItems: 'center',
     top: -height * 0.1,
-    right: -width * 0.2,
     zIndex: 0,
   },
   contentArea: {

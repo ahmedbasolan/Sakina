@@ -2,6 +2,7 @@ import React, { useRef, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Animated } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '../../theme/DesignSystem';
+import { useReduceMotion } from '../../hooks/useReduceMotion';
 
 interface CheckInBannerProps {
   onDismiss: () => void;
@@ -9,15 +10,19 @@ interface CheckInBannerProps {
 
 export function CheckInBanner({ onDismiss }: CheckInBannerProps) {
   const pulseAnim = useRef(new Animated.Value(1)).current;
+  const reduceMotion = useReduceMotion();
 
   useEffect(() => {
-    Animated.loop(
+    if (reduceMotion) return;
+    const loop = Animated.loop(
       Animated.sequence([
         Animated.timing(pulseAnim, { toValue: 1.5, duration: 900, useNativeDriver: true }),
         Animated.timing(pulseAnim, { toValue: 1, duration: 900, useNativeDriver: true }),
       ])
-    ).start();
-  }, []);
+    );
+    loop.start();
+    return () => loop.stop();
+  }, [reduceMotion]);
 
   return (
     <View style={styles.checkinBanner}>

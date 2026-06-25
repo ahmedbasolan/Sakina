@@ -3,6 +3,7 @@ import { Session, User } from '@supabase/supabase-js';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { AuthService } from '../services/authService';
 import { SupabaseDataService } from '../services/supabaseDataService';
+import { revenueCat } from '../services/revenueCatService';
 import { STORAGE_KEYS } from '../constants';
 
 interface AuthContextType {
@@ -10,8 +11,9 @@ interface AuthContextType {
   session: Session | null;
   isGuest: boolean;
   loading: boolean;
+  onboardingComplete: boolean;
   signOut: () => Promise<void>;
-  enterGuestMode: () => void;
+  enterGuestMode: (didCompleteOnboarding?: boolean) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -21,6 +23,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [isGuest, setIsGuest] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [onboardingComplete, setOnboardingComplete] = useState(false);
   const authService = AuthService.getInstance();
   const hasMigrated = useRef(false);
 
@@ -32,13 +35,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setSession(currentSession);
         setUser(currentSession?.user ?? null);
 
-        // Fix: if no Supabase session, check whether the user already completed
-        // onboarding as a guest. Without this, every cold restart drops them back
-        // to the onboarding flow because isGuest is initialised to false.
-        if (!currentSession) {
-          const onboardingDone = await AsyncStorage.getItem(STORAGE_KEYS.onboarding);
-          if (onboardingDone === 'true') {
+        if (currentSession) {
+          // Signed-in user has always completed onboarding.
+          setOnboardingComplete(true);
+        } else {
+          // No Supabase session — check AsyncStorage flags set during onboarding.
+          // `onboarding` = completed onboarding at least once (never show it again).
+          // `guestSession` = user is actively in guest mode (cleared on explicit sign-out).
+          // Keeping these two flags separate lets a signed-out user land on Auth
+          // on cold restart rather than silently re-entering guest mode.
+          const [onboardingDone, guestActive] = await Promise.all([
+            AsyncStorage.getItem(STORAGE_KEYS.onboarding),
+            AsyncStorage.getItem(STORAGE_KEYS.guestSession),
+          ]);
+          if (onboardingDone === 'true') setOnboardingComplete(true);
+          if (guestActive === 'true') {
             setIsGuest(true);
+          } else if (onboardingDone === 'true') {
+            // Onboarding was completed but guest session was cleared (sign-out, token expiry).
+            // Auto-restore guest mode — Auth screen is only reachable via Settings, never automatic.
+            setIsGuest(true);
+            AsyncStorage.setItem(STORAGE_KEYS.guestSession, 'true').catch(() => {});
           }
         }
       } catch (error) {
@@ -51,11 +68,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     checkSession();
 
     // Listen for auth changes
-    const subscription = authService.onAuthStateChange((_event, currentSession) => {
+    const subscription = authService.onAuthStateChange((event, currentSession) => {
+      // INITIAL_SESSION fires on every mount to report current state; it is not
+      // an auth transition — skip it and let checkSession() own the initial read.
+      if (event === 'INITIAL_SESSION') return;
+
       setSession(currentSession);
       setUser(currentSession?.user ?? null);
       if (currentSession?.user) {
         setIsGuest(false);
+        setOnboardingComplete(true);
+        // Clear any stale guest-session flag written before this sign-in so
+        // cold restarts after token expiry or account deletion don't silently
+        // re-enter guest mode.
+        AsyncStorage.removeItem(STORAGE_KEYS.guestSession).catch(() => {});
+
+        // Link RC identity so cross-device entitlements work and the future
+        // webhook can map purchases back to this Supabase user_id.
+        revenueCat.logIn(currentSession.user.id).catch(() => {});
 
         // One-time migration: sync guest data to Supabase on first sign-in
         if (!hasMigrated.current) {
@@ -69,6 +99,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             })
             .catch((err) => console.error('[Auth] Guest migration error:', err));
         }
+      } else {
+        // SIGNED_OUT — token expiry, account deletion, or explicit sign-out.
+        // Clear guest state regardless of how sign-out was triggered.
+        setIsGuest(false);
+        AsyncStorage.removeItem(STORAGE_KEYS.guestSession).catch(() => {});
+        // Revert RC to anonymous ID so the next sign-in gets a clean identity.
+        revenueCat.logOut().catch(() => {});
       }
       setLoading(false);
     });
@@ -79,23 +116,38 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const signOut = async () => {
+    setLoading(true);
     try {
-      setLoading(true);
       await authService.signOut();
-      setIsGuest(false);
+      // On success, the SIGNED_OUT subscriber fires and clears isGuest + storage.
     } catch (error) {
       console.error('Error signing out:', error);
+      // Subscriber won't fire on error (e.g. AuthSessionMissingError for guests).
+      // Clear guest state manually so the user isn't permanently trapped.
+      setIsGuest(false);
+      AsyncStorage.removeItem(STORAGE_KEYS.guestSession).catch(() => {});
     } finally {
       setLoading(false);
     }
   };
 
-  const enterGuestMode = () => {
+  const enterGuestMode = async (didCompleteOnboarding = false) => {
     setIsGuest(true);
+    setOnboardingComplete(true);
+    const writes: Promise<void>[] = [
+      AsyncStorage.setItem(STORAGE_KEYS.guestSession, 'true').catch(() => {}),
+    ];
+    // Only mark onboarding done in storage when the user actually completed the
+    // flow (CommitScreen / WelcomeScreen skip). Auth-screen "Continue as Guest"
+    // bypasses onboarding — don't write the key so they see it on cold restart.
+    if (didCompleteOnboarding) {
+      writes.push(AsyncStorage.setItem(STORAGE_KEYS.onboarding, 'true').catch(() => {}));
+    }
+    await Promise.all(writes);
   };
 
   return (
-    <AuthContext.Provider value={{ user, session, isGuest, loading, signOut, enterGuestMode }}>
+    <AuthContext.Provider value={{ user, session, isGuest, loading, onboardingComplete, signOut, enterGuestMode }}>
       {children}
     </AuthContext.Provider>
   );

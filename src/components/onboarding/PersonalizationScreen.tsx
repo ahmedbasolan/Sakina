@@ -6,7 +6,7 @@
  * All elements use shared stagger animation.
  */
 import React, { useEffect, useRef, useState, useCallback } from 'react';
-import { Colors, Typography } from '../../theme/DesignSystem';
+import { Colors, Typography, Spacing } from '../../theme/DesignSystem';
 import {
   View,
   Text,
@@ -16,6 +16,8 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
+import { LinearGradient } from 'expo-linear-gradient';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Haptics from 'expo-haptics';
 import { useStaggerEntry } from '../../hooks/useStaggerEntry';
@@ -41,6 +43,7 @@ interface GoalOption {
   desc: string;
   iconPath: string;
   accentColor: string;
+  gradientColors: [string, string, string];
 }
 
 const GOALS: GoalOption[] = [
@@ -50,6 +53,7 @@ const GOALS: GoalOption[] = [
     desc: 'A daily habit of dhikr and Quran',
     iconPath: 'M12,15 C14.8,15 17,12.8 17,10 M3,18 L21,18 M12,2 L12,5 M5.6,5.6 L7.8,7.8 M18.4,5.6 L16.2,7.8 M2,13 L5,13 M19,13 L22,13',
     accentColor: '#FBBF24',
+    gradientColors: ['#5E3A00', '#3A2200', '#1A1000'],
   },
   {
     id: 'peace',
@@ -57,6 +61,7 @@ const GOALS: GoalOption[] = [
     desc: 'Verses for stillness and serenity',
     iconPath: 'M12,20 C12,20 4,14.5 4,9 C4,6 6.5,4 9,4 C10.5,4 11.5,4.8 12,5.5 C12.5,4.8 13.5,4 15,4 C17.5,4 20,6 20,9 C20,14.5 12,20 12,20 Z',
     accentColor: '#F472B6',
+    gradientColors: ['#5C0A30', '#380518', '#1A020C'],
   },
   {
     id: 'growth',
@@ -64,6 +69,7 @@ const GOALS: GoalOption[] = [
     desc: 'Deepen your knowledge and reflection',
     iconPath: 'M12,2 L14.4,8.5 L21.5,9.2 L16.4,13.8 L17.8,21 L12,17.3 L6.2,21 L7.6,13.8 L2.5,9.2 L9.6,8.5 Z',
     accentColor: '#A78BFA',
+    gradientColors: ['#280D60', '#160638', '#07021A'],
   },
   {
     id: 'night',
@@ -71,6 +77,7 @@ const GOALS: GoalOption[] = [
     desc: 'Gentle Tahajjud and night reminders',
     iconPath: 'M21,12.8 C21,17.9 16.9,22 11.8,22 C7.8,22 4.4,19.4 3,15.8 C4.2,16.6 5.6,17 7.2,17 C11.6,17 15.2,13.4 15.2,9 C15.2,6.8 14.4,4.8 13,3.2 C17.5,3.8 21,7.9 21,12.8 Z',
     accentColor: '#60A5FA',
+    gradientColors: ['#062060', '#031236', '#010818'],
   },
 ];
 
@@ -83,9 +90,17 @@ interface Props {
 
 export default function PersonalizationScreen({ isActive, onNext }: Props) {
   const [selectedGoal, setSelectedGoal] = useState<string | null>(null);
+  const nextTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const insets = useSafeAreaInsets();
 
   // [0] title, [1] subtitle, [2] card0, [3] card1, [4] card2, [5] card3, [6] chip
   const s = useStaggerEntry(isActive, 7);
+
+  useEffect(() => {
+    return () => {
+      if (nextTimerRef.current) clearTimeout(nextTimerRef.current);
+    };
+  }, []);
 
   // Selection border animation per card
   const selectionAnims = useRef(
@@ -137,7 +152,7 @@ export default function PersonalizationScreen({ isActive, onNext }: Props) {
         }
       });
 
-      setTimeout(() => onNext(), 800);
+      nextTimerRef.current = setTimeout(() => onNext(), 800);
     },
     [selectedGoal, onNext],
   );
@@ -149,7 +164,7 @@ export default function PersonalizationScreen({ isActive, onNext }: Props) {
 
       {/* Mandala backdrop */}
       <View style={styles.mandalaWrap} pointerEvents="none">
-        <AnimatedMandala size={250} color={Colors.accent.primary} opacity={0.04} />
+        <AnimatedMandala size={300} color={Colors.accent.primary} opacity={0.15} webLayers={2} />
       </View>
 
       <View style={styles.contentArea}>
@@ -178,62 +193,78 @@ export default function PersonalizationScreen({ isActive, onNext }: Props) {
                 activeOpacity={0.85}
                 onPress={() => handleSelect(goal.id, i)}
                 disabled={!!selectedGoal}
-                style={styles.card}
+                style={styles.cardTouch}
               >
-                {/* Selection border */}
-                <Animated.View
-                  style={[
-                    styles.selectionBorder,
-                    { borderColor: goal.accentColor, opacity: selectionAnims[i].borderOpacity },
-                  ]}
-                  pointerEvents="none"
-                />
-
-                {/* Icon */}
-                <View style={[styles.iconCircle, { borderColor: goal.accentColor + '60' }]}>
-                  <Svg width={26} height={26} viewBox="0 0 24 24">
-                    <Path
-                      d={goal.iconPath}
-                      fill="none"
-                      stroke={goal.accentColor}
-                      strokeWidth={1.8}
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </Svg>
-                </View>
-
-                {/* Title */}
-                <Text style={[styles.cardTitle, { color: goal.accentColor }]}>
-                  {goal.title}
-                </Text>
-
-                {/* Description */}
-                <Text style={[styles.cardDesc, { color: goal.accentColor }]}>
-                  {goal.desc}
-                </Text>
-
-                {/* Checkmark */}
-                <Animated.View
-                  style={[
-                    styles.checkWrap,
-                    {
-                      backgroundColor: goal.accentColor,
-                      transform: [{ scale: selectionAnims[i].checkScale }],
-                    },
-                  ]}
+                <LinearGradient
+                  colors={goal.gradientColors}
+                  style={[styles.card, { borderColor: goal.accentColor + '45' }]}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 0, y: 1 }}
                 >
-                  <Svg width={14} height={14} viewBox="0 0 16 16">
-                    <Path
-                      d="M3,8.5 L6.5,12 L13,4"
-                      fill="none"
-                      stroke="#14100C"
-                      strokeWidth={2.5}
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </Svg>
-                </Animated.View>
+                  {/* Top sheen */}
+                  <LinearGradient
+                    colors={[goal.accentColor + '1F', 'transparent']}
+                    start={{ x: 0.5, y: 0 }}
+                    end={{ x: 0.5, y: 0.38 }}
+                    style={styles.cardSheen}
+                    pointerEvents="none"
+                  />
+
+                  {/* Selection border */}
+                  <Animated.View
+                    style={[
+                      styles.selectionBorder,
+                      { borderColor: goal.accentColor, opacity: selectionAnims[i].borderOpacity },
+                    ]}
+                    pointerEvents="none"
+                  />
+
+                  {/* Icon */}
+                  <View style={[styles.iconCircle, { borderColor: goal.accentColor + '60', backgroundColor: goal.accentColor + '15' }]}>
+                    <Svg width={26} height={26} viewBox="0 0 24 24">
+                      <Path
+                        d={goal.iconPath}
+                        fill="none"
+                        stroke={goal.accentColor}
+                        strokeWidth={1.8}
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </Svg>
+                  </View>
+
+                  {/* Title */}
+                  <Text style={[styles.cardTitle, { color: goal.accentColor }]}>
+                    {goal.title}
+                  </Text>
+
+                  {/* Description */}
+                  <Text style={[styles.cardDesc, { color: goal.accentColor }]}>
+                    {goal.desc}
+                  </Text>
+
+                  {/* Checkmark */}
+                  <Animated.View
+                    style={[
+                      styles.checkWrap,
+                      {
+                        backgroundColor: goal.accentColor,
+                        transform: [{ scale: selectionAnims[i].checkScale }],
+                      },
+                    ]}
+                  >
+                    <Svg width={14} height={14} viewBox="0 0 16 16">
+                      <Path
+                        d="M3,8.5 L6.5,12 L13,4"
+                        fill="none"
+                        stroke="#14100C"
+                        strokeWidth={2.5}
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </Svg>
+                  </Animated.View>
+                </LinearGradient>
               </TouchableOpacity>
             </Animated.View>
           ))}
@@ -241,7 +272,7 @@ export default function PersonalizationScreen({ isActive, onNext }: Props) {
       </View>
 
       {/* Bottom chip */}
-      <Animated.View style={[styles.bottomChip, s[6]]}>
+      <Animated.View style={[styles.bottomChip, s[6], { marginBottom: Math.max(insets.bottom + Spacing.xxl, Spacing.xxxl) }]}>
         <Text style={styles.chipText}>
           Your answers shape your spiritual journey
         </Text>
@@ -256,7 +287,9 @@ const styles = StyleSheet.create({
   },
   mandalaWrap: {
     position: 'absolute',
-    left: width / 2 - 125,
+    left: 0,
+    right: 0,
+    alignItems: 'center',
     top: height * 0.08,
     zIndex: 0,
   },
@@ -264,11 +297,11 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    paddingHorizontal: 24,
+    paddingHorizontal: Spacing.xl,
     paddingTop: height * 0.07,
   },
   title: {
-    fontFamily: 'serif',
+    fontFamily: Typography.fonts.serif,
     fontSize: 26,
     color: '#F5EDE3',
     textAlign: 'center',
@@ -292,16 +325,22 @@ const styles = StyleSheet.create({
     width: CARD_SIZE,
     height: CARD_SIZE * 1.35,
   },
+  cardTouch: {
+    flex: 1,
+    borderRadius: 18,
+    overflow: 'hidden',
+  },
   card: {
     flex: 1,
     borderRadius: 18,
     borderWidth: 1,
-    borderColor: 'rgba(201, 168, 76, 0.2)',
-    backgroundColor: 'rgba(255, 255, 255, 0.06)',
     justifyContent: 'center',
     alignItems: 'center',
-    overflow: 'hidden',
     paddingVertical: 16,
+  },
+  cardSheen: {
+    ...StyleSheet.absoluteFillObject,
+    borderRadius: 17,
   },
   selectionBorder: {
     ...StyleSheet.absoluteFillObject,
@@ -318,7 +357,7 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   cardTitle: {
-    fontFamily: 'serif',
+    fontFamily: Typography.fonts.serif,
     fontSize: 14,
     textAlign: 'center',
     letterSpacing: 0.3,
@@ -353,7 +392,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'rgba(201, 168, 76, 0.15)',
     marginHorizontal: 24,
-    marginBottom: height * 0.10,
+    marginBottom: 0,
   },
   chipText: {
     fontSize: 13,

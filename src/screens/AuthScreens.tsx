@@ -1,12 +1,11 @@
 /**
  * Auth Screens — Login & Sign Up
  *
- * Dark, immersive design that continues the onboarding's reverent mood.
- * Geometric Islamic pattern softly pulses in the background.
- * Form elements use frosted glass styling with gold accents.
+ * Warm Arabian Sanctuary aesthetic: navy gradient, twinkling stars,
+ * gold-accented glass card, crescent emblem.
  */
-import React, { useState, useRef, useEffect } from 'react';
-import { Colors, Spacing, Typography } from '../theme/DesignSystem';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
+import { BorderRadius, Colors, Spacing, Typography } from '../theme/DesignSystem';
 import {
   View,
   Text,
@@ -20,6 +19,7 @@ import {
   ScrollView,
   Alert,
   ActivityIndicator,
+  Linking,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { AuthService } from '../services/authService';
@@ -32,12 +32,13 @@ import Svg, {
   Stop,
 } from 'react-native-svg';
 import { useAuth } from '../context/AuthContext';
+import { LEGAL_URLS } from '../constants';
 import * as Haptics from 'expo-haptics';
+import { InteractiveStarfield } from '../components/onboarding/InteractiveStarfield';
 
 const { width, height } = Dimensions.get('window');
 
 // --- Geometric background pattern ---
-// Creates a subtle tessellated Islamic star grid
 const PATTERN_CELL = 48;
 const COLS = Math.ceil(width / PATTERN_CELL) + 1;
 const ROWS = Math.ceil(height / PATTERN_CELL) + 1;
@@ -54,7 +55,6 @@ function miniStar(cx: number, cy: number, r: number): string {
   return pts.join(' ') + ' Z';
 }
 
-// Pre-compute pattern paths
 const PATTERN_STARS = (() => {
   const paths: string[] = [];
   for (let row = 0; row < ROWS; row++) {
@@ -67,6 +67,17 @@ const PATTERN_STARS = (() => {
   return paths;
 })();
 
+// Twinkling stars — hoisted to module scope so array reference is stable.
+const AUTH_STARS = [
+  { x: 0.07, y: 0.05, size: 2.5, delay: 0 },
+  { x: 0.90, y: 0.04, size: 2,   delay: 500 },
+  { x: 0.18, y: 0.16, size: 1.5, delay: 250 },
+  { x: 0.82, y: 0.12, size: 2,   delay: 750 },
+  { x: 0.50, y: 0.08, size: 1.5, delay: 100 },
+  { x: 0.12, y: 0.32, size: 1.5, delay: 400 },
+  { x: 0.92, y: 0.28, size: 2,   delay: 650 },
+];
+
 interface AuthScreenProps {
   navigation: {
     navigate: (screen: string) => void;
@@ -78,7 +89,10 @@ interface AuthScreenProps {
 // ==================== SHARED BACKGROUND ====================
 function AuthBackground({ children, patternOpacity }: { children: React.ReactNode; patternOpacity: Animated.Value }) {
   return (
-    <LinearGradient colors={['#0A0806', '#0E0B08', '#0A0806']} style={styles.gradient}>
+    <LinearGradient colors={['#07111E', '#0C1A2E', '#0F1F30']} style={styles.gradient}>
+      {/* Twinkling stars — visual continuity with onboarding */}
+      <InteractiveStarfield positions={AUTH_STARS} />
+
       {/* Geometric star pattern */}
       <Animated.View style={[styles.patternLayer, { opacity: patternOpacity }]} pointerEvents="none">
         <Svg width={width} height={height}>
@@ -182,8 +196,8 @@ export function LoginScreen({ navigation, onLogin }: AuthScreenProps) {
 
   const { enterGuestMode } = useAuth();
   const authService = AuthService.getInstance();
+  const handleGuestMode = useCallback(async () => { await enterGuestMode(); }, [enterGuestMode]);
 
-  // Staggered entrance
   const logoOpacity = useRef(new Animated.Value(0)).current;
   const logoSlide = useRef(new Animated.Value(20)).current;
   const formOpacity = useRef(new Animated.Value(0)).current;
@@ -192,7 +206,6 @@ export function LoginScreen({ navigation, onLogin }: AuthScreenProps) {
   const patternPulse = useRef(new Animated.Value(0.4)).current;
 
   useEffect(() => {
-    // Logo entrance
     Animated.sequence([
       Animated.delay(200),
       Animated.parallel([
@@ -201,7 +214,6 @@ export function LoginScreen({ navigation, onLogin }: AuthScreenProps) {
       ]),
     ]).start();
 
-    // Form entrance
     Animated.sequence([
       Animated.delay(500),
       Animated.parallel([
@@ -210,13 +222,11 @@ export function LoginScreen({ navigation, onLogin }: AuthScreenProps) {
       ]),
     ]).start();
 
-    // Footer
     Animated.sequence([
       Animated.delay(800),
       Animated.timing(footerOpacity, { toValue: 1, duration: 500, useNativeDriver: true }),
     ]).start();
 
-    // Pattern pulse
     Animated.loop(
       Animated.sequence([
         Animated.timing(patternPulse, { toValue: 1, duration: 4000, useNativeDriver: true }),
@@ -231,7 +241,6 @@ export function LoginScreen({ navigation, onLogin }: AuthScreenProps) {
       Alert.alert('Error', 'Please enter both email and password.');
       return;
     }
-    // Basic email format check — catches obvious mistakes before a network round-trip
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(trimmedEmail)) {
       Alert.alert('Invalid Email', 'Please enter a valid email address.');
@@ -287,18 +296,11 @@ export function LoginScreen({ navigation, onLogin }: AuthScreenProps) {
         >
           {/* Header */}
           <Animated.View
-            style={[
-              styles.headerWrap,
-              {
-                opacity: logoOpacity,
-                transform: [{ translateY: logoSlide }],
-              },
-            ]}
+            style={[styles.headerWrap, { opacity: logoOpacity, transform: [{ translateY: logoSlide }] }]}
           >
-            {/* Crescent + star emblem */}
             <View style={styles.emblemWrap}>
               <View style={styles.emblemGlow} />
-              <Svg width={52} height={52} viewBox="0 0 52 52">
+              <Svg width={64} height={64} viewBox="0 0 52 52">
                 <Defs>
                   <SvgLinearGradient id="emblemGold" x1="0" y1="0" x2="1" y2="1">
                     <Stop offset="0" stopColor="#E5C07B" />
@@ -323,15 +325,8 @@ export function LoginScreen({ navigation, onLogin }: AuthScreenProps) {
 
           {/* Form card */}
           <Animated.View
-            style={[
-              styles.formCard,
-              {
-                opacity: formOpacity,
-                transform: [{ translateY: formSlide }],
-              },
-            ]}
+            style={[styles.formCard, { opacity: formOpacity, transform: [{ translateY: formSlide }] }]}
           >
-            {/* Email */}
             <Text style={styles.inputLabel}>Email</Text>
             <AuthInput
               icon={<MailIcon size={18} color="rgba(212, 175, 55, 0.6)" />}
@@ -342,7 +337,6 @@ export function LoginScreen({ navigation, onLogin }: AuthScreenProps) {
               autoCapitalize="none"
             />
 
-            {/* Password */}
             <Text style={styles.inputLabel}>Password</Text>
             <AuthInput
               icon={<LockIcon size={18} color="rgba(212, 175, 55, 0.6)" />}
@@ -361,27 +355,22 @@ export function LoginScreen({ navigation, onLogin }: AuthScreenProps) {
               }
             />
 
-            {/* Forgot password */}
             <TouchableOpacity onPress={handleForgotPassword} style={styles.forgotBtn}>
               <Text style={styles.forgotText}>Forgot password?</Text>
             </TouchableOpacity>
 
-            {/* Sign In button */}
             <TouchableOpacity activeOpacity={0.85} onPress={handleSignIn} disabled={isLoading}>
-              <LinearGradient colors={[Colors.accent.primary, Colors.accent.primary]} style={styles.primaryBtn}>
+              <LinearGradient colors={['#E8C84A', '#B8860B']} style={styles.primaryBtn}>
                 {isLoading ? (
-                  <ActivityIndicator color="#14100C" />
+                  <ActivityIndicator color="#0C1A2E" />
                 ) : (
                   <Text style={styles.primaryBtnText}>Sign In</Text>
                 )}
               </LinearGradient>
             </TouchableOpacity>
 
-            {/* Divider */}
             <GoldDivider text="Or continue with" />
 
-            {/* Social buttons — OAuth not yet integrated; buttons are disabled to
-                prevent the email/password handler from being called accidentally */}
             <View style={styles.socialRow}>
               <TouchableOpacity
                 style={[styles.socialBtn, styles.socialBtnDisabled]}
@@ -401,8 +390,7 @@ export function LoginScreen({ navigation, onLogin }: AuthScreenProps) {
               </TouchableOpacity>
             </View>
 
-            {/* Guest mode */}
-            <TouchableOpacity style={styles.guestBtn} activeOpacity={0.7} onPress={enterGuestMode}>
+            <TouchableOpacity style={styles.guestBtn} activeOpacity={0.7} onPress={handleGuestMode}>
               <Text style={styles.guestBtnText}>Continue as Guest</Text>
             </TouchableOpacity>
           </Animated.View>
@@ -432,6 +420,7 @@ export function SignUpScreen({ navigation, onSignUp }: AuthScreenProps) {
 
   const { enterGuestMode } = useAuth();
   const authService = AuthService.getInstance();
+  const handleGuestMode = useCallback(async () => { await enterGuestMode(); }, [enterGuestMode]);
 
   const logoOpacity = useRef(new Animated.Value(0)).current;
   const logoSlide = useRef(new Animated.Value(20)).current;
@@ -478,13 +467,11 @@ export function SignUpScreen({ navigation, onSignUp }: AuthScreenProps) {
       Alert.alert('Error', 'Please fill in all fields.');
       return;
     }
-    // Basic email format check
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(trimmedEmail)) {
       Alert.alert('Invalid Email', 'Please enter a valid email address.');
       return;
     }
-    // Enforce the password hint shown to the user ("at least 8 characters")
     if (password.length < 8) {
       Alert.alert('Weak Password', 'Password must be at least 8 characters long.');
       return;
@@ -524,17 +511,11 @@ export function SignUpScreen({ navigation, onSignUp }: AuthScreenProps) {
         >
           {/* Header */}
           <Animated.View
-            style={[
-              styles.headerWrap,
-              {
-                opacity: logoOpacity,
-                transform: [{ translateY: logoSlide }],
-              },
-            ]}
+            style={[styles.headerWrap, { opacity: logoOpacity, transform: [{ translateY: logoSlide }] }]}
           >
             <View style={styles.emblemWrap}>
               <View style={styles.emblemGlow} />
-              <Svg width={52} height={52} viewBox="0 0 52 52">
+              <Svg width={64} height={64} viewBox="0 0 52 52">
                 <Defs>
                   <SvgLinearGradient id="emblemGold2" x1="0" y1="0" x2="1" y2="1">
                     <Stop offset="0" stopColor="#E5C07B" />
@@ -559,15 +540,8 @@ export function SignUpScreen({ navigation, onSignUp }: AuthScreenProps) {
 
           {/* Form */}
           <Animated.View
-            style={[
-              styles.formCard,
-              {
-                opacity: formOpacity,
-                transform: [{ translateY: formSlide }],
-              },
-            ]}
+            style={[styles.formCard, { opacity: formOpacity, transform: [{ translateY: formSlide }] }]}
           >
-            {/* Name */}
             <Text style={styles.inputLabel}>Full Name</Text>
             <AuthInput
               icon={<UserIcon size={18} color="rgba(212, 175, 55, 0.6)" />}
@@ -577,7 +551,6 @@ export function SignUpScreen({ navigation, onSignUp }: AuthScreenProps) {
               autoCapitalize="words"
             />
 
-            {/* Email */}
             <Text style={styles.inputLabel}>Email</Text>
             <AuthInput
               icon={<MailIcon size={18} color="rgba(212, 175, 55, 0.6)" />}
@@ -588,7 +561,6 @@ export function SignUpScreen({ navigation, onSignUp }: AuthScreenProps) {
               autoCapitalize="none"
             />
 
-            {/* Password */}
             <Text style={styles.inputLabel}>Password</Text>
             <AuthInput
               icon={<LockIcon size={18} color="rgba(212, 175, 55, 0.6)" />}
@@ -608,29 +580,35 @@ export function SignUpScreen({ navigation, onSignUp }: AuthScreenProps) {
             />
             <Text style={styles.passwordHint}>At least 8 characters with numbers and symbols</Text>
 
-            {/* Terms */}
             <TouchableOpacity
               style={styles.checkboxRow}
               onPress={() => setAgreeTerms(!agreeTerms)}
               activeOpacity={0.7}
             >
               <View style={[styles.checkbox, agreeTerms && styles.checkboxChecked]}>
-                {agreeTerms && <CheckIcon size={14} color="#14100C" />}
+                {agreeTerms && <CheckIcon size={14} color="#0C1A2E" />}
               </View>
               <Text style={styles.checkboxText}>
-                I agree to the <Text style={styles.linkText}>Terms of Service</Text> and{' '}
-                <Text style={styles.linkText}>Privacy Policy</Text>
+                I agree to the{' '}
+                <Text
+                  style={styles.linkText}
+                  onPress={() => Linking.openURL(LEGAL_URLS.terms).catch(() => Alert.alert('Could not open link', 'Please try again later.'))}
+                >Terms of Service</Text>
+                {' '}and{' '}
+                <Text
+                  style={styles.linkText}
+                  onPress={() => Linking.openURL(LEGAL_URLS.privacy).catch(() => Alert.alert('Could not open link', 'Please try again later.'))}
+                >Privacy Policy</Text>
               </Text>
             </TouchableOpacity>
 
-            {/* Create Account button */}
             <TouchableOpacity activeOpacity={0.85} disabled={!canSubmit} onPress={handleCreateAccount}>
               <LinearGradient
-                colors={canSubmit ? [Colors.accent.primary, Colors.accent.primary] : ['rgba(212, 175, 55, 0.15)', 'rgba(212, 175, 55, 0.08)']}
+                colors={canSubmit ? ['#E8C84A', '#B8860B'] : ['rgba(212, 175, 55, 0.15)', 'rgba(212, 175, 55, 0.08)']}
                 style={[styles.primaryBtn, !canSubmit && styles.primaryBtnDisabled]}
               >
                 {isLoading ? (
-                  <ActivityIndicator color="#14100C" />
+                  <ActivityIndicator color="#0C1A2E" />
                 ) : (
                   <Text style={[styles.primaryBtnText, !canSubmit && styles.primaryBtnTextDisabled]}>
                     Create Account
@@ -639,10 +617,8 @@ export function SignUpScreen({ navigation, onSignUp }: AuthScreenProps) {
               </LinearGradient>
             </TouchableOpacity>
 
-            {/* Divider */}
             <GoldDivider text="Or sign up with" />
 
-            {/* Social — OAuth not yet integrated */}
             <View style={styles.socialRow}>
               <TouchableOpacity
                 style={[styles.socialBtn, styles.socialBtnDisabled]}
@@ -662,8 +638,7 @@ export function SignUpScreen({ navigation, onSignUp }: AuthScreenProps) {
               </TouchableOpacity>
             </View>
 
-            {/* Guest */}
-            <TouchableOpacity style={styles.guestBtn} activeOpacity={0.7} onPress={enterGuestMode}>
+            <TouchableOpacity style={styles.guestBtn} activeOpacity={0.7} onPress={handleGuestMode}>
               <Text style={styles.guestBtnText}>Continue as Guest</Text>
             </TouchableOpacity>
           </Animated.View>
@@ -698,11 +673,7 @@ function fivePointStarPath(cx: number, cy: number, outerR: number, innerR: numbe
 function MailIcon({ size, color }: { size: number; color: string }) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
-      <Path
-        d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"
-        stroke={color}
-        strokeWidth="2"
-      />
+      <Path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" stroke={color} strokeWidth="2" />
       <Path d="M22 6l-10 7L2 6" stroke={color} strokeWidth="2" />
     </Svg>
   );
@@ -711,11 +682,7 @@ function MailIcon({ size, color }: { size: number; color: string }) {
 function LockIcon({ size, color }: { size: number; color: string }) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
-      <Path
-        d="M19 11H5c-1.1 0-2 .9-2 2v7c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2v-7c0-1.1-.9-2-2-2z"
-        stroke={color}
-        strokeWidth="2"
-      />
+      <Path d="M19 11H5c-1.1 0-2 .9-2 2v7c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2v-7c0-1.1-.9-2-2-2z" stroke={color} strokeWidth="2" />
       <Path d="M7 11V7a5 5 0 0110 0v4" stroke={color} strokeWidth="2" />
     </Svg>
   );
@@ -769,22 +736,10 @@ function CheckIcon({ size, color }: { size: number; color: string }) {
 function GoogleIcon({ size }: { size: number }) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24">
-      <Path
-        fill="#4285F4"
-        d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
-      />
-      <Path
-        fill="#34A853"
-        d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-      />
-      <Path
-        fill="#FBBC05"
-        d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
-      />
-      <Path
-        fill="#EA4335"
-        d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
-      />
+      <Path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+      <Path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+      <Path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
+      <Path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
     </Svg>
   );
 }
@@ -817,42 +772,42 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     width: width * 0.8,
     height: 200,
-    borderRadius: 100,
-    backgroundColor: 'rgba(212, 175, 55, 0.04)',
+    borderRadius: BorderRadius.full,
+    backgroundColor: 'rgba(212, 175, 55, 0.10)',
   },
   scrollContent: {
     flexGrow: 1,
-    paddingHorizontal: 28,
-    paddingBottom: 40,
+    paddingHorizontal: Spacing.xl,
+    paddingBottom: Spacing.xxxl,
   },
   // --- Header ---
   headerWrap: {
     alignItems: 'center',
-    marginBottom: 36,
+    marginBottom: Spacing.xxl,
   },
   emblemWrap: {
-    marginBottom: 20,
+    marginBottom: Spacing.lg,
     alignItems: 'center',
     justifyContent: 'center',
   },
   emblemGlow: {
     position: 'absolute',
-    width: 80,
-    height: 80,
-    borderRadius: 40,
+    width: 88,
+    height: 88,
+    borderRadius: BorderRadius.full,
     backgroundColor: 'rgba(212, 175, 55, 0.08)',
   },
   heroTitle: {
     fontFamily: Typography.fonts.serif,
-    fontSize: 30,
+    fontSize: Typography.sizes.hero,
     color: '#F5EDE3',
     textAlign: 'center',
     letterSpacing: 0.3,
-    marginBottom: 8,
+    marginBottom: Spacing.sm,
   },
   heroSubtitle: {
     fontFamily: Typography.fonts.serif,
-    fontSize: 15,
+    fontSize: Typography.sizes.small,
     color: 'rgba(245, 237, 227, 0.45)',
     textAlign: 'center',
     fontStyle: 'italic',
@@ -860,17 +815,17 @@ const styles = StyleSheet.create({
   // --- Form card ---
   formCard: {
     backgroundColor: 'rgba(245, 237, 227, 0.04)',
-    borderRadius: 20,
-    padding: 24,
+    borderRadius: BorderRadius.xl,
+    padding: Spacing.xl,
     borderWidth: 1,
     borderColor: 'rgba(212, 175, 55, 0.1)',
-    marginBottom: 24,
+    marginBottom: Spacing.xl,
   },
   inputLabel: {
-    fontSize: 13,
+    fontSize: Typography.sizes.detail,
     fontWeight: '600',
     color: 'rgba(245, 237, 227, 0.5)',
-    marginBottom: 8,
+    marginBottom: Spacing.sm,
     letterSpacing: 0.5,
     textTransform: 'uppercase',
   },
@@ -879,38 +834,37 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: 'rgba(245, 237, 227, 0.04)',
     borderWidth: 1,
-    borderRadius: 12,
-    paddingHorizontal: 14,
-    paddingVertical: Platform.OS === 'ios' ? 14 : 10,
-    marginBottom: 16,
+    borderRadius: BorderRadius.md,
+    paddingHorizontal: Spacing.lg,
+    paddingVertical: Platform.OS === 'ios' ? Spacing.lg : Spacing.md,
+    marginBottom: Spacing.lg,
   },
   input: {
     flex: 1,
-    marginLeft: 12,
-    fontSize: 16,
+    marginLeft: Spacing.md,
+    fontSize: Typography.sizes.body,
     color: '#F5EDE3',
   },
   forgotBtn: {
     alignSelf: 'flex-end',
-    marginBottom: 20,
-    marginTop: -8,
+    marginBottom: Spacing.xl,
   },
   forgotText: {
-    fontSize: 13,
+    fontSize: Typography.sizes.detail,
     color: Colors.accent.primary,
     letterSpacing: 0.3,
   },
   // --- Primary button ---
   primaryBtn: {
-    borderRadius: 14,
-    height: 52,
+    borderRadius: BorderRadius.lg,
+    height: 54,
     alignItems: 'center',
     justifyContent: 'center',
     shadowColor: Colors.accent.primary,
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.25,
-    shadowRadius: 12,
-    elevation: 6,
+    shadowOpacity: 0.35,
+    shadowRadius: 16,
+    elevation: 8,
   },
   primaryBtnDisabled: {
     shadowOpacity: 0,
@@ -918,9 +872,9 @@ const styles = StyleSheet.create({
   },
   primaryBtnText: {
     fontFamily: Typography.fonts.serif,
-    fontSize: 16,
+    fontSize: Typography.sizes.body,
     fontWeight: '700',
-    color: '#14100C',
+    color: '#0C1A2E',
     letterSpacing: 0.5,
   },
   primaryBtnTextDisabled: {
@@ -930,7 +884,7 @@ const styles = StyleSheet.create({
   divider: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginVertical: 22,
+    marginVertical: Spacing.xl,
   },
   dividerLine: {
     flex: 1,
@@ -940,8 +894,8 @@ const styles = StyleSheet.create({
   dividerCenter: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 14,
-    gap: 8,
+    paddingHorizontal: Spacing.lg,
+    gap: Spacing.sm,
   },
   dividerDiamond: {
     width: 4,
@@ -950,29 +904,29 @@ const styles = StyleSheet.create({
     transform: [{ rotate: '45deg' }],
   },
   dividerText: {
-    fontSize: 12,
+    fontSize: Typography.sizes.detail,
     color: 'rgba(245, 237, 227, 0.35)',
     letterSpacing: 0.4,
   },
   // --- Social buttons ---
   socialRow: {
     flexDirection: 'row',
-    gap: 12,
+    gap: Spacing.md,
   },
   socialBtn: {
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 8,
+    gap: Spacing.sm,
     height: 48,
-    borderRadius: 12,
+    borderRadius: BorderRadius.md,
     borderWidth: 1,
     borderColor: 'rgba(245, 237, 227, 0.08)',
     backgroundColor: 'rgba(245, 237, 227, 0.04)',
   },
   socialBtnText: {
-    fontSize: 14,
+    fontSize: Typography.sizes.small,
     fontWeight: '600',
     color: 'rgba(245, 237, 227, 0.7)',
     letterSpacing: 0.3,
@@ -982,9 +936,9 @@ const styles = StyleSheet.create({
   },
   // --- Guest button ---
   guestBtn: {
-    marginTop: 16,
+    marginTop: Spacing.lg,
     height: 46,
-    borderRadius: 12,
+    borderRadius: BorderRadius.md,
     borderWidth: 1,
     borderColor: 'rgba(212, 175, 55, 0.2)',
     backgroundColor: 'rgba(212, 175, 55, 0.04)',
@@ -992,7 +946,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   guestBtnText: {
-    fontSize: 14,
+    fontSize: Typography.sizes.small,
     fontWeight: '600',
     color: Colors.accent.primary,
     letterSpacing: 0.4,
@@ -1002,36 +956,35 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    paddingBottom: 20,
+    paddingBottom: Spacing.xl,
   },
   footerText: {
-    fontSize: 14,
+    fontSize: Typography.sizes.small,
     color: 'rgba(245, 237, 227, 0.4)',
   },
   footerLink: {
-    fontSize: 14,
+    fontSize: Typography.sizes.small,
     fontWeight: '600',
     color: Colors.accent.primary,
   },
   // --- Sign Up specific ---
   passwordHint: {
-    fontSize: 12,
+    fontSize: Typography.sizes.detail,
     color: 'rgba(245, 237, 227, 0.3)',
-    marginTop: -10,
-    marginBottom: 16,
+    marginBottom: Spacing.lg,
   },
   checkboxRow: {
     flexDirection: 'row',
     alignItems: 'flex-start',
-    marginBottom: 20,
+    marginBottom: Spacing.xl,
   },
   checkbox: {
     width: 20,
     height: 20,
-    borderRadius: 5,
+    borderRadius: BorderRadius.sm,
     borderWidth: 1.5,
     borderColor: 'rgba(212, 175, 55, 0.3)',
-    marginRight: 12,
+    marginRight: Spacing.md,
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: 'rgba(245, 237, 227, 0.04)',
@@ -1042,9 +995,9 @@ const styles = StyleSheet.create({
   },
   checkboxText: {
     flex: 1,
-    fontSize: 13,
+    fontSize: Typography.sizes.detail,
     color: 'rgba(245, 237, 227, 0.5)',
-    lineHeight: 19,
+    lineHeight: 18,
   },
   linkText: {
     color: Colors.accent.primary,

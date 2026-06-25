@@ -35,6 +35,7 @@ export interface MoodConfig {
   color: string;
   bgColor: string;
   borderColor: string;
+  gradientColors: [string, string, string];
   iconName: string;
 }
 

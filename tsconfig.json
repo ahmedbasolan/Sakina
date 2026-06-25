@@ -9,5 +9,9 @@
     "moduleResolution": "bundler",
     "skipLibCheck": true,
     "esModuleInterop": true
-  }
+  },
+  "exclude": [
+    "node_modules",
+    "supabase/functions"
+  ]
 }

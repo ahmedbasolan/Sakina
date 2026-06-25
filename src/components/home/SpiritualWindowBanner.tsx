@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, Animated } from 'react-native
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { PrayerContext } from '../../types';
-import { Colors, Typography } from '../../theme/DesignSystem';
+import { Colors, Typography, Spacing } from '../../theme/DesignSystem';
 import { getSpiritualWindowName, getSpiritualActionText } from '../../utils/prayerContext';
 
 /** Maps each of the 8 prayer contexts to a semantically appropriate Ionicons icon. */
@@ -67,7 +67,7 @@ export function SpiritualWindowBanner({ prayerContext, fadeAnim, slideAnim, onPr
 
 const styles = StyleSheet.create({
   spiritualSection: {
-    paddingHorizontal: 20,
+    paddingHorizontal: Spacing.xl,
     marginBottom: 24,
   },
   spiritualBanner: {

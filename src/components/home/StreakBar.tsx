@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Animated } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
-import { Colors } from '../../theme/DesignSystem';
+import { Colors, Spacing } from '../../theme/DesignSystem';
 import { CrescentIcon } from './CrescentIcon';
 
 const WEEK_LABELS = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
@@ -72,7 +72,7 @@ export function StreakBar({ streakDays, fadeAnim, slideAnim, onPress }: StreakBa
           </View>
           <View style={styles.streakRight}>
             <Text style={styles.streakViewText}>View</Text>
-            <Ionicons name="arrow-forward" size={12} color="#2A6A2A" />
+            <Ionicons name="arrow-forward" size={12} color="#4ADE80" />
           </View>
         </LinearGradient>
       </TouchableOpacity>
@@ -82,7 +82,7 @@ export function StreakBar({ streakDays, fadeAnim, slideAnim, onPress }: StreakBa
 
 const styles = StyleSheet.create({
   streakSection: {
-    paddingHorizontal: 20,
+    paddingHorizontal: Spacing.xl,
     marginBottom: 24,
   },
   streakBar: {
@@ -156,6 +156,6 @@ const styles = StyleSheet.create({
   streakViewText: {
     fontSize: 13,
     fontWeight: '600',
-    color: '#2A6A2A',
+    color: '#4ADE80',
   },
 });

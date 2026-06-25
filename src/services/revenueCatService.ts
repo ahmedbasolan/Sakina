@@ -19,15 +19,14 @@ import Purchases, {
   INTRO_ELIGIBILITY_STATUS,
 } from 'react-native-purchases';
 import { Platform } from 'react-native';
+import { REVENUECAT_ANDROID_API_KEY, REVENUECAT_IOS_API_KEY } from '@env';
 
 // ─── SDK keys ──────────────────────────────────────────────────────────────
-// Test Store key — works for both platforms during development/sandbox testing.
-// When you add real App Store / Play Store app configs in RC, replace these
-// with the platform-specific appl_ / goog_ keys from:
+// Keys are loaded from .env (never hardcoded). Get them from:
 //   app.revenuecat.com → Project: Sakina → API keys → SDK API keys
-const TEST_STORE_KEY = 'test_VUODgTDnxGTYIBCxcJMaHVAqGTW';
-const IOS_API_KEY = TEST_STORE_KEY; // swap for appl_xxxxx when App Store app is added
-const ANDROID_API_KEY = TEST_STORE_KEY; // swap for goog_xxxxx when Play Store app is added
+//   iOS key starts with appl_  |  Android key starts with goog_
+const IOS_API_KEY = REVENUECAT_IOS_API_KEY;
+const ANDROID_API_KEY = REVENUECAT_ANDROID_API_KEY;
 // ───────────────────────────────────────────────────────────────────────────
 
 // RC entitlement identifier — must match exactly what's in the RC dashboard.

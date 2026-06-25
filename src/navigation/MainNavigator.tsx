@@ -11,7 +11,7 @@ import { useAuth } from '../context/AuthContext';
 import { useAppContext } from '../context/AppContext';
 
 // Navigation Types
-import { RootStackParamList, AuthStackParamList, MainTabParamList } from './types';
+import { RootStackParamList, MainTabParamList } from './types';
 
 // Screens
 import OnboardingScreen from '../screens/OnboardingScreen';
@@ -36,17 +36,7 @@ import SupportSakinaScreen from '../screens/SupportSakinaScreen';
 import { HapticsService } from '../services/hapticsService';
 
 const RootStack = createStackNavigator<RootStackParamList>();
-const AuthStack = createStackNavigator<AuthStackParamList>();
 const Tab = createBottomTabNavigator<MainTabParamList>();
-
-function AuthNavigator() {
-  return (
-    <AuthStack.Navigator screenOptions={{ headerShown: false }}>
-      <AuthStack.Screen name="Login" component={LoginScreen} />
-      <AuthStack.Screen name="SignUp" component={SignUpScreen} />
-    </AuthStack.Navigator>
-  );
-}
 
 // ── Tab metadata ─────────────────────────────────────────────────────
 const TAB_ICONS: Record<string, { active: string; inactive: string }> = {
@@ -196,12 +186,12 @@ export default function MainNavigator() {
   if (loading) return null;
 
   return (
-    <RootStack.Navigator screenOptions={{ headerShown: false }}>
+    <RootStack.Navigator
+      screenOptions={{ headerShown: false }}
+      initialRouteName={!user && !isGuest ? 'Onboarding' : 'Main'}
+    >
       {!user && !isGuest ? (
-        <>
-          <RootStack.Screen name="Onboarding" component={OnboardingScreen} />
-          <RootStack.Screen name="Auth" component={AuthNavigator} />
-        </>
+        <RootStack.Screen name="Onboarding" component={OnboardingScreen} />
       ) : (
         <>
           <RootStack.Screen name="Main" component={MainTabNavigator} />
@@ -216,6 +206,8 @@ export default function MainNavigator() {
           <RootStack.Screen name="Settings" component={SettingsScreen} />
           <RootStack.Screen name="SurahReader" component={SurahReaderScreen} />
           <RootStack.Screen name="Support" component={SupportSakinaScreen} />
+          <RootStack.Screen name="Login" component={LoginScreen} />
+          <RootStack.Screen name="SignUp" component={SignUpScreen} />
         </>
       )}
     </RootStack.Navigator>

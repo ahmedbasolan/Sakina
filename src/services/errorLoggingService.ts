@@ -5,6 +5,21 @@ export enum ErrorSeverity {
   CRITICAL = 'critical',
 }
 
+/** Regex patterns that redact PII embedded in free-text strings. */
+const PII_PATTERNS: Array<{ re: RegExp; sub: string }> = [
+  { re: /[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}/g, sub: '[email]' },
+  { re: /\b(eyJ[A-Za-z0-9\-_]+\.[A-Za-z0-9\-_]+\.[A-Za-z0-9\-_]*)/g, sub: '[token]' },
+];
+
+/**
+ * Redacts PII (emails, JWT tokens) embedded in a free-text string. Exported so
+ * non-service callers — e.g. the global error handler in App.tsx — can apply the
+ * same scrubbing before sending text to PostHog.
+ */
+export function redactPII(s: string): string {
+  return PII_PATTERNS.reduce((acc, { re, sub }) => acc.replace(re, sub), s);
+}
+
 export interface ErrorLog {
   id: string;
   timestamp: number;
@@ -252,11 +267,13 @@ class ErrorLoggingService {
   }
 
   /**
-   * Fields that must never be forwarded to PostHog or any external service.
-   * Callers sometimes pass userId, city, country in context — those are fine
-   * for debugging but email / tokens must never leave the device.
+   * Keys that must never be forwarded to PostHog.
+   * Callers sometimes pass userId, city, country in context — fine for debugging
+   * but email / tokens / urls (may carry signed tokens) must never leave the device.
    */
-  private readonly PII_KEYS = new Set(['email', 'password', 'token', 'access_token', 'refresh_token']);
+  private readonly PII_KEYS = new Set([
+    'email', 'password', 'token', 'access_token', 'refresh_token', 'url',
+  ]);
 
   /** Strips known PII keys from a context object before sending to PostHog. */
   private sanitizeContext(context?: Record<string, any>): Record<string, any> {
@@ -271,14 +288,13 @@ class ErrorLoggingService {
       // Lazy import to avoid circular deps at module init time
       const posthog = require('../config/posthog').default;
       posthog.capture('$exception', {
-        $exception_message: errorLog.message,
+        $exception_message: redactPII(errorLog.message),
         $exception_type: errorLog.severity,
-        $exception_stack: errorLog.stack,
+        $exception_stack: errorLog.stack ? redactPII(errorLog.stack) : undefined,
         component: errorLog.component,
         severity: errorLog.severity,
-        // Spread sanitized context — raw context spread was removed because
-        // callers could accidentally include PII (email, tokens) in context
-        // which would then be forwarded to PostHog unredacted.
+        // Spread sanitized context — PII keys (email, token, url) dropped;
+        // raw context spread was removed to prevent accidental PII forwarding.
         ...this.sanitizeContext(errorLog.context),
       });
     } catch {

@@ -40,7 +40,13 @@
       "expo-audio",
       "expo-sqlite",
       "expo-asset",
-      "expo-notifications",
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/notification-icon.png",
+          "color": "#D4AF37"
+        }
+      ],
       "expo-secure-store"
     ],
     "extra": {

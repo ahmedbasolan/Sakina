@@ -14,7 +14,6 @@ import {
 } from '../constants';
 import { revenueCat } from './revenueCatService';
 import { dbQuery } from '../database/schema';
-import { SPECIAL_EDITION_BUNDLES } from '../data/staticPaths';
 import { loadUpgradeAsk, saveUpgradeAsk, UpgradeAskState } from './upgradeAskStore';
 
 const PREMIUM_LIMITS: FreemiumLimits = {
@@ -79,6 +78,11 @@ export class FreemiumService {
           };
         }
       }).catch(() => {});
+      // Pre-warm the prayer-window session so the first mood tap doesn't
+      // wait for a cold SQLite read. Awaited so the mutex is released before
+      // isLoaded = true — a tap-time syncPrayerWindow() call would otherwise
+      // block on the same lock until this finishes, causing first-tap latency.
+      await this.syncPrayerWindow().catch(() => {});
       this.isLoaded = true;
     })();
 
@@ -104,9 +108,8 @@ export class FreemiumService {
   }
 
   async purchaseBundle(_bundleId: string): Promise<boolean> {
-    // Bundles are not yet in RevenueCat — no payment flow exists. Throw so any
-    // accidental caller gets a clear error rather than silently granting access.
-    throw new Error('Bundle purchases are not available yet. Coming soon.');
+    // Bundles are not yet in RevenueCat — no payment flow exists.
+    return false;
   }
 
   getSubscriptionState(): SubscriptionState | null {

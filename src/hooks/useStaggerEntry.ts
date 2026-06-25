@@ -92,7 +92,7 @@ export function useStaggerEntry(
         ]),
       ]).start();
     });
-  }, [isActive]);
+  }, [isActive, baseDelay, stagger, offset, duration]);
 
   return anims.map((a) => ({
     opacity: a.opacity,

@@ -31,16 +31,17 @@ import { AppProvider } from './src/context/AppContext';
 import { AuthProvider } from './src/context/AuthContext';
 import { ThemeProvider, useTheme } from './src/context/ThemeContext';
 import posthog, { loadAnalyticsConsent } from './src/config/posthog';
+import { redactPII } from './src/services/errorLoggingService';
 
 // ── Global error handlers ─────────────────────────────────────────────────
 // Capture unhandled JS errors and promise rejections before they silently vanish.
 const _globalHandler = ErrorUtils.getGlobalHandler();
 ErrorUtils.setGlobalHandler((error, isFatal) => {
   posthog.capture('$exception', {
-    $exception_message: error?.message,
-    // Stack traces are redacted in production to prevent accidental PII leakage
+    $exception_message: redactPII(String(error?.message ?? 'Unknown error')),
+    // Stack traces are only sent in development to prevent accidental PII leakage
     // (tokens or user data in local variables can surface in stack frames).
-    $exception_stack: __DEV__ ? error?.stack : undefined,
+    $exception_stack: __DEV__ && error?.stack ? redactPII(String(error.stack)) : null,
     isFatal: isFatal ?? false,
     source: 'global_error_handler',
   });
@@ -55,7 +56,7 @@ if (typeof (global as any).HermesInternal !== 'undefined') {
   const originalUnhandled = (global as any).onunhandledrejection;
   (global as any).onunhandledrejection = (event: any) => {
     posthog.capture('$exception', {
-      $exception_message: String(event?.reason),
+      $exception_message: redactPII(String(event?.reason)),
       source: 'unhandled_promise_rejection',
     });
     originalUnhandled?.(event);

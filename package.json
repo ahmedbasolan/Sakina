@@ -10,7 +10,8 @@
     "lint": "eslint .",
     "format": "prettier --write .",
     "test": "jest",
-    "gen-types": "supabase gen types typescript --project-id $SUPABASE_PROJECT_ID > src/types/supabase.ts"
+    "gen-types": "supabase gen types typescript --project-id $SUPABASE_PROJECT_ID > src/types/supabase.ts",
+    "pad-icon": "node scripts/pad-adaptive-icon.js"
   },
   "dependencies": {
     "@expo-google-fonts/amiri": "^0.4.1",
@@ -70,6 +71,7 @@
     "jest-expo": "~54.0.17",
     "prettier": "^3.8.1",
     "react-test-renderer": "19.1.0",
+    "sharp": "^0.35.2",
     "supabase": "^2.76.12",
     "ts-jest": "^29.2.1",
     "typescript": "~5.9.2"
