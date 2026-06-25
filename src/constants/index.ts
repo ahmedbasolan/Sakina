@@ -74,6 +74,7 @@ export const STORAGE_KEYS = {
 
   // Onboarding
   onboarding: '@onboarding_complete',
+  guestSession: '@guest_session_active',
   onboardingMood: '@onboarding_mood',
   onboardingGoal: '@onboarding_prayer_goal',
 

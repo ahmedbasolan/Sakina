@@ -2,11 +2,11 @@
  * Screen 5: First Guidance — Personalized Verse Reveal
  *
  * Reads the mood saved during HeartCheckInScreen.
- * Displays a real verse matching that mood from the curated bank.
- * Dark navy background, twinkling stars, AnimatedMandala, gold accents.
+ * Arabic words reveal one by one with a staggered fade-in.
+ * Translation and reference appear after the Arabic settles.
  */
 import React, { useEffect, useRef, useState } from 'react';
-import { Colors, Typography } from '../../theme/DesignSystem';
+import { Colors, Typography, Spacing } from '../../theme/DesignSystem';
 import {
   View,
   Text,
@@ -17,6 +17,7 @@ import {
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useStaggerEntry } from '../../hooks/useStaggerEntry';
 import { AnimatedMandala } from '../AnimatedMandala';
 import { InteractiveStarfield } from './InteractiveStarfield';
@@ -26,144 +27,173 @@ const { width, height } = Dimensions.get('window');
 
 const STAR_POS = [
   { x: 0.08, y: 0.04, s: 2.5, d: 0 },
-  { x: 0.90, y: 0.06, s: 2, d: 400 },
+  { x: 0.90, y: 0.06, s: 2,   d: 400 },
   { x: 0.15, y: 0.18, s: 1.5, d: 200 },
-  { x: 0.82, y: 0.12, s: 2, d: 700 },
+  { x: 0.82, y: 0.12, s: 2,   d: 700 },
   { x: 0.50, y: 0.08, s: 1.5, d: 100 },
   { x: 0.94, y: 0.26, s: 2.5, d: 550 },
   { x: 0.04, y: 0.35, s: 1.5, d: 350 },
 ];
 
-// Curated first-guidance verses per mood
-const MOOD_VERSES: Record<string, { arabic: string; translation: string; ref: string }> = {
+// Curated first-guidance verses per mood — Arabic split into words for reveal
+const MOOD_VERSES: Record<string, {
+  words: string[];        // Arabic broken by spaces for word-by-word reveal
+  arabic: string;         // Full Arabic (for accessibility / layout ref)
+  translation: string;
+  ref: string;
+  pretitle: string;       // Poetic context line
+}> = {
   Grateful: {
+    words: ['لَئِن', 'شَكَرْتُمْ', 'لَأَزِيدَنَّكُمْ'],
     arabic: 'لَئِن شَكَرْتُمْ لَأَزِيدَنَّكُمْ',
-    translation: '"If you are grateful, I will surely increase you [in favor]."',
-    ref: 'Surah Ibrahim 14:7',
+    translation: 'If you are grateful, I will surely increase you in favour.',
+    ref: 'Surah Ibrahim · 14:7',
+    pretitle: 'For the grateful heart',
   },
   Hopeful: {
+    words: ['إِنَّ', 'مَعَ', 'الْعُسْرِ', 'يُسْرًا'],
     arabic: 'إِنَّ مَعَ الْعُسْرِ يُسْرًا',
-    translation: '"Indeed, with hardship comes ease."',
-    ref: 'Surah Ash-Sharh 94:6',
+    translation: 'Indeed, with hardship comes ease.',
+    ref: 'Surah Ash-Sharh · 94:6',
+    pretitle: 'For the hopeful soul',
   },
   Calm: {
+    words: ['أَلَا', 'بِذِكْرِ', 'اللَّهِ', 'تَطْمَئِنُّ', 'الْقُلُوبُ'],
     arabic: 'أَلَا بِذِكْرِ اللَّهِ تَطْمَئِنُّ الْقُلُوبُ',
-    translation: '"Verily, in the remembrance of Allah do hearts find rest."',
-    ref: 'Surah Ar-Ra\'d 13:28',
+    translation: 'Verily, in the remembrance of Allah do hearts find rest.',
+    ref: "Surah Ar-Ra'd · 13:28",
+    pretitle: 'For the peaceful heart',
   },
   Overwhelmed: {
+    words: ['لَا', 'يُكَلِّفُ', 'اللَّهُ', 'نَفْسًا', 'إِلَّا', 'وُسْعَهَا'],
     arabic: 'لَا يُكَلِّفُ اللَّهُ نَفْسًا إِلَّا وُسْعَهَا',
-    translation: '"Allah does not burden a soul beyond that it can bear."',
-    ref: 'Surah Al-Baqarah 2:286',
+    translation: 'Allah does not burden a soul beyond that it can bear.',
+    ref: 'Surah Al-Baqarah · 2:286',
+    pretitle: 'For the overwhelmed spirit',
   },
   Tired: {
+    words: ['وَمَن', 'يَتَّقِ', 'اللَّهَ', 'يَجْعَل', 'لَّهُ', 'مَخْرَجًا'],
     arabic: 'وَمَن يَتَّقِ اللَّهَ يَجْعَل لَّهُ مَخْرَجًا',
-    translation: '"Whoever fears Allah — He will make for him a way out."',
-    ref: 'Surah At-Talaq 65:2',
+    translation: 'Whoever fears Allah — He will make for him a way out.',
+    ref: 'Surah At-Talaq · 65:2',
+    pretitle: 'For the weary traveller',
   },
   Lonely: {
+    words: ['وَهُوَ', 'مَعَكُمْ', 'أَيْنَ', 'مَا', 'كُنتُمْ'],
     arabic: 'وَهُوَ مَعَكُمْ أَيْنَ مَا كُنتُمْ',
-    translation: '"And He is with you wherever you are."',
-    ref: 'Surah Al-Hadid 57:4',
+    translation: 'And He is with you wherever you are.',
+    ref: 'Surah Al-Hadid · 57:4',
+    pretitle: 'For the lonely heart',
   },
   Sad: {
+    words: ['لَا', 'تَقْنَطُوا', 'مِن', 'رَّحْمَةِ', 'اللَّهِ'],
     arabic: 'لَا تَقْنَطُوا مِن رَّحْمَةِ اللَّهِ',
-    translation: '"Do not despair of the mercy of Allah."',
-    ref: 'Surah Az-Zumar 39:53',
+    translation: 'Do not despair of the mercy of Allah.',
+    ref: 'Surah Az-Zumar · 39:53',
+    pretitle: 'For the saddened soul',
   },
   Angry: {
+    words: ['وَالْكَاظِمِينَ', 'الْغَيْظَ', 'وَالْعَافِينَ', 'عَنِ', 'النَّاسِ'],
     arabic: 'وَالْكَاظِمِينَ الْغَيْظَ وَالْعَافِينَ عَنِ النَّاسِ',
-    translation: '"Those who restrain anger and pardon people — and Allah loves the doers of good."',
-    ref: 'Surah Aal-Imran 3:134',
+    translation: 'Those who restrain anger and pardon people — Allah loves the doers of good.',
+    ref: 'Surah Aal-Imran · 3:134',
+    pretitle: 'For the tested heart',
   },
 };
 
 const DEFAULT_VERSE = MOOD_VERSES.Calm;
-
-// Maps stored mood id → human-readable display label shown in pretitle
-const MOOD_DISPLAY_LABELS: Record<string, string> = {
-  Grateful: 'Grateful',
-  Hopeful: 'Hopeful',
-  Calm: 'Peaceful',
-  Overwhelmed: 'Overwhelmed',
-  Tired: 'Tired',
-  Lonely: 'Lonely',
-  Sad: 'Sad',
-  Angry: 'Angry',
-};
+const WORD_STAGGER_MS = 220;
 
 interface Props {
   isActive: boolean;
   onNext: () => void;
 }
 
+// Renders a single Arabic word that fades+slides in after `delay` ms
+function RevealWord({ word, delay, isActive }: { word: string; delay: number; isActive: boolean }) {
+  const opacity = useRef(new Animated.Value(0)).current;
+  const translateY = useRef(new Animated.Value(8)).current;
+
+  useEffect(() => {
+    if (!isActive) {
+      opacity.setValue(0);
+      translateY.setValue(8);
+      return;
+    }
+    const t = setTimeout(() => {
+      Animated.parallel([
+        Animated.timing(opacity, { toValue: 1, duration: 500, useNativeDriver: true }),
+        Animated.timing(translateY, { toValue: 0, duration: 400, useNativeDriver: true }),
+      ]).start();
+    }, delay);
+    return () => clearTimeout(t);
+  }, [isActive]);
+
+  return (
+    <Animated.Text style={[styles.arabicWord, { opacity, transform: [{ translateY }] }]}>
+      {word}{' '}
+    </Animated.Text>
+  );
+}
+
 export default function FirstGuidanceScreen({ isActive, onNext }: Props) {
   const [verse, setVerse] = useState(DEFAULT_VERSE);
-  const [moodLabel, setMoodLabel] = useState('');
+  const insets = useSafeAreaInsets();
 
-  // [0] pretitle, [1] goldLine, [2] arabic, [3] ornament, [4] translation, [5] ref, [6] chip, [7] CTA
-  const s = useStaggerEntry(isActive, 8, { baseDelay: 400, stagger: 160 });
+  // [0] pretitle+line, [1] ornament after last word, [2] translation, [3] ref
+  const s = useStaggerEntry(isActive, 4, {
+    baseDelay: verse.words.length * WORD_STAGGER_MS + 400,
+    stagger: 180,
+  });
 
   const ctaOpacity = useRef(new Animated.Value(0)).current;
   const chipOpacity = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     if (!isActive) return;
+    const wordsDone = verse.words.length * WORD_STAGGER_MS + 600;
 
     const chipTimer = setTimeout(() => {
-      Animated.timing(chipOpacity, { toValue: 1, duration: 800, useNativeDriver: true }).start();
-    }, 2000);
-
+      Animated.timing(chipOpacity, { toValue: 1, duration: 700, useNativeDriver: true }).start();
+    }, wordsDone + 800);
     const ctaTimer = setTimeout(() => {
-      Animated.timing(ctaOpacity, { toValue: 1, duration: 800, useNativeDriver: true }).start();
-    }, 2500);
+      Animated.timing(ctaOpacity, { toValue: 1, duration: 700, useNativeDriver: true }).start();
+    }, wordsDone + 1200);
 
-    return () => {
-      clearTimeout(chipTimer);
-      clearTimeout(ctaTimer);
-    };
-  }, [isActive]);
-
-  const forceShowCta = () => {
-    ctaOpacity.setValue(1);
-    chipOpacity.setValue(1);
-  };
+    return () => { clearTimeout(chipTimer); clearTimeout(ctaTimer); };
+  }, [isActive, verse.words.length]);
 
   useEffect(() => {
     if (!isActive) return;
     AsyncStorage.getItem('@onboarding_mood').then(mood => {
-      if (mood && MOOD_VERSES[mood]) {
-        setVerse(MOOD_VERSES[mood]);
-        setMoodLabel(MOOD_DISPLAY_LABELS[mood] ?? mood);
-      }
+      if (mood && MOOD_VERSES[mood]) setVerse(MOOD_VERSES[mood]);
     }).catch(() => {});
   }, [isActive]);
 
+  const forceShowCta = () => {
+    if (!isActive) return;
+    ctaOpacity.setValue(1);
+    chipOpacity.setValue(1);
+  };
+
   return (
     <View style={styles.container} onTouchEnd={forceShowCta}>
-      {/* Stars */}
       <InteractiveStarfield positions={STAR_POS.map(p => ({ ...p, y: p.y * 1.5 }))} />
 
-      {/* Mandala */}
       <View style={styles.mandalaOuter} pointerEvents="none">
-        <AnimatedMandala size={320} color={Colors.accent.primary} opacity={0.06} />
-      </View>
-      <View style={styles.mandalaInner} pointerEvents="none">
-        <AnimatedMandala size={200} color={Colors.accent.primary} opacity={0.035} direction="ccw" />
+        <AnimatedMandala size={320} color={Colors.accent.primary} opacity={0.15} webLayers={2} />
       </View>
 
       <GoldenMotes />
 
-      <View style={styles.contentArea}>
-        {/* Pre-title */}
+      <View style={[styles.contentArea, { paddingTop: insets.top + 72 }]}>
+        {/* Poetic pretitle */}
         <Animated.Text style={[styles.pretitle, s[0]]}>
-          {moodLabel
-            ? `Based on how you feel — ${moodLabel}`
-            : 'A verse chosen for you'}
+          {verse.pretitle}
         </Animated.Text>
 
-        {/* Gold line */}
-        <Animated.View style={[styles.goldLineWrap, s[1]]}>
+        {/* Gold divider */}
+        <Animated.View style={[styles.goldLineWrap, s[0]]}>
           <LinearGradient
             colors={['transparent', Colors.accent.primary, 'transparent']}
             start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}
@@ -171,33 +201,38 @@ export default function FirstGuidanceScreen({ isActive, onNext }: Props) {
           />
         </Animated.View>
 
-        {/* Arabic verse */}
-        <Animated.Text style={[styles.arabic, s[2]]}>
-          {verse.arabic}
-        </Animated.Text>
+        {/* Arabic verse — word-by-word reveal */}
+        <View style={styles.arabicWrap}>
+          {verse.words.map((word, i) => (
+            <RevealWord
+              key={`${word}-${i}`}
+              word={word}
+              delay={600 + i * WORD_STAGGER_MS}
+              isActive={isActive}
+            />
+          ))}
+        </View>
 
-        {/* Ornament */}
-        <Animated.Text style={[styles.ornament, s[3]]}>✦</Animated.Text>
+        {/* Ornament separator */}
+        <Animated.Text style={[styles.ornament, s[1]]}>✦</Animated.Text>
 
         {/* Translation */}
-        <Animated.Text style={[styles.translation, s[4]]}>
+        <Animated.Text style={[styles.translation, s[2]]}>
           {verse.translation}
         </Animated.Text>
 
         {/* Reference */}
-        <Animated.Text style={[styles.reference, s[5]]}>
+        <Animated.Text style={[styles.reference, s[3]]}>
           — {verse.ref}
         </Animated.Text>
       </View>
 
       {/* Bottom */}
-      <View style={styles.bottomSection}>
-        {/* Journey whisper */}
+      <View style={[styles.bottomSection, { paddingBottom: Math.max(insets.bottom + Spacing.xxl, Spacing.xxxl) }]}>
         <Animated.Text style={[styles.journeyWhisper, { opacity: chipOpacity }]}>
           ✦ Your journey has already begun
         </Animated.Text>
 
-        {/* CTA */}
         <Animated.View style={[styles.ctaWrap, { opacity: ctaOpacity }]}>
           <TouchableOpacity style={styles.ctaBtn} activeOpacity={0.85} onPress={onNext}>
             <LinearGradient
@@ -218,79 +253,91 @@ const styles = StyleSheet.create({
   container: { flex: 1 },
   mandalaOuter: {
     position: 'absolute',
-    left: width / 2 - 160, top: height * 0.06, zIndex: 0,
-  },
-  mandalaInner: {
-    position: 'absolute',
-    left: width / 2 - 100, top: height * 0.13, zIndex: 0,
+    left: 0,
+    right: 0,
+    alignItems: 'center',
+    top: height * 0.25,
+    zIndex: 0,
   },
   contentArea: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    paddingHorizontal: 32,
+    paddingHorizontal: Spacing.xxl,
     zIndex: 2,
   },
   pretitle: {
     fontSize: 13,
-    color: 'rgba(201,168,76,0.65)',
-    letterSpacing: 0.8,
-    marginBottom: 16,
+    color: 'rgba(212, 175, 55, 0.85)',
+    letterSpacing: 1.2,
+    marginBottom: Spacing.md,
     textAlign: 'center',
+    fontFamily: Typography.fonts.serif,
+    fontStyle: 'italic',
   },
   goldLineWrap: {
     width: width * 0.55,
     height: 1.5,
-    marginBottom: 28,
+    marginBottom: Spacing.xxl,
   },
   goldLine: {
     flex: 1,
     borderRadius: 1,
   },
-  arabic: {
-    fontSize: 26,
-    color: '#F0E6D3',
-    fontFamily: Typography.fonts.serif,
+  arabicWrap: {
+    flexDirection: 'row-reverse',
+    flexWrap: 'wrap',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: Spacing.xl,
+    paddingHorizontal: Spacing.sm,
+    paddingTop: 10,
+    paddingBottom: 28,
+  },
+  arabicWord: {
+    fontSize: 30,
+    color: '#F5EDE3',
+    fontFamily: Typography.fonts.arabic,
+    lineHeight: 72,
     textAlign: 'center',
-    lineHeight: 46,
-    marginBottom: 18,
-    textShadowColor: 'rgba(201,168,76,0.25)',
+    textShadowColor: 'rgba(212, 175, 55, 0.35)',
     textShadowOffset: { width: 0, height: 0 },
-    textShadowRadius: 12,
+    textShadowRadius: 16,
   },
   ornament: {
     fontSize: 16,
-    color: 'rgba(201,168,76,0.5)',
-    marginBottom: 18,
+    color: 'rgba(212, 175, 55, 0.65)',
+    marginBottom: Spacing.lg,
   },
   translation: {
-    fontSize: 16,
-    color: 'rgba(176,196,215,0.85)',
+    fontSize: 17,
+    color: 'rgba(245, 237, 227, 0.92)',
     textAlign: 'center',
-    lineHeight: 26,
+    lineHeight: 27,
     fontStyle: 'italic',
-    marginBottom: 14,
-    paddingHorizontal: 8,
+    fontFamily: Typography.fonts.serif,
+    marginBottom: Spacing.sm,
+    paddingHorizontal: Spacing.sm,
+    textShadowColor: 'rgba(212, 175, 55, 0.15)',
+    textShadowOffset: { width: 0, height: 0 },
+    textShadowRadius: 8,
   },
   reference: {
     fontSize: 13,
-    color: 'rgba(201,168,76,0.55)',
+    color: 'rgba(212, 175, 55, 0.75)',
     fontFamily: Typography.fonts.serif,
-    letterSpacing: 0.5,
+    letterSpacing: 0.6,
   },
   bottomSection: {
-    paddingHorizontal: 24,
-    paddingBottom: height * 0.10,
-    gap: 14,
+    paddingHorizontal: Spacing.xl,
+    gap: Spacing.md,
     zIndex: 2,
   },
   journeyWhisper: {
     fontSize: 13,
     color: Colors.accent.primary,
-    opacity: 0.6,
     textAlign: 'center',
     letterSpacing: 0.5,
-    marginBottom: 14,
     textShadowColor: 'rgba(212, 175, 55, 0.3)',
     textShadowOffset: { width: 0, height: 0 },
     textShadowRadius: 8,

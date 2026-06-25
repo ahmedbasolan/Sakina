@@ -24,8 +24,6 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Svg, { Path } from 'react-native-svg';
 import * as Haptics from 'expo-haptics';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-
 import BismillahScreen from '../components/onboarding/BismillahScreen';
 import WelcomeScreen from '../components/onboarding/WelcomeScreen';
 import HeartCheckInScreen from '../components/onboarding/HeartCheckInScreen';
@@ -186,12 +184,9 @@ export default function OnboardingScreen({ navigation }: any) {
     [currentScreen, goNext, goBack],
   );
 
-  // --- Final: mark onboarding done and enter the app as guest ---
+  // --- Final: enter the app as guest ---
   const handleCommitComplete = useCallback(async () => {
-    // Mark onboarding as complete
-    await AsyncStorage.setItem('@onboarding_complete', 'true').catch(() => {});
-    // Enter guest mode to flip navigator out of the Auth layout to the Main layout automatically
-    enterGuestMode();
+    await enterGuestMode(true);
   }, [enterGuestMode]);
 
   // --- Notification handlers — advance to CommitScreen ---
@@ -218,7 +213,7 @@ export default function OnboardingScreen({ navigation }: any) {
       case 0:
         return <BismillahScreen isActive={isActive} onNext={goNext} />;
       case 1:
-        return <WelcomeScreen isActive={isActive} onNext={goNext} onSkip={handleCommitComplete} />;
+        return <WelcomeScreen isActive={isActive} onNext={goNext} />;
       case 2:
         return <HeartCheckInScreen isActive={isActive} onNext={goNext} />;
       case 3:
@@ -301,7 +296,7 @@ export default function OnboardingScreen({ navigation }: any) {
         </View>
 
         {/* Screen content */}
-        <PanGestureHandler onHandlerStateChange={onHandlerStateChange} activeOffsetX={[-15, 15]}>
+        <PanGestureHandler onHandlerStateChange={onHandlerStateChange} activeOffsetX={[-15, 15]} enabled={currentScreen !== 2}>
           <View style={styles.track}>
             {layers.map((layer) => (
               <Animated.View

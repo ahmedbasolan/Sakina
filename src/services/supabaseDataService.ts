@@ -359,6 +359,11 @@ export class SupabaseDataService {
 
     /**
      * Clear all history (e.g., from a "Clear History" button).
+     *
+     * For signed-in users the Supabase delete MUST succeed before local rows
+     * are removed. If it fails (offline), we throw so the caller can surface an
+     * error — continuing to the local DELETE would permanently destroy any rows
+     * with pending_sync=1 that haven't been uploaded yet.
      */
     async clearHistory(): Promise<void> {
         const userId = await this.getUserId();
@@ -367,10 +372,14 @@ export class SupabaseDataService {
             const { error } = await supabase.from('user_history').delete().eq('user_id', userId);
             if (error) {
                 console.error('[SupabaseDataService] Error clearing history:', error.message);
+                // Do NOT fall through to local delete — pending_sync=1 rows would be
+                // lost forever if we wipe them before they reach Supabase.
+                throw new Error(error.message);
             }
         }
 
-        // Also clear local
+        // Supabase delete succeeded (or guest — no server copy exists).
+        // Safe to clear the local cache now.
         await dbQuery(async (db) => {
             await db.execAsync('DELETE FROM user_history');
         });
@@ -381,55 +390,32 @@ export class SupabaseDataService {
     // ══════════════════════════════════════════════════════════════════
 
     /**
-     * Sync all local SQLite history to Supabase on sign-up.
-     * Idempotent: safe to call multiple times. Will skip history insertion if
-     * the user already has any rows in Supabase (implies a previous migration
-     * or data from another device). Local history is cleared on success so a
-     * re-run is a no-op even if the skip-check is bypassed.
+     * Sync all local SQLite history and path progress to Supabase on first sign-in.
+     * Idempotent: uses upsert + ignoreDuplicates for history (backed by the
+     * unique_user_history_entry DB constraint) so partial re-runs skip rows
+     * already on the server. Local history is cleared only after all batches
+     * succeed; a failed run leaves local rows intact for the next sign-in to retry.
      */
     async migrateGuestDataToSupabase(): Promise<{ migratedCount: number }> {
         const userId = await this.getUserId();
         if (!userId) return { migratedCount: 0 };
 
         try {
-            // 0. Idempotency check — if this user already has history in Supabase,
-            //    don't re-insert. Just clean up local data below.
-            const { count: existingCount, error: countError } = await supabase
-                .from('user_history')
-                .select('id', { count: 'exact', head: true })
-                .eq('user_id', userId);
-
-            if (countError) {
-                console.error('[Migration] Count check failed, aborting to avoid duplicates:', countError.message);
-                return { migratedCount: 0 };
-            }
-
-            // alreadyMigrated only when EVERY local row is in Supabase.
-            // > 0 incorrectly blocked re-runs after a partial batch failure,
-            // permanently orphaning the remaining rows.
-            const localHistoryCount = await dbQuery(async (db) => {
-                const r = await db.getFirstAsync<{ cnt: number }>(
-                    'SELECT COUNT(*) as cnt FROM user_history',
-                );
-                return r?.cnt ?? 0;
-            });
-            const alreadyMigrated =
-                localHistoryCount === 0 || (existingCount ?? 0) >= localHistoryCount;
-
-            // 1. Migrate user_history (only if this is a fresh account)
+            // 1. Migrate user_history.
+            //    Use upsert + ignoreDuplicates so partial re-runs safely skip rows
+            //    that were already uploaded — the unique_user_history_entry constraint
+            //    (migration 005) guarantees the DB rejects duplicates at rest.
+            //    Local rows are cleared only after ALL batches confirm on the server.
             const localHistory = await dbQuery(async (db) => {
-                return db.getAllAsync(
+                return db.getAllAsync<{ contentId: string; angleId: string; mood: string; timestamp: number }>(
                     `SELECT contentId, angleId, mood, timestamp FROM user_history ORDER BY timestamp ASC`,
                 );
             });
 
-            let migratedCount = 0;
-            let historyInsertSucceeded = true;
+            let historyMigrationOk = true;
 
-            if (!alreadyMigrated && localHistory.length > 0) {
-                const supabaseRows = (
-                    localHistory as { contentId: string; angleId: string; mood: string; timestamp: number }[]
-                ).map((row) => ({
+            if (localHistory.length > 0) {
+                const supabaseRows = localHistory.map((row) => ({
                     user_id: userId,
                     content_id: row.contentId,
                     angle_id: row.angleId,
@@ -437,51 +423,74 @@ export class SupabaseDataService {
                     created_at: new Date(row.timestamp).toISOString(),
                 }));
 
-                // Insert in batches of 100
                 const batchSize = 100;
                 for (let i = 0; i < supabaseRows.length; i += batchSize) {
                     const batch = supabaseRows.slice(i, i + batchSize);
-                    const { error } = await supabase.from('user_history').insert(batch);
+                    const { error } = await supabase
+                        .from('user_history')
+                        .upsert(batch, {
+                            onConflict: 'user_id,content_id,angle_id,created_at',
+                            ignoreDuplicates: true,
+                        });
                     if (error) {
-                        console.error('[Migration] History batch insert error:', error.message);
-                        historyInsertSucceeded = false;
-                        // Continue remaining batches — partial success is better than none.
-                        // The updated alreadyMigrated check above lets the next login resume
-                        // from where this left off rather than skipping everything.
-                    } else {
-                        migratedCount += batch.length;
+                        console.error('[Migration] History batch upsert error:', error.message);
+                        historyMigrationOk = false;
                     }
                 }
-            } else if (alreadyMigrated) {
-                console.log('[Migration] User already has Supabase history — skipping insert.');
             }
 
-            // 2. Migrate user_path_progress (always upserts — natural key is user+path)
+            // Only clear local after every batch is confirmed on the server.
+            // Keeps pending rows intact on failure so the next sign-in can retry.
+            if (historyMigrationOk) {
+                await dbQuery(async (db) => {
+                    await db.execAsync('DELETE FROM user_history');
+                });
+            }
+
+            const migratedCount = historyMigrationOk ? localHistory.length : 0;
+
+            // 2. Migrate user_path_progress — merge, don't overwrite.
+            //    Fetch server state first; only upsert a path when local is further ahead
+            //    (higher currentDay or more completedDays) to prevent regression.
             const localProgress = await dbQuery(async (db) => {
-                return db.getAllAsync(`SELECT * FROM user_path_progress`);
+                return db.getAllAsync<any>(`SELECT * FROM user_path_progress`);
             });
 
             if (localProgress.length > 0) {
-                for (const row of localProgress as any[]) {
+                const { data: serverProgress } = await supabase
+                    .from('user_path_progress')
+                    .select('path_id, current_day, completed_days')
+                    .eq('user_id', userId);
+
+                const serverMap = new Map<string, { current_day: number; completed_days: number[] }>();
+                for (const sp of (serverProgress ?? [])) {
+                    serverMap.set(sp.path_id, {
+                        current_day: sp.current_day ?? 1,
+                        completed_days: sp.completed_days ?? [],
+                    });
+                }
+
+                for (const row of localProgress) {
+                    const localDays: number[] = row.completedDays ? JSON.parse(row.completedDays) : [];
+                    const server = serverMap.get(row.pathId);
+                    // Skip if server is already ahead on both metrics.
+                    if (
+                        server &&
+                        server.current_day >= row.currentDay &&
+                        server.completed_days.length >= localDays.length
+                    ) {
+                        continue;
+                    }
                     await supabase.from('user_path_progress').upsert({
                         user_id: userId,
                         path_id: row.pathId,
                         current_day: row.currentDay,
                         start_date: new Date(row.startDate).toISOString(),
-                        completed_days: row.completedDays ? JSON.parse(row.completedDays) : [],
+                        completed_days: localDays,
                         is_completed: Boolean(row.isCompleted),
                         completed_at: row.completedAt ? new Date(row.completedAt).toISOString() : null,
                     });
                 }
-            }
-
-            // 3. Clear local history after successful migration (or if it was already
-            //    migrated). Prevents re-runs from duplicating, and guest state now lives
-            //    authoritatively in Supabase for logged-in users.
-            if (historyInsertSucceeded && (alreadyMigrated || migratedCount === localHistory.length)) {
-                await dbQuery(async (db) => {
-                    await db.execAsync('DELETE FROM user_history');
-                });
             }
 
             console.log(`[Migration] Migrated ${migratedCount} history entries to Supabase`);

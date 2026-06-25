@@ -15,7 +15,6 @@ import { Colors, Spacing, BorderRadius, Typography } from '../theme/DesignSystem
 import { getUserLocation, UserLocation } from '../services/locationStorage';
 import PrayerTimesService, { PrayerTimesData, formatPrayerTime, TimeFormat } from '../services/prayerTimesService';
 import { LocationPickerModal } from '../components/LocationPickerModal';
-import NotificationService from '../services/notificationService';
 import { useSession } from '../context/AppContext';
 
 const SERIF = Typography.fonts.serif;
@@ -48,8 +47,6 @@ export default function PrayerTimesScreen({ navigation }: { navigation: any }) {
       try {
         const data = await service.getTimingsByCity(loc.city, loc.country);
         setPrayerData(data);
-        const notifService = NotificationService.getInstance();
-        await notifService.schedulePrayerNotifications(data.timings, loc.city);
       } catch (error) {
         Alert.alert('Error', 'Failed to fetch prayer times. Please try again.');
       } finally {
@@ -88,7 +85,28 @@ export default function PrayerTimesScreen({ navigation }: { navigation: any }) {
     () => (prayerData ? service.getNextPrayerInfo(prayerData.timings) : null),
     [prayerData, service, now],
   );
-  const countdown = nextInfo ? service.formatCountdown(nextInfo.minutesRemaining) : '';
+
+  // getNextPrayerInfo excludes Sunrise (not a salah) so the home screen shows
+  // the next salah correctly. For this screen we also want to highlight Sunrise
+  // when the user is in the post-Fajr window, so we compute it separately.
+  const sunriseNextInfo = useMemo(() => {
+    if (!prayerData) return null;
+    const currentTime = new Date().getHours() * 60 + new Date().getMinutes();
+    const fajr = service.parseTimeToMinutes(prayerData.timings.Fajr);
+    const sunrise = service.parseTimeToMinutes(prayerData.timings.Sunrise);
+    if (currentTime >= fajr && currentTime < sunrise) {
+      return {
+        name: 'Sunrise',
+        time: prayerData.timings.Sunrise,
+        minutesRemaining: sunrise - currentTime,
+      };
+    }
+    return null;
+  }, [prayerData, now]);
+
+  // What to show in the hero card: Sunrise takes priority when it's the next event.
+  const displayNext = sunriseNextInfo ?? nextInfo;
+  const countdown = displayNext ? service.formatCountdown(displayNext.minutesRemaining) : '';
 
   const prayerItems = prayerData
     ? (['Fajr', 'Sunrise', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'] as const).map((name) => ({
@@ -152,17 +170,17 @@ export default function PrayerTimesScreen({ navigation }: { navigation: any }) {
           ) : prayerData ? (
             <>
               {/* Next-prayer hero */}
-              {nextInfo && (
+              {displayNext && (
                 <LinearGradient
                   colors={['#1A1408', '#0F1A2A']}
                   start={{ x: 0, y: 0 }}
                   end={{ x: 1, y: 1 }}
                   style={styles.nextCard}
                 >
-                  <Text style={styles.nextLabel}>NEXT PRAYER</Text>
-                  <Text style={styles.nextName}>{nextInfo.name}</Text>
+                  <Text style={styles.nextLabel}>{sunriseNextInfo ? 'NEXT EVENT' : 'NEXT PRAYER'}</Text>
+                  <Text style={styles.nextName}>{displayNext.name}</Text>
                   <View style={styles.nextRow}>
-                    <Text style={styles.nextTime}>{formatPrayerTime(nextInfo.time, timeFormat)}</Text>
+                    <Text style={styles.nextTime}>{formatPrayerTime(displayNext.time, timeFormat)}</Text>
                     <View style={styles.nextDot} />
                     <Text style={styles.nextCountdown}>in {countdown}</Text>
                   </View>
@@ -204,7 +222,9 @@ export default function PrayerTimesScreen({ navigation }: { navigation: any }) {
               {/* Prayer list */}
               <View style={styles.card}>
                 {prayerItems.map((prayer, index) => {
-                  const isNext = nextInfo?.name === prayer.name;
+                  const isNext = prayer.name === 'Sunrise'
+                    ? !!sunriseNextInfo
+                    : nextInfo?.name === prayer.name;
                   const meta = PRAYER_META[prayer.name];
                   return (
                     <View

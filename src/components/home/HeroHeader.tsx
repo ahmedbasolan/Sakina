@@ -53,10 +53,10 @@ export function HeroHeader({ fadeAnim, slideAnim, onSettingsPress, greeting }: H
 
       {/* Mandala — subtle background geometry */}
       <View style={styles.mandalaOuter} pointerEvents="none">
-        <AnimatedMandala size={220} color={Colors.accent.primary} opacity={0.35} />
+        <AnimatedMandala size={220} color={Colors.accent.primary} opacity={0.35} webLayers={2} />
       </View>
       <View style={styles.mandalaInner} pointerEvents="none">
-        <AnimatedMandala size={160} color={Colors.accent.primary} opacity={0.25} direction="ccw" />
+        <AnimatedMandala size={160} color={Colors.accent.primary} opacity={0.25} direction="ccw" webLayers={2} />
       </View>
 
       {/* Top bar — settings only */}
@@ -67,13 +67,12 @@ export function HeroHeader({ fadeAnim, slideAnim, onSettingsPress, greeting }: H
         ]}
       >
         <TouchableOpacity
-          style={styles.notifBell}
           onPress={onSettingsPress}
           accessibilityRole="button"
           accessibilityLabel="Settings"
-          hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+          hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
         >
-          <Ionicons name="settings-outline" size={20} color={Colors.accent.primary} />
+          <Ionicons name="settings-outline" size={22} color={Colors.accent.primary} />
         </TouchableOpacity>
       </Animated.View>
 
@@ -128,7 +127,7 @@ const styles = StyleSheet.create({
   greetingBlock: {
     alignSelf: 'stretch',
     paddingHorizontal: 24,
-    marginTop: 36,
+    marginTop: 44,
   },
   greetingCaption: {
     fontSize: 12,
@@ -152,20 +151,13 @@ const styles = StyleSheet.create({
     fontFamily: Typography.fonts.arabic,
     fontSize: 24,
     lineHeight: 44,
-    color: 'rgba(245, 237, 227, 0.62)',
+    color: 'rgba(245, 237, 227, 0.92)',
     textAlign: 'center',
     alignSelf: 'stretch',
     paddingHorizontal: 24,
-    marginTop: 22,
-  },
-  notifBell: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: 'rgba(212, 175, 55, 0.08)',
-    borderWidth: 1,
-    borderColor: 'rgba(212, 175, 55, 0.15)',
-    justifyContent: 'center',
-    alignItems: 'center',
+    marginTop: 28,
+    textShadowColor: 'rgba(212, 175, 55, 0.65)',
+    textShadowOffset: { width: 0, height: 0 },
+    textShadowRadius: 18,
   },
 });

@@ -6,7 +6,7 @@
  * Selection saves to AsyncStorage and auto-advances after 800ms.
  */
 import React, { useEffect, useRef, useState, useCallback } from 'react';
-import { Colors, Typography } from '../../theme/DesignSystem';
+import { Colors, Typography, Spacing } from '../../theme/DesignSystem';
 import {
   View,
   Text,
@@ -18,8 +18,10 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
+import { NativeViewGestureHandler } from 'react-native-gesture-handler';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Haptics from 'expo-haptics';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useStaggerEntry } from '../../hooks/useStaggerEntry';
 import { AnimatedMandala } from '../AnimatedMandala';
 import { InteractiveStarfield } from './InteractiveStarfield';
@@ -48,7 +50,7 @@ interface MoodOption {
   giving: string;
   color: string;
   bgColor: string;
-  gradientColors: [string, string];
+  gradientColors: [string, string, string];
   iconName: string;
 }
 
@@ -62,7 +64,7 @@ const MOODS: MoodOption[] = [
     giving: 'Verses to deepen your gratitude and multiply His blessings',
     color: '#FBBF24',
     bgColor: '#451A03',
-    gradientColors: ['#3A1602', '#451A03'],
+    gradientColors: ['#5E2204', '#3A1602', '#1A0901'],
     iconName: 'heart',
   },
   {
@@ -72,7 +74,7 @@ const MOODS: MoodOption[] = [
     giving: 'Reminders of Allah\'s promise — ease follows every hardship',
     color: '#22D3EE',
     bgColor: '#083344',
-    gradientColors: ['#062836', '#083344'],
+    gradientColors: ['#0C4A63', '#062836', '#021620'],
     iconName: 'sunny',
   },
   {
@@ -82,7 +84,7 @@ const MOODS: MoodOption[] = [
     giving: 'Reflections to sustain and deepen this blessed stillness',
     color: '#34D399',
     bgColor: '#064E3B',
-    gradientColors: ['#053E2F', '#064E3B'],
+    gradientColors: ['#0A6B52', '#053E2F', '#021F18'],
     iconName: 'water',
   },
   {
@@ -92,7 +94,7 @@ const MOODS: MoodOption[] = [
     giving: 'He does not burden a soul beyond what it can bear',
     color: '#818CF8',
     bgColor: '#0F172A',
-    gradientColors: ['#0B1220', '#0F172A'],
+    gradientColors: ['#192840', '#0B1220', '#050A14'],
     iconName: 'layers',
   },
   {
@@ -102,7 +104,7 @@ const MOODS: MoodOption[] = [
     giving: 'Rest in His mercy — He sees every effort you make',
     color: '#D6D3D1',
     bgColor: '#1C1917',
-    gradientColors: ['#161310', '#1C1917'],
+    gradientColors: ['#2A2420', '#161310', '#080706'],
     iconName: 'moon',
   },
   {
@@ -112,7 +114,7 @@ const MOODS: MoodOption[] = [
     giving: 'He is with you wherever you are — you are never alone',
     color: '#C084FC',
     bgColor: '#2E1065',
-    gradientColors: ['#240C50', '#2E1065'],
+    gradientColors: ['#481A8A', '#240C50', '#10052B'],
     iconName: 'person',
   },
   {
@@ -122,7 +124,7 @@ const MOODS: MoodOption[] = [
     giving: 'Do not despair — the mercy of Allah has no limits',
     color: '#94A3B8',
     bgColor: '#1E293B',
-    gradientColors: ['#172030', '#1E293B'],
+    gradientColors: ['#253648', '#172030', '#0A1018'],
     iconName: 'rainy',
   },
   {
@@ -132,7 +134,7 @@ const MOODS: MoodOption[] = [
     giving: 'Find peace through His remembrance — hearts find rest',
     color: '#FB923C',
     bgColor: '#1A0F0A',
-    gradientColors: ['#140C08', '#1A0F0A'],
+    gradientColors: ['#2A1508', '#140C08', '#060302'],
     iconName: 'flame',
   },
 ];
@@ -147,9 +149,10 @@ interface Props {
 export default function HeartCheckInScreen({ isActive, onNext }: Props) {
   const [selectedMood, setSelectedMood] = useState<string | null>(null);
   const [activeIndex, setActiveIndex] = useState(0);
+  const insets = useSafeAreaInsets();
 
-  // [0] arabic, [1] title, [2] subtitle, [3] carousel
-  const s = useStaggerEntry(isActive, 4);
+  // [0] title, [1] subtitle, [2] carousel
+  const s = useStaggerEntry(isActive, 3);
 
   const scrollRef = useRef<ScrollView>(null);
   const cardScales = useRef(MOODS.map((_, i) => new Animated.Value(i === 0 ? 1 : 0.92))).current;
@@ -219,24 +222,23 @@ export default function HeartCheckInScreen({ isActive, onNext }: Props) {
       <InteractiveStarfield positions={STAR_POS.map(p => ({ ...p, y: p.y * 1.5 }))} />
 
       <View style={styles.mandalaWrap} pointerEvents="none">
-        <AnimatedMandala size={280} color={Colors.accent.primary} opacity={0.04} />
+        <AnimatedMandala size={320} color={Colors.accent.primary} opacity={0.15} webLayers={2} />
       </View>
 
       {/* Header */}
-      <View style={styles.headerArea}>
-        <Animated.Text style={[styles.arabicTitle, s[0]]}>
-          كيف حال قلبك
-        </Animated.Text>
-        <Animated.Text style={[styles.title, s[1]]}>
+      <View style={[styles.headerArea, { paddingTop: insets.top + 72 }]}>
+        <Animated.Text style={[styles.title, s[0]]}>
           How Is Your Heart?
         </Animated.Text>
-        <Animated.Text style={[styles.subtitle, s[2]]}>
+        <Animated.Text style={[styles.subtitle, s[1]]}>
           Swipe to find your feeling — tap to choose
         </Animated.Text>
       </View>
 
-      {/* Carousel */}
-      <Animated.View style={[styles.carouselWrap, s[3]]}>
+      {/* Carousel — NativeViewGestureHandler absorbs horizontal swipes so they
+          don't bleed through to the parent screen-level PanGestureHandler */}
+      <Animated.View style={[styles.carouselWrap, s[2]]}>
+        <NativeViewGestureHandler>
         <ScrollView
           ref={scrollRef}
           horizontal
@@ -264,10 +266,19 @@ export default function HeartCheckInScreen({ isActive, onNext }: Props) {
               >
                 <LinearGradient
                   colors={mood.gradientColors}
-                  style={[styles.card, { borderColor: mood.color + '30' }]}
+                  style={[styles.card, { borderColor: mood.color + '45' }]}
                   start={{ x: 0, y: 0 }}
                   end={{ x: 0, y: 1 }}
                 >
+                  {/* Top sheen — accent backlight fading to transparent */}
+                  <LinearGradient
+                    colors={[mood.color + '1F', 'transparent']}
+                    start={{ x: 0.5, y: 0 }}
+                    end={{ x: 0.5, y: 0.38 }}
+                    style={styles.cardSheen}
+                    pointerEvents="none"
+                  />
+
                   {/* Icon */}
                   <View style={[styles.iconCircle, { borderColor: mood.color + '50', backgroundColor: mood.color + '15' }]}>
                     <Ionicons name={mood.iconName as any} size={28} color={mood.color} />
@@ -297,10 +308,11 @@ export default function HeartCheckInScreen({ isActive, onNext }: Props) {
             </Animated.View>
           ))}
         </ScrollView>
+        </NativeViewGestureHandler>
       </Animated.View>
 
       {/* Dot indicators */}
-      <View style={styles.dotsRow}>
+      <View style={[styles.dotsRow, { paddingBottom: Math.max(insets.bottom + Spacing.xxl, Spacing.xxxl) }]}>
         {MOODS.map((_, i) => (
           <View key={i} style={styles.dotSlot}>
             {/* Inactive dot — always visible */}
@@ -326,23 +338,17 @@ const styles = StyleSheet.create({
   container: { flex: 1 },
   mandalaWrap: {
     position: 'absolute',
-    left: width / 2 - 140,
+    left: 0,
+    right: 0,
+    alignItems: 'center',
     top: height * 0.02,
     zIndex: 0,
   },
   headerArea: {
     alignItems: 'center',
-    paddingHorizontal: 24,
-    paddingTop: height * 0.08,
+    paddingHorizontal: Spacing.xl,
     paddingBottom: 20,
     zIndex: 2,
-  },
-  arabicTitle: {
-    fontSize: 20,
-    color: 'rgba(201,168,76,0.78)',
-    fontFamily: Typography.fonts.serif,
-    marginBottom: 6,
-    letterSpacing: 1,
   },
   title: {
     fontFamily: Typography.fonts.serif,
@@ -384,9 +390,13 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: 24,
+    paddingHorizontal: Spacing.xl,
     paddingVertical: 28,
     gap: 0,
+  },
+  cardSheen: {
+    ...StyleSheet.absoluteFillObject,
+    borderRadius: 23,
   },
   iconCircle: {
     width: 64,
@@ -440,7 +450,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     gap: 6,
-    paddingBottom: height * 0.06,
+    paddingBottom: 0,
     zIndex: 2,
   },
   dotSlot: {

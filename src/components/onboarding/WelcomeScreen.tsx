@@ -1,105 +1,100 @@
 /**
  * Screen 2: Welcome to Sakina
  *
- * Dark navy background (#07111E → #0C1A2E) with animated mandala
- * geometric web, twinkling gold stars, sparkle icon, and CTA.
- * Matches the reference image exactly.
+ * Dark navy background with twinkling stars. Icon-first feature cards
+ * with Ionicons, gold accent borders, and a privacy chip.
  */
-import React, { useEffect, useRef } from 'react';
-import { Colors, Typography } from '../../theme/DesignSystem';
+import React from 'react';
+import { Colors, Typography, Spacing, BorderRadius } from '../../theme/DesignSystem';
 import {
   View,
   Text,
   StyleSheet,
   Animated,
   Dimensions,
-  TouchableOpacity,
+  Image,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { Ionicons } from '@expo/vector-icons';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useStaggerEntry } from '../../hooks/useStaggerEntry';
 import { InteractiveStarfield } from './InteractiveStarfield';
-import { SakinaLantern } from '../SakinaLantern';
 import { ShimmerButton } from '../ShimmerButton';
 
 const { width, height } = Dimensions.get('window');
+const ICON_SIZE = Math.min(Math.round(width * 0.28), 120);
 
-const STAR_POSITIONS = [
-  { x: 0.08, y: 0.06, size: 2.5, delay: 0 },
-  { x: 0.88, y: 0.04, size: 2, delay: 600 },
-  { x: 0.18, y: 0.18, size: 1.5, delay: 300 },
-  { x: 0.78, y: 0.14, size: 2, delay: 900 },
-  { x: 0.50, y: 0.08, size: 1.5, delay: 150 },
-  { x: 0.92, y: 0.28, size: 2.5, delay: 750 },
-  { x: 0.04, y: 0.38, size: 1.5, delay: 450 },
-  { x: 0.96, y: 0.46, size: 2, delay: 1050 },
-  { x: 0.25, y: 0.32, size: 1.5, delay: 200 },
-  { x: 0.70, y: 0.22, size: 1.5, delay: 800 },
-  { x: 0.35, y: 0.55, size: 1.5, delay: 350 },
-  { x: 0.62, y: 0.50, size: 2, delay: 650 },
-  { x: 0.14, y: 0.62, size: 1.5, delay: 500 },
-  { x: 0.84, y: 0.60, size: 2, delay: 950 },
-  { x: 0.45, y: 0.70, size: 1.5, delay: 100 },
-  { x: 0.92, y: 0.72, size: 1.5, delay: 1200 },
-  { x: 0.06, y: 0.76, size: 2, delay: 400 },
-  { x: 0.55, y: 0.84, size: 1.5, delay: 700 },
+const MAPPED_STAR_POSITIONS = [
+  { x: 0.08, y: 0.078, size: 2.5, delay: 0 },
+  { x: 0.88, y: 0.052, size: 2,   delay: 600 },
+  { x: 0.18, y: 0.234, size: 1.5, delay: 300 },
+  { x: 0.78, y: 0.182, size: 2,   delay: 900 },
+  { x: 0.50, y: 0.104, size: 1.5, delay: 150 },
+  { x: 0.92, y: 0.364, size: 2.5, delay: 750 },
+  { x: 0.04, y: 0.494, size: 1.5, delay: 450 },
+  { x: 0.96, y: 0.598, size: 2,   delay: 1050 },
+  { x: 0.25, y: 0.416, size: 1.5, delay: 200 },
+  { x: 0.70, y: 0.286, size: 1.5, delay: 800 },
+  { x: 0.14, y: 0.806, size: 1.5, delay: 500 },
+  { x: 0.84, y: 0.780, size: 2,   delay: 950 },
+  { x: 0.06, y: 0.988, size: 2,   delay: 400 },
+  { x: 0.55, y: 1.092, size: 1.5, delay: 700 },
 ];
 
+interface FeatureItem {
+  icon: keyof typeof Ionicons.glyphMap;
+  title: string;
+  description: string;
+}
 
-
+const FEATURES: FeatureItem[] = [
+  {
+    icon: 'book-outline',
+    title: 'Daily Verse',
+    description: 'A Quran verse matched to your mood — morning and evening, every day',
+  },
+  {
+    icon: 'compass-outline',
+    title: 'Guided Journeys',
+    description: 'Build salah, dhikr, and reflection habits step by step',
+  },
+  {
+    icon: 'journal-outline',
+    title: 'Private Journal',
+    description: 'Your thoughts and gratitude — only you can read your entries',
+  },
+];
 
 interface Props {
   isActive: boolean;
   onNext: () => void;
-  onSkip: () => void;
 }
 
-const FEATURES = [
-  'A Quran verse matched to your mood — morning and evening guidance, every day',
-  'Guided Journeys to build salah, dhikr, and reflection habits — step by step',
-  'A private journal for your thoughts and gratitude — only you can read your entries',
-];
-
-export default function WelcomeScreen({ isActive, onNext, onSkip }: Props) {
-  // [0] icon, [1] title, [2] subtitle, [3-5] features, [6] privacy chip, [7] CTA, [8] skip
-  const s = useStaggerEntry(isActive, 9);
-
-  const glowAnim = useRef(new Animated.Value(0.08)).current;
-
-  useEffect(() => {
-    Animated.loop(
-      Animated.sequence([
-        Animated.timing(glowAnim, { toValue: 0.2, duration: 3000, useNativeDriver: true }),
-        Animated.timing(glowAnim, { toValue: 0.08, duration: 3000, useNativeDriver: true }),
-      ])
-    ).start();
-  }, []);
+export default function WelcomeScreen({ isActive, onNext }: Props) {
+  // [0] icon, [1] title, [2] subtitle, [3-5] feature cards, [6] privacy chip, [7] CTA
+  const s = useStaggerEntry(isActive, 8);
+  const insets = useSafeAreaInsets();
+  const topClearance = insets.top + 72;
 
   return (
     <View style={styles.container}>
-      {/* Dark navy gradient background — matches reference exactly */}
       <LinearGradient
         colors={['#07111E', '#0C1A2E', '#0F1F30']}
         style={StyleSheet.absoluteFill}
         start={{ x: 0.5, y: 0 }}
         end={{ x: 0.5, y: 1 }}
       />
+      <InteractiveStarfield positions={MAPPED_STAR_POSITIONS} />
 
-      {/* Interactive Twinkling stars scattered in the dark background */}
-      <InteractiveStarfield positions={STAR_POSITIONS.map(p => ({ ...p, y: p.y * 1.3 }))} />
-
-      {/* Content area */}
-      <View style={styles.contentArea}>
-        {/* Hero Area grouping the Icon and Mandala perfectly centered */}
+      <View style={[styles.contentArea, { paddingTop: topClearance }]}>
+        {/* App icon */}
         <View style={styles.heroWrap}>
-          {/* Breathing gold glow behind the lantern */}
-          <Animated.View
-            style={[styles.breathingGlow, { opacity: glowAnim }]}
-            pointerEvents="none"
-          />
-
-          {/* Sakina lantern — the app's brand mark */}
           <Animated.View style={s[0]}>
-            <SakinaLantern size={132} />
+            <Image
+              source={require('../../../assets/icon.png')}
+              style={styles.appIcon}
+              resizeMode="cover"
+            />
           </Animated.View>
         </View>
 
@@ -110,41 +105,43 @@ export default function WelcomeScreen({ isActive, onNext, onSkip }: Props) {
 
         {/* Subtitle */}
         <Animated.Text style={[styles.subtitle, s[2]]}>
-          Your companion for spiritual growth,{'\n'}
-          guided by the wisdom of the Quran
+          Your companion for spiritual growth,{'\n'}guided by the wisdom of the Quran
         </Animated.Text>
 
-        {/* Feature rows */}
+        {/* Feature cards */}
         <View style={styles.featuresWrap}>
-          {FEATURES.map((text, i) => (
-            <Animated.View key={i} style={[styles.featureRow, s[3 + i]]}>
-              <Text style={styles.featureOrnament}>✦</Text>
-              <Text style={styles.featureText}>{text}</Text>
+          {FEATURES.map((feat, i) => (
+            <Animated.View key={feat.icon} style={[styles.featureCard, s[3 + i]]}>
+              {/* Gold accent left border */}
+              <View style={styles.featureAccentBar} />
+
+              {/* Icon circle */}
+              <View style={styles.featureIconWrap}>
+                <Ionicons name={feat.icon} size={22} color={Colors.accent.primary} />
+              </View>
+
+              {/* Text */}
+              <View style={styles.featureTextWrap}>
+                <Text style={styles.featureTitle}>{feat.title}</Text>
+                <Text style={styles.featureDesc}>{feat.description}</Text>
+              </View>
             </Animated.View>
           ))}
 
           {/* Privacy note */}
           <Animated.View style={[styles.privacyChip, s[6]]}>
-            <Text style={styles.privacyIcon}>🔒</Text>
+            <Ionicons name="lock-closed-outline" size={14} color="rgba(176, 196, 215, 0.7)" />
             <Text style={styles.privacyText}>
-              Your journal entries are private and never leave your device. Check-ins sync to your account when you sign in.
+              Your mood history, journeys, and reflections are saved on this device only — we never collect or store them.
             </Text>
           </Animated.View>
         </View>
       </View>
 
-      {/* Bottom section */}
-      <View style={styles.bottomSection}>
-        {/* CTA */}
+      {/* CTA */}
+      <View style={[styles.bottomSection, { paddingBottom: Math.max(insets.bottom + Spacing.xxl, Spacing.xxxl) }]}>
         <Animated.View style={[styles.ctaWrap, s[7]]}>
           <ShimmerButton label="Begin Your Journey" onPress={onNext} height={58} />
-        </Animated.View>
-
-        {/* Skip button for power users */}
-        <Animated.View style={[styles.skipWrap, s[8]]}>
-          <TouchableOpacity onPress={onSkip} hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}>
-            <Text style={styles.skipText}>Skip onboarding</Text>
-          </TouchableOpacity>
         </Animated.View>
       </View>
     </View>
@@ -156,111 +153,114 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#07111E',
   },
-  heroWrap: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 24,
-    marginTop: 8,
-  },
-  breathingGlow: {
-    position: 'absolute',
-    width: 180,
-    height: 180,
-    borderRadius: 90,
-    backgroundColor: '#D4AF37',
-  },
   contentArea: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    paddingHorizontal: 32,
+    paddingHorizontal: Spacing.xl,
     zIndex: 2,
+  },
+  heroWrap: {
+    alignItems: 'center',
+    marginBottom: Spacing.lg,
+  },
+  appIcon: {
+    width: ICON_SIZE,
+    height: ICON_SIZE,
+    borderRadius: BorderRadius.xxl,
   },
   title: {
     fontFamily: Typography.fonts.serif,
-    fontSize: 30,
+    fontSize: Typography.sizes.hero,
     color: '#F0E6D3',
     textAlign: 'center',
     letterSpacing: 0.5,
-    marginBottom: 14,
+    marginBottom: Spacing.sm,
     textShadowColor: 'rgba(201, 168, 76, 0.3)',
     textShadowOffset: { width: 0, height: 0 },
     textShadowRadius: 12,
   },
   subtitle: {
-    fontSize: 15,
+    fontSize: Typography.sizes.small,
     color: 'rgba(176, 196, 215, 0.8)',
     textAlign: 'center',
-    lineHeight: 24,
+    lineHeight: 22,
     letterSpacing: 0.2,
-    marginBottom: 32,
+    marginBottom: Spacing.xl,
   },
   featuresWrap: {
     width: '100%',
-    gap: 14,
-    paddingHorizontal: 8,
+    gap: Spacing.sm,
   },
-  featureRow: {
+  featureCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
-    paddingHorizontal: 20,
-    paddingVertical: 12,
-    borderRadius: 14,
+    borderRadius: BorderRadius.md,
     backgroundColor: 'rgba(255, 255, 255, 0.04)',
     borderWidth: 1,
-    borderColor: 'rgba(201, 168, 76, 0.1)',
+    borderColor: 'rgba(201, 168, 76, 0.12)',
+    overflow: 'hidden',
+    paddingVertical: Spacing.md,
+    paddingRight: Spacing.lg,
   },
-  featureOrnament: {
-    fontSize: 10,
-    color: Colors.accent.primary,
-    opacity: 0.75,
+  featureAccentBar: {
+    width: 3,
+    alignSelf: 'stretch',
+    backgroundColor: Colors.accent.primary,
+    opacity: 0.7,
+    marginRight: Spacing.md,
+    borderRadius: 2,
   },
-  featureText: {
-    fontSize: 14,
-    color: 'rgba(245, 237, 227, 0.7)',
-    letterSpacing: 0.2,
-    lineHeight: 20,
+  featureIconWrap: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: 'rgba(212, 175, 55, 0.10)',
+    borderWidth: 1,
+    borderColor: 'rgba(212, 175, 55, 0.25)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: Spacing.md,
+  },
+  featureTextWrap: {
     flex: 1,
+  },
+  featureTitle: {
+    fontSize: Typography.sizes.small,
+    fontWeight: '700',
+    color: Colors.accent.primary,
+    letterSpacing: 0.4,
+    marginBottom: 3,
+  },
+  featureDesc: {
+    fontSize: Typography.sizes.detail,
+    color: 'rgba(245, 237, 227, 0.65)',
+    lineHeight: 18,
+    letterSpacing: 0.1,
   },
   privacyChip: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 10,
-    marginTop: 6,
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-    borderRadius: 12,
-    backgroundColor: 'rgba(107, 142, 174, 0.08)',
+    gap: Spacing.sm,
+    marginTop: Spacing.xs,
+    paddingHorizontal: Spacing.lg,
+    paddingVertical: Spacing.sm,
+    borderRadius: BorderRadius.md,
+    backgroundColor: 'rgba(107, 142, 174, 0.06)',
     borderWidth: 1,
-    borderColor: 'rgba(107, 142, 174, 0.18)',
-  },
-  privacyIcon: {
-    fontSize: 14,
+    borderColor: 'rgba(107, 142, 174, 0.15)',
   },
   privacyText: {
-    fontSize: 12,
-    color: 'rgba(176, 196, 215, 0.75)',
-    letterSpacing: 0.2,
-    lineHeight: 18,
+    fontSize: Typography.sizes.detail,
+    color: 'rgba(176, 196, 215, 0.70)',
+    lineHeight: 17,
     flex: 1,
   },
   bottomSection: {
-    paddingHorizontal: 24,
-    paddingBottom: height * 0.10,
-    gap: 12,
+    paddingHorizontal: Spacing.xl,
     zIndex: 2,
   },
   ctaWrap: {
     width: '100%',
-  },
-  skipWrap: {
-    marginTop: 4,
-    alignItems: 'center',
-  },
-  skipText: {
-    fontSize: 14,
-    color: 'rgba(176, 196, 215, 0.65)',
-    letterSpacing: 0.5,
   },
 });

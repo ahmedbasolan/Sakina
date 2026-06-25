@@ -51,7 +51,7 @@ export function VerseOfTheDay({ dailyVerse, fadeAnim, slideAnim }: VerseOfTheDay
 
 const styles = StyleSheet.create({
   verseSection: {
-    paddingHorizontal: 20,
+    paddingHorizontal: 24,
     marginBottom: 32,
   },
   verseCard: {
@@ -89,6 +89,9 @@ const styles = StyleSheet.create({
     fontFamily: Typography.fonts.arabic,
     lineHeight: 36,
     marginBottom: 16,
+    textShadowColor: 'rgba(212, 175, 55, 0.55)',
+    textShadowOffset: { width: 0, height: 0 },
+    textShadowRadius: 14,
   },
   ornamentStar: {
     fontSize: 16,
@@ -97,6 +100,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   verseTranslation: {
+    fontFamily: Typography.fonts.serif,
     fontSize: 15,
     color: 'rgba(245, 237, 227, 0.85)',
     textAlign: 'center',
@@ -104,6 +108,7 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   verseRef: {
+    fontFamily: Typography.fonts.serif,
     fontSize: 12,
     color: 'rgba(245, 237, 227, 0.70)',
     textAlign: 'center',

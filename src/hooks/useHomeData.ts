@@ -107,12 +107,16 @@ export function useHomeData({ setStreakCount }: UseHomeDataOptions) {
       if (data.timings.Fajr) setFajrTime(data.timings.Fajr);
 
       // Re-schedule both notification categories from today's fresh timings.
-      // This also flushes stale pending notifications left over from previous
-      // days (the cause of prayer alerts firing at the wrong time after the
-      // device slept through them).
+      // Both calls are wrapped together: if either fails mid-way, cancel
+      // everything so no orphaned notifications survive the partial run.
       const notifications = NotificationService.getInstance();
-      await notifications.scheduleSpiritualReminders(data.timings);
-      await notifications.schedulePrayerNotifications(data.timings, city);
+      try {
+        await notifications.scheduleSpiritualReminders(data.timings);
+        await notifications.schedulePrayerNotifications(data.timings, city);
+      } catch (notifError) {
+        await notifications.cancelPrayerAndSpiritual().catch(() => {});
+        throw notifError;
+      }
     } catch (error) {
       logServiceError('useHomeData', 'loadPrayerData', error instanceof Error ? error : new Error(String(error)));
     } finally {
@@ -284,6 +288,8 @@ export function useHomeData({ setStreakCount }: UseHomeDataOptions) {
     lastCheckin,
     localSelectedMood,
     setLocalSelectedMood,
+    loadStreakData,
+    checkTodayMood,
 
     // Content
     activePath,

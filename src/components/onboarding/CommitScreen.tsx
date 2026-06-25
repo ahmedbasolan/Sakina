@@ -1,18 +1,19 @@
 /**
- * Screen 6: Hold to Commit
+ * Screen 7: Hold to Commit
  *
- * Dark circle with gold ring. 4-point gold star in centre.
- * Progress ring fills as user holds for 3 seconds.
- * ON COMPLETION: Golden particle burst + floating ember shimmer + glow.
- * "Bismillah." fades in with warmth. Auto-advances after 2.2s.
+ * Hold for 3 seconds to seal your intention.
+ * While holding: progress ring fills, dark circle warms with amber glow,
+ * soft motes drift upward. Release before done → everything rewinds.
+ * On completion: warm fill settles, "Bismillah." fades in gently.
  */
-import React, { useEffect, useRef, useState } from 'react';
-import { Colors, Typography } from '../../theme/DesignSystem';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { Colors, Typography, Spacing } from '../../theme/DesignSystem';
 import {
   View,
   Text,
   StyleSheet,
   Animated,
+  Easing,
   Dimensions,
   Pressable,
 } from 'react-native';
@@ -24,9 +25,11 @@ import Svg, {
   RadialGradient as SvgRadial,
   Stop,
 } from 'react-native-svg';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useStaggerEntry } from '../../hooks/useStaggerEntry';
+import { useReduceMotion } from '../../hooks/useReduceMotion';
 import { AnimatedMandala } from '../AnimatedMandala';
 
 const { width, height } = Dimensions.get('window');
@@ -37,112 +40,74 @@ const RING_SIZE = 220;
 const CENTER = RING_SIZE / 2;
 const RING_R = 86;
 
-// 4-point sparkle star path
 const STAR_PATH = `M${CENTER},${CENTER - 40} C${CENTER + 4},${CENTER - 12} ${CENTER + 12},${CENTER - 4} ${CENTER + 40},${CENTER} C${CENTER + 12},${CENTER + 4} ${CENTER + 4},${CENTER + 12} ${CENTER},${CENTER + 40} C${CENTER - 4},${CENTER + 12} ${CENTER - 12},${CENTER + 4} ${CENTER - 40},${CENTER} C${CENTER - 12},${CENTER - 4} ${CENTER - 4},${CENTER - 12} ${CENTER},${CENTER - 40} Z`;
 
-// 12 particle directions for the burst effect
-const PARTICLES = Array.from({ length: 12 }, (_, i) => ({
-  angle: (i / 12) * Math.PI * 2,
-  distance: 90 + (i % 3) * 25,
-  size: 3 + (i % 4),
-  delay: i * 30,
-}));
-
-// 8 floating ember positions
-const EMBERS = Array.from({ length: 8 }, (_, i) => ({
-  x: (i * 37 + 20) % (RING_SIZE + 60) - 30,
-  delay: i * 150,
-}));
-
-function BurstParticle({ angle, distance, size, delay, trigger }: any) {
-  const x = useRef(new Animated.Value(0)).current;
-  const y = useRef(new Animated.Value(0)).current;
-  const opacity = useRef(new Animated.Value(0)).current;
-  const scale = useRef(new Animated.Value(0)).current;
-
-  useEffect(() => {
-    if (!trigger) return;
-    Animated.sequence([
-      Animated.delay(delay),
-      Animated.parallel([
-        Animated.timing(x, {
-          toValue: Math.cos(angle) * distance,
-          duration: 700,
-          useNativeDriver: true,
-        }),
-        Animated.timing(y, {
-          toValue: Math.sin(angle) * distance,
-          duration: 700,
-          useNativeDriver: true,
-        }),
-        Animated.sequence([
-          Animated.timing(opacity, { toValue: 1, duration: 100, useNativeDriver: true }),
-          Animated.timing(opacity, { toValue: 0, duration: 600, useNativeDriver: true }),
-        ]),
-        Animated.sequence([
-          Animated.spring(scale, { toValue: 1, useNativeDriver: true, friction: 6 }),
-          Animated.timing(scale, { toValue: 0, duration: 400, useNativeDriver: true }),
-        ]),
-      ]),
-    ]).start();
-  }, [trigger]);
-
-  const colors = ['#FFF4DC', Colors.accent.primary, '#FFD700', '#E5B162'];
-  const color = colors[Math.floor(Math.abs(Math.sin(angle) * 4)) % 4];
-
-  return (
-    <Animated.View
-      style={{
-        position: 'absolute',
-        width: size,
-        height: size,
-        borderRadius: size / 2,
-        backgroundColor: color,
-        transform: [{ translateX: x }, { translateY: y }, { scale }],
-        opacity,
-      }}
-    />
-  );
-}
-
-function FloatingEmber({ x, delay, trigger }: any) {
+// Soft upward mote — fades in while holding, drifts up, fades out
+// Resets when `holding` goes false before completion
+function WarmMote({ offsetX, delay, holding, reduceMotion }: {
+  offsetX: number; delay: number; holding: boolean; reduceMotion: boolean;
+}) {
   const translateY = useRef(new Animated.Value(0)).current;
   const opacity = useRef(new Animated.Value(0)).current;
+  const loopRef = useRef<Animated.CompositeAnimation | null>(null);
 
   useEffect(() => {
-    if (!trigger) return;
-    Animated.sequence([
-      Animated.delay(delay + 600),
-      Animated.parallel([
-        Animated.timing(translateY, {
-          toValue: -80,
-          duration: 2500,
-          useNativeDriver: true,
-        }),
-        Animated.sequence([
-          Animated.timing(opacity, { toValue: 0.7, duration: 400, useNativeDriver: true }),
-          Animated.timing(opacity, { toValue: 0, duration: 2100, useNativeDriver: true }),
-        ]),
-      ]),
-    ]).start();
-  }, [trigger]);
+    if (holding && !reduceMotion) {
+      const start = () => {
+        translateY.setValue(0);
+        opacity.setValue(0);
+        loopRef.current = Animated.sequence([
+          Animated.delay(delay),
+          Animated.parallel([
+            Animated.timing(translateY, { toValue: -60, duration: 2200, useNativeDriver: true }),
+            Animated.sequence([
+              Animated.timing(opacity, { toValue: 0.55, duration: 600, useNativeDriver: true }),
+              Animated.timing(opacity, { toValue: 0, duration: 1600, useNativeDriver: true }),
+            ]),
+          ]),
+        ]);
+        loopRef.current.start(({ finished }) => { if (finished && holding) start(); });
+      };
+      start();
+    } else {
+      loopRef.current?.stop();
+      Animated.timing(opacity, { toValue: 0, duration: 300, useNativeDriver: true }).start(() => {
+        translateY.setValue(0);
+      });
+    }
+    return () => loopRef.current?.stop();
+  }, [holding, reduceMotion]);
 
   return (
     <Animated.View
-      style={{
-        position: 'absolute',
-        left: x + CENTER,
-        bottom: CENTER - 10,
-        width: 3,
-        height: 3,
-        borderRadius: 1.5,
-        backgroundColor: Colors.accent.primary,
-        opacity,
-        transform: [{ translateY }],
-      }}
+      pointerEvents="none"
+      style={[
+        moteBase,
+        { left: CENTER + offsetX, bottom: CENTER - 6 },
+        { opacity, transform: [{ translateY }] },
+      ]}
     />
   );
 }
+
+const moteBase = StyleSheet.create({
+  dot: {
+    position: 'absolute',
+    width: 4,
+    height: 4,
+    borderRadius: 2,
+    backgroundColor: Colors.accent.primary,
+  },
+}).dot;
+
+const MOTES = [
+  { offsetX: -28, delay: 0 },
+  { offsetX: 10,  delay: 400 },
+  { offsetX: -8,  delay: 800 },
+  { offsetX: 24,  delay: 200 },
+  { offsetX: -18, delay: 1100 },
+  { offsetX: 36,  delay: 650 },
+];
 
 interface Props {
   isActive: boolean;
@@ -152,189 +117,180 @@ interface Props {
 export default function CommitScreen({ isActive, onCommit }: Props) {
   const [isHolding, setIsHolding] = useState(false);
   const [isComplete, setIsComplete] = useState(false);
+  const insets = useSafeAreaInsets();
+
+  // 0-1 progress value — drives ring, glow, and star scale
   const holdProgress = useRef(new Animated.Value(0)).current;
-  const starScale = useRef(new Animated.Value(1)).current;
-  const starRotation = useRef(new Animated.Value(0)).current;
-  const starGlow = useRef(new Animated.Value(0)).current;
+  const starScale    = useRef(new Animated.Value(1)).current;
+  const warmGlow     = useRef(new Animated.Value(0)).current;   // inner amber fill
   const completionOpacity = useRef(new Animated.Value(0)).current;
-  const completionSlide = useRef(new Animated.Value(10)).current;
-  const ringGlow = useRef(new Animated.Value(0)).current;
-  const bgBrightness = useRef(new Animated.Value(0)).current;
-  // Micro-animation: instant pop + flash at the moment the hold completes
-  const ringPop = useRef(new Animated.Value(1)).current;
-  const successFlash = useRef(new Animated.Value(0)).current;
-  const holdAnimRef = useRef<Animated.CompositeAnimation | null>(null);
-  const holdTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const completionSlide   = useRef(new Animated.Value(10)).current;
+  const starRotation      = useRef(new Animated.Value(0)).current;
+  const holdAnimRef       = useRef<Animated.CompositeAnimation | null>(null);
+  const holdNativeAnimRef = useRef<Animated.CompositeAnimation | null>(null);
+  const starRotateLoopRef = useRef<Animated.CompositeAnimation | null>(null);
+  const holdTimerRef      = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // useRef guard — React state is async, stale closure would let handleCompletion fire twice
+  const isCompleteRef = useRef(false);
 
-  const [burstTrigger, setBurstTrigger] = useState(false);
-  const [emberTrigger, setEmberTrigger] = useState(false);
+  // [0] title, [1] subtitle, [2] hold area, [3] chip
+  const s = useStaggerEntry(isActive, 4, { baseDelay: 250, stagger: 120 });
+  const reduceMotion = useReduceMotion();
 
-  const [selectedGoal, setSelectedGoal] = useState('spiritual growth');
-  const [selectedMood, setSelectedMood] = useState('peace');
+  // starRotation: 0–360 degrees directly, extrapolate:extend for completion overshoot
+  const starRotate = useMemo(() =>
+    starRotation.interpolate({
+      inputRange: [0, 360],
+      outputRange: ['0deg', '360deg'],
+      extrapolate: 'extend',
+    }),
+    [],
+  );
 
-  // [0] title, [1] subtitle, [2] hold area, [3] instruction, [4] chip
-  const s = useStaggerEntry(isActive, 5, { baseDelay: 250, stagger: 120 });
+  // Starts a calm rotation loop (resets to 0° each hold attempt for a clean start).
+  // Recursive so it can stop cleanly mid-cycle without a loop jump.
+  const startStarRotation = () => {
+    starRotation.setValue(0);
+    const runLoop = () => {
+      starRotateLoopRef.current = Animated.timing(starRotation, {
+        toValue: 360,
+        duration: 8000,
+        easing: Easing.linear,
+        useNativeDriver: true,
+      });
+      starRotateLoopRef.current.start(({ finished }) => {
+        if (finished && !isCompleteRef.current) {
+          starRotation.setValue(0);
+          runLoop();
+        }
+      });
+    };
+    runLoop();
+  };
 
   useEffect(() => {
     if (!isActive) return;
-    
-    // Fetch personalized data
-    AsyncStorage.getItem('@onboarding_prayer_goal').then(goal => {
-      if (goal === 'consistency') setSelectedGoal('consistency');
-      if (goal === 'peace') setSelectedGoal('inner peace');
-      if (goal === 'growth') setSelectedGoal('spiritual growth');
-      if (goal === 'night') setSelectedGoal('night reflections');
-    }).catch(() => {});
-
-    AsyncStorage.getItem('@onboarding_mood').then(mood => {
-      if (mood) setSelectedMood(mood.toLowerCase());
-    }).catch(() => {});
+    starRotateLoopRef.current?.stop();
+    starRotation.setValue(0);
     holdProgress.setValue(0);
     starScale.setValue(1);
-    starRotation.setValue(0);
-    starGlow.setValue(0);
+    warmGlow.setValue(0);
     completionOpacity.setValue(0);
     completionSlide.setValue(10);
-    ringGlow.setValue(0);
-    bgBrightness.setValue(0);
-    ringPop.setValue(1);
-    successFlash.setValue(0);
+    isCompleteRef.current = false;
     setIsComplete(false);
     setIsHolding(false);
-    setBurstTrigger(false);
-    setEmberTrigger(false);
   }, [isActive]);
 
   const handlePressIn = () => {
-    if (isComplete) return;
+    if (isCompleteRef.current) return;
     setIsHolding(true);
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
 
+    // starScale + starRotation use native driver; holdProgress + warmGlow cannot —
+    // split into two groups started simultaneously to avoid the mixed-driver warning.
+    const nativeHold = Animated.timing(starScale, { toValue: 1.35, duration: HOLD_DURATION, useNativeDriver: true });
+    holdNativeAnimRef.current = nativeHold;
+    nativeHold.start();
+    startStarRotation();
+
     holdAnimRef.current = Animated.parallel([
-      Animated.timing(holdProgress, {
-        toValue: 1, duration: HOLD_DURATION, useNativeDriver: false,
-      }),
-      Animated.timing(starScale, {
-        toValue: 1.4, duration: HOLD_DURATION, useNativeDriver: true,
-      }),
-      Animated.timing(starRotation, {
-        toValue: 1, duration: HOLD_DURATION, useNativeDriver: true,
-      }),
-      Animated.timing(starGlow, {
-        toValue: 1, duration: HOLD_DURATION, useNativeDriver: false,
-      }),
+      Animated.timing(holdProgress, { toValue: 1, duration: HOLD_DURATION, useNativeDriver: false }),
+      Animated.timing(warmGlow,     { toValue: 1, duration: HOLD_DURATION, useNativeDriver: false }),
     ]);
-
-    holdAnimRef.current.start(({ finished }) => {
-      if (finished) handleCompletion();
-    });
-
+    holdAnimRef.current.start(({ finished }) => { if (finished) handleCompletion(); });
     holdTimerRef.current = setTimeout(() => handleCompletion(), HOLD_DURATION + 50);
   };
 
   const handlePressOut = () => {
-    if (isComplete) return;
+    if (isCompleteRef.current) return;
     setIsHolding(false);
     holdAnimRef.current?.stop();
+    holdNativeAnimRef.current?.stop();
+    starRotateLoopRef.current?.stop();
     if (holdTimerRef.current) clearTimeout(holdTimerRef.current);
 
+    Animated.spring(starScale, { toValue: 1, damping: 15, stiffness: 120, useNativeDriver: true }).start();
     Animated.parallel([
-      Animated.timing(holdProgress, { toValue: 0, duration: 300, useNativeDriver: false }),
-      Animated.spring(starScale, { toValue: 1, damping: 15, stiffness: 120, useNativeDriver: true }),
-      Animated.timing(starRotation, { toValue: 0, duration: 300, useNativeDriver: true }),
-      Animated.timing(starGlow, { toValue: 0, duration: 300, useNativeDriver: false }),
+      Animated.timing(holdProgress, { toValue: 0, duration: 500, useNativeDriver: false }),
+      Animated.timing(warmGlow,     { toValue: 0, duration: 500, useNativeDriver: false }),
     ]).start();
   };
 
   const handleCompletion = () => {
-    if (isComplete) return;
+    if (isCompleteRef.current) return;
+    isCompleteRef.current = true;
     setIsComplete(true);
     setIsHolding(false);
 
-    // 3-phase haptic feedback: light → medium → success
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    setTimeout(() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium), 120);
-    setTimeout(() => Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success), 280);
+    setTimeout(() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium), 150);
+    setTimeout(() => Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success), 350);
 
-    // ── Micro-animation: instant pop + flash at the exact completion moment ──
-    // Ring area bounces sharply (scale up then spring back) — felt immediately
+    // Stop hold rotation, then do a celebratory full spin before settling into
+    // a gentle eternal rotation — calm but clearly completed.
+    starRotateLoopRef.current?.stop();
+    const currentDeg = (starRotation as any)._value || 0;
+    Animated.timing(starRotation, {
+      toValue: currentDeg + 360,
+      duration: 500,
+      easing: Easing.out(Easing.cubic),
+      useNativeDriver: true,
+    }).start(({ finished }) => {
+      if (!finished) return;
+      starRotation.setValue(0);
+      starRotateLoopRef.current = Animated.loop(
+        Animated.timing(starRotation, {
+          toValue: 360,
+          duration: 20000,
+          easing: Easing.linear,
+          useNativeDriver: true,
+        }),
+      );
+      starRotateLoopRef.current.start();
+    });
+
+    // Star blooms out then settles — more celebratory than a plain spring
     Animated.sequence([
-      Animated.timing(ringPop, { toValue: 1.07, duration: 110, useNativeDriver: true }),
-      Animated.spring(ringPop, { toValue: 1, friction: 4, tension: 220, useNativeDriver: true }),
+      Animated.timing(starScale, { toValue: 1.55, duration: 280, easing: Easing.out(Easing.quad), useNativeDriver: true }),
+      Animated.spring(starScale, { toValue: 1.2, friction: 7, tension: 50, useNativeDriver: true }),
     ]).start();
-    // White-gold flash washes the screen then fades — classic "success" feel
+
+    // "Bismillah." fades in after the bloom peaks
     Animated.sequence([
-      Animated.timing(successFlash, { toValue: 0.55, duration: 80, useNativeDriver: true }),
-      Animated.timing(successFlash, { toValue: 0, duration: 380, useNativeDriver: true }),
-    ]).start();
-
-    // Trigger particle burst
-    setBurstTrigger(true);
-
-    // Background brightens + ring glows
-    Animated.parallel([
-      Animated.timing(bgBrightness, { toValue: 1, duration: 500, useNativeDriver: false }),
-      Animated.timing(ringGlow, { toValue: 1, duration: 600, useNativeDriver: false }),
-      // Star pulses brighter
-      Animated.sequence([
-        Animated.spring(starScale, { toValue: 1.8, friction: 4, tension: 120, useNativeDriver: true }),
-        Animated.spring(starScale, { toValue: 1.4, friction: 8, useNativeDriver: true }),
-      ]),
-    ]).start();
-
-    // Floating embers after burst
-    setTimeout(() => setEmberTrigger(true), 400);
-
-    // Bismillah text fades in
-    Animated.sequence([
-      Animated.delay(500),
+      Animated.delay(400),
       Animated.parallel([
-        Animated.timing(completionOpacity, { toValue: 1, duration: 600, useNativeDriver: true }),
-        Animated.timing(completionSlide, { toValue: 0, duration: 600, useNativeDriver: true }),
+        Animated.timing(completionOpacity, { toValue: 1, duration: 700, useNativeDriver: true }),
+        Animated.timing(completionSlide,   { toValue: 0, duration: 600, useNativeDriver: true }),
       ]),
     ]).start();
 
-    setTimeout(() => onCommit(), 2200);
+    setTimeout(() => onCommit(), 2400);
   };
 
   const progressStroke = holdProgress.interpolate({
     inputRange: [0, 1],
     outputRange: [Math.PI * 2 * RING_R, 0],
   });
-  const rotateInterp = starRotation.interpolate({
-    inputRange: [0, 1],
-    outputRange: ['0deg', '45deg'],
-  });
-  const glowSize = starGlow.interpolate({
-    inputRange: [0, 1],
-    outputRange: [0, 32],
-  });
-  const ringGlowOp = ringGlow.interpolate({
-    inputRange: [0, 1],
-    outputRange: [0, 0.6],
-  });
-  const bgOpacity = bgBrightness.interpolate({
-    inputRange: [0, 1],
-    outputRange: [0, 0.22],
-  });
+
+  // Amber glow fills the interior of the ring as warmGlow rises 0→1
+  const innerGlowOpacity = warmGlow.interpolate({ inputRange: [0, 1], outputRange: [0, 0.18] });
+  // Ring color brightens slightly when near completion
+  const ringOpacity = warmGlow.interpolate({ inputRange: [0, 1], outputRange: [0.5, 1] });
+  // Outer background warms very subtly
+  const bgOpacity = warmGlow.interpolate({ inputRange: [0, 1], outputRange: [0, 0.10] });
 
   return (
     <View style={styles.container}>
-      {/* Subtle background brightening on completion */}
+      {/* Very subtle background warming */}
       <Animated.View
         style={[StyleSheet.absoluteFill, { backgroundColor: Colors.accent.primary, opacity: bgOpacity }]}
         pointerEvents="none"
       />
 
-      {/* Micro-animation: white-gold success flash */}
-      <Animated.View
-        style={[StyleSheet.absoluteFill, { backgroundColor: '#FFF8E7', opacity: successFlash }]}
-        pointerEvents="none"
-      />
-
-      {/* Mandala backdrop */}
+      {/* Mandala */}
       <View style={styles.mandalaWrap} pointerEvents="none">
-        <AnimatedMandala size={360} color={Colors.accent.primary} opacity={0.06} />
+        <AnimatedMandala size={360} color={Colors.accent.primary} opacity={0.15} webLayers={2} />
       </View>
 
       {/* Title */}
@@ -348,8 +304,6 @@ export default function CommitScreen({ isActive, onCommit }: Props) {
 
       {/* Hold area */}
       <Animated.View style={[styles.holdAreaWrap, s[2]]}>
-        {/* ringPop lives on its own wrapper so it doesn't conflict with the stagger transform above */}
-        <Animated.View style={{ transform: [{ scale: ringPop }] }}>
         <View style={styles.particleContainer}>
           <Pressable
             onPressIn={handlePressIn}
@@ -357,56 +311,33 @@ export default function CommitScreen({ isActive, onCommit }: Props) {
             style={styles.holdArea}
             accessibilityRole="button"
             accessibilityLabel="Hold to commit"
-            accessibilityHint="Hold the screen for 3 seconds to confirm your intention and begin."
+            accessibilityHint="Hold for 3 seconds to confirm your intention."
           >
             {/* Dark filled circle */}
             <View style={styles.darkCircle} />
 
-            {/* Completion ring glow overlay */}
-            <Animated.View
-              style={[
-                styles.ringGlowOverlay,
-                { opacity: ringGlowOp },
-              ]}
-            />
+            {/* Amber inner glow — grows as you hold */}
+            <Animated.View style={[styles.innerGlow, { opacity: innerGlowOpacity }]} />
 
-            {/* SVG rings and progress */}
+            {/* SVG rings */}
             <Svg width={RING_SIZE} height={RING_SIZE} viewBox={`0 0 ${RING_SIZE} ${RING_SIZE}`}>
               <Defs>
-                <SvgGradient id="starGoldG" x1="0" y1="0" x2="1" y2="1">
-                  <Stop offset="0" stopColor="#FFF4DC" />
-                  <Stop offset="0.5" stopColor={Colors.accent.primary} />
-                  <Stop offset="1" stopColor={Colors.accent.primary} />
-                </SvgGradient>
                 <SvgRadial id="circleGlow" cx="50%" cy="50%" r="50%">
-                  <Stop offset="0" stopColor={Colors.accent.primary} stopOpacity="0.08" />
-                  <Stop offset="1" stopColor={Colors.accent.primary} stopOpacity="0" />
-                </SvgRadial>
-                <SvgRadial id="completionGlow" cx="50%" cy="50%" r="50%">
-                  <Stop offset="0" stopColor="#FFF4DC" stopOpacity="0.25" />
-                  <Stop offset="0.6" stopColor={Colors.accent.primary} stopOpacity="0.1" />
-                  <Stop offset="1" stopColor={Colors.accent.primary} stopOpacity="0" />
+                  <Stop offset="0"   stopColor={Colors.accent.primary} stopOpacity="0.06" />
+                  <Stop offset="1"   stopColor={Colors.accent.primary} stopOpacity="0" />
                 </SvgRadial>
               </Defs>
-
-              {/* Inner glow */}
               <Circle cx={CENTER} cy={CENTER} r={RING_R - 10} fill="url(#circleGlow)" />
-
-              {/* Static outer ring */}
+              {/* Static faint outer ring */}
               <Circle
-                cx={CENTER}
-                cy={CENTER}
-                r={RING_R}
+                cx={CENTER} cy={CENTER} r={RING_R}
                 fill="none"
-                stroke="rgba(212, 175, 55, 0.2)"
+                stroke="rgba(212, 175, 55, 0.18)"
                 strokeWidth={1.5}
               />
-
               {/* Progress ring */}
               <AnimatedCircle
-                cx={CENTER}
-                cy={CENTER}
-                r={RING_R}
+                cx={CENTER} cy={CENTER} r={RING_R}
                 fill="none"
                 stroke={Colors.accent.primary}
                 strokeWidth={2.5}
@@ -414,36 +345,21 @@ export default function CommitScreen({ isActive, onCommit }: Props) {
                 strokeDashoffset={progressStroke}
                 strokeLinecap="round"
                 transform={`rotate(-90 ${CENTER} ${CENTER})`}
+                opacity={ringOpacity as any}
               />
             </Svg>
 
-            {/* Star glow halo — rendered BEFORE star so star sits on top */}
+            {/* Star — scales up and rotates while holding */}
             <Animated.View
-              style={[
-                styles.starGlowHalo,
-                {
-                  shadowRadius: glowSize,
-                  opacity: starGlow,
-                },
-              ]}
-              pointerEvents="none"
-            />
-
-            {/* Star overlay — scales, rotates, and glows on hold */}
-            <Animated.View
-              style={[
-                styles.starOverlay,
-                { transform: [{ scale: starScale }, { rotate: rotateInterp }] },
-              ]}
+              style={[styles.starOverlay, { transform: [{ scale: starScale }, { rotate: starRotate }] }]}
               pointerEvents="none"
             >
-              {/* Defs MUST live in the same SVG as the element using them */}
               <Svg width={RING_SIZE} height={RING_SIZE} viewBox={`0 0 ${RING_SIZE} ${RING_SIZE}`}>
                 <Defs>
                   <SvgGradient id="starGold" x1="0" y1="0" x2="1" y2="1">
-                    <Stop offset="0" stopColor="#FFF4DC" />
+                    <Stop offset="0"   stopColor="#FFF4DC" />
                     <Stop offset="0.4" stopColor="#E8C84A" />
-                    <Stop offset="1" stopColor={Colors.accent.primary} />
+                    <Stop offset="1"   stopColor={Colors.accent.primary} />
                   </SvgGradient>
                 </Defs>
                 <Path d={STAR_PATH} fill="url(#starGold)" />
@@ -451,39 +367,28 @@ export default function CommitScreen({ isActive, onCommit }: Props) {
             </Animated.View>
           </Pressable>
 
-          {/* Particles rendered after Pressable so they appear on top of the circle */}
-          <View pointerEvents="none" style={StyleSheet.absoluteFill}>
-            {PARTICLES.map((p, i) => (
-              <BurstParticle key={i} {...p} trigger={burstTrigger} />
-            ))}
-            {EMBERS.map((e, i) => (
-              <FloatingEmber key={i} {...e} trigger={emberTrigger} />
-            ))}
-          </View>
+          {/* Soft motes drift up while holding */}
+          {MOTES.map((m, i) => (
+            <WarmMote key={i} offsetX={m.offsetX} delay={m.delay} holding={isHolding} reduceMotion={reduceMotion} />
+          ))}
         </View>
-        </Animated.View>
       </Animated.View>
 
-      {/* Instruction / Completion */}
+      {/* Instruction / Completion text */}
       {!isComplete ? (
         <Animated.Text style={[styles.instruction, s[3]]}>
           {isHolding ? 'Keep holding...' : 'HOLD TO BEGIN'}
         </Animated.Text>
       ) : (
-        <Animated.View
-          style={{
-            opacity: completionOpacity,
-            transform: [{ translateY: completionSlide }],
-            alignItems: 'center',
-          }}
-        >
+        <Animated.View style={[styles.completionWrap, { opacity: completionOpacity, transform: [{ translateY: completionSlide }] }]}>
           <Text style={styles.completionText}>Bismillah.</Text>
           <Text style={styles.completionSub}>Your intention is sealed.</Text>
+          <Text style={styles.completionHint}>Your first verse awaits</Text>
         </Animated.View>
       )}
 
       {/* Bottom chip */}
-      <Animated.View style={[styles.bottomChip, s[4]]}>
+      <Animated.View style={[styles.bottomChip, s[3], { bottom: Math.max(insets.bottom + Spacing.xxl, Spacing.xxxl) }]}>
         <Text style={styles.chipText}>
           This moment of intention begins your transformation
         </Text>
@@ -497,21 +402,18 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    paddingHorizontal: 32,
+    paddingHorizontal: Spacing.xxl,
   },
   mandalaWrap: {
     position: 'absolute',
-    top: 0,
-    bottom: 0,
-    left: 0,
-    right: 0,
+    top: 0, bottom: 0, left: 0, right: 0,
     justifyContent: 'center',
     alignItems: 'center',
     zIndex: -1,
   },
   headerWrap: {
     alignItems: 'center',
-    marginBottom: 10,
+    marginBottom: Spacing.sm,
   },
   title: {
     fontFamily: Typography.fonts.serif,
@@ -519,16 +421,19 @@ const styles = StyleSheet.create({
     color: '#F5EDE3',
     textAlign: 'center',
     letterSpacing: 0.3,
+    textShadowColor: 'rgba(212, 175, 55, 0.25)',
+    textShadowOffset: { width: 0, height: 0 },
+    textShadowRadius: 12,
   },
   subtitle: {
     fontSize: 15,
-    color: 'rgba(245, 237, 227, 0.70)',
+    color: 'rgba(245, 237, 227, 0.65)',
     textAlign: 'center',
     lineHeight: 23,
-    marginBottom: 36,
+    marginBottom: Spacing.xxl,
   },
   holdAreaWrap: {
-    marginBottom: 28,
+    marginBottom: Spacing.xl,
   },
   particleContainer: {
     width: RING_SIZE + 20,
@@ -547,85 +452,74 @@ const styles = StyleSheet.create({
     width: RING_SIZE - 30,
     height: RING_SIZE - 30,
     borderRadius: (RING_SIZE - 30) / 2,
-    backgroundColor: 'rgba(12, 18, 30, 0.9)',
+    backgroundColor: 'rgba(8, 14, 26, 0.92)',
     borderWidth: 1,
-    borderColor: 'rgba(212, 175, 55, 0.18)',
-    shadowColor: Colors.accent.primary,
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.15,
-    shadowRadius: 16,
+    borderColor: 'rgba(212, 175, 55, 0.15)',
   },
-  ringGlowOverlay: {
+  innerGlow: {
     position: 'absolute',
-    width: RING_SIZE,
-    height: RING_SIZE,
-    borderRadius: RING_SIZE / 2,
-    backgroundColor: 'rgba(212, 175, 55, 0.04)',
-    borderWidth: 6,
-    borderColor: Colors.accent.primary,
-    shadowColor: Colors.accent.primary,
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 1,
-    shadowRadius: 24,
-    elevation: 20,
+    width: RING_SIZE - 30,
+    height: RING_SIZE - 30,
+    borderRadius: (RING_SIZE - 30) / 2,
+    backgroundColor: Colors.accent.primary,
   },
   starOverlay: {
     position: 'absolute',
     width: RING_SIZE,
     height: RING_SIZE,
   },
-  starGlowHalo: {
-    position: 'absolute',
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    // Must have a real background for shadow/glow to render on both platforms
-    backgroundColor: '#E8C84A',
-    shadowColor: '#FFF4DC',
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 1,
-    elevation: 30,
-  },
   instruction: {
-    fontSize: 14,
-    color: 'rgba(245, 237, 227, 0.62)',
+    fontSize: 13,
+    color: 'rgba(245, 237, 227, 0.55)',
     textAlign: 'center',
-    letterSpacing: 2,
+    letterSpacing: 2.5,
     textTransform: 'uppercase',
+  },
+  completionWrap: {
+    alignItems: 'center',
   },
   completionText: {
     fontFamily: Typography.fonts.serif,
-    fontSize: 26,
+    fontSize: 28,
     color: Colors.accent.primary,
     textAlign: 'center',
     marginBottom: 6,
-    textShadowColor: 'rgba(212, 175, 55, 0.6)',
+    textShadowColor: 'rgba(212, 175, 55, 0.55)',
     textShadowOffset: { width: 0, height: 0 },
     textShadowRadius: 20,
   },
   completionSub: {
     fontSize: 14,
-    color: 'rgba(245, 237, 227, 0.6)',
+    color: 'rgba(245, 237, 227, 0.75)',
     textAlign: 'center',
     letterSpacing: 0.5,
   },
+  completionHint: {
+    fontSize: 12,
+    color: 'rgba(212, 175, 55, 0.60)',
+    textAlign: 'center',
+    letterSpacing: 1,
+    marginTop: Spacing.sm,
+    fontFamily: Typography.fonts.serif,
+    fontStyle: 'italic',
+  },
   bottomChip: {
     position: 'absolute',
-    bottom: height * 0.10,
     left: 24,
     right: 24,
     alignItems: 'center',
-    backgroundColor: 'rgba(255, 245, 220, 0.06)',
+    backgroundColor: 'rgba(255, 245, 220, 0.05)',
     borderRadius: 12,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
+    paddingHorizontal: Spacing.lg,
+    paddingVertical: Spacing.md,
     borderWidth: 1,
     borderColor: 'rgba(255, 245, 220, 0.08)',
   },
   chipText: {
-    fontSize: 13,
-    color: 'rgba(245, 237, 227, 0.68)',
-    letterSpacing: 0.3,
+    fontSize: Typography.sizes.detail,
+    color: 'rgba(245, 237, 227, 0.55)',
     textAlign: 'center',
+    letterSpacing: 0.3,
+    lineHeight: 18,
   },
 });

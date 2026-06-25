@@ -2,8 +2,9 @@ import { Mood, GuidanceExperience, SpiritualPath, PathStep, UserPathProgress } f
 
 export type RootStackParamList = {
   Onboarding: undefined;
-  Auth: undefined;
   Main: undefined;
+  Login: undefined;
+  SignUp: undefined;
   SpiritualWindow: {
     context: string;
   };
@@ -29,11 +30,6 @@ export type RootStackParamList = {
   SurahReader: { surahNumber: number; surahName: string; surahArabic: string; verseCount: number };
   Settings: undefined;
   Support: undefined;
-};
-
-export type AuthStackParamList = {
-  Login: undefined;
-  SignUp: undefined;
 };
 
 export type MainTabParamList = {

@@ -7,14 +7,15 @@ import {
   Animated,
   Dimensions,
 } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { Mood, MoodConfig } from '../../types';
 import { Colors, Typography } from '../../theme/DesignSystem';
 import { getMoodsForTime } from '../../utils/moodTimeMapping';
+import { useReduceMotion } from '../../hooks/useReduceMotion';
 
 const { width } = Dimensions.get('window');
 const CARD_WIDTH = (width - 48 - 12) / 2;
-const EXPAND_DURATION = 280;
 
 
 interface SmartMoodGridProps {
@@ -42,6 +43,7 @@ const SmartMoodCard = memo(function SmartMoodCard({
 }) {
   const scaleAnim = useRef(new Animated.Value(0)).current;
   const glowAnim = useRef(new Animated.Value(0)).current;
+  const reduceMotion = useReduceMotion();
 
   useEffect(() => {
     const anim = Animated.sequence([
@@ -53,7 +55,7 @@ const SmartMoodCard = memo(function SmartMoodCard({
   }, []);
 
   useEffect(() => {
-    if (isChecked) {
+    if (isChecked && !reduceMotion) {
       const loop = Animated.loop(
         Animated.sequence([
           Animated.timing(glowAnim, { toValue: 1, duration: 1200, useNativeDriver: true }),
@@ -65,7 +67,7 @@ const SmartMoodCard = memo(function SmartMoodCard({
     } else {
       glowAnim.setValue(0);
     }
-  }, [isChecked]);
+  }, [isChecked, reduceMotion]);
 
   const handlePress = useCallback(() => {
     Animated.sequence([
@@ -85,43 +87,53 @@ const SmartMoodCard = memo(function SmartMoodCard({
       <TouchableOpacity
         onPress={handlePress}
         activeOpacity={0.85}
-        style={[
-          styles.card,
-          {
-            backgroundColor: mood.bgColor,
-            borderColor: isChecked ? mood.color + '60' : mood.borderColor,
-          },
-        ]}
+        style={styles.cardTouch}
       >
-        <Animated.View
-          style={[
-            StyleSheet.absoluteFill,
-            { borderRadius: 16, backgroundColor: mood.color, opacity: glowOpacity },
-          ]}
-        />
-        <View style={styles.cardRow}>
-          <View style={[styles.iconCircle, { backgroundColor: mood.color + '16', borderColor: mood.color + '30' }]}>
-            <Ionicons name={mood.iconName as any} size={20} color={mood.color} />
+        <LinearGradient
+          colors={mood.gradientColors}
+          style={[styles.card, { borderColor: isChecked ? mood.color + '60' : mood.color + '38' }]}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 0, y: 1 }}
+        >
+          {/* Top sheen */}
+          <LinearGradient
+            colors={[mood.color + '1F', 'transparent']}
+            start={{ x: 0.5, y: 0 }}
+            end={{ x: 0.5, y: 0.45 }}
+            style={styles.cardSheen}
+            pointerEvents="none"
+          />
+          {/* Checked glow overlay */}
+          <Animated.View
+            style={[
+              StyleSheet.absoluteFill,
+              { borderRadius: 15, backgroundColor: mood.color, opacity: glowOpacity },
+            ]}
+          />
+          <View style={styles.cardRow}>
+            <View style={[styles.iconCircle, { backgroundColor: mood.color + '18', borderColor: mood.color + '45' }]}>
+              <Ionicons name={mood.iconName as any} size={20} color={mood.color} />
+            </View>
+            <View style={styles.cardText}>
+              <Text style={[styles.cardLabel, { color: mood.color }]}>
+                {mood.label.charAt(0) + mood.label.slice(1).toLowerCase()}
+              </Text>
+              <Text
+                style={[
+                  styles.cardSublabel,
+                  { color: mood.color, opacity: isChecked ? 0.75 : 0.45 },
+                ]}
+              >
+                {mood.sublabel}
+              </Text>
+            </View>
           </View>
-          <View style={styles.cardText}>
-            <Text style={[styles.cardLabel, { color: mood.color }]}>
-              {mood.label.charAt(0) + mood.label.slice(1).toLowerCase()}
-            </Text>
-            <Text
-              style={[
-                styles.cardSublabel,
-                { color: mood.color, opacity: isChecked ? 0.75 : 0.45 },
-              ]}
-            >
-              {mood.sublabel}
-            </Text>
-          </View>
-        </View>
-        {isChecked && (
-          <View style={[styles.checkedBadge, { backgroundColor: mood.color }]}>
-            <Ionicons name="checkmark" size={8} color={mood.bgColor} />
-          </View>
-        )}
+          {isChecked && (
+            <View style={[styles.checkedBadge, { backgroundColor: mood.color }]}>
+              <Ionicons name="checkmark" size={8} color={mood.bgColor} />
+            </View>
+          )}
+        </LinearGradient>
       </TouchableOpacity>
     </Animated.View>
   );
@@ -135,7 +147,6 @@ export const SmartMoodGrid = memo(function SmartMoodGrid({
   onMoodPress,
 }: SmartMoodGridProps) {
   const [expanded, setExpanded] = useState(false);
-  const expandAnim = useRef(new Animated.Value(0)).current;
 
   // Compute time-based moods once per mount — getMoodsForTime reads the clock
   // and does array filtering; calling it on every render is wasteful.
@@ -151,14 +162,8 @@ export const SmartMoodGrid = memo(function SmartMoodGrid({
   );
 
   const toggleExpand = useCallback(() => {
-    const toValue = expanded ? 0 : 1;
-    Animated.timing(expandAnim, {
-      toValue,
-      duration: EXPAND_DURATION,
-      useNativeDriver: true,
-    }).start();
     setExpanded((prev) => !prev);
-  }, [expanded]);
+  }, []);
 
   return (
     <View>
@@ -196,6 +201,10 @@ const styles = StyleSheet.create({
   cardWrapper: {
     width: CARD_WIDTH,
   },
+  cardTouch: {
+    borderRadius: 16,
+    overflow: 'hidden',
+  },
   card: {
     borderRadius: 16,
     padding: 14,
@@ -204,6 +213,10 @@ const styles = StyleSheet.create({
     position: 'relative',
     overflow: 'hidden',
     justifyContent: 'center',
+  },
+  cardSheen: {
+    ...StyleSheet.absoluteFillObject,
+    borderRadius: 15,
   },
   cardRow: {
     flexDirection: 'row',

@@ -80,4 +80,11 @@ export class PreferencesService {
       showTransliteration: show,
     });
   }
+
+  async setAutoPlayAudio(autoPlay: boolean): Promise<void> {
+    await this.savePreferences({
+      ...this.preferences,
+      autoPlayAudio: autoPlay,
+    });
+  }
 }

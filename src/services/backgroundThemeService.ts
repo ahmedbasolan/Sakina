@@ -160,19 +160,19 @@ export const BACKGROUND_THEMES: BackgroundTheme[] = [
         isPremium: true,
     },
     {
-        id: 'landscape_green_tea_fields',
-        name: 'Tea Gardens',
+        id: 'landscape_blue_mosque',
+        name: 'Blue Mosque',
         category: 'landscapes',
         imageUri:
-            'https://images.unsplash.com/photo-1531259683007-016a7b628fc3?auto=format&fit=crop&q=90&w=3840',
+            'https://images.unsplash.com/photo-1519817650390-64a93db51149?auto=format&fit=crop&q=90&w=3840',
         isPremium: true,
     },
     {
-        id: 'landscape_sunset_valley',
-        name: 'Sunset Valley',
+        id: 'landscape_sheikh_zayed',
+        name: 'Sheikh Zayed Mosque',
         category: 'landscapes',
         imageUri:
-            'https://images.unsplash.com/photo-1472214222541-d510753a49f4?auto=format&fit=crop&q=90&w=3840',
+            'https://images.unsplash.com/premium_photo-1678563876224-dbb520ffef17?auto=format&fit=crop&q=90&w=3840',
         isPremium: true,
     },
 
@@ -228,11 +228,11 @@ export const BACKGROUND_THEMES: BackgroundTheme[] = [
         isPremium: true,
     },
     {
-        id: 'animals_majestic_swan',
-        name: 'Swan in Mist',
+        id: 'animals_kaaba_sanctuary',
+        name: 'Al-Haram Sanctuary',
         category: 'animals',
         imageUri:
-            'https://images.unsplash.com/photo-1508215885820-4585e56135c8?auto=format&fit=crop&q=90&w=3840',
+            'https://images.unsplash.com/photo-1580418827493-f2b22c0a76cb?auto=format&fit=crop&q=90&w=3840',
         isPremium: true,
     },
     {

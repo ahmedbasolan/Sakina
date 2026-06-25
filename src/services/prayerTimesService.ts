@@ -202,7 +202,7 @@ class PrayerTimesService {
    * Determines the current spiritual "context" based on prayer timings.
    */
   /** Convert "HH:MM" (or "HH:MM suffix") to total minutes since midnight. */
-  private parseTimeToMinutes(timeStr: string): number {
+  public parseTimeToMinutes(timeStr: string): number {
     const cleanTime = timeStr.split(' ')[0]; // strip " (GST)" style suffixes
     const [hours, minutes] = cleanTime.split(':').map(Number);
     return hours * 60 + minutes;
@@ -266,7 +266,8 @@ class PrayerTimesService {
     const currentTime = now.getHours() * 60 + now.getMinutes();
     const parseTime = (t: string) => this.parseTimeToMinutes(t);
 
-    const prayerOrder: (keyof PrayerTimings)[] = ['Fajr', 'Sunrise', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'];
+    // Sunrise is informational — not a salah — so skip it for the "next prayer" display.
+    const prayerOrder: (keyof PrayerTimings)[] = ['Fajr', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'];
 
     for (const key of prayerOrder) {
       const prayerTime = parseTime(timings[key]);

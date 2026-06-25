@@ -54,6 +54,9 @@ interface AnimatedMandalaProps {
   /** Multiplies every stroke width — lets the lattice read at tiny sizes
    *  (e.g. the 44px progress ring) without thickening the large backdrops. */
   strokeScale?: number;
+  /** Cap the number of star-polygon overlay layers. Undefined = all layers.
+   *  Use 2–3 for background mandalas: same geometry, less density. */
+  webLayers?: number;
 }
 
 function AnimatedMandalaInner({
@@ -63,6 +66,7 @@ function AnimatedMandalaInner({
   direction = 'cw',
   points = 12,
   strokeScale = 1,
+  webLayers,
 }: AnimatedMandalaProps) {
   const rotation = useRef(new Animated.Value(0)).current;
   const reduceMotion = useReduceMotion();
@@ -97,9 +101,10 @@ function AnimatedMandalaInner({
   // lace rather than clutter. Steps span 3..(n/2-1); {n/6} (diameters) skipped.
   const geometry = useMemo(() => {
     const maxStep = Math.floor(points / 2);
-    const steps: number[] = [];
-    for (let s = 3; s <= maxStep - 1; s++) steps.push(s);
-    if (steps.length === 0) steps.push(Math.max(2, maxStep - 1));
+    const allSteps: number[] = [];
+    for (let s = 3; s <= maxStep - 1; s++) allSteps.push(s);
+    if (allSteps.length === 0) allSteps.push(maxStep);
+    const steps = webLayers !== undefined ? allSteps.slice(0, webLayers) : allSteps;
 
     const webs = steps.map((step) => ({
       d: generateStarWeb(points, step, OUTER_R, CENTER, CENTER),
@@ -110,7 +115,7 @@ function AnimatedMandalaInner({
     }));
 
     return { webs };
-  }, [points]);
+  }, [points, webLayers]);
 
   return (
     <Animated.View

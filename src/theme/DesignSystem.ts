@@ -15,6 +15,11 @@ export const Spacing = {
   xxxl: 48,
 };
 
+export const Layout = {
+  // Tab bar height (~60) + bottom offset (~20) + breathing room
+  tabBarClearance: 96,
+};
+
 export const BorderRadius = {
   sm: 8,
   md: 12,
@@ -76,10 +81,12 @@ export const Typography = {
   sizes: {
     hero: 32,
     h1: 24,
+    stat: 22,   // stat-card numbers — between h1 and h2
     h2: 20,
     body: 16,
     small: 14,
     detail: 12,
+    label: 11,  // all-caps section / micro labels (below detail floor)
   },
   letterSpacing: {
     widest: 3,

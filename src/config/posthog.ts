@@ -37,6 +37,11 @@ const CONSENT_KEY = '@analytics_consent';
 const posthog = new PostHog(API_KEY || 'phc_placeholder', {
   host: 'https://us.i.posthog.com',
   disabled: true,
+  // Crash/error reporting only — no usage analytics. App-lifecycle events
+  // (App Opened/Backgrounded/Installed/Updated) default to ON in the SDK, so we
+  // disable them here to keep the "Share Crash Reports" consent label accurate
+  // and avoid having to disclose app-activity data in the store privacy forms.
+  captureAppLifecycleEvents: false,
   flushAt: 10,
   flushInterval: 10000,
 });

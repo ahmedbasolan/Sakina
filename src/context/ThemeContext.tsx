@@ -64,7 +64,7 @@ const lightOnboardingColors: OnboardingThemeColors = {
 };
 
 const darkOnboardingGradients: [string, string, string][] = [
-  ['#04090A', '#081912', '#04090A'],   // 0. Bismillah
+  ['#040D1A', '#081629', '#040D1A'],   // 0. Bismillah
   ['#07111E', '#0C1A2E', '#07111E'],   // 1. Welcome
   ['#07111E', '#0C1A2E', '#07111E'],   // 2. Heart Check-In
   ['#06080E', '#0D1525', '#06080E'],   // 3. Personalization

@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import { getSpiritualWindowName } from '../utils/prayerContext';
 import { formatPrayerTime, formatCountdown } from '../services/prayerTimesService';
-import { Colors, Spacing, Typography } from '../theme/DesignSystem';
+import { Colors, Spacing, Typography, Animations, Layout } from '../theme/DesignSystem';
 import {
   View,
   Text,
@@ -41,14 +41,14 @@ const { width } = Dimensions.get('window');
 // Colors aligned with MoodColors in DesignSystem.ts (GuidanceScreen source of truth)
 // so the accent colour a user sees on the card matches the immersive background they enter.
 const moodConfigs: MoodConfig[] = [
-  { id: 'Grateful',    label: 'GRATEFUL',    sublabel: 'Shukr',   color: '#FBBF24', bgColor: '#451A03', borderColor: '#78350F', iconName: 'heart' },
-  { id: 'Hopeful',     label: 'HOPEFUL',     sublabel: 'Amal',    color: '#22D3EE', bgColor: '#083344', borderColor: '#155E75', iconName: 'sunny' },
-  { id: 'Calm',        label: 'PEACEFUL',    sublabel: 'Sukoon',  color: '#34D399', bgColor: '#064E3B', borderColor: '#065F46', iconName: 'water' },
-  { id: 'Overwhelmed', label: 'OVERWHELMED', sublabel: 'Ghamm',   color: '#818CF8', bgColor: '#0F172A', borderColor: '#1E1B4B', iconName: 'layers' },
-  { id: 'Tired',       label: 'TIRED',       sublabel: "Ta'ab",   color: '#D6D3D1', bgColor: '#1C1917', borderColor: '#292524', iconName: 'moon' },
-  { id: 'Lonely',      label: 'LONELY',      sublabel: 'Wahshah', color: '#C084FC', bgColor: '#2E1065', borderColor: '#4C1D95', iconName: 'person' },
-  { id: 'Sad',         label: 'SAD',         sublabel: 'Huzn',    color: '#94A3B8', bgColor: '#1E293B', borderColor: '#334155', iconName: 'rainy' },
-  { id: 'Angry',       label: 'ANGRY',       sublabel: 'Ghadab',  color: '#FB923C', bgColor: '#1A0F0A', borderColor: '#2D1610', iconName: 'flame' },
+  { id: 'Grateful',    label: 'GRATEFUL',    sublabel: 'Shukr',   color: '#FBBF24', bgColor: '#451A03', borderColor: '#78350F', gradientColors: ['#5E2204', '#3A1602', '#1A0901'], iconName: 'heart' },
+  { id: 'Hopeful',     label: 'HOPEFUL',     sublabel: 'Amal',    color: '#22D3EE', bgColor: '#083344', borderColor: '#155E75', gradientColors: ['#0C4A63', '#062836', '#021620'], iconName: 'sunny' },
+  { id: 'Calm',        label: 'PEACEFUL',    sublabel: 'Sukoon',  color: '#34D399', bgColor: '#064E3B', borderColor: '#065F46', gradientColors: ['#0A6B52', '#053E2F', '#021F18'], iconName: 'water' },
+  { id: 'Overwhelmed', label: 'OVERWHELMED', sublabel: 'Ghamm',   color: '#818CF8', bgColor: '#0F172A', borderColor: '#1E1B4B', gradientColors: ['#192840', '#0B1220', '#050A14'], iconName: 'layers' },
+  { id: 'Tired',       label: 'TIRED',       sublabel: "Ta'ab",   color: '#D6D3D1', bgColor: '#1C1917', borderColor: '#292524', gradientColors: ['#2A2420', '#161310', '#080706'], iconName: 'moon' },
+  { id: 'Lonely',      label: 'LONELY',      sublabel: 'Wahshah', color: '#C084FC', bgColor: '#2E1065', borderColor: '#4C1D95', gradientColors: ['#481A8A', '#240C50', '#10052B'], iconName: 'person' },
+  { id: 'Sad',         label: 'SAD',         sublabel: 'Huzn',    color: '#94A3B8', bgColor: '#1E293B', borderColor: '#334155', gradientColors: ['#253648', '#172030', '#0A1018'], iconName: 'rainy' },
+  { id: 'Angry',       label: 'ANGRY',       sublabel: 'Ghadab',  color: '#FB923C', bgColor: '#1A0F0A', borderColor: '#2D1610', gradientColors: ['#2A1508', '#140C08', '#060302'], iconName: 'flame' },
 ];
 
 /* ─── Helpers ────────────────────────────────────────────────── */
@@ -108,6 +108,8 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
     bannerDismissed, setBannerDismissed,
     lastCheckin,
     localSelectedMood, setLocalSelectedMood,
+    loadStreakData,
+    checkTodayMood,
     activePath,
     dailyVerse,
     refreshing,
@@ -121,10 +123,28 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
 
   useEffect(() => {
     Animated.parallel([
-      Animated.timing(fadeAnim, { toValue: 1, duration: 800, useNativeDriver: true }),
+      Animated.timing(fadeAnim, { toValue: 1, duration: Animations.timing.slow, useNativeDriver: true }),
       Animated.spring(slideAnim, { toValue: 0, friction: 8, tension: 40, useNativeDriver: true }),
     ]).start();
   }, []);
+
+  // Reload streak when returning from any sub-screen (Guidance, Settings, etc.).
+  // hasMountedRef skips the first focus emission React Navigation fires on mount
+  // so we don't double-invoke what bootstrap already loaded.
+  const hasMountedRef = useRef(false);
+  useEffect(() => {
+    const unsub = navigation.addListener('focus', () => {
+      if (!hasMountedRef.current) { hasMountedRef.current = true; return; }
+      loadStreakData();
+      checkTodayMood();
+    });
+    return unsub;
+  }, [navigation, loadStreakData, checkTodayMood]);
+
+  const scrollContentStyle = useMemo(
+    () => [styles.scrollContent, { paddingBottom: insets.bottom + Layout.tabBarClearance }],
+    [insets.bottom],
+  );
 
   // ── Double-tap guard (view concern — prevents two nav pushes) ─
   const isHandlingTap = useRef(false);
@@ -230,7 +250,7 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
       <LinearGradient colors={['#07111E', '#0C1A2E', '#0F1519']} style={styles.gradient}>
         <ScrollView
           showsVerticalScrollIndicator={false}
-          contentContainerStyle={[styles.scrollContent, { paddingBottom: insets.bottom + 120 }]}
+          contentContainerStyle={scrollContentStyle}
           refreshControl={
             <RefreshControl
               refreshing={refreshing}
@@ -404,7 +424,9 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
                   {nextPrayer ? `${nextPrayer.name} ${formatPrayerTime(nextPrayer.time, timeFormat)}` : 'View all'}
                 </Text>
                 <Text style={styles.quickCardSub}>
-                  {nextPrayer ? `in ${formatCountdown(nextPrayer.minutesRemaining)}` : 'Today'}
+                  {nextPrayer
+                    ? `in ${formatCountdown(nextPrayer.minutesRemaining)} · ${currentCity}`
+                    : currentCity || 'Today'}
                 </Text>
               </TouchableOpacity>
 
@@ -443,7 +465,7 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
 const styles = StyleSheet.create({
   container: { flex: 1 },
   gradient: { flex: 1 },
-  scrollContent: { paddingBottom: 140 },
+  scrollContent: {},
 
   moodSection: { paddingHorizontal: Spacing.xl, marginBottom: Spacing.xl },
   sectionHeader: {

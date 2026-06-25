@@ -96,6 +96,32 @@ class NotificationService {
     return { hours: finalHours, minutes };
   }
 
+  // Builds up to 7 one-shot DATE triggers for a given time, all in parallel.
+  // Only future dates are scheduled; already-past slots are skipped.
+  private async scheduleWeeklyTrigger(
+    hour: number,
+    minute: number,
+    content: Notifications.NotificationContentInput,
+  ): Promise<string[]> {
+    const now = new Date();
+    const dates: Date[] = [];
+    for (let dayOffset = 0; dayOffset < 7; dayOffset++) {
+      const date = new Date();
+      date.setDate(date.getDate() + dayOffset);
+      date.setHours(hour, minute, 0, 0);
+      if (date > now) dates.push(date);
+    }
+    const ids = await Promise.all(
+      dates.map((date) =>
+        Notifications.scheduleNotificationAsync({
+          content,
+          trigger: { type: Notifications.SchedulableTriggerInputTypes.DATE, date },
+        }).catch(() => null),
+      ),
+    );
+    return ids.filter((id): id is string => id !== null);
+  }
+
   public async schedulePrayerNotifications(
     timings: PrayerTimings,
     cityName: string,
@@ -106,113 +132,88 @@ class NotificationService {
     // Clear existing PRAYER notifications only — don't touch other categories.
     await cancelTrackedCategory(PRAYER_NOTIF_IDS_KEY);
 
-    const prayerNames = Object.keys(timings) as Array<keyof PrayerTimings>;
-    const newIds: string[] = [];
+    // Explicit salah list — avoids Object.keys picking up extra Aladhan API
+    // fields (Imsak, Midnight, Firstthird, Lastthird, Sunset) that are present
+    // at runtime despite not being in the PrayerTimings interface.
+    const SALAH: Array<keyof PrayerTimings> = ['Fajr', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'];
 
-    for (const prayer of prayerNames) {
-      if (prayer === 'Sunrise') continue;
-
+    const validSalah = SALAH.filter((prayer) => {
       const { hours, minutes } = this.parseTime(timings[prayer]);
+      // Guard: a malformed API response can produce NaN; skip rather than
+      // passing invalid values to the OS notification scheduler.
+      return Number.isFinite(hours) && Number.isFinite(minutes);
+    });
 
-      const now = new Date();
-      const scheduledDate = new Date();
-      scheduledDate.setHours(hours, minutes, 0, 0);
-
-      if (scheduledDate > now) {
-        const id = await Notifications.scheduleNotificationAsync({
-          content: {
-            title: `Time for ${prayer}`,
-            body: `It's time for the ${prayer} prayer in ${cityName}.`,
-            sound: true,
-            priority: Notifications.AndroidNotificationPriority.HIGH,
-          },
-          trigger: {
-            type: Notifications.SchedulableTriggerInputTypes.DATE,
-            date: scheduledDate,
-          },
+    const batches = await Promise.all(
+      validSalah.map((prayer) => {
+        const { hours, minutes } = this.parseTime(timings[prayer]);
+        return this.scheduleWeeklyTrigger(hours, minutes, {
+          title: `Time for ${prayer}`,
+          body: `It's time for the ${prayer} prayer in ${cityName}.`,
+          sound: true,
+          priority: Notifications.AndroidNotificationPriority.HIGH,
         });
-        newIds.push(id);
-      }
-    }
+      }),
+    );
 
-    await setTrackedIds(PRAYER_NOTIF_IDS_KEY, newIds);
+    await setTrackedIds(PRAYER_NOTIF_IDS_KEY, batches.flat());
   }
 
   /**
    * Schedules proactive reminders for spiritual windows.
    */
-  public async scheduleSpiritualReminders(
-    timings: PrayerTimings,
-  ): Promise<void> {
+  public async scheduleSpiritualReminders(timings: PrayerTimings): Promise<void> {
     const hasPermission = await this.requestPermissions();
     if (!hasPermission) return;
 
     // Clear existing SPIRITUAL notifications only — don't touch other categories.
     await cancelTrackedCategory(SPIRITUAL_NOTIF_IDS_KEY);
-    const newIds: string[] = [];
 
-    // 1. Tahajjud Reminder (fajr_pre) - 1 hour before Fajr
     const fajrTime = this.parseTime(timings.Fajr);
-    const tahajjudDate = new Date();
-    // Wrap into [0,1440) so an hour-before-Fajr that crosses midnight (e.g. Fajr
-    // 00:30 → 23:30) maps to a valid same-day wall-clock. Plain subtraction here
-    // produced negative minutes → setHours(-1,-30), which moved the date backwards
-    // and silently failed the > new Date() guard, dropping the reminder entirely.
-    const fajrTotalMinutes = fajrTime.hours * 60 + fajrTime.minutes;
-    const tahajjudTotalMinutes = (((fajrTotalMinutes - 60) % 1440) + 1440) % 1440;
-    tahajjudDate.setHours(
-      Math.floor(tahajjudTotalMinutes / 60),
-      tahajjudTotalMinutes % 60,
-      0,
-      0,
-    );
-
-    if (tahajjudDate > new Date()) {
-      const id = await Notifications.scheduleNotificationAsync({
-        content: {
-          title: "The Silent Hour",
-          body: "It is the time of Tahajjud. A moment for deep reflection and conversation with your Lord.",
-          categoryIdentifier: 'spiritual_window',
-        },
-        trigger: { type: Notifications.SchedulableTriggerInputTypes.DATE, date: tahajjudDate },
-      });
-      newIds.push(id);
-    }
-
-    // 2. Morning Adhkar (fajr_post) - 20 mins after Fajr
-    const morningDate = new Date();
-    morningDate.setHours(fajrTime.hours, fajrTime.minutes + 20, 0, 0);
-
-    if (morningDate > new Date()) {
-      const id = await Notifications.scheduleNotificationAsync({
-        content: {
-          title: "Start with Light",
-          body: "The sun is rising. Remember Allah with the morning adhkars to protect your day.",
-          categoryIdentifier: 'spiritual_window',
-        },
-        trigger: { type: Notifications.SchedulableTriggerInputTypes.DATE, date: morningDate },
-      });
-      newIds.push(id);
-    }
-
-    // 3. Evening Adhkar (maghrib_pre) - 45 mins before Maghrib
     const maghribTime = this.parseTime(timings.Maghrib);
-    const eveningDate = new Date();
-    eveningDate.setHours(maghribTime.hours, maghribTime.minutes - 45, 0, 0);
 
-    if (eveningDate > new Date()) {
-      const id = await Notifications.scheduleNotificationAsync({
-        content: {
-          title: "Closing the Day",
-          body: "The day is ending. Find peace in the evening remembrance before the night sets in.",
-          categoryIdentifier: 'spiritual_window',
-        },
-        trigger: { type: Notifications.SchedulableTriggerInputTypes.DATE, date: eveningDate },
-      });
-      newIds.push(id);
-    }
+    // Guard: skip scheduling entirely if base times are malformed.
+    const fajrValid = Number.isFinite(fajrTime.hours) && Number.isFinite(fajrTime.minutes);
+    const maghribValid = Number.isFinite(maghribTime.hours) && Number.isFinite(maghribTime.minutes);
 
-    await setTrackedIds(SPIRITUAL_NOTIF_IDS_KEY, newIds);
+    const fajrMins = fajrTime.hours * 60 + fajrTime.minutes;
+    const maghribMins = maghribTime.hours * 60 + maghribTime.minutes;
+
+    // 1. Tahajjud — 1 hour before Fajr (wraps midnight)
+    // 2. Morning Adhkar — 20 mins after Fajr
+    // 3. Evening Adhkar — 45 mins before Maghrib
+    const tahajjudMins = (((fajrMins - 60) % 1440) + 1440) % 1440;
+    const morningMins = (fajrMins + 20) % 1440;
+    const eveningMins = (((maghribMins - 45) % 1440) + 1440) % 1440;
+
+    const [tahajjudIds, morningIds, eveningIds] = await Promise.all([
+      fajrValid ? this.scheduleWeeklyTrigger(
+        Math.floor(tahajjudMins / 60), tahajjudMins % 60,
+        { title: 'The Silent Hour', body: 'It is the time of Tahajjud. A moment for deep reflection and conversation with your Lord.', categoryIdentifier: 'spiritual_window' },
+      ) : Promise.resolve([]),
+      fajrValid ? this.scheduleWeeklyTrigger(
+        Math.floor(morningMins / 60), morningMins % 60,
+        { title: 'Start with Light', body: 'The sun is rising. Remember Allah with the morning adhkars to protect your day.', categoryIdentifier: 'spiritual_window' },
+      ) : Promise.resolve([]),
+      maghribValid ? this.scheduleWeeklyTrigger(
+        Math.floor(eveningMins / 60), eveningMins % 60,
+        { title: 'Closing the Day', body: 'The day is ending. Find peace in the evening remembrance before the night sets in.', categoryIdentifier: 'spiritual_window' },
+      ) : Promise.resolve([]),
+    ]);
+
+    await setTrackedIds(SPIRITUAL_NOTIF_IDS_KEY, [...tahajjudIds, ...morningIds, ...eveningIds]);
+  }
+
+  /**
+   * Cancels only prayer and spiritual notification categories.
+   * Use in error paths where scheduling partially failed — preserves the
+   * user's custom daily reminder which lives in a separate category.
+   */
+  public async cancelPrayerAndSpiritual(): Promise<void> {
+    await Promise.all([
+      cancelTrackedCategory(PRAYER_NOTIF_IDS_KEY),
+      cancelTrackedCategory(SPIRITUAL_NOTIF_IDS_KEY),
+    ]);
   }
 
   /**

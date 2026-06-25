@@ -76,28 +76,13 @@ export class SubscriptionService {
     return this.isPremium();
   }
 
-  /** Purchase a special-edition bundle (still local — bundles not in RC yet). */
-  async purchaseBundle(bundleId: string): Promise<boolean> {
-    try {
-      const currentBundles = this.subscriptionState?.unlockedBundleIds || [];
-      if (currentBundles.includes(bundleId)) return true;
-      const newBundles = [...currentBundles, bundleId];
-
-      await this.supabaseData.updateUserProfile({ unlocked_bundles: newBundles }).catch(() => {});
-      await dbQuery(async (db) => {
-        await db.runAsync(
-          `UPDATE user_subscription SET unlockedBundleIds = ?, updatedAt = ? WHERE id = 'user_subscription'`,
-          [JSON.stringify(newBundles), Date.now()],
-        );
-      });
-      if (this.subscriptionState) {
-        this.subscriptionState.unlockedBundleIds = newBundles;
-      }
-      return true;
-    } catch (error) {
-      console.error('Error purchasing bundle:', error);
-      return false;
-    }
+  /**
+   * Bundle purchases are not yet implemented — bundles must go through
+   * RevenueCat like the main subscription. This is a stub; wire it to
+   * revenueCat.purchasePackage(bundlePackageId) when bundles go live.
+   */
+  async purchaseBundle(_bundleId: string): Promise<boolean> {
+    return false;
   }
 
   async cancelSubscription(): Promise<boolean> {
@@ -124,13 +109,7 @@ export class SubscriptionService {
 
   async resetToFreeTier(): Promise<void> {
     try {
-      await this.supabaseData.updateUserProfile({
-        subscription_tier: 'free',
-        subscription_type: null,
-        subscription_end: null,
-        is_active: false,
-      }).catch(() => {});
-
+      // Supabase subscription fields are managed by RC webhook (not client).
       await dbQuery(async (db) => {
         await db.runAsync(
           `UPDATE user_subscription
@@ -210,13 +189,11 @@ export class SubscriptionService {
       }
     }).catch(() => {});
 
-    // Sync to Supabase (fire-and-forget).
-    this.supabaseData.updateUserProfile({
-      subscription_tier: tier,
-      subscription_type: type ?? null,
-      subscription_end: subscriptionEndDate ? new Date(subscriptionEndDate).toISOString() : null,
-      is_active: isActive,
-    }).catch(() => {});
+    // Subscription state is intentionally NOT synced to Supabase here.
+    // RevenueCat is the authoritative source; the Supabase trigger correctly
+    // blocks client-side writes to subscription fields. If server-side
+    // subscription checking is ever needed, add a RevenueCat webhook →
+    // Edge Function that writes with service_role key.
   }
 
   /** Load subscription state from local SQLite (offline fallback). */
