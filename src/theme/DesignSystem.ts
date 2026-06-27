@@ -33,6 +33,7 @@ export const Colors = {
   // Brand & Semantic
   accent: {
     primary: '#D4AF37', // Gold — Main brand color from Sakina logo
+    light: '#E8C86A',   // Light gold — for calligraphy / glowing text
     secondary: '#2ED3C6', // Teal — Fresh interactive secondary
     warm: '#E8A87C', // Soft amber
     muted: 'rgba(212, 175, 55, 0.2)',
@@ -52,10 +53,13 @@ export const Colors = {
   },
 
   background: {
-    primary: '#040D1A', // Midnight Navy
-    secondary: '#081629', // Deep Navy
-    tertiary: '#0C1D3A', // Soft Navy
+    primary:   '#07111E', // Celestial base — deepest screen ground
+    secondary: '#0C1A2E', // Raised surfaces / sheets
+    tertiary:  '#0F1F30', // Cards
   },
+
+  // Standard screen-wash gradient — use instead of inline color arrays
+  celestialWash: ['#07111E', '#0C1A2E', '#0F1F30'] as const,
 
   glass: {
     light: 'rgba(255, 235, 210, 0.05)',
