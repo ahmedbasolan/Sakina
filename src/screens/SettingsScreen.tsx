@@ -352,7 +352,7 @@ export default function SettingsScreen() {
   // ── Render ─────────────────────────────────────────────────────────────────
 
   return (
-    <LinearGradient colors={['#07111E', '#0C1A2E', '#0F1519']} style={styles.container}>
+    <LinearGradient colors={Colors.celestialWash} style={styles.container}>
       <View style={[styles.header, { paddingTop: Math.max(insets.top, Spacing.xl) }]}>
         <Text style={styles.headerTitle}>Settings</Text>
       </View>
