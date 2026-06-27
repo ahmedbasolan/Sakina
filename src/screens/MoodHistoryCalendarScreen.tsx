@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { formatDateYMD } from '../utils/date';
-import { Colors } from '../theme/DesignSystem';
+import { Colors, BorderRadius, Spacing } from '../theme/DesignSystem';
+import { AnimatedMandala } from '../components/AnimatedMandala';
 import {
   View,
   Text,
@@ -197,7 +198,7 @@ interface MoodHistoryCalendarScreenProps {
 }
 
 export default function MoodHistoryCalendarScreen({ onBack }: MoodHistoryCalendarScreenProps) {
-  const navigation = useNavigation();
+  const navigation = useNavigation<any>();
   const handleBack = onBack || (() => navigation.goBack());
   const insets = useSafeAreaInsets();
   const topInset = insets?.top ?? 0;
@@ -325,11 +326,16 @@ export default function MoodHistoryCalendarScreen({ onBack }: MoodHistoryCalenda
 
   return (
     <View style={styles.container}>
+      {/* Celestial texture — matches Library/Paths backdrop */}
+      <View style={styles.mandalaWrap} pointerEvents="none">
+        <AnimatedMandala size={280} color={Colors.accent.primary} opacity={0.07} />
+      </View>
+
       {/* Header */}
       <Animated.View style={[styles.header, { paddingTop: topInset + 12, opacity: headerOpacity }]}>
         {/* Background gradient */}
         <LinearGradient
-          colors={['#0E0C18', '#0C1220']}
+          colors={[Colors.background.primary, Colors.background.secondary]}
           style={StyleSheet.absoluteFill}
         />
 
@@ -490,7 +496,7 @@ export default function MoodHistoryCalendarScreen({ onBack }: MoodHistoryCalenda
                       style={[
                         styles.calendarDayText,
                         entry && { color: visual!.text, fontWeight: '700' },
-                        !entry && { color: '#2A4060' },
+                        !entry && { color: Colors.text.muted },
                         isToday && !entry && { color: '#FB923C', fontWeight: '700' },
                       ]}
                     >
@@ -658,7 +664,9 @@ export default function MoodHistoryCalendarScreen({ onBack }: MoodHistoryCalenda
           {stats && stats.totalDaysTracked === 0 && (
             <NoReflections
               onStartReflecting={() => {
-                // TODO: Navigate to home screen for mood selection
+                HapticsService.impactAsync('LIGHT');
+                // Begin reflecting by choosing today's mood → guidance → reflection.
+                navigation.navigate('MoodSelection');
               }}
             />
           )}
@@ -717,7 +725,7 @@ const CELL_SIZE = Math.floor((width - 48 - 24) / 7); // 48 = padding, 24 = gaps
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0C1220',
+    backgroundColor: Colors.background.primary,
   },
   loadingContainer: {
     flex: 1,
@@ -727,7 +735,7 @@ const styles = StyleSheet.create({
   },
   loadingText: {
     fontSize: 14,
-    color: '#6B8EAE',
+    color: Colors.text.muted,
     fontWeight: '500',
   },
 
@@ -760,12 +768,12 @@ const styles = StyleSheet.create({
   backText: {
     fontSize: 14,
     fontWeight: '500',
-    color: '#F0E6D3',
+    color: Colors.text.primary,
   },
   headerTitle: {
     fontSize: 20,
     fontWeight: '700',
-    color: '#F0E6D3',
+    color: Colors.text.primary,
     letterSpacing: -0.3,
   },
 
@@ -781,8 +789,8 @@ const styles = StyleSheet.create({
 
   // Hero Card
   heroCard: {
-    backgroundColor: '#0F1E30',
-    borderRadius: 20,
+    backgroundColor: Colors.background.tertiary,
+    borderRadius: BorderRadius.xl,
     padding: 18,
     borderWidth: 1,
     borderColor: 'rgba(251,146,60,0.2)',
@@ -812,7 +820,7 @@ const styles = StyleSheet.create({
   ringValue: {
     fontSize: 30,
     fontWeight: '700',
-    color: '#F0E6D3',
+    color: Colors.text.primary,
     lineHeight: 34,
   },
   ringLabel: {
@@ -828,7 +836,7 @@ const styles = StyleSheet.create({
   heroTitle: {
     fontSize: 18,
     fontWeight: '700',
-    color: '#F0E6D3',
+    color: Colors.text.primary,
     marginBottom: 2,
   },
   heroSubtitle: {
@@ -847,7 +855,7 @@ const styles = StyleSheet.create({
   },
   heroStatLabel: {
     fontSize: 12,
-    color: '#6B8EAE',
+    color: Colors.text.muted,
   },
   heroStatValue: {
     fontSize: 14,
@@ -860,7 +868,7 @@ const styles = StyleSheet.create({
   },
   quoteText: {
     fontSize: 12,
-    color: '#6B8EAE',
+    color: Colors.text.muted,
     fontStyle: 'italic',
     textAlign: 'center',
     lineHeight: 18,
@@ -876,11 +884,11 @@ const styles = StyleSheet.create({
 
   // Card
   card: {
-    backgroundColor: '#0F1E30',
-    borderRadius: 18,
+    backgroundColor: Colors.background.tertiary,
+    borderRadius: BorderRadius.xl,
     padding: 18,
     borderWidth: 1,
-    borderColor: '#1E3A5F',
+    borderColor: Colors.glass.border,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
@@ -890,7 +898,7 @@ const styles = StyleSheet.create({
   cardTitle: {
     fontSize: 16,
     fontWeight: '700',
-    color: '#F0E6D3',
+    color: Colors.text.primary,
     marginBottom: 14,
   },
 
@@ -904,15 +912,15 @@ const styles = StyleSheet.create({
   monthArrow: {
     width: 36,
     height: 36,
-    borderRadius: 12,
-    backgroundColor: '#1E3A5F',
+    borderRadius: BorderRadius.md,
+    backgroundColor: Colors.glass.medium,
     alignItems: 'center',
     justifyContent: 'center',
   },
   monthTitle: {
     fontSize: 18,
     fontWeight: '700',
-    color: '#F0E6D3',
+    color: Colors.text.primary,
     letterSpacing: -0.2,
   },
 
@@ -928,7 +936,7 @@ const styles = StyleSheet.create({
   weekdayText: {
     fontSize: 12,
     fontWeight: '600',
-    color: '#2A4A6A',
+    color: Colors.text.muted,
   },
 
   // Calendar
@@ -957,7 +965,7 @@ const styles = StyleSheet.create({
   calendarDayText: {
     fontSize: 14,
     fontWeight: '500',
-    color: '#F0E6D3',
+    color: Colors.text.primary,
   },
 
   // Legend
@@ -979,7 +987,7 @@ const styles = StyleSheet.create({
   },
   legendText: {
     fontSize: 11,
-    color: '#6B8EAE',
+    color: Colors.text.muted,
     fontWeight: '500',
   },
 
@@ -993,7 +1001,7 @@ const styles = StyleSheet.create({
   dayDetailTitle: {
     fontSize: 16,
     fontWeight: '700',
-    color: '#F0E6D3',
+    color: Colors.text.primary,
   },
   moodBadgeRow: {
     flexDirection: 'row',
@@ -1004,18 +1012,18 @@ const styles = StyleSheet.create({
   moodBadge: {
     width: 44,
     height: 44,
-    borderRadius: 14,
+    borderRadius: BorderRadius.lg,
     alignItems: 'center',
     justifyContent: 'center',
   },
   moodBadgeLabel: {
     fontSize: 16,
     fontWeight: '700',
-    color: '#F0E6D3',
+    color: Colors.text.primary,
   },
   moodBadgeSub: {
     fontSize: 12,
-    color: '#6B8EAE',
+    color: Colors.text.muted,
     fontWeight: '500',
   },
 
@@ -1032,7 +1040,7 @@ const styles = StyleSheet.create({
   entryTime: {
     fontSize: 12,
     fontWeight: '600',
-    color: '#6B8EAE',
+    color: Colors.text.muted,
   },
   entryMoodDot: {
     width: 8,
@@ -1052,14 +1060,14 @@ const styles = StyleSheet.create({
   entryArabic: {
     fontSize: 22,
     fontFamily: 'Amiri-Quran',
-    color: '#F0E6D3',
+    color: Colors.text.primary,
     textAlign: 'right',
     lineHeight: 38,
     marginBottom: 6,
   },
   entryTranslation: {
     fontSize: 13,
-    color: '#6A90B0',
+    color: Colors.text.muted,
     lineHeight: 19,
     fontStyle: 'italic',
     marginBottom: 8,
@@ -1067,8 +1075,8 @@ const styles = StyleSheet.create({
   reflectionBox: {
     flexDirection: 'row',
     gap: 6,
-    backgroundColor: 'rgba(30, 58, 95, 0.5)',
-    borderRadius: 10,
+    backgroundColor: Colors.glass.light,
+    borderRadius: BorderRadius.sm,
     padding: 12,
     marginTop: 4,
     borderWidth: 1,
@@ -1077,18 +1085,18 @@ const styles = StyleSheet.create({
   reflectionText: {
     flex: 1,
     fontSize: 13,
-    color: '#7DD3FC',
+    color: Colors.text.secondary,
     lineHeight: 19,
     fontStyle: 'italic',
   },
   entryDivider: {
     height: 1,
-    backgroundColor: '#1E3A5F',
+    backgroundColor: Colors.glass.border,
     marginVertical: 12,
   },
   noDataText: {
     fontSize: 13,
-    color: '#6B8EAE',
+    color: Colors.text.muted,
     textAlign: 'center',
     marginVertical: 16,
   },
@@ -1112,7 +1120,7 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 13,
     fontWeight: '600',
-    color: '#B0C4D8',
+    color: Colors.text.secondary,
   },
   distCount: {
     fontSize: 12,
@@ -1120,7 +1128,7 @@ const styles = StyleSheet.create({
   },
   distBarBg: {
     height: 8,
-    backgroundColor: '#1E3A5F',
+    backgroundColor: Colors.glass.medium,
     borderRadius: 4,
     overflow: 'hidden',
   },
@@ -1136,12 +1144,12 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 16,
     fontWeight: '700',
-    color: '#F0E6D3',
+    color: Colors.text.primary,
     marginBottom: 2,
   },
   insightCard: {
     flexDirection: 'row',
-    borderRadius: 16,
+    borderRadius: BorderRadius.lg,
     padding: 14,
     borderWidth: 1.5,
     gap: 12,
@@ -1149,7 +1157,7 @@ const styles = StyleSheet.create({
   insightIcon: {
     width: 36,
     height: 36,
-    borderRadius: 10,
+    borderRadius: BorderRadius.sm,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -1160,10 +1168,17 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '700',
     marginBottom: 3,
+    color: Colors.text.primary,
   },
   insightDesc: {
     fontSize: 12,
-    color: '#6A90B0',
+    color: Colors.text.muted,
     lineHeight: 18,
+  },
+  mandalaWrap: {
+    position: 'absolute',
+    left: width / 2 - 140,
+    top: 16,
+    zIndex: 0,
   },
 });
