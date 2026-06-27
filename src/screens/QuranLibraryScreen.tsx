@@ -215,7 +215,7 @@ export default function QuranLibraryScreen({ navigation }: { navigation: any }) 
   return (
     <View style={styles.container}>
       <LinearGradient
-        colors={['#07111E', '#0C1A2E', '#0F1F30']}
+        colors={Colors.celestialWash}
         style={StyleSheet.absoluteFill}
         start={{ x: 0.5, y: 0 }}
         end={{ x: 0.5, y: 1 }}
