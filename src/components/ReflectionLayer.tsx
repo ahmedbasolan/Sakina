@@ -32,7 +32,6 @@ const ReflectionLayer: React.FC<ReflectionLayerProps> = ({
   onComplete,
   buttonText = 'Complete Session',
   footerText = 'Your reflections are private and only you can see them.',
-  requireText = true,
   scrollY,
   accentColor = Colors.accent.secondary,
 }) => {

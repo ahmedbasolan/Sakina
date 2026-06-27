@@ -5,9 +5,6 @@ export type RootStackParamList = {
   Main: undefined;
   Login: undefined;
   SignUp: undefined;
-  SpiritualWindow: {
-    context: string;
-  };
   Guidance: {
     experience?: GuidanceExperience;
     mood: Mood;

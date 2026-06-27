@@ -1,18 +1,11 @@
 /**
  * PathsScreen — Sacred Journeys
  *
- * Deep navy background, twinkling stars, mandala backdrop (matching image-3
- * reference), stats bar with real data, and journey cards with accurate
- * progress pulled from UserPathProgress.
- *
- * Bugs fixed:
- * - Progress bar was always 0 (used SpiritualPath.currentDay which doesn't
- *   exist — now uses UserPathProgress.completedDays.length)
- * - "Days left" was hardcoded to 21 — now computed from live progress
- * - Active-card mandala was inside BlurView (overflow:hidden) — now sits
- *   outside so it renders correctly
+ * Filter tabs (All | Active | Completed) replace the old stat boxes.
+ * Available paths: path_rizq_revolution, path_salah_transformation.
+ * All other paths show an "Early Access · Premium" locked state.
  */
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { Colors, Spacing, BorderRadius, Typography } from '../theme/DesignSystem';
 import {
   View,
@@ -20,7 +13,6 @@ import {
   StyleSheet,
   FlatList,
   TouchableOpacity,
-  Dimensions,
   Animated,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -34,39 +26,138 @@ import { AnimatedMandala } from '../components/AnimatedMandala';
 import { TwinklingStar } from '../components/home/TwinklingStar';
 import { getPathVisual } from '../constants/pathVisuals';
 
-const { width } = Dimensions.get('window');
+// ── Paths available for users to start ─────────────────────────
+const AVAILABLE_PATH_IDS = new Set([
+  'path_rizq_revolution',
+  'path_salah_transformation',
+]);
 
-// ── Star positions for the header backdrop ─────────────────────
+// ── Star positions for the header backdrop ──────────────────────
 const STAR_POSITIONS = [
-  { x: 0.06, y: 0.08, delay: 0, size: 1.8 },
-  { x: 0.9, y: 0.06, delay: 500, size: 1.5 },
+  { x: 0.06, y: 0.08, delay: 0,   size: 1.8 },
+  { x: 0.9,  y: 0.06, delay: 500, size: 1.5 },
   { x: 0.78, y: 0.35, delay: 900, size: 2.2 },
   { x: 0.14, y: 0.42, delay: 300, size: 1.5 },
   { x: 0.55, y: 0.15, delay: 700, size: 1.2 },
 ];
 
-// ── Path icon / colour map — sourced from shared constants ─────
-const getVisual = (id: string) => getPathVisual(id);
+type FilterTab = 'all' | 'active' | 'completed';
+
+// ── FilterBar ───────────────────────────────────────────────────
+interface FilterBarProps {
+  active: FilterTab;
+  onChange: (tab: FilterTab) => void;
+  counts: { all: number; active: number; completed: number };
+}
+
+const TABS: { key: FilterTab; label: string }[] = [
+  { key: 'all',       label: 'All'       },
+  { key: 'active',    label: 'Active'    },
+  { key: 'completed', label: 'Completed' },
+];
+
+function FilterBar({ active, onChange, counts }: FilterBarProps) {
+  return (
+    <View style={filterStyles.row}>
+      {TABS.map((tab) => {
+        const isSelected = active === tab.key;
+        const count = counts[tab.key];
+        return (
+          <TouchableOpacity
+            key={tab.key}
+            activeOpacity={0.75}
+            onPress={() => onChange(tab.key)}
+            style={[filterStyles.tab, isSelected && filterStyles.tabActive]}
+          >
+            <Text style={[filterStyles.label, isSelected && filterStyles.labelActive]}>
+              {tab.label}
+            </Text>
+            {count > 0 && (
+              <View style={[filterStyles.badge, isSelected && filterStyles.badgeActive]}>
+                <Text style={[filterStyles.badgeText, isSelected && filterStyles.badgeTextActive]}>
+                  {count}
+                </Text>
+              </View>
+            )}
+          </TouchableOpacity>
+        );
+      })}
+    </View>
+  );
+}
+
+const filterStyles = StyleSheet.create({
+  row: {
+    flexDirection: 'row',
+    gap: Spacing.sm,
+    marginBottom: Spacing.xl,
+  },
+  tab: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: Spacing.xs,
+    paddingVertical: 11,
+    borderRadius: BorderRadius.md,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.07)',
+    backgroundColor: 'rgba(255,255,255,0.03)',
+  },
+  tabActive: {
+    borderColor: `${Colors.accent.primary}50`,
+    backgroundColor: `${Colors.accent.primary}12`,
+  },
+  label: {
+    fontSize: Typography.sizes.small,
+    fontWeight: '600',
+    color: Colors.text.muted,
+    letterSpacing: 0.3,
+  },
+  labelActive: {
+    color: Colors.accent.primary,
+  },
+  badge: {
+    minWidth: 18,
+    height: 18,
+    borderRadius: 9,
+    paddingHorizontal: 5,
+    backgroundColor: 'rgba(255,255,255,0.07)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  badgeActive: {
+    backgroundColor: `${Colors.accent.primary}25`,
+  },
+  badgeText: {
+    fontSize: 10,
+    fontWeight: '700',
+    color: Colors.text.muted,
+  },
+  badgeTextActive: {
+    color: Colors.accent.primary,
+  },
+});
 
 // ── JourneyCard ─────────────────────────────────────────────────
 interface JourneyCardProps {
   path: any;
   index: number;
   isActive: boolean;
-  /** Actual progress record from the database — may be undefined for untouched paths */
+  isLocked: boolean;
   userProgress?: UserPathProgress;
   onPress: () => void;
 }
 
-function JourneyCard({ path, index, isActive, userProgress, onPress }: JourneyCardProps) {
-  const visual = getVisual(path.id);
+function JourneyCard({ path, index, isActive, isLocked, userProgress, onPress }: JourneyCardProps) {
+  const visual = getPathVisual(path.id);
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const slideAnim = useRef(new Animated.Value(24)).current;
 
   useEffect(() => {
     Animated.parallel([
       Animated.timing(fadeAnim, {
-        toValue: 1,
+        toValue: isLocked ? 0.65 : 1,
         duration: 500,
         delay: 150 + index * 90,
         useNativeDriver: true,
@@ -81,70 +172,98 @@ function JourneyCard({ path, index, isActive, userProgress, onPress }: JourneyCa
     ]).start();
   }, []);
 
-  // ── Real progress from UserPathProgress ──
   const totalDays = path.duration || 7;
   const completedDays = userProgress?.completedDays.length ?? 0;
   const progress = totalDays > 0 ? Math.round((completedDays / totalDays) * 100) : 0;
 
+  const cardColor = isLocked ? `${visual.color}80` : visual.color;
+
   return (
     <Animated.View style={{ opacity: fadeAnim, transform: [{ translateY: slideAnim }] }}>
       {/* Active-card mandala — OUTSIDE BlurView so overflow:hidden doesn't clip it */}
-      {isActive && (
+      {isActive && !isLocked && (
         <View style={styles.cardMandalaWrap} pointerEvents="none">
           <AnimatedMandala size={140} color={visual.color} opacity={0.36} />
         </View>
       )}
 
-      <TouchableOpacity activeOpacity={0.88} onPress={onPress}>
+      <TouchableOpacity activeOpacity={isLocked ? 0.95 : 0.88} onPress={onPress}>
         <BlurView
           intensity={10}
           tint="dark"
-          style={[styles.journeyCard, isActive && { borderColor: `${visual.color}50` }]}
+          style={[
+            styles.journeyCard,
+            isActive && !isLocked && { borderColor: `${visual.color}50` },
+            isLocked && styles.journeyCardLocked,
+          ]}
         >
-          <View style={styles.journeyCardInner}>
-            {/* Top row: icon + info + chevron */}
+          <View style={[styles.journeyCardInner, isLocked && styles.journeyCardInnerLocked]}>
+            {/* Top row: icon + info + badge/chevron */}
             <View style={styles.journeyTop}>
               <View
                 style={[
                   styles.journeyIcon,
-                  { backgroundColor: `${visual.color}18`, borderColor: `${visual.color}30` },
+                  { backgroundColor: `${cardColor}18`, borderColor: `${cardColor}30` },
                 ]}
               >
-                <MaterialCommunityIcons name={visual.icon} size={22} color={visual.color} />
+                <MaterialCommunityIcons
+                  name={isLocked ? 'lock-outline' : visual.icon}
+                  size={22}
+                  color={cardColor}
+                />
               </View>
               <View style={styles.journeyInfo}>
                 <View style={styles.pathLabelRow}>
-                  <Text style={[styles.journeyPathLabel, { color: visual.color }]}>
+                  <Text style={[styles.journeyPathLabel, { color: cardColor }]}>
                     {totalDays}-DAY PATH
                   </Text>
                 </View>
-                <Text style={[styles.journeyTitle, { color: visual.color }]}>
+                <Text style={[styles.journeyTitle, { color: cardColor }]}>
                   {path.title.toUpperCase()}
                 </Text>
-                <Text style={styles.journeyTheme}>{path.target || path.theme}</Text>
+                <Text style={[styles.journeyTheme, { color: `${cardColor}CC` }]}>
+                  {path.target || path.theme}
+                </Text>
               </View>
-              <MaterialCommunityIcons name="chevron-right" size={18} color="#6B8EAE" />
+              {isLocked ? (
+                <View style={styles.earlyAccessBadge}>
+                  <MaterialCommunityIcons name="star-four-points" size={9} color={Colors.accent.primary} />
+                  <Text style={styles.earlyAccessText}>PREMIUM</Text>
+                </View>
+              ) : (
+                <MaterialCommunityIcons name="chevron-right" size={18} color={Colors.text.muted} />
+              )}
             </View>
 
             {/* Description */}
-            <Text style={styles.journeyDescription} numberOfLines={3}>
+            <Text
+              style={[styles.journeyDescription, isLocked && { color: `${Colors.text.muted}80` }]}
+              numberOfLines={2}
+            >
               {path.description}
             </Text>
 
-            {/* Progress bar */}
-            <View style={styles.progressSection}>
-              <View style={styles.progressTrack}>
-                <LinearGradient
-                  colors={[visual.color, `${visual.color}CC`]}
-                  start={{ x: 0, y: 0 }}
-                  end={{ x: 1, y: 0 }}
-                  style={[styles.progressFill, { width: `${Math.max(progress, 0)}%` }]}
-                />
+            {/* Bottom: progress (unlocked) or coming-soon pill (locked) */}
+            {isLocked ? (
+              <View style={styles.lockedStatus}>
+                <MaterialCommunityIcons name="lock" size={11} color={`${Colors.accent.primary}70`} />
+                <Text style={styles.lockedStatusText}>EARLY ACCESS · COMING SOON</Text>
               </View>
-              <Text style={[styles.journeyPct, { color: visual.color }]}>
-                {completedDays}/{totalDays}
-              </Text>
-            </View>
+            ) : (
+              <View style={styles.progressSection}>
+                <View style={styles.progressTrack}>
+                  <LinearGradient
+                    colors={[visual.color, `${visual.color}CC`]}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 0 }}
+                    style={[styles.progressFill, { width: `${Math.max(progress, 0)}%` }]}
+                  />
+                </View>
+                <Text style={[styles.journeyPct, { color: visual.color }]}>
+                  {completedDays}/{totalDays}
+                </Text>
+              </View>
+            )}
           </View>
         </BlurView>
       </TouchableOpacity>
@@ -158,6 +277,7 @@ export default function PathsScreen() {
   const insets = useSafeAreaInsets();
   const [PATHS, setPaths] = useState<any[]>([]);
   const [userProgressList, setUserProgressList] = useState<UserPathProgress[]>([]);
+  const [activeFilter, setActiveFilter] = useState<FilterTab>('all');
   const headerFade = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
@@ -172,37 +292,53 @@ export default function PathsScreen() {
     Animated.timing(headerFade, { toValue: 1, duration: 600, useNativeDriver: true }).start();
   }, []);
 
-  const onPathSelected = (pathId: string) => navigation.navigate('PathDetail', { pathId });
+  const onPathSelected = (pathId: string) => {
+    if (AVAILABLE_PATH_IDS.has(pathId)) {
+      navigation.navigate('PathDetail', { pathId });
+    } else {
+      navigation.navigate('Support');
+    }
+  };
 
-  // ── Real stats ──────────────────────────────────────────────
-  const activeCount = userProgressList.filter((p) => !p.isCompleted).length;
+  // ── Filter logic ────────────────────────────────────────────
+  const filteredPaths = useMemo(() => {
+    if (activeFilter === 'all') return PATHS;
+    if (activeFilter === 'active') {
+      return PATHS.filter((path) => {
+        if (!AVAILABLE_PATH_IDS.has(path.id)) return false;
+        const prog = userProgressList.find((p) => p.pathId === path.id);
+        return prog && !prog.isCompleted;
+      });
+    }
+    return PATHS.filter((path) => {
+      const prog = userProgressList.find((p) => p.pathId === path.id);
+      return prog?.isCompleted;
+    });
+  }, [PATHS, userProgressList, activeFilter]);
 
-  const daysLeft = userProgressList
-    .filter((p) => !p.isCompleted)
-    .reduce((sum, p) => {
-      const pathDef = PATHS.find((path) => path.id === p.pathId);
-      if (!pathDef) return sum;
-      return sum + Math.max(0, pathDef.duration - p.completedDays.length);
-    }, 0);
-
-  const stats = [
-    { label: 'Paths', value: PATHS.length.toString(), color: Colors.accent.primary },
-    { label: 'Active', value: activeCount.toString(), color: '#34D399' },
-    { label: 'Days left', value: daysLeft > 0 ? daysLeft.toString() : '—', color: '#60A5FA' },
-  ];
+  const filterCounts = useMemo(() => ({
+    all: PATHS.length,
+    active: PATHS.filter((path) => {
+      if (!AVAILABLE_PATH_IDS.has(path.id)) return false;
+      const prog = userProgressList.find((p) => p.pathId === path.id);
+      return prog && !prog.isCompleted;
+    }).length,
+    completed: PATHS.filter((path) => {
+      const prog = userProgressList.find((p) => p.pathId === path.id);
+      return prog?.isCompleted;
+    }).length,
+  }), [PATHS, userProgressList]);
 
   return (
     <View style={styles.container}>
-      <LinearGradient colors={['#0A1321', '#0C1A2E']} style={StyleSheet.absoluteFill} />
+      <LinearGradient colors={Colors.celestialWash} style={StyleSheet.absoluteFill} />
 
       {/* ── Header with mandala backdrop ─────────────────────── */}
       <Animated.View style={[styles.header, { paddingTop: insets.top + 16, opacity: headerFade }]}>
-        {/* Twinkling stars */}
         {STAR_POSITIONS.map((s, i) => (
           <TwinklingStar key={i} x={s.x} y={s.y} delay={s.delay} size={s.size} />
         ))}
 
-        {/* Mandala backdrop — two rings, centered behind the title */}
         <View style={styles.headerMandalaOuter} pointerEvents="none">
           <AnimatedMandala size={290} color={Colors.accent.primary} opacity={0.12} />
         </View>
@@ -210,7 +346,6 @@ export default function PathsScreen() {
           <AnimatedMandala size={180} color={Colors.accent.primary} opacity={0.1} direction="ccw" />
         </View>
 
-        {/* Header text — sits on top of the mandala (zIndex: 1) */}
         <View style={styles.headerText}>
           <Text style={styles.topBarText}>★ SAKINA</Text>
           <Text style={styles.headerPretitle}>GUIDED PROGRAMS</Text>
@@ -224,29 +359,47 @@ export default function PathsScreen() {
       {/* ── Content ──────────────────────────────────────────── */}
       <FlatList
         style={styles.scrollView}
-        data={PATHS}
+        data={filteredPaths}
         keyExtractor={(item) => item.id}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={[styles.content, { paddingBottom: insets.bottom + 100 }]}
         ItemSeparatorComponent={() => <View style={{ height: Spacing.lg }} />}
         ListHeaderComponent={
-          <Animated.View style={[styles.statsRow, { opacity: headerFade }]}>
-            {stats.map((stat) => (
-              <BlurView key={stat.label} intensity={12} tint="dark" style={styles.statCard}>
-                <Text style={[styles.statValue, { color: stat.color }]}>{stat.value}</Text>
-                <Text style={styles.statLabel}>{stat.label}</Text>
-              </BlurView>
-            ))}
+          <Animated.View style={{ opacity: headerFade }}>
+            <FilterBar
+              active={activeFilter}
+              onChange={setActiveFilter}
+              counts={filterCounts}
+            />
           </Animated.View>
+        }
+        ListEmptyComponent={
+          <View style={styles.emptyState}>
+            <MaterialCommunityIcons
+              name={activeFilter === 'completed' ? 'check-circle-outline' : 'compass-outline'}
+              size={44}
+              color={`${Colors.accent.primary}40`}
+            />
+            <Text style={styles.emptyTitle}>
+              {activeFilter === 'active' ? 'No active journeys' : 'None yet'}
+            </Text>
+            <Text style={styles.emptySub}>
+              {activeFilter === 'active'
+                ? 'Begin a path to see it here.'
+                : 'Complete a path to see it here.'}
+            </Text>
+          </View>
         }
         renderItem={({ item, index }) => {
           const userProgress = userProgressList.find((p) => p.pathId === item.id);
           const isActive = !!userProgress && !userProgress.isCompleted;
+          const isLocked = !AVAILABLE_PATH_IDS.has(item.id);
           return (
             <JourneyCard
               path={item}
               index={index}
               isActive={isActive}
+              isLocked={isLocked}
               userProgress={userProgress}
               onPress={() => onPathSelected(item.id)}
             />
@@ -259,7 +412,7 @@ export default function PathsScreen() {
 
 // ── Styles ──────────────────────────────────────────────────────
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#0C1A2E' },
+  container: { flex: 1, backgroundColor: Colors.background.primary },
 
   /* ── Header ── */
   header: {
@@ -267,7 +420,6 @@ const styles = StyleSheet.create({
     paddingBottom: Spacing.lg,
     zIndex: 2,
     overflow: 'hidden',
-    // Height driven by text content
     minHeight: 180,
   },
   headerMandalaOuter: {
@@ -286,9 +438,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     zIndex: 0,
   },
-  headerText: {
-    zIndex: 1,
-  },
+  headerText: { zIndex: 1 },
   topBarText: {
     fontSize: Typography.sizes.detail,
     color: Colors.accent.primary,
@@ -317,7 +467,7 @@ const styles = StyleSheet.create({
   },
   headerSub: {
     fontSize: 13,
-    color: '#7B8FA1',
+    color: Colors.text.muted,
     lineHeight: 18,
   },
 
@@ -325,51 +475,28 @@ const styles = StyleSheet.create({
   scrollView: { flex: 1, zIndex: 2 },
   content: { paddingHorizontal: Spacing.xl, paddingTop: Spacing.md },
 
-  /* ── Stats bar ── */
-  statsRow: {
-    flexDirection: 'row',
-    gap: Spacing.md,
-    marginBottom: Spacing.xl,
-  },
-  statCard: {
-    flex: 1,
-    borderRadius: BorderRadius.md,
-    overflow: 'hidden',
-    paddingVertical: 18,
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.05)',
-    backgroundColor: 'rgba(255,255,255,0.02)',
-  },
-  statValue: {
-    fontSize: Typography.sizes.h1,
-    fontWeight: '400',
-    marginBottom: Spacing.xs,
-    fontFamily: Typography.fonts.serif,
-  },
-  statLabel: {
-    fontSize: 11,
-    color: '#6B8EAE',
-    letterSpacing: 0.5,
-  },
-
-  /* Active-card mandala — outside BlurView so overflow:hidden doesn't clip */
+  /* ── Journey card ── */
   cardMandalaWrap: {
     position: 'absolute',
     top: -50,
     right: -50,
     zIndex: 0,
   },
-
   journeyCard: {
     borderRadius: BorderRadius.lg,
     overflow: 'hidden',
     borderWidth: 1,
     borderColor: 'rgba(255,255,255,0.08)',
   },
+  journeyCardLocked: {
+    borderColor: 'rgba(255,255,255,0.04)',
+  },
   journeyCardInner: {
     padding: Spacing.lg,
     backgroundColor: 'rgba(15,25,40,0.6)',
+  },
+  journeyCardInnerLocked: {
+    backgroundColor: 'rgba(12,20,32,0.55)',
   },
   journeyTop: {
     flexDirection: 'row',
@@ -406,14 +533,54 @@ const styles = StyleSheet.create({
   },
   journeyTheme: {
     fontSize: Typography.sizes.detail,
-    color: '#7B8FA1',
   },
   journeyDescription: {
     fontSize: 13,
-    color: '#7B8FA1',
+    color: Colors.text.muted,
     lineHeight: 20,
     marginBottom: Spacing.lg,
   },
+
+  /* ── Early access badge (top-right) ── */
+  earlyAccessBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    paddingHorizontal: Spacing.sm,
+    paddingVertical: 5,
+    borderRadius: BorderRadius.sm,
+    backgroundColor: `${Colors.accent.primary}14`,
+    borderWidth: 1,
+    borderColor: `${Colors.accent.primary}30`,
+  },
+  earlyAccessText: {
+    fontSize: 9,
+    fontWeight: '700',
+    color: Colors.accent.primary,
+    letterSpacing: 1,
+  },
+
+  /* ── Locked status pill (bottom of card) ── */
+  lockedStatus: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.xs,
+    paddingVertical: Spacing.sm,
+    paddingHorizontal: Spacing.md,
+    borderRadius: BorderRadius.sm,
+    backgroundColor: 'rgba(255,255,255,0.04)',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.06)',
+    alignSelf: 'flex-start',
+  },
+  lockedStatusText: {
+    fontSize: 10,
+    fontWeight: '700',
+    color: `${Colors.accent.primary}70`,
+    letterSpacing: 1,
+  },
+
+  /* ── Progress bar (unlocked) ── */
   progressSection: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -436,5 +603,24 @@ const styles = StyleSheet.create({
     letterSpacing: 0.5,
     minWidth: 36,
     textAlign: 'right',
+  },
+
+  /* ── Empty state ── */
+  emptyState: {
+    alignItems: 'center',
+    paddingTop: Spacing.xxxl,
+    gap: Spacing.md,
+  },
+  emptyTitle: {
+    fontSize: Typography.sizes.h2,
+    color: Colors.text.primary,
+    fontFamily: Typography.fonts.serif,
+    fontWeight: '400',
+  },
+  emptySub: {
+    fontSize: Typography.sizes.small,
+    color: Colors.text.muted,
+    textAlign: 'center',
+    lineHeight: 22,
   },
 });

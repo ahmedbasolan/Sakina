@@ -21,7 +21,7 @@ import { useStaggerEntry } from '../../hooks/useStaggerEntry';
 import { InteractiveStarfield } from './InteractiveStarfield';
 import { ShimmerButton } from '../ShimmerButton';
 
-const { width, height } = Dimensions.get('window');
+const { width } = Dimensions.get('window');
 const ICON_SIZE = Math.min(Math.round(width * 0.28), 120);
 
 const MAPPED_STAR_POSITIONS = [
@@ -79,7 +79,7 @@ export default function WelcomeScreen({ isActive, onNext }: Props) {
   return (
     <View style={styles.container}>
       <LinearGradient
-        colors={['#07111E', '#0C1A2E', '#0F1F30']}
+        colors={Colors.celestialWash}
         style={StyleSheet.absoluteFill}
         start={{ x: 0.5, y: 0 }}
         end={{ x: 0.5, y: 1 }}
@@ -151,7 +151,7 @@ export default function WelcomeScreen({ isActive, onNext }: Props) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#07111E',
+    backgroundColor: Colors.background.primary,
   },
   contentArea: {
     flex: 1,
@@ -172,17 +172,17 @@ const styles = StyleSheet.create({
   title: {
     fontFamily: Typography.fonts.serif,
     fontSize: Typography.sizes.hero,
-    color: '#F0E6D3',
+    color: Colors.text.primary,
     textAlign: 'center',
     letterSpacing: 0.5,
     marginBottom: Spacing.sm,
-    textShadowColor: 'rgba(201, 168, 76, 0.3)',
+    textShadowColor: 'rgba(212, 175, 55, 0.3)',
     textShadowOffset: { width: 0, height: 0 },
     textShadowRadius: 12,
   },
   subtitle: {
     fontSize: Typography.sizes.small,
-    color: 'rgba(176, 196, 215, 0.8)',
+    color: Colors.text.secondary,
     textAlign: 'center',
     lineHeight: 22,
     letterSpacing: 0.2,
@@ -252,7 +252,7 @@ const styles = StyleSheet.create({
   },
   privacyText: {
     fontSize: Typography.sizes.detail,
-    color: 'rgba(176, 196, 215, 0.70)',
+    color: Colors.text.secondary,
     lineHeight: 17,
     flex: 1,
   },

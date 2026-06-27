@@ -20,7 +20,6 @@ interface PathTopBarProps {
 }
 
 const PathTopBar: React.FC<PathTopBarProps> = ({
-  pathType = 'droplet',
   currentDay,
   totalDays,
   completedDays,
@@ -34,19 +33,6 @@ const PathTopBar: React.FC<PathTopBarProps> = ({
   // matches the celebration modal's ring (both show achievement, not position).
   const doneCount = completedDays ?? Math.max(currentDay - 1, 0);
   const progress = (doneCount / totalDays) * 100;
-
-  const getPathIcon = () => {
-    switch (pathType) {
-      case 'droplet':
-        return 'water';
-      case 'sun':
-        return 'sunny';
-      case 'moon':
-        return 'moon';
-      default:
-        return 'water';
-    }
-  };
 
   return (
     <View style={[styles.container, { paddingTop: insets.top + Spacing.sm }]}>

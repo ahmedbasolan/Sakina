@@ -5,7 +5,7 @@
  * 2-column bento grid with mood icon, Arabic name, English name, description.
  * Dark navy background, twinkling stars, animated mandala, from reference image.
  */
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Colors, Spacing, Typography } from '../theme/DesignSystem';
 import {
   View,
@@ -19,7 +19,6 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
-import { BlurView } from 'expo-blur';
 import Svg, { Path } from 'react-native-svg';
 import { AnimatedMandala } from '../components/AnimatedMandala';
 
@@ -78,6 +77,16 @@ const MOODS = [
     bg: 'rgba(129, 140, 248, 0.08)',
     border: 'rgba(129, 140, 248, 0.2)',
     icon: 'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z',
+  },
+  {
+    key: 'Tired',
+    arabic: 'تَعَب',
+    label: 'TIRED',
+    description: 'Seeking strength to carry on',
+    color: '#D6D3D1',
+    bg: 'rgba(214, 211, 209, 0.08)',
+    border: 'rgba(214, 211, 209, 0.2)',
+    icon: 'M9 2c-1.05 0-2.05.16-3 .46 4.06 1.27 7 5.06 7 9.54 0 4.48-2.94 8.27-7 9.54.95.3 1.95.46 3 .46 5.52 0 10-4.48 10-10S14.52 2 9 2z',
   },
   {
     key: 'Sad',
@@ -202,7 +211,6 @@ function MoodCard({ mood, onPress, index }: { mood: typeof MOODS[0]; onPress: ()
 export default function MoodSelectionScreen({ navigation }: any) {
   const insets = useSafeAreaInsets();
   const headerOpacity = useRef(new Animated.Value(0)).current;
-  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const cardAnims = useRef(MOODS.map(() => ({
     scale: new Animated.Value(1),
     opacity: new Animated.Value(1),
@@ -228,8 +236,6 @@ export default function MoodSelectionScreen({ navigation }: any) {
       });
     }
 
-    setSelectedIndex(index);
-
     Animated.spring(cardAnims[index].scale, {
       toValue: 1.05,
       friction: 8,
@@ -249,7 +255,6 @@ export default function MoodSelectionScreen({ navigation }: any) {
     transitionTimeout.current = setTimeout(() => {
       navigation.navigate('Guidance', { mood: mood.key });
       setTimeout(() => {
-        setSelectedIndex(null);
         cardAnims.forEach((a) => {
           a.scale.setValue(1);
           a.opacity.setValue(1);
@@ -262,7 +267,7 @@ export default function MoodSelectionScreen({ navigation }: any) {
     <View style={styles.container}>
       <StatusBar barStyle="light-content" translucent backgroundColor="transparent" />
       <LinearGradient
-        colors={['#07111E', '#0C1A2E', '#0E1F30']}
+        colors={Colors.celestialWash}
         style={StyleSheet.absoluteFill}
         start={{ x: 0.5, y: 0 }}
         end={{ x: 0.5, y: 1 }}
@@ -336,7 +341,7 @@ export default function MoodSelectionScreen({ navigation }: any) {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#07111E' },
+  container: { flex: 1, backgroundColor: Colors.background.primary },
 
   glowOrb: {
     position: 'absolute',
@@ -358,9 +363,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     paddingBottom: 20,
     zIndex: 2,
-  },
-  backBtn: {
-    marginBottom: 20,
   },
   headerCenter: {
     alignItems: 'center',
@@ -386,7 +388,7 @@ const styles = StyleSheet.create({
   },
   headerSub: {
     fontSize: 13,
-    color: 'rgba(176,196,215,0.7)',
+    color: Colors.text.secondary,
     textAlign: 'center',
     lineHeight: 20,
   },
@@ -446,7 +448,7 @@ const styles = StyleSheet.create({
   },
   moodDesc: {
     fontSize: 11,
-    color: 'rgba(176,196,215,0.65)',
+    color: Colors.text.muted,
     lineHeight: 16,
   },
   chevron: {

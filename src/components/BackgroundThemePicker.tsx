@@ -5,7 +5,6 @@ import {
     Text,
     TouchableOpacity,
     Modal,
-    TouchableWithoutFeedback,
     Platform,
     FlatList,
     Image,
@@ -15,7 +14,7 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { Colors, Spacing, Typography, BorderRadius } from '../theme/DesignSystem';
 import { BackgroundTheme, BackgroundThemeCategory } from '../types';
-import { BACKGROUND_THEMES, THEME_CATEGORIES, backgroundThemeService } from '../services/backgroundThemeService';
+import { BACKGROUND_THEMES, THEME_CATEGORIES } from '../services/backgroundThemeService';
 
 const { width } = Dimensions.get('window');
 const COLUMN_COUNT = 2;

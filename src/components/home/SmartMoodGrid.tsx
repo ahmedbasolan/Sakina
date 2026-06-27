@@ -10,7 +10,7 @@ import {
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { Mood, MoodConfig } from '../../types';
-import { Colors, Typography } from '../../theme/DesignSystem';
+import { Typography } from '../../theme/DesignSystem';
 import { getMoodsForTime } from '../../utils/moodTimeMapping';
 import { useReduceMotion } from '../../hooks/useReduceMotion';
 
@@ -90,19 +90,11 @@ const SmartMoodCard = memo(function SmartMoodCard({
         style={styles.cardTouch}
       >
         <LinearGradient
-          colors={mood.gradientColors}
-          style={[styles.card, { borderColor: isChecked ? mood.color + '60' : mood.color + '38' }]}
+          colors={[mood.color + '90', mood.color + '55']}
+          style={[styles.card, { borderColor: isChecked ? mood.color + 'CC' : mood.color + '70' }]}
           start={{ x: 0, y: 0 }}
           end={{ x: 0, y: 1 }}
         >
-          {/* Top sheen */}
-          <LinearGradient
-            colors={[mood.color + '1F', 'transparent']}
-            start={{ x: 0.5, y: 0 }}
-            end={{ x: 0.5, y: 0.45 }}
-            style={styles.cardSheen}
-            pointerEvents="none"
-          />
           {/* Checked glow overlay */}
           <Animated.View
             style={[
@@ -111,17 +103,22 @@ const SmartMoodCard = memo(function SmartMoodCard({
             ]}
           />
           <View style={styles.cardRow}>
-            <View style={[styles.iconCircle, { backgroundColor: mood.color + '18', borderColor: mood.color + '45' }]}>
-              <Ionicons name={mood.iconName as any} size={20} color={mood.color} />
+            <View style={[styles.iconCircle, { backgroundColor: 'rgba(0,0,0,0.18)', borderColor: 'rgba(255,255,255,0.20)' }]}>
+              <Ionicons name={mood.iconName as any} size={20} color="#FFFFFF" />
             </View>
             <View style={styles.cardText}>
-              <Text style={[styles.cardLabel, { color: mood.color }]}>
+              <Text
+                style={[styles.cardLabel, { color: '#FFFFFF' }]}
+                numberOfLines={1}
+                adjustsFontSizeToFit
+                minimumFontScale={0.86}
+              >
                 {mood.label.charAt(0) + mood.label.slice(1).toLowerCase()}
               </Text>
               <Text
                 style={[
                   styles.cardSublabel,
-                  { color: mood.color, opacity: isChecked ? 0.75 : 0.45 },
+                  { color: 'rgba(255,255,255,0.75)', opacity: isChecked ? 0.9 : 0.7 },
                 ]}
               >
                 {mood.sublabel}
@@ -129,8 +126,8 @@ const SmartMoodCard = memo(function SmartMoodCard({
             </View>
           </View>
           {isChecked && (
-            <View style={[styles.checkedBadge, { backgroundColor: mood.color }]}>
-              <Ionicons name="checkmark" size={8} color={mood.bgColor} />
+            <View style={[styles.checkedBadge, { backgroundColor: 'rgba(255,255,255,0.25)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.5)' }]}>
+              <Ionicons name="checkmark" size={8} color="#FFFFFF" />
             </View>
           )}
         </LinearGradient>
@@ -213,10 +210,6 @@ const styles = StyleSheet.create({
     position: 'relative',
     overflow: 'hidden',
     justifyContent: 'center',
-  },
-  cardSheen: {
-    ...StyleSheet.absoluteFillObject,
-    borderRadius: 15,
   },
   cardRow: {
     flexDirection: 'row',

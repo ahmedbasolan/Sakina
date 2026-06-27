@@ -1,7 +1,7 @@
 import React, { Component, ErrorInfo, ReactNode } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { Colors } from '../theme/DesignSystem';
-import { errorLoggingService, ErrorSeverity } from '../services/errorLoggingService';
+import { errorLoggingService } from '../services/errorLoggingService';
 
 interface ErrorBoundaryProps {
   children: ReactNode;

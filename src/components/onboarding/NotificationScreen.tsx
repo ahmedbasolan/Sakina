@@ -20,7 +20,7 @@ import { useStaggerEntry } from '../../hooks/useStaggerEntry';
 import { InteractiveStarfield } from './InteractiveStarfield';
 import { ShimmerButton } from '../ShimmerButton';
 
-const { width, height } = Dimensions.get('window');
+const { width } = Dimensions.get('window');
 const ICON_SIZE = Math.min(Math.round(width * 0.28), 120);
 
 const STAR_POS = [

@@ -56,6 +56,18 @@ export default [
       ...reactPlugin.configs.recommended.rules,
       ...reactHooksPlugin.configs.recommended.rules,
       'react/react-in-jsx-scope': 'off',
+      // Respect the `_`-prefix convention for intentionally-unused bindings
+      // (ignored catch errors, placeholder params for a stable signature, etc.).
+      'no-unused-vars': 'off',
+      '@typescript-eslint/no-unused-vars': [
+        'warn',
+        {
+          argsIgnorePattern: '^_',
+          varsIgnorePattern: '^_',
+          caughtErrorsIgnorePattern: '^_',
+          ignoreRestSiblings: true,
+        },
+      ],
       '@typescript-eslint/no-explicit-any': 'warn',
       'react-native/no-unused-styles': 'warn',
       'react-native/no-inline-styles': 'warn',

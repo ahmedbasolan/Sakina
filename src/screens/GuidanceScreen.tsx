@@ -5,7 +5,6 @@ import {
   Text,
   ActivityIndicator,
   StatusBar,
-  TouchableOpacity,
   Animated,
   PanResponder,
 } from 'react-native';
@@ -15,7 +14,6 @@ import { GoldenMotes } from '../components/GoldenMotes';
 import GuidanceHeader from '../components/GuidanceHeader';
 import VerseLayer from '../components/VerseLayer';
 import ContextLayer from '../components/ContextLayer';
-import FloatingActionRow from '../components/FloatingActionRow';
 import ShareSheet from '../components/ShareSheet';
 import DisplayPreferencesModal from '../components/DisplayPreferencesModal';
 import BackgroundThemePicker from '../components/BackgroundThemePicker';
@@ -296,6 +294,7 @@ const GuidanceScreen: React.FC = () => {
               angleSource={experience.angle?.angleSource}
               scrollY={scrollY}
               topInset={Spacing.lg}
+              accentColor={(MoodColors[mood] || MoodColors.Calm).accent}
             />
           )}
         </LayerContainer>
@@ -348,20 +347,6 @@ const GuidanceScreen: React.FC = () => {
         }
       />
 
-      {/* FloatingActionRow — verse-action buttons only; not shown on context layer */}
-      {currentLayer !== 0 && LAYER_TYPES[currentLayer] !== 'context' && (
-        <View style={styles.floatingFooter} pointerEvents="box-none">
-          <FloatingActionRow
-            layerType={LAYER_TYPES[currentLayer] || 'verse'}
-            onShare={handleShareVerse}
-            onSave={() => handleSave(0)}
-            isSaved={!!savedStates[0]}
-            audioKey={extractVerseKey(experience.content.source)}
-            onSaveReflection={() => {}}
-          />
-        </View>
-      )}
-
       <ShareSheet
         isVisible={isShareSheetVisible}
         onClose={() => setIsShareSheetVisible(false)}
@@ -370,7 +355,6 @@ const GuidanceScreen: React.FC = () => {
           source: shareContent.source,
           arabicText: shareContent.arabicText,
           transliteration: shareContent.transliteration,
-          translation: mood,
         }}
       />
 
@@ -446,14 +430,6 @@ const styles = StyleSheet.create({
   },
   gestureWrap: {
     flex: 1,
-  },
-  floatingFooter: {
-    position: 'absolute',
-    bottom: Spacing.md,
-    left: 0,
-    right: 0,
-    alignItems: 'center',
-    justifyContent: 'center',
   },
   budgetRow: {
     flexDirection: 'row',

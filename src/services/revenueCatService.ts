@@ -5,10 +5,11 @@
  * any actual purchase/restore/entitlement work. This keeps the rest of the
  * codebase decoupled from the RC SDK surface.
  *
- * SDK keys are PUBLIC (safe to ship in the binary — RC docs confirm this).
- * Replace the placeholder strings below with the keys from:
- *   app.revenuecat.com → Project: Sakina → API keys
- *   → "App specific keys" section → iOS / Android public key
+ * SDK keys are PUBLIC (safe to ship in the binary — RC docs confirm this) and
+ * are loaded from .env (REVENUECAT_IOS_API_KEY / REVENUECAT_ANDROID_API_KEY),
+ * never hardcoded. Get them from:
+ *   app.revenuecat.com → Project: Sakina → API keys → SDK API keys
+ *   (iOS key starts with appl_  |  Android key starts with goog_)
  */
 import Purchases, {
   CustomerInfo,

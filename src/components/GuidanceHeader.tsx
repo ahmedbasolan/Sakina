@@ -20,7 +20,6 @@ const LAYER_LABELS = ['Verse', 'Context', 'Practice', 'Reflection'];
 
 const GuidanceHeader: React.FC<GuidanceHeaderProps> = ({
   mood,
-  islamicTerm,
   onBack,
   onOptionsPress,
   activeIndex,

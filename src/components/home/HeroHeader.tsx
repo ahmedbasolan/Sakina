@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Animated, Easing } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Colors, Typography } from '../../theme/DesignSystem';
+import { Colors, Spacing, Typography } from '../../theme/DesignSystem';
 import { Ionicons } from '@expo/vector-icons';
 import { AnimatedMandala } from '../AnimatedMandala';
 import { TwinklingStar } from './TwinklingStar';
@@ -21,9 +21,14 @@ interface HeroHeaderProps {
   greeting?: string;
 }
 
+const SETTINGS_ICON_SIZE = 22;
+
 export function HeroHeader({ fadeAnim, slideAnim, onSettingsPress, greeting }: HeroHeaderProps) {
   const insets = useSafeAreaInsets();
   const reduceMotion = useReduceMotion();
+  // Single source of truth for safe-area floor used by both the top bar and
+  // the greeting block — avoids the two expressions drifting apart.
+  const safeTop = Math.max(insets.top, 20);
 
   // The greeting reveals on its own — a calm opacity-only fade (no slide, no
   // pulse), slightly delayed so it settles in above the Verse of the Day.
@@ -53,17 +58,17 @@ export function HeroHeader({ fadeAnim, slideAnim, onSettingsPress, greeting }: H
 
       {/* Mandala — subtle background geometry */}
       <View style={styles.mandalaOuter} pointerEvents="none">
-        <AnimatedMandala size={220} color={Colors.accent.primary} opacity={0.35} webLayers={2} />
+        <AnimatedMandala size={300} color={Colors.accent.primary} opacity={0.35} webLayers={2} />
       </View>
       <View style={styles.mandalaInner} pointerEvents="none">
-        <AnimatedMandala size={160} color={Colors.accent.primary} opacity={0.25} direction="ccw" webLayers={2} />
+        <AnimatedMandala size={220} color={Colors.accent.primary} opacity={0.25} direction="ccw" webLayers={2} />
       </View>
 
       {/* Top bar — settings only */}
       <Animated.View
         style={[
           styles.heroTopBar,
-          { paddingTop: Math.max(insets.top, 20), opacity: fadeAnim, transform: [{ translateY: slideAnim }] },
+          { paddingTop: safeTop, opacity: fadeAnim, transform: [{ translateY: slideAnim }] },
         ]}
       >
         <TouchableOpacity
@@ -72,19 +77,19 @@ export function HeroHeader({ fadeAnim, slideAnim, onSettingsPress, greeting }: H
           accessibilityLabel="Settings"
           hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
         >
-          <Ionicons name="settings-outline" size={22} color={Colors.accent.primary} />
+          <Ionicons name="settings-outline" size={SETTINGS_ICON_SIZE} color={Colors.accent.primary} />
         </TouchableOpacity>
       </Animated.View>
 
       {/* Greeting — time-of-day caption + salam, calm fade-in only (no slide) */}
       {!!greeting && (
-        <Animated.View style={[styles.greetingBlock, { opacity: greetingFade }]}>
+        <Animated.View style={[styles.greetingBlock, { opacity: greetingFade, marginTop: safeTop + SETTINGS_ICON_SIZE + Spacing.sm }]}>
           <Text style={styles.greetingCaption}>{greeting}</Text>
           <Text style={styles.greetingTitle}>Assalamu Alaikum</Text>
         </Animated.View>
       )}
 
-      {/* Bismillah — faded calligraphy centred over the mandala, same calm fade */}
+      {/* Bismillah — gold calligraphy centred over the mandala, same calm fade */}
       <Animated.Text style={[styles.bismillah, { opacity: greetingFade }]}>
         بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ
       </Animated.Text>
@@ -96,20 +101,20 @@ export function HeroHeader({ fadeAnim, slideAnim, onSettingsPress, greeting }: H
 const styles = StyleSheet.create({
   heroHeader: {
     position: 'relative',
-    paddingTop: 60,
-    paddingBottom: 40,
+    paddingTop: 0,
+    paddingBottom: Spacing.xs,
     alignItems: 'center',
   },
   mandalaOuter: {
     position: 'absolute',
-    top: 20,
+    top: 10,
     left: 0,
     right: 0,
     alignItems: 'center',
   },
   mandalaInner: {
     position: 'absolute',
-    top: 50,
+    top: 40,
     left: 0,
     right: 0,
     alignItems: 'center',
@@ -127,7 +132,6 @@ const styles = StyleSheet.create({
   greetingBlock: {
     alignSelf: 'stretch',
     paddingHorizontal: 24,
-    marginTop: 44,
   },
   greetingCaption: {
     fontSize: 12,
@@ -150,14 +154,15 @@ const styles = StyleSheet.create({
   bismillah: {
     fontFamily: Typography.fonts.arabic,
     fontSize: 24,
-    lineHeight: 44,
-    color: 'rgba(245, 237, 227, 0.92)',
+    lineHeight: 52,
+    color: Colors.accent.light,
     textAlign: 'center',
     alignSelf: 'stretch',
-    paddingHorizontal: 24,
-    marginTop: 28,
-    textShadowColor: 'rgba(212, 175, 55, 0.65)',
+    paddingHorizontal: Spacing.xl,
+    paddingBottom: Spacing.sm,
+    marginTop: Spacing.sm,
+    textShadowColor: 'rgba(232, 200, 106, 0.85)',
     textShadowOffset: { width: 0, height: 0 },
-    textShadowRadius: 18,
+    textShadowRadius: 24,
   },
 });

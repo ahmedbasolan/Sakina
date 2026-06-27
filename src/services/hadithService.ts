@@ -104,7 +104,7 @@ export async function getDailyHadith(): Promise<HadithContent> {
   try {
     await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(fallback));
     await AsyncStorage.setItem(CACHE_DATE_KEY, today);
-  } catch (e) {
+  } catch (_e) {
     // Ignore
   }
   

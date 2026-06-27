@@ -3,34 +3,20 @@ import { StyleSheet, View, Text, Dimensions, Animated } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 const { height } = Dimensions.get('window');
 import Svg, { Path } from 'react-native-svg';
-import { Colors, Spacing, Typography, BorderRadius } from '../theme/DesignSystem';
+import { Colors, Spacing, Typography } from '../theme/DesignSystem';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 interface ContextLayerProps {
   attribution: string;
   text: string;
   source: string;
-  /** Mood-specific framing from ContentAngle.angle — shown as "For Your Heart" */
   angle?: string;
-  /** Source citation for the angle (e.g. "Tafsir Ibn Kathir") */
   angleSource?: string;
   scrollY?: Animated.Value;
-  /** Journey identity color — themes the "For Your Heart" + source accents. */
   accentColor?: string;
-  /**
-   * Override the top padding when the parent already renders a header in the
-   * flex flow (not absolute-positioned). When omitted the component falls back
-   * to `insets.top + Spacing.sm` — correct when it is rendered inside an
-   * absoluteFill container where the safe area hasn't been consumed yet.
-   */
   topInset?: number;
 }
 
-/**
- * Splits the tafsir text into two sections:
- * 1. "How to Understand This" - the scholarly explanation
- * 2. "Why It Matters" - the prophetic hadith / practical relevance
- */
 function splitIntoSections(text: string): { understand: string; matters: string } {
   const splitPatterns = [
     /\.\s+The Prophet\s+ﷺ\s+said:/,
@@ -70,7 +56,6 @@ function splitIntoSections(text: string): { understand: string; matters: string 
   return { understand: text, matters: '' };
 }
 
-/** Extracts a clean source label from the tafsir text */
 function extractSourceLabel(text: string, fallbackSource: string): string {
   const match = text.match(/\[Tafsir\s+[^\]]+\]/);
   if (match) return match[0].replace(/[[\]]/g, '');
@@ -78,9 +63,7 @@ function extractSourceLabel(text: string, fallbackSource: string): string {
   return 'Islamic Scholarship';
 }
 
-/** Detect and extract a prophetic quote if present */
 function extractPropheticQuote(text: string): { before: string; quote: string; after: string } | null {
-  // Match "The Prophet ﷺ said: "..." patterns
   const quoteMatch = text.match(
     /The Prophet\s+ﷺ\s+said:\s*["""]([^"""]+)["""]/,
   );
@@ -93,7 +76,6 @@ function extractPropheticQuote(text: string): { before: string; quote: string; a
   return null;
 }
 
-/* ─── Decorative Quote Mark ─────────────────────────────────── */
 function QuoteOrnament({ color }: { color: string }) {
   return (
     <Svg width={28} height={22} viewBox="0 0 28 22" style={{ opacity: 0.2 }}>
@@ -105,13 +87,21 @@ function QuoteOrnament({ color }: { color: string }) {
   );
 }
 
-const ContextLayer: React.FC<ContextLayerProps> = ({ attribution, text, source, angle, angleSource, scrollY, accentColor = Colors.accent.primary, topInset }) => {
+const ContextLayer: React.FC<ContextLayerProps> = ({
+  attribution,
+  text,
+  source,
+  angle,
+  angleSource,
+  scrollY,
+  accentColor = Colors.accent.primary,
+  topInset,
+}) => {
   const insets = useSafeAreaInsets();
   const { understand, matters } = useMemo(() => splitIntoSections(text), [text]);
   const sourceLabel = useMemo(() => extractSourceLabel(text, source), [text, source]);
   const propheticQuote = useMemo(() => extractPropheticQuote(matters || text), [matters, text]);
 
-  // Staggered fade-in for sections
   const fadeAnim1  = useRef(new Animated.Value(0)).current;
   const fadeAnim2  = useRef(new Animated.Value(0)).current;
   const fadeAnim3  = useRef(new Animated.Value(0)).current;
@@ -148,7 +138,6 @@ const ContextLayer: React.FC<ContextLayerProps> = ({ attribution, text, source, 
       )
       .trim();
 
-  // For the "matters" section, if we extracted a prophetic quote, render it specially
   const renderMattersContent = () => {
     if (!propheticQuote) {
       return <Text style={styles.bodyText}>{cleanText(matters)}</Text>;
@@ -160,13 +149,10 @@ const ContextLayer: React.FC<ContextLayerProps> = ({ attribution, text, source, 
           <Text style={styles.bodyText}>{cleanText(propheticQuote.before)}</Text>
         ) : null}
 
-        {/* Prophetic Quote Callout */}
-        <View style={styles.quoteCard}>
-          <View style={styles.quoteCardInner}>
-            <QuoteOrnament color={Colors.accent.secondary} />
-            <Text style={styles.quoteText}>{propheticQuote.quote}</Text>
-            <Text style={styles.quoteAttribution}>— Prophet Muhammad ﷺ</Text>
-          </View>
+        <View style={[styles.quoteCard, { borderLeftColor: accentColor }]}>
+          <QuoteOrnament color={accentColor} />
+          <Text style={styles.quoteText}>{propheticQuote.quote}</Text>
+          <Text style={[styles.quoteAttribution, { color: accentColor }]}>— Prophet Muhammad ﷺ</Text>
         </View>
 
         {propheticQuote.after ? (
@@ -202,7 +188,10 @@ const ContextLayer: React.FC<ContextLayerProps> = ({ attribution, text, source, 
             : undefined
         }
       >
-        {/* Section 1: Scholarly Understanding — hidden when whyThis is empty */}
+        {/* Mood-tinted top rule — signals layer transition */}
+        <View style={[styles.topRule, { backgroundColor: accentColor }]} />
+
+        {/* Section 1: Scholarly understanding */}
         {understand.length > 0 && (
           <Animated.View
             style={[
@@ -210,20 +199,17 @@ const ContextLayer: React.FC<ContextLayerProps> = ({ attribution, text, source, 
               { opacity: fadeAnim1, transform: [{ translateY: slideAnim1 }] },
             ]}
           >
-            <View style={styles.sectionHeader}>
-              <MaterialCommunityIcons name="book-open-variant" size={16} color={Colors.accent.secondary} />
-              <Text style={styles.sectionLabel}>
+            <View style={styles.sectionLead}>
+              <MaterialCommunityIcons name="book-open-variant" size={13} color={accentColor} style={{ opacity: 0.7 }} />
+              <Text style={[styles.sectionTag, { color: accentColor }]}>
                 {attribution || 'Scholarly Context'}
               </Text>
             </View>
-
-            <View style={styles.textCard}>
-              <Text style={styles.bodyText}>{cleanText(understand)}</Text>
-            </View>
+            <Text style={styles.bodyText}>{cleanText(understand)}</Text>
           </Animated.View>
         )}
 
-        {/* Section 2: Why It Matters / Prophetic Wisdom */}
+        {/* Section 2: Prophetic wisdom */}
         {matters.length > 0 && (
           <Animated.View
             style={[
@@ -231,54 +217,34 @@ const ContextLayer: React.FC<ContextLayerProps> = ({ attribution, text, source, 
               { opacity: fadeAnim2, transform: [{ translateY: slideAnim2 }] },
             ]}
           >
-            <View style={styles.sectionHeader}>
-              <MaterialCommunityIcons name="heart-outline" size={16} color={Colors.accent.warm} />
-              <Text style={[styles.sectionLabel, { color: Colors.accent.warm }]}>
-                Why It Matters
-              </Text>
-            </View>
-
-            <View style={styles.textCard}>
-              {renderMattersContent()}
-            </View>
+            {renderMattersContent()}
           </Animated.View>
         )}
 
-        {/* Source Attribution — only when there is scholarly text to attribute */}
+        {/* Source attribution — footnote */}
         {understand.length > 0 && (
-          <Animated.View style={[styles.sourceRow, { opacity: fadeAnim2 }]}>
-            <View style={styles.sourceLine} />
-            <View style={styles.sourceBadge}>
-              <MaterialCommunityIcons name="shield-check" size={13} color={accentColor} />
-              <Text style={styles.sourceText}>{sourceLabel}</Text>
-            </View>
+          <Animated.View style={[styles.attributionRow, { opacity: fadeAnim2 }]}>
+            <MaterialCommunityIcons name="shield-check" size={11} color={accentColor} style={{ opacity: 0.55 }} />
+            <Text style={styles.attributionText}>{sourceLabel}</Text>
           </Animated.View>
         )}
 
-        {/* Section 3: For Your Heart — mood-specific framing from ContentAngle */}
+        {/* For Your Heart — left-border personal message card */}
         {angle ? (
           <Animated.View
             style={[
-              styles.section,
               styles.heartSection,
               { opacity: fadeAnim3, transform: [{ translateY: slideAnim3 }] },
             ]}
           >
-            <View style={styles.heartDivider}>
-              <View style={styles.heartDividerLine} />
-              <View style={[styles.heartDividerDiamond, { backgroundColor: accentColor + '55' }]} />
-              <View style={styles.heartDividerLine} />
-            </View>
-
-            <View style={styles.sectionHeader}>
-              <MaterialCommunityIcons name="heart-outline" size={16} color={accentColor} />
-              <Text style={[styles.sectionLabel, { color: accentColor }]}>FOR YOUR HEART</Text>
-            </View>
-
-            <View style={[styles.textCard, styles.heartCard]}>
-              <Text style={[styles.bodyText, styles.heartText]}>{angle}</Text>
+            <View style={[styles.heartCard, { borderLeftColor: accentColor, backgroundColor: accentColor + '0D' }]}>
+              <View style={styles.heartHeader}>
+                <MaterialCommunityIcons name="heart-outline" size={13} color={accentColor} />
+                <Text style={[styles.heartLabel, { color: accentColor }]}>For Your Heart</Text>
+              </View>
+              <Text style={styles.heartBody}>{angle}</Text>
               {angleSource ? (
-                <Text style={styles.heartSource}>— {angleSource}</Text>
+                <Text style={[styles.heartSource, { color: accentColor }]}>— {angleSource}</Text>
               ) : null}
             </View>
           </Animated.View>
@@ -291,7 +257,7 @@ const ContextLayer: React.FC<ContextLayerProps> = ({ attribution, text, source, 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingHorizontal: 24,
+    paddingHorizontal: Spacing.xl,
   },
   scrollArea: {
     flex: 1,
@@ -302,33 +268,33 @@ const styles = StyleSheet.create({
     paddingTop: Spacing.sm,
   },
 
+  /* ── Top accent rule ── */
+  topRule: {
+    height: 1.5,
+    borderRadius: 1,
+    marginBottom: Spacing.xl,
+    opacity: 0.45,
+  },
+
   /* ── Sections ── */
   section: {
     marginBottom: Spacing.xl,
   },
-  sectionHeader: {
+  sectionLead: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 10,
+    gap: Spacing.sm,
     marginBottom: Spacing.md,
-    paddingLeft: 4,
   },
-  sectionLabel: {
-    fontSize: 12,
-    color: Colors.accent.secondary,
+  sectionTag: {
+    fontSize: 11,
     fontWeight: '700',
     letterSpacing: 1.8,
     textTransform: 'uppercase',
+    opacity: 0.75,
   },
 
-  /* ── Text Card ── */
-  textCard: {
-    backgroundColor: 'rgba(255, 235, 210, 0.04)',
-    borderRadius: BorderRadius.lg,
-    padding: Spacing.xl,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 235, 210, 0.06)',
-  },
+  /* ── Body text — floats on immersive background ── */
   bodyText: {
     fontSize: 16,
     lineHeight: 28,
@@ -337,22 +303,17 @@ const styles = StyleSheet.create({
     opacity: 0.9,
   },
 
-  /* ── Prophetic Quote Callout ── */
+  /* ── Prophetic quote callout ── */
   quoteCard: {
     marginVertical: Spacing.lg,
-    borderRadius: BorderRadius.lg,
-    overflow: 'hidden',
-  },
-  quoteCardInner: {
-    backgroundColor: 'rgba(212, 175, 55, 0.06)',
     borderLeftWidth: 3,
-    borderLeftColor: Colors.accent.secondary,
-    padding: Spacing.xl,
     paddingLeft: Spacing.xl,
+    paddingVertical: Spacing.md,
+    paddingRight: Spacing.sm,
   },
   quoteText: {
     fontFamily: Typography.fonts.serif,
-    fontSize: 17,
+    fontSize: Typography.sizes.body,
     lineHeight: 28,
     color: Colors.text.primary,
     fontStyle: 'italic',
@@ -361,72 +322,64 @@ const styles = StyleSheet.create({
   },
   quoteAttribution: {
     fontSize: 12,
-    color: Colors.accent.secondary,
     fontWeight: '600',
     marginTop: Spacing.md,
     letterSpacing: 0.5,
     opacity: 0.7,
   },
 
-  /* ── For Your Heart section ── */
+  /* ── Source attribution footnote ── */
+  attributionRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.sm,
+    paddingLeft: Spacing.xs,
+    marginBottom: Spacing.xl,
+  },
+  attributionText: {
+    fontSize: 11,
+    color: 'rgba(245, 237, 227, 0.35)',
+    fontStyle: 'italic',
+    letterSpacing: 0.3,
+  },
+
+  /* ── For Your Heart ── */
   heartSection: {
     marginTop: Spacing.xl,
   },
-  heartDivider: {
+  heartCard: {
+    borderLeftWidth: 3,
+    paddingLeft: Spacing.xl,
+    paddingVertical: Spacing.lg,
+    paddingRight: Spacing.md,
+  },
+  heartHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: Spacing.md,
-    marginBottom: Spacing.xl,
+    gap: Spacing.sm,
+    marginBottom: Spacing.md,
   },
-  heartDividerLine: {
-    flex: 1,
-    height: StyleSheet.hairlineWidth,
-    backgroundColor: 'rgba(245, 237, 227, 0.08)',
+  heartLabel: {
+    fontSize: 11,
+    fontWeight: '700',
+    letterSpacing: 1.5,
+    textTransform: 'uppercase',
+    opacity: 0.85,
   },
-  heartDividerDiamond: {
-    width: 5,
-    height: 5,
-    borderRadius: 1,
-    transform: [{ rotate: '45deg' }],
-  },
-  heartCard: {
-    backgroundColor: 'rgba(212, 175, 55, 0.05)',
-    borderColor: 'rgba(212, 175, 55, 0.1)',
-  },
-  heartText: {
+  heartBody: {
+    fontFamily: Typography.fonts.serif,
+    fontSize: Typography.sizes.body,
+    lineHeight: 30,
+    color: Colors.text.primary,
     fontStyle: 'italic',
-    opacity: 0.88,
+    opacity: 0.9,
   },
   heartSource: {
     fontSize: 11,
-    color: Colors.accent.primary,
-    opacity: 0.6,
+    opacity: 0.55,
     fontWeight: '500',
     marginTop: Spacing.md,
     letterSpacing: 0.4,
-  },
-
-  /* ── Source ── */
-  sourceRow: {
-    marginTop: Spacing.md,
-    alignItems: 'flex-start',
-    gap: Spacing.md,
-  },
-  sourceLine: {
-    height: StyleSheet.hairlineWidth,
-    backgroundColor: 'rgba(245, 237, 227, 0.08)',
-    width: '100%',
-  },
-  sourceBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    paddingLeft: 4,
-  },
-  sourceText: {
-    fontSize: 12,
-    color: 'rgba(245, 237, 227, 0.4)',
-    fontWeight: '600',
     fontStyle: 'italic',
   },
 });

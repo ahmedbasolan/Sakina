@@ -8,6 +8,15 @@ const DAILY_REMINDER_IDS_KEY = '@notif_ids/daily_reminder';
 const PRAYER_NOTIF_IDS_KEY = '@notif_ids/prayer';
 const SPIRITUAL_NOTIF_IDS_KEY = '@notif_ids/spiritual';
 
+// Android notification channels. On Android 8+ a scheduled notification only
+// shows with sound / heads-up if it targets a channel; without one the OS
+// silently drops it to minimal importance. iOS ignores channels entirely
+// (a `channelId` in a trigger is a harmless no-op there). Separate channels
+// let users mute, say, spiritual-window nudges while keeping prayer alerts.
+const CH_DAILY = 'daily-reminders';
+const CH_PRAYER = 'prayer-times';
+const CH_SPIRITUAL = 'spiritual-windows';
+
 interface ReminderSettings {
   hour: number;    // 24h format
   minute: number;
@@ -63,6 +72,7 @@ Notifications.setNotificationHandler({
 
 class NotificationService {
   private static instance: NotificationService;
+  private channelsReady = false;
 
   private constructor() { }
 
@@ -73,7 +83,44 @@ class NotificationService {
     return NotificationService.instance;
   }
 
+  /**
+   * Create the Android notification channels (idempotent, Android-only).
+   * Runs before the permission prompt so Android has a channel to attach the
+   * request to, and before any scheduling so triggers can target a channel.
+   */
+  private async ensureAndroidChannels(): Promise<void> {
+    if (Platform.OS !== 'android' || this.channelsReady) return;
+    try {
+      await Promise.all([
+        Notifications.setNotificationChannelAsync(CH_DAILY, {
+          name: 'Daily Reflection',
+          importance: Notifications.AndroidImportance.HIGH,
+          sound: 'default',
+          vibrationPattern: [0, 250, 250, 250],
+          lightColor: '#D4AF37',
+        }),
+        Notifications.setNotificationChannelAsync(CH_PRAYER, {
+          name: 'Prayer Times',
+          importance: Notifications.AndroidImportance.HIGH,
+          sound: 'default',
+          vibrationPattern: [0, 250, 250, 250],
+          lightColor: '#D4AF37',
+        }),
+        Notifications.setNotificationChannelAsync(CH_SPIRITUAL, {
+          name: 'Spiritual Windows',
+          importance: Notifications.AndroidImportance.DEFAULT,
+          sound: 'default',
+          lightColor: '#D4AF37',
+        }),
+      ]);
+      this.channelsReady = true;
+    } catch (e) {
+      console.warn('[NotificationService] Failed to create Android channels:', e);
+    }
+  }
+
   public async requestPermissions(): Promise<boolean> {
+    await this.ensureAndroidChannels();
     const { status: existingStatus } = await Notifications.getPermissionsAsync();
     let finalStatus = existingStatus;
     if (existingStatus !== 'granted') {
@@ -102,6 +149,7 @@ class NotificationService {
     hour: number,
     minute: number,
     content: Notifications.NotificationContentInput,
+    channelId: string,
   ): Promise<string[]> {
     const now = new Date();
     const dates: Date[] = [];
@@ -115,7 +163,7 @@ class NotificationService {
       dates.map((date) =>
         Notifications.scheduleNotificationAsync({
           content,
-          trigger: { type: Notifications.SchedulableTriggerInputTypes.DATE, date },
+          trigger: { type: Notifications.SchedulableTriggerInputTypes.DATE, date, channelId },
         }).catch(() => null),
       ),
     );
@@ -152,7 +200,7 @@ class NotificationService {
           body: `It's time for the ${prayer} prayer in ${cityName}.`,
           sound: true,
           priority: Notifications.AndroidNotificationPriority.HIGH,
-        });
+        }, CH_PRAYER);
       }),
     );
 
@@ -190,14 +238,17 @@ class NotificationService {
       fajrValid ? this.scheduleWeeklyTrigger(
         Math.floor(tahajjudMins / 60), tahajjudMins % 60,
         { title: 'The Silent Hour', body: 'It is the time of Tahajjud. A moment for deep reflection and conversation with your Lord.', categoryIdentifier: 'spiritual_window' },
+        CH_SPIRITUAL,
       ) : Promise.resolve([]),
       fajrValid ? this.scheduleWeeklyTrigger(
         Math.floor(morningMins / 60), morningMins % 60,
         { title: 'Start with Light', body: 'The sun is rising. Remember Allah with the morning adhkars to protect your day.', categoryIdentifier: 'spiritual_window' },
+        CH_SPIRITUAL,
       ) : Promise.resolve([]),
       maghribValid ? this.scheduleWeeklyTrigger(
         Math.floor(eveningMins / 60), eveningMins % 60,
         { title: 'Closing the Day', body: 'The day is ending. Find peace in the evening remembrance before the night sets in.', categoryIdentifier: 'spiritual_window' },
+        CH_SPIRITUAL,
       ) : Promise.resolve([]),
     ]);
 
@@ -278,6 +329,7 @@ class NotificationService {
         hour: hour24,
         minute,
         repeats: true,
+        channelId: CH_DAILY,
       },
     });
 

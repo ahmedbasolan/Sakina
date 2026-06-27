@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
   Text,
@@ -14,28 +14,12 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { HapticsService } from '../services/hapticsService';
 import NotificationService from '../services/notificationService';
 import { logServiceError } from '../services/errorLoggingService';
+import { Colors, Typography } from '../theme/DesignSystem';
 
 const CLOCK_SIZE = 240;
 const CLOCK_RADIUS = CLOCK_SIZE / 2;
 const MINUTE_HAND_LENGTH = CLOCK_RADIUS * 0.75;
 const HOUR_HAND_LENGTH = CLOCK_RADIUS * 0.45;
-
-// Premium color palette matching the mockup
-const COLORS = {
-  primary: '#E0C3FC',
-  primaryMuted: 'rgba(224, 195, 252, 0.4)',
-  primaryGlow: 'rgba(224, 195, 252, 0.5)',
-  spiritViolet: '#8E94F2',
-  duskDeep: '#1a1a2e',
-  duskMid: '#16213e',
-  duskSoft: '#0f3460',
-  white: '#FFFFFF',
-  whiteDim: 'rgba(255, 255, 255, 0.9)',
-  whiteMuted: 'rgba(255, 255, 255, 0.4)',
-  whiteSubtle: 'rgba(255, 255, 255, 0.2)',
-  glass: 'rgba(255, 255, 255, 0.04)',
-  glassBorder: 'rgba(255, 255, 255, 0.05)',
-};
 
 interface DailyRemindersScreenProps {
   onBack?: () => void;
@@ -375,7 +359,7 @@ export default function DailyRemindersScreen({ onBack }: DailyRemindersScreenPro
   if (isLoading) {
     return (
       <View style={[styles.container, styles.centered]}>
-        <ActivityIndicator size="large" color={COLORS.primary} />
+        <ActivityIndicator size="large" color={Colors.accent.primary} />
       </View>
     );
   }
@@ -383,11 +367,7 @@ export default function DailyRemindersScreen({ onBack }: DailyRemindersScreenPro
   return (
     <>
       <LinearGradient
-        colors={
-          period === 'AM'
-            ? ['#2a1a3e', '#3d2a5f', '#5b3a7a'] // Dawn purple tones
-            : ['#0a0a14', '#12121e', '#1a1a2e'] // Midnight blue/black tones
-        }
+        colors={Colors.celestialWash}
         style={styles.container}
       >
         {/* Ambient glow */}
@@ -398,7 +378,7 @@ export default function DailyRemindersScreen({ onBack }: DailyRemindersScreenPro
           <TouchableOpacity
             onPress={handleBack}
             style={styles.closeButton}
-            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+            hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
           >
             <Text style={styles.closeIcon}>✕</Text>
           </TouchableOpacity>
@@ -567,7 +547,7 @@ export default function DailyRemindersScreen({ onBack }: DailyRemindersScreenPro
             disabled={isSaving}
           >
             {isSaving ? (
-              <ActivityIndicator color={COLORS.white} />
+              <ActivityIndicator color={Colors.text.primary} />
             ) : (
               <Text style={styles.setButtonText}>Set Reminder</Text>
             )}
@@ -577,7 +557,7 @@ export default function DailyRemindersScreen({ onBack }: DailyRemindersScreenPro
         {/* Footer - Branding only */}
         <View style={[styles.footer, { paddingBottom: Math.max(insets.bottom, 20) + 12 }]}>
           <View style={styles.brandingContainer}>
-            <Text style={styles.brandingText}>AL-HIKMAH</Text>
+            <Text style={styles.brandingText}>SAKINA</Text>
             <View style={styles.brandingDot} />
           </View>
         </View>
@@ -618,7 +598,7 @@ const styles = StyleSheet.create({
     left: '-10%',
     width: '50%',
     height: '40%',
-    backgroundColor: 'rgba(142, 148, 242, 0.1)',
+    backgroundColor: Colors.accent.glow,
     borderRadius: 999,
   },
   header: {
@@ -633,14 +613,14 @@ const styles = StyleSheet.create({
   },
   closeIcon: {
     fontSize: 20,
-    color: COLORS.whiteMuted,
+    color: Colors.text.muted,
     fontWeight: '200',
   },
   headerLabel: {
     fontSize: 10,
     fontWeight: '300',
     letterSpacing: 4,
-    color: COLORS.whiteMuted,
+    color: Colors.text.muted,
   },
   content: {
     flex: 1,
@@ -653,8 +633,9 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 36,
+    fontFamily: Typography.fonts.serif,
     fontWeight: '300',
-    color: COLORS.whiteDim,
+    color: Colors.text.primary,
     letterSpacing: -0.5,
   },
   subtitle: {
@@ -662,7 +643,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '300',
     fontStyle: 'italic',
-    color: COLORS.primaryMuted,
+    color: Colors.text.secondary,
   },
   clockRow: {
     flexDirection: 'row',
@@ -713,8 +694,8 @@ const styles = StyleSheet.create({
     fontWeight: '400',
   },
   meridiemActiveText: {
-    color: '#E0C3FC',
-    textShadowColor: 'rgba(224, 195, 252, 0.5)',
+    color: Colors.accent.primary,
+    textShadowColor: 'rgba(212, 175, 55, 0.5)',
     textShadowOffset: { width: 0, height: 0 },
     textShadowRadius: 10,
   },
@@ -735,13 +716,13 @@ const styles = StyleSheet.create({
   // Constellation label (Roman numeral)
   constellationLabel: {
     position: 'absolute',
-    fontFamily: 'serif',
+    fontFamily: Typography.fonts.serif,
     fontWeight: '200',
     fontSize: 14,
     letterSpacing: 1,
     color: 'rgba(255, 255, 255, 0.4)',
     transform: [{ translateX: -12 }, { translateY: -8 }],
-    textShadowColor: 'rgba(224, 195, 252, 0.2)',
+    textShadowColor: 'rgba(212, 175, 55, 0.2)',
     textShadowOffset: { width: 0, height: 0 },
     textShadowRadius: 10,
   },
@@ -766,7 +747,7 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     marginLeft: -0.5,
-    backgroundColor: 'rgba(240, 230, 255, 0.4)', // star-glow color
+    backgroundColor: 'rgba(212, 175, 55, 0.5)',
   },
   hourHand: {
     height: HOUR_HAND_LENGTH,
@@ -784,8 +765,8 @@ const styles = StyleSheet.create({
     width: 6,
     height: 6,
     borderRadius: 3,
-    backgroundColor: '#F0E6FF', // star-glow color
-    shadowColor: '#F0E6FF',
+    backgroundColor: Colors.accent.primary,
+    shadowColor: Colors.accent.primary,
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 1,
     shadowRadius: 15,
@@ -804,9 +785,9 @@ const styles = StyleSheet.create({
     height: 100,
     borderRadius: 50,
     borderWidth: 2,
-    borderColor: '#E0C3FC',
+    borderColor: Colors.accent.primary,
     backgroundColor: 'transparent',
-    shadowColor: '#E0C3FC',
+    shadowColor: Colors.accent.primary,
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.8,
     shadowRadius: 20,
@@ -819,7 +800,7 @@ const styles = StyleSheet.create({
   timeText: {
     fontSize: 28,
     fontWeight: '300',
-    color: COLORS.white,
+    color: Colors.text.primary,
     letterSpacing: 4,
   },
   glassPanel: {
@@ -827,9 +808,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: COLORS.glass,
+    backgroundColor: Colors.glass.light,
     borderWidth: 1,
-    borderColor: COLORS.glassBorder,
+    borderColor: Colors.glass.border,
     borderRadius: 32,
     padding: 16,
   },
@@ -840,14 +821,14 @@ const styles = StyleSheet.create({
   toggleTitle: {
     fontSize: 18,
     fontWeight: '300',
-    color: 'rgba(255, 255, 255, 0.8)',
+    color: Colors.text.primary,
     marginBottom: 4,
   },
   toggleSubtitle: {
     fontSize: 12,
     fontWeight: '300',
     fontStyle: 'italic',
-    color: COLORS.whiteMuted,
+    color: Colors.text.muted,
     lineHeight: 18,
   },
   toggleSwitch: {
@@ -861,18 +842,18 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   toggleSwitchActive: {
-    backgroundColor: 'rgba(224, 195, 252, 0.2)',
+    backgroundColor: 'rgba(212, 175, 55, 0.2)',
   },
   toggleKnob: {
     width: 20,
     height: 20,
     borderRadius: 10,
-    backgroundColor: 'rgba(224, 195, 252, 0.5)',
+    backgroundColor: 'rgba(212, 175, 55, 0.5)',
   },
   toggleKnobActive: {
-    backgroundColor: 'rgba(224, 195, 252, 0.8)',
+    backgroundColor: Colors.accent.primary,
     transform: [{ translateX: 20 }],
-    shadowColor: COLORS.primary,
+    shadowColor: Colors.accent.primary,
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.4,
     shadowRadius: 10,
@@ -894,7 +875,7 @@ const styles = StyleSheet.create({
   setButtonText: {
     fontSize: 18,
     fontWeight: '300',
-    color: COLORS.white,
+    color: Colors.text.primary,
     letterSpacing: 2,
   },
   brandingContainer: {
@@ -912,7 +893,7 @@ const styles = StyleSheet.create({
     width: 4,
     height: 4,
     borderRadius: 2,
-    backgroundColor: COLORS.primaryMuted,
+    backgroundColor: Colors.accent.muted,
   },
 
   // Time control button styles
@@ -920,12 +901,12 @@ const styles = StyleSheet.create({
     width: 44,
     height: 44,
     borderRadius: 22,
-    backgroundColor: 'rgba(255, 255, 255, 0.08)',
+    backgroundColor: Colors.glass.light,
     borderWidth: 1,
-    borderColor: 'rgba(224, 195, 252, 0.25)',
+    borderColor: 'rgba(212, 175, 55, 0.25)',
     justifyContent: 'center',
     alignItems: 'center',
-    shadowColor: '#E0C3FC',
+    shadowColor: Colors.accent.primary,
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.15,
     shadowRadius: 8,
@@ -933,7 +914,7 @@ const styles = StyleSheet.create({
   },
   timeButtonText: {
     fontSize: 18,
-    color: COLORS.primary,
+    color: Colors.accent.primary,
     fontWeight: '300',
   },
   timeLabel: {
@@ -960,7 +941,7 @@ const styles = StyleSheet.create({
   successTitle: {
     fontSize: 28,
     fontWeight: '600',
-    color: COLORS.white,
+    color: Colors.text.primary,
     marginBottom: 8,
   },
   successSubtitle: {

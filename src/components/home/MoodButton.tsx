@@ -1,8 +1,8 @@
 import React, { useRef, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Animated } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { Mood, MoodConfig } from '../../types';
-import { Colors, Typography } from '../../theme/DesignSystem';
+import { MoodConfig } from '../../types';
+import { Typography } from '../../theme/DesignSystem';
 
 interface MoodButtonProps {
   mood: MoodConfig;
