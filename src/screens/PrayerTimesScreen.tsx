@@ -47,7 +47,7 @@ export default function PrayerTimesScreen({ navigation }: { navigation: any }) {
       try {
         const data = await service.getTimingsByCity(loc.city, loc.country);
         setPrayerData(data);
-      } catch (error) {
+      } catch (_error) {
         Alert.alert('Error', 'Failed to fetch prayer times. Please try again.');
       } finally {
         setIsLoading(false);
@@ -117,7 +117,7 @@ export default function PrayerTimesScreen({ navigation }: { navigation: any }) {
 
   return (
     <View style={styles.container}>
-      <LinearGradient colors={['#07111E', '#0C1A2E', '#0F1519']} style={styles.gradient}>
+      <LinearGradient colors={Colors.celestialWash} style={styles.gradient}>
         {/* Header */}
         <View style={[styles.header, { paddingTop: insets.top + Spacing.sm }]}>
           <TouchableOpacity
