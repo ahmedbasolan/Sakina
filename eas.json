@@ -21,12 +21,7 @@
       },
       "channel": "preview",
       "env": {
-        "SUPABASE_URL": "https://kfoogulmkylgtxwqbeat.supabase.co",
-        "QURAN_API_ENV": "test",
-        "QURAN_API_TEST_CLIENT_ID": "b5bcc09e-532b-4b2c-918c-faca884cb08d",
-        "QURAN_API_TEST_ENDPOINT": "https://prelive-oauth2.quran.foundation",
-        "QURAN_API_CLIENT_ID": "c721de0f-1ecb-4576-a83d-ac78550b0d4c",
-        "QURAN_API_ENDPOINT": "https://oauth2.quran.foundation"
+        "SUPABASE_URL": "https://kfoogulmkylgtxwqbeat.supabase.co"
       }
     },
     "production": {
@@ -37,6 +32,9 @@
       },
       "android": {
         "buildType": "app-bundle"
+      },
+      "env": {
+        "SUPABASE_URL": "https://kfoogulmkylgtxwqbeat.supabase.co"
       }
     }
   },

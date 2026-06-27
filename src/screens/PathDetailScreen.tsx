@@ -1,35 +1,23 @@
-import React, { useRef, useState, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import {
   View,
   Text,
   TouchableOpacity,
   StyleSheet,
   ScrollView,
-  Dimensions,
-  Animated,
   Alert,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import Svg, {
-  Path,
-  Circle,
-  Defs,
-  RadialGradient as SvgRadialGradient,
-  Stop,
-} from 'react-native-svg';
-import { logServiceError } from '../services/errorLoggingService';
+import Svg, { Circle } from 'react-native-svg';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRoute, useNavigation, useFocusEffect } from '@react-navigation/native';
-import { Typography, Spacing } from '../theme/DesignSystem';
+import { Colors, Typography, Spacing } from '../theme/DesignSystem';
 
 import { UserPathProgress } from '../types';
 import { PathsService } from '../services/pathsService';
 import { useAppContext } from '../context/AppContext';
 
-const { width, height } = Dimensions.get('window');
-
-import { AnimatedMandala } from '../components/AnimatedMandala';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { getPathVisual } from '../constants/pathVisuals';
 
@@ -89,13 +77,11 @@ export const PathDetailScreen: React.FC = () => {
   const navigation = useNavigation<any>();
   const insets = useSafeAreaInsets();
   const pathsService = PathsService.getInstance();
-  const { rotationEngine, freemiumService } = useAppContext();
+  const { rotationEngine } = useAppContext();
 
   const { pathId } = route.params;
   const path = pathsService.getPathById(pathId);
   const [userProgress, setUserProgress] = useState<UserPathProgress | undefined>();
-
-  const scrollY = useRef(new Animated.Value(0)).current;
 
   // Reload on every focus (not just mount) so the ring, dots and Continue label
   // refresh when the user returns from completing a lesson in PathStepScreen.
@@ -196,14 +182,14 @@ export const PathDetailScreen: React.FC = () => {
     <View style={styles.container}>
       {/* Background */}
       <LinearGradient
-        colors={['#0A1321', '#0C1A2E']}
+        colors={Colors.celestialWash}
         style={StyleSheet.absoluteFill}
       />
 
       {/* Header */}
       <View style={[styles.header, { paddingTop: insets.top + 10 }]}>
         <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-          <Ionicons name="chevron-back" size={20} color="#7B8FA1" />
+          <Ionicons name="chevron-back" size={20} color={Colors.text.muted} />
           <Text style={styles.backText}>Journeys</Text>
         </TouchableOpacity>
         <Text style={styles.topBarText}>★ SAKINA</Text>
@@ -336,7 +322,7 @@ export const PathDetailScreen: React.FC = () => {
               onPress={() => openDay(nextStep)}
             >
               <View style={styles.todayCardLeft}>
-                <Text style={[styles.todayCardTitle, { color: '#F0E6D3' }]}>
+                <Text style={[styles.todayCardTitle, { color: Colors.text.primary }]}>
                   {nextStep.title}
                 </Text>
               </View>
@@ -379,13 +365,7 @@ export const PathDetailScreen: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#07111E',
-  },
-  mandalaWrap: {
-    position: 'absolute',
-    top: -50,
-    right: -100,
-    zIndex: 0,
+    backgroundColor: Colors.background.primary,
   },
   header: {
     flexDirection: 'row',
@@ -401,13 +381,13 @@ const styles = StyleSheet.create({
     width: 100,
   },
   backText: {
-    color: '#7B8FA1',
+    color: Colors.text.muted,
     fontSize: 15,
     marginLeft: 2,
   },
   topBarText: {
     fontSize: 12,
-    color: '#D4AF37',
+    color: Colors.accent.primary,
     letterSpacing: 2,
     fontWeight: '700',
     flex: 1,
@@ -453,7 +433,7 @@ const styles = StyleSheet.create({
   },
   heroSubtitle: {
     fontSize: 14,
-    color: '#7B8FA1',
+    color: Colors.text.muted,
   },
   progressSection: {
     flexDirection: 'row',
@@ -475,12 +455,12 @@ const styles = StyleSheet.create({
   progressCircleTextMain: {
     fontSize: 16,
     fontWeight: '700',
-    color: '#FFF',
+    color: Colors.text.primary,
     lineHeight: 18,
   },
   progressCircleTextSub: {
     fontSize: 10,
-    color: 'rgba(255,255,255,0.5)',
+    color: Colors.text.muted,
     lineHeight: 10,
   },
   progressTexts: {
@@ -489,12 +469,12 @@ const styles = StyleSheet.create({
   progressDayComplete: {
     fontSize: 15,
     fontWeight: '700',
-    color: '#FFF',
+    color: Colors.text.primary,
     marginBottom: 2,
   },
   progressDaysRem: {
     fontSize: 13,
-    color: '#7B8FA1',
+    color: Colors.text.muted,
     marginBottom: 10,
   },
   progressDotsContainer: {
@@ -510,7 +490,7 @@ const styles = StyleSheet.create({
   },
   sectionHeaderLabel: {
     fontSize: 11,
-    color: '#7B8FA1',
+    color: Colors.text.muted,
     letterSpacing: 2,
     fontWeight: '700',
     marginBottom: 12,
@@ -647,12 +627,12 @@ const styles = StyleSheet.create({
   },
   lessonTitle: {
     fontSize: 16,
-    color: '#F0E6D3',
+    color: Colors.text.primary,
     marginBottom: 2,
   },
   lessonSource: {
     fontSize: 13,
-    color: '#7B8FA1',
+    color: Colors.text.muted,
   },
 });
 

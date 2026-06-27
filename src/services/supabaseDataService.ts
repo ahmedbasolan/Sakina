@@ -55,6 +55,12 @@ export class SupabaseDataService {
     // Prevents two concurrent syncPendingHistory runs from double-uploading rows.
     private isSyncing = false;
 
+    // In-memory cache for getRecentHistory — avoids a Supabase round-trip on
+    // every getGuidance call within the same session. Invalidated when a new
+    // history entry is recorded for the same mood so recency scoring stays fresh.
+    private historyCache = new Map<string, { data: Map<string, number>; cachedAt: number }>();
+    private readonly HISTORY_TTL_MS = 30 * 60 * 1000; // 30 min — well under any prayer window
+
     static getInstance(): SupabaseDataService {
         if (!SupabaseDataService.instance) {
             SupabaseDataService.instance = new SupabaseDataService();
@@ -95,6 +101,10 @@ export class SupabaseDataService {
      * - Guest:               writes to local SQLite (pending_sync = 0, never synced).
      */
     async recordHistory(contentId: string, angleId: string, mood: Mood): Promise<void> {
+        // Invalidate the in-memory cache so the next getGuidance call for this
+        // mood includes the entry we're about to write in its recency penalties.
+        this.historyCache.delete(mood);
+
         const userId = await this.getUserId();
 
         if (userId) {
@@ -247,9 +257,20 @@ export class SupabaseDataService {
     /**
      * Get recent history for rotation scoring.
      * Returns a Map of "contentId-angleId" → lastShown timestamp.
+     *
+     * Results are cached in memory for HISTORY_TTL_MS. The cache is invalidated
+     * when recordHistory writes a new entry for the same mood, so the recency
+     * scoring used by getGuidance stays accurate without a network round-trip
+     * on every call within the same session.
      */
     async getRecentHistory(mood: Mood, cutoffMs: number): Promise<Map<string, number>> {
+        const cached = this.historyCache.get(mood);
+        if (cached && Date.now() - cached.cachedAt < this.HISTORY_TTL_MS) {
+            return cached.data;
+        }
+
         const userId = await this.getUserId();
+        let result: Map<string, number>;
 
         if (userId) {
             // ── Supabase path ──
@@ -276,11 +297,14 @@ export class SupabaseDataService {
                     }
                 }
             }
-            return historyMap;
+            result = historyMap;
         } else {
             // ── Guest/offline path ──
-            return this.getRecentHistoryLocal(mood, cutoffMs);
+            result = await this.getRecentHistoryLocal(mood, cutoffMs);
         }
+
+        this.historyCache.set(mood, { data: result, cachedAt: Date.now() });
+        return result;
     }
 
     private async getRecentHistoryLocal(mood: string, cutoffMs: number): Promise<Map<string, number>> {
@@ -678,7 +702,7 @@ export class SupabaseDataService {
      * Fetch guidance content from Supabase filtered by mood.
      * Optionally filters/prioritizes by prayer context if provided.
      */
-    async fetchContentByMood(mood: Mood, prayerContext?: PrayerContext): Promise<any[]> {
+    async fetchContentByMood(mood: Mood, _prayerContext?: PrayerContext): Promise<any[]> {
         // Limit to 50 rows — the rotation engine only uses the top 3 candidates,
         // so fetching the entire table is wasteful as content grows.
         const query = supabase

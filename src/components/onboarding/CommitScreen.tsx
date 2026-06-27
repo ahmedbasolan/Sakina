@@ -14,7 +14,6 @@ import {
   StyleSheet,
   Animated,
   Easing,
-  Dimensions,
   Pressable,
 } from 'react-native';
 import Svg, {
@@ -27,12 +26,10 @@ import Svg, {
 } from 'react-native-svg';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useStaggerEntry } from '../../hooks/useStaggerEntry';
 import { useReduceMotion } from '../../hooks/useReduceMotion';
 import { AnimatedMandala } from '../AnimatedMandala';
 
-const { width, height } = Dimensions.get('window');
 const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 
 const HOLD_DURATION = 3000;
@@ -90,7 +87,9 @@ function WarmMote({ offsetX, delay, holding, reduceMotion }: {
   );
 }
 
+// `dot` is used immediately via `.dot` below, so no-unused-styles can't see it.
 const moteBase = StyleSheet.create({
+  // eslint-disable-next-line react-native/no-unused-styles
   dot: {
     position: 'absolute',
     width: 4,

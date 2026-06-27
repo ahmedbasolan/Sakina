@@ -64,14 +64,13 @@ const lightOnboardingColors: OnboardingThemeColors = {
 };
 
 const darkOnboardingGradients: [string, string, string][] = [
-  ['#040D1A', '#081629', '#040D1A'],   // 0. Bismillah
-  ['#07111E', '#0C1A2E', '#07111E'],   // 1. Welcome
-  ['#07111E', '#0C1A2E', '#07111E'],   // 2. Heart Check-In
-  ['#06080E', '#0D1525', '#06080E'],   // 3. Personalization
-  ['#07111E', '#0C1A2E', '#07111E'],   // 4. First Guidance
-  ['#050A10', '#0A1525', '#050A10'],   // 5. Paywall
-  ['#0A0408', '#1E0A10', '#0A0408'],   // 6. Notification
-  ['#04080F', '#09142A', '#04080F'],   // 7. Commit
+  ['#07111E', '#0C1A2E', '#0F1F30'],   // 0. Bismillah
+  ['#07111E', '#0C1A2E', '#0F1F30'],   // 1. Welcome
+  ['#07111E', '#0C1A2E', '#0F1F30'],   // 2. Heart Check-In
+  ['#07111E', '#0C1A2E', '#0F1F30'],   // 3. Personalization
+  ['#07111E', '#0C1A2E', '#0F1F30'],   // 4. First Guidance
+  ['#07111E', '#0C1A2E', '#0F1F30'],   // 5. Notification
+  ['#07111E', '#0C1A2E', '#0F1F30'],   // 6. Commit
 ];
 
 const lightOnboardingGradients: [string, string, string][] = [
@@ -80,9 +79,8 @@ const lightOnboardingGradients: [string, string, string][] = [
   ['#EDF1F7', '#E0EAF5', '#EDF1F7'],   // 2. Heart Check-In
   ['#F0EDF7', '#EAE0F2', '#F0EDF7'],   // 3. Personalization
   ['#EDF1F7', '#E0EAF5', '#EDF1F7'],   // 4. First Guidance
-  ['#EAF0F6', '#DFE8F1', '#EAF0F6'],   // 5. Paywall
-  ['#F7EDEE', '#F2E0E2', '#F7EDEE'],   // 6. Notification
-  ['#EEF1F7', '#E2EAF2', '#EEF1F7'],   // 7. Commit
+  ['#EEF1F7', '#E2EAF2', '#EEF1F7'],   // 5. Notification
+  ['#EFF5F1', '#E3EEE9', '#EFF5F1'],   // 6. Commit
 ];
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);

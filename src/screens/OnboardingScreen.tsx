@@ -63,7 +63,7 @@ function BackArrow() {
   );
 }
 
-export default function OnboardingScreen({ navigation }: any) {
+export default function OnboardingScreen() {
   const [currentScreen, setCurrentScreen] = useState(0);
   // While a page-turn is in flight, the target page is mounted alongside the
   // current one so the two can cross-slide together.
@@ -193,7 +193,7 @@ export default function OnboardingScreen({ navigation }: any) {
   const handleAllowNotifications = useCallback(async () => {
     try {
       await NotificationService.getInstance().requestPermissions();
-    } catch (e) {
+    } catch (_e) {
       // User denied or error — continue anyway
     }
     goNext();

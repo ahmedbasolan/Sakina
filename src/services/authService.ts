@@ -1,5 +1,18 @@
+import { Platform } from 'react-native';
+import * as AppleAuthentication from 'expo-apple-authentication';
+import * as WebBrowser from 'expo-web-browser';
+import { makeRedirectUri } from 'expo-auth-session';
+import * as QueryParams from 'expo-auth-session/build/QueryParams';
 import { supabase } from '../config/supabaseClient';
-import { Session, User } from '@supabase/supabase-js';
+import { Session } from '@supabase/supabase-js';
+
+// Lets the in-app browser dismiss itself and hand the redirect back to the app.
+WebBrowser.maybeCompleteAuthSession();
+
+// Deep-link the OAuth provider redirects back to — derived from the "sakina"
+// scheme in app.json (e.g. sakina://). This EXACT value must be added to the
+// provider's redirect allow-list in the Supabase dashboard, or sign-in fails.
+const OAUTH_REDIRECT = makeRedirectUri();
 
 export class AuthService {
   private static instance: AuthService;
@@ -68,6 +81,90 @@ export class AuthService {
   async sendPasswordResetEmail(email: string) {
     const { error } = await supabase.auth.resetPasswordForEmail(email);
     if (error) throw error;
+  }
+
+  // ── OAuth ──────────────────────────────────────────────────────────────────
+  // NOTE: these only work once the providers are configured in the Supabase
+  // dashboard (Google + Apple) and OAUTH_REDIRECT is in each provider's redirect
+  // allow-list. Apple additionally needs the "Sign in with Apple" capability on
+  // the iOS bundle id. They require a fresh native build (new native modules).
+
+  /** True only where native Apple Sign-In is supported (iOS). */
+  async isAppleSignInAvailable(): Promise<boolean> {
+    if (Platform.OS !== 'ios') return false;
+    try {
+      return await AppleAuthentication.isAvailableAsync();
+    } catch {
+      return false;
+    }
+  }
+
+  /**
+   * Google sign-in via Supabase's OAuth web flow: open the provider in an
+   * in-app browser, then turn the redirect back into a Supabase session.
+   * Resolves to null if the user dismisses the browser (treated as a cancel).
+   */
+  async signInWithGoogle(): Promise<Session | null> {
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: { redirectTo: OAUTH_REDIRECT, skipBrowserRedirect: true },
+    });
+    if (error) throw error;
+    if (!data?.url) throw new Error('Could not start Google sign-in.');
+
+    const result = await WebBrowser.openAuthSessionAsync(data.url, OAUTH_REDIRECT);
+    if (result.type !== 'success' || !result.url) return null; // dismissed / cancelled
+
+    return this.createSessionFromUrl(result.url);
+  }
+
+  /** Exchange the OAuth redirect URL for a persisted Supabase session. */
+  private async createSessionFromUrl(url: string): Promise<Session | null> {
+    const { params, errorCode } = QueryParams.getQueryParams(url);
+    if (errorCode) throw new Error(errorCode);
+    const { access_token, refresh_token } = params;
+    if (!access_token) throw new Error('Sign-in did not return a session.');
+
+    const { data, error } = await supabase.auth.setSession({ access_token, refresh_token });
+    if (error) throw error;
+    return data.session;
+  }
+
+  /**
+   * Native Apple sign-in (iOS only). Throws on non-iOS. User cancellation
+   * surfaces as an error with code 'ERR_REQUEST_CANCELED' — callers should
+   * swallow that quietly rather than showing an error.
+   */
+  async signInWithApple() {
+    if (Platform.OS !== 'ios') {
+      throw new Error('Apple sign-in is only available on iOS.');
+    }
+    const credential = await AppleAuthentication.signInAsync({
+      requestedScopes: [
+        AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
+        AppleAuthentication.AppleAuthenticationScope.EMAIL,
+      ],
+    });
+    if (!credential.identityToken) {
+      throw new Error('Apple did not return an identity token.');
+    }
+
+    const { data, error } = await supabase.auth.signInWithIdToken({
+      provider: 'apple',
+      token: credential.identityToken,
+    });
+    if (error) throw error;
+
+    // Apple returns the full name ONLY on the first authorization. Persist it
+    // so the profile isn't blank on subsequent sign-ins.
+    const fullName = credential.fullName;
+    if (fullName && (fullName.givenName || fullName.familyName)) {
+      const display = [fullName.givenName, fullName.familyName].filter(Boolean).join(' ').trim();
+      if (display) {
+        await supabase.auth.updateUser({ data: { full_name: display } }).catch(() => {});
+      }
+    }
+    return data;
   }
 
   /**

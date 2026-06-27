@@ -1,5 +1,3 @@
-import { logNetworkError } from './errorLoggingService';
-
 export interface RetryConfig {
   maxRetries: number;
   retryDelayMs: number;

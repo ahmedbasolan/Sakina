@@ -8,7 +8,7 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import {
   View, Text, StyleSheet, TouchableOpacity,
-  ActivityIndicator, Animated, Platform,
+  ActivityIndicator, Animated,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { BlurView } from 'expo-blur';
@@ -445,7 +445,7 @@ export default function SurahReaderScreen({ route, navigation }: Props) {
   return (
     <View style={styles.container}>
       <LinearGradient
-        colors={['#07111E', '#0C1A2E', '#0F1F30']}
+        colors={Colors.celestialWash}
         style={StyleSheet.absoluteFill}
         start={{ x: 0.5, y: 0 }}
         end={{ x: 0.5, y: 1 }}
@@ -756,7 +756,7 @@ export default function SurahReaderScreen({ route, navigation }: Props) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#07111E',
+    backgroundColor: Colors.background.primary,
   },
 
   // ── Header ──

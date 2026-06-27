@@ -3,7 +3,7 @@ import { StyleSheet, View, Text, Animated, TouchableOpacity } from 'react-native
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Svg, { Path, Circle as SvgCircle, G } from 'react-native-svg';
 import { BlurView } from 'expo-blur';
-import { Colors, Spacing, Typography, BorderRadius } from '../theme/DesignSystem';
+import { Colors, Spacing, Typography } from '../theme/DesignSystem';
 import { Ionicons } from '@expo/vector-icons';
 import { HapticsService } from '../services/hapticsService';
 import ArabicText from './ArabicText';
@@ -386,7 +386,7 @@ const VerseLayer: React.FC<VerseLayerProps> = ({
             </Animated.View>
 
             <Animated.View style={{ opacity: transOpacity, transform: [{ translateY: transSlide }] }}>
-              <Text style={[styles.translation, isLongTranslation && styles.translationCompact]}>
+              <Text style={[styles.translation, isLongTranslation && styles.translationCompact, { color: accentColor + 'BF' }]}>
                 {formattedTranslation}
               </Text>
             </Animated.View>
@@ -413,7 +413,7 @@ const VerseLayer: React.FC<VerseLayerProps> = ({
             <Animated.View style={{ opacity: transOpacity, transform: [{ translateY: transSlide }] }}>
               <ArabicText
                 text={arabic}
-                style={isLongArabic ? styles.arabicSecondaryCompact : styles.arabicSecondary}
+                style={[isLongArabic ? styles.arabicSecondaryCompact : styles.arabicSecondary, { color: accentColor + 'CC' }]}
               />
             </Animated.View>
 
@@ -533,9 +533,10 @@ const VerseLayer: React.FC<VerseLayerProps> = ({
           )}
         </Animated.View>
 
-        {/* Persistent ambient pip — pulses when a context layer is available */}
+        {/* Persistent context pip — chevron + dot pulsing so users know to swipe up */}
         {hasContext && (
           <Animated.View style={[styles.swipeHintCenter, { opacity: swipeHintOpacity }]}>
+            <Ionicons name="chevron-up" size={10} color={accentColor} style={{ opacity: 0.75 }} />
             <View style={[styles.contextDot, { backgroundColor: accentColor }]} />
           </Animated.View>
         )}
@@ -798,6 +799,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingBottom: 4,
+    gap: 2,
   },
   contextDot: {
     width: 5,

@@ -19,7 +19,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Colors, BorderRadius, Spacing, Typography } from '../theme/DesignSystem';
 
-const { height: SCREEN_HEIGHT, width: SCREEN_WIDTH } = Dimensions.get('window');
+const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
 interface ShareSheetProps {
   isVisible: boolean;
@@ -81,6 +81,11 @@ const ShareSheet = ({ isVisible, onClose, content }: ShareSheetProps) => {
   const [showTransliteration, setShowTransliteration] = useState(!!content.transliteration);
 
   useEffect(() => {
+    setShowArabic(!!content.arabicText);
+    setShowTransliteration(!!content.transliteration);
+  }, [content]);
+
+  useEffect(() => {
     if (isVisible) {
       Animated.parallel([
         Animated.timing(slideAnim, {
@@ -116,7 +121,7 @@ const ShareSheet = ({ isVisible, onClose, content }: ShareSheetProps) => {
     if (showArabic && content.arabicText) shareText += `${content.arabicText}\n`;
     if (showTransliteration && content.transliteration)
       shareText += `(${content.transliteration})\n`;
-    shareText += `\n${content.source}\n\nShared via Quiet Heart`;
+    shareText += `\n${content.source}\n\nShared via Sakina`;
 
     try {
       if (action === 'whatsapp') {
@@ -477,10 +482,10 @@ const styles = StyleSheet.create({
   },
   previewCard: {
     width: '100%',
-    aspectRatio: 1.05,
+    minHeight: 300,
     borderRadius: 24,
-    padding: 24,
-    paddingVertical: 32,
+    paddingHorizontal: Spacing.xl,
+    paddingVertical: Spacing.xxl,
     alignItems: 'center',
     justifyContent: 'space-between',
     marginBottom: 32,
@@ -504,9 +509,9 @@ const styles = StyleSheet.create({
   },
   quoteContainer: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
     width: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   previewArabic: {
     fontSize: 22,

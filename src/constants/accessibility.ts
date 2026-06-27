@@ -6,11 +6,11 @@ export const accessibilityLabels = {
   close: 'Close this screen',
 
   // Onboarding
-  onboardingTitle: 'Islamic Guidance App Onboarding',
-  bismillahScreen: 'Screen 1 of 4: Bismillah - In the name of Allah',
-  heartScreen: "Screen 2 of 4: Your emotions and Allah's guidance",
-  pathScreen: 'Screen 3 of 4: Spiritual journeys and practices',
-  streakScreen: 'Screen 4 of 4: Building consistent habits',
+  onboardingTitle: 'Sakina Onboarding',
+  bismillahScreen: 'Screen 1 of 7: Bismillah - In the name of Allah',
+  heartScreen: "Screen 3 of 7: Your emotions and Allah's guidance",
+  pathScreen: 'Screen 4 of 7: Personalization',
+  streakScreen: 'Screen 5 of 7: First guidance verse',
 
   // Mood Selection
   moodSelection: 'Select your current emotional state',

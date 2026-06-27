@@ -269,7 +269,6 @@ export default function PathCompletionCelebration({
   // `getNextStep`) so we don't add a second +1 and skip a day.
   const progress = Math.round((userProgress.completedDays.length / path.duration) * 100);
   const nextStep = pathsService.getCurrentStep(path.id, userProgress);
-  const actionsCompleted = userProgress.completedDays.length;
   const currentStreak = userProgress.completedDays.length; // Simplified streak
 
   useEffect(() => {
@@ -330,7 +329,7 @@ export default function PathCompletionCelebration({
   const handleShare = async () => {
     try {
       await Share.share({
-        message: `Alhamdulillah! I just completed Day ${step.day} of the "${path.title}" path on Guidance App. ${progress}% through my journey! 🌙`,
+        message: `Alhamdulillah! I just completed Day ${step.day} of the "${path.title}" path on Sakina. ${progress}% through my journey! 🌙`,
       });
     } catch (error) {
       console.error('Error sharing:', error);

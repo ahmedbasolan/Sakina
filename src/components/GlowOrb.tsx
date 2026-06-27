@@ -4,7 +4,7 @@
  * to create an ambient light atmosphere. No blur filter needed.
  */
 import React, { useMemo } from 'react';
-import { View, StyleSheet, ViewStyle } from 'react-native';
+import { View, ViewStyle } from 'react-native';
 
 interface GlowOrbProps {
   color?: string;

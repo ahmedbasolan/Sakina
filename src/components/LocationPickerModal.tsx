@@ -49,7 +49,7 @@ export const LocationPickerModal: React.FC<LocationPickerModalProps> = ({
       await saveUserLocation(newLocation);
       onLocationSelected(newLocation);
       onClose();
-    } catch (error: any) {
+    } catch (_error: any) {
       Alert.alert(
         'Location Error',
         `We couldn't find prayer times for ${city}, ${country}. Please check the spelling.`,

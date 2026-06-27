@@ -1,8 +1,7 @@
 import React, { useState, useMemo, useRef } from 'react';
-import { Share, Dimensions, View, PanResponder } from 'react-native';
+import { Share, View, PanResponder } from 'react-native';
 import { HapticsService } from '../services/hapticsService';
-const { height } = Dimensions.get('window');
-import { SpiritualPath, PathStep, UserPathProgress, GuidanceExperience } from '../types';
+import { UserPathProgress } from '../types';
 import { PathsService } from '../services/pathsService';
 import ImmersiveBackground from '../components/ImmersiveBackground';
 import PathTopBar from '../components/PathTopBar';
@@ -21,16 +20,6 @@ import { useAppContext } from '../context/AppContext';
 
 import { useRoute, useNavigation } from '@react-navigation/native';
 import { extractVerseKey } from '../utils';
-
-interface PathStepScreenProps {
-  path: SpiritualPath;
-  step: PathStep;
-  userProgress: UserPathProgress;
-  guidanceExperience: GuidanceExperience;
-  onCompleteStep: (pathId: string, day: number) => void;
-  onNextStep: (pathId: string) => void;
-  onBack: () => void;
-}
 
 type LayerType = 'verse' | 'context' | 'practice' | 'reflection';
 
@@ -183,7 +172,7 @@ export const PathStepScreen: React.FC = () => {
   const handleShare = async () => {
     try {
       await Share.share({
-        message: `${guidanceExperience.content.englishTranslation}\n\n— ${guidanceExperience.content.source}\nReflect more on Guidance App.`,
+        message: `${guidanceExperience.content.englishTranslation}\n\n— ${guidanceExperience.content.source}\nReflect more on Sakina.`,
       });
     } catch (error) {
       logServiceError(
@@ -269,7 +258,16 @@ export const PathStepScreen: React.FC = () => {
         );
       case 'practice':
         return (
-          <PracticeLayer steps={practiceSteps} onCheckAll={() => {}} accentColor={accentColor} />
+          <PracticeLayer
+            steps={practiceSteps}
+            onCheckAll={() => {
+              // All Sunnah steps done → carry momentum forward into the
+              // reflection layer (the final step before day completion).
+              HapticsService.impactAsync('LIGHT');
+              setCurrentLayerIndex((prev) => Math.min(prev + 1, layerTypes.length - 1));
+            }}
+            accentColor={accentColor}
+          />
         );
       case 'reflection':
         return (

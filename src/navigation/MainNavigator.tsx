@@ -6,7 +6,7 @@ import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { BlurView } from 'expo-blur';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { Spacing, BorderRadius } from '../theme/DesignSystem';
+import { Colors, Spacing, BorderRadius } from '../theme/DesignSystem';
 import { useAuth } from '../context/AuthContext';
 import { useAppContext } from '../context/AppContext';
 
@@ -75,12 +75,10 @@ function TabItem({
   const isStreak = routeName === 'Streak';
   const hasStreak = isStreak && typeof streakCount === 'number' && streakCount > 0;
 
-  const iconColor = focused ? '#FFFFFF' : 'rgba(255,255,255,0.38)';
+  const iconColor = focused ? Colors.accent.primary : 'rgba(255,255,255,0.38)';
   const flameColor = focused ? '#F59E0B' : 'rgba(245,158,11,0.42)';
 
   const iconScale = anim.interpolate({ inputRange: [0, 1], outputRange: [1, 1.15] });
-  const highlightScale = anim.interpolate({ inputRange: [0, 1], outputRange: [0.55, 1] });
-  const highlightAlpha = anim.interpolate({ inputRange: [0, 0.35, 1], outputRange: [0, 0.5, 1] });
 
   return (
     <TouchableOpacity
@@ -94,17 +92,6 @@ function TabItem({
       accessibilityState={{ selected: focused }}
     >
       <View style={styles.iconArea}>
-        {/* Highlight disc — scales in from centre */}
-        <Animated.View
-          style={[
-            styles.highlightGlow,
-            { opacity: highlightAlpha, transform: [{ scale: highlightScale }] },
-          ]}
-          pointerEvents="none"
-        >
-          <View style={styles.highlightDisc} />
-        </Animated.View>
-
         {/* Icon */}
         <Animated.View style={{ transform: [{ scale: iconScale }] }}>
           <MaterialCommunityIcons
@@ -266,27 +253,6 @@ const styles = StyleSheet.create({
     height: 46,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-
-  // Outer glow wrapper — shadow doesn't get clipped
-  highlightGlow: {
-    position: 'absolute',
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    shadowColor: '#FFFFFF',
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.22,
-    shadowRadius: 8,
-  },
-  // Solid disc — clearly visible against the dark pill
-  highlightDisc: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: 'rgba(255, 255, 255, 0.18)',
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.28)',
   },
 
   // Streak count badge

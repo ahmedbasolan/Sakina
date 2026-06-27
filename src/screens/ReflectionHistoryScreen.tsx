@@ -260,7 +260,7 @@ export default function ReflectionHistoryScreen() {
   return (
     <View style={styles.container}>
       <LinearGradient
-        colors={['#07111E', '#0C1A2E', '#0F1F30']}
+        colors={Colors.celestialWash}
         style={StyleSheet.absoluteFill}
         start={{ x: 0.5, y: 0 }}
         end={{ x: 0.5, y: 1 }}
@@ -281,9 +281,12 @@ export default function ReflectionHistoryScreen() {
             <Text style={styles.headerPretitle}>BETWEEN YOU AND ALLAH</Text>
             <Text style={styles.headerTitle}>JOURNAL</Text>
           </View>
-          <View style={styles.headerLockCircle}>
-            <MaterialCommunityIcons name="lock" size={18} color={Colors.accent.primary} />
-          </View>
+          <MaterialCommunityIcons
+            name="lock"
+            size={20}
+            color={Colors.accent.primary}
+            hitSlop={{ top: 12, right: 12, bottom: 12, left: 12 }}
+          />
         </View>
         <BlurView intensity={10} tint="dark" style={styles.privacyBadge}>
           <MaterialCommunityIcons name="lock" size={11} color={`${Colors.accent.primary}B3`} />
@@ -378,12 +381,6 @@ const styles = StyleSheet.create({
     textShadowColor: `${Colors.accent.primary}33`,
     textShadowOffset: { width: 0, height: 0 },
     textShadowRadius: 10,
-  },
-  headerLockCircle: {
-    width: 44, height: 44, borderRadius: BorderRadius.full,
-    backgroundColor: `${Colors.accent.primary}1A`,
-    borderWidth: 1, borderColor: `${Colors.accent.primary}33`,
-    alignItems: 'center', justifyContent: 'center',
   },
   privacyBadge: {
     flexDirection: 'row', alignItems: 'center', gap: Spacing.sm,
@@ -624,12 +621,12 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.lg,
   },
   sheetSaveBtn: {
-    backgroundColor: '#A78BFA',
+    backgroundColor: Colors.accent.primary,
     borderRadius: BorderRadius.md,
     paddingVertical: Spacing.md + 2,
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: '#A78BFA',
+    shadowColor: Colors.accent.primary,
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.35,
     shadowRadius: 12,
