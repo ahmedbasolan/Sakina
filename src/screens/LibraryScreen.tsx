@@ -376,7 +376,7 @@ export default function LibraryScreen({ navigation }: any) {
   return (
     <View style={styles.container}>
       <LinearGradient
-        colors={['#07111E', '#0C1A2E', '#0F1F30']}
+        colors={Colors.celestialWash}
         style={StyleSheet.absoluteFill}
         start={{ x: 0.5, y: 0 }}
         end={{ x: 0.5, y: 1 }}
@@ -509,6 +509,25 @@ export default function LibraryScreen({ navigation }: any) {
           ]}
           showsVerticalScrollIndicator={false}
           ItemSeparatorComponent={() => <View style={styles.separator} />}
+          ListEmptyComponent={
+            searchQuery.trim().length > 0 ? (
+              <View style={styles.emptyState}>
+                <MaterialCommunityIcons
+                  name="magnify"
+                  size={52}
+                  color="rgba(201,168,76,0.25)"
+                />
+                <Text style={styles.emptyTitle}>No Surahs Found</Text>
+                <Text style={styles.emptySub}>
+                  Nothing matches “{searchQuery.trim()}”.{'\n'}Try a different name or number.
+                </Text>
+                <TouchableOpacity style={styles.emptyAction} onPress={() => setSearchQuery('')}>
+                  <Text style={styles.emptyActionText}>Clear Search</Text>
+                  <MaterialCommunityIcons name="close" size={14} color={Colors.accent.primary} />
+                </TouchableOpacity>
+              </View>
+            ) : null
+          }
           ListHeaderComponent={
             <>
               {/* Download progress banner — shown until all 114 surahs are cached */}
@@ -576,7 +595,7 @@ export default function LibraryScreen({ navigation }: any) {
 // ─── Styles ───────────────────────────────────────────────────────────────────
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#07111E' },
+  container: { flex: 1, backgroundColor: Colors.background.primary },
 
   mandalaWrap: {
     position: 'absolute',

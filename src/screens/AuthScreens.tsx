@@ -89,7 +89,7 @@ interface AuthScreenProps {
 // ==================== SHARED BACKGROUND ====================
 function AuthBackground({ children, patternOpacity }: { children: React.ReactNode; patternOpacity: Animated.Value }) {
   return (
-    <LinearGradient colors={['#07111E', '#0C1A2E', '#0F1F30']} style={styles.gradient}>
+    <LinearGradient colors={Colors.celestialWash} style={styles.gradient}>
       {/* Twinkling stars — visual continuity with onboarding */}
       <InteractiveStarfield positions={AUTH_STARS} />
 
@@ -283,6 +283,36 @@ export function LoginScreen({ navigation, onLogin }: AuthScreenProps) {
     );
   };
 
+  const handleGoogleAuth = async () => {
+    setIsLoading(true);
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    try {
+      const session = await authService.signInWithGoogle();
+      // null = user dismissed the browser; the auth listener handles success nav.
+      if (session && onLogin) onLogin();
+    } catch (error: any) {
+      Alert.alert('Google Sign-In Failed', error?.message || 'Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleAppleAuth = async () => {
+    setIsLoading(true);
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    try {
+      await authService.signInWithApple();
+      if (onLogin) onLogin();
+    } catch (error: any) {
+      // Swallow the user-cancelled case; only surface real failures.
+      if (error?.code !== 'ERR_REQUEST_CANCELED') {
+        Alert.alert('Apple Sign-In Failed', error?.message || 'Please try again.');
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -373,21 +403,25 @@ export function LoginScreen({ navigation, onLogin }: AuthScreenProps) {
 
             <View style={styles.socialRow}>
               <TouchableOpacity
-                style={[styles.socialBtn, styles.socialBtnDisabled]}
-                activeOpacity={0.5}
-                onPress={() => Alert.alert('Coming Soon', 'Google sign-in will be available soon.')}
+                style={styles.socialBtn}
+                activeOpacity={0.8}
+                onPress={handleGoogleAuth}
+                disabled={isLoading}
               >
                 <GoogleIcon size={18} />
                 <Text style={styles.socialBtnText}>Google</Text>
               </TouchableOpacity>
-              <TouchableOpacity
-                style={[styles.socialBtn, styles.socialBtnDisabled]}
-                activeOpacity={0.5}
-                onPress={() => Alert.alert('Coming Soon', 'Apple sign-in will be available soon.')}
-              >
-                <AppleIcon size={18} fill="#F5EDE3" />
-                <Text style={styles.socialBtnText}>Apple</Text>
-              </TouchableOpacity>
+              {Platform.OS === 'ios' && (
+                <TouchableOpacity
+                  style={styles.socialBtn}
+                  activeOpacity={0.8}
+                  onPress={handleAppleAuth}
+                  disabled={isLoading}
+                >
+                  <AppleIcon size={18} fill="#F5EDE3" />
+                  <Text style={styles.socialBtnText}>Apple</Text>
+                </TouchableOpacity>
+              )}
             </View>
 
             <TouchableOpacity style={styles.guestBtn} activeOpacity={0.7} onPress={handleGuestMode}>
@@ -491,6 +525,36 @@ export function SignUpScreen({ navigation, onSignUp }: AuthScreenProps) {
       );
     } catch (error: any) {
       Alert.alert('Sign Up Failed', error.message || 'An unexpected error occurred.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // OAuth sign-up is immediate (no email verification step) — the auth listener
+  // routes into the app on success, so these mirror the Login handlers.
+  const handleGoogleAuth = async () => {
+    setIsLoading(true);
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    try {
+      const session = await authService.signInWithGoogle();
+      if (session && onSignUp) onSignUp();
+    } catch (error: any) {
+      Alert.alert('Google Sign-In Failed', error?.message || 'Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleAppleAuth = async () => {
+    setIsLoading(true);
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    try {
+      await authService.signInWithApple();
+      if (onSignUp) onSignUp();
+    } catch (error: any) {
+      if (error?.code !== 'ERR_REQUEST_CANCELED') {
+        Alert.alert('Apple Sign-In Failed', error?.message || 'Please try again.');
+      }
     } finally {
       setIsLoading(false);
     }
@@ -621,21 +685,25 @@ export function SignUpScreen({ navigation, onSignUp }: AuthScreenProps) {
 
             <View style={styles.socialRow}>
               <TouchableOpacity
-                style={[styles.socialBtn, styles.socialBtnDisabled]}
-                activeOpacity={0.5}
-                onPress={() => Alert.alert('Coming Soon', 'Google sign-up will be available soon.')}
+                style={styles.socialBtn}
+                activeOpacity={0.8}
+                onPress={handleGoogleAuth}
+                disabled={isLoading}
               >
                 <GoogleIcon size={18} />
                 <Text style={styles.socialBtnText}>Google</Text>
               </TouchableOpacity>
-              <TouchableOpacity
-                style={[styles.socialBtn, styles.socialBtnDisabled]}
-                activeOpacity={0.5}
-                onPress={() => Alert.alert('Coming Soon', 'Apple sign-up will be available soon.')}
-              >
-                <AppleIcon size={18} fill="#F5EDE3" />
-                <Text style={styles.socialBtnText}>Apple</Text>
-              </TouchableOpacity>
+              {Platform.OS === 'ios' && (
+                <TouchableOpacity
+                  style={styles.socialBtn}
+                  activeOpacity={0.8}
+                  onPress={handleAppleAuth}
+                  disabled={isLoading}
+                >
+                  <AppleIcon size={18} fill="#F5EDE3" />
+                  <Text style={styles.socialBtnText}>Apple</Text>
+                </TouchableOpacity>
+              )}
             </View>
 
             <TouchableOpacity style={styles.guestBtn} activeOpacity={0.7} onPress={handleGuestMode}>
@@ -930,9 +998,6 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: 'rgba(245, 237, 227, 0.7)',
     letterSpacing: 0.3,
-  },
-  socialBtnDisabled: {
-    opacity: 0.5,
   },
   // --- Guest button ---
   guestBtn: {
