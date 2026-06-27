@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
+import React, { useRef, useEffect, useCallback, useMemo } from 'react';
 import { getSpiritualWindowName } from '../utils/prayerContext';
 import { formatPrayerTime, formatCountdown } from '../services/prayerTimesService';
 import { Colors, Spacing, Typography, Animations, Layout } from '../theme/DesignSystem';
@@ -8,7 +8,6 @@ import {
   TouchableOpacity,
   StyleSheet,
   ScrollView,
-  Dimensions,
   Animated,
   RefreshControl,
 } from 'react-native';
@@ -34,21 +33,19 @@ import {
 } from '../components/home';
 import { useHomeData } from '../hooks/useHomeData';
 
-const { width } = Dimensions.get('window');
-
 /* ─── Constants ──────────────────────────────────────────────── */
 
 // Colors aligned with MoodColors in DesignSystem.ts (GuidanceScreen source of truth)
 // so the accent colour a user sees on the card matches the immersive background they enter.
 const moodConfigs: MoodConfig[] = [
-  { id: 'Grateful',    label: 'GRATEFUL',    sublabel: 'Shukr',   color: '#FBBF24', bgColor: '#451A03', borderColor: '#78350F', gradientColors: ['#5E2204', '#3A1602', '#1A0901'], iconName: 'heart' },
-  { id: 'Hopeful',     label: 'HOPEFUL',     sublabel: 'Amal',    color: '#22D3EE', bgColor: '#083344', borderColor: '#155E75', gradientColors: ['#0C4A63', '#062836', '#021620'], iconName: 'sunny' },
-  { id: 'Calm',        label: 'PEACEFUL',    sublabel: 'Sukoon',  color: '#34D399', bgColor: '#064E3B', borderColor: '#065F46', gradientColors: ['#0A6B52', '#053E2F', '#021F18'], iconName: 'water' },
-  { id: 'Overwhelmed', label: 'OVERWHELMED', sublabel: 'Ghamm',   color: '#818CF8', bgColor: '#0F172A', borderColor: '#1E1B4B', gradientColors: ['#192840', '#0B1220', '#050A14'], iconName: 'layers' },
-  { id: 'Tired',       label: 'TIRED',       sublabel: "Ta'ab",   color: '#D6D3D1', bgColor: '#1C1917', borderColor: '#292524', gradientColors: ['#2A2420', '#161310', '#080706'], iconName: 'moon' },
-  { id: 'Lonely',      label: 'LONELY',      sublabel: 'Wahshah', color: '#C084FC', bgColor: '#2E1065', borderColor: '#4C1D95', gradientColors: ['#481A8A', '#240C50', '#10052B'], iconName: 'person' },
-  { id: 'Sad',         label: 'SAD',         sublabel: 'Huzn',    color: '#94A3B8', bgColor: '#1E293B', borderColor: '#334155', gradientColors: ['#253648', '#172030', '#0A1018'], iconName: 'rainy' },
-  { id: 'Angry',       label: 'ANGRY',       sublabel: 'Ghadab',  color: '#FB923C', bgColor: '#1A0F0A', borderColor: '#2D1610', gradientColors: ['#2A1508', '#140C08', '#060302'], iconName: 'flame' },
+  { id: 'Grateful',    label: 'GRATEFUL',    sublabel: 'Shukr',   color: '#FBBF24', bgColor: '#451A03', borderColor: '#78350F', gradientColors: ['#6B3008', '#4A2006', '#4A2006'], iconName: 'heart' },
+  { id: 'Hopeful',     label: 'HOPEFUL',     sublabel: 'Amal',    color: '#22D3EE', bgColor: '#083344', borderColor: '#155E75', gradientColors: ['#0D5A7A', '#083E58', '#083E58'], iconName: 'sunny' },
+  { id: 'Calm',        label: 'PEACEFUL',    sublabel: 'Sukoon',  color: '#34D399', bgColor: '#064E3B', borderColor: '#065F46', gradientColors: ['#0C6B4E', '#085038', '#085038'], iconName: 'water' },
+  { id: 'Overwhelmed', label: 'OVERWHELMED', sublabel: 'Ghamm',   color: '#818CF8', bgColor: '#0F172A', borderColor: '#1E1B4B', gradientColors: ['#1C3872', '#102558', '#102558'], iconName: 'layers' },
+  { id: 'Tired',       label: 'TIRED',       sublabel: "Ta'ab",   color: '#D6D3D1', bgColor: '#1C1917', borderColor: '#292524', gradientColors: ['#2E2520', '#1E1815', '#1E1815'], iconName: 'moon' },
+  { id: 'Lonely',      label: 'LONELY',      sublabel: 'Wahshah', color: '#C084FC', bgColor: '#2E1065', borderColor: '#4C1D95', gradientColors: ['#501A8A', '#37116A', '#37116A'], iconName: 'person' },
+  { id: 'Sad',         label: 'SAD',         sublabel: 'Huzn',    color: '#94A3B8', bgColor: '#1E293B', borderColor: '#334155', gradientColors: ['#243B56', '#162840', '#162840'], iconName: 'rainy' },
+  { id: 'Angry',       label: 'ANGRY',       sublabel: 'Ghadab',  color: '#FB923C', bgColor: '#1A0F0A', borderColor: '#2D1610', gradientColors: ['#3A1808', '#271006', '#271006'], iconName: 'flame' },
 ];
 
 /* ─── Helpers ────────────────────────────────────────────────── */
@@ -102,7 +99,7 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
     nextPrayer,
     showLocationModal, setShowLocationModal,
     loadPrayerData,
-    currentCity, currentCountry,
+    currentCity,
     streakDays,
     checkedInToday, setCheckedInToday,
     bannerDismissed, setBannerDismissed,
@@ -247,7 +244,7 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
 
   return (
     <View style={styles.container}>
-      <LinearGradient colors={['#07111E', '#0C1A2E', '#0F1519']} style={styles.gradient}>
+      <LinearGradient colors={Colors.celestialWash} style={styles.gradient}>
         <ScrollView
           showsVerticalScrollIndicator={false}
           contentContainerStyle={scrollContentStyle}
@@ -412,15 +409,15 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
           <View style={styles.quickActionsSection}>
             <View style={styles.quickActionsRow}>
               <TouchableOpacity
-                style={[styles.quickCard, { backgroundColor: '#0F2236', borderColor: '#1E3A5F' }]}
+                style={[styles.quickCard, { backgroundColor: Colors.background.tertiary, borderColor: Colors.glass.border }]}
                 onPress={() => navigation.navigate('PrayerTimes')}
                 activeOpacity={0.85}
               >
-                <View style={[styles.quickCardIcon, { backgroundColor: '#0A1828', borderColor: '#1A3A5A' }]}>
-                  <PrayerArchIcon size={18} color="#60A5FA" />
+                <View style={[styles.quickCardIcon, { backgroundColor: Colors.background.secondary, borderColor: Colors.glass.border }]}>
+                  <PrayerArchIcon size={18} color={Colors.accent.primary} />
                 </View>
                 <Text style={styles.quickCardTitle}>PRAYER TIMES</Text>
-                <Text style={[styles.quickCardValue, { color: '#60A5FA' }]}>
+                <Text style={[styles.quickCardValue, { color: Colors.accent.primary }]}>
                   {nextPrayer ? `${nextPrayer.name} ${formatPrayerTime(nextPrayer.time, timeFormat)}` : 'View all'}
                 </Text>
                 <Text style={styles.quickCardSub}>
@@ -431,15 +428,15 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
               </TouchableOpacity>
 
               <TouchableOpacity
-                style={[styles.quickCard, { backgroundColor: '#180E2E', borderColor: '#3D1E6A' }]}
+                style={[styles.quickCard, { backgroundColor: Colors.background.tertiary, borderColor: Colors.glass.border }]}
                 onPress={() => navigation.navigate('Journal')}
                 activeOpacity={0.85}
               >
-                <View style={[styles.quickCardIcon, { backgroundColor: '#120A20', borderColor: '#2A1040' }]}>
-                  <QuillIcon size={18} color="#C084FC" />
+                <View style={[styles.quickCardIcon, { backgroundColor: Colors.background.secondary, borderColor: Colors.glass.border }]}>
+                  <QuillIcon size={18} color={Colors.accent.secondary} />
                 </View>
                 <Text style={styles.quickCardTitle}>JOURNAL</Text>
-                <Text style={[styles.quickCardValue, { color: '#C084FC' }]}>Write today</Text>
+                <Text style={[styles.quickCardValue, { color: Colors.accent.secondary }]}>Write today</Text>
                 <Text style={styles.quickCardSub}>Private to you</Text>
               </TouchableOpacity>
             </View>
@@ -449,7 +446,7 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
         <LocationPickerModal
           visible={showLocationModal}
           onClose={() => setShowLocationModal(false)}
-          onLocationSelected={(location) => {
+          onLocationSelected={() => {
             loadPrayerData();
           }}
         />
