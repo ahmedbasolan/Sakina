@@ -18,7 +18,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { formatDateYMD, subtractDays } from '../utils/date';
 import { Colors } from '../theme/DesignSystem';
 import { Mood, PrayerContext } from '../types';
-import PrayerTimesService, { PrayerTimings } from '../services/prayerTimesService';
+import PrayerTimesService, { PrayerTimings, PrayerTimesData } from '../services/prayerTimesService';
 import { getUserLocation } from '../services/locationStorage';
 import NotificationService from '../services/notificationService';
 import { getDailyVerse, getDailyVerseSync, DailyVerse } from '../services/dailyVerseService';
@@ -101,7 +101,17 @@ export function useHomeData({ setStreakCount }: UseHomeDataOptions) {
       setCurrentCity(city);
       setCurrentCountry(country);
 
-      const data = await prayerService.getTimingsByCity(city, country);
+      let data: PrayerTimesData;
+      if (savedLocation?.latitude && savedLocation?.longitude) {
+        data = await prayerService.getTimingsByCoordinates(
+          savedLocation.latitude,
+          savedLocation.longitude,
+          country,
+        );
+      } else {
+        data = await prayerService.getTimingsByCity(city, country);
+      }
+
       setPrayerTimings(data.timings);
       updatePrayerStatus(data.timings);
       if (data.timings.Fajr) setFajrTime(data.timings.Fajr);
