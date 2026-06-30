@@ -17,7 +17,8 @@
       "bundleIdentifier": "com.lelahmed.sakina",
       "infoPlist": {
         "UIUserInterfaceStyle": "Dark",
-        "ITSAppUsesNonExemptEncryption": false
+        "ITSAppUsesNonExemptEncryption": false,
+        "NSLocationWhenInUseUsageDescription": "Sakina uses your location to calculate accurate prayer times."
       }
     },
     "android": {
@@ -26,7 +27,8 @@
         "backgroundColor": "#040D1A"
       },
       "permissions": [
-        "android.permission.MODIFY_AUDIO_SETTINGS"
+        "android.permission.MODIFY_AUDIO_SETTINGS",
+        "android.permission.ACCESS_FINE_LOCATION"
       ],
       "blockedPermissions": [
         "android.permission.RECORD_AUDIO"
@@ -50,7 +52,8 @@
       ],
       "expo-secure-store",
       "expo-web-browser",
-      "expo-apple-authentication"
+      "expo-apple-authentication",
+      "expo-location"
     ],
     "extra": {
       "eas": {
