@@ -179,7 +179,7 @@ const styles = StyleSheet.create({
   },
   skipBtnText: {
     fontSize: Typography.sizes.small,
-    color: 'rgba(245, 237, 227, 0.68)',
+    color: 'rgba(245, 237, 227, 0.85)',
     letterSpacing: 0.3,
   },
   previewsWrap: {

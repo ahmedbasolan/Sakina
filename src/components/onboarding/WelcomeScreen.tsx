@@ -198,7 +198,7 @@ const styles = StyleSheet.create({
     borderRadius: BorderRadius.md,
     backgroundColor: 'rgba(255, 255, 255, 0.04)',
     borderWidth: 1,
-    borderColor: 'rgba(201, 168, 76, 0.12)',
+    borderColor: 'rgba(201, 168, 76, 0.25)',
     overflow: 'hidden',
     paddingVertical: Spacing.md,
     paddingRight: Spacing.lg,
