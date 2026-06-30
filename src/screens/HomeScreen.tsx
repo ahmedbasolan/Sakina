@@ -141,7 +141,12 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
   }, [navigation, loadStreakData, checkTodayMood]);
 
   // Reload prayer data when returning from PrayerTimesScreen (location may have changed).
-  useFocusEffect(useCallback(() => { loadPrayerData(); }, [loadPrayerData]));
+  // hasPrayerFocusedRef skips the first focus (mount) — useHomeData already loads on bootstrap.
+  const hasPrayerFocusedRef = useRef(false);
+  useFocusEffect(useCallback(() => {
+    if (!hasPrayerFocusedRef.current) { hasPrayerFocusedRef.current = true; return; }
+    loadPrayerData();
+  }, [loadPrayerData]));
 
   const scrollContentStyle = useMemo(
     () => [styles.scrollContent, { paddingBottom: insets.bottom + Layout.tabBarClearance }],

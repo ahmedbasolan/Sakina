@@ -11,7 +11,7 @@ import {
   ActivityIndicator,
   Alert,
   FlatList,
-  Dimensions,
+  useWindowDimensions,
 } from 'react-native';
 import { BlurView } from 'expo-blur';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -20,8 +20,6 @@ import { Colors, Spacing, Typography, BorderRadius } from '../theme/DesignSystem
 import { saveUserLocation, formatLocation, UserLocation } from '../services/locationStorage';
 import PrayerTimesService from '../services/prayerTimesService';
 import { CITIES } from '../data/cityData';
-
-const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
 interface LocationPickerModalProps {
   visible: boolean;
@@ -36,12 +34,14 @@ export const LocationPickerModal: React.FC<LocationPickerModalProps> = ({
   onClose,
   onLocationSelected,
 }) => {
+  const { height: screenHeight } = useWindowDimensions();
   const [mode, setMode] = useState<'search' | 'manual'>('search');
   const [query, setQuery] = useState('');
   const [city, setCity] = useState('');
   const [country, setCountry] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const searchRef = useRef<TextInput>(null);
+  const isSelectingRef = useRef(false);
 
   useEffect(() => {
     if (visible) {
@@ -62,6 +62,8 @@ export const LocationPickerModal: React.FC<LocationPickerModalProps> = ({
   }, [query]);
 
   const handleSelect = async (selected: { city: string; country: string }) => {
+    if (isSelectingRef.current) return;
+    isSelectingRef.current = true;
     const formatted = formatLocation({ city: selected.city, country: selected.country });
     await saveUserLocation(formatted);
     onLocationSelected(formatted);
@@ -98,7 +100,7 @@ export const LocationPickerModal: React.FC<LocationPickerModalProps> = ({
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
           style={styles.modalContainer}
         >
-          <View style={styles.content}>
+          <View style={[styles.content, { maxHeight: screenHeight * 0.75 }]}>
             {/* Header */}
             <View style={styles.header}>
               <View style={styles.headerLeft}>
@@ -257,7 +259,6 @@ const styles = StyleSheet.create({
   },
   content: {
     width: '100%',
-    maxHeight: SCREEN_HEIGHT * 0.75,
     backgroundColor: Colors.background.secondary,
     borderRadius: BorderRadius.xxl,
     overflow: 'hidden',
