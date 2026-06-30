@@ -76,7 +76,7 @@ function TabItem({
   const hasStreak = isStreak && typeof streakCount === 'number' && streakCount > 0;
 
   const iconColor = focused ? Colors.accent.primary : 'rgba(255,255,255,0.38)';
-  const flameColor = focused ? '#F59E0B' : 'rgba(245,158,11,0.42)';
+  const flameColor = focused ? Colors.accent.primary : `${Colors.accent.primary}6A`;
 
   const iconScale = anim.interpolate({ inputRange: [0, 1], outputRange: [1, 1.15] });
 
@@ -264,7 +264,7 @@ const styles = StyleSheet.create({
     height: 16,
     borderRadius: 8,
     paddingHorizontal: Spacing.xs,
-    backgroundColor: '#F59E0B',
+    backgroundColor: Colors.accent.primary,
     alignItems: 'center',
     justifyContent: 'center',
   },

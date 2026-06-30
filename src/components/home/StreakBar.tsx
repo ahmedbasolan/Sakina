@@ -41,7 +41,7 @@ export function StreakBar({ streakDays, fadeAnim, slideAnim, onPress }: StreakBa
           {/* Crescent icon + streak info */}
           <View style={styles.streakLeft}>
             <View style={styles.streakFlameContainer}>
-              <CrescentIcon size={18} color={Colors.status.success} />
+              <CrescentIcon size={18} color={Colors.accent.primary} />
             </View>
             <View>
               {streakDays === 0 ? (
@@ -72,7 +72,7 @@ export function StreakBar({ streakDays, fadeAnim, slideAnim, onPress }: StreakBa
           </View>
           <View style={styles.streakRight}>
             <Text style={styles.streakViewText}>View</Text>
-            <Ionicons name="arrow-forward" size={12} color={Colors.status.success} />
+            <Ionicons name="arrow-forward" size={12} color={Colors.accent.primary} />
           </View>
         </LinearGradient>
       </TouchableOpacity>
@@ -92,7 +92,7 @@ const styles = StyleSheet.create({
     borderRadius: BorderRadius.lg,
     padding: Spacing.lg,
     borderWidth: 1,
-    borderColor: Colors.status.success + '26',
+    borderColor: Colors.accent.primary + '26',
   },
   streakLeft: {
     flexDirection: 'row',
@@ -103,19 +103,19 @@ const styles = StyleSheet.create({
     width: 36,
     height: 36,
     borderRadius: 18,
-    backgroundColor: Colors.status.success + '1A',
+    backgroundColor: Colors.accent.primary + '1A',
     justifyContent: 'center',
     alignItems: 'center',
   },
   streakText: {
     fontSize: 15,
     fontWeight: '600',
-    color: Colors.status.success,
+    color: Colors.accent.primary,
     marginBottom: 2,
   },
   streakHint: {
     fontSize: 11,
-    color: Colors.status.success + '73',
+    color: Colors.accent.primary + '73',
     letterSpacing: 0.2,
   },
   streakMoons: {
@@ -130,23 +130,23 @@ const styles = StyleSheet.create({
     width: 7,
     height: 7,
     borderRadius: 4,
-    backgroundColor: Colors.status.success + '33',
+    backgroundColor: Colors.accent.primary + '33',
   },
   streakMoonActive: {
-    backgroundColor: Colors.status.success,
+    backgroundColor: Colors.accent.primary,
   },
   streakDotToday: {
     borderWidth: 1,
-    borderColor: Colors.status.success,
+    borderColor: Colors.accent.primary,
   },
   streakDayLabel: {
     fontSize: 8,
     fontWeight: '700',
-    color: `${Colors.status.success}59`,
+    color: `${Colors.accent.primary}59`,
     letterSpacing: 0.3,
   },
   streakDayLabelToday: {
-    color: Colors.status.success,
+    color: Colors.accent.primary,
   },
   streakRight: {
     flexDirection: 'row',
@@ -156,6 +156,6 @@ const styles = StyleSheet.create({
   streakViewText: {
     fontSize: 13,
     fontWeight: '600',
-    color: Colors.status.success,
+    color: Colors.accent.primary,
   },
 });

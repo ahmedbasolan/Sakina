@@ -224,14 +224,14 @@ const styles = StyleSheet.create({
     right: 5,
     width: 30,
     height: 4,
-    backgroundColor: 'rgba(167, 139, 250, 0.8)',
+    backgroundColor: `${Colors.accent.primary}CC`,
     borderRadius: 2,
     transform: [{ rotate: '45deg' }],
   },
   journalPenLine: {
     width: 30,
     height: 4,
-    backgroundColor: 'rgba(167, 139, 250, 0.8)',
+    backgroundColor: `${Colors.accent.primary}CC`,
     borderRadius: 2,
   },
 
