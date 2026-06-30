@@ -313,8 +313,8 @@ export default function HeartCheckInScreen({ isActive, onNext }: Props) {
 
       {/* Dot indicators */}
       <View style={[styles.dotsRow, { paddingBottom: Math.max(insets.bottom + Spacing.xxl, Spacing.xxxl) }]}>
-        {MOODS.map((_, i) => (
-          <View key={i} style={styles.dotSlot}>
+        {MOODS.map((mood, i) => (
+          <View key={mood.id} style={styles.dotSlot}>
             {/* Inactive dot — always visible */}
             <View style={[styles.dotInactive]} />
             {/* Active dot — fades in/out over it */}
@@ -362,8 +362,8 @@ const styles = StyleSheet.create({
     textShadowRadius: 10,
   },
   subtitle: {
-    fontSize: 13,
-    color: 'rgba(176,196,215,0.65)',
+    fontSize: 14,
+    color: 'rgba(176,196,215,0.85)',
     textAlign: 'center',
     letterSpacing: 0.3,
   },
