@@ -194,7 +194,8 @@ function JourneyCard({ path, index, isActive, isLocked, userProgress, onPress }:
           tint="dark"
           style={[
             styles.journeyCard,
-            isActive && !isLocked && { borderColor: `${visual.color}50` },
+            !isActive && !isLocked && { borderColor: 'rgba(212, 175, 55, 0.20)' },
+            isActive && !isLocked && { borderColor: `${visual.color}65` },
             isLocked && styles.journeyCardLocked,
           ]}
         >

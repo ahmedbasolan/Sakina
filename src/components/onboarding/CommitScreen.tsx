@@ -327,12 +327,12 @@ export default function CommitScreen({ isActive, onCommit }: Props) {
                 </SvgRadial>
               </Defs>
               <Circle cx={CENTER} cy={CENTER} r={RING_R - 10} fill="url(#circleGlow)" />
-              {/* Static faint outer ring */}
+              {/* Static outer ring — visible guide before holding begins */}
               <Circle
                 cx={CENTER} cy={CENTER} r={RING_R}
                 fill="none"
-                stroke="rgba(212, 175, 55, 0.18)"
-                strokeWidth={1.5}
+                stroke="rgba(212, 175, 55, 0.35)"
+                strokeWidth={2}
               />
               {/* Progress ring */}
               <AnimatedCircle
