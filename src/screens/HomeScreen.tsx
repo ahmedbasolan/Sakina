@@ -1,4 +1,5 @@
-import React, { useRef, useEffect, useCallback, useMemo } from 'react';
+import React, { useRef, useEffect, useCallback, useMemo, useState } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
 import { getSpiritualWindowName } from '../utils/prayerContext';
 import { formatPrayerTime, formatCountdown } from '../services/prayerTimesService';
 import { Colors, Spacing, Typography, Animations, Layout } from '../theme/DesignSystem';
@@ -100,6 +101,7 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
     showLocationModal, setShowLocationModal,
     loadPrayerData,
     currentCity,
+    currentCountry,
     streakDays,
     checkedInToday, setCheckedInToday,
     bannerDismissed, setBannerDismissed,
@@ -138,6 +140,9 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
     return unsub;
   }, [navigation, loadStreakData, checkTodayMood]);
 
+  // Reload prayer data when returning from PrayerTimesScreen (location may have changed).
+  useFocusEffect(useCallback(() => { loadPrayerData(); }, [loadPrayerData]));
+
   const scrollContentStyle = useMemo(
     () => [styles.scrollContent, { paddingBottom: insets.bottom + Layout.tabBarClearance }],
     [insets.bottom],
@@ -145,6 +150,12 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
 
   // ── Double-tap guard (view concern — prevents two nav pushes) ─
   const isHandlingTap = useRef(false);
+  // Which mood card is currently loading guidance (shows spinner while fetch runs)
+  const [loadingMood, setLoadingMood] = useState<Mood | null>(null);
+  // Ref so handleMoodTap can read the current mood without taking a dep on it
+  // (avoids invalidating pressHandlers → SmartMoodCard memo on every tap)
+  const localSelectedMoodRef = useRef<Mood | null>(localSelectedMood);
+  useEffect(() => { localSelectedMoodRef.current = localSelectedMood; }, [localSelectedMood]);
 
   // Window-aware guidance fetch shared by the mood grid and the timed card.
   // Free users get ONE fresh verse per mood per prayer window from Home;
@@ -173,11 +184,9 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
   const handleMoodTap = useCallback(async (moodId: Mood) => {
     if (isHandlingTap.current) return;
     isHandlingTap.current = true;
-    // Instant response BEFORE the async guidance fetch — a tap from someone
-    // in distress must never feel dead while the content loads. The
-    // selection is reverted if the fetch fails.
-    const previousMood = localSelectedMood;
+    const previousMood = localSelectedMoodRef.current;
     setLocalSelectedMood(moodId);
+    setLoadingMood(moodId);
     HapticsService.impactAsync('LIGHT');
     try {
       const experience = await fetchWindowGuidance(moodId);
@@ -197,9 +206,10 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
       setLocalSelectedMood(previousMood);
       logServiceError('HomeScreen', 'handleMoodTap', error instanceof Error ? error : new Error(String(error)));
     } finally {
+      setLoadingMood(null);
       isHandlingTap.current = false;
     }
-  }, [navigation, fetchWindowGuidance, setSelectedMood, setLocalSelectedMood, setCheckedInToday, localSelectedMood]);
+  }, [navigation, fetchWindowGuidance, setSelectedMood, setLocalSelectedMood, setCheckedInToday]);
 
   const navigateToTimedGuidance = useCallback(async () => {
     const mood = localSelectedMood || 'Calm';
@@ -314,6 +324,7 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
             <SmartMoodGrid
               moodConfigs={moodConfigs}
               selectedMood={localSelectedMood}
+              loadingMood={loadingMood}
               onMoodPress={handleMoodTap}
             />
 
@@ -445,10 +456,9 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
 
         <LocationPickerModal
           visible={showLocationModal}
+          currentLocation={{ city: currentCity, country: currentCountry }}
           onClose={() => setShowLocationModal(false)}
-          onLocationSelected={() => {
-            loadPrayerData();
-          }}
+          onLocationSelected={() => loadPrayerData()}
         />
       </LinearGradient>
     </View>

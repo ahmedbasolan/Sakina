@@ -286,6 +286,7 @@ export default function PrayerTimesScreen({ navigation }: { navigation: any }) {
 
       <LocationPickerModal
         visible={showLocationPicker}
+        currentLocation={location ?? undefined}
         onClose={() => setShowLocationPicker(false)}
         onLocationSelected={handleLocationSelected}
       />
