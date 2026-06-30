@@ -6,6 +6,7 @@
  * All other paths show an "Early Access · Premium" locked state.
  */
 import React, { useState, useEffect, useRef, useMemo } from 'react';
+import * as Haptics from 'expo-haptics';
 import { Colors, Spacing, BorderRadius, Typography } from '../theme/DesignSystem';
 import {
   View,
@@ -296,7 +297,7 @@ export default function PathsScreen() {
     if (AVAILABLE_PATH_IDS.has(pathId)) {
       navigation.navigate('PathDetail', { pathId });
     } else {
-      navigation.navigate('Support');
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     }
   };
 
