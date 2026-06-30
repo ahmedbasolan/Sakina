@@ -20,6 +20,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { getAudioUrls, RECITER_FALLBACKS } from '../services/audioService';
 
 import { Colors, Spacing, Typography, BorderRadius } from '../theme/DesignSystem';
+import { useReduceMotion } from '../hooks/useReduceMotion';
 
 interface AudioPlayerButtonProps {
   verseKey: string;
@@ -61,12 +62,14 @@ const WaveBars = React.memo(function WaveBars({
 }) {
   const barMaxH = height;
   const barW    = Math.max(2.5, height * 0.22);
+  const reduceMotion = useReduceMotion();
 
   const b1 = useRef(new Animated.Value(barMaxH * 0.28)).current;
   const b2 = useRef(new Animated.Value(barMaxH * 0.72)).current;
   const b3 = useRef(new Animated.Value(barMaxH * 0.48)).current;
 
   useEffect(() => {
+    if (reduceMotion) return;
     const loop = (anim: Animated.Value, lo: number, hi: number, dur: number) =>
       Animated.loop(
         Animated.sequence([
@@ -84,7 +87,7 @@ const WaveBars = React.memo(function WaveBars({
     a3.start();
 
     return () => { a1.stop(); a2.stop(); a3.stop(); };
-  }, [barMaxH]);
+  }, [barMaxH, reduceMotion]);
 
   return (
     <View

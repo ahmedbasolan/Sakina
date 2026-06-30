@@ -10,6 +10,8 @@
 import React, { useEffect, useRef } from 'react';
 import { View, Text, Animated, StyleSheet } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { Colors } from '../theme/DesignSystem';
+import { useReduceMotion } from '../hooks/useReduceMotion';
 
 interface Props {
   focused: boolean;
@@ -20,6 +22,7 @@ interface Props {
 const FLAME_COLOR = '#F59E0B';
 
 export default function StreakCenterTab({ focused, streakCount }: Props) {
+  const reduceMotion = useReduceMotion();
   // Outer ring pulse — sustained ember glow
   const outerPulse = useRef(new Animated.Value(1)).current;
   // Inner glow opacity
@@ -32,6 +35,8 @@ export default function StreakCenterTab({ focused, streakCount }: Props) {
       Animated.timing(sparkFlash, { toValue: 1, duration: 200, useNativeDriver: true }),
       Animated.timing(sparkFlash, { toValue: 0, duration: 400, useNativeDriver: true }),
     ]).start();
+
+    if (reduceMotion) return;
 
     const pulse = Animated.loop(
       Animated.sequence([
@@ -53,7 +58,7 @@ export default function StreakCenterTab({ focused, streakCount }: Props) {
       pulse.stop();
       glow.stop();
     };
-  }, []);
+  }, [reduceMotion]);
 
   const hasStreak = typeof streakCount === 'number' && streakCount > 0;
 
@@ -87,7 +92,7 @@ export default function StreakCenterTab({ focused, streakCount }: Props) {
           style={[
             styles.buttonInner,
             {
-              backgroundColor: '#0C1A2E',
+              backgroundColor: Colors.background.secondary,
               borderColor: focused ? FLAME_COLOR : `${FLAME_COLOR}60`,
             },
           ]}
@@ -167,14 +172,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: 6,
     backgroundColor: FLAME_COLOR,
     borderWidth: 1.5,
-    borderColor: '#0A121C',
+    borderColor: Colors.background.primary,
     alignItems: 'center',
     justifyContent: 'center',
   },
   badgeText: {
     fontSize: 10,
     fontWeight: '800',
-    color: '#0A121C',
+    color: Colors.background.primary,
     letterSpacing: 0.3,
   },
 });
