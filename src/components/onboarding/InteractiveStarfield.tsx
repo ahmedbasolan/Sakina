@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { Colors } from '../../theme/DesignSystem';
 import { Animated, Dimensions, View, StyleSheet } from 'react-native';
+import { useReduceMotion } from '../../hooks/useReduceMotion';
 
 const { width, height } = Dimensions.get('window');
 
@@ -30,10 +31,10 @@ interface StarProps {
   delay: number;
 }
 
-function PxStar({ x, y, size, delay }: StarProps) {
+function PxStar({ x, y, size, delay, reduceMotion }: StarProps & { reduceMotion: boolean }) {
   const absX = x * width;
   const absY = y * height;
-  
+
   const pulseAnim = useRef(new Animated.Value(0.15)).current;
   const scaleAnim = useRef(new Animated.Value(1)).current;
   const driftX = useRef(new Animated.Value(0)).current;
@@ -41,6 +42,7 @@ function PxStar({ x, y, size, delay }: StarProps) {
 
   // Base loop
   useEffect(() => {
+    if (reduceMotion) return;
     const anim = Animated.loop(
       Animated.sequence([
         Animated.delay(delay),
@@ -50,14 +52,15 @@ function PxStar({ x, y, size, delay }: StarProps) {
     );
     anim.start();
     return () => anim.stop();
-  }, []);
+  }, [reduceMotion]);
 
   // Parallax drift
   useEffect(() => {
+    if (reduceMotion) return;
     const speed = size < 2 ? 0.3 : size < 2.5 ? 0.6 : 0.9;
     const driftDuration = 20000 / speed;
 
-    Animated.loop(
+    const drift = Animated.loop(
       Animated.sequence([
         Animated.parallel([
           Animated.timing(driftX, {
@@ -84,8 +87,10 @@ function PxStar({ x, y, size, delay }: StarProps) {
           }),
         ]),
       ])
-    ).start();
-  }, []);
+    );
+    drift.start();
+    return () => drift.stop();
+  }, [reduceMotion]);
 
   // Distance tracking
   useEffect(() => {
@@ -134,11 +139,11 @@ function PxStar({ x, y, size, delay }: StarProps) {
 }
 
 export function InteractiveStarfield({ positions }: { positions: any[] }) {
-  // Pass relative X,Y
+  const reduceMotion = useReduceMotion();
   return (
     <View style={StyleSheet.absoluteFill} pointerEvents="none" importantForAccessibility="no" accessibilityElementsHidden={true}>
       {positions.map((p, i) => (
-        <PxStar key={i} x={p.x} y={p.y} size={p.size || p.s} delay={p.delay || p.d || 0} />
+        <PxStar key={i} x={p.x} y={p.y} size={p.size || p.s} delay={p.delay || p.d || 0} reduceMotion={reduceMotion} />
       ))}
     </View>
   );

@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity, StyleSheet, Animated } from 'react-native
 import { Ionicons } from '@expo/vector-icons';
 import { MoodConfig } from '../../types';
 import { Typography } from '../../theme/DesignSystem';
+import { useReduceMotion } from '../../hooks/useReduceMotion';
 
 interface MoodButtonProps {
   mood: MoodConfig;
@@ -15,6 +16,7 @@ interface MoodButtonProps {
 export function MoodButton({ mood, isChecked, isRecentlySelected, onPress, animDelay }: MoodButtonProps) {
   const scaleAnim = useRef(new Animated.Value(0)).current;
   const glowAnim = useRef(new Animated.Value(0)).current;
+  const reduceMotion = useReduceMotion();
 
   useEffect(() => {
     Animated.sequence([
@@ -29,7 +31,7 @@ export function MoodButton({ mood, isChecked, isRecentlySelected, onPress, animD
   const glowLoopRef = useRef<{ stop: () => void } | null>(null);
 
   useEffect(() => {
-    if (isChecked) {
+    if (isChecked && !reduceMotion) {
       const loop = Animated.loop(
         Animated.sequence([
           Animated.timing(glowAnim, { toValue: 1, duration: 1200, useNativeDriver: true }),
@@ -47,7 +49,7 @@ export function MoodButton({ mood, isChecked, isRecentlySelected, onPress, animD
       glowLoopRef.current?.stop();
       glowLoopRef.current = null;
     };
-  }, [isChecked]);
+  }, [isChecked, reduceMotion]);
 
   const handlePress = () => {
     Animated.sequence([
