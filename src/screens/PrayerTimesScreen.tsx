@@ -45,7 +45,12 @@ export default function PrayerTimesScreen({ navigation }: { navigation: any }) {
     async (loc: UserLocation) => {
       setIsLoading(true);
       try {
-        const data = await service.getTimingsByCity(loc.city, loc.country);
+        let data: PrayerTimesData;
+        if (loc.latitude && loc.longitude) {
+          data = await service.getTimingsByCoordinates(loc.latitude, loc.longitude, loc.country);
+        } else {
+          data = await service.getTimingsByCity(loc.city, loc.country);
+        }
         setPrayerData(data);
       } catch (_error) {
         Alert.alert('Error', 'Failed to fetch prayer times. Please try again.');
@@ -268,7 +273,9 @@ export default function PrayerTimesScreen({ navigation }: { navigation: any }) {
               <View style={styles.privacyRow}>
                 <Ionicons name="lock-closed-outline" size={13} color="rgba(176, 196, 215, 0.6)" />
                 <Text style={styles.privacyText}>
-                  Your location is set manually and stored only on this device.
+                  {location?.latitude
+                    ? 'Your location was auto-detected and stored only on this device.'
+                    : 'Your location is set manually and stored only on this device.'}
                 </Text>
               </View>
             </>
