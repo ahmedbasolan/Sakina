@@ -364,12 +364,11 @@ const styles = StyleSheet.create({
     lineHeight: 20,
   },
   cardDesc: {
-    fontSize: 11,
+    fontSize: 12,
     fontFamily: Typography.fonts.serif,
-    fontStyle: 'italic',
     textAlign: 'center',
-    lineHeight: 16,
-    opacity: 0.55,
+    lineHeight: 17,
+    opacity: 0.72,
     paddingHorizontal: 4,
   },
   checkWrap: {
