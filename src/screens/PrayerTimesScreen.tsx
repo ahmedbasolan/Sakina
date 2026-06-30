@@ -13,7 +13,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Colors, Spacing, BorderRadius, Typography } from '../theme/DesignSystem';
 import { getUserLocation, UserLocation } from '../services/locationStorage';
-import PrayerTimesService, { PrayerTimesData, formatPrayerTime, TimeFormat } from '../services/prayerTimesService';
+import PrayerTimesService, { PrayerTimesData, formatPrayerTime, formatCountdown, TimeFormat } from '../services/prayerTimesService';
 import { LocationPickerModal } from '../components/LocationPickerModal';
 import { useSession } from '../context/AppContext';
 
@@ -106,7 +106,7 @@ export default function PrayerTimesScreen({ navigation }: { navigation: any }) {
 
   // What to show in the hero card: Sunrise takes priority when it's the next event.
   const displayNext = sunriseNextInfo ?? nextInfo;
-  const countdown = displayNext ? service.formatCountdown(displayNext.minutesRemaining) : '';
+  const countdown = displayNext ? formatCountdown(displayNext.minutesRemaining) : '';
 
   const prayerItems = prayerData
     ? (['Fajr', 'Sunrise', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'] as const).map((name) => ({

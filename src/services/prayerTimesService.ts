@@ -289,15 +289,6 @@ class PrayerTimesService {
     };
   }
 
-  /**
-   * Formats minutes remaining into "2h 15m" style.
-   */
-  public formatCountdown(minutes: number): string {
-    const h = Math.floor(minutes / 60);
-    const m = minutes % 60;
-    if (h > 0) return `${h}h ${m}m`;
-    return `${m}m`;
-  }
 }
 
 export default PrayerTimesService;
