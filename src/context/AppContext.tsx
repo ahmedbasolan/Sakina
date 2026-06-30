@@ -10,7 +10,7 @@
  * useAppContext()  → backward-compatible shim that merges both; existing call sites
  *                    don't need to change.
  */
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useMemo } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { RotationEngine } from '../services/rotationEngine';
 import { FreemiumService } from '../services/freemiumService';
@@ -123,5 +123,5 @@ interface AppContextType extends ServicesContextType, SessionContextType {}
 export function useAppContext(): AppContextType {
   const services = useServices();
   const session = useSession();
-  return { ...services, ...session };
+  return useMemo(() => ({ ...services, ...session }), [services, session]);
 }

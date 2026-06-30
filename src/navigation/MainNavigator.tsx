@@ -170,7 +170,7 @@ function MainTabNavigator() {
 export default function MainNavigator() {
   const { user, isGuest, loading } = useAuth();
 
-  if (loading) return null;
+  if (loading) return <View style={{ flex: 1, backgroundColor: Colors.background.primary }} />;
 
   return (
     <RootStack.Navigator

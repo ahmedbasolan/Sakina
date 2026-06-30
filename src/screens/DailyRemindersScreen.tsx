@@ -15,6 +15,7 @@ import { HapticsService } from '../services/hapticsService';
 import NotificationService from '../services/notificationService';
 import { logServiceError } from '../services/errorLoggingService';
 import { Colors, Typography } from '../theme/DesignSystem';
+import { useReduceMotion } from '../hooks/useReduceMotion';
 
 const CLOCK_SIZE = 240;
 const CLOCK_RADIUS = CLOCK_SIZE / 2;
@@ -35,6 +36,8 @@ export default function DailyRemindersScreen({ onBack }: DailyRemindersScreenPro
   const [minute, setMinute] = useState(30);
   const [period, setPeriod] = useState<'AM' | 'PM'>('AM');
   const [isEnabled, setIsEnabled] = useState(false);
+  const [prayerEnabled, setPrayerEnabled] = useState(true);
+  const [spiritualEnabled, setSpiritualEnabled] = useState(true);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
@@ -45,6 +48,11 @@ export default function DailyRemindersScreen({ onBack }: DailyRemindersScreenPro
   const successScale = useRef(new Animated.Value(0)).current;
   const successOpacity = useRef(new Animated.Value(0)).current;
   const starPulse = useRef(new Animated.Value(1)).current;
+  const isMounted = useRef(true);
+  const isToggling = useRef(false);
+  const isPrayerToggling = useRef(false);
+  const isSpiritualToggling = useRef(false);
+  const reduceMotion = useReduceMotion();
 
   // Twinkling constellation refs (8 dim dots)
   const twinkleAnims = useRef(Array.from({ length: 8 }, () => new Animated.Value(0.2))).current;
@@ -54,8 +62,12 @@ export default function DailyRemindersScreen({ onBack }: DailyRemindersScreenPro
   const starburstOpacity = useRef(new Animated.Value(0)).current;
   const starburstRotation = useRef(new Animated.Value(0)).current;
 
+  // Unmount guard for async animation callbacks
+  useEffect(() => () => { isMounted.current = false; }, []);
+
   // Pulsing star animation
   useEffect(() => {
+    if (reduceMotion) return;
     const pulse = Animated.loop(
       Animated.sequence([
         Animated.timing(starPulse, {
@@ -72,10 +84,11 @@ export default function DailyRemindersScreen({ onBack }: DailyRemindersScreenPro
     );
     pulse.start();
     return () => pulse.stop();
-  }, [starPulse]);
+  }, [starPulse, reduceMotion]);
 
   // Twinkling constellation animation
   useEffect(() => {
+    if (reduceMotion) return;
     const twinkle = () => {
       const randomIndex = Math.floor(Math.random() * twinkleAnims.length);
       const targetOpacity = Math.random() * 0.5 + 0.1; // 0.1 to 0.6
@@ -94,7 +107,7 @@ export default function DailyRemindersScreen({ onBack }: DailyRemindersScreenPro
     };
     const interval = setInterval(twinkle, 600);
     return () => clearInterval(interval);
-  }, [twinkleAnims]);
+  }, [twinkleAnims, reduceMotion]);
 
   // Load saved settings on mount
   useEffect(() => {
@@ -126,7 +139,11 @@ export default function DailyRemindersScreen({ onBack }: DailyRemindersScreenPro
 
   const loadSettings = async () => {
     try {
-      const settings = await notificationService.getSettings();
+      const [settings, prayerOn, spiritualOn] = await Promise.all([
+        notificationService.getSettings(),
+        notificationService.getPrayerEnabled(),
+        notificationService.getSpiritualEnabled(),
+      ]);
       const { time, period: savedPeriod } = notificationService.formatTime(
         settings.hour,
         settings.minute,
@@ -136,6 +153,8 @@ export default function DailyRemindersScreen({ onBack }: DailyRemindersScreenPro
       setMinute(m);
       setPeriod(savedPeriod);
       setIsEnabled(settings.enabled);
+      setPrayerEnabled(prayerOn);
+      setSpiritualEnabled(spiritualOn);
       if (settings.enabled) {
         setSavedTime(`${time} ${savedPeriod}`);
       }
@@ -199,7 +218,7 @@ export default function DailyRemindersScreen({ onBack }: DailyRemindersScreenPro
             duration: 300,
             useNativeDriver: true,
           }),
-        ]).start(() => setShowSuccess(false));
+        ]).start(() => { if (isMounted.current) setShowSuccess(false); });
       }, 1500);
     });
   };
@@ -262,11 +281,38 @@ export default function DailyRemindersScreen({ onBack }: DailyRemindersScreenPro
   };
 
   const handleToggle = async () => {
-    const newValue = !isEnabled;
-    setIsEnabled(newValue);
+    if (isToggling.current) return;
+    isToggling.current = true;
+    try {
+      const newValue = !isEnabled;
+      setIsEnabled(newValue);
+      if (!newValue) await notificationService.cancelReminder();
+    } finally {
+      isToggling.current = false;
+    }
+  };
 
-    if (!newValue) {
-      await notificationService.cancelReminder();
+  const handlePrayerToggle = async () => {
+    if (isPrayerToggling.current) return;
+    isPrayerToggling.current = true;
+    try {
+      const newValue = !prayerEnabled;
+      setPrayerEnabled(newValue);
+      await notificationService.setPrayerEnabled(newValue);
+    } finally {
+      isPrayerToggling.current = false;
+    }
+  };
+
+  const handleSpiritualToggle = async () => {
+    if (isSpiritualToggling.current) return;
+    isSpiritualToggling.current = true;
+    try {
+      const newValue = !spiritualEnabled;
+      setSpiritualEnabled(newValue);
+      await notificationService.setSpiritualEnabled(newValue);
+    } finally {
+      isSpiritualToggling.current = false;
     }
   };
 
@@ -536,6 +582,40 @@ export default function DailyRemindersScreen({ onBack }: DailyRemindersScreenPro
               activeOpacity={0.8}
             >
               <Animated.View style={[styles.toggleKnob, isEnabled && styles.toggleKnobActive]} />
+            </TouchableOpacity>
+          </View>
+
+          {/* Prayer Times Toggle */}
+          <View style={[styles.glassPanel, { marginTop: 10 }]}>
+            <View style={styles.toggleContent}>
+              <Text style={styles.toggleTitle}>Prayer Times</Text>
+              <Text style={styles.toggleSubtitle}>
+                Alert at each of the five daily prayers.
+              </Text>
+            </View>
+            <TouchableOpacity
+              style={[styles.toggleSwitch, prayerEnabled && styles.toggleSwitchActive]}
+              onPress={handlePrayerToggle}
+              activeOpacity={0.8}
+            >
+              <Animated.View style={[styles.toggleKnob, prayerEnabled && styles.toggleKnobActive]} />
+            </TouchableOpacity>
+          </View>
+
+          {/* Spiritual Windows Toggle */}
+          <View style={[styles.glassPanel, { marginTop: 10 }]}>
+            <View style={styles.toggleContent}>
+              <Text style={styles.toggleTitle}>Spiritual Windows</Text>
+              <Text style={styles.toggleSubtitle}>
+                Tahajjud, morning adhkar, and evening remembrance.
+              </Text>
+            </View>
+            <TouchableOpacity
+              style={[styles.toggleSwitch, spiritualEnabled && styles.toggleSwitchActive]}
+              onPress={handleSpiritualToggle}
+              activeOpacity={0.8}
+            >
+              <Animated.View style={[styles.toggleKnob, spiritualEnabled && styles.toggleKnobActive]} />
             </TouchableOpacity>
           </View>
 

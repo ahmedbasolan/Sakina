@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Animated } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
-import { Colors, Spacing } from '../../theme/DesignSystem';
+import { Colors, Spacing, BorderRadius } from '../../theme/DesignSystem';
 import { CrescentIcon } from './CrescentIcon';
 
 const WEEK_LABELS = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
@@ -37,11 +37,11 @@ export function StreakBar({ streakDays, fadeAnim, slideAnim, onPress }: StreakBa
   return (
     <Animated.View style={[styles.streakSection, { opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
       <TouchableOpacity activeOpacity={0.9} onPress={onPress}>
-        <LinearGradient colors={['#0C2214', '#0A1A0E']} style={styles.streakBar}>
+        <LinearGradient colors={[Colors.background.secondary, Colors.background.primary]} style={styles.streakBar}>
           {/* Crescent icon + streak info */}
           <View style={styles.streakLeft}>
             <View style={styles.streakFlameContainer}>
-              <CrescentIcon size={18} color="#4ADE80" />
+              <CrescentIcon size={18} color={Colors.status.success} />
             </View>
             <View>
               {streakDays === 0 ? (
@@ -72,7 +72,7 @@ export function StreakBar({ streakDays, fadeAnim, slideAnim, onPress }: StreakBa
           </View>
           <View style={styles.streakRight}>
             <Text style={styles.streakViewText}>View</Text>
-            <Ionicons name="arrow-forward" size={12} color="#4ADE80" />
+            <Ionicons name="arrow-forward" size={12} color={Colors.status.success} />
           </View>
         </LinearGradient>
       </TouchableOpacity>
@@ -83,16 +83,16 @@ export function StreakBar({ streakDays, fadeAnim, slideAnim, onPress }: StreakBa
 const styles = StyleSheet.create({
   streakSection: {
     paddingHorizontal: Spacing.xl,
-    marginBottom: 24,
+    marginBottom: Spacing.xl,
   },
   streakBar: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    borderRadius: 16,
-    padding: 16,
+    borderRadius: BorderRadius.lg,
+    padding: Spacing.lg,
     borderWidth: 1,
-    borderColor: 'rgba(74, 222, 128, 0.15)',
+    borderColor: Colors.status.success + '26',
   },
   streakLeft: {
     flexDirection: 'row',
@@ -103,19 +103,19 @@ const styles = StyleSheet.create({
     width: 36,
     height: 36,
     borderRadius: 18,
-    backgroundColor: 'rgba(74, 222, 128, 0.1)',
+    backgroundColor: Colors.status.success + '1A',
     justifyContent: 'center',
     alignItems: 'center',
   },
   streakText: {
     fontSize: 15,
     fontWeight: '600',
-    color: '#4ADE80',
+    color: Colors.status.success,
     marginBottom: 2,
   },
   streakHint: {
     fontSize: 11,
-    color: 'rgba(74, 222, 128, 0.45)',
+    color: Colors.status.success + '73',
     letterSpacing: 0.2,
   },
   streakMoons: {
@@ -130,7 +130,7 @@ const styles = StyleSheet.create({
     width: 7,
     height: 7,
     borderRadius: 4,
-    backgroundColor: 'rgba(74, 222, 128, 0.2)',
+    backgroundColor: Colors.status.success + '33',
   },
   streakMoonActive: {
     backgroundColor: Colors.status.success,
@@ -156,6 +156,6 @@ const styles = StyleSheet.create({
   streakViewText: {
     fontSize: 13,
     fontWeight: '600',
-    color: '#4ADE80',
+    color: Colors.status.success,
   },
 });

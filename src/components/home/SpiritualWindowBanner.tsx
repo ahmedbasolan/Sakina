@@ -37,7 +37,7 @@ export function SpiritualWindowBanner({ prayerContext, fadeAnim, slideAnim, onPr
         accessibilityHint="Double tap to open the spiritual window screen"
       >
         <LinearGradient
-          colors={['#1e293b', '#0f172a']}
+          colors={[Colors.background.secondary, Colors.background.primary]}
           style={styles.spiritualBanner}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}

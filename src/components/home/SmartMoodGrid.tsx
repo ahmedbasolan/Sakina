@@ -5,8 +5,8 @@ import {
   TouchableOpacity,
   StyleSheet,
   Animated,
-  Dimensions,
   ActivityIndicator,
+  useWindowDimensions,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
@@ -14,9 +14,6 @@ import { Mood, MoodConfig } from '../../types';
 import { Typography } from '../../theme/DesignSystem';
 import { getMoodsForTime } from '../../utils/moodTimeMapping';
 import { useReduceMotion } from '../../hooks/useReduceMotion';
-
-const { width } = Dimensions.get('window');
-const CARD_WIDTH = (width - 48 - 12) / 2;
 
 
 interface SmartMoodGridProps {
@@ -37,11 +34,13 @@ const SmartMoodCard = memo(function SmartMoodCard({
   isChecked,
   isLoading,
   onPress,
+  cardWidth,
 }: {
   mood: MoodConfig;
   isChecked: boolean;
   isLoading: boolean;
   onPress: () => void;
+  cardWidth: number;
 }) {
   const scaleAnim = useRef(new Animated.Value(1)).current;
   const glowAnim = useRef(new Animated.Value(0)).current;
@@ -76,11 +75,14 @@ const SmartMoodCard = memo(function SmartMoodCard({
   );
 
   return (
-    <Animated.View style={[styles.cardWrapper, { transform: [{ scale: scaleAnim }] }]}>
+    <Animated.View style={[styles.cardWrapper, { width: cardWidth, transform: [{ scale: scaleAnim }] }]}>
       <TouchableOpacity
         onPress={handlePress}
         activeOpacity={0.85}
         style={styles.cardTouch}
+        accessibilityRole="button"
+        accessibilityLabel={`${mood.label} — ${mood.sublabel}`}
+        accessibilityHint="Tap to receive guidance for this mood"
       >
         <LinearGradient
           colors={[mood.color + '90', mood.color + '55']}
@@ -142,6 +144,8 @@ export const SmartMoodGrid = memo(function SmartMoodGrid({
   loadingMood,
   onMoodPress,
 }: SmartMoodGridProps) {
+  const { width } = useWindowDimensions();
+  const cardWidth = (width - 48 - 12) / 2;
   const [expanded, setExpanded] = useState(false);
 
   // Compute time-based moods once per mount — getMoodsForTime reads the clock
@@ -171,6 +175,7 @@ export const SmartMoodGrid = memo(function SmartMoodGrid({
             isChecked={selectedMood === mood.id}
             isLoading={loadingMood === mood.id}
             onPress={pressHandlers[mood.id]}
+            cardWidth={cardWidth}
           />
         ))}
       </View>
@@ -194,9 +199,7 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     gap: 12,
   },
-  cardWrapper: {
-    width: CARD_WIDTH,
-  },
+  cardWrapper: {},
   cardTouch: {
     borderRadius: 16,
     overflow: 'hidden',

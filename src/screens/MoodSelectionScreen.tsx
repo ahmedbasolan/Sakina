@@ -21,6 +21,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import Svg, { Path } from 'react-native-svg';
 import { AnimatedMandala } from '../components/AnimatedMandala';
+import { useReduceMotion } from '../hooks/useReduceMotion';
 
 const { width, height } = Dimensions.get('window');
 const CARD_WIDTH = (width - Spacing.xl * 2 - 12) / 2;
@@ -132,7 +133,9 @@ const MOODS = [
 
 function TwinklingStar({ x, y, s: size, d: delay }: any) {
   const opacity = useRef(new Animated.Value(0.15)).current;
+  const reduceMotion = useReduceMotion();
   useEffect(() => {
+    if (reduceMotion) return;
     const anim = Animated.loop(
       Animated.sequence([
         Animated.delay(delay),
@@ -142,7 +145,7 @@ function TwinklingStar({ x, y, s: size, d: delay }: any) {
     );
     anim.start();
     return () => anim.stop();
-  }, []);
+  }, [reduceMotion]);
   return (
     <Animated.View
       pointerEvents="none"

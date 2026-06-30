@@ -162,10 +162,13 @@ function AudioPlayerButtonInternal({
   useEffect(() => {
     if (status?.error) {
       console.warn('Audio playback error encountered:', status.error);
-      if (fallbackIndex < RECITER_FALLBACKS.length - 1) {
-        console.log(`Falling back to reciter: ${RECITER_FALLBACKS[fallbackIndex + 1].name}`);
-        setFallbackIndex((prev) => prev + 1);
-      }
+      setFallbackIndex((prev) => {
+        if (prev < RECITER_FALLBACKS.length - 1) {
+          console.log(`Falling back to reciter: ${RECITER_FALLBACKS[prev + 1].name}`);
+          return prev + 1;
+        }
+        return prev;
+      });
     }
   }, [status?.error]);
 
@@ -177,7 +180,7 @@ function AudioPlayerButtonInternal({
         player.play();
       }
     }
-  }, [fallbackIndex]);
+  }, [fallbackIndex, audioUrls, currentVerseIndex, isPlaying]);
 
   // Glow breathing — outer ring fades 0.3 → 1.0 → 0.3 over 1800 ms each direction.
   // No scale: purely opacity so there is no layout jank and it feels meditative.

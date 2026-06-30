@@ -96,9 +96,13 @@ function mapCloudRow(row: any): ContentAngle {
           source: row.content.source || '',
           whyThis: row.content.why_this || '',
           propheticPractice: row.content.prophetic_practice
-            ? typeof row.content.prophetic_practice === 'string'
-              ? JSON.parse(row.content.prophetic_practice)
-              : row.content.prophetic_practice
+            ? (() => {
+                try {
+                  return typeof row.content.prophetic_practice === 'string'
+                    ? JSON.parse(row.content.prophetic_practice)
+                    : row.content.prophetic_practice;
+                } catch { return undefined; }
+              })()
             : undefined,
           optionalAction: row.content.optional_action,
           optionalReflection: row.content.optional_reflection,
@@ -138,10 +142,8 @@ function mapLocalRow(row: ContentAngleRow): ContentAngle {
       source: row.source || '',
       audioKey: row.audioKey,
       whyThis: row.whyThis || '',
-      prayerContext: row.prayerContext ? JSON.parse(row.prayerContext) : [],
-      propheticPractice: row.propheticPractice
-        ? JSON.parse(row.propheticPractice)
-        : undefined,
+      prayerContext: (() => { try { return row.prayerContext ? JSON.parse(row.prayerContext) : []; } catch { return []; } })(),
+      propheticPractice: (() => { try { return row.propheticPractice ? JSON.parse(row.propheticPractice) : undefined; } catch { return undefined; } })(),
       optionalAction: row.optionalAction,
       optionalReflection: row.optionalReflection,
       moods: [],

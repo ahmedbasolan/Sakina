@@ -134,6 +134,9 @@ const ReflectionLayer: React.FC<ReflectionLayerProps> = ({
           )}
         </Animated.View>
 
+        {/* Spacer pushes actions toward bottom on tall screens */}
+        <View style={styles.spacer} />
+
         {/* Actions */}
         <View style={styles.actionsArea}>
           {hasText ? (
@@ -172,7 +175,12 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollContent: {
-    paddingHorizontal: 28,
+    paddingHorizontal: Spacing.xl,
+    flexGrow: 1,
+  },
+  spacer: {
+    flex: 1,
+    minHeight: Spacing.xl,
   },
 
   /* ── Bismillah Ornament ── */

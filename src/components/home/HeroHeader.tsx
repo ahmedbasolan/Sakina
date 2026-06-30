@@ -23,6 +23,13 @@ interface HeroHeaderProps {
 
 const SETTINGS_ICON_SIZE = 22;
 
+// Mandala sizing constants — both rings share the same visual center.
+// inner.top = MANDALA_TOP + (OUTER_SIZE - INNER_SIZE) / 2
+// guarantees true concentricity regardless of individual sizes.
+const MANDALA_TOP = 10;
+const OUTER_SIZE = 300;
+const INNER_SIZE = 220;
+
 export function HeroHeader({ fadeAnim, slideAnim, onSettingsPress, greeting }: HeroHeaderProps) {
   const insets = useSafeAreaInsets();
   const reduceMotion = useReduceMotion();
@@ -56,12 +63,12 @@ export function HeroHeader({ fadeAnim, slideAnim, onSettingsPress, greeting }: H
         <TwinklingStar key={i} x={s.x} y={s.y} delay={s.delay} size={s.size} />
       ))}
 
-      {/* Mandala — subtle background geometry */}
+      {/* Mandala — outer + inner share the same center (see MANDALA_TOP constants above) */}
       <View style={styles.mandalaOuter} pointerEvents="none">
-        <AnimatedMandala size={300} color={Colors.accent.primary} opacity={0.35} webLayers={2} />
+        <AnimatedMandala size={OUTER_SIZE} color={Colors.accent.primary} opacity={0.35} webLayers={2} />
       </View>
       <View style={styles.mandalaInner} pointerEvents="none">
-        <AnimatedMandala size={220} color={Colors.accent.primary} opacity={0.25} direction="ccw" webLayers={2} />
+        <AnimatedMandala size={INNER_SIZE} color={Colors.accent.primary} opacity={0.25} direction="ccw" webLayers={2} />
       </View>
 
       {/* Top bar — settings only */}
@@ -107,14 +114,14 @@ const styles = StyleSheet.create({
   },
   mandalaOuter: {
     position: 'absolute',
-    top: 10,
+    top: MANDALA_TOP,
     left: 0,
     right: 0,
     alignItems: 'center',
   },
   mandalaInner: {
     position: 'absolute',
-    top: 40,
+    top: MANDALA_TOP + (OUTER_SIZE - INNER_SIZE) / 2,
     left: 0,
     right: 0,
     alignItems: 'center',

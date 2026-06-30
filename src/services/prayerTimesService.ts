@@ -220,9 +220,13 @@ class PrayerTimesService {
     const maghrib = parseTime(timings.Maghrib);
     const isha = parseTime(timings.Isha);
 
-    // 1. Pre-Fajr (Tahajjud window: 2 hours before Fajr)
-    if (currentTime >= fajr - 120 && currentTime < fajr) {
-      return 'fajr_pre';
+    // 1. Pre-Fajr (Tahajjud window: 2 hours before Fajr).
+    // Use modulo to handle midnight wrap (e.g. Fajr at 01:00 → window starts 23:00 prev day).
+    const preFajrStart = (fajr - 120 + 1440) % 1440;
+    if (preFajrStart > fajr) {
+      if (currentTime >= preFajrStart || currentTime < fajr) return 'fajr_pre';
+    } else {
+      if (currentTime >= preFajrStart && currentTime < fajr) return 'fajr_pre';
     }
 
     // 2. Post-Fajr (Fajr until Sunrise - Morning Adhkar window)

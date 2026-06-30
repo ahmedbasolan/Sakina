@@ -7,6 +7,8 @@ const REMINDER_SETTINGS_KEY = '@daily_reminder_settings';
 const DAILY_REMINDER_IDS_KEY = '@notif_ids/daily_reminder';
 const PRAYER_NOTIF_IDS_KEY = '@notif_ids/prayer';
 const SPIRITUAL_NOTIF_IDS_KEY = '@notif_ids/spiritual';
+const PRAYER_ENABLED_KEY = '@notif_settings/prayer';
+const SPIRITUAL_ENABLED_KEY = '@notif_settings/spiritual';
 
 // Android notification channels. On Android 8+ a scheduled notification only
 // shows with sound / heads-up if it targets a channel; without one the OS
@@ -131,16 +133,9 @@ class NotificationService {
   }
 
   private parseTime(timeStr: string): { hours: number; minutes: number } {
-    // Handle "HH:mm (Timezone)" or "HH:mm AM/PM" or just "HH:mm"
-    const cleanTime = timeStr.split(' ')[0];
-    const [hours, minutes] = cleanTime.split(':').map(Number);
-
-    let finalHours = hours;
-    const modifier = timeStr.split(' ')[1];
-    if (modifier === 'PM' && hours < 12) finalHours += 12;
-    if (modifier === 'AM' && hours === 12) finalHours = 0;
-
-    return { hours: finalHours, minutes };
+    // Aladhan API returns 24h — "HH:mm" or "HH:mm (Timezone)". Take first token.
+    const [hours, minutes] = timeStr.split(' ')[0].split(':').map(Number);
+    return { hours, minutes };
   }
 
   // Builds up to 7 one-shot DATE triggers for a given time, all in parallel.
@@ -174,6 +169,9 @@ class NotificationService {
     timings: PrayerTimings,
     cityName: string,
   ): Promise<void> {
+    const enabled = await this.getPrayerEnabled();
+    if (!enabled) { await cancelTrackedCategory(PRAYER_NOTIF_IDS_KEY); return; }
+
     const hasPermission = await this.requestPermissions();
     if (!hasPermission) return;
 
@@ -211,6 +209,9 @@ class NotificationService {
    * Schedules proactive reminders for spiritual windows.
    */
   public async scheduleSpiritualReminders(timings: PrayerTimings): Promise<void> {
+    const enabled = await this.getSpiritualEnabled();
+    if (!enabled) { await cancelTrackedCategory(SPIRITUAL_NOTIF_IDS_KEY); return; }
+
     const hasPermission = await this.requestPermissions();
     if (!hasPermission) return;
 
@@ -237,22 +238,46 @@ class NotificationService {
     const [tahajjudIds, morningIds, eveningIds] = await Promise.all([
       fajrValid ? this.scheduleWeeklyTrigger(
         Math.floor(tahajjudMins / 60), tahajjudMins % 60,
-        { title: 'The Silent Hour', body: 'It is the time of Tahajjud. A moment for deep reflection and conversation with your Lord.', categoryIdentifier: 'spiritual_window' },
+        { title: 'The Silent Hour', body: 'It is the time of Tahajjud. A moment for deep reflection and conversation with your Lord.' },
         CH_SPIRITUAL,
       ) : Promise.resolve([]),
       fajrValid ? this.scheduleWeeklyTrigger(
         Math.floor(morningMins / 60), morningMins % 60,
-        { title: 'Start with Light', body: 'The sun is rising. Remember Allah with the morning adhkars to protect your day.', categoryIdentifier: 'spiritual_window' },
+        { title: 'Start with Light', body: 'The sun is rising. Remember Allah with the morning adhkars to protect your day.' },
         CH_SPIRITUAL,
       ) : Promise.resolve([]),
       maghribValid ? this.scheduleWeeklyTrigger(
         Math.floor(eveningMins / 60), eveningMins % 60,
-        { title: 'Closing the Day', body: 'The day is ending. Find peace in the evening remembrance before the night sets in.', categoryIdentifier: 'spiritual_window' },
+        { title: 'Closing the Day', body: 'The day is ending. Find peace in the evening remembrance before the night sets in.' },
         CH_SPIRITUAL,
       ) : Promise.resolve([]),
     ]);
 
     await setTrackedIds(SPIRITUAL_NOTIF_IDS_KEY, [...tahajjudIds, ...morningIds, ...eveningIds]);
+  }
+
+  public async getPrayerEnabled(): Promise<boolean> {
+    try {
+      const raw = await AsyncStorage.getItem(PRAYER_ENABLED_KEY);
+      return raw === null ? true : JSON.parse(raw);
+    } catch { return true; }
+  }
+
+  public async setPrayerEnabled(value: boolean): Promise<void> {
+    await AsyncStorage.setItem(PRAYER_ENABLED_KEY, JSON.stringify(value));
+    if (!value) await cancelTrackedCategory(PRAYER_NOTIF_IDS_KEY);
+  }
+
+  public async getSpiritualEnabled(): Promise<boolean> {
+    try {
+      const raw = await AsyncStorage.getItem(SPIRITUAL_ENABLED_KEY);
+      return raw === null ? true : JSON.parse(raw);
+    } catch { return true; }
+  }
+
+  public async setSpiritualEnabled(value: boolean): Promise<void> {
+    await AsyncStorage.setItem(SPIRITUAL_ENABLED_KEY, JSON.stringify(value));
+    if (!value) await cancelTrackedCategory(SPIRITUAL_NOTIF_IDS_KEY);
   }
 
   /**

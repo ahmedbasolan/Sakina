@@ -245,8 +245,9 @@ export function useHomeData({ setStreakCount }: UseHomeDataOptions) {
   // back hours later. Reload it all whenever the app returns to the
   // foreground, and tick `now` each minute for time-derived labels.
   useEffect(() => {
+    let mounted = true;
     const subscription = AppState.addEventListener('change', (state) => {
-      if (state !== 'active') return;
+      if (state !== 'active' || !mounted) return;
       setNow(Date.now());
       loadPrayerData();
       loadStreakData();
@@ -254,8 +255,9 @@ export function useHomeData({ setStreakCount }: UseHomeDataOptions) {
       checkTodayMood();
       getDailyVerse().then(setDailyVerse).catch(() => {});
     });
-    const tick = setInterval(() => setNow(Date.now()), 60_000);
+    const tick = setInterval(() => { if (mounted) setNow(Date.now()); }, 60_000);
     return () => {
+      mounted = false;
       subscription.remove();
       clearInterval(tick);
     };
