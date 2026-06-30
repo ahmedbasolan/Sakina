@@ -17,6 +17,7 @@ import { BlurView } from 'expo-blur';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors, Spacing, Typography, BorderRadius } from '../theme/DesignSystem';
+import * as Location from 'expo-location';
 import { saveUserLocation, formatLocation, UserLocation } from '../services/locationStorage';
 import PrayerTimesService from '../services/prayerTimesService';
 import { CITIES } from '../data/cityData';
@@ -42,6 +43,7 @@ export const LocationPickerModal: React.FC<LocationPickerModalProps> = ({
   const [isLoading, setIsLoading] = useState(false);
   const searchRef = useRef<TextInput>(null);
   const isSelectingRef = useRef(false);
+  const [gpsStatus, setGpsStatus] = useState<'idle' | 'loading' | 'denied' | 'error'>('idle');
 
   useEffect(() => {
     if (visible) {
@@ -49,6 +51,7 @@ export const LocationPickerModal: React.FC<LocationPickerModalProps> = ({
       setQuery(currentLocation?.city ?? '');
       setCity('');
       setCountry('');
+      setGpsStatus('idle');
       setTimeout(() => searchRef.current?.focus(), 150);
     }
   }, [visible]);
@@ -68,6 +71,40 @@ export const LocationPickerModal: React.FC<LocationPickerModalProps> = ({
     await saveUserLocation(formatted);
     onLocationSelected(formatted);
     onClose();
+  };
+
+  const handleUseCurrentLocation = async () => {
+    setGpsStatus('loading');
+    try {
+      const { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') {
+        setGpsStatus('denied');
+        return;
+      }
+      const pos = await Promise.race([
+        Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Balanced }),
+        new Promise<never>((_, reject) =>
+          setTimeout(() => reject(new Error('timeout')), 10000),
+        ),
+      ]);
+      const [geo] = await Location.reverseGeocodeAsync({
+        latitude: pos.coords.latitude,
+        longitude: pos.coords.longitude,
+      });
+      const rawCity = geo?.city || geo?.district || geo?.subregion || 'Current Location';
+      const rawCountry = geo?.isoCountryCode || '';
+      const formatted = formatLocation({ city: rawCity, country: rawCountry });
+      const locationWithCoords: UserLocation = {
+        ...formatted,
+        latitude: pos.coords.latitude,
+        longitude: pos.coords.longitude,
+      };
+      await saveUserLocation(locationWithCoords);
+      onLocationSelected(locationWithCoords);
+      onClose();
+    } catch {
+      setGpsStatus('error');
+    }
   };
 
   const handleManualSave = async () => {
@@ -131,6 +168,36 @@ export const LocationPickerModal: React.FC<LocationPickerModalProps> = ({
 
             {mode === 'search' ? (
               <>
+                {/* GPS row */}
+                <TouchableOpacity
+                  style={styles.gpsRow}
+                  onPress={handleUseCurrentLocation}
+                  disabled={gpsStatus === 'loading'}
+                  activeOpacity={0.7}
+                  hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+                  accessibilityRole="button"
+                  accessibilityLabel="Use current location"
+                >
+                  {gpsStatus === 'loading' ? (
+                    <ActivityIndicator size="small" color={Colors.accent.primary} />
+                  ) : (
+                    <Ionicons name="locate" size={18} color={Colors.accent.primary} />
+                  )}
+                  <Text
+                    style={[
+                      styles.gpsText,
+                      (gpsStatus === 'denied' || gpsStatus === 'error') && styles.gpsTextMuted,
+                    ]}
+                  >
+                    {gpsStatus === 'denied'
+                      ? 'Location access denied — search below'
+                      : gpsStatus === 'error'
+                      ? "Couldn't get location — search below"
+                      : 'Use Current Location'}
+                  </Text>
+                </TouchableOpacity>
+                <View style={styles.gpsDivider} />
+
                 {/* Search input */}
                 <View style={styles.searchContainer}>
                   <Ionicons name="search-outline" size={18} color="rgba(245, 237, 227, 0.4)" />
@@ -420,5 +487,27 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     letterSpacing: 1,
     color: Colors.background.secondary,
+  },
+  gpsRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.sm,
+    paddingHorizontal: Spacing.xl,
+    paddingVertical: Spacing.lg,
+  },
+  gpsText: {
+    fontSize: Typography.sizes.body,
+    color: Colors.accent.primary,
+    fontWeight: '600',
+  },
+  gpsTextMuted: {
+    color: Colors.text.muted,
+    fontWeight: '400',
+  },
+  gpsDivider: {
+    height: 1,
+    backgroundColor: 'rgba(255, 255, 255, 0.06)',
+    marginHorizontal: Spacing.xl,
+    marginBottom: Spacing.sm,
   },
 });
