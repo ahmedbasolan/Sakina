@@ -54,7 +54,7 @@ export function StreakBar({ streakDays, fadeAnim, slideAnim, onPress }: StreakBa
                   <Text style={styles.streakText}>{streakDays}-Day Streak</Text>
                   <View style={styles.streakMoons}>
                     {weekDots.map((dot, i) => (
-                      <View key={i} style={styles.streakDotCol}>
+                      <View key={`streak-dot-${i}`} style={styles.streakDotCol}>
                         <View style={[
                           styles.streakMoonDot,
                           dot.active && styles.streakMoonActive,
