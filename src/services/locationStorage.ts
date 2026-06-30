@@ -3,6 +3,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 export interface UserLocation {
   city: string;
   country: string;
+  latitude?: number;   // present when GPS was used
+  longitude?: number;  // present when GPS was used
 }
 
 const LOCATION_KEY = '@user_location';
