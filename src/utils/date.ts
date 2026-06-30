@@ -44,3 +44,14 @@ export function subtractDays(date: Date, days: number): Date {
   d.setDate(d.getDate() - days);
   return d;
 }
+
+/**
+ * Format a Date as a local-timezone "DD-MM-YYYY" string.
+ * Used for the Aladhan coordinates API endpoint path which requires this format.
+ */
+export function formatDateDMY(date: Date = new Date()): string {
+  const d = String(date.getDate()).padStart(2, '0');
+  const m = String(date.getMonth() + 1).padStart(2, '0');
+  const y = date.getFullYear();
+  return `${d}-${m}-${y}`;
+}
