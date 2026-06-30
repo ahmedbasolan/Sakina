@@ -28,7 +28,12 @@ export const formatLocation = (location: UserLocation): UserLocation => ({
 
 export const saveUserLocation = async (location: UserLocation): Promise<void> => {
   try {
-    await AsyncStorage.setItem(LOCATION_KEY, JSON.stringify(formatLocation(location)));
+    const formatted = formatLocation(location);
+    const toSave: UserLocation =
+      location.latitude !== undefined
+        ? { ...formatted, latitude: location.latitude, longitude: location.longitude }
+        : formatted;
+    await AsyncStorage.setItem(LOCATION_KEY, JSON.stringify(toSave));
   } catch (error) {
     console.error('Error saving user location:', error);
   }
