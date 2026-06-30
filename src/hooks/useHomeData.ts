@@ -106,17 +106,12 @@ export function useHomeData({ setStreakCount }: UseHomeDataOptions) {
       updatePrayerStatus(data.timings);
       if (data.timings.Fajr) setFajrTime(data.timings.Fajr);
 
-      // Re-schedule both notification categories from today's fresh timings.
-      // Both calls are wrapped together: if either fails mid-way, cancel
-      // everything so no orphaned notifications survive the partial run.
+      // Re-schedule notifications in the background — prayer UI must not wait
+      // for OS scheduling calls, which can take 100-500ms on cold start.
       const notifications = NotificationService.getInstance();
-      try {
-        await notifications.scheduleSpiritualReminders(data.timings);
-        await notifications.schedulePrayerNotifications(data.timings, city);
-      } catch (notifError) {
-        await notifications.cancelPrayerAndSpiritual().catch(() => {});
-        throw notifError;
-      }
+      notifications.scheduleSpiritualReminders(data.timings)
+        .then(() => notifications.schedulePrayerNotifications(data.timings, city))
+        .catch(() => notifications.cancelPrayerAndSpiritual().catch(() => {}));
     } catch (error) {
       logServiceError('useHomeData', 'loadPrayerData', error instanceof Error ? error : new Error(String(error)));
     } finally {
@@ -212,13 +207,14 @@ export function useHomeData({ setStreakCount }: UseHomeDataOptions) {
 
   useEffect(() => {
     const bootstrap = async () => {
-      // Key migration: @noor_last_open → @sakina_last_open
-      const lastOpen =
-        (await AsyncStorage.getItem('@sakina_last_open')) ??
-        (await AsyncStorage.getItem('@noor_last_open'));
-      setLastOpenDate(lastOpen);
-      await AsyncStorage.setItem('@sakina_last_open', new Date().toISOString());
-      await AsyncStorage.removeItem('@noor_last_open').catch(() => {});
+      // Key migration (@noor_last_open → @sakina_last_open) runs as a side
+      // effect — it is cosmetic and must not block the data Promise.all below.
+      AsyncStorage.getItem('@sakina_last_open').then(async (v) => {
+        const lastOpen = v ?? (await AsyncStorage.getItem('@noor_last_open'));
+        setLastOpenDate(lastOpen);
+        await AsyncStorage.setItem('@sakina_last_open', new Date().toISOString());
+        await AsyncStorage.removeItem('@noor_last_open').catch(() => {});
+      });
 
       await Promise.all([
         loadPrayerData(),
