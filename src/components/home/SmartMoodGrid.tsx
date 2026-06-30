@@ -6,6 +6,7 @@ import {
   StyleSheet,
   Animated,
   Dimensions,
+  ActivityIndicator,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
@@ -21,6 +22,7 @@ const CARD_WIDTH = (width - 48 - 12) / 2;
 interface SmartMoodGridProps {
   moodConfigs: MoodConfig[];
   selectedMood: Mood | null;
+  loadingMood?: Mood | null;
   onMoodPress: (mood: Mood) => void;
 }
 
@@ -33,29 +35,20 @@ interface SmartMoodGridProps {
 const SmartMoodCard = memo(function SmartMoodCard({
   mood,
   isChecked,
+  isLoading,
   onPress,
-  index,
 }: {
   mood: MoodConfig;
   isChecked: boolean;
+  isLoading: boolean;
   onPress: () => void;
-  index: number;
 }) {
-  const scaleAnim = useRef(new Animated.Value(0)).current;
+  const scaleAnim = useRef(new Animated.Value(1)).current;
   const glowAnim = useRef(new Animated.Value(0)).current;
   const reduceMotion = useReduceMotion();
 
   useEffect(() => {
-    const anim = Animated.sequence([
-      Animated.delay(index * 80),
-      Animated.spring(scaleAnim, { toValue: 1, friction: 5, tension: 40, useNativeDriver: true }),
-    ]);
-    anim.start();
-    return () => anim.stop();
-  }, []);
-
-  useEffect(() => {
-    if (isChecked && !reduceMotion) {
+    if (isChecked && !isLoading && !reduceMotion) {
       const loop = Animated.loop(
         Animated.sequence([
           Animated.timing(glowAnim, { toValue: 1, duration: 1200, useNativeDriver: true }),
@@ -103,7 +96,12 @@ const SmartMoodCard = memo(function SmartMoodCard({
             ]}
           />
           <View style={styles.cardRow}>
-            <View style={[styles.iconCircle, { backgroundColor: 'rgba(0,0,0,0.18)', borderColor: 'rgba(255,255,255,0.20)' }]}>
+            <View style={[
+              styles.iconCircle,
+              isChecked
+                ? { backgroundColor: mood.color + '40', borderColor: mood.color + 'CC' }
+                : { backgroundColor: 'rgba(0,0,0,0.18)', borderColor: 'rgba(255,255,255,0.20)' },
+            ]}>
               <Ionicons name={mood.iconName as any} size={20} color="#FFFFFF" />
             </View>
             <View style={styles.cardText}>
@@ -125,9 +123,9 @@ const SmartMoodCard = memo(function SmartMoodCard({
               </Text>
             </View>
           </View>
-          {isChecked && (
-            <View style={[styles.checkedBadge, { backgroundColor: 'rgba(255,255,255,0.25)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.5)' }]}>
-              <Ionicons name="checkmark" size={8} color="#FFFFFF" />
+          {isLoading && (
+            <View style={[styles.checkedBadge, { backgroundColor: 'rgba(255,255,255,0.15)' }]}>
+              <ActivityIndicator size="small" color="#FFFFFF" style={styles.badgeSpinner} />
             </View>
           )}
         </LinearGradient>
@@ -141,6 +139,7 @@ const SmartMoodCard = memo(function SmartMoodCard({
 export const SmartMoodGrid = memo(function SmartMoodGrid({
   moodConfigs,
   selectedMood,
+  loadingMood,
   onMoodPress,
 }: SmartMoodGridProps) {
   const [expanded, setExpanded] = useState(false);
@@ -165,13 +164,13 @@ export const SmartMoodGrid = memo(function SmartMoodGrid({
   return (
     <View>
       <View style={styles.grid}>
-        {visibleMoods.map((mood, idx) => (
+        {visibleMoods.map((mood) => (
           <SmartMoodCard
             key={mood.id}
             mood={mood}
             isChecked={selectedMood === mood.id}
+            isLoading={loadingMood === mood.id}
             onPress={pressHandlers[mood.id]}
-            index={idx}
           />
         ))}
       </View>
@@ -242,11 +241,14 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 8,
     right: 8,
-    width: 18,
-    height: 18,
-    borderRadius: 9,
+    width: 22,
+    height: 22,
+    borderRadius: 11,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  badgeSpinner: {
+    transform: [{ scale: 0.6 }],
   },
   expandBtn: {
     flexDirection: 'row',
