@@ -4,7 +4,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { PrayerContext } from '../types';
 import { getUserLocation } from './locationStorage';
 import { logServiceError, logNetworkError } from './errorLoggingService';
-import { formatDateYMD } from '../utils/date';
+import { formatDateYMD, formatDateDMY } from '../utils/date';
 import { withRetry, AXIOS_RETRY_CONFIG } from './retryUtils';
 
 export interface PrayerTimings {
@@ -63,6 +63,21 @@ const METHOD_BY_COUNTRY: Record<string, number> = {
   indonesia: 20, // KEMENAG
   tunisia: 18, algeria: 19, morocco: 21, jordan: 23,
   usa: 2, 'united states': 2, us: 2, canada: 2, // ISNA
+  // ISO-2 aliases returned by expo-location reverseGeocodeAsync
+  ae: 8, om: 8, bh: 8, ye: 8,
+  sa: 4,
+  kw: 9,
+  qa: 10,
+  eg: 5,
+  pk: 1, 'in': 1, bd: 1, af: 1,
+  tr: 13,
+  sg: 11,
+  fr: 12,
+  ru: 14,
+  my: 17,
+  id: 20,
+  tn: 18, dz: 19, ma: 21, jo: 23,
+  ca: 2,
 };
 
 export function getCalculationMethodForCountry(country: string): number {
@@ -161,6 +176,63 @@ class PrayerTimesService {
         return JSON.parse(stale);
       }
 
+      throw new Error(error.message || 'Network error fetching prayer times');
+    }
+  }
+
+  /**
+   * Fetches prayer times by GPS coordinates.
+   * More accurate than city-name lookup. Uses the same day-based caching
+   * and stale-fallback strategy as getTimingsByCity.
+   * Coords are rounded to 2 decimal places in the cache key (~1 km precision)
+   * to avoid cache misses from GPS jitter between calls.
+   */
+  public async getTimingsByCoordinates(
+    lat: number,
+    lon: number,
+    country: string,
+  ): Promise<PrayerTimesData> {
+    const resolvedMethod = getCalculationMethodForCountry(country);
+    const today = formatDateYMD();
+    const lat2 = lat.toFixed(2);
+    const lon2 = lon.toFixed(2);
+    const cacheKey = `@prayer_timings_lat${lat2}_lon${lon2}_m${resolvedMethod}_${today}`;
+    const fallbackKey = `@prayer_timings_lat${lat2}_lon${lon2}_m${resolvedMethod}_fallback`;
+
+    try {
+      const cachedData = await AsyncStorage.getItem(cacheKey);
+      if (cachedData) return JSON.parse(cachedData);
+
+      const dateDMY = formatDateDMY();
+      const data = await withRetry(
+        async () => {
+          const response = await axios.get(
+            `https://api.aladhan.com/v1/timings/${dateDMY}`,
+            { params: { latitude: lat, longitude: lon, method: resolvedMethod } },
+          );
+          if (response.data.code === 200) return response.data.data;
+          throw new Error(response.data.status || 'Failed to fetch prayer times');
+        },
+        'PrayerTimesService.getTimingsByCoordinates',
+        AXIOS_RETRY_CONFIG,
+      );
+
+      await AsyncStorage.setItem(cacheKey, JSON.stringify(data));
+      await AsyncStorage.setItem(fallbackKey, JSON.stringify(data));
+      this.pruneStaleTimingCaches(today).catch(() => {});
+      return data;
+    } catch (error: any) {
+      logNetworkError(
+        'https://api.aladhan.com/v1/timings',
+        'GET',
+        error instanceof Error ? error : new Error(String(error)),
+        { lat, lon },
+      );
+      const stale = await AsyncStorage.getItem(fallbackKey);
+      if (stale) {
+        console.warn('[PrayerTimes] Network unavailable — using stale cached timings');
+        return JSON.parse(stale);
+      }
       throw new Error(error.message || 'Network error fetching prayer times');
     }
   }
