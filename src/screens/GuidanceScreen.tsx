@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import {
   StyleSheet,
   View,
@@ -26,7 +26,7 @@ import { Colors, Spacing, Typography, MoodColors } from '../theme/DesignSystem';
 import { extractVerseKey } from '../utils';
 import { logServiceError } from '../services/errorLoggingService';
 
-import { useRoute, useNavigation } from '@react-navigation/native';
+import { useRoute, useNavigation, useFocusEffect } from '@react-navigation/native';
 import { useAppContext } from '../context/AppContext';
 import { SubscriptionService } from '../services/subscriptionService';
 import { FreemiumService } from '../services/freemiumService';
@@ -38,7 +38,10 @@ const GuidanceScreen: React.FC = () => {
   const route = useRoute<any>();
   const navigation = useNavigation<any>();
   const { rotationEngine, timeFormat } = useAppContext();
-  const isPremium = SubscriptionService.getInstance().isPremium();
+  const [isPremium, setIsPremium] = useState(() => SubscriptionService.getInstance().isPremium());
+  useFocusEffect(useCallback(() => {
+    setIsPremium(SubscriptionService.getInstance().isPremium());
+  }, []));
   const freemium = FreemiumService.getInstance();
 
   const { experience, mood, islamicTerm } = route.params;
@@ -142,7 +145,7 @@ const GuidanceScreen: React.FC = () => {
     scrollY.setValue(0);
   }, [experience?.content?.id]);
 
-  const hasContext = !!(experience.content.whyThis || experience.angle?.angle);
+  const hasContext = !!(experience?.content?.whyThis || experience?.angle?.angle);
   const LAYER_TYPES: Array<'verse' | 'context'> = hasContext ? ['verse', 'context'] : ['verse'];
 
   const totalLayers = LAYER_TYPES.length;

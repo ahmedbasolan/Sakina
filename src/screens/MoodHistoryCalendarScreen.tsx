@@ -30,6 +30,7 @@ import {
 import { HapticsService } from '../services/hapticsService';
 import { NoReflections } from '../components/EmptyStates';
 import { logServiceError } from '../services/errorLoggingService';
+import { useReduceMotion } from '../hooks/useReduceMotion';
 
 const { width } = Dimensions.get('window');
 const AnimatedCircle = Animated.createAnimatedComponent(Circle);
@@ -111,8 +112,10 @@ function TwinklingStar({
   size?: number;
 }) {
   const opacity = useRef(new Animated.Value(0.2)).current;
+  const reduceMotion = useReduceMotion();
 
   useEffect(() => {
+    if (reduceMotion) return;
     const anim = Animated.loop(
       Animated.sequence([
         Animated.timing(opacity, {
@@ -130,7 +133,7 @@ function TwinklingStar({
     );
     anim.start();
     return () => anim.stop();
-  }, [opacity, delay]);
+  }, [opacity, delay, reduceMotion]);
 
   return (
     <Animated.View
@@ -141,7 +144,7 @@ function TwinklingStar({
         width: size,
         height: size,
         borderRadius: size / 2,
-        backgroundColor: '#FB923C',
+        backgroundColor: Colors.accent.primary,
         opacity,
       }}
     />
@@ -182,7 +185,7 @@ function ProgressRing({ progress, size = 110, strokeWidth = 6 }: {
         cy={size / 2}
         r={r}
         fill="none"
-        stroke="#FB923C"
+        stroke={Colors.accent.primary}
         strokeWidth={strokeWidth}
         strokeLinecap="round"
         strokeDasharray={circumference}
@@ -317,7 +320,7 @@ export default function MoodHistoryCalendarScreen({ onBack }: MoodHistoryCalenda
     return (
       <View style={[styles.container, { paddingTop: topInset }]}>
         <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color="#FB923C" />
+          <ActivityIndicator size="large" color={Colors.accent.primary} />
           <Text style={styles.loadingText}>Loading mood history...</Text>
         </View>
       </View>
@@ -371,7 +374,7 @@ export default function MoodHistoryCalendarScreen({ onBack }: MoodHistoryCalenda
           contentContainerStyle={[styles.scrollContent, { paddingBottom: bottomInset + 40 }]}
           showsVerticalScrollIndicator={false}
           refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} tintColor="#FB923C" />
+            <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} tintColor={Colors.accent.primary} />
           }
         >
           {/* Hero Streak Card */}
@@ -497,7 +500,7 @@ export default function MoodHistoryCalendarScreen({ onBack }: MoodHistoryCalenda
                         styles.calendarDayText,
                         entry && { color: visual!.text, fontWeight: '700' },
                         !entry && { color: Colors.text.muted },
-                        isToday && !entry && { color: '#FB923C', fontWeight: '700' },
+                        isToday && !entry && { color: Colors.accent.primary, fontWeight: '700' },
                       ]}
                     >
                       {day}
@@ -536,7 +539,7 @@ export default function MoodHistoryCalendarScreen({ onBack }: MoodHistoryCalenda
               </View>
 
               {loadingDetail ? (
-                <ActivityIndicator size="small" color="#FB923C" style={{ marginVertical: 20 }} />
+                <ActivityIndicator size="small" color={Colors.accent.primary} style={{ marginVertical: 20 }} />
               ) : dayDetail ? (
                 <>
                   {/* Mood Badge */}
@@ -826,7 +829,7 @@ const styles = StyleSheet.create({
   ringLabel: {
     fontSize: 10,
     fontWeight: '700',
-    color: '#FB923C',
+    color: Colors.accent.primary,
     letterSpacing: 1.5,
     marginTop: 2,
   },
@@ -841,7 +844,7 @@ const styles = StyleSheet.create({
   },
   heroSubtitle: {
     fontSize: 12,
-    color: '#FB923C',
+    color: Colors.accent.primary,
     marginBottom: 10,
     lineHeight: 17,
   },
@@ -954,12 +957,12 @@ const styles = StyleSheet.create({
   },
   calendarCellSelected: {
     borderWidth: 2,
-    borderColor: '#FB923C',
+    borderColor: Colors.accent.primary,
     transform: [{ scale: 1.08 }],
   },
   calendarCellToday: {
     borderWidth: 2,
-    borderColor: '#FB923C',
+    borderColor: Colors.accent.primary,
     borderStyle: 'dashed',
   },
   calendarDayText: {

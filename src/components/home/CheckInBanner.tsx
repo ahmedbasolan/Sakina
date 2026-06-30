@@ -34,7 +34,13 @@ export function CheckInBanner({ onDismiss }: CheckInBannerProps) {
           Your heart has a story today — take a moment
         </Text>
       </View>
-      <TouchableOpacity onPress={onDismiss} style={styles.checkinDismiss}>
+      <TouchableOpacity
+        onPress={onDismiss}
+        style={styles.checkinDismiss}
+        hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+        accessibilityRole="button"
+        accessibilityLabel="Dismiss"
+      >
         <Ionicons name="close" size={10} color={Colors.accent.primary} />
       </TouchableOpacity>
     </View>

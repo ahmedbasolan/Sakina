@@ -1,15 +1,17 @@
 import React, { useEffect, useRef } from 'react';
 import { View, StyleSheet, Animated, Dimensions } from 'react-native';
+import { useReduceMotion } from '../hooks/useReduceMotion';
 
 const { width, height } = Dimensions.get('window');
 const PARTICLE_COUNT = 6;
 
-function Mote({ delay }: { delay: number }) {
+function Mote({ delay, reduceMotion }: { delay: number; reduceMotion: boolean }) {
   const opacity = useRef(new Animated.Value(0)).current;
   const translateY = useRef(new Animated.Value(height * 0.8)).current;
   const translateX = useRef(new Animated.Value(width * (0.2 + Math.random() * 0.6))).current;
 
   useEffect(() => {
+    if (reduceMotion) return;
     let stopped = false;
     const animate = () => {
       if (stopped) return;
@@ -37,7 +39,7 @@ function Mote({ delay }: { delay: number }) {
 
     animate();
     return () => { stopped = true; };
-  }, []);
+  }, [reduceMotion]);
 
   return (
     <Animated.View
@@ -54,10 +56,11 @@ function Mote({ delay }: { delay: number }) {
 }
 
 export function GoldenMotes() {
+  const reduceMotion = useReduceMotion();
   return (
     <View style={StyleSheet.absoluteFill} pointerEvents="none">
       {Array.from({ length: PARTICLE_COUNT }).map((_, i) => (
-        <Mote key={i} delay={i * 1200} />
+        <Mote key={i} delay={i * 1200} reduceMotion={reduceMotion} />
       ))}
     </View>
   );

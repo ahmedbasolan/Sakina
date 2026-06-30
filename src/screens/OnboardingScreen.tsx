@@ -37,6 +37,7 @@ import { touchEmitter } from '../components/onboarding/InteractiveStarfield';
 import { useTheme } from '../context/ThemeContext';
 import { useAuth } from '../context/AuthContext';
 import { Animations, Spacing } from '../theme/DesignSystem';
+import { useReduceMotion } from '../hooks/useReduceMotion';
 
 const TOTAL_SCREENS = 7;
 const SWIPE_THRESHOLD = 50;
@@ -79,10 +80,12 @@ export default function OnboardingScreen() {
   const mandalaScale = useRef(new Animated.Value(1)).current;
   const bgScale = useRef(new Animated.Value(1)).current;
   const isTransitioning = useRef(false);
+  const reduceMotion = useReduceMotion();
 
   // Breathing background gradient loop
   useEffect(() => {
-    Animated.loop(
+    if (reduceMotion) return;
+    const loop = Animated.loop(
       Animated.sequence([
         Animated.timing(bgScale, {
           toValue: 1.05,
@@ -97,8 +100,10 @@ export default function OnboardingScreen() {
           useNativeDriver: true,
         }),
       ]),
-    ).start();
-  }, []);
+    );
+    loop.start();
+    return () => loop.stop();
+  }, [reduceMotion]);
 
   // Animate progress bar on screen change and mandala pulse
   useEffect(() => {

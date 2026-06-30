@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
-import { Colors, Spacing, BorderRadius, Typography, MoodColors } from '../theme/DesignSystem';
+import { Colors, Spacing, BorderRadius, Typography, MoodColors, Layout } from '../theme/DesignSystem';
 import { logServiceError } from '../services/errorLoggingService';
 import {
   View,
@@ -100,15 +100,15 @@ function ReflectionCard({ reflection, index, isLast }: { reflection: any; index:
 
 // ── New-reflection sheet ─────────────────────────────────────────────
 const SHEET_MOODS = [
-  { id: 'Grateful',    label: 'GRATEFUL',    color: '#34D399', icon: 'heart' },
-  { id: 'Hopeful',     label: 'HOPEFUL',     color: '#FBBF24', icon: 'sunny' },
-  { id: 'Calm',        label: 'PEACEFUL',    color: '#22D3EE', icon: 'water' },
-  { id: 'Overwhelmed', label: 'OVERWHELMED', color: '#818CF8', icon: 'layers' },
-  { id: 'Tired',       label: 'TIRED',       color: '#9CA3AF', icon: 'moon' },
-  { id: 'Lonely',      label: 'LONELY',      color: '#A78BFA', icon: 'person' },
-  { id: 'Sad',         label: 'SAD',         color: '#60A5FA', icon: 'rainy' },
-  { id: 'Angry',       label: 'ANGRY',       color: '#F87171', icon: 'flame' },
-] as const;
+  { id: 'Grateful',    label: 'GRATEFUL',    color: MoodColors['Grateful'].accent,    icon: 'heart' },
+  { id: 'Hopeful',     label: 'HOPEFUL',     color: MoodColors['Hopeful'].accent,     icon: 'sunny' },
+  { id: 'Calm',        label: 'PEACEFUL',    color: MoodColors['Calm'].accent,        icon: 'water' },
+  { id: 'Overwhelmed', label: 'OVERWHELMED', color: MoodColors['Overwhelmed'].accent, icon: 'layers' },
+  { id: 'Tired',       label: 'TIRED',       color: MoodColors['Tired'].accent,       icon: 'moon' },
+  { id: 'Lonely',      label: 'LONELY',      color: MoodColors['Lonely'].accent,      icon: 'person' },
+  { id: 'Sad',         label: 'SAD',         color: MoodColors['Sad'].accent,         icon: 'rainy' },
+  { id: 'Angry',       label: 'ANGRY',       color: MoodColors['Angry'].accent,       icon: 'flame' },
+];
 
 function NewReflectionModal({ visible, onClose, onSave }: {
   visible: boolean;
@@ -119,6 +119,7 @@ function NewReflectionModal({ visible, onClose, onSave }: {
   const [bodyText, setBodyText] = useState('');
   const [selectedMood, setSelectedMood] = useState<string | null>(null);
   const insets = useSafeAreaInsets();
+  const bodyRef = useRef<TextInput>(null);
 
   const handleSave = () => {
     if (!bodyText.trim()) return;
@@ -130,11 +131,17 @@ function NewReflectionModal({ visible, onClose, onSave }: {
   };
 
   return (
-    <Modal visible={visible} animationType="slide" transparent onRequestClose={onClose}>
+    <Modal
+      visible={visible}
+      animationType="slide"
+      transparent
+      onRequestClose={onClose}
+      onShow={() => setTimeout(() => bodyRef.current?.focus(), 100)}
+    >
       <TouchableOpacity style={styles.sheetBackdrop} activeOpacity={1} onPress={onClose} />
       <KeyboardAvoidingView
         style={styles.sheetWrap}
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         pointerEvents="box-none"
       >
         <View style={[styles.sheet, { paddingBottom: Math.max(insets.bottom, Spacing.lg) + Spacing.sm }]}>
@@ -156,6 +163,7 @@ function NewReflectionModal({ visible, onClose, onSave }: {
             horizontal
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={styles.moodChipsRow}
+            keyboardShouldPersistTaps="handled"
           >
             {SHEET_MOODS.map((m) => {
               const active = selectedMood === m.id;
@@ -181,31 +189,39 @@ function NewReflectionModal({ visible, onClose, onSave }: {
             })}
           </ScrollView>
 
-          <TextInput
-            style={styles.sheetTitleInput}
-            placeholder="TITLE…"
-            placeholderTextColor={`${Colors.text.primary}38`}
-            value={titleText}
-            onChangeText={setTitleText}
-          />
-          <TextInput
-            style={styles.sheetBodyInput}
-            placeholder="Write freely… this space is private, sacred, and only yours."
-            placeholderTextColor={`${Colors.text.secondary}59`}
-            value={bodyText}
-            onChangeText={setBodyText}
-            multiline
-            textAlignVertical="top"
-            autoFocus
-          />
-          <TouchableOpacity
-            onPress={handleSave}
-            disabled={!bodyText.trim()}
-            activeOpacity={0.9}
-            style={[styles.sheetSaveBtn, !bodyText.trim() && { opacity: 0.4 }]}
+          {/* Inputs in a vertical scroll so they stay visible above the keyboard */}
+          <ScrollView
+            keyboardShouldPersistTaps="handled"
+            showsVerticalScrollIndicator={false}
+            style={styles.sheetScrollArea}
+            contentContainerStyle={styles.sheetScrollContent}
           >
-            <Text style={styles.sheetSaveText}>SAVE REFLECTION</Text>
-          </TouchableOpacity>
+            <TextInput
+              style={styles.sheetTitleInput}
+              placeholder="TITLE…"
+              placeholderTextColor={`${Colors.text.primary}38`}
+              value={titleText}
+              onChangeText={setTitleText}
+            />
+            <TextInput
+              ref={bodyRef}
+              style={styles.sheetBodyInput}
+              placeholder="Write freely… this space is private, sacred, and only yours."
+              placeholderTextColor={`${Colors.text.secondary}59`}
+              value={bodyText}
+              onChangeText={setBodyText}
+              multiline
+              textAlignVertical="top"
+            />
+            <TouchableOpacity
+              onPress={handleSave}
+              disabled={!bodyText.trim()}
+              activeOpacity={0.9}
+              style={[styles.sheetSaveBtn, !bodyText.trim() && { opacity: 0.4 }]}
+            >
+              <Text style={styles.sheetSaveText}>SAVE REFLECTION</Text>
+            </TouchableOpacity>
+          </ScrollView>
         </View>
       </KeyboardAvoidingView>
     </Modal>
@@ -251,7 +267,7 @@ export default function ReflectionHistoryScreen() {
           [id, title || 'Reflection', text, mood || null, Date.now()]
         );
       });
-      loadReflections();
+      await loadReflections();
     } catch (e) {
       logServiceError('ReflectionHistoryScreen', 'saveReflection', e instanceof Error ? e : new Error(String(e)));
     }
@@ -295,7 +311,7 @@ export default function ReflectionHistoryScreen() {
       </Animated.View>
 
       <ScrollView
-        contentContainerStyle={[styles.listContent, { paddingBottom: insets.bottom + Spacing.xxxl * 2 }]}
+        contentContainerStyle={[styles.listContent, { paddingBottom: insets.bottom + Layout.tabBarClearance }]}
         showsVerticalScrollIndicator={false}
       >
         {/* Daily prompt card */}
@@ -539,6 +555,13 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.5,
     shadowRadius: 20,
     elevation: 20,
+    maxHeight: '90%',
+  },
+  sheetScrollArea: {
+    flexShrink: 1,
+  },
+  sheetScrollContent: {
+    paddingBottom: Spacing.sm,
   },
   sheetHandle: {
     alignSelf: 'center',

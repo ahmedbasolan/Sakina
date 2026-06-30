@@ -227,7 +227,7 @@ export class SubscriptionService {
           subscriptionEndDate: row.subscriptionEndDate,
           isActive: tier === 'premium' && Boolean(row.isActive),
           willRenew: Boolean(row.willRenew),
-          unlockedBundleIds: row.unlockedBundleIds ? JSON.parse(row.unlockedBundleIds) : [],
+          unlockedBundleIds: (() => { try { return row.unlockedBundleIds ? JSON.parse(row.unlockedBundleIds) : []; } catch { return []; } })(),
         };
       }
     } catch (error) {

@@ -78,8 +78,10 @@ export const useGuidanceLogic = (
   // Re-runs if the active mood changes in-session; syncPrayerWindow is
   // idempotent (only writes when the window actually changed).
   useEffect(() => {
+    let mounted = true;
     const syncRefreshes = async () => {
       await freemiumService.syncPrayerWindow();
+      if (!mounted) return;
       const remaining = freemiumService.getRemainingRefreshes();
       setRemainingRefreshes(remaining);
       if (remaining > 0) {
@@ -89,6 +91,7 @@ export const useGuidanceLogic = (
       }
     };
     syncRefreshes();
+    return () => { mounted = false; };
   }, [mood]);
 
   // One-time: load user preferences (not mood-dependent).

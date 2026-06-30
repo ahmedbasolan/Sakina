@@ -123,7 +123,7 @@ export class AuthService {
     const { params, errorCode } = QueryParams.getQueryParams(url);
     if (errorCode) throw new Error(errorCode);
     const { access_token, refresh_token } = params;
-    if (!access_token) throw new Error('Sign-in did not return a session.');
+    if (!access_token || !refresh_token) throw new Error('Sign-in did not return a complete session.');
 
     const { data, error } = await supabase.auth.setSession({ access_token, refresh_token });
     if (error) throw error;

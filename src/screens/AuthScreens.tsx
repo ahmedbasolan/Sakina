@@ -35,6 +35,7 @@ import { useAuth } from '../context/AuthContext';
 import { LEGAL_URLS } from '../constants';
 import * as Haptics from 'expo-haptics';
 import { InteractiveStarfield } from '../components/onboarding/InteractiveStarfield';
+import { useReduceMotion } from '../hooks/useReduceMotion';
 
 const { width, height } = Dimensions.get('window');
 
@@ -226,14 +227,20 @@ export function LoginScreen({ navigation, onLogin }: AuthScreenProps) {
       Animated.delay(800),
       Animated.timing(footerOpacity, { toValue: 1, duration: 500, useNativeDriver: true }),
     ]).start();
+  }, []);
 
-    Animated.loop(
+  const reduceMotion = useReduceMotion();
+  useEffect(() => {
+    if (reduceMotion) return;
+    const loop = Animated.loop(
       Animated.sequence([
         Animated.timing(patternPulse, { toValue: 1, duration: 4000, useNativeDriver: true }),
         Animated.timing(patternPulse, { toValue: 0.4, duration: 4000, useNativeDriver: true }),
       ])
-    ).start();
-  }, []);
+    );
+    loop.start();
+    return () => loop.stop();
+  }, [reduceMotion, patternPulse]);
 
   const handleSignIn = async () => {
     const trimmedEmail = email.trim().toLowerCase();
@@ -484,14 +491,20 @@ export function SignUpScreen({ navigation, onSignUp }: AuthScreenProps) {
       Animated.delay(800),
       Animated.timing(footerOpacity, { toValue: 1, duration: 500, useNativeDriver: true }),
     ]).start();
+  }, []);
 
-    Animated.loop(
+  const reduceMotion = useReduceMotion();
+  useEffect(() => {
+    if (reduceMotion) return;
+    const loop = Animated.loop(
       Animated.sequence([
         Animated.timing(patternPulse, { toValue: 1, duration: 4000, useNativeDriver: true }),
         Animated.timing(patternPulse, { toValue: 0.4, duration: 4000, useNativeDriver: true }),
       ])
-    ).start();
-  }, []);
+    );
+    loop.start();
+    return () => loop.stop();
+  }, [reduceMotion, patternPulse]);
 
   const handleCreateAccount = async () => {
     const trimmedName = name.trim();

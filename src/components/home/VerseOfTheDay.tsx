@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, Animated } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Colors, Typography } from '../../theme/DesignSystem';
+import { Colors, Typography, Spacing, BorderRadius } from '../../theme/DesignSystem';
 import { DailyVerse } from '../../services/dailyVerseService';
 
 interface VerseOfTheDayProps {
@@ -43,7 +43,7 @@ export function VerseOfTheDay({ dailyVerse, fadeAnim, slideAnim }: VerseOfTheDay
         )}
 
         {/* Gold bottom line */}
-        <LinearGradient colors={['transparent', '#C9A84C60', 'transparent']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={styles.verseBorderLineBottom} />
+        <LinearGradient colors={['transparent', Colors.accent.primary + '60', 'transparent']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={styles.verseBorderLineBottom} />
       </View>
     </Animated.View>
   );
@@ -51,15 +51,15 @@ export function VerseOfTheDay({ dailyVerse, fadeAnim, slideAnim }: VerseOfTheDay
 
 const styles = StyleSheet.create({
   verseSection: {
-    paddingHorizontal: 24,
-    marginBottom: 32,
+    paddingHorizontal: Spacing.xl,
+    marginBottom: Spacing.xxl,
   },
   verseCard: {
-    backgroundColor: 'rgba(12, 18, 28, 0.6)',
-    borderRadius: 20,
-    padding: 24,
+    backgroundColor: Colors.background.secondary + '99',
+    borderRadius: BorderRadius.xl,
+    padding: Spacing.xl,
     borderWidth: 1,
-    borderColor: 'rgba(201, 168, 76, 0.15)',
+    borderColor: Colors.accent.glow,
   },
   verseBorderLine: {
     height: 1,

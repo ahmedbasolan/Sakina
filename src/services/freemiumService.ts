@@ -231,7 +231,8 @@ export class FreemiumService {
   async startTrial(): Promise<boolean> {
     const success = await this.subscriptionService.startTrial();
     if (success) {
-      this.sessionService.getCurrentSession()!.nextRefreshesRemaining = 999;
+      const s = this.sessionService.getCurrentSession();
+      if (s) s.nextRefreshesRemaining = 999;
       await this.sessionService.saveSession();
     }
     return success;
@@ -240,7 +241,8 @@ export class FreemiumService {
   async activatePremium(type: 'monthly' | 'yearly'): Promise<boolean> {
     const success = await this.subscriptionService.activatePremium(type);
     if (success) {
-      this.sessionService.getCurrentSession()!.nextRefreshesRemaining = 999;
+      const s = this.sessionService.getCurrentSession();
+      if (s) s.nextRefreshesRemaining = 999;
       await this.sessionService.saveSession();
     }
     return success;
@@ -259,7 +261,8 @@ export class FreemiumService {
   async restorePurchase(): Promise<boolean> {
     const ok = await this.subscriptionService.restorePurchases();
     if (ok) {
-      this.sessionService.getCurrentSession()!.nextRefreshesRemaining = 999;
+      const s = this.sessionService.getCurrentSession();
+      if (s) s.nextRefreshesRemaining = 999;
       await this.sessionService.saveSession();
     }
     return ok;
