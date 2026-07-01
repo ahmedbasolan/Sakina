@@ -7,6 +7,7 @@ import {
   StatusBar,
   Animated,
   PanResponder,
+  ImageSourcePropType,
 } from 'react-native';
 import { HapticsService } from '../services/hapticsService';
 import ImmersiveBackground from '../components/ImmersiveBackground';
@@ -31,6 +32,7 @@ import { useAppContext } from '../context/AppContext';
 import { SubscriptionService } from '../services/subscriptionService';
 import { FreemiumService } from '../services/freemiumService';
 import { setCachedGuidance } from '../services/windowGuidanceCache';
+import { fetchWindowGuidance } from '../services/guidanceWindowFetch';
 import PrayerTimesService, { formatPrayerTime } from '../services/prayerTimesService';
 import { getUserLocation } from '../services/locationStorage';
 
@@ -95,20 +97,47 @@ const GuidanceScreen: React.FC = () => {
   const [isPrefsModalVisible, setIsPrefsModalVisible] = useState(false);
   const [isThemePickerVisible, setIsThemePickerVisible] = useState(false);
   const [selectedThemeId, setSelectedThemeId] = useState<string | null>(null);
-  const [selectedThemeUri, setSelectedThemeUri] = useState<string | null>(null);
+  const [selectedThemeSource, setSelectedThemeSource] = useState<ImageSourcePropType | null>(null);
   const [selectedThemeName, setSelectedThemeName] = useState<string | null>(null);
 
   const refreshSelectedTheme = React.useCallback(async () => {
     if (!isPremium) return;
     const t = await backgroundThemeService.getSelectedTheme();
     setSelectedThemeId(t?.id ?? null);
-    setSelectedThemeUri(t?.imageUri ?? null);
+    setSelectedThemeSource(t?.imageSource ?? null);
     setSelectedThemeName(t?.name ?? null);
   }, [isPremium]);
 
   useEffect(() => {
     refreshSelectedTheme();
   }, [refreshSelectedTheme]);
+
+  // Safety net: this screen is meant to always receive `experience` from its
+  // caller (Home and MoodSelection both prefetch before navigating). If it
+  // ever doesn't — a failed prefetch, or a future caller that forgets to —
+  // fetch it here instead of leaving the loading spinner below spinning
+  // forever with nothing to resolve it.
+  useEffect(() => {
+    if (experience) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const exp = await fetchWindowGuidance(rotationEngine, mood);
+        if (!cancelled && exp) {
+          navigation.setParams({ experience: exp, islamicTerm: islamicTerm ?? mood });
+        }
+      } catch (error) {
+        logServiceError(
+          'GuidanceScreen',
+          'fallbackFetch',
+          error instanceof Error ? error : new Error(String(error)),
+        );
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [experience, mood, islamicTerm, rotationEngine, navigation]);
 
   const scrollY = useRef(new Animated.Value(0)).current;
   const [currentLayer, setCurrentLayer] = useState(0);
@@ -225,7 +254,7 @@ const GuidanceScreen: React.FC = () => {
     <ImmersiveBackground
       mood={mood}
       isPremium={isPremium}
-      imageUri={selectedThemeUri ?? undefined}
+      imageSource={selectedThemeSource ?? undefined}
       selfManageTheme={false}
     >
       <GoldenMotes />

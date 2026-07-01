@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, ImageBackground } from 'react-native';
+import { StyleSheet, View, ImageBackground, ImageSourcePropType } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { MoodColors } from '../theme/DesignSystem';
 import { Mood, PathTone } from '../types';
@@ -24,11 +24,11 @@ interface ImmersiveBackgroundProps {
   children: React.ReactNode;
   theme?: 'sand' | 'ocean' | 'dawn';
   mood?: Mood;
-  imageUri?: string;
-  /** When false, the parent fully controls the premium theme image via `imageUri`
+  imageSource?: ImageSourcePropType;
+  /** When false, the parent fully controls the premium theme image via `imageSource`
    *  and this component does NOT read the saved theme itself. Defaults to true so
    *  every other screen keeps auto-showing the user's selected theme. Set false on
-   *  screens (e.g. Guidance) that drive live theme changes through `imageUri`,
+   *  screens (e.g. Guidance) that drive live theme changes through `imageSource`,
    *  otherwise the stale mount-time read would mask a switch back to Default. */
   selfManageTheme?: boolean;
   overlayOpacity?: number;
@@ -48,14 +48,14 @@ const ImmersiveBackground: React.FC<ImmersiveBackgroundProps> = ({
   children,
   theme = 'sand',
   mood,
-  imageUri,
+  imageSource,
   selfManageTheme = true,
   overlayOpacity = 0.4,
   isPremium = false,
   accentColor,
   tone = 'momentum',
 }) => {
-  const [selectedThemeUri, setSelectedThemeUri] = useState<string | null>(null);
+  const [selectedThemeSource, setSelectedThemeSource] = useState<ImageSourcePropType | null>(null);
   // Resolved once here so the 6 TwinklingStars don't each subscribe independently.
   const reduceMotion = useReduceMotion();
 
@@ -64,7 +64,7 @@ const ImmersiveBackground: React.FC<ImmersiveBackgroundProps> = ({
       // Reset to null when no theme is selected so clearing it (Default) reverts
       // the background instead of keeping the previously-read image.
       backgroundThemeService.getSelectedTheme().then((t) => {
-        setSelectedThemeUri(t ? t.imageUri : null);
+        setSelectedThemeSource(t ? t.imageSource : null);
       });
     }
   }, [isPremium, selfManageTheme]);
@@ -74,9 +74,9 @@ const ImmersiveBackground: React.FC<ImmersiveBackgroundProps> = ({
   // Journey screen: accentColor passed, no mood.
   const isJourney = !!accentColor && !moodStyle;
 
-  // Priority: explicit imageUri > self-managed premium theme > mood image (premium only)
-  const finalImageUri = imageUri
-    || (selfManageTheme && isPremium && selectedThemeUri)
+  // Priority: explicit imageSource > self-managed premium theme > mood image (premium only)
+  const finalImageSource = imageSource
+    || (selfManageTheme && isPremium && selectedThemeSource)
     || (isPremium && moodStyle?.image)
     || null;
 
@@ -84,7 +84,7 @@ const ImmersiveBackground: React.FC<ImmersiveBackgroundProps> = ({
   // Use the same navy-base + accent-wash approach as journey screens so the
   // whole immersive surface shares one consistent dark foundation. Premium users
   // who have a nature image keep the full mood gradient (it underlies the image).
-  const freeMoodScreen = !!moodStyle && !isPremium && !finalImageUri;
+  const freeMoodScreen = !!moodStyle && !isPremium && !finalImageSource;
 
   // Accent used for the top glow wash (journey identity OR mood accent for free users).
   const washAccent = accentColor ?? (freeMoodScreen ? moodStyle?.accent : undefined);
@@ -105,7 +105,7 @@ const ImmersiveBackground: React.FC<ImmersiveBackgroundProps> = ({
 
   // Show atmospheric particles for free users on any immersive screen (journey
   // or guidance) — not for premium users who have a nature image instead.
-  const showAtmosphere = (isJourney || freeMoodScreen) && !finalImageUri;
+  const showAtmosphere = (isJourney || freeMoodScreen) && !finalImageSource;
 
   // Star tint: gold for journeys, the mood's own accent color for guidance.
   const starColor = moodStyle
@@ -118,7 +118,7 @@ const ImmersiveBackground: React.FC<ImmersiveBackgroundProps> = ({
       <LinearGradient colors={finalGradient as any} style={StyleSheet.absoluteFill} />
 
       {/* Accent wash — journey identity color or mood accent, fades from top */}
-      {washAccent && !finalImageUri && (
+      {washAccent && !finalImageSource && (
         <LinearGradient
           colors={[`${washAccent}${glowAlpha}`, 'transparent']}
           start={{ x: 0.5, y: 0 }}
@@ -154,9 +154,9 @@ const ImmersiveBackground: React.FC<ImmersiveBackgroundProps> = ({
       )}
 
       {/* Nature image layer — premium only */}
-      {finalImageUri && (
+      {finalImageSource && (
         <ImageBackground
-          source={{ uri: finalImageUri }}
+          source={finalImageSource}
           style={StyleSheet.absoluteFill}
           imageStyle={{ opacity: overlayOpacity }}
           resizeMode="cover"

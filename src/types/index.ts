@@ -1,3 +1,5 @@
+import { ImageSourcePropType } from 'react-native';
+
 export type Mood =
   | 'Overwhelmed'
   | 'Sad'
@@ -272,6 +274,7 @@ export interface BackgroundTheme {
   id: string;
   name: string;
   category: BackgroundThemeCategory;
-  imageUri: string;
+  /** Local asset loaded via require(). */
+  imageSource: ImageSourcePropType;
   isPremium: boolean;
 }

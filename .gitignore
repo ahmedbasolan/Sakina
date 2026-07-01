@@ -71,3 +71,6 @@ skills-lock.json
 
 # Test / coverage artifacts
 coverage/
+
+# Supabase CLI local link cache (machine-local project ref, not shared state)
+supabase/.temp/
