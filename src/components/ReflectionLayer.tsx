@@ -11,6 +11,7 @@ import {
   Animated,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { BlurView } from 'expo-blur';
 const { height } = Dimensions.get('window');
 import { Colors, Spacing, Typography, BorderRadius } from '../theme/DesignSystem';
 import { Ionicons } from '@expo/vector-icons';
@@ -104,13 +105,15 @@ const ReflectionLayer: React.FC<ReflectionLayerProps> = ({
           <Text style={styles.promptText}>{prompt}</Text>
         </Animated.View>
 
-        {/* Journal Input */}
+        {/* Journal Input — frosted so the immersive background blends instead
+            of showing almost fully through a barely-tinted rectangle */}
         <Animated.View style={[
           styles.journalContainer,
           isFocused && styles.journalContainerFocused,
           isFocused && { borderColor: accentColor + '40' },
           { opacity: fadeAnim },
         ]}>
+          <BlurView intensity={20} tint="dark" style={StyleSheet.absoluteFillObject} pointerEvents="none" />
           <TextInput
             style={styles.journalInput}
             placeholder="Speak from the heart..."
@@ -233,6 +236,7 @@ const styles = StyleSheet.create({
   journalContainer: {
     backgroundColor: 'rgba(255, 235, 210, 0.03)',
     borderRadius: BorderRadius.xl,
+    overflow: 'hidden',
     padding: Spacing.xl,
     minHeight: height * 0.25,
     borderWidth: 1,

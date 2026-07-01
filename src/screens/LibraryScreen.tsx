@@ -22,6 +22,7 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
+import { BlurView } from 'expo-blur';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { dbQuery } from '../database/schema';
 import { AnimatedMandala } from '../components/AnimatedMandala';
@@ -416,8 +417,8 @@ export default function LibraryScreen({ navigation }: any) {
           </View>
         </View>
 
-        {/* Search */}
-        <View style={styles.searchBar}>
+        {/* Search — frosted so the mandala backdrop blends instead of showing a hard-edged tint */}
+        <BlurView intensity={14} tint="dark" style={styles.searchBar}>
           <MaterialCommunityIcons
             name="magnify"
             size={18}
@@ -440,10 +441,10 @@ export default function LibraryScreen({ navigation }: any) {
               />
             </TouchableOpacity>
           )}
-        </View>
+        </BlurView>
 
-        {/* Tab switcher */}
-        <View style={styles.tabSwitcher}>
+        {/* Tab switcher — same frosted treatment as the bottom nav pill */}
+        <BlurView intensity={14} tint="dark" style={styles.tabSwitcher}>
           <Animated.View style={[styles.tabIndicator, { left: indicatorLeft }]} />
           <TouchableOpacity style={styles.tabBtn} onPress={() => switchTab('saved')}>
             <Text style={[styles.tabText, activeTab === 'saved' && styles.tabTextActive]}>
@@ -455,7 +456,7 @@ export default function LibraryScreen({ navigation }: any) {
               ALL SURAHS
             </Text>
           </TouchableOpacity>
-        </View>
+        </BlurView>
       </Animated.View>
 
       {/* ── Content ─────────────────────────────────────────────── */}
@@ -650,6 +651,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: 'rgba(255,255,255,0.05)',
     borderRadius: BorderRadius.md,
+    overflow: 'hidden',
     borderWidth: 1,
     borderColor: 'rgba(201,168,76,0.15)',
     paddingHorizontal: Spacing.lg,

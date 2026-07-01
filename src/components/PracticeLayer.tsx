@@ -9,6 +9,7 @@ import {
   LayoutAnimation,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { BlurView } from 'expo-blur';
 const { height } = Dimensions.get('window');
 import { Colors, Spacing, Typography, BorderRadius } from '../theme/DesignSystem';
 import { Ionicons } from '@expo/vector-icons';
@@ -173,6 +174,10 @@ const PracticeStepCard = ({
             isExpanded && styles.stepCardExpanded,
           ]}
         >
+          {/* Frosted-glass surface — lets the immersive background (mandala or
+              journey photo) blend through instead of a flat opaque box */}
+          <BlurView intensity={18} tint="dark" style={StyleSheet.absoluteFillObject} pointerEvents="none" />
+
           {/* Card Header */}
           <View style={styles.stepCardHeader}>
             <View style={styles.stepTitleRow}>
@@ -430,7 +435,7 @@ const styles = StyleSheet.create({
 
   /* ── Step Card ── */
   stepCard: {
-    backgroundColor: Colors.background.secondary,
+    backgroundColor: Colors.background.secondary + '66',
     borderRadius: BorderRadius.lg,
     borderWidth: 1,
     borderColor: 'rgba(255, 235, 210, 0.06)',

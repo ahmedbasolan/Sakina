@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, Animated } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { BlurView } from 'expo-blur';
 import { Colors, Typography, Spacing, BorderRadius } from '../../theme/DesignSystem';
 import { DailyVerse } from '../../services/dailyVerseService';
 
@@ -13,7 +14,7 @@ interface VerseOfTheDayProps {
 export function VerseOfTheDay({ dailyVerse, fadeAnim, slideAnim }: VerseOfTheDayProps) {
   return (
     <Animated.View style={[styles.verseSection, { opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
-      <View style={styles.verseCard}>
+      <BlurView intensity={16} tint="dark" style={styles.verseCard}>
         {/* Gold top line */}
         <LinearGradient colors={['transparent', Colors.accent.primary, 'transparent']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={styles.verseBorderLine} />
 
@@ -44,7 +45,7 @@ export function VerseOfTheDay({ dailyVerse, fadeAnim, slideAnim }: VerseOfTheDay
 
         {/* Gold bottom line */}
         <LinearGradient colors={['transparent', Colors.accent.primary + '60', 'transparent']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={styles.verseBorderLineBottom} />
-      </View>
+      </BlurView>
     </Animated.View>
   );
 }
@@ -57,6 +58,7 @@ const styles = StyleSheet.create({
   verseCard: {
     backgroundColor: Colors.background.secondary + '99',
     borderRadius: BorderRadius.xl,
+    overflow: 'hidden',
     padding: Spacing.xl,
     borderWidth: 1,
     borderColor: Colors.accent.glow,
