@@ -49,6 +49,10 @@ const PATH_VISUALS: Record<string, PathVisual> = {
   path_parent_healing:           { icon: 'home-heart',                color: '#F9A8D4' }, // soft pink
   path_two_worlds:               { icon: 'earth',                     color: '#7DD3FC' }, // sky
 
+  // ── Study & exam ───────────────────────────────────────────────────
+  path_study_journaling:         { icon: 'notebook-edit-outline',     color: '#67E8F9' }, // cyan
+  path_trusting_the_results:     { icon: 'scale-balance',             color: '#FDE68A' }, // amber
+
   // ── Long recovery journeys (Tier 3) ────────────────────────────────
   path_addiction_recovery:       { icon: 'heart-broken',              color: '#FB923C' }, // orange
   path_breaking_free_90:         { icon: 'lock-open-variant',         color: '#86EFAC' }, // light green
