@@ -33,8 +33,8 @@ Replace the centered card + flat `fade` `Modal` animation with a bottom sheet:
 
 Restyle the existing `gpsRow` (logic unchanged: `idle` / `loading` / `denied` / `error` states):
 
-- Wrap in a bordered glass surface: `backgroundColor: Colors.glass.medium`, `borderWidth: 1`, `borderColor: Colors.accent.muted`, `borderRadius: BorderRadius.lg`, margin-matched to the sheet's horizontal padding.
-- Add a trailing chevron (`Ionicons chevron-forward`, muted color) at the right edge to imply "tap for instant result" — bare icon, no circle container per nav-icon rules.
+- Wrap in a bordered glass surface: `backgroundColor: Colors.glass.medium`, `borderWidth: 1`, `borderColor: Colors.accent.muted`, `borderRadius: BorderRadius.lg`, `marginHorizontal: Spacing.xl` (matches the existing `searchContainer` margin so the two blocks align edge-to-edge).
+- Add a trailing chevron (`Ionicons name="chevron-forward" size={16} color="rgba(255,255,255,0.18)"`) at the right edge — matches the exact chevron affordance already used for tappable rows in `SettingsScreen.tsx`, so this isn't a new pattern, it's applying the existing one here. Bare icon, no circle container per nav-icon rules.
 - Keep icon/spinner + text exactly as-is on the left; just relocate onto the new surface with slightly more vertical padding (`Spacing.lg`).
 - `denied`/`error` states: same muted-text treatment as today, just on the new surface.
 
@@ -49,7 +49,7 @@ Restyle the existing `gpsRow` (logic unchanged: `idle` / `loading` / `denied` / 
 
 - Row: add `Spacing.xs` extra vertical padding; add a pressed-state background highlight (`rgba(255,235,210,0.04)`) via `TouchableOpacity`'s existing `activeOpacity` plus a light `underlayColor`-equivalent — since `TouchableOpacity` has no underlay, use `onPressIn`/`onPressOut` to toggle a background color via local state, kept per-row (memoized row component) so it doesn't re-render the whole list.
 - Separator: swap flat white hairline for a barely-there gold tint (`rgba(212,175,55,0.08)`).
-- Entrance: stagger the first-visible batch (cap at 6 rows — matches the pattern used elsewhere via `Animations.stagger`) with fade + small translateY; rows beyond the cap render without individual animation (avoids a long cascade for 30 results, and avoids re-triggering stagger on every keystroke — key the stagger off first-mount-of-nonempty-results, not off every `results` change).
+- Entrance: stagger the first-visible batch (cap at 6 rows) with fade + small translateY, using the `Animations.stagger` token values (`baseDelay`, `step`, `duration`) directly. **Do not reuse `useStaggerEntry`** — that hook pre-allocates a fixed-size `Animated.Value` array via `useRef(count)` for a known, static element count (built for onboarding screens); it isn't built for a `FlatList` whose row count changes every keystroke. Instead, give the memoized row component its own local `opacity`/`translateY` `Animated.Value`s and run the entrance animation once on mount, with the per-row delay computed as `baseDelay + min(index, 5) * step`. Rows beyond index 5 skip the delay/animation entirely and render at rest (avoids both a long cascade for 30 results and any risk of the animation re-firing on every keystroke, since it's driven by the row's own mount, not by `results` changing).
 
 ## 5. Manual entry mode
 
