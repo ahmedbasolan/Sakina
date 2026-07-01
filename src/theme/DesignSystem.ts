@@ -1,4 +1,4 @@
-import { Platform } from 'react-native';
+import { Platform, ImageSourcePropType } from 'react-native';
 
 /**
  * Design System Tokens
@@ -127,7 +127,7 @@ export const MoodColors: Record<
     accent: string;
     bgFill: string;
     glow: string;
-    image: string;
+    image: ImageSourcePropType;
   }
 > = {
   Overwhelmed: {
@@ -135,72 +135,63 @@ export const MoodColors: Record<
     accent: '#818CF8',
     bgFill: '#0F172A',
     glow: 'rgba(129, 140, 248, 0.2)',
-    image:
-      'https://images.unsplash.com/photo-1507400492013-162706c8c05e?auto=format&fit=crop&q=90&w=3840', // Calm starry night sky over ocean
+    image: require('../assets/themes/ocean_deep_blue.jpg'), // Calm starry night sky over ocean
   },
   Angry: {
     gradient: ['#1A0F0A', '#2D1610', '#140E0C'] as const,
     accent: '#FB923C',
     bgFill: '#1A0F0A',
     glow: 'rgba(251, 146, 60, 0.2)',
-    image:
-      'https://images.unsplash.com/photo-1509316975850-ff9c5deb0cd9?auto=format&fit=crop&q=90&w=3840', // Peaceful desert sunset with warm tones
+    image: require('../assets/themes/landscape_desert_dunes.jpg'), // Peaceful desert sunset with warm tones
   },
   Sad: {
     gradient: ['#1E293B', '#334155', '#0F172A'] as const,
     accent: '#94A3B8',
     bgFill: '#1E293B',
     glow: 'rgba(148, 163, 184, 0.2)',
-    image:
-      'https://images.unsplash.com/photo-1534088568595-a066f410bcda?auto=format&fit=crop&q=90&w=3840', // Gentle misty rain over green mountains
+    image: require('../assets/themes/mood_sad.jpg'), // Gentle misty rain over green mountains
   },
   Calm: {
     gradient: ['#064E3B', '#022C22', '#052E16'] as const,
     accent: '#34D399',
     bgFill: '#064E3B',
     glow: 'rgba(52, 211, 153, 0.2)',
-    image:
-      'https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&q=90&w=3840', // Still forest lake with perfect reflection
+    image: require('../assets/themes/mountain_alpine_lake.jpg'), // Still forest lake with perfect reflection
   },
   Grateful: {
     gradient: ['#451A03', '#78350F', '#451A03'] as const,
     accent: '#FBBF24',
     bgFill: '#451A03',
     glow: 'rgba(251, 191, 36, 0.2)',
-    image:
-      'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&q=90&w=3840', // Golden sunrise over majestic mountain peaks
+    image: require('../assets/themes/mountain_snow_peaks.jpg'), // Golden sunrise over majestic mountain peaks
   },
   Hopeful: {
     gradient: ['#083344', '#155E75', '#083344'] as const,
     accent: '#22D3EE',
     bgFill: '#083344',
     glow: 'rgba(34, 211, 238, 0.2)',
-    image:
-      'https://images.unsplash.com/photo-1495616811223-4d98c6e9c869?auto=format&fit=crop&q=90&w=3840', // Dawn horizon light breaking through clouds
+    image: require('../assets/themes/sky_golden_sunset.jpg'), // Dawn horizon light breaking through clouds
   },
   Tired: {
     gradient: ['#1C1917', '#292524', '#1C1917'] as const,
     accent: '#D6D3D1',
     bgFill: '#1C1917',
     glow: 'rgba(214, 211, 209, 0.2)',
-    image:
-      'https://images.unsplash.com/photo-1500534314138-5903a991bf08?auto=format&fit=crop&q=90&w=3840', // Soft sunset over peaceful lavender meadow
+    image: require('../assets/themes/landscape_lavender_field.jpg'), // Soft sunset over peaceful lavender meadow
   },
   Lonely: {
     gradient: ['#2E1065', '#4C1D95', '#2E1065'] as const,
     accent: '#C084FC',
     bgFill: '#2E1065',
     glow: 'rgba(192, 132, 252, 0.2)',
-    image:
-      'https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&q=90&w=3840', // Vast starry night sky with milky way over mountains
+    image: require('../assets/themes/sky_milky_way.jpg'), // Vast starry night sky with milky way over mountains
   },
   Guilty: {
     gradient: ['#1A1A1A', '#262626', '#1A1A1A'] as const,
     accent: '#A3A3A3',
     bgFill: '#1A1A1A',
     glow: 'rgba(163, 163, 163, 0.2)',
-    image:
-      'https://images.unsplash.com/photo-1432405972618-c6b0cfba5428?auto=format&fit=crop&q=90&w=3840', // Gentle waterfall in lush green forest — renewal/tawbah
+    image: require('../assets/themes/nature_waterfall.jpg'), // Gentle waterfall in lush green forest — renewal/tawbah
   },
 };
 

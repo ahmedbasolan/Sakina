@@ -10,8 +10,10 @@ import {
     Image,
     Dimensions,
     Alert,
+    ScrollView,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
 import { Colors, Spacing, Typography, BorderRadius } from '../theme/DesignSystem';
 import { BackgroundTheme, BackgroundThemeCategory } from '../types';
 import { BACKGROUND_THEMES, THEME_CATEGORIES } from '../services/backgroundThemeService';
@@ -69,7 +71,7 @@ const BackgroundThemePicker: React.FC<BackgroundThemePickerProps> = ({
                 onPress={() => handleThemePress(item)}
                 activeOpacity={0.8}
             >
-                <Image source={{ uri: item.imageUri }} style={styles.themeImage} resizeMode="cover" />
+                <Image source={item.imageSource} style={styles.themeImage} resizeMode="cover" />
                 <LinearGradient
                     colors={['transparent', 'rgba(0,0,0,0.6)']}
                     style={styles.themeOverlay}
@@ -166,10 +168,6 @@ const BackgroundThemePicker: React.FC<BackgroundThemePickerProps> = ({
         </Modal>
     );
 };
-
-// Internal LinearGradient shim if direct import fails in editor
-const LinearGradient = require('expo-linear-gradient').LinearGradient;
-const ScrollView = require('react-native').ScrollView;
 
 const styles = StyleSheet.create({
     overlay: {
