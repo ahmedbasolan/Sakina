@@ -5,6 +5,7 @@ import {
   Text,
   ScrollView,
   ViewStyle,
+  Animated,
 } from 'react-native';
 import { BlurView } from 'expo-blur';
 import { Colors, Spacing, Typography, BorderRadius, Elevation } from '../theme/DesignSystem';
@@ -13,7 +14,7 @@ import { Content } from '../types';
 interface HadithLayerProps {
   hadith: Content;
   accentColor?: string;
-  scrollY?: any;
+  scrollY?: Animated.Value;
   topInset?: number;
 }
 
@@ -101,21 +102,21 @@ const styles = StyleSheet.create({
   },
   arabicText: {
     fontSize: Typography.sizes.h2,
-    fontFamily: 'Amiri-Quran',
+    fontFamily: Typography.fonts.arabic,
     lineHeight: Typography.sizes.h2 * 1.6,
     marginBottom: Spacing.md,
     textAlign: 'center',
   },
   translationText: {
     fontSize: Typography.sizes.body,
-    fontFamily: 'Poppins-Regular',
+    fontFamily: Typography.fonts.latin,
     lineHeight: Typography.sizes.body * 1.5,
     marginBottom: Spacing.md,
     textAlign: 'center',
   },
   sourceLine: {
     fontSize: Typography.sizes.small,
-    fontFamily: 'Poppins-Regular',
+    fontFamily: Typography.fonts.latin,
     textAlign: 'center',
     fontWeight: '500',
   },
