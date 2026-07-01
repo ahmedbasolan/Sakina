@@ -12,6 +12,7 @@ import {
   Alert,
   FlatList,
   useWindowDimensions,
+  Linking,
 } from 'react-native';
 import { BlurView } from 'expo-blur';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -74,6 +75,13 @@ export const LocationPickerModal: React.FC<LocationPickerModalProps> = ({
   };
 
   const handleUseCurrentLocation = async () => {
+    // iOS never re-shows the system prompt once denied — a second call to
+    // requestForegroundPermissionsAsync() just silently resolves 'denied'
+    // again. Route straight to Settings instead of repeating a dead-end request.
+    if (gpsStatus === 'denied') {
+      Linking.openSettings();
+      return;
+    }
     setGpsStatus('loading');
     try {
       const { status } = await Location.requestForegroundPermissionsAsync();
@@ -81,12 +89,20 @@ export const LocationPickerModal: React.FC<LocationPickerModalProps> = ({
         setGpsStatus('denied');
         return;
       }
-      const pos = await Promise.race([
-        Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Balanced }),
-        new Promise<never>((_, reject) =>
-          setTimeout(() => reject(new Error('timeout')), 10000),
-        ),
-      ]);
+      // Try the cached last-known fix first — this returns immediately (no GPS
+      // warm-up wait) and is what most apps (maps, weather, ride-hailing) use
+      // for "use my location" flows. Only fall back to a fresh fix — at Low
+      // accuracy, which resolves from cell/wifi in ~1-2s instead of waiting
+      // for a GPS lock — if there's no recent cached position.
+      let pos = await Location.getLastKnownPositionAsync({ maxAge: 5 * 60 * 1000 });
+      if (!pos) {
+        pos = await Promise.race([
+          Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Low }),
+          new Promise<never>((_, reject) =>
+            setTimeout(() => reject(new Error('timeout')), 6000),
+          ),
+        ]);
+      }
       const [geo] = await Location.reverseGeocodeAsync({
         latitude: pos.coords.latitude,
         longitude: pos.coords.longitude,
@@ -190,7 +206,7 @@ export const LocationPickerModal: React.FC<LocationPickerModalProps> = ({
                     ]}
                   >
                     {gpsStatus === 'denied'
-                      ? 'Location access denied — search below'
+                      ? 'Location access denied — tap to open Settings'
                       : gpsStatus === 'error'
                       ? "Couldn't get location — search below"
                       : 'Use Current Location'}
