@@ -20,6 +20,7 @@ import {
 import { BlurView } from 'expo-blur';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Colors, Spacing, Typography, BorderRadius, Animations } from '../theme/DesignSystem';
 import * as Location from 'expo-location';
 import { saveUserLocation, formatLocation, UserLocation } from '../services/locationStorage';
@@ -74,6 +75,7 @@ export const LocationPickerModal: React.FC<LocationPickerModalProps> = ({
   onLocationSelected,
 }) => {
   const { height: screenHeight } = useWindowDimensions();
+  const insets = useSafeAreaInsets();
   const reduceMotion = useReduceMotion();
   const [mode, setMode] = useState<'search' | 'manual'>('search');
   const [query, setQuery] = useState('');
@@ -506,6 +508,11 @@ export const LocationPickerModal: React.FC<LocationPickerModalProps> = ({
                 </Animated.View>
               </View>
             )}
+
+            {/* Home indicator clearance — the sheet is now bottom-anchored
+                (unlike the old centered card), so its lowest content can sit
+                flush against a notched device's home indicator without this. */}
+            <View style={{ height: insets.bottom }} />
           </Animated.View>
         </KeyboardAvoidingView>
       </View>
