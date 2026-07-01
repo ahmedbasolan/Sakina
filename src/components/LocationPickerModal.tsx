@@ -87,7 +87,10 @@ export const LocationPickerModal: React.FC<LocationPickerModalProps> = ({
   const translateY = useRef(new Animated.Value(screenHeight)).current;
   const backdropOpacity = useRef(new Animated.Value(0)).current;
   const searchGlow = useFocusGlow();
+  const cityGlow = useFocusGlow();
+  const countryGlow = useFocusGlow();
   const clearOpacity = useRef(new Animated.Value(0)).current;
+  const saveScale = useRef(new Animated.Value(1)).current;
 
   const handleClose = () => {
     if (reduceMotion) {
@@ -273,6 +276,21 @@ export const LocationPickerModal: React.FC<LocationPickerModalProps> = ({
     }
   };
 
+  const handleSavePressIn = () => {
+    Animated.spring(saveScale, {
+      toValue: 0.98,
+      useNativeDriver: true,
+      ...Animations.spring.gentle,
+    }).start();
+  };
+  const handleSavePressOut = () => {
+    Animated.spring(saveScale, {
+      toValue: 1,
+      useNativeDriver: true,
+      ...Animations.spring.gentle,
+    }).start();
+  };
+
   return (
     <Modal visible={visible} transparent animationType="none" onRequestClose={handleClose}>
       <View style={StyleSheet.absoluteFill}>
@@ -434,46 +452,58 @@ export const LocationPickerModal: React.FC<LocationPickerModalProps> = ({
 
                 <View style={styles.inputGroup}>
                   <Text style={styles.label}>City</Text>
-                  <View style={styles.inputContainer}>
+                  <Animated.View style={[styles.inputContainer, { borderColor: cityGlow.borderColor }]}>
                     <Ionicons name="business-outline" size={18} color={Colors.accent.primary} />
                     <TextInput
                       style={styles.input}
                       placeholder="e.g. London"
                       value={city}
                       onChangeText={setCity}
+                      onFocus={cityGlow.onFocus}
+                      onBlur={cityGlow.onBlur}
                       placeholderTextColor="rgba(245, 237, 227, 0.35)"
                     />
-                  </View>
+                  </Animated.View>
                 </View>
 
                 <View style={styles.inputGroup}>
                   <Text style={styles.label}>Country</Text>
-                  <View style={styles.inputContainer}>
+                  <Animated.View style={[styles.inputContainer, { borderColor: countryGlow.borderColor }]}>
                     <Ionicons name="earth-outline" size={18} color={Colors.accent.primary} />
                     <TextInput
                       style={styles.input}
                       placeholder="e.g. United Kingdom"
                       value={country}
                       onChangeText={setCountry}
+                      onFocus={countryGlow.onFocus}
+                      onBlur={countryGlow.onBlur}
                       placeholderTextColor="rgba(245, 237, 227, 0.35)"
                     />
-                  </View>
+                  </Animated.View>
                 </View>
 
-                <TouchableOpacity onPress={handleManualSave} disabled={isLoading} activeOpacity={0.85}>
-                  <LinearGradient
-                    colors={['#E8C84A', '#B8860B']}
-                    start={{ x: 0, y: 0 }}
-                    end={{ x: 1, y: 1 }}
-                    style={styles.saveButton}
+                <Animated.View style={{ transform: [{ scale: saveScale }] }}>
+                  <TouchableOpacity
+                    onPress={handleManualSave}
+                    onPressIn={handleSavePressIn}
+                    onPressOut={handleSavePressOut}
+                    disabled={isLoading}
+                    activeOpacity={0.85}
                   >
-                    {isLoading ? (
-                      <ActivityIndicator color={Colors.background.secondary} />
-                    ) : (
-                      <Text style={styles.saveButtonText}>Save Location</Text>
-                    )}
-                  </LinearGradient>
-                </TouchableOpacity>
+                    <LinearGradient
+                      colors={['#E8C84A', '#B8860B']}
+                      start={{ x: 0, y: 0 }}
+                      end={{ x: 1, y: 1 }}
+                      style={styles.saveButton}
+                    >
+                      {isLoading ? (
+                        <ActivityIndicator color={Colors.background.secondary} />
+                      ) : (
+                        <Text style={styles.saveButtonText}>Save Location</Text>
+                      )}
+                    </LinearGradient>
+                  </TouchableOpacity>
+                </Animated.View>
               </View>
             )}
           </Animated.View>
@@ -621,9 +651,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: Spacing.sm,
-    backgroundColor: 'rgba(255, 255, 255, 0.04)',
+    backgroundColor: Colors.glass.light,
     borderWidth: 1,
-    borderColor: Colors.accent.muted,
     borderRadius: BorderRadius.md,
     paddingHorizontal: Spacing.lg,
     paddingVertical: Spacing.md,
