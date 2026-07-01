@@ -114,26 +114,34 @@ export const LocationPickerModal: React.FC<LocationPickerModalProps> = ({
       setCountry('');
       setGpsStatus('idle');
       setTimeout(() => searchRef.current?.focus(), 150);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [visible]);
 
-      if (reduceMotion) {
-        translateY.setValue(0);
-        backdropOpacity.setValue(1);
-      } else {
-        translateY.setValue(screenHeight);
-        backdropOpacity.setValue(0);
-        Animated.parallel([
-          Animated.spring(translateY, {
-            toValue: 0,
-            useNativeDriver: true,
-            ...Animations.spring.gentle,
-          }),
-          Animated.timing(backdropOpacity, {
-            toValue: 1,
-            duration: Animations.timing.normal,
-            useNativeDriver: true,
-          }),
-        ]).start();
-      }
+  // Separate from the state-reset effect above so that a mid-session change to
+  // reduceMotion or screenHeight (device rotation, toggling OS Reduce Motion
+  // while the sheet is open) only replays the open animation — it must never
+  // reset the user's in-progress search text or form fields.
+  useEffect(() => {
+    if (!visible) return;
+    if (reduceMotion) {
+      translateY.setValue(0);
+      backdropOpacity.setValue(1);
+    } else {
+      translateY.setValue(screenHeight);
+      backdropOpacity.setValue(0);
+      Animated.parallel([
+        Animated.spring(translateY, {
+          toValue: 0,
+          useNativeDriver: true,
+          ...Animations.spring.gentle,
+        }),
+        Animated.timing(backdropOpacity, {
+          toValue: 1,
+          duration: Animations.timing.normal,
+          useNativeDriver: true,
+        }),
+      ]).start();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [visible, reduceMotion, screenHeight]);
@@ -250,35 +258,33 @@ export const LocationPickerModal: React.FC<LocationPickerModalProps> = ({
               { maxHeight: screenHeight * SHEET_MAX_HEIGHT_RATIO, transform: [{ translateY }] },
             ]}
           >
-            <View {...panResponder.panHandlers}>
-              <View style={styles.handleBar} />
-              {/* Header */}
-              <View style={styles.header}>
-                <View style={styles.headerLeft}>
-                  {mode === 'manual' ? (
-                    <TouchableOpacity
-                      onPress={() => setMode('search')}
-                      style={styles.backButton}
-                      hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-                    >
-                      <Ionicons name="arrow-back" size={18} color={Colors.accent.primary} />
-                      <Text style={styles.backText}>Search</Text>
-                    </TouchableOpacity>
-                  ) : (
-                    <>
-                      <Ionicons name="location-outline" size={20} color={Colors.accent.primary} />
-                      <Text style={styles.headerTitle}>Where are you?</Text>
-                    </>
-                  )}
-                </View>
-                <TouchableOpacity
-                  onPress={handleClose}
-                  style={styles.closeButton}
-                  hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-                >
-                  <Ionicons name="close" size={22} color="rgba(245, 237, 227, 0.7)" />
-                </TouchableOpacity>
+            <View style={styles.handleBar} {...panResponder.panHandlers} />
+            {/* Header */}
+            <View style={styles.header}>
+              <View style={styles.headerLeft}>
+                {mode === 'manual' ? (
+                  <TouchableOpacity
+                    onPress={() => setMode('search')}
+                    style={styles.backButton}
+                    hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                  >
+                    <Ionicons name="arrow-back" size={18} color={Colors.accent.primary} />
+                    <Text style={styles.backText}>Search</Text>
+                  </TouchableOpacity>
+                ) : (
+                  <>
+                    <Ionicons name="location-outline" size={20} color={Colors.accent.primary} />
+                    <Text style={styles.headerTitle}>Where are you?</Text>
+                  </>
+                )}
               </View>
+              <TouchableOpacity
+                onPress={handleClose}
+                style={styles.closeButton}
+                hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+              >
+                <Ionicons name="close" size={22} color="rgba(245, 237, 227, 0.7)" />
+              </TouchableOpacity>
             </View>
 
             {mode === 'search' ? (
