@@ -5,7 +5,7 @@
  * Available paths: path_rizq_revolution, path_salah_transformation.
  * All other paths show an "Early Access · Premium" locked state.
  */
-import React, { useState, useEffect, useRef, useMemo } from 'react';
+import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import * as Haptics from 'expo-haptics';
 import { Colors, Spacing, BorderRadius, Typography } from '../theme/DesignSystem';
 import {
@@ -17,7 +17,7 @@ import {
   Animated,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { BlurView } from 'expo-blur';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
@@ -285,16 +285,28 @@ export default function PathsScreen() {
   const headerFade = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
-    const loadPaths = async () => {
-      const svc = PathsService.getInstance();
-      const progress = await svc.getAllProgress();
-      setUserProgressList(progress);
-      const allPaths = svc.getAllPaths();
-      setPaths(allPaths);
-    };
-    loadPaths();
+    const svc = PathsService.getInstance();
+    setPaths(svc.getAllPaths());
     Animated.timing(headerFade, { toValue: 1, duration: 600, useNativeDriver: true }).start();
   }, []);
+
+  // Progress changes whenever the user starts or completes a day on
+  // PathDetail/PathStep, but this screen lives inside the tab navigator and
+  // never unmounts — so it must reload on every focus, not just on mount,
+  // or the Active/Completed tabs go stale until the app fully reloads.
+  useFocusEffect(
+    useCallback(() => {
+      let active = true;
+      PathsService.getInstance()
+        .getAllProgress()
+        .then((progress) => {
+          if (active) setUserProgressList(progress);
+        });
+      return () => {
+        active = false;
+      };
+    }, []),
+  );
 
   const onPathSelected = (pathId: string) => {
     if (AVAILABLE_PATH_IDS.has(pathId)) {
@@ -306,7 +318,15 @@ export default function PathsScreen() {
 
   // ── Filter logic ────────────────────────────────────────────
   const filteredPaths = useMemo(() => {
-    if (activeFilter === 'all') return PATHS;
+    if (activeFilter === 'all') {
+      // Available paths first, locked (early-access) paths after — stable
+      // within each group so unrelated re-ordering doesn't shuffle cards.
+      return [...PATHS].sort((a, b) => {
+        const aLocked = !AVAILABLE_PATH_IDS.has(a.id);
+        const bLocked = !AVAILABLE_PATH_IDS.has(b.id);
+        return aLocked === bLocked ? 0 : aLocked ? 1 : -1;
+      });
+    }
     if (activeFilter === 'active') {
       return PATHS.filter((path) => {
         if (!AVAILABLE_PATH_IDS.has(path.id)) return false;
