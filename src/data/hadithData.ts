@@ -2,21 +2,20 @@
 import { Content } from '../types';
 
 /**
- * VERIFICATION: All hadiths below are from training knowledge.
- * Before shipping, verify each against sunnah.com:
- * - Ibn Majah 224: seeking knowledge obligation
- * - Muslim 2699: path seeking knowledge
- * - Bukhari 1: actions by intentions
- * - Ibn Hibban (needs exact number verification)
- * - Bukhari 6465 / Muslim 782: consistency
- * - Ibn Majah 925: asking for beneficial knowledge
- * - Abu Dawud 4811: gratitude
- * - Tirmidhi 2344: reliance on Allah (sparrows)
- * - Bukhari 6369: anxiety dua
- * - Muslim 2999: wondrous affair (appears 2x, verify both uses)
- * - Tirmidhi 2516: nation cannot benefit verification
- * - Muslim 2664: strong believer is better
- * - Ahmad closing dua: acceptance
+ * VERIFICATION: Verified 2026-07-01 against sunnah.com via Apify browser scraping.
+ * - Ibn Majah 224: chain Da'if Jaddan (sunnah.com note); matn authenticated by other narrations — grading kept 'hasan'
+ * - Muslim 2699: Sahih ✓
+ * - Bukhari 1: Sahih ✓
+ * - Ibn Hibban (exact number unknown): dua well-known, cannot verify on sunnah.com without number
+ * - Bukhari 6465 / Muslim 782: Sahih ✓
+ * - Ibn Majah 925: Sahih (Darussalam) — corrected from 'hasan'
+ * - Abu Dawud 4811: Sahih (Al-Albani) — corrected from 'hasan'
+ * - Tirmidhi 2344: Hasan (Darussalam) ✓
+ * - Bukhari 6369: Sahih ✓
+ * - Muslim 2999: Sahih ✓
+ * - Tirmidhi 2516: Hasan (Darussalam) — corrected from 'sahih'
+ * - Muslim 2664: Sahih ✓
+ * - hadith_results_7: replaced unverifiable "Ahmad (closing dua variant)" with Muslim 2999 (same matn, canonical source)
  */
 
 export const hadithContent: Content[] = [
@@ -124,7 +123,7 @@ export const hadithContent: Content[] = [
     propheticPractice: {
       description: 'Make dua for beneficial knowledge',
       source: 'Ibn Majah 925',
-      grading: 'hasan',
+      grading: 'sahih',
     },
     moods: [],
   },
@@ -142,7 +141,7 @@ export const hadithContent: Content[] = [
     propheticPractice: {
       description: 'Express gratitude for teachers and resources',
       source: 'Abu Dawud 4811',
-      grading: 'hasan',
+      grading: 'sahih',
     },
     moods: [],
   },
@@ -156,7 +155,7 @@ export const hadithContent: Content[] = [
     translation: 'If you were to rely upon Allah with true reliance, He would provide for you as He provides the birds: they go out hungry in the morning and come back full in the evening',
     englishTranslation: 'If you were to rely upon Allah with true reliance, He would provide for you as He provides the birds: they go out hungry in the morning and come back full in the evening',
     source: 'Tirmidhi 2344',
-    transliteration: 'Law annakum tawakkaltum ala allahi haqqa tawakkulihi laraqakum kama yarqqu at-tayr',
+    transliteration: 'Law annakum tawakkaltum ala allahi haqqa tawakkulihi larazaqakum kama turzaqu at-tayr',
     whyThis: 'Core tawakkul: preparation + divine reliance, not anxiety.',
     propheticPractice: {
       description: 'Practice tawakkul—reliance on Allah after doing your part',
@@ -215,7 +214,7 @@ export const hadithContent: Content[] = [
     propheticPractice: {
       description: 'Accept divine decree and focus on your efforts',
       source: 'Tirmidhi 2516',
-      grading: 'sahih',
+      grading: 'hasan',
     },
     moods: [],
   },
@@ -259,17 +258,17 @@ export const hadithContent: Content[] = [
   {
     id: 'hadith_results_7',
     type: 'Hadith',
-    primaryText: 'How amazing is the affair of the believer—if a calamity befalls him, he is patient, and that is good for him',
-    arabicText: 'كَيْفَ عَجَبًا... إِنْ أَصَابَتْهُ ضَرَّاءُ صَبَرَ فَكَانَ خَيْرًا لَهُ',
-    translation: 'How amazing is the affair of the believer — if a calamity befalls him, he is patient, and that is good for him (closing du\'a of acceptance)',
-    englishTranslation: 'How amazing is the affair of the believer — if a calamity befalls him, he is patient, and that is good for him (closing acceptance dua)',
-    source: 'Ahmad (closing dua variant)',
-    transliteration: 'Kayf ajaban inna asabathu darrau sabara fa kana khayran lahu',
+    primaryText: 'Wondrous is the affair of the believer — if a calamity befalls him, he is patient, and that is good for him',
+    arabicText: 'عَجَبًا لِأَمْرِ الْمُؤْمِنِ إِنَّ أَمْرَهُ كُلَّهُ خَيْرٌ إِنْ أَصَابَتْهُ ضَرَّاءُ صَبَرَ فَكَانَ خَيْرًا لَهُ',
+    translation: 'Wondrous is the affair of the believer — if a calamity befalls him, he is patient, and that is good for him',
+    englishTranslation: 'Wondrous is the affair of the believer — if a calamity befalls him, he is patient, and that is good for him',
+    source: 'Muslim 2999',
+    transliteration: 'Ajaban li-amr al-mumin inna amrahu kulluhu khayr, in asabathu darrau sabara fa kana khayran lahu',
     whyThis: 'Sabr + next-step framing: accept and move forward.',
     propheticPractice: {
       description: 'Practice patience and acceptance with dignity',
-      source: 'Ahmad (closing dua variant)',
-      grading: 'hasan',
+      source: 'Muslim 2999',
+      grading: 'sahih',
     },
     moods: [],
   },
