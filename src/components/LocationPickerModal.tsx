@@ -43,7 +43,7 @@ const DRAG_CLOSE_VELOCITY = 1.2;
 /**
  * Animates a text-field container's border between resting and focused
  * states. Each call owns its own Animated.Value, so the search box and the
- * two manual-entry fields (added in a later task) animate independently.
+ * two manual-entry fields animate independently.
  */
 function useFocusGlow() {
   const focusAnim = useRef(new Animated.Value(0)).current;
