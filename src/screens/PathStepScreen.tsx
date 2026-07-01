@@ -1,12 +1,13 @@
-import React, { useState, useMemo, useRef } from 'react';
+import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { Share, View, PanResponder } from 'react-native';
 import { HapticsService } from '../services/hapticsService';
-import { UserPathProgress } from '../types';
+import { UserPathProgress, Content } from '../types';
 import { PathsService } from '../services/pathsService';
 import ImmersiveBackground from '../components/ImmersiveBackground';
 import PathTopBar from '../components/PathTopBar';
 import LayerContainer from '../components/LayerContainer';
 import LayerPager from '../components/LayerPager';
+import HadithLayer from '../components/HadithLayer';
 import VerseLayer from '../components/VerseLayer';
 import ContextLayer from '../components/ContextLayer';
 import PracticeLayer, { PracticeStepData } from '../components/PracticeLayer';
@@ -21,7 +22,7 @@ import { useAppContext } from '../context/AppContext';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import { extractVerseKey } from '../utils';
 
-type LayerType = 'verse' | 'context' | 'practice' | 'reflection';
+type LayerType = 'hadith' | 'verse' | 'context' | 'practice' | 'reflection';
 
 export const PathStepScreen: React.FC = () => {
   const route = useRoute<any>();
@@ -31,7 +32,14 @@ export const PathStepScreen: React.FC = () => {
   const isPremium = SubscriptionService.getInstance().isPremium();
   const freemium = FreemiumService.getInstance();
 
-  const { path, step, userProgress, guidanceExperience, accentColor: accentParam } = route.params;
+  const {
+    path,
+    step,
+    userProgress,
+    guidanceExperience,
+    accentColor: accentParam,
+    hadithContent: hadithContentParam,
+  } = route.params;
 
   // Journey identity color (passed from PathDetailScreen) + emotional register.
   const accentColor: string = accentParam || '#D4AF37';
@@ -126,7 +134,41 @@ export const PathStepScreen: React.FC = () => {
   // stale route.params snapshot (which is missing the current day).
   const [celebrationProgress, setCelebrationProgress] = useState(userProgress);
 
-  const layerTypes: LayerType[] = ['verse', 'context', 'practice', 'reflection'];
+  // Hadith content is normally prefetched by PathDetailScreen and passed in via
+  // route params (mirrors `guidanceExperience`). It's local state (not read
+  // directly from route.params) so the fallback fetch below can populate it.
+  const [hadithContent, setHadithContent] = useState<Content | null>(hadithContentParam ?? null);
+
+  // Safety net (mirrors GuidanceScreen's `experience` fallback fetch): if this
+  // step has a hadithContentId but the prefetched content never arrived — a
+  // failed prefetch, or a future caller that forgets to pass it — fetch it here
+  // instead of leaving that layer stuck without content.
+  useEffect(() => {
+    if (!step.hadithContentId || hadithContent) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const content = await rotationEngine.getHadithContent(step.hadithContentId);
+        if (!cancelled && content) {
+          setHadithContent(content);
+        }
+      } catch (error) {
+        logServiceError(
+          'PathStepScreen',
+          'fallbackFetchHadith',
+          error instanceof Error ? error : new Error(String(error)),
+        );
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [step.hadithContentId, hadithContent, rotationEngine]);
+
+  const hasHadith = !!(step.hadithContentId && hadithContent);
+  const layerTypes: LayerType[] = hasHadith
+    ? ['hadith', 'verse', 'context', 'practice', 'reflection']
+    : ['verse', 'context', 'practice', 'reflection'];
   const currentLayerType = layerTypes[currentLayerIndex];
 
   // Build structured practice steps from angle data
@@ -234,6 +276,10 @@ export const PathStepScreen: React.FC = () => {
 
   const renderLayer = () => {
     switch (currentLayerType) {
+      case 'hadith':
+        return hadithContent ? (
+          <HadithLayer hadith={hadithContent} accentColor={accentColor} />
+        ) : null;
       case 'verse':
         return (
           <VerseLayer
@@ -306,7 +352,11 @@ export const PathStepScreen: React.FC = () => {
       <LayerPager
         total={layerTypes.length}
         current={currentLayerIndex}
-        labels={['Verse', 'Context', 'Practice', 'Reflection']}
+        labels={
+          hasHadith
+            ? ['Hadith', 'Verse', 'Context', 'Practice', 'Reflection']
+            : ['Verse', 'Context', 'Practice', 'Reflection']
+        }
         accentColor={accentColor}
         onLayerChange={setCurrentLayerIndex}
       />
