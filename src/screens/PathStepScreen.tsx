@@ -78,10 +78,12 @@ export const PathStepScreen: React.FC = () => {
       const nextStep = pathsService.getCurrentStep(path.id, updatedProgress);
       if (nextStep) {
         try {
-          const experience = await rotationEngine.getGuidanceForStep(
-            nextStep.contentId,
-            nextStep.angleId,
-          );
+          const [experience, hadithContent] = await Promise.all([
+            rotationEngine.getGuidanceForStep(nextStep.contentId, nextStep.angleId),
+            nextStep.hadithContentId
+              ? rotationEngine.getHadithContent(nextStep.hadithContentId)
+              : Promise.resolve(null),
+          ]);
           if (experience) {
             navigation.replace('PathStep', {
               path,
@@ -89,6 +91,7 @@ export const PathStepScreen: React.FC = () => {
               userProgress: updatedProgress,
               guidanceExperience: experience,
               accentColor,
+              hadithContent: hadithContent ?? undefined,
             });
             return;
           }

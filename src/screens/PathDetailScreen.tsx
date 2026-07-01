@@ -136,7 +136,12 @@ export const PathDetailScreen: React.FC = () => {
       setUserProgress(progress);
     }
 
-    const experience = await rotationEngine.getGuidanceForStep(step.contentId, step.angleId);
+    const [experience, hadithContent] = await Promise.all([
+      rotationEngine.getGuidanceForStep(step.contentId, step.angleId),
+      step.hadithContentId
+        ? rotationEngine.getHadithContent(step.hadithContentId)
+        : Promise.resolve(null),
+    ]);
     if (!experience) {
       // Near-unreachable now that all path angles ship in the local seed,
       // but keep a warm, recoverable message for the network-only edge.
@@ -157,6 +162,7 @@ export const PathDetailScreen: React.FC = () => {
       userProgress: progress,
       guidanceExperience: experience,
       accentColor: visual.color,
+      hadithContent: hadithContent ?? undefined,
     });
   };
 
