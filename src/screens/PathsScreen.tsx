@@ -31,6 +31,8 @@ import { getPathVisual } from '../constants/pathVisuals';
 const AVAILABLE_PATH_IDS = new Set([
   'path_rizq_revolution',
   'path_salah_transformation',
+  'path_study_journaling',
+  'path_trusting_the_results',
 ]);
 
 // ── Star positions for the header backdrop ──────────────────────
@@ -313,6 +315,7 @@ export default function PathsScreen() {
       });
     }
     return PATHS.filter((path) => {
+      if (!AVAILABLE_PATH_IDS.has(path.id)) return false;
       const prog = userProgressList.find((p) => p.pathId === path.id);
       return prog?.isCompleted;
     });
@@ -326,6 +329,7 @@ export default function PathsScreen() {
       return prog && !prog.isCompleted;
     }).length,
     completed: PATHS.filter((path) => {
+      if (!AVAILABLE_PATH_IDS.has(path.id)) return false;
       const prog = userProgressList.find((p) => p.pathId === path.id);
       return prog?.isCompleted;
     }).length,
