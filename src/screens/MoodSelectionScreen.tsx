@@ -22,6 +22,9 @@ import { LinearGradient } from 'expo-linear-gradient';
 import Svg, { Path } from 'react-native-svg';
 import { AnimatedMandala } from '../components/AnimatedMandala';
 import { useReduceMotion } from '../hooks/useReduceMotion';
+import { useAppContext } from '../context/AppContext';
+import { fetchWindowGuidance } from '../services/guidanceWindowFetch';
+import { Mood } from '../types';
 
 const { width, height } = Dimensions.get('window');
 const CARD_WIDTH = (width - Spacing.xl * 2 - 12) / 2;
@@ -213,6 +216,7 @@ function MoodCard({ mood, onPress, index }: { mood: typeof MOODS[0]; onPress: ()
 
 export default function MoodSelectionScreen({ navigation }: any) {
   const insets = useSafeAreaInsets();
+  const { rotationEngine } = useAppContext();
   const headerOpacity = useRef(new Animated.Value(0)).current;
   const cardAnims = useRef(MOODS.map(() => ({
     scale: new Animated.Value(1),
@@ -239,6 +243,11 @@ export default function MoodSelectionScreen({ navigation }: any) {
       });
     }
 
+    // Start the guidance fetch immediately so it resolves in parallel with the
+    // 400ms card animation below instead of only starting once the animation
+    // (plus a further artificial wait) has already finished.
+    const guidancePromise = fetchWindowGuidance(rotationEngine, mood.key as Mood);
+
     Animated.spring(cardAnims[index].scale, {
       toValue: 1.05,
       friction: 8,
@@ -255,15 +264,20 @@ export default function MoodSelectionScreen({ navigation }: any) {
       }
     });
 
-    transitionTimeout.current = setTimeout(() => {
-      navigation.navigate('Guidance', { mood: mood.key });
+    transitionTimeout.current = setTimeout(async () => {
+      const experience = await guidancePromise;
+      navigation.navigate('Guidance', {
+        mood: mood.key,
+        experience,
+        islamicTerm: mood.label,
+      });
       setTimeout(() => {
         cardAnims.forEach((a) => {
           a.scale.setValue(1);
           a.opacity.setValue(1);
         });
       }, 500);
-    }, 800);
+    }, 400);
   };
 
   return (

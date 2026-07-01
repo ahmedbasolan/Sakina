@@ -22,8 +22,7 @@ import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { AnimatedMandala } from '../components/AnimatedMandala';
 import { logServiceError } from '../services/errorLoggingService';
 import { HapticsService } from '../services/hapticsService';
-import { FreemiumService } from '../services/freemiumService';
-import { getCachedGuidance, setCachedGuidance } from '../services/windowGuidanceCache';
+import { fetchWindowGuidance as fetchWindowGuidanceShared } from '../services/guidanceWindowFetch';
 import {
   HeroHeader,
   VerseOfTheDay,
@@ -168,22 +167,10 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
   // for you", as the resting point promises). Fresh verses beyond the first
   // flow only through GuidanceScreen's gated refresh budget — without this,
   // re-tapping a mood minted unlimited verses and bypassed the resting point.
-  const fetchWindowGuidance = useCallback(async (moodId: Mood) => {
-    const freemium = FreemiumService.getInstance();
-    await freemium.syncPrayerWindow();
-    const windowKey = freemium.getSessionInfo()?.windowKey;
-    const gated = !freemium.isPremium() && !!windowKey;
-
-    if (gated) {
-      const cached = await getCachedGuidance(windowKey!, moodId);
-      if (cached) return cached;
-    }
-    const experience = await rotationEngine.getGuidance(moodId);
-    if (experience && gated) {
-      await setCachedGuidance(windowKey!, moodId, experience);
-    }
-    return experience;
-  }, [rotationEngine]);
+  const fetchWindowGuidance = useCallback(
+    (moodId: Mood) => fetchWindowGuidanceShared(rotationEngine, moodId),
+    [rotationEngine],
+  );
 
   // ── Mood tap ───────────────────────────────────────────────────
   const handleMoodTap = useCallback(async (moodId: Mood) => {
