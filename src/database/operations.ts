@@ -2,7 +2,7 @@ import * as SQLite from 'expo-sqlite';
 import { dbQuery } from './connection';
 import { createTables, createIndices } from './tables';
 import { runMigrationSteps } from './migrations';
-import { seedQuranContent } from './seedContent';
+import { seedQuranContent, seedHadithContent } from './seedContent';
 
 const CURRENT_DB_VERSION = 11; // Increment this to force a content refresh
 
@@ -164,6 +164,15 @@ export const initializeDatabase = async (): Promise<void> => {
       await seedQuranContent(db);
     } catch (error) {
       console.error('[Seed] Failed to seed Quran content:', error);
+      // Non-fatal: Supabase is the primary content source; SQLite is a fallback.
+    }
+
+    // Seed Hadith content (Study Journeys) — same idempotent, version-gated
+    // pattern as Quran content above.
+    try {
+      await seedHadithContent(db);
+    } catch (error) {
+      console.error('[Seed] Failed to seed Hadith content:', error);
       // Non-fatal: Supabase is the primary content source; SQLite is a fallback.
     }
   });
