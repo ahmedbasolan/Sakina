@@ -12,7 +12,7 @@
  * been extracted into focused collaborators so this class stays <200 lines.
  */
 
-import { Mood, GuidanceExperience, ContentAngle, PrayerContext } from '../types';
+import { Mood, GuidanceExperience, ContentAngle, PrayerContext, Content } from '../types';
 import { getDatabase } from '../database/schema';
 import { SupabaseDataService } from './supabaseDataService';
 import { ContentRepository } from './contentRepository';
@@ -136,7 +136,7 @@ export class RotationEngine {
    * Fetch hadith content by ID for prefetch before navigation.
    * Delegates to ContentRepository (already encapsulated behind this facade).
    */
-  async getHadithContent(contentId: string): Promise<any | null> {
+  async getHadithContent(contentId: string): Promise<Content | null> {
     try {
       return await this.contentRepo.fetchContentById(contentId);
     } catch (error) {
