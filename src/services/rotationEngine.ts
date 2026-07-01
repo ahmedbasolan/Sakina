@@ -132,6 +132,19 @@ export class RotationEngine {
     }
   }
 
+  /**
+   * Fetch hadith content by ID for prefetch before navigation.
+   * Delegates to ContentRepository (already encapsulated behind this facade).
+   */
+  async getHadithContent(contentId: string): Promise<any | null> {
+    try {
+      return await this.contentRepo.fetchContentById(contentId);
+    } catch (error) {
+      console.error(`[RotationEngine] getHadithContent(${contentId}) failed:`, error);
+      return null;
+    }
+  }
+
   async saveReflection(contentId: string, angleId: string, mood: Mood, reflection: string): Promise<void> {
     await this.reflectionRepo.save(contentId, angleId, mood, reflection);
   }
