@@ -117,11 +117,20 @@ export function useHomeData({ setStreakCount }: UseHomeDataOptions) {
       if (data.timings.Fajr) setFajrTime(data.timings.Fajr);
 
       // Re-schedule notifications in the background — prayer UI must not wait
-      // for OS scheduling calls, which can take 100-500ms on cold start.
+      // for OS scheduling calls, which can take 100-500ms on cold start. Each
+      // call already cancels-then-reschedules its own category internally, so
+      // a failure here should just be logged, not used to wipe the OTHER
+      // category's notifications that may have just scheduled successfully
+      // (the previous `.catch(() => cancelPrayerAndSpiritual())` did exactly
+      // that, silencing a healthy category whenever its sibling call failed).
       const notifications = NotificationService.getInstance();
       notifications.scheduleSpiritualReminders(data.timings)
         .then(() => notifications.schedulePrayerNotifications(data.timings, city))
-        .catch(() => notifications.cancelPrayerAndSpiritual().catch(() => {}));
+        .catch((error) => logServiceError(
+          'useHomeData',
+          'scheduleNotifications',
+          error instanceof Error ? error : new Error(String(error)),
+        ));
     } catch (error) {
       logServiceError('useHomeData', 'loadPrayerData', error instanceof Error ? error : new Error(String(error)));
     } finally {
