@@ -39,6 +39,34 @@ const SHEET_MAX_HEIGHT_RATIO = 0.85;
 const DRAG_CLOSE_THRESHOLD = 120;
 const DRAG_CLOSE_VELOCITY = 1.2;
 
+/**
+ * Animates a text-field container's border between resting and focused
+ * states. Each call owns its own Animated.Value, so the search box and the
+ * two manual-entry fields (added in a later task) animate independently.
+ */
+function useFocusGlow() {
+  const focusAnim = useRef(new Animated.Value(0)).current;
+  const onFocus = () => {
+    Animated.timing(focusAnim, {
+      toValue: 1,
+      duration: Animations.timing.fast,
+      useNativeDriver: false, // borderColor isn't transform/opacity
+    }).start();
+  };
+  const onBlur = () => {
+    Animated.timing(focusAnim, {
+      toValue: 0,
+      duration: Animations.timing.fast,
+      useNativeDriver: false,
+    }).start();
+  };
+  const borderColor = focusAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: [Colors.glass.border, 'rgba(212, 175, 55, 0.5)'],
+  });
+  return { borderColor, onFocus, onBlur };
+}
+
 export const LocationPickerModal: React.FC<LocationPickerModalProps> = ({
   visible,
   currentLocation,
@@ -58,6 +86,8 @@ export const LocationPickerModal: React.FC<LocationPickerModalProps> = ({
 
   const translateY = useRef(new Animated.Value(screenHeight)).current;
   const backdropOpacity = useRef(new Animated.Value(0)).current;
+  const searchGlow = useFocusGlow();
+  const clearOpacity = useRef(new Animated.Value(0)).current;
 
   const handleClose = () => {
     if (reduceMotion) {
@@ -145,6 +175,14 @@ export const LocationPickerModal: React.FC<LocationPickerModalProps> = ({
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [visible, reduceMotion, screenHeight]);
+
+  useEffect(() => {
+    Animated.timing(clearOpacity, {
+      toValue: query.length > 0 ? 1 : 0,
+      duration: Animations.timing.micro,
+      useNativeDriver: true,
+    }).start();
+  }, [query.length > 0]);
 
   const results = useMemo(() => {
     if (!query.trim()) return [];
@@ -299,28 +337,32 @@ export const LocationPickerModal: React.FC<LocationPickerModalProps> = ({
                   accessibilityRole="button"
                   accessibilityLabel="Use current location"
                 >
-                  {gpsStatus === 'loading' ? (
-                    <ActivityIndicator size="small" color={Colors.accent.primary} />
-                  ) : (
-                    <Ionicons name="locate" size={18} color={Colors.accent.primary} />
+                  <View style={styles.gpsRowLeft}>
+                    {gpsStatus === 'loading' ? (
+                      <ActivityIndicator size="small" color={Colors.accent.primary} />
+                    ) : (
+                      <Ionicons name="locate" size={18} color={Colors.accent.primary} />
+                    )}
+                    <Text
+                      style={[
+                        styles.gpsText,
+                        (gpsStatus === 'denied' || gpsStatus === 'error') && styles.gpsTextMuted,
+                      ]}
+                    >
+                      {gpsStatus === 'denied'
+                        ? 'Location access denied — tap to open Settings'
+                        : gpsStatus === 'error'
+                        ? "Couldn't get location — search below"
+                        : 'Use Current Location'}
+                    </Text>
+                  </View>
+                  {gpsStatus !== 'loading' && (
+                    <Ionicons name="chevron-forward" size={16} color="rgba(255,255,255,0.18)" />
                   )}
-                  <Text
-                    style={[
-                      styles.gpsText,
-                      (gpsStatus === 'denied' || gpsStatus === 'error') && styles.gpsTextMuted,
-                    ]}
-                  >
-                    {gpsStatus === 'denied'
-                      ? 'Location access denied — tap to open Settings'
-                      : gpsStatus === 'error'
-                      ? "Couldn't get location — search below"
-                      : 'Use Current Location'}
-                  </Text>
                 </TouchableOpacity>
-                <View style={styles.gpsDivider} />
 
                 {/* Search input */}
-                <View style={styles.searchContainer}>
+                <Animated.View style={[styles.searchContainer, { borderColor: searchGlow.borderColor }]}>
                   <Ionicons name="search-outline" size={18} color="rgba(245, 237, 227, 0.4)" />
                   <TextInput
                     ref={searchRef}
@@ -328,19 +370,24 @@ export const LocationPickerModal: React.FC<LocationPickerModalProps> = ({
                     placeholder="Search city..."
                     value={query}
                     onChangeText={setQuery}
+                    onFocus={searchGlow.onFocus}
+                    onBlur={searchGlow.onBlur}
                     placeholderTextColor="rgba(245, 237, 227, 0.35)"
                     autoCorrect={false}
                     autoCapitalize="words"
                   />
-                  {query.length > 0 && (
+                  <Animated.View
+                    style={{ opacity: clearOpacity }}
+                    pointerEvents={query.length > 0 ? 'auto' : 'none'}
+                  >
                     <TouchableOpacity
                       onPress={() => setQuery('')}
                       hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
                     >
                       <Ionicons name="close-circle" size={16} color="rgba(245, 237, 227, 0.4)" />
                     </TouchableOpacity>
-                  )}
-                </View>
+                  </Animated.View>
+                </Animated.View>
 
                 {query.trim() ? (
                   results.length > 0 ? (
@@ -502,13 +549,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: Spacing.sm,
     marginHorizontal: Spacing.xl,
+    marginTop: Spacing.lg,
     marginBottom: Spacing.sm,
-    backgroundColor: 'rgba(255, 255, 255, 0.04)',
+    backgroundColor: Colors.glass.light,
     borderWidth: 1,
-    borderColor: Colors.accent.muted,
     borderRadius: BorderRadius.md,
     paddingHorizontal: Spacing.lg,
-    paddingVertical: Spacing.md,
+    paddingVertical: Spacing.lg,
   },
   searchInput: {
     flex: 1,
@@ -602,23 +649,31 @@ const styles = StyleSheet.create({
   gpsRow: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'space-between',
     gap: Spacing.sm,
-    paddingHorizontal: Spacing.xl,
+    marginHorizontal: Spacing.xl,
+    marginTop: Spacing.sm,
+    paddingHorizontal: Spacing.lg,
     paddingVertical: Spacing.lg,
+    backgroundColor: Colors.glass.medium,
+    borderWidth: 1,
+    borderColor: Colors.accent.muted,
+    borderRadius: BorderRadius.lg,
+  },
+  gpsRowLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.sm,
+    flexShrink: 1,
   },
   gpsText: {
     fontSize: Typography.sizes.body,
     color: Colors.accent.primary,
     fontWeight: '600',
+    flexShrink: 1,
   },
   gpsTextMuted: {
     color: Colors.text.muted,
     fontWeight: '400',
-  },
-  gpsDivider: {
-    height: 1,
-    backgroundColor: 'rgba(255, 255, 255, 0.06)',
-    marginHorizontal: Spacing.xl,
-    marginBottom: Spacing.sm,
   },
 });
