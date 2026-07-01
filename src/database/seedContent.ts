@@ -184,20 +184,6 @@ export async function seedHadithContent(db: any): Promise<void> {
           item.prayerContext ? JSON.stringify(item.prayerContext) : null,
         ],
       );
-
-      // 2. content_moods — one row per (content, mood) pair. Hadith rows in
-      // hadithData.ts currently have empty moods[] (they're referenced
-      // directly by contentId from path_steps, not via mood rotation), so
-      // this loop is a no-op today but stays here for parity with Quran and
-      // to support any future hadith rows that do carry moods.
-      for (const mood of item.moods) {
-        const score = (item.moodScores as Record<string, number> | undefined)?.[mood] ?? 10;
-        await db.runAsync(
-          `INSERT OR IGNORE INTO content_moods (contentId, mood, relevanceScore)
-           VALUES (?, ?, ?)`,
-          [item.id, mood, score],
-        );
-      }
     }
   });
 
