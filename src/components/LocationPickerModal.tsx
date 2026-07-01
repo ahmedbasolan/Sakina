@@ -6,23 +6,27 @@ import {
   Modal,
   TextInput,
   TouchableOpacity,
+  TouchableWithoutFeedback,
   KeyboardAvoidingView,
   Platform,
   ActivityIndicator,
   Alert,
   FlatList,
+  Animated,
+  PanResponder,
   useWindowDimensions,
   Linking,
 } from 'react-native';
 import { BlurView } from 'expo-blur';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
-import { Colors, Spacing, Typography, BorderRadius } from '../theme/DesignSystem';
+import { Colors, Spacing, Typography, BorderRadius, Animations } from '../theme/DesignSystem';
 import * as Location from 'expo-location';
 import { saveUserLocation, formatLocation, UserLocation } from '../services/locationStorage';
 import PrayerTimesService from '../services/prayerTimesService';
 import { CITIES } from '../data/cityData';
 import { LocationResultRow } from './LocationResultRow';
+import { useReduceMotion } from '../hooks/useReduceMotion';
 
 interface LocationPickerModalProps {
   visible: boolean;
@@ -31,6 +35,10 @@ interface LocationPickerModalProps {
   onLocationSelected: (location: UserLocation) => void;
 }
 
+const SHEET_MAX_HEIGHT_RATIO = 0.85;
+const DRAG_CLOSE_THRESHOLD = 120;
+const DRAG_CLOSE_VELOCITY = 1.2;
+
 export const LocationPickerModal: React.FC<LocationPickerModalProps> = ({
   visible,
   currentLocation,
@@ -38,6 +46,7 @@ export const LocationPickerModal: React.FC<LocationPickerModalProps> = ({
   onLocationSelected,
 }) => {
   const { height: screenHeight } = useWindowDimensions();
+  const reduceMotion = useReduceMotion();
   const [mode, setMode] = useState<'search' | 'manual'>('search');
   const [query, setQuery] = useState('');
   const [city, setCity] = useState('');
@@ -47,6 +56,56 @@ export const LocationPickerModal: React.FC<LocationPickerModalProps> = ({
   const isSelectingRef = useRef(false);
   const [gpsStatus, setGpsStatus] = useState<'idle' | 'loading' | 'denied' | 'error'>('idle');
 
+  const translateY = useRef(new Animated.Value(screenHeight)).current;
+  const backdropOpacity = useRef(new Animated.Value(0)).current;
+
+  const handleClose = () => {
+    if (reduceMotion) {
+      onClose();
+      return;
+    }
+    Animated.parallel([
+      Animated.timing(translateY, {
+        toValue: screenHeight,
+        duration: Animations.timing.fast,
+        useNativeDriver: true,
+      }),
+      Animated.timing(backdropOpacity, {
+        toValue: 0,
+        duration: Animations.timing.fast,
+        useNativeDriver: true,
+      }),
+    ]).start(() => onClose());
+  };
+
+  // PanResponder is created once via useRef, but must always invoke the
+  // *latest* handleClose (which closes over reduceMotion/screenHeight) — route
+  // through a ref so the gesture handler never calls a stale closure.
+  const handleCloseRef = useRef(handleClose);
+  handleCloseRef.current = handleClose;
+
+  const panResponder = useRef(
+    PanResponder.create({
+      onStartShouldSetPanResponder: () => false,
+      onMoveShouldSetPanResponderCapture: (_, gesture) =>
+        gesture.dy > 4 && Math.abs(gesture.dy) > Math.abs(gesture.dx),
+      onPanResponderMove: (_, gesture) => {
+        if (gesture.dy > 0) translateY.setValue(gesture.dy);
+      },
+      onPanResponderRelease: (_, gesture) => {
+        if (gesture.dy > DRAG_CLOSE_THRESHOLD || gesture.vy > DRAG_CLOSE_VELOCITY) {
+          handleCloseRef.current();
+        } else {
+          Animated.spring(translateY, {
+            toValue: 0,
+            useNativeDriver: true,
+            ...Animations.spring.gentle,
+          }).start();
+        }
+      },
+    }),
+  ).current;
+
   useEffect(() => {
     if (visible) {
       setMode('search');
@@ -55,8 +114,29 @@ export const LocationPickerModal: React.FC<LocationPickerModalProps> = ({
       setCountry('');
       setGpsStatus('idle');
       setTimeout(() => searchRef.current?.focus(), 150);
+
+      if (reduceMotion) {
+        translateY.setValue(0);
+        backdropOpacity.setValue(1);
+      } else {
+        translateY.setValue(screenHeight);
+        backdropOpacity.setValue(0);
+        Animated.parallel([
+          Animated.spring(translateY, {
+            toValue: 0,
+            useNativeDriver: true,
+            ...Animations.spring.gentle,
+          }),
+          Animated.timing(backdropOpacity, {
+            toValue: 1,
+            duration: Animations.timing.normal,
+            useNativeDriver: true,
+          }),
+        ]).start();
+      }
     }
-  }, [visible]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [visible, reduceMotion, screenHeight]);
 
   const results = useMemo(() => {
     if (!query.trim()) return [];
@@ -72,7 +152,7 @@ export const LocationPickerModal: React.FC<LocationPickerModalProps> = ({
     const formatted = formatLocation({ city: selected.city, country: selected.country });
     await saveUserLocation(formatted);
     onLocationSelected(formatted);
-    onClose();
+    handleClose();
   };
 
   const handleUseCurrentLocation = async () => {
@@ -118,7 +198,7 @@ export const LocationPickerModal: React.FC<LocationPickerModalProps> = ({
       };
       await saveUserLocation(locationWithCoords);
       onLocationSelected(locationWithCoords);
-      onClose();
+      handleClose();
     } catch {
       setGpsStatus('error');
     }
@@ -136,7 +216,7 @@ export const LocationPickerModal: React.FC<LocationPickerModalProps> = ({
       const formatted = formatLocation({ city: city.trim(), country: country.trim() });
       await saveUserLocation(formatted);
       onLocationSelected(formatted);
-      onClose();
+      handleClose();
     } catch {
       Alert.alert(
         'Location Error',
@@ -148,39 +228,57 @@ export const LocationPickerModal: React.FC<LocationPickerModalProps> = ({
   };
 
   return (
-    <Modal visible={visible} transparent animationType="fade">
-      <BlurView intensity={24} tint="dark" style={StyleSheet.absoluteFill}>
+    <Modal visible={visible} transparent animationType="none" onRequestClose={handleClose}>
+      <View style={StyleSheet.absoluteFill}>
+        <Animated.View
+          style={[StyleSheet.absoluteFill, { opacity: backdropOpacity }]}
+          pointerEvents="none"
+        >
+          <BlurView intensity={24} tint="dark" style={StyleSheet.absoluteFill} />
+        </Animated.View>
+        <TouchableWithoutFeedback onPress={handleClose}>
+          <View style={StyleSheet.absoluteFill} />
+        </TouchableWithoutFeedback>
         <KeyboardAvoidingView
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
           style={styles.modalContainer}
+          pointerEvents="box-none"
         >
-          <View style={[styles.content, { maxHeight: screenHeight * 0.75 }]}>
-            {/* Header */}
-            <View style={styles.header}>
-              <View style={styles.headerLeft}>
-                {mode === 'manual' ? (
-                  <TouchableOpacity
-                    onPress={() => setMode('search')}
-                    style={styles.backButton}
-                    hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-                  >
-                    <Ionicons name="arrow-back" size={18} color={Colors.accent.primary} />
-                    <Text style={styles.backText}>Search</Text>
-                  </TouchableOpacity>
-                ) : (
-                  <>
-                    <Ionicons name="location-outline" size={20} color={Colors.accent.primary} />
-                    <Text style={styles.headerTitle}>Where are you?</Text>
-                  </>
-                )}
+          <Animated.View
+            style={[
+              styles.content,
+              { maxHeight: screenHeight * SHEET_MAX_HEIGHT_RATIO, transform: [{ translateY }] },
+            ]}
+          >
+            <View {...panResponder.panHandlers}>
+              <View style={styles.handleBar} />
+              {/* Header */}
+              <View style={styles.header}>
+                <View style={styles.headerLeft}>
+                  {mode === 'manual' ? (
+                    <TouchableOpacity
+                      onPress={() => setMode('search')}
+                      style={styles.backButton}
+                      hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                    >
+                      <Ionicons name="arrow-back" size={18} color={Colors.accent.primary} />
+                      <Text style={styles.backText}>Search</Text>
+                    </TouchableOpacity>
+                  ) : (
+                    <>
+                      <Ionicons name="location-outline" size={20} color={Colors.accent.primary} />
+                      <Text style={styles.headerTitle}>Where are you?</Text>
+                    </>
+                  )}
+                </View>
+                <TouchableOpacity
+                  onPress={handleClose}
+                  style={styles.closeButton}
+                  hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                >
+                  <Ionicons name="close" size={22} color="rgba(245, 237, 227, 0.7)" />
+                </TouchableOpacity>
               </View>
-              <TouchableOpacity
-                onPress={onClose}
-                style={styles.closeButton}
-                hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-              >
-                <Ionicons name="close" size={22} color="rgba(245, 237, 227, 0.7)" />
-              </TouchableOpacity>
             </View>
 
             {mode === 'search' ? (
@@ -325,9 +423,9 @@ export const LocationPickerModal: React.FC<LocationPickerModalProps> = ({
                 </TouchableOpacity>
               </View>
             )}
-          </View>
+          </Animated.View>
         </KeyboardAvoidingView>
-      </BlurView>
+      </View>
     </Modal>
   );
 };
@@ -335,29 +433,38 @@ export const LocationPickerModal: React.FC<LocationPickerModalProps> = ({
 const styles = StyleSheet.create({
   modalContainer: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: Spacing.xl,
+    justifyContent: 'flex-end',
   },
   content: {
     width: '100%',
     backgroundColor: Colors.background.secondary,
-    borderRadius: BorderRadius.xxl,
+    borderTopLeftRadius: BorderRadius.xxl,
+    borderTopRightRadius: BorderRadius.xxl,
     overflow: 'hidden',
     borderWidth: 1,
     borderColor: Colors.accent.muted,
+    borderBottomWidth: 0,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 10 },
+    shadowOffset: { width: 0, height: -4 },
     shadowOpacity: 0.4,
     shadowRadius: 20,
     elevation: 10,
+  },
+  handleBar: {
+    width: 40,
+    height: 4,
+    backgroundColor: 'rgba(255, 235, 210, 0.2)',
+    borderRadius: BorderRadius.full,
+    alignSelf: 'center',
+    marginTop: Spacing.md,
+    marginBottom: Spacing.xs,
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: Spacing.xl,
-    paddingTop: Spacing.xl,
+    paddingTop: Spacing.sm,
     paddingBottom: Spacing.md,
   },
   headerLeft: {
