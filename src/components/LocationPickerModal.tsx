@@ -22,6 +22,7 @@ import * as Location from 'expo-location';
 import { saveUserLocation, formatLocation, UserLocation } from '../services/locationStorage';
 import PrayerTimesService from '../services/prayerTimesService';
 import { CITIES } from '../data/cityData';
+import { LocationResultRow } from './LocationResultRow';
 
 interface LocationPickerModalProps {
   visible: boolean;
@@ -244,15 +245,13 @@ export const LocationPickerModal: React.FC<LocationPickerModalProps> = ({
                       keyExtractor={(item, i) => `${item.city}-${item.country}-${i}`}
                       keyboardShouldPersistTaps="handled"
                       style={styles.list}
-                      renderItem={({ item }) => (
-                        <TouchableOpacity
-                          style={styles.resultRow}
+                      renderItem={({ item, index }) => (
+                        <LocationResultRow
+                          city={item.city}
+                          country={item.country}
+                          index={index}
                           onPress={() => handleSelect(item)}
-                          activeOpacity={0.7}
-                        >
-                          <Text style={styles.resultCity}>{item.city}</Text>
-                          <Text style={styles.resultCountry}>{item.country}</Text>
-                        </TouchableOpacity>
+                        />
                       )}
                       ItemSeparatorComponent={() => <View style={styles.separator} />}
                       ListFooterComponent={
@@ -406,26 +405,9 @@ const styles = StyleSheet.create({
   list: {
     flex: 1,
   },
-  resultRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: Spacing.xl,
-    paddingVertical: Spacing.md,
-  },
-  resultCity: {
-    fontSize: Typography.sizes.body,
-    color: Colors.text.primary,
-    flex: 1,
-  },
-  resultCountry: {
-    fontSize: Typography.sizes.small,
-    color: Colors.text.muted,
-    marginLeft: Spacing.sm,
-  },
   separator: {
     height: 1,
-    backgroundColor: 'rgba(255, 255, 255, 0.04)',
+    backgroundColor: 'rgba(212, 175, 55, 0.08)',
     marginHorizontal: Spacing.xl,
   },
   manualFooter: {
