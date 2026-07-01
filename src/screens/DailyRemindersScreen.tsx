@@ -7,6 +7,7 @@ import {
   Animated,
   Alert,
   ActivityIndicator,
+  Linking,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
@@ -271,6 +272,10 @@ export default function DailyRemindersScreen({ onBack }: DailyRemindersScreenPro
         Alert.alert(
           'Permission Required',
           'Please enable notifications in your device settings to receive daily reminders.',
+          [
+            { text: 'Not Now', style: 'cancel' },
+            { text: 'Open Settings', onPress: () => Linking.openSettings() },
+          ],
         );
       }
     } catch (_error) {
