@@ -16,6 +16,7 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import {
   Animations,
@@ -205,7 +206,7 @@ const SupportSakinaScreen: React.FC = () => {
   };
 
   return (
-    <View style={styles.container}>
+    <LinearGradient colors={Colors.celestialWash} style={styles.container}>
       {/* Close */}
       <TouchableOpacity
         style={[styles.closeBtn, { top: insets.top + Spacing.sm }]}
@@ -370,14 +371,13 @@ const SupportSakinaScreen: React.FC = () => {
           )}
         </View>
       </View>
-    </View>
+    </LinearGradient>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.background.primary,
   },
 
   closeBtn: {
@@ -569,7 +569,7 @@ const styles = StyleSheet.create({
     right: 0,
     paddingHorizontal: Spacing.xl,
     paddingTop: Spacing.lg,
-    backgroundColor: Colors.background.primary,
+    backgroundColor: Colors.background.tertiary,
     borderTopWidth: 1,
     borderTopColor: Colors.glass.border,
   },
