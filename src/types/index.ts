@@ -228,6 +228,7 @@ export interface PathStep {
   angleId: string;
   isCompleted: boolean;
   completedAt?: number;
+  hadithContentId?: string;
 }
 
 export interface UserPathProgress {
