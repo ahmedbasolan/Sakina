@@ -1,5 +1,12 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Animated } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Animated,
+  ActivityIndicator,
+} from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { PrayerContext } from '../../types';
@@ -23,16 +30,20 @@ interface SpiritualWindowBannerProps {
   fadeAnim: Animated.Value;
   slideAnim: Animated.Value;
   onPress: () => void;
+  /** True while the guidance fetch for this banner is in flight. */
+  loading?: boolean;
 }
 
 
-export function SpiritualWindowBanner({ prayerContext, fadeAnim, slideAnim, onPress }: SpiritualWindowBannerProps) {
+export function SpiritualWindowBanner({ prayerContext, fadeAnim, slideAnim, onPress, loading = false }: SpiritualWindowBannerProps) {
   return (
     <Animated.View style={[styles.spiritualSection, { opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
       <TouchableOpacity
         activeOpacity={0.9}
         onPress={onPress}
+        disabled={loading}
         accessibilityRole="button"
+        accessibilityState={{ busy: loading }}
         accessibilityLabel={`${getSpiritualWindowName(prayerContext)} — ${getSpiritualActionText(prayerContext)}`}
         accessibilityHint="Double tap to open the spiritual window screen"
       >
@@ -48,7 +59,11 @@ export function SpiritualWindowBanner({ prayerContext, fadeAnim, slideAnim, onPr
               <Text style={styles.bannerTitle}>{getSpiritualWindowName(prayerContext)}</Text>
               <View style={styles.bannerCTA}>
                 <Text style={styles.bannerCTAText}>{getSpiritualActionText(prayerContext)}</Text>
-                <Ionicons name="arrow-forward" size={14} color={Colors.accent.primary} />
+                {loading ? (
+                  <ActivityIndicator size="small" color={Colors.accent.primary} />
+                ) : (
+                  <Ionicons name="arrow-forward" size={14} color={Colors.accent.primary} />
+                )}
               </View>
             </View>
             <View style={styles.bannerIconContainer}>

@@ -203,8 +203,15 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
     }
   }, [navigation, fetchWindowGuidance, setSelectedMood, setLocalSelectedMood, setCheckedInToday]);
 
+  // Spinner state for the spiritual-window banner (same touch-feedback
+  // contract as the mood cards: guard + haptic + visible progress).
+  const [windowLoading, setWindowLoading] = useState(false);
   const navigateToTimedGuidance = useCallback(async () => {
-    const mood = localSelectedMood || 'Calm';
+    if (isHandlingTap.current) return;
+    isHandlingTap.current = true;
+    setWindowLoading(true);
+    HapticsService.impactAsync('LIGHT');
+    const mood = localSelectedMoodRef.current || 'Calm';
     try {
       const experience = await fetchWindowGuidance(mood);
       if (experience) {
@@ -216,8 +223,11 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
       }
     } catch (error) {
       logServiceError('HomeScreen', 'navigateToTimedGuidance', error instanceof Error ? error : new Error(String(error)));
+    } finally {
+      setWindowLoading(false);
+      isHandlingTap.current = false;
     }
-  }, [localSelectedMood, prayerContext, navigation, fetchWindowGuidance]);
+  }, [prayerContext, navigation, fetchWindowGuidance]);
 
   // ── Derived display values ─────────────────────────────────────
 
@@ -284,6 +294,7 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
             fadeAnim={fadeAnim}
             slideAnim={slideAnim}
             onPress={navigateToTimedGuidance}
+            loading={windowLoading}
           />
 
           {/* ═══ HOW IS YOUR HEART? ══════════════════════════════ */}
