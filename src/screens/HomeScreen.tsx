@@ -2,7 +2,7 @@ import React, { useRef, useEffect, useCallback, useMemo, useState } from 'react'
 import { useFocusEffect } from '@react-navigation/native';
 import { getSpiritualWindowName } from '../utils/prayerContext';
 import { formatPrayerTime, formatCountdown } from '../services/prayerTimesService';
-import { Colors, Spacing, Typography, Animations, Layout } from '../theme/DesignSystem';
+import { Colors, Spacing, Typography, Animations, Layout, MoodColors } from '../theme/DesignSystem';
 import {
   View,
   Text,
@@ -35,18 +35,33 @@ import { useHomeData } from '../hooks/useHomeData';
 
 /* ─── Constants ──────────────────────────────────────────────── */
 
-// Colors aligned with MoodColors in DesignSystem.ts (GuidanceScreen source of truth)
-// so the accent colour a user sees on the card matches the immersive background they enter.
-const moodConfigs: MoodConfig[] = [
-  { id: 'Grateful',    label: 'GRATEFUL',    sublabel: 'Shukr',   color: '#FBBF24', bgColor: '#451A03', borderColor: '#78350F', gradientColors: ['#6B3008', '#4A2006', '#4A2006'], iconName: 'heart' },
-  { id: 'Hopeful',     label: 'HOPEFUL',     sublabel: 'Amal',    color: '#22D3EE', bgColor: '#083344', borderColor: '#155E75', gradientColors: ['#0D5A7A', '#083E58', '#083E58'], iconName: 'sunny' },
-  { id: 'Calm',        label: 'PEACEFUL',    sublabel: 'Sukoon',  color: '#34D399', bgColor: '#064E3B', borderColor: '#065F46', gradientColors: ['#0C6B4E', '#085038', '#085038'], iconName: 'water' },
-  { id: 'Overwhelmed', label: 'OVERWHELMED', sublabel: 'Ghamm',   color: '#818CF8', bgColor: '#0F172A', borderColor: '#1E1B4B', gradientColors: ['#1C3872', '#102558', '#102558'], iconName: 'layers' },
-  { id: 'Tired',       label: 'TIRED',       sublabel: "Ta'ab",   color: '#D6D3D1', bgColor: '#1C1917', borderColor: '#292524', gradientColors: ['#2E2520', '#1E1815', '#1E1815'], iconName: 'moon' },
-  { id: 'Lonely',      label: 'LONELY',      sublabel: 'Wahshah', color: '#C084FC', bgColor: '#2E1065', borderColor: '#4C1D95', gradientColors: ['#501A8A', '#37116A', '#37116A'], iconName: 'person' },
-  { id: 'Sad',         label: 'SAD',         sublabel: 'Huzn',    color: '#94A3B8', bgColor: '#1E293B', borderColor: '#334155', gradientColors: ['#243B56', '#162840', '#162840'], iconName: 'rainy' },
-  { id: 'Angry',       label: 'ANGRY',       sublabel: 'Ghadab',  color: '#FB923C', bgColor: '#1A0F0A', borderColor: '#2D1610', gradientColors: ['#3A1808', '#271006', '#271006'], iconName: 'flame' },
+// Card content (labels, Arabic terms, icons). All colour fields derive from
+// MoodColors in DesignSystem.ts — the single source of truth — so the accent a
+// user taps on the card always matches the immersive background it opens.
+const MOOD_CARD_CONTENT: { id: Mood; label: string; sublabel: string; iconName: string }[] = [
+  { id: 'Grateful',    label: 'GRATEFUL',    sublabel: 'Shukr',   iconName: 'heart' },
+  { id: 'Hopeful',     label: 'HOPEFUL',     sublabel: 'Amal',    iconName: 'sunny' },
+  { id: 'Calm',        label: 'PEACEFUL',    sublabel: 'Sukoon',  iconName: 'water' },
+  { id: 'Overwhelmed', label: 'OVERWHELMED', sublabel: 'Ghamm',   iconName: 'layers' },
+  { id: 'Tired',       label: 'TIRED',       sublabel: "Ta'ab",   iconName: 'moon' },
+  { id: 'Lonely',      label: 'LONELY',      sublabel: 'Wahshah', iconName: 'person' },
+  { id: 'Sad',         label: 'SAD',         sublabel: 'Huzn',    iconName: 'rainy' },
+  { id: 'Angry',       label: 'ANGRY',       sublabel: 'Ghadab',  iconName: 'flame' },
 ];
+
+const moodConfigs: MoodConfig[] = MOOD_CARD_CONTENT.map(({ id, label, sublabel, iconName }) => {
+  const mc = MoodColors[id];
+  return {
+    id,
+    label,
+    sublabel,
+    iconName,
+    color: mc.accent,
+    bgColor: mc.bgFill,
+    borderColor: mc.card.border,
+    gradientColors: mc.card.gradient,
+  };
+});
 
 /* ─── Helpers ────────────────────────────────────────────────── */
 
@@ -334,7 +349,7 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
             {checkedInToday && localSelectedMood && (
               <View style={styles.successRow}>
                 <Ionicons name="sparkles" size={11} color={Colors.accent.primary} />
-                <Text style={styles.successText}>Heart logged today · Barakallahu feek</Text>
+                <Text style={styles.successText}>Heart logged today · Barakallahu feekum</Text>
                 <Ionicons name="sparkles" size={11} color={Colors.accent.primary} />
               </View>
             )}
@@ -357,7 +372,7 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
                     <Text style={styles.journeyDiscoverySub}>Build salah, dhikr & reflection habits, step by step</Text>
                   </View>
                 </View>
-                <Ionicons name="chevron-forward" size={16} color="#6B8EAE" />
+                <Ionicons name="chevron-forward" size={16} color={Colors.text.steel} />
               </TouchableOpacity>
             </View>
           )}
@@ -398,7 +413,7 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
                         )}
                       </View>
                     </View>
-                    <Ionicons name="chevron-forward" size={16} color="#6B8EAE" style={{ marginTop: 2 }} />
+                    <Ionicons name="chevron-forward" size={16} color={Colors.text.steel} style={{ marginTop: 2 }} />
                   </View>
 
                   <View style={styles.progressBarTrack}>
@@ -633,7 +648,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
   },
-  journeyDayText: { fontSize: 12, color: '#6B8EAE' },
+  journeyDayText: { fontSize: 12, color: Colors.text.steel },
   journeyPctText: {
     fontSize: 11,
     fontFamily: Typography.fonts.serif,
@@ -662,5 +677,5 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
   },
   quickCardValue: { fontSize: 13, marginTop: 4, fontWeight: '600' },
-  quickCardSub: { fontSize: 11, color: '#6B8EAE', marginTop: 2 },
+  quickCardSub: { fontSize: 11, color: Colors.text.steel, marginTop: 2 },
 });
