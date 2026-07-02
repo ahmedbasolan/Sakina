@@ -2,7 +2,8 @@ import { Platform, ImageSourcePropType } from 'react-native';
 
 /**
  * Design System Tokens
- * Following a "Warm Arabian Sanctuary" aesthetic.
+ * "Celestial Night" — cool steel-blue washes, warm cream text, single gold
+ * accent. A lantern under a starlit sky (see CLAUDE.md).
  */
 
 export const Spacing = {
@@ -67,19 +68,15 @@ export const Colors = {
     heavy: 'rgba(255, 235, 210, 0.12)',
     border: 'rgba(255, 235, 210, 0.08)',
   },
-
-  overlay: 'rgba(20, 16, 12, 0.85)',
-  headerGradient: ['#14100C', 'rgba(20, 16, 12, 0.8)', 'transparent'] as const,
-  surfaceSheet: '#241E19',
-  verseGradient: ['#1C1612', '#14100C'] as const,
-  wisdomGradient: ['#241E19', '#1C1612'] as const,
-  actionGradient: ['#1E1A14', '#14100C'] as const,
 };
 
 export const Typography = {
   fonts: {
     arabic: 'Amiri-Quran',
-    latin: Platform.OS === 'ios' ? 'Inter' : 'sans-serif',
+    // Deliberately the platform system font (SF on iOS, Roboto on Android).
+    // 'Inter' was never bundled, so iOS silently fell back to SF anyway —
+    // 'System' makes that intentional and keeps every fontWeight working.
+    latin: Platform.OS === 'ios' ? 'System' : 'sans-serif',
     serif: Platform.OS === 'ios' ? 'Georgia' : 'serif',
   },
   sizes: {
@@ -97,26 +94,6 @@ export const Typography = {
     wide: 1.5,
     normal: 0.5,
     tight: -0.5,
-  },
-};
-
-export const Themes = {
-  immersive: {
-    sand: {
-      bg: '#14100C',
-      accent: '#D4AF37',
-      text: '#F5EDE3',
-    },
-    ocean: {
-      bg: '#12100E',
-      accent: '#2ED3C6',
-      text: '#F5EDE3',
-    },
-    dawn: {
-      bg: '#1A1210',
-      accent: '#E8A87C',
-      text: '#F5EDE3',
-    },
   },
 };
 
@@ -242,40 +219,4 @@ export const Elevation = {
     shadowRadius: 24,
     elevation: 12,
   },
-};
-
-// Legacy exports for backward compatibility (transition period)
-export const Grid = {
-  contentPadding: Spacing.xl,
-  borderRadius: BorderRadius.xl,
-  borderRadiusInner: BorderRadius.lg,
-  space4: Spacing.xs,
-  space8: Spacing.sm,
-  space12: Spacing.md,
-  space16: Spacing.lg,
-  space20: 20, // Revisit if needed
-  space24: Spacing.xl,
-  space32: Spacing.xxl,
-  space40: 40,
-  space48: Spacing.xxxl,
-  cardGap: Spacing.xl,
-};
-
-// Re-map Colors for legacy compatibility
-export const LegacyColors = {
-  teal: Colors.accent.secondary,
-  tealMuted: 'rgba(46, 211, 198, 0.2)',
-  tealGlow: 'rgba(46, 211, 198, 0.15)',
-  green: Colors.status.success,
-  greenGlow: Colors.status.successGlow,
-  red: Colors.status.error,
-  white: Colors.text.primary,
-  whiteDim: Colors.text.secondary,
-  whiteMuted: Colors.text.muted,
-  gold: Colors.accent.primary,
-  warm: Colors.accent.warm,
-  background: Colors.background.primary,
-  backgroundLighter: Colors.background.tertiary,
-  surface: Colors.background.secondary,
-  border: Colors.glass.border,
 };
