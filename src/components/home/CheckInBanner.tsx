@@ -57,7 +57,7 @@ const styles = StyleSheet.create({
     padding: 12,
     marginBottom: 16,
     borderWidth: 1,
-    borderColor: 'rgba(212, 175, 55, 0.15)',
+    borderColor: Colors.accent.glow,
   },
   checkinBannerLeft: {
     flexDirection: 'row',

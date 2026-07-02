@@ -211,7 +211,7 @@ const styles = StyleSheet.create({
   ornamentLine: {
     flex: 1,
     height: StyleSheet.hairlineWidth,
-    backgroundColor: 'rgba(212, 175, 55, 0.2)',
+    backgroundColor: Colors.accent.muted,
   },
   ornamentDiamond: {
     width: 4,
@@ -248,7 +248,7 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.xl,
   },
   journalContainerFocused: {
-    borderColor: 'rgba(212, 175, 55, 0.2)',
+    borderColor: Colors.accent.muted,
     backgroundColor: 'rgba(255, 235, 210, 0.05)',
   },
   journalInput: {

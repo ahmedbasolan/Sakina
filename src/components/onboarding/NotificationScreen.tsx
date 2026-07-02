@@ -157,7 +157,7 @@ const styles = StyleSheet.create({
   title: {
     fontFamily: Typography.fonts.serif,
     fontSize: Typography.sizes.h1,
-    color: '#F5EDE3',
+    color: Colors.text.primary,
     textAlign: 'center',
     letterSpacing: 0.2,
     marginBottom: Spacing.md,
@@ -197,7 +197,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255, 255, 255, 0.04)',
     borderRadius: BorderRadius.md,
     borderWidth: 1,
-    borderColor: 'rgba(212, 175, 55, 0.15)',
+    borderColor: Colors.accent.glow,
     borderLeftWidth: 3,
     borderLeftColor: Colors.accent.primary,
     paddingHorizontal: Spacing.lg,

@@ -47,7 +47,7 @@ const TYPE_COLORS: Record<PracticeStepData['type'], string> = {
 };
 
 const SOURCE_TYPE_CONFIG: Record<PracticeSourceType, { label: string; color: string }> = {
-  quran_dua: { label: "Qur'anic", color: '#4ADE80' },
+  quran_dua: { label: "Qur'anic", color: Colors.status.success },
   prophetic_dua: { label: "Prophetic Du'a", color: '#60A5FA' },
   prophetic_dhikr: { label: 'Prophetic Dhikr', color: '#A78BFA' },
   sunnah_action: { label: 'Sunnah Action', color: '#FBBF24' },

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, View, ImageBackground, ImageSourcePropType } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { MoodColors } from '../theme/DesignSystem';
+import { Colors, MoodColors } from '../theme/DesignSystem';
 import { Mood, PathTone } from '../types';
 import { backgroundThemeService } from '../services/backgroundThemeService';
 import { TwinklingStar } from './TwinklingStar';
@@ -42,7 +42,7 @@ interface ImmersiveBackgroundProps {
 }
 
 // Shared navy base, matching PathsScreen / PathDetailScreen.
-const NAVY_GRADIENT = ['#0A1321', '#0C1A2E'];
+const NAVY_GRADIENT = ['#0A1321', Colors.background.secondary];
 
 const ImmersiveBackground: React.FC<ImmersiveBackgroundProps> = ({
   children,
@@ -147,7 +147,7 @@ const ImmersiveBackground: React.FC<ImmersiveBackgroundProps> = ({
             <AnimatedMandala
               size={280}
               opacity={0.035}
-              color={washAccent ?? '#D4AF37'}
+              color={washAccent ?? Colors.accent.primary}
             />
           </View>
         </>

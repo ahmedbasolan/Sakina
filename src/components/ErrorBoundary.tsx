@@ -131,7 +131,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 22,
     fontWeight: '700',
-    color: '#F5EDE3',
+    color: Colors.text.primary,
     marginBottom: 8,
     textAlign: 'center',
   },
@@ -153,7 +153,7 @@ const styles = StyleSheet.create({
   errorTitle: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#F5EDE3',
+    color: Colors.text.primary,
     marginBottom: 8,
   },
   errorDetail: {

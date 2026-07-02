@@ -459,7 +459,7 @@ const styles = StyleSheet.create({
     color: Colors.text.muted,
   },
   formatOptionTextActive: {
-    color: '#0C1A2E',
+    color: Colors.background.secondary,
   },
   card: {
     backgroundColor: 'rgba(255, 255, 255, 0.04)',
@@ -562,7 +562,7 @@ const styles = StyleSheet.create({
     borderRadius: BorderRadius.md,
   },
   retryButtonText: {
-    color: '#0C1A2E',
+    color: Colors.background.secondary,
     fontWeight: '700',
     fontSize: 15,
   },

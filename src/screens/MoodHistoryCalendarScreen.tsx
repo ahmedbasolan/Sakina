@@ -416,7 +416,7 @@ export default function MoodHistoryCalendarScreen({ onBack }: MoodHistoryCalenda
                       </View>
                       <View style={styles.heroStatRow}>
                         <Text style={styles.heroStatLabel}>Positive</Text>
-                        <Text style={[styles.heroStatValue, { color: '#4ADE80' }]}>
+                        <Text style={[styles.heroStatValue, { color: Colors.status.success }]}>
                           {stats.positivePercentage}%
                         </Text>
                       </View>
@@ -703,7 +703,7 @@ function InsightCard({ insight }: { insight: MoodInsight }) {
       bg: 'rgba(16,185,129,0.08)',
       border: 'rgba(16,185,129,0.22)',
       iconBg: 'rgba(16,185,129,0.14)',
-      text: '#4ADE80',
+      text: Colors.status.success,
     },
     streak: {
       bg: 'rgba(245,158,11,0.08)',

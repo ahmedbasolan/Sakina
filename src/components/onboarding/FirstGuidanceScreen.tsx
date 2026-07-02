@@ -302,7 +302,7 @@ const styles = StyleSheet.create({
   },
   arabicWord: {
     fontSize: 30,
-    color: '#F5EDE3',
+    color: Colors.text.primary,
     fontFamily: Typography.fonts.arabic,
     lineHeight: 72,
     textAlign: 'center',
@@ -324,7 +324,7 @@ const styles = StyleSheet.create({
     fontFamily: Typography.fonts.serif,
     marginBottom: Spacing.sm,
     paddingHorizontal: Spacing.sm,
-    textShadowColor: 'rgba(212, 175, 55, 0.15)',
+    textShadowColor: Colors.accent.glow,
     textShadowOffset: { width: 0, height: 0 },
     textShadowRadius: 8,
   },
@@ -369,6 +369,6 @@ const styles = StyleSheet.create({
     fontSize: 17,
     letterSpacing: 1.5,
     fontWeight: '600',
-    color: '#0C1A2E',
+    color: Colors.background.secondary,
   },
 });

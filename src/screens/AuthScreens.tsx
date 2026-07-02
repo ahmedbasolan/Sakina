@@ -164,7 +164,7 @@ function AuthInput({
 
   const borderColor = borderAnim.interpolate({
     inputRange: [0, 1],
-    outputRange: ['rgba(212, 175, 55, 0.15)', 'rgba(212, 175, 55, 0.5)'],
+    outputRange: [Colors.accent.glow, 'rgba(212, 175, 55, 0.5)'],
   });
 
   return (
@@ -416,7 +416,7 @@ export function LoginScreen({ navigation, onLogin }: AuthScreenProps) {
             >
               <LinearGradient colors={['#E8C84A', '#B8860B']} style={styles.primaryBtn}>
                 {isLoading ? (
-                  <ActivityIndicator color="#0C1A2E" />
+                  <ActivityIndicator color={Colors.background.secondary} />
                 ) : (
                   <Text style={styles.primaryBtnText}>Sign In</Text>
                 )}
@@ -448,7 +448,7 @@ export function LoginScreen({ navigation, onLogin }: AuthScreenProps) {
                   accessibilityLabel="Continue with Apple"
                   accessibilityState={{ disabled: isLoading }}
                 >
-                  <AppleIcon size={18} fill="#F5EDE3" />
+                  <AppleIcon size={18} fill={Colors.text.primary} />
                   <Text style={styles.socialBtnText}>Apple</Text>
                 </TouchableOpacity>
               )}
@@ -704,7 +704,7 @@ export function SignUpScreen({ navigation, onSignUp }: AuthScreenProps) {
               accessibilityState={{ checked: agreeTerms }}
             >
               <View style={[styles.checkbox, agreeTerms && styles.checkboxChecked]}>
-                {agreeTerms && <CheckIcon size={14} color="#0C1A2E" />}
+                {agreeTerms && <CheckIcon size={14} color={Colors.background.secondary} />}
               </View>
               <Text style={styles.checkboxText}>
                 I agree to the{' '}
@@ -729,11 +729,11 @@ export function SignUpScreen({ navigation, onSignUp }: AuthScreenProps) {
               accessibilityState={{ disabled: !canSubmit, busy: isLoading }}
             >
               <LinearGradient
-                colors={canSubmit ? ['#E8C84A', '#B8860B'] : ['rgba(212, 175, 55, 0.15)', 'rgba(212, 175, 55, 0.08)']}
+                colors={canSubmit ? ['#E8C84A', '#B8860B'] : [Colors.accent.glow, 'rgba(212, 175, 55, 0.08)']}
                 style={[styles.primaryBtn, !canSubmit && styles.primaryBtnDisabled]}
               >
                 {isLoading ? (
-                  <ActivityIndicator color="#0C1A2E" />
+                  <ActivityIndicator color={Colors.background.secondary} />
                 ) : (
                   <Text style={[styles.primaryBtnText, !canSubmit && styles.primaryBtnTextDisabled]}>
                     Create Account
@@ -767,7 +767,7 @@ export function SignUpScreen({ navigation, onSignUp }: AuthScreenProps) {
                   accessibilityLabel="Sign up with Apple"
                   accessibilityState={{ disabled: isLoading }}
                 >
-                  <AppleIcon size={18} fill="#F5EDE3" />
+                  <AppleIcon size={18} fill={Colors.text.primary} />
                   <Text style={styles.socialBtnText}>Apple</Text>
                 </TouchableOpacity>
               )}
@@ -945,7 +945,7 @@ const styles = StyleSheet.create({
   heroTitle: {
     fontFamily: Typography.fonts.serif,
     fontSize: Typography.sizes.hero,
-    color: '#F5EDE3',
+    color: Colors.text.primary,
     textAlign: 'center',
     letterSpacing: 0.3,
     marginBottom: Spacing.sm,
@@ -988,7 +988,7 @@ const styles = StyleSheet.create({
     flex: 1,
     marginLeft: Spacing.md,
     fontSize: Typography.sizes.body,
-    color: '#F5EDE3',
+    color: Colors.text.primary,
   },
   forgotBtn: {
     alignSelf: 'flex-end',
@@ -1019,7 +1019,7 @@ const styles = StyleSheet.create({
     fontFamily: Typography.fonts.serif,
     fontSize: Typography.sizes.body,
     fontWeight: '700',
-    color: '#0C1A2E',
+    color: Colors.background.secondary,
     letterSpacing: 0.5,
   },
   primaryBtnTextDisabled: {
@@ -1073,7 +1073,7 @@ const styles = StyleSheet.create({
   socialBtnText: {
     fontSize: Typography.sizes.small,
     fontWeight: '600',
-    color: 'rgba(245, 237, 227, 0.7)',
+    color: Colors.text.secondary,
     letterSpacing: 0.3,
   },
   // --- Guest button ---
@@ -1082,7 +1082,7 @@ const styles = StyleSheet.create({
     height: 46,
     borderRadius: BorderRadius.md,
     borderWidth: 1,
-    borderColor: 'rgba(212, 175, 55, 0.2)',
+    borderColor: Colors.accent.muted,
     backgroundColor: 'rgba(212, 175, 55, 0.04)',
     alignItems: 'center',
     justifyContent: 'center',

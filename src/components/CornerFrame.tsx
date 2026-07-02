@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, StyleSheet, ViewStyle } from 'react-native';
+import { Colors } from '../theme/DesignSystem';
 
 interface CornerFrameProps {
   color?: string;
@@ -10,7 +11,7 @@ interface CornerFrameProps {
 }
 
 export function CornerFrame({
-  color = '#D4AF37',
+  color = Colors.accent.primary,
   size = 24,
   thickness = 2,
   offset = -12,
