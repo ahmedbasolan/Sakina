@@ -1,12 +1,23 @@
 import React, { useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Animated, Easing } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Animated,
+  Easing,
+  Dimensions,
+} from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Colors, Spacing, Typography } from '../../theme/DesignSystem';
 import { Ionicons } from '@expo/vector-icons';
 import { AnimatedMandala } from '../AnimatedMandala';
-import { TwinklingStar } from './TwinklingStar';
+import { TwinklingStar } from '../TwinklingStar';
 import { useReduceMotion } from '../../hooks/useReduceMotion';
 
+const SCREEN_W = Dimensions.get('window').width;
+
+// Fractions of screen width / the 200px header star band.
 const starPositions = [
   { x: 0.08, y: 0.12, delay: 0,   size: 2 },
   { x: 0.88, y: 0.08, delay: 400, size: 2 },
@@ -60,7 +71,16 @@ export function HeroHeader({ fadeAnim, slideAnim, onSettingsPress, greeting }: H
     <View style={styles.heroHeader}>
       {/* Twinkling stars */}
       {starPositions.map((s, i) => (
-        <TwinklingStar key={i} x={s.x} y={s.y} delay={s.delay} size={s.size} />
+        <TwinklingStar
+          key={i}
+          x={s.x * SCREEN_W}
+          y={s.y * 200}
+          delay={s.delay}
+          size={s.size}
+          color={Colors.accent.primary}
+          duration={2400}
+          reduceMotionOverride={reduceMotion}
+        />
       ))}
 
       {/* Mandala — outer + inner share the same center (see MANDALA_TOP constants above) */}
