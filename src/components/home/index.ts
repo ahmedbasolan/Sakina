@@ -1,5 +1,4 @@
 export { HeroHeader } from './HeroHeader';
-export { TwinklingStar } from './TwinklingStar';
 export { VerseOfTheDay } from './VerseOfTheDay';
 export { StreakBar } from './StreakBar';
 export { CrescentIcon } from './CrescentIcon';

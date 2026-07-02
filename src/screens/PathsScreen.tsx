@@ -15,6 +15,7 @@ import {
   FlatList,
   TouchableOpacity,
   Animated,
+  Dimensions,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
@@ -24,8 +25,10 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { UserPathProgress } from '../types';
 import { PathsService } from '../services/pathsService';
 import { AnimatedMandala } from '../components/AnimatedMandala';
-import { TwinklingStar } from '../components/home/TwinklingStar';
+import { TwinklingStar } from '../components/TwinklingStar';
 import { getPathVisual } from '../constants/pathVisuals';
+
+const SCREEN_W = Dimensions.get('window').width;
 
 // ── Paths available for users to start ─────────────────────────
 const AVAILABLE_PATH_IDS = new Set([
@@ -372,7 +375,15 @@ export default function PathsScreen() {
       {/* ── Header with mandala backdrop ─────────────────────── */}
       <Animated.View style={[styles.header, { paddingTop: insets.top + 16, opacity: headerFade }]}>
         {STAR_POSITIONS.map((s, i) => (
-          <TwinklingStar key={i} x={s.x} y={s.y} delay={s.delay} size={s.size} />
+          <TwinklingStar
+            key={i}
+            x={s.x * SCREEN_W}
+            y={s.y * 200}
+            delay={s.delay}
+            size={s.size}
+            color={Colors.accent.primary}
+            duration={2400}
+          />
         ))}
 
         <View style={styles.headerMandalaOuter} pointerEvents="none">

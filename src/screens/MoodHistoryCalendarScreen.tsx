@@ -545,7 +545,7 @@ export default function MoodHistoryCalendarScreen({ onBack }: MoodHistoryCalenda
                   accessibilityRole="button"
                   accessibilityLabel="Close day detail"
                 >
-                  <MaterialCommunityIcons name="close" size={20} color="#6B8EAE" />
+                  <MaterialCommunityIcons name="close" size={20} color={Colors.text.steel} />
                 </TouchableOpacity>
               </View>
 
