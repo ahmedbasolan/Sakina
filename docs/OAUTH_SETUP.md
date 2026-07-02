@@ -1,73 +1,91 @@
-# OAuth Setup Guide — Google & Apple Sign-In
+# OAuth Setup Guide — Google now, Apple later
 
-The app code is **done**. Sign-in will start working after you complete these
-dashboard steps and make one new EAS build. Budget ~45 minutes.
+Rollout plan: **Google Play first, App Store later.** The Apple sign-in button
+only renders on iOS, so a Play release needs **only the Google steps** below.
+The app code is done — after these dashboard steps, one new build activates
+sign-in (and the notification background fix from the same batch).
 
-Keep this handy: your Supabase callback URL is
-`https://<YOUR-PROJECT-REF>.supabase.co/auth/v1/callback`
-(find the project ref in Supabase → Project Settings → General).
+Your Supabase callback URL (used in Google step 3):
+`https://kfoogulmkylgtxwqbeat.supabase.co/auth/v1/callback`
 
 ---
 
-## Part 1 — Google (≈20 min)
+## Now: Google (≈20 min)
 
 1. Go to [console.cloud.google.com](https://console.cloud.google.com) → create
    (or pick) a project called **Sakina**.
 2. **APIs & Services → OAuth consent screen**
-   - User type: **External** → fill in app name "Sakina", your email, save.
-   - Add scopes: `email`, `profile`, `openid` (the defaults).
-   - Publish the app (or add your own email as a test user while testing).
+   - User type: **External** → app name "Sakina", your email, save.
+   - Scopes: `email`, `profile`, `openid` (the defaults).
+   - While testing, add your own Gmail as a test user.
+   - ⚠️ **Before the Play launch, click "Publish app"** on the consent screen —
+     in Testing mode only your test users can sign in.
 3. **APIs & Services → Credentials → Create Credentials → OAuth client ID**
    - Application type: **Web application** (yes, web — Supabase does the
-     browser handshake, not the phone).
+     browser handshake; no Android client or SHA-1 fingerprints needed for
+     this flow, even on Play).
    - Name: `Sakina Supabase`.
-   - Authorized redirect URIs: paste your Supabase callback URL from above.
-   - Create → copy the **Client ID** and **Client Secret**.
+   - Authorized redirect URIs: the Supabase callback URL above (exact, no
+     trailing slash).
+   - Create → copy **Client ID** and **Client Secret**.
 4. **Supabase dashboard → Authentication → Sign In / Providers → Google**
-   - Toggle **Enable**, paste the Client ID and Client Secret, Save.
+   - Enable, paste Client ID + Client Secret, Save.
 5. **Supabase dashboard → Authentication → URL Configuration**
    - Under **Redirect URLs**, add exactly: `sakina://`
-   - (This lets the browser hand the session back to the app.)
 
-## Part 2 — Apple (≈20 min, needs your Apple Developer account)
-
-1. Go to [developer.apple.com](https://developer.apple.com/account) →
-   **Certificates, Identifiers & Profiles → Identifiers**.
-2. Find the App ID **com.lelahmed.sakina** (create it if missing).
-   - Tick the **Sign in with Apple** capability → Save.
-   - ⚠️ Skipping this makes the iOS EAS build fail at the credentials step.
-3. **Supabase dashboard → Authentication → Sign In / Providers → Apple**
-   - Toggle **Enable**.
-   - In **Client IDs**, add: `com.lelahmed.sakina`
-   - (That's all the native flow needs — the app sends Apple's identity token
-     straight to Supabase. No Services ID or secret key required unless you
-     later add Apple sign-in on web.)
-
-## Part 3 — Rebuild (one build covers OAuth + the notification fix)
+## Now: Build & test (Android)
 
 ```bash
-eas build --profile preview --platform all
+# test build first (installable APK)
+eas build --profile preview --platform android
 ```
 
-- The build must be a **fresh native build** — OAuth and the notification
-  background task both added native modules that Expo OTA updates can't ship.
-- When EAS asks about iOS capabilities, let it sync (it will pick up Sign in
-  with Apple).
-
-## Part 4 — Verify on device
-
-- [ ] Google button opens a browser, you pick an account, and you land back
-      in the app signed in.
-- [ ] Apple button (iOS only) shows the native Face ID sheet and signs you in.
-- [ ] Supabase dashboard → Authentication → Users shows the new accounts.
+Verify on your phone:
+- [ ] Google button opens a browser, you pick an account, you land back in
+      the app signed in.
+- [ ] Supabase dashboard → Authentication → Users shows the new account.
 - [ ] Leave the app closed 3–4 days → prayer reminders keep arriving
-      (verifies the notification top-up task from the same build).
+      (verifies the notification top-up task in the same build).
+
+Then the store build:
+
+```bash
+eas build --profile production --platform android   # produces the .aab for Play
+```
+
+## Play Store submission notes (not OAuth, but you'll hit them)
+
+- Play Console will ask for a **privacy policy URL** — required because the
+  app has accounts and optional crash reporting. A simple hosted page is fine.
+- **Data Safety form**: data collected = email address + name (account),
+  optional crash logs (user consent, off by default). No ads, no data sold.
+  Location is used on-device for prayer times.
+- First upload goes smoothest via **Internal testing** track, then promote.
+
+---
+
+## Later: Apple (before the App Store release)
+
+1. [developer.apple.com](https://developer.apple.com/account) →
+   **Identifiers** → App ID **com.lelahmed.sakina** → tick **Sign in with
+   Apple** capability → Save.
+   ⚠️ Skipping this makes the iOS EAS build fail at the credentials step.
+2. **Supabase → Authentication → Providers → Apple** → Enable → add
+   `com.lelahmed.sakina` under **Client IDs**. (No Services ID or secret
+   needed for the native flow.)
+3. `eas build --profile production --platform ios` — let EAS sync the
+   capability when asked.
+4. App Store review note: Apple **requires** Sign in with Apple whenever an
+   app offers Google sign-in — you already have it, so you're compliant.
 
 ## If something fails
 
-- **"redirect_uri_mismatch" (Google)** → the callback URL in Google
-  Credentials doesn't exactly match the Supabase one. No trailing slash.
-- **Browser opens, signs in, but returns to a blank app** → `sakina://` is
-  missing from Supabase's Redirect URLs (Part 1, step 5).
-- **Apple button does nothing / build fails** → the Sign in with Apple
-  capability isn't on the App ID (Part 2, step 2).
+- **"redirect_uri_mismatch" (Google)** → callback URL in Google Credentials
+  doesn't exactly match Supabase's. No trailing slash.
+- **Signs in but returns to a blank app** → `sakina://` missing from
+  Supabase Redirect URLs (step 5).
+- **"Access blocked: app not verified"** → consent screen still in Testing
+  mode and that account isn't a test user — add it, or publish the app.
+- **EAS build fails on env** → run `eas env:list` and confirm
+  `SUPABASE_ANON_KEY` (and `POSTHOG_API_KEY`) exist as EAS secrets — the
+  build errors out if any `@env` key is missing.
