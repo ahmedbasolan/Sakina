@@ -14,5 +14,13 @@ module.exports = function (api) {
         allowUndefined: false,
       }],
     ],
+    env: {
+      production: {
+        // Strip console.log/info/debug from release builds (they run on the
+        // JS thread and can leak internals to device logs). error/warn stay
+        // so crash context still reaches errorLoggingService/PostHog.
+        plugins: [['transform-remove-console', { exclude: ['error', 'warn'] }]],
+      },
+    },
   };
 };
