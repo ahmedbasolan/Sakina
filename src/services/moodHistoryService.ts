@@ -46,6 +46,83 @@ export interface MoodInsight {
 
 const POSITIVE_MOODS: Mood[] = ['Grateful', 'Hopeful', 'Calm'];
 
+/**
+ * Streak calculation with one "mercy day" (rahma): a single missed day never
+ * breaks the living streak — the chain bridges one gap, once per streak, so a
+ * hard day is met with grace instead of a zero. Two consecutive missed days
+ * still end it. Exported pure for direct unit testing.
+ */
+export function computeStreaks(
+  daySet: Set<string>,
+  now: Date = new Date(),
+): { currentStreak: number; longestStreak: number } {
+  const sortedDays = Array.from(daySet).sort();
+
+  let longestStreak = 0;
+  let tempStreak = sortedDays.length > 0 ? 1 : 0;
+  for (let i = 1; i < sortedDays.length; i++) {
+    const prev = new Date(sortedDays[i - 1] + 'T00:00:00');
+    const curr = new Date(sortedDays[i] + 'T00:00:00');
+    const diffDays = Math.round((curr.getTime() - prev.getTime()) / 86400000);
+    if (diffDays === 1) {
+      tempStreak++;
+    } else {
+      longestStreak = Math.max(longestStreak, tempStreak);
+      tempStreak = 1;
+    }
+  }
+  longestStreak = Math.max(longestStreak, tempStreak);
+
+  const todayStr = formatDateYMD(now);
+  const yesterdayStr = formatDateYMD(subtractDays(now, 1));
+
+  // Anchor the living streak: today, else yesterday (today simply not logged
+  // yet — not a miss), else the day before yesterday via the mercy day
+  // (yesterday was missed; the chain holds while today is still open).
+  let currentStreak = 0;
+  let mercyUsed = false;
+  let anchor: string | null = null;
+  if (daySet.has(todayStr)) {
+    anchor = todayStr;
+  } else if (daySet.has(yesterdayStr)) {
+    anchor = yesterdayStr;
+  } else {
+    const dayBefore = formatDateYMD(subtractDays(now, 2));
+    if (daySet.has(dayBefore)) {
+      anchor = dayBefore;
+      mercyUsed = true;
+    }
+  }
+
+  if (anchor) {
+    currentStreak = 1;
+    let checkDate = new Date(anchor + 'T00:00:00');
+    while (true) {
+      checkDate = subtractDays(checkDate, 1);
+      if (daySet.has(formatDateYMD(checkDate))) {
+        currentStreak++;
+        continue;
+      }
+      if (!mercyUsed) {
+        const beyond = subtractDays(checkDate, 1);
+        if (daySet.has(formatDateYMD(beyond))) {
+          mercyUsed = true;
+          checkDate = beyond;
+          currentStreak++; // count the day on the far side of the gap
+          continue;
+        }
+      }
+      break;
+    }
+  }
+
+  // A mercy-bridged current streak can exceed the strict-consecutive longest;
+  // never display current > longest.
+  longestStreak = Math.max(longestStreak, currentStreak);
+
+  return { currentStreak, longestStreak };
+}
+
 // ── Service ─────────────────────────────────────────────────────────
 export class MoodHistoryService {
   private supabaseData = SupabaseDataService.getInstance();
@@ -199,44 +276,8 @@ export class MoodHistoryService {
 
     const totalDaysTracked = uniqueDays.size;
 
-    // Streak calculation
-    const sortedDays = Array.from(uniqueDays).sort();
-    // O(1) Set lookup replaces O(n) Array.includes inside the streak walk
-    const daySet = new Set(sortedDays);
-    let currentStreak = 0;
-    let longestStreak = 0;
-    let tempStreak = 1;
-
-    const todayStr = formatDateYMD();
-    const yesterdayStr = formatDateYMD(subtractDays(new Date(), 1));
-
-    for (let i = 1; i < sortedDays.length; i++) {
-      const prev = new Date(sortedDays[i - 1] + 'T00:00:00');
-      const curr = new Date(sortedDays[i] + 'T00:00:00');
-      const diffDays = Math.round((curr.getTime() - prev.getTime()) / 86400000);
-
-      if (diffDays === 1) {
-        tempStreak++;
-      } else {
-        longestStreak = Math.max(longestStreak, tempStreak);
-        tempStreak = 1;
-      }
-    }
-    longestStreak = Math.max(longestStreak, tempStreak);
-
-    if (daySet.has(todayStr) || daySet.has(yesterdayStr)) {
-      currentStreak = 1;
-      let checkDate = new Date((daySet.has(todayStr) ? todayStr : yesterdayStr) + 'T00:00:00');
-
-      while (true) {
-        checkDate = subtractDays(checkDate, 1);
-        if (daySet.has(formatDateYMD(checkDate))) {
-          currentStreak++;
-        } else {
-          break;
-        }
-      }
-    }
+    // Streak calculation — one mercy day per streak (see computeStreaks).
+    const { currentStreak, longestStreak } = computeStreaks(uniqueDays);
 
     const sortedMoods = Object.entries(moodCounts).sort((a, b) => b[1] - a[1]);
     const mostCommonMood = sortedMoods.length > 0 ? (sortedMoods[0][0] as Mood) : null;
