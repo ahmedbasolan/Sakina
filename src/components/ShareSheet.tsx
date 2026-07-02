@@ -170,7 +170,12 @@ const ShareSheet = ({ isVisible, onClose, content }: ShareSheetProps) => {
     color: string;
     label: string;
   }) => (
-    <TouchableOpacity style={styles.socialItem} onPress={() => handleAction(name)}>
+    <TouchableOpacity
+      style={styles.socialItem}
+      onPress={() => handleAction(name)}
+      accessibilityRole="button"
+      accessibilityLabel={label}
+    >
       <View style={[styles.socialCircle, { backgroundColor: color }]}>
         <Ionicons name={icon} size={28} color="#FFF" />
       </View>
@@ -192,6 +197,8 @@ const ShareSheet = ({ isVisible, onClose, content }: ShareSheetProps) => {
     <TouchableOpacity
       style={[styles.actionRow, !isLast && styles.actionRowBorder]}
       onPress={onPress}
+      accessibilityRole="button"
+      accessibilityLabel={label}
     >
       <Text style={styles.actionLabel}>{label}</Text>
       <Ionicons name={icon} size={20} color="rgba(255,255,255,0.4)" />
@@ -215,7 +222,7 @@ const ShareSheet = ({ isVisible, onClose, content }: ShareSheetProps) => {
   return (
     <Modal visible={isVisible} transparent animationType="none" onRequestClose={onClose}>
       <View style={styles.overlay}>
-        <TouchableWithoutFeedback onPress={onClose}>
+        <TouchableWithoutFeedback onPress={onClose} accessibilityRole="button" accessibilityLabel="Dismiss share sheet">
           <Animated.View
             style={[
               StyleSheet.absoluteFill,
@@ -313,6 +320,9 @@ const ShareSheet = ({ isVisible, onClose, content }: ShareSheetProps) => {
                   <TouchableOpacity
                     style={[styles.filterChip, showArabic && styles.filterChipActive]}
                     onPress={() => setShowArabic(!showArabic)}
+                    accessibilityRole="button"
+                    accessibilityLabel="Arabic"
+                    accessibilityState={{ selected: showArabic }}
                   >
                     <Text
                       style={[styles.filterChipText, showArabic && styles.filterChipTextActive]}
@@ -324,6 +334,9 @@ const ShareSheet = ({ isVisible, onClose, content }: ShareSheetProps) => {
                 <TouchableOpacity
                   style={[styles.filterChip, showEnglish && styles.filterChipActive]}
                   onPress={() => setShowEnglish(!showEnglish)}
+                  accessibilityRole="button"
+                  accessibilityLabel="English"
+                  accessibilityState={{ selected: showEnglish }}
                 >
                   <Text style={[styles.filterChipText, showEnglish && styles.filterChipTextActive]}>
                     ENGLISH
@@ -333,6 +346,9 @@ const ShareSheet = ({ isVisible, onClose, content }: ShareSheetProps) => {
                   <TouchableOpacity
                     style={[styles.filterChip, showTransliteration && styles.filterChipActive]}
                     onPress={() => setShowTransliteration(!showTransliteration)}
+                    accessibilityRole="button"
+                    accessibilityLabel="Phonetic"
+                    accessibilityState={{ selected: showTransliteration }}
                   >
                     <Text
                       style={[
@@ -364,6 +380,9 @@ const ShareSheet = ({ isVisible, onClose, content }: ShareSheetProps) => {
                       selectedTheme.id === theme.id && styles.themeOptionSelected,
                     ]}
                     onPress={() => setSelectedTheme(theme)}
+                    accessibilityRole="button"
+                    accessibilityLabel={theme.label}
+                    accessibilityState={{ selected: selectedTheme.id === theme.id }}
                   >
                     <LinearGradient
                       colors={theme.colors}
@@ -385,6 +404,9 @@ const ShareSheet = ({ isVisible, onClose, content }: ShareSheetProps) => {
                       selectedFont.id === font.id && styles.fontChipSelected,
                     ]}
                     onPress={() => setSelectedFont(font)}
+                    accessibilityRole="button"
+                    accessibilityLabel={font.name}
+                    accessibilityState={{ selected: selectedFont.id === font.id }}
                   >
                     <Text
                       style={[

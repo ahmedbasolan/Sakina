@@ -70,6 +70,7 @@ const GuidanceHeader: React.FC<GuidanceHeaderProps> = ({
         <TouchableOpacity
           style={styles.iconButton}
           onPress={handleBack}
+          accessibilityRole="button"
           accessibilityLabel="Go back"
         >
           <Ionicons name="chevron-back" size={22} color={Colors.text.primary} />
@@ -103,6 +104,7 @@ const GuidanceHeader: React.FC<GuidanceHeaderProps> = ({
         <TouchableOpacity
           style={styles.iconButton}
           onPress={handleOptions}
+          accessibilityRole="button"
           accessibilityLabel="Options"
         >
           <Ionicons name="options-outline" size={22} color={Colors.text.primary} />

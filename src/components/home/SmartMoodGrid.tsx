@@ -179,7 +179,13 @@ export const SmartMoodGrid = memo(function SmartMoodGrid({
           />
         ))}
       </View>
-      <TouchableOpacity onPress={toggleExpand} style={styles.expandBtn}>
+      <TouchableOpacity
+        onPress={toggleExpand}
+        style={styles.expandBtn}
+        accessibilityRole="button"
+        accessibilityLabel={expanded ? 'Show less' : `See all ${moodConfigs.length} moods`}
+        accessibilityState={{ expanded }}
+      >
         <Text style={styles.expandText}>
           {expanded ? 'Show less' : `See all ${moodConfigs.length}`}
         </Text>

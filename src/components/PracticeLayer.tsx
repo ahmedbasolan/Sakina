@@ -82,6 +82,11 @@ const DhikrCounter = ({ target, accentColor }: { target: number; accentColor: st
       style={styles.dhikrContainer}
       onPress={increment}
       activeOpacity={0.8}
+      disabled={done}
+      accessibilityRole="button"
+      accessibilityLabel={done ? 'Dhikr count complete' : `Dhikr counter, ${count} of ${target}`}
+      accessibilityHint={done ? undefined : 'Double tap to count one'}
+      accessibilityState={{ disabled: done }}
     >
       <Animated.View style={[styles.dhikrCircle, { transform: [{ scale: scaleAnim }] }]}>
         <View style={[styles.dhikrProgress, {
@@ -149,6 +154,10 @@ const PracticeStepCard = ({
               ? { backgroundColor: accentColor, borderColor: accentColor }
               : { borderColor: accentColor + '50' },
           ]}
+          accessibilityRole="button"
+          accessibilityLabel={`Step ${index + 1}, ${item.title}`}
+          accessibilityHint={checked ? 'Double tap to mark as not done' : 'Double tap to mark as done'}
+          accessibilityState={{ selected: checked }}
         >
           {checked ? (
             <Ionicons name="checkmark" size={14} color={Colors.background.primary} />
@@ -173,6 +182,9 @@ const PracticeStepCard = ({
             checked && { borderColor: accentColor + '30' },
             isExpanded && styles.stepCardExpanded,
           ]}
+          accessibilityRole="button"
+          accessibilityLabel={item.title}
+          accessibilityState={{ expanded: isExpanded }}
         >
           {/* Frosted-glass surface — lets the immersive background (mandala or
               journey photo) blend through instead of a flat opaque box */}
@@ -213,6 +225,9 @@ const PracticeStepCard = ({
                       setShowExplanation(!showExplanation);
                     }}
                     style={styles.whyButton}
+                    accessibilityRole="button"
+                    accessibilityLabel="Why write it down?"
+                    accessibilityState={{ expanded: showExplanation }}
                   >
                     <Ionicons
                       name={showExplanation ? 'chevron-up' : 'help-circle-outline'}
@@ -358,6 +373,8 @@ const PracticeLayer: React.FC<PracticeLayerProps> = ({ steps, onCheckAll, scroll
             style={styles.completionButton}
             onPress={onCheckAll}
             activeOpacity={0.8}
+            accessibilityRole="button"
+            accessibilityLabel="All steps complete, continue"
           >
             <Text style={styles.completionIcon}>✦</Text>
             <Text style={styles.completionText}>Alhamdulillah — All Complete</Text>

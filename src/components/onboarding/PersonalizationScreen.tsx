@@ -194,6 +194,9 @@ export default function PersonalizationScreen({ isActive, onNext }: Props) {
                 onPress={() => handleSelect(goal.id, i)}
                 disabled={!!selectedGoal}
                 style={styles.cardTouch}
+                accessibilityRole="button"
+                accessibilityLabel={`${goal.title} — ${goal.desc}`}
+                accessibilityState={{ disabled: !!selectedGoal }}
               >
                 <LinearGradient
                   colors={goal.gradientColors}

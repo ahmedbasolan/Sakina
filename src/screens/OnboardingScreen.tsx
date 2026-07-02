@@ -284,6 +284,8 @@ export default function OnboardingScreen() {
                 onPress={goBack}
                 activeOpacity={0.6}
                 hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+                accessibilityRole="button"
+                accessibilityLabel="Go back"
               >
                 <BackArrow />
               </TouchableOpacity>

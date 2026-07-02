@@ -70,6 +70,9 @@ export default function ThemeToggle() {
       style={styles.btn}
       activeOpacity={0.75}
       hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+      accessibilityRole="switch"
+      accessibilityLabel="Dark mode"
+      accessibilityState={{ checked: isDark }}
     >
       <Animated.View style={{ transform: [{ rotate }, { scale: scaleAnim }] }}>
         {isDark ? <MoonIcon size={17} /> : <SunIcon size={17} />}

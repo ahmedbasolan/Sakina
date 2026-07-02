@@ -115,7 +115,13 @@ export default function NotificationScreen({ isActive, onAllow, onSkip }: Props)
         </Animated.View>
 
         <Animated.View style={[styles.skipWrap, s[7]]}>
-          <TouchableOpacity style={styles.skipBtn} activeOpacity={0.7} onPress={onSkip}>
+          <TouchableOpacity
+            style={styles.skipBtn}
+            activeOpacity={0.7}
+            onPress={onSkip}
+            accessibilityRole="button"
+            accessibilityLabel="Not now"
+          >
             <Text style={styles.skipBtnText}>Not now</Text>
           </TouchableOpacity>
         </Animated.View>

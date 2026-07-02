@@ -71,6 +71,9 @@ function FilterBar({ active, onChange, counts }: FilterBarProps) {
             activeOpacity={0.75}
             onPress={() => onChange(tab.key)}
             style={[filterStyles.tab, isSelected && filterStyles.tabActive]}
+            accessibilityRole="tab"
+            accessibilityLabel={`${tab.label}${count > 0 ? `, ${count}` : ''}`}
+            accessibilityState={{ selected: isSelected }}
           >
             <Text style={[filterStyles.label, isSelected && filterStyles.labelActive]}>
               {tab.label}
@@ -190,7 +193,14 @@ function JourneyCard({ path, index, isActive, isLocked, userProgress, onPress }:
         </View>
       )}
 
-      <TouchableOpacity activeOpacity={isLocked ? 0.95 : 0.88} onPress={onPress}>
+      <TouchableOpacity
+        activeOpacity={isLocked ? 0.95 : 0.88}
+        onPress={onPress}
+        accessibilityRole="button"
+        accessibilityLabel={isLocked ? `${path.title} — Premium, early access coming soon` : `${path.title} — ${completedDays} of ${totalDays} days complete`}
+        accessibilityHint={isLocked ? undefined : 'Double tap to open this journey'}
+        accessibilityState={{ disabled: isLocked }}
+      >
         <BlurView
           intensity={10}
           tint="dark"

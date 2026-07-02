@@ -70,6 +70,9 @@ const BackgroundThemePicker: React.FC<BackgroundThemePickerProps> = ({
                 style={[styles.themeItem, isSelected && styles.themeItemActive]}
                 onPress={() => handleThemePress(item)}
                 activeOpacity={0.8}
+                accessibilityRole="button"
+                accessibilityLabel={`${item.name}${isLocked ? ', premium' : ''}`}
+                accessibilityState={{ selected: isSelected, disabled: isLocked }}
             >
                 <Image source={item.imageSource} style={styles.themeImage} resizeMode="cover" />
                 <LinearGradient
@@ -105,7 +108,12 @@ const BackgroundThemePicker: React.FC<BackgroundThemePickerProps> = ({
                             <Text style={styles.title}>BACKGROUND THEMES</Text>
                             <Text style={styles.subtitle}>High-quality 4K Nature Photography</Text>
                         </View>
-                        <TouchableOpacity onPress={onClose} style={styles.closeButton}>
+                        <TouchableOpacity
+                            onPress={onClose}
+                            style={styles.closeButton}
+                            accessibilityRole="button"
+                            accessibilityLabel="Close"
+                        >
                             <Ionicons name="close" size={24} color={Colors.text.primary} />
                         </TouchableOpacity>
                     </View>
@@ -120,6 +128,9 @@ const BackgroundThemePicker: React.FC<BackgroundThemePickerProps> = ({
                             <TouchableOpacity
                                 style={[styles.categoryPill, activeCategory === 'all' && styles.categoryPillActive]}
                                 onPress={() => setActiveCategory('all')}
+                                accessibilityRole="tab"
+                                accessibilityLabel="All categories"
+                                accessibilityState={{ selected: activeCategory === 'all' }}
                             >
                                 <Text style={[styles.categoryLabel, activeCategory === 'all' && styles.categoryLabelActive]}>
                                     ALL
@@ -130,6 +141,9 @@ const BackgroundThemePicker: React.FC<BackgroundThemePickerProps> = ({
                                     key={cat.id}
                                     style={[styles.categoryPill, activeCategory === cat.id && styles.categoryPillActive]}
                                     onPress={() => setActiveCategory(cat.id)}
+                                    accessibilityRole="tab"
+                                    accessibilityLabel={cat.label}
+                                    accessibilityState={{ selected: activeCategory === cat.id }}
                                 >
                                     <Text style={styles.categoryIcon}>{cat.icon}</Text>
                                     <Text style={[styles.categoryLabel, activeCategory === cat.id && styles.categoryLabelActive]}>
@@ -144,6 +158,9 @@ const BackgroundThemePicker: React.FC<BackgroundThemePickerProps> = ({
                     <TouchableOpacity
                         style={[styles.defaultOption, !selectedThemeId && styles.themeItemActive]}
                         onPress={() => onSelectTheme(null)}
+                        accessibilityRole="button"
+                        accessibilityLabel="Default, atmospheric dark gradient"
+                        accessibilityState={{ selected: !selectedThemeId }}
                     >
                         <View style={styles.defaultDot} />
                         <Text style={styles.defaultLabel}>Default (Atmospheric Dark Gradient)</Text>
@@ -160,7 +177,12 @@ const BackgroundThemePicker: React.FC<BackgroundThemePickerProps> = ({
                         showsVerticalScrollIndicator={false}
                     />
 
-                    <TouchableOpacity style={styles.doneButton} onPress={onClose}>
+                    <TouchableOpacity
+                        style={styles.doneButton}
+                        onPress={onClose}
+                        accessibilityRole="button"
+                        accessibilityLabel="Done"
+                    >
                         <Text style={styles.doneButtonText}>DONE</Text>
                     </TouchableOpacity>
                 </View>

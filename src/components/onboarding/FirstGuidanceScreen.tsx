@@ -234,7 +234,13 @@ export default function FirstGuidanceScreen({ isActive, onNext }: Props) {
         </Animated.Text>
 
         <Animated.View style={[styles.ctaWrap, { opacity: ctaOpacity }]}>
-          <TouchableOpacity style={styles.ctaBtn} activeOpacity={0.85} onPress={onNext}>
+          <TouchableOpacity
+            style={styles.ctaBtn}
+            activeOpacity={0.85}
+            onPress={onNext}
+            accessibilityRole="button"
+            accessibilityLabel="Continue"
+          >
             <LinearGradient
               colors={['#E8C84A', '#B8860B']}
               style={styles.ctaBtnGradient}

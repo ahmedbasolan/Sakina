@@ -283,7 +283,12 @@ export default function PrayerTimesScreen({ navigation }: { navigation: any }) {
             <View style={styles.errorContainer}>
               <Ionicons name="location-outline" size={44} color="rgba(176, 196, 215, 0.6)" />
               <Text style={styles.errorText}>No location set</Text>
-              <TouchableOpacity style={styles.retryButton} onPress={() => setShowLocationPicker(true)}>
+              <TouchableOpacity
+                style={styles.retryButton}
+                onPress={() => setShowLocationPicker(true)}
+                accessibilityRole="button"
+                accessibilityLabel="Set location"
+              >
                 <Text style={styles.retryButtonText}>Set Location</Text>
               </TouchableOpacity>
             </View>

@@ -75,6 +75,9 @@ function MoodChip({
       onPress={onPress}
       activeOpacity={0.75}
       style={[styles.chip, isSelected && { borderColor: dotColor, backgroundColor: `${dotColor}18` }]}
+      accessibilityRole="button"
+      accessibilityLabel={`${mood}, ${count} verses`}
+      accessibilityState={{ selected: isSelected }}
     >
       <View style={[styles.chipDot, { backgroundColor: dotColor }]} />
       <Text style={[styles.chipLabel, isSelected && { color: Colors.text.primary }]}>
@@ -91,7 +94,13 @@ function VerseCard({ verse }: { verse: Content }) {
   const [expanded, setExpanded] = useState(false);
 
   return (
-    <TouchableOpacity activeOpacity={0.88} onPress={() => setExpanded(!expanded)}>
+    <TouchableOpacity
+      activeOpacity={0.88}
+      onPress={() => setExpanded(!expanded)}
+      accessibilityRole="button"
+      accessibilityLabel={verse.source}
+      accessibilityState={{ expanded }}
+    >
       <BlurView intensity={12} tint="dark" style={styles.card}>
         <View style={styles.cardInner}>
           <Text style={styles.cardSource}>{verse.source.toUpperCase()}</Text>
@@ -232,7 +241,13 @@ export default function QuranLibraryScreen({ navigation }: { navigation: any }) 
       </View>
 
       <Animated.View style={[styles.header, { paddingTop: insets.top + Spacing.lg }, { opacity: fadeAnim }]}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          style={styles.backButton}
+          accessibilityRole="button"
+          accessibilityLabel="Go back"
+          hitSlop={{ top: 12, right: 12, bottom: 12, left: 12 }}
+        >
           <Svg width={20} height={20} viewBox="0 0 24 24">
             <Path
               d="M19 12H5M12 19l-7-7 7-7"

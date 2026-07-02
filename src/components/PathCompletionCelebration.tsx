@@ -379,6 +379,8 @@ export default function PathCompletionCelebration({
             style={StyleSheet.absoluteFill}
             activeOpacity={1}
             onPress={handleBackToJourney}
+            accessibilityRole="button"
+            accessibilityLabel="Dismiss and return to journey"
           />
         </Animated.View>
 
@@ -522,6 +524,8 @@ export default function PathCompletionCelebration({
                     ]}
                     onPress={handleContinue}
                     activeOpacity={0.85}
+                    accessibilityRole="button"
+                    accessibilityLabel={nextStep ? `Continue to day ${nextStep.day}` : 'Finish journey'}
                   >
                     <Text style={[styles.continueButtonText, { color: CARD_BG }]}>
                       {nextStep ? `Continue to Day ${nextStep.day}` : 'Finish journey'}
@@ -535,6 +539,8 @@ export default function PathCompletionCelebration({
                       style={styles.secondaryButton}
                       onPress={handleBackToJourney}
                       activeOpacity={0.8}
+                      accessibilityRole="button"
+                      accessibilityLabel="Back to journey"
                     >
                       <Text style={styles.secondaryButtonText}>Back to journey</Text>
                     </TouchableOpacity>
@@ -544,6 +550,8 @@ export default function PathCompletionCelebration({
                     style={styles.shareButton}
                     onPress={handleShare}
                     activeOpacity={0.8}
+                    accessibilityRole="button"
+                    accessibilityLabel="Share progress"
                   >
                     <MaterialCommunityIcons
                       name="share-variant-outline"

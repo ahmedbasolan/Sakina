@@ -462,6 +462,8 @@ export default function SurahReaderScreen({ route, navigation }: Props) {
           onPress={() => navigation.goBack()}
           style={styles.backBtn}
           hitSlop={{ top: 12, right: 12, bottom: 12, left: 12 }}
+          accessibilityRole="button"
+          accessibilityLabel="Go back"
         >
           <Svg width={20} height={20} viewBox="0 0 24 24">
             <Path
@@ -492,12 +494,19 @@ export default function SurahReaderScreen({ route, navigation }: Props) {
             Continue from verse {verses[resumeIndex]?.numberInSurah}
           </Text>
           <View style={styles.resumeActions}>
-            <TouchableOpacity onPress={handleResume} style={styles.resumeBtn}>
+            <TouchableOpacity
+              onPress={handleResume}
+              style={styles.resumeBtn}
+              accessibilityRole="button"
+              accessibilityLabel="Jump to your last read verse"
+            >
               <Text style={styles.resumeBtnText}>Jump there</Text>
             </TouchableOpacity>
             <TouchableOpacity
               onPress={() => setResumeIndex(null)}
               hitSlop={{ top: 8, right: 8, bottom: 8, left: 8 }}
+              accessibilityRole="button"
+              accessibilityLabel="Dismiss resume banner"
             >
               <MaterialCommunityIcons
                 name="close"
@@ -527,7 +536,12 @@ export default function SurahReaderScreen({ route, navigation }: Props) {
           />
           <Text style={styles.errorTitle}>No Connection</Text>
           <Text style={styles.errorSub}>{error}</Text>
-          <TouchableOpacity style={styles.retryBtn} onPress={loadAll}>
+          <TouchableOpacity
+            style={styles.retryBtn}
+            onPress={loadAll}
+            accessibilityRole="button"
+            accessibilityLabel="Try again"
+          >
             <Text style={styles.retryText}>Try Again</Text>
           </TouchableOpacity>
         </View>
@@ -602,6 +616,9 @@ export default function SurahReaderScreen({ route, navigation }: Props) {
               style={styles.reflectionHeader}
               onPress={toggleReflection}
               activeOpacity={0.75}
+              accessibilityRole="button"
+              accessibilityLabel="Context"
+              accessibilityState={{ expanded: reflectionOpen }}
             >
               <View style={styles.reflectionHeaderLeft}>
                 <Ionicons name="book-outline" size={16} color={GOLD} />
@@ -655,7 +672,9 @@ export default function SurahReaderScreen({ route, navigation }: Props) {
                 onPress={handleBookmark}
                 style={styles.pillBtn}
                 hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                accessibilityRole="button"
                 accessibilityLabel={isBookmarked ? 'Remove bookmark' : 'Save verse'}
+                accessibilityState={{ selected: isBookmarked }}
               >
                 <Ionicons
                   name={isBookmarked ? 'bookmark' : 'bookmark-outline'}
@@ -674,6 +693,7 @@ export default function SurahReaderScreen({ route, navigation }: Props) {
                 onPress={handleShare}
                 style={styles.pillBtn}
                 hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                accessibilityRole="button"
                 accessibilityLabel="Share verse"
               >
                 <Ionicons name="share-outline" size={22} color="rgba(245,237,227,0.7)" />
@@ -708,6 +728,9 @@ export default function SurahReaderScreen({ route, navigation }: Props) {
               disabled={atStart}
               style={[styles.navBtn, atStart && styles.navBtnOff]}
               hitSlop={{ top: 8, bottom: 8, left: 16, right: 16 }}
+              accessibilityRole="button"
+              accessibilityLabel="Previous verse"
+              accessibilityState={{ disabled: atStart }}
             >
               <Ionicons
                 name="chevron-back"
@@ -725,6 +748,9 @@ export default function SurahReaderScreen({ route, navigation }: Props) {
               disabled={atEnd}
               style={[styles.navBtn, atEnd && styles.navBtnOff]}
               hitSlop={{ top: 8, bottom: 8, left: 16, right: 16 }}
+              accessibilityRole="button"
+              accessibilityLabel="Next verse"
+              accessibilityState={{ disabled: atEnd }}
             >
               <Ionicons
                 name="chevron-forward"

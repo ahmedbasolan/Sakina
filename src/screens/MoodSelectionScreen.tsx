@@ -188,6 +188,9 @@ function MoodCard({ mood, onPress, index }: { mood: typeof MOODS[0]; onPress: ()
         style={[styles.moodCard, { backgroundColor: mood.bg, borderColor: mood.border }]}
         onPress={onPress}
         activeOpacity={0.8}
+        accessibilityRole="button"
+        accessibilityLabel={`${mood.label} — ${mood.description}`}
+        accessibilityHint="Double tap to receive spiritual guidance for this mood"
       >
         {/* Arabic name top-right */}
         <Text style={[styles.arabicName, { color: mood.color }]}>{mood.arabic}</Text>
@@ -306,6 +309,8 @@ export default function MoodSelectionScreen({ navigation }: any) {
         <TouchableOpacity
           onPress={() => navigation.goBack()}
           hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+          accessibilityRole="button"
+          accessibilityLabel="Go back"
         >
           <Svg width={22} height={22} viewBox="0 0 24 24" fill="none">
             <Path

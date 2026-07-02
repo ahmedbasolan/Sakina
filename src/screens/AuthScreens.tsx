@@ -382,7 +382,12 @@ export function LoginScreen({ navigation, onLogin }: AuthScreenProps) {
               onChangeText={setPassword}
               secureTextEntry={!showPassword}
               trailing={
-                <TouchableOpacity onPress={() => setShowPassword(!showPassword)} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
+                <TouchableOpacity
+                  onPress={() => setShowPassword(!showPassword)}
+                  hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                  accessibilityRole="button"
+                  accessibilityLabel={showPassword ? 'Hide password' : 'Show password'}
+                >
                   {showPassword ? (
                     <EyeOffIcon size={18} color="rgba(245, 237, 227, 0.4)" />
                   ) : (
@@ -392,11 +397,23 @@ export function LoginScreen({ navigation, onLogin }: AuthScreenProps) {
               }
             />
 
-            <TouchableOpacity onPress={handleForgotPassword} style={styles.forgotBtn}>
+            <TouchableOpacity
+              onPress={handleForgotPassword}
+              style={styles.forgotBtn}
+              accessibilityRole="button"
+              accessibilityLabel="Forgot password?"
+            >
               <Text style={styles.forgotText}>Forgot password?</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity activeOpacity={0.85} onPress={handleSignIn} disabled={isLoading}>
+            <TouchableOpacity
+              activeOpacity={0.85}
+              onPress={handleSignIn}
+              disabled={isLoading}
+              accessibilityRole="button"
+              accessibilityLabel="Sign in"
+              accessibilityState={{ disabled: isLoading, busy: isLoading }}
+            >
               <LinearGradient colors={['#E8C84A', '#B8860B']} style={styles.primaryBtn}>
                 {isLoading ? (
                   <ActivityIndicator color="#0C1A2E" />
@@ -414,6 +431,9 @@ export function LoginScreen({ navigation, onLogin }: AuthScreenProps) {
                 activeOpacity={0.8}
                 onPress={handleGoogleAuth}
                 disabled={isLoading}
+                accessibilityRole="button"
+                accessibilityLabel="Continue with Google"
+                accessibilityState={{ disabled: isLoading }}
               >
                 <GoogleIcon size={18} />
                 <Text style={styles.socialBtnText}>Google</Text>
@@ -424,6 +444,9 @@ export function LoginScreen({ navigation, onLogin }: AuthScreenProps) {
                   activeOpacity={0.8}
                   onPress={handleAppleAuth}
                   disabled={isLoading}
+                  accessibilityRole="button"
+                  accessibilityLabel="Continue with Apple"
+                  accessibilityState={{ disabled: isLoading }}
                 >
                   <AppleIcon size={18} fill="#F5EDE3" />
                   <Text style={styles.socialBtnText}>Apple</Text>
@@ -431,7 +454,13 @@ export function LoginScreen({ navigation, onLogin }: AuthScreenProps) {
               )}
             </View>
 
-            <TouchableOpacity style={styles.guestBtn} activeOpacity={0.7} onPress={handleGuestMode}>
+            <TouchableOpacity
+              style={styles.guestBtn}
+              activeOpacity={0.7}
+              onPress={handleGuestMode}
+              accessibilityRole="button"
+              accessibilityLabel="Continue as guest"
+            >
               <Text style={styles.guestBtnText}>Continue as Guest</Text>
             </TouchableOpacity>
           </Animated.View>
@@ -439,7 +468,11 @@ export function LoginScreen({ navigation, onLogin }: AuthScreenProps) {
           {/* Footer link */}
           <Animated.View style={[styles.footerRow, { opacity: footerOpacity }]}>
             <Text style={styles.footerText}>Don't have an account? </Text>
-            <TouchableOpacity onPress={() => navigation.navigate('SignUp')}>
+            <TouchableOpacity
+              onPress={() => navigation.navigate('SignUp')}
+              accessibilityRole="button"
+              accessibilityLabel="Create an account"
+            >
               <Text style={styles.footerLink}>Create one</Text>
             </TouchableOpacity>
           </Animated.View>
@@ -646,7 +679,12 @@ export function SignUpScreen({ navigation, onSignUp }: AuthScreenProps) {
               onChangeText={setPassword}
               secureTextEntry={!showPassword}
               trailing={
-                <TouchableOpacity onPress={() => setShowPassword(!showPassword)} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
+                <TouchableOpacity
+                  onPress={() => setShowPassword(!showPassword)}
+                  hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                  accessibilityRole="button"
+                  accessibilityLabel={showPassword ? 'Hide password' : 'Show password'}
+                >
                   {showPassword ? (
                     <EyeOffIcon size={18} color="rgba(245, 237, 227, 0.4)" />
                   ) : (
@@ -661,6 +699,9 @@ export function SignUpScreen({ navigation, onSignUp }: AuthScreenProps) {
               style={styles.checkboxRow}
               onPress={() => setAgreeTerms(!agreeTerms)}
               activeOpacity={0.7}
+              accessibilityRole="checkbox"
+              accessibilityLabel="I agree to the Terms of Service and Privacy Policy"
+              accessibilityState={{ checked: agreeTerms }}
             >
               <View style={[styles.checkbox, agreeTerms && styles.checkboxChecked]}>
                 {agreeTerms && <CheckIcon size={14} color="#0C1A2E" />}
@@ -679,7 +720,14 @@ export function SignUpScreen({ navigation, onSignUp }: AuthScreenProps) {
               </Text>
             </TouchableOpacity>
 
-            <TouchableOpacity activeOpacity={0.85} disabled={!canSubmit} onPress={handleCreateAccount}>
+            <TouchableOpacity
+              activeOpacity={0.85}
+              disabled={!canSubmit}
+              onPress={handleCreateAccount}
+              accessibilityRole="button"
+              accessibilityLabel="Create account"
+              accessibilityState={{ disabled: !canSubmit, busy: isLoading }}
+            >
               <LinearGradient
                 colors={canSubmit ? ['#E8C84A', '#B8860B'] : ['rgba(212, 175, 55, 0.15)', 'rgba(212, 175, 55, 0.08)']}
                 style={[styles.primaryBtn, !canSubmit && styles.primaryBtnDisabled]}
@@ -702,6 +750,9 @@ export function SignUpScreen({ navigation, onSignUp }: AuthScreenProps) {
                 activeOpacity={0.8}
                 onPress={handleGoogleAuth}
                 disabled={isLoading}
+                accessibilityRole="button"
+                accessibilityLabel="Sign up with Google"
+                accessibilityState={{ disabled: isLoading }}
               >
                 <GoogleIcon size={18} />
                 <Text style={styles.socialBtnText}>Google</Text>
@@ -712,6 +763,9 @@ export function SignUpScreen({ navigation, onSignUp }: AuthScreenProps) {
                   activeOpacity={0.8}
                   onPress={handleAppleAuth}
                   disabled={isLoading}
+                  accessibilityRole="button"
+                  accessibilityLabel="Sign up with Apple"
+                  accessibilityState={{ disabled: isLoading }}
                 >
                   <AppleIcon size={18} fill="#F5EDE3" />
                   <Text style={styles.socialBtnText}>Apple</Text>
@@ -719,7 +773,13 @@ export function SignUpScreen({ navigation, onSignUp }: AuthScreenProps) {
               )}
             </View>
 
-            <TouchableOpacity style={styles.guestBtn} activeOpacity={0.7} onPress={handleGuestMode}>
+            <TouchableOpacity
+              style={styles.guestBtn}
+              activeOpacity={0.7}
+              onPress={handleGuestMode}
+              accessibilityRole="button"
+              accessibilityLabel="Continue as guest"
+            >
               <Text style={styles.guestBtnText}>Continue as Guest</Text>
             </TouchableOpacity>
           </Animated.View>
@@ -727,7 +787,11 @@ export function SignUpScreen({ navigation, onSignUp }: AuthScreenProps) {
           {/* Footer */}
           <Animated.View style={[styles.footerRow, { opacity: footerOpacity }]}>
             <Text style={styles.footerText}>Already have an account? </Text>
-            <TouchableOpacity onPress={() => navigation.navigate('Login')}>
+            <TouchableOpacity
+              onPress={() => navigation.navigate('Login')}
+              accessibilityRole="button"
+              accessibilityLabel="Sign in"
+            >
               <Text style={styles.footerLink}>Sign in</Text>
             </TouchableOpacity>
           </Animated.View>

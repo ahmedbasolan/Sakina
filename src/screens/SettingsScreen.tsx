@@ -70,6 +70,9 @@ const SettingRow = ({
     onPress={onPress}
     activeOpacity={onPress && !disabled ? 0.7 : 1}
     disabled={disabled}
+    accessibilityRole={showToggle ? undefined : 'button'}
+    accessibilityLabel={label}
+    accessibilityState={{ disabled: !!disabled }}
   >
     <View style={styles.rowLeft}>
       {icon && (
@@ -124,7 +127,13 @@ const ProfileCard = ({ name, email, isGuest, onSignIn }: ProfileCardProps) => {
 
   if (isGuest) {
     return (
-      <TouchableOpacity style={styles.profileCard} onPress={onSignIn} activeOpacity={0.8}>
+      <TouchableOpacity
+        style={styles.profileCard}
+        onPress={onSignIn}
+        activeOpacity={0.8}
+        accessibilityRole="button"
+        accessibilityLabel="Guest mode — sign in to sync your progress"
+      >
         <View style={[styles.avatar, styles.avatarGuest]}>
           <Ionicons name="person-outline" size={24} color="rgba(240,220,190,0.45)" />
         </View>
@@ -376,6 +385,9 @@ export default function SettingsScreen() {
             style={styles.statCard}
             onPress={() => navigation.navigate('MoodHistory')}
             activeOpacity={0.7}
+            accessibilityRole="button"
+            accessibilityLabel={`Streak — ${streakDays} days`}
+            accessibilityHint="Double tap to view mood history"
           >
             <Icon name="flame" size={26} color={Colors.accent.primary} />
             <Text style={styles.statValue}>{streakDays}</Text>
@@ -386,6 +398,9 @@ export default function SettingsScreen() {
             style={styles.statCard}
             onPress={() => navigation.navigate('Journal')}
             activeOpacity={0.7}
+            accessibilityRole="button"
+            accessibilityLabel={`Reflections — ${reflectionCount}`}
+            accessibilityHint="Double tap to open your journal"
           >
             <Icon name="chat" size={26} color="rgba(180, 130, 220, 0.9)" />
             <Text style={styles.statValue}>{reflectionCount}</Text>
@@ -396,6 +411,9 @@ export default function SettingsScreen() {
             style={styles.statCard}
             onPress={() => navigation.navigate('MoodHistory')}
             activeOpacity={0.7}
+            accessibilityRole="button"
+            accessibilityLabel={`Sessions — ${totalSessions}`}
+            accessibilityHint="Double tap to view mood history"
           >
             <Icon name="chart" size={26} color="rgba(90, 160, 220, 0.9)" />
             <Text style={styles.statValue}>{totalSessions}</Text>

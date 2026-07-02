@@ -24,11 +24,12 @@ interface DisplayPreferencesModalProps {
   onOpenBackgroundPicker: () => void;
 }
 
-const Toggle: React.FC<{ value: boolean; onPress: () => void }> = ({ value, onPress }) => (
+const Toggle: React.FC<{ value: boolean; onPress: () => void; label?: string }> = ({ value, onPress, label }) => (
   <TouchableOpacity
     onPress={onPress}
     style={[styles.toggleBase, value && styles.toggleActive]}
     accessibilityRole="switch"
+    accessibilityLabel={label}
     accessibilityState={{ checked: value }}
   >
     <View style={[styles.toggleThumb, value && styles.toggleThumbActive]} />
@@ -49,13 +50,18 @@ const DisplayPreferencesModal: React.FC<DisplayPreferencesModalProps> = ({
 
   return (
     <Modal visible={isVisible} transparent animationType="fade" onRequestClose={onClose}>
-      <TouchableWithoutFeedback onPress={onClose}>
+      <TouchableWithoutFeedback onPress={onClose} accessibilityRole="button" accessibilityLabel="Dismiss reading options">
         <View style={styles.overlay}>
           <TouchableWithoutFeedback>
             <View style={[styles.sheet, { paddingBottom: insets.bottom + Spacing.xl }]}>
               <View style={styles.header}>
                 <Text style={styles.title}>READING OPTIONS</Text>
-                <TouchableOpacity onPress={onClose} style={styles.closeButton}>
+                <TouchableOpacity
+                  onPress={onClose}
+                  style={styles.closeButton}
+                  accessibilityRole="button"
+                  accessibilityLabel="Close"
+                >
                   <Ionicons name="close" size={24} color={Colors.text.primary} />
                 </TouchableOpacity>
               </View>
@@ -67,6 +73,9 @@ const DisplayPreferencesModal: React.FC<DisplayPreferencesModalProps> = ({
                   <TouchableOpacity
                     style={[styles.optionButton, preferences.primaryLanguage === 'english' && styles.optionButtonActive]}
                     onPress={() => setLanguage('english')}
+                    accessibilityRole="button"
+                    accessibilityLabel="English"
+                    accessibilityState={{ selected: preferences.primaryLanguage === 'english' }}
                   >
                     <Ionicons
                       name="text-outline"
@@ -81,6 +90,9 @@ const DisplayPreferencesModal: React.FC<DisplayPreferencesModalProps> = ({
                   <TouchableOpacity
                     style={[styles.optionButton, preferences.primaryLanguage === 'arabic' && styles.optionButtonActive]}
                     onPress={() => setLanguage('arabic')}
+                    accessibilityRole="button"
+                    accessibilityLabel="Arabic"
+                    accessibilityState={{ selected: preferences.primaryLanguage === 'arabic' }}
                   >
                     <Text style={[styles.arabicIcon, preferences.primaryLanguage === 'arabic' && styles.arabicIconActive]}>
                       ع
@@ -102,6 +114,7 @@ const DisplayPreferencesModal: React.FC<DisplayPreferencesModalProps> = ({
                   <Toggle
                     value={preferences.autoPlayAudio}
                     onPress={() => onUpdatePreference({ autoPlayAudio: !preferences.autoPlayAudio })}
+                    label="Auto-play recitation"
                   />
                 </View>
 
@@ -113,6 +126,7 @@ const DisplayPreferencesModal: React.FC<DisplayPreferencesModalProps> = ({
                   <Toggle
                     value={preferences.showTransliteration}
                     onPress={() => onUpdatePreference({ showTransliteration: !preferences.showTransliteration })}
+                    label="Transliteration"
                   />
                 </View>
               </View>
@@ -120,7 +134,13 @@ const DisplayPreferencesModal: React.FC<DisplayPreferencesModalProps> = ({
               {/* ── Background (premium) ── */}
               <View style={styles.section}>
                 <Text style={styles.sectionTitle}>BACKGROUND</Text>
-                <TouchableOpacity style={styles.backgroundRow} onPress={onOpenBackgroundPicker} activeOpacity={0.8}>
+                <TouchableOpacity
+                  style={styles.backgroundRow}
+                  onPress={onOpenBackgroundPicker}
+                  activeOpacity={0.8}
+                  accessibilityRole="button"
+                  accessibilityLabel={`Background, ${selectedThemeName ?? 'Default'}${!isPremium ? ', premium' : ''}`}
+                >
                   <Ionicons name="image-outline" size={20} color={Colors.accent.primary} />
                   <Text style={styles.backgroundValue} numberOfLines={1}>
                     {selectedThemeName ?? 'Default'}
@@ -135,7 +155,12 @@ const DisplayPreferencesModal: React.FC<DisplayPreferencesModalProps> = ({
                 </TouchableOpacity>
               </View>
 
-              <TouchableOpacity style={styles.doneButton} onPress={onClose}>
+              <TouchableOpacity
+                style={styles.doneButton}
+                onPress={onClose}
+                accessibilityRole="button"
+                accessibilityLabel="Done"
+              >
                 <Text style={styles.doneButtonText}>DONE</Text>
               </TouchableOpacity>
             </View>
