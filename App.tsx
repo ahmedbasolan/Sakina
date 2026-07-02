@@ -32,6 +32,9 @@ import { AuthProvider } from './src/context/AuthContext';
 import { ThemeProvider, useTheme } from './src/context/ThemeContext';
 import posthog, { loadAnalyticsConsent } from './src/config/posthog';
 import { redactPII } from './src/services/errorLoggingService';
+// Side-effect import: defines the notification top-up background task at
+// module scope so headless OS launches (no React tree) can execute it.
+import { registerNotificationTopUpTask } from './src/services/notificationTopUpTask';
 
 // ── Global error handlers ─────────────────────────────────────────────────
 // Capture unhandled JS errors and promise rejections before they silently vanish.
@@ -162,6 +165,9 @@ export default function App() {
       try {
         await initializeDatabase();
         await loadAnalyticsConsent();
+        // Fire-and-forget: keeps prayer/spiritual reminders topped up when
+        // the app stays closed for days. Self-catching — never blocks startup.
+        registerNotificationTopUpTask();
         setIsInitialized(true);
       } catch (error) {
         console.error('Database initialization failed:', error);
