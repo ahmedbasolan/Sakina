@@ -85,27 +85,9 @@ export class SubscriptionService {
     return false;
   }
 
-  async cancelSubscription(): Promise<boolean> {
-    // Users cancel via the App Store / Play Store settings — there is no API call
-    // for this on the client side. RC will automatically detect the cancellation
-    // and stop renewing the entitlement. We just mark willRenew=false locally.
-    try {
-      // Supabase profile has no will_renew field — cancellation is tracked locally only.
-      await dbQuery(async (db) => {
-        await db.runAsync(
-          `UPDATE user_subscription SET willRenew = 0, updatedAt = ? WHERE id = 'user_subscription'`,
-          [Date.now()],
-        );
-      });
-      if (this.subscriptionState) {
-        this.subscriptionState.willRenew = false;
-      }
-      return true;
-    } catch (error) {
-      console.error('Error cancelling subscription:', error);
-      return false;
-    }
-  }
+  // NOTE: there is deliberately no cancelSubscription() — users cancel via
+  // App Store / Play Store settings and RevenueCat detects it; any future UI
+  // must point them there rather than pretend the app can cancel.
 
   async resetToFreeTier(): Promise<void> {
     try {
