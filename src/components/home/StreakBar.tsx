@@ -36,7 +36,13 @@ export function StreakBar({ streakDays, fadeAnim, slideAnim, onPress }: StreakBa
   const weekDots = useWeekDots(streakDays);
   return (
     <Animated.View style={[styles.streakSection, { opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
-      <TouchableOpacity activeOpacity={0.9} onPress={onPress}>
+      <TouchableOpacity
+        activeOpacity={0.9}
+        onPress={onPress}
+        accessibilityRole="button"
+        accessibilityLabel={streakDays === 0 ? 'Begin your streak today' : `${streakDays}-day streak`}
+        accessibilityHint="Double tap to view your streak history"
+      >
         <LinearGradient colors={[Colors.background.secondary, Colors.background.primary]} style={styles.streakBar}>
           {/* Crescent icon + streak info */}
           <View style={styles.streakLeft}>

@@ -358,6 +358,8 @@ export default function MoodHistoryCalendarScreen({ onBack }: MoodHistoryCalenda
           onPress={handleBack}
           activeOpacity={0.7}
           hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+          accessibilityRole="button"
+          accessibilityLabel="Go back"
         >
           <MaterialCommunityIcons name="arrow-left" size={22} color="#F0E6D3" />
           <Text style={styles.backText}>Back</Text>
@@ -442,6 +444,8 @@ export default function MoodHistoryCalendarScreen({ onBack }: MoodHistoryCalenda
                 style={styles.monthArrow}
                 onPress={() => handleMonthChange(-1)}
                 activeOpacity={0.7}
+                accessibilityRole="button"
+                accessibilityLabel="Previous month"
               >
                 <MaterialCommunityIcons name="chevron-left" size={24} color="#6A90B0" />
               </TouchableOpacity>
@@ -454,6 +458,8 @@ export default function MoodHistoryCalendarScreen({ onBack }: MoodHistoryCalenda
                 style={styles.monthArrow}
                 onPress={() => handleMonthChange(1)}
                 activeOpacity={0.7}
+                accessibilityRole="button"
+                accessibilityLabel="Next month"
               >
                 <MaterialCommunityIcons name="chevron-right" size={24} color="#6A90B0" />
               </TouchableOpacity>
@@ -494,6 +500,9 @@ export default function MoodHistoryCalendarScreen({ onBack }: MoodHistoryCalenda
                     onPress={() => handleDayPress(dateStr)}
                     activeOpacity={entry ? 0.7 : 1}
                     disabled={!entry}
+                    accessibilityRole="button"
+                    accessibilityLabel={`${MONTH_NAMES[currentMonth.month]} ${day}${entry ? `, ${moodLabel(entry.mood)}` : ''}${isToday ? ', today' : ''}`}
+                    accessibilityState={{ disabled: !entry, selected: isSelected }}
                   >
                     <Text
                       style={[
@@ -533,6 +542,8 @@ export default function MoodHistoryCalendarScreen({ onBack }: MoodHistoryCalenda
                   }}
                   activeOpacity={0.7}
                   hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                  accessibilityRole="button"
+                  accessibilityLabel="Close day detail"
                 >
                   <MaterialCommunityIcons name="close" size={20} color="#6B8EAE" />
                 </TouchableOpacity>

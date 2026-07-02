@@ -59,7 +59,13 @@ export function ReflectionPrompt({ visible, onSave, onSkip }: ReflectionPromptPr
   return (
     <View style={StyleSheet.absoluteFill}>
       <Animated.View style={[styles.backdrop, { opacity: backdropOpacity }]}>
-        <TouchableOpacity style={StyleSheet.absoluteFill} onPress={onSkip} activeOpacity={1} />
+        <TouchableOpacity
+          style={StyleSheet.absoluteFill}
+          onPress={onSkip}
+          activeOpacity={1}
+          accessibilityRole="button"
+          accessibilityLabel="Dismiss reflection prompt"
+        />
       </Animated.View>
 
       <KeyboardAvoidingView
@@ -79,10 +85,20 @@ export function ReflectionPrompt({ visible, onSave, onSkip }: ReflectionPromptPr
             autoFocus
           />
           <View style={styles.actions}>
-            <TouchableOpacity onPress={onSkip} style={styles.skipBtn}>
+            <TouchableOpacity
+              onPress={onSkip}
+              style={styles.skipBtn}
+              accessibilityRole="button"
+              accessibilityLabel="Skip"
+            >
               <Text style={styles.skipText}>Skip</Text>
             </TouchableOpacity>
-            <TouchableOpacity onPress={handleSave} style={styles.saveBtn}>
+            <TouchableOpacity
+              onPress={handleSave}
+              style={styles.saveBtn}
+              accessibilityRole="button"
+              accessibilityLabel="Save to journal"
+            >
               <Text style={styles.saveText}>Save to Journal</Text>
             </TouchableOpacity>
           </View>

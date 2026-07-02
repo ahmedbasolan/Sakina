@@ -218,6 +218,9 @@ function SurahRow({
       style={[styles.surahRow, isLastRead && styles.surahRowLastRead]}
       onPress={onPress}
       activeOpacity={0.75}
+      accessibilityRole="button"
+      accessibilityLabel={`${surah.english}${isLastRead ? ', last read' : ''}, ${surah.verses} verses`}
+      accessibilityHint="Double tap to open this surah"
     >
       <View style={[styles.surahNumber, isLastRead && styles.surahNumberLastRead]}>
         <MaterialCommunityIcons
@@ -433,7 +436,12 @@ export default function LibraryScreen({ navigation }: any) {
             returnKeyType="search"
           />
           {searchQuery.length > 0 && (
-            <TouchableOpacity onPress={() => setSearchQuery('')}>
+            <TouchableOpacity
+              onPress={() => setSearchQuery('')}
+              accessibilityRole="button"
+              accessibilityLabel="Clear search"
+              hitSlop={{ top: 10, right: 10, bottom: 10, left: 10 }}
+            >
               <MaterialCommunityIcons
                 name="close-circle"
                 size={16}
@@ -446,12 +454,24 @@ export default function LibraryScreen({ navigation }: any) {
         {/* Tab switcher — same frosted treatment as the bottom nav pill */}
         <BlurView intensity={14} tint="dark" style={styles.tabSwitcher}>
           <Animated.View style={[styles.tabIndicator, { left: indicatorLeft }]} />
-          <TouchableOpacity style={styles.tabBtn} onPress={() => switchTab('saved')}>
+          <TouchableOpacity
+            style={styles.tabBtn}
+            onPress={() => switchTab('saved')}
+            accessibilityRole="tab"
+            accessibilityLabel="Saved verses"
+            accessibilityState={{ selected: activeTab === 'saved' }}
+          >
             <Text style={[styles.tabText, activeTab === 'saved' && styles.tabTextActive]}>
               SAVED VERSES
             </Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.tabBtn} onPress={() => switchTab('surahs')}>
+          <TouchableOpacity
+            style={styles.tabBtn}
+            onPress={() => switchTab('surahs')}
+            accessibilityRole="tab"
+            accessibilityLabel="All surahs"
+            accessibilityState={{ selected: activeTab === 'surahs' }}
+          >
             <Text style={[styles.tabText, activeTab === 'surahs' && styles.tabTextActive]}>
               ALL SURAHS
             </Text>
@@ -477,6 +497,8 @@ export default function LibraryScreen({ navigation }: any) {
             <TouchableOpacity
               style={styles.emptyAction}
               onPress={() => switchTab('surahs')}
+              accessibilityRole="button"
+              accessibilityLabel="Browse all surahs"
             >
               <Text style={styles.emptyActionText}>Browse All Surahs</Text>
               <MaterialCommunityIcons
@@ -522,7 +544,12 @@ export default function LibraryScreen({ navigation }: any) {
                 <Text style={styles.emptySub}>
                   Nothing matches “{searchQuery.trim()}”.{'\n'}Try a different name or number.
                 </Text>
-                <TouchableOpacity style={styles.emptyAction} onPress={() => setSearchQuery('')}>
+                <TouchableOpacity
+                  style={styles.emptyAction}
+                  onPress={() => setSearchQuery('')}
+                  accessibilityRole="button"
+                  accessibilityLabel="Clear search"
+                >
                   <Text style={styles.emptyActionText}>Clear Search</Text>
                   <MaterialCommunityIcons name="close" size={14} color={Colors.accent.primary} />
                 </TouchableOpacity>
@@ -558,7 +585,12 @@ export default function LibraryScreen({ navigation }: any) {
 
               {/* Continue Reading banner */}
               {readingProgress ? (
-              <TouchableOpacity style={styles.continueReadingCard} onPress={continueReading}>
+              <TouchableOpacity
+                style={styles.continueReadingCard}
+                onPress={continueReading}
+                accessibilityRole="button"
+                accessibilityLabel={`Continue reading ${readingProgress.surahName}, from verse ${readingProgress.verseIndex + 1}`}
+              >
                 <View style={styles.continueReadingLeft}>
                   <MaterialCommunityIcons
                     name="bookmark-check"

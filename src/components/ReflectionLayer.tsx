@@ -147,6 +147,8 @@ const ReflectionLayer: React.FC<ReflectionLayerProps> = ({
               style={[styles.saveButton, { backgroundColor: accentColor, shadowColor: accentColor }]}
               onPress={handleComplete}
               activeOpacity={0.8}
+              accessibilityRole="button"
+              accessibilityLabel={buttonText}
             >
               <Ionicons name="bookmark-outline" size={18} color={Colors.background.primary} />
               <Text style={styles.saveButtonText}>{buttonText.toUpperCase()}</Text>
@@ -156,6 +158,8 @@ const ReflectionLayer: React.FC<ReflectionLayerProps> = ({
               style={styles.skipButton}
               onPress={handleSkip}
               activeOpacity={0.7}
+              accessibilityRole="button"
+              accessibilityLabel="I'll reflect later"
             >
               <Text style={styles.skipText}>I'll reflect later</Text>
               <Ionicons name="arrow-forward" size={16} color={Colors.text.muted} />

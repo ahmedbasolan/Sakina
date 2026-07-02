@@ -39,6 +39,9 @@ const FloatingActionRow: React.FC<FloatingActionRowProps> = ({
             style={styles.actionButton}
             onPress={() => handleAction(onSave)}
             activeOpacity={0.7}
+            accessibilityRole="button"
+            accessibilityLabel={isSaved ? 'Saved' : 'Save'}
+            accessibilityState={{ selected: !!isSaved }}
           >
             <Ionicons
               name={isSaved ? 'heart' : 'heart-outline'}
@@ -54,6 +57,8 @@ const FloatingActionRow: React.FC<FloatingActionRowProps> = ({
             style={styles.actionButton}
             onPress={() => handleAction(onCheckAll)}
             activeOpacity={0.7}
+            accessibilityRole="button"
+            accessibilityLabel="Check all practice steps"
           >
             <Ionicons name="checkmark-done-outline" size={20} color={Colors.accent.primary} />
             <Text style={styles.actionLabel}>CHECK ALL</Text>
@@ -65,6 +70,8 @@ const FloatingActionRow: React.FC<FloatingActionRowProps> = ({
             style={styles.actionButton}
             onPress={() => handleAction(onSaveReflection)}
             activeOpacity={0.7}
+            accessibilityRole="button"
+            accessibilityLabel="Save reflection draft"
           >
             <Ionicons name="save-outline" size={20} color={Colors.accent.secondary} />
             <Text style={styles.actionLabel}>SAVE DRAFT</Text>
@@ -86,6 +93,8 @@ const FloatingActionRow: React.FC<FloatingActionRowProps> = ({
         style={styles.actionButton}
         onPress={() => handleAction(onShare)}
         activeOpacity={0.7}
+        accessibilityRole="button"
+        accessibilityLabel="Share"
       >
         <Ionicons name="share-outline" size={18} color={Colors.text.primary} />
         <Text style={styles.actionLabel}>SHARE</Text>

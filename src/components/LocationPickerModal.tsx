@@ -302,7 +302,7 @@ export const LocationPickerModal: React.FC<LocationPickerModalProps> = ({
         >
           <BlurView intensity={24} tint="dark" style={StyleSheet.absoluteFill} />
         </Animated.View>
-        <TouchableWithoutFeedback onPress={handleClose}>
+        <TouchableWithoutFeedback onPress={handleClose} accessibilityRole="button" accessibilityLabel="Dismiss location picker">
           <View style={StyleSheet.absoluteFill} />
         </TouchableWithoutFeedback>
         <KeyboardAvoidingView
@@ -325,6 +325,8 @@ export const LocationPickerModal: React.FC<LocationPickerModalProps> = ({
                     onPress={() => setMode('search')}
                     style={styles.backButton}
                     hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                    accessibilityRole="button"
+                    accessibilityLabel="Back to search"
                   >
                     <Ionicons name="arrow-back" size={18} color={Colors.accent.primary} />
                     <Text style={styles.backText}>Search</Text>
@@ -340,6 +342,8 @@ export const LocationPickerModal: React.FC<LocationPickerModalProps> = ({
                 onPress={handleClose}
                 style={styles.closeButton}
                 hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                accessibilityRole="button"
+                accessibilityLabel="Close"
               >
                 <Ionicons name="close" size={22} color="rgba(245, 237, 227, 0.7)" />
               </TouchableOpacity>
@@ -403,6 +407,8 @@ export const LocationPickerModal: React.FC<LocationPickerModalProps> = ({
                     <TouchableOpacity
                       onPress={() => setQuery('')}
                       hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                      accessibilityRole="button"
+                      accessibilityLabel="Clear search"
                     >
                       <Ionicons name="close-circle" size={16} color="rgba(245, 237, 227, 0.4)" />
                     </TouchableOpacity>
@@ -429,6 +435,8 @@ export const LocationPickerModal: React.FC<LocationPickerModalProps> = ({
                         <TouchableOpacity
                           style={styles.manualFooter}
                           onPress={() => setMode('manual')}
+                          accessibilityRole="button"
+                          accessibilityLabel="Can't find your city? Enter manually"
                         >
                           <Text style={styles.manualLink}>Can't find your city? Enter manually →</Text>
                         </TouchableOpacity>
@@ -437,7 +445,11 @@ export const LocationPickerModal: React.FC<LocationPickerModalProps> = ({
                   ) : (
                     <View style={styles.emptyState}>
                       <Text style={styles.emptyText}>No results for "{query}"</Text>
-                      <TouchableOpacity onPress={() => setMode('manual')}>
+                      <TouchableOpacity
+                        onPress={() => setMode('manual')}
+                        accessibilityRole="button"
+                        accessibilityLabel="Enter manually"
+                      >
                         <Text style={styles.manualLink}>Enter manually →</Text>
                       </TouchableOpacity>
                     </View>
@@ -491,6 +503,9 @@ export const LocationPickerModal: React.FC<LocationPickerModalProps> = ({
                     onPressOut={handleSavePressOut}
                     disabled={isLoading}
                     activeOpacity={0.85}
+                    accessibilityRole="button"
+                    accessibilityLabel="Save location"
+                    accessibilityState={{ disabled: isLoading }}
                   >
                     <LinearGradient
                       colors={['#E8C84A', '#B8860B']}

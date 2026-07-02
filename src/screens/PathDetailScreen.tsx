@@ -44,6 +44,10 @@ const LessonRow = ({ step, visual, isCompleted, isCurrent, isLocked, onPress }: 
       onPress={onPress}
       disabled={isLocked}
       activeOpacity={0.7}
+      accessibilityRole="button"
+      accessibilityLabel={`Day ${step.day}${isCurrent ? ', current' : ''}, ${step.title}`}
+      accessibilityHint={isLocked ? undefined : "Double tap to open this day's lesson"}
+      accessibilityState={{ disabled: isLocked, selected: isCompleted }}
     >
       <View style={styles.lessonCardHeader}>
         <View style={[
@@ -194,7 +198,13 @@ export const PathDetailScreen: React.FC = () => {
 
       {/* Header */}
       <View style={[styles.header, { paddingTop: insets.top + 10 }]}>
-        <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
+        <TouchableOpacity
+          style={styles.backButton}
+          onPress={() => navigation.goBack()}
+          accessibilityRole="button"
+          accessibilityLabel="Go back to Journeys"
+          hitSlop={{ top: 12, right: 12, bottom: 12, left: 12 }}
+        >
           <Ionicons name="chevron-back" size={20} color={Colors.text.muted} />
           <Text style={styles.backText}>Journeys</Text>
         </TouchableOpacity>
@@ -326,6 +336,8 @@ export const PathDetailScreen: React.FC = () => {
             <TouchableOpacity
               style={[styles.todayCard, { borderColor: visual.color }]}
               onPress={() => openDay(nextStep)}
+              accessibilityRole="button"
+              accessibilityLabel={`${completedDays === 0 ? 'Begin' : 'Continue'} day ${nextStepDay}, ${nextStep.title}`}
             >
               <View style={styles.todayCardLeft}>
                 <Text style={[styles.todayCardTitle, { color: Colors.text.primary }]}>

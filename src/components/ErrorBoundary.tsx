@@ -88,14 +88,21 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
           )}
           
           <View style={styles.buttonContainer}>
-            <TouchableOpacity style={styles.retryButton} onPress={this.handleRetry}>
+            <TouchableOpacity
+              style={styles.retryButton}
+              onPress={this.handleRetry}
+              accessibilityRole="button"
+              accessibilityLabel="Try again"
+            >
               <Text style={styles.retryText}>Try Again</Text>
             </TouchableOpacity>
-            
+
             {__DEV__ && (
-              <TouchableOpacity 
-                style={styles.detailsButton} 
+              <TouchableOpacity
+                style={styles.detailsButton}
                 onPress={this.handleViewErrorDetails}
+                accessibilityRole="button"
+                accessibilityLabel="Log error details"
               >
                 <Text style={styles.detailsText}>Log Details</Text>
               </TouchableOpacity>

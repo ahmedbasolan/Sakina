@@ -78,6 +78,8 @@ export const LocationResultRow = React.memo(function LocationResultRow({
         onPressIn={handlePressIn}
         onPressOut={handlePressOut}
         activeOpacity={0.7}
+        accessibilityRole="button"
+        accessibilityLabel={`${city}, ${country}`}
       >
         <Animated.View style={[styles.resultRow, { backgroundColor }]}>
           <Text style={styles.resultCity}>{city}</Text>

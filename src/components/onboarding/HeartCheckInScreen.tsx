@@ -263,6 +263,9 @@ export default function HeartCheckInScreen({ isActive, onNext }: Props) {
                 onPress={() => handleSelect(mood, i)}
                 disabled={!!selectedMood}
                 style={styles.cardTouch}
+                accessibilityRole="button"
+                accessibilityLabel={`${mood.label} — ${mood.sublabel}`}
+                accessibilityState={{ disabled: !!selectedMood }}
               >
                 <LinearGradient
                   colors={mood.gradientColors}

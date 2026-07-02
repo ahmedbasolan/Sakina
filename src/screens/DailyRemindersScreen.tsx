@@ -430,6 +430,8 @@ export default function DailyRemindersScreen({ onBack }: DailyRemindersScreenPro
             onPress={handleBack}
             style={styles.closeButton}
             hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+            accessibilityRole="button"
+            accessibilityLabel="Close"
           >
             <Text style={styles.closeIcon}>✕</Text>
           </TouchableOpacity>
@@ -449,11 +451,21 @@ export default function DailyRemindersScreen({ onBack }: DailyRemindersScreenPro
           <View style={styles.clockRow}>
             {/* Hour controls - Left side */}
             <View style={styles.sideControlGroup}>
-              <TouchableOpacity style={styles.timeButton} onPress={incrementHour}>
+              <TouchableOpacity
+                style={styles.timeButton}
+                onPress={incrementHour}
+                accessibilityRole="button"
+                accessibilityLabel="Increase hour"
+              >
                 <Text style={styles.timeButtonText}>▲</Text>
               </TouchableOpacity>
               <Text style={styles.timeLabel}>Hour</Text>
-              <TouchableOpacity style={styles.timeButton} onPress={decrementHour}>
+              <TouchableOpacity
+                style={styles.timeButton}
+                onPress={decrementHour}
+                accessibilityRole="button"
+                accessibilityLabel="Decrease hour"
+              >
                 <Text style={styles.timeButtonText}>▼</Text>
               </TouchableOpacity>
             </View>
@@ -467,6 +479,9 @@ export default function DailyRemindersScreen({ onBack }: DailyRemindersScreenPro
                   HapticsService.impactAsync('MEDIUM');
                   setPeriod('AM');
                 }}
+                accessibilityRole="button"
+                accessibilityLabel="AM"
+                accessibilityState={{ selected: period === 'AM' }}
               >
                 <Text style={[styles.meridiemText, period === 'AM' && styles.meridiemActiveText]}>
                   AM
@@ -554,6 +569,9 @@ export default function DailyRemindersScreen({ onBack }: DailyRemindersScreenPro
                   HapticsService.impactAsync('MEDIUM');
                   setPeriod('PM');
                 }}
+                accessibilityRole="button"
+                accessibilityLabel="PM"
+                accessibilityState={{ selected: period === 'PM' }}
               >
                 <Text style={[styles.meridiemText, period === 'PM' && styles.meridiemActiveText]}>
                   PM
@@ -563,11 +581,21 @@ export default function DailyRemindersScreen({ onBack }: DailyRemindersScreenPro
 
             {/* Minute controls - Right side */}
             <View style={styles.sideControlGroup}>
-              <TouchableOpacity style={styles.timeButton} onPress={incrementMinute}>
+              <TouchableOpacity
+                style={styles.timeButton}
+                onPress={incrementMinute}
+                accessibilityRole="button"
+                accessibilityLabel="Increase minute"
+              >
                 <Text style={styles.timeButtonText}>▲</Text>
               </TouchableOpacity>
               <Text style={styles.timeLabel}>Min</Text>
-              <TouchableOpacity style={styles.timeButton} onPress={decrementMinute}>
+              <TouchableOpacity
+                style={styles.timeButton}
+                onPress={decrementMinute}
+                accessibilityRole="button"
+                accessibilityLabel="Decrease minute"
+              >
                 <Text style={styles.timeButtonText}>▼</Text>
               </TouchableOpacity>
             </View>
@@ -585,6 +613,9 @@ export default function DailyRemindersScreen({ onBack }: DailyRemindersScreenPro
               style={[styles.toggleSwitch, isEnabled && styles.toggleSwitchActive]}
               onPress={handleToggle}
               activeOpacity={0.8}
+              accessibilityRole="switch"
+              accessibilityLabel="Daily guidance"
+              accessibilityState={{ checked: isEnabled }}
             >
               <Animated.View style={[styles.toggleKnob, isEnabled && styles.toggleKnobActive]} />
             </TouchableOpacity>
@@ -602,6 +633,9 @@ export default function DailyRemindersScreen({ onBack }: DailyRemindersScreenPro
               style={[styles.toggleSwitch, prayerEnabled && styles.toggleSwitchActive]}
               onPress={handlePrayerToggle}
               activeOpacity={0.8}
+              accessibilityRole="switch"
+              accessibilityLabel="Prayer times"
+              accessibilityState={{ checked: prayerEnabled }}
             >
               <Animated.View style={[styles.toggleKnob, prayerEnabled && styles.toggleKnobActive]} />
             </TouchableOpacity>
@@ -619,6 +653,9 @@ export default function DailyRemindersScreen({ onBack }: DailyRemindersScreenPro
               style={[styles.toggleSwitch, spiritualEnabled && styles.toggleSwitchActive]}
               onPress={handleSpiritualToggle}
               activeOpacity={0.8}
+              accessibilityRole="switch"
+              accessibilityLabel="Spiritual windows"
+              accessibilityState={{ checked: spiritualEnabled }}
             >
               <Animated.View style={[styles.toggleKnob, spiritualEnabled && styles.toggleKnobActive]} />
             </TouchableOpacity>
@@ -630,6 +667,9 @@ export default function DailyRemindersScreen({ onBack }: DailyRemindersScreenPro
             onPress={handleSetReminder}
             activeOpacity={0.8}
             disabled={isSaving}
+            accessibilityRole="button"
+            accessibilityLabel="Set reminder"
+            accessibilityState={{ disabled: isSaving }}
           >
             {isSaving ? (
               <ActivityIndicator color={Colors.text.primary} />

@@ -79,7 +79,12 @@ function ReflectionCard({ reflection, index, isLast }: { reflection: any; index:
 
   return (
     <Animated.View style={{ opacity: fadeAnim, transform: [{ translateY: slideAnim }] }}>
-      <TouchableOpacity activeOpacity={0.7} style={styles.entryRow}>
+      <TouchableOpacity
+        activeOpacity={0.7}
+        style={styles.entryRow}
+        accessibilityRole="button"
+        accessibilityLabel={`${reflection.title || 'Reflection'}, ${formatDate(reflection.createdAt || Date.now())}`}
+      >
         <View style={[styles.entryDot, { backgroundColor: moodColor }]} />
         <View style={styles.entryBody}>
           <View style={styles.entryTop}>
@@ -138,7 +143,13 @@ function NewReflectionModal({ visible, onClose, onSave }: {
       onRequestClose={onClose}
       onShow={() => setTimeout(() => bodyRef.current?.focus(), 100)}
     >
-      <TouchableOpacity style={styles.sheetBackdrop} activeOpacity={1} onPress={onClose} />
+      <TouchableOpacity
+        style={styles.sheetBackdrop}
+        activeOpacity={1}
+        onPress={onClose}
+        accessibilityRole="button"
+        accessibilityLabel="Dismiss new reflection"
+      />
       <KeyboardAvoidingView
         style={styles.sheetWrap}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -152,6 +163,7 @@ function NewReflectionModal({ visible, onClose, onSave }: {
               onPress={onClose}
               style={styles.sheetClose}
               hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+              accessibilityRole="button"
               accessibilityLabel="Close"
             >
               <Ionicons name="close" size={18} color={Colors.text.secondary} />
@@ -179,6 +191,9 @@ function NewReflectionModal({ visible, onClose, onSave }: {
                       backgroundColor: active ? `${m.color}16` : Colors.glass.light,
                     },
                   ]}
+                  accessibilityRole="button"
+                  accessibilityLabel={m.label}
+                  accessibilityState={{ selected: active }}
                 >
                   <Ionicons name={m.icon as any} size={14} color={m.color} />
                   <Text style={[styles.moodChipLabel, { color: m.color, opacity: active ? 1 : 0.7 }]}>
@@ -218,6 +233,9 @@ function NewReflectionModal({ visible, onClose, onSave }: {
               disabled={!bodyText.trim()}
               activeOpacity={0.9}
               style={[styles.sheetSaveBtn, !bodyText.trim() && { opacity: 0.4 }]}
+              accessibilityRole="button"
+              accessibilityLabel="Save reflection"
+              accessibilityState={{ disabled: !bodyText.trim() }}
             >
               <Text style={styles.sheetSaveText}>SAVE REFLECTION</Text>
             </TouchableOpacity>
@@ -315,7 +333,12 @@ export default function ReflectionHistoryScreen() {
         showsVerticalScrollIndicator={false}
       >
         {/* Daily prompt card */}
-        <TouchableOpacity activeOpacity={0.85} onPress={() => setShowModal(true)}>
+        <TouchableOpacity
+          activeOpacity={0.85}
+          onPress={() => setShowModal(true)}
+          accessibilityRole="button"
+          accessibilityLabel="Start writing a reflection"
+        >
           <BlurView intensity={14} tint="dark" style={styles.promptCard}>
             <LinearGradient
               colors={[`${Colors.accent.primary}14`, `${Colors.accent.primary}06`]}
