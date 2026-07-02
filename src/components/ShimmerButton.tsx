@@ -151,7 +151,7 @@ const styles = StyleSheet.create({
     fontSize: 17,
     letterSpacing: 1.5,
     fontWeight: '600',
-    color: '#0C1A2E',
+    color: Colors.background.secondary,
   },
   bandWrap: {
     alignItems: 'flex-start',

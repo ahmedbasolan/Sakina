@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { View, StyleSheet, Animated, Dimensions } from 'react-native';
 import { useReduceMotion } from '../hooks/useReduceMotion';
+import { Colors } from '../theme/DesignSystem';
 
 const { width, height } = Dimensions.get('window');
 const PARTICLE_COUNT = 6;
@@ -72,6 +73,6 @@ const styles = StyleSheet.create({
     width: 3,
     height: 3,
     borderRadius: 1.5,
-    backgroundColor: '#D4AF37',
+    backgroundColor: Colors.accent.primary,
   },
 });

@@ -417,7 +417,7 @@ const styles = StyleSheet.create({
   title: {
     fontFamily: Typography.fonts.serif,
     fontSize: 26,
-    color: '#F5EDE3',
+    color: Colors.text.primary,
     textAlign: 'center',
     letterSpacing: 0.3,
     textShadowColor: 'rgba(212, 175, 55, 0.25)',
@@ -453,7 +453,7 @@ const styles = StyleSheet.create({
     borderRadius: (RING_SIZE - 30) / 2,
     backgroundColor: 'rgba(8, 14, 26, 0.92)',
     borderWidth: 1,
-    borderColor: 'rgba(212, 175, 55, 0.15)',
+    borderColor: Colors.accent.glow,
   },
   innerGlow: {
     position: 'absolute',

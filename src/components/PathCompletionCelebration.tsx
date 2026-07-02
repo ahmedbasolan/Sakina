@@ -10,7 +10,7 @@ import {
   Share,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Typography } from '../theme/DesignSystem';
+import { Colors, Typography } from '../theme/DesignSystem';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { SpiritualPath, PathStep, UserPathProgress } from '../types';
@@ -245,7 +245,7 @@ export default function PathCompletionCelebration({
   step,
   userProgress,
   reflectionWritten = false,
-  accentColor = '#D4AF37',
+  accentColor = Colors.accent.primary,
   onContinue,
   onClose,
   onSupport,

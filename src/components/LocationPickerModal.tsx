@@ -345,7 +345,7 @@ export const LocationPickerModal: React.FC<LocationPickerModalProps> = ({
                 accessibilityRole="button"
                 accessibilityLabel="Close"
               >
-                <Ionicons name="close" size={22} color="rgba(245, 237, 227, 0.7)" />
+                <Ionicons name="close" size={22} color={Colors.text.secondary} />
               </TouchableOpacity>
             </View>
 

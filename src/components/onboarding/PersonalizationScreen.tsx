@@ -306,7 +306,7 @@ const styles = StyleSheet.create({
   title: {
     fontFamily: Typography.fonts.serif,
     fontSize: 26,
-    color: '#F5EDE3',
+    color: Colors.text.primary,
     textAlign: 'center',
     letterSpacing: 0.3,
     marginBottom: 10,

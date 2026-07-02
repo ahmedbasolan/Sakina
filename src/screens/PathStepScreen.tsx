@@ -21,6 +21,7 @@ import { useAppContext } from '../context/AppContext';
 
 import { useRoute, useNavigation } from '@react-navigation/native';
 import { extractVerseKey } from '../utils';
+import { Colors } from '../theme/DesignSystem';
 
 type LayerType = 'hadith' | 'verse' | 'context' | 'practice' | 'reflection';
 
@@ -42,7 +43,7 @@ export const PathStepScreen: React.FC = () => {
   } = route.params;
 
   // Journey identity color (passed from PathDetailScreen) + emotional register.
-  const accentColor: string = accentParam || '#D4AF37';
+  const accentColor: string = accentParam || Colors.accent.primary;
   const tone =
     path.tone || (path.theme === 'Sad' || path.theme === 'Angry' ? 'refuge' : 'momentum');
 

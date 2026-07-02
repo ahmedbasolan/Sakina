@@ -86,7 +86,7 @@ const styles = StyleSheet.create({
   },
   verseArabic: {
     fontSize: 22,
-    color: '#F5EDE3',
+    color: Colors.text.primary,
     textAlign: 'center',
     fontFamily: Typography.fonts.arabic,
     lineHeight: 52,

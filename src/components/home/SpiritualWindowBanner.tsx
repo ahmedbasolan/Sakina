@@ -89,7 +89,7 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     padding: 20,
     borderWidth: 1,
-    borderColor: 'rgba(212, 175, 55, 0.15)',
+    borderColor: Colors.accent.glow,
   },
   bannerContent: {
     flexDirection: 'row',
@@ -110,7 +110,7 @@ const styles = StyleSheet.create({
   bannerTitle: {
     fontFamily: Typography.fonts.serif,
     fontSize: 19,
-    color: '#F5EDE3',
+    color: Colors.text.primary,
     letterSpacing: 0.3,
     marginBottom: 12,
   },

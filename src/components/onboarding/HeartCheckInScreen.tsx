@@ -304,7 +304,7 @@ export default function HeartCheckInScreen({ isActive, onNext }: Props) {
                     styles.checkCircle,
                     { backgroundColor: mood.color, transform: [{ scale: checkScales[i] }] },
                   ]}>
-                    <Ionicons name="checkmark" size={14} color="#0C1A2E" />
+                    <Ionicons name="checkmark" size={14} color={Colors.background.secondary} />
                   </Animated.View>
                 </LinearGradient>
               </TouchableOpacity>

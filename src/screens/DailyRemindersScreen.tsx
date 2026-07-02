@@ -847,7 +847,7 @@ const styles = StyleSheet.create({
     letterSpacing: 1,
     color: 'rgba(255, 255, 255, 0.4)',
     transform: [{ translateX: -12 }, { translateY: -8 }],
-    textShadowColor: 'rgba(212, 175, 55, 0.2)',
+    textShadowColor: Colors.accent.muted,
     textShadowOffset: { width: 0, height: 0 },
     textShadowRadius: 10,
   },
@@ -967,7 +967,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   toggleSwitchActive: {
-    backgroundColor: 'rgba(212, 175, 55, 0.2)',
+    backgroundColor: Colors.accent.muted,
   },
   toggleKnob: {
     width: 20,
