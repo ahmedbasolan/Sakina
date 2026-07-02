@@ -51,6 +51,7 @@ export const Colors = {
     primary: '#F5EDE3', // Warm cream
     secondary: 'rgba(245, 237, 227, 0.7)',
     muted: 'rgba(245, 237, 227, 0.60)',
+    steel: '#6B8EAE', // Muted steel-blue — captions/chevrons on celestial surfaces
   },
 
   background: {
@@ -105,6 +106,11 @@ export const MoodColors: Record<
     bgFill: string;
     glow: string;
     image: ImageSourcePropType;
+    /** Home mood-card visuals (lighter variants of the immersive gradient). */
+    card: {
+      border: string;
+      gradient: [string, string, string];
+    };
   }
 > = {
   Overwhelmed: {
@@ -113,6 +119,7 @@ export const MoodColors: Record<
     bgFill: '#0F172A',
     glow: 'rgba(129, 140, 248, 0.2)',
     image: require('../assets/themes/ocean_deep_blue.jpg'), // Calm starry night sky over ocean
+    card: { border: '#1E1B4B', gradient: ['#1C3872', '#102558', '#102558'] },
   },
   Angry: {
     gradient: ['#1A0F0A', '#2D1610', '#140E0C'] as const,
@@ -120,6 +127,7 @@ export const MoodColors: Record<
     bgFill: '#1A0F0A',
     glow: 'rgba(251, 146, 60, 0.2)',
     image: require('../assets/themes/landscape_desert_dunes.jpg'), // Peaceful desert sunset with warm tones
+    card: { border: '#2D1610', gradient: ['#3A1808', '#271006', '#271006'] },
   },
   Sad: {
     gradient: ['#1E293B', '#334155', '#0F172A'] as const,
@@ -127,6 +135,7 @@ export const MoodColors: Record<
     bgFill: '#1E293B',
     glow: 'rgba(148, 163, 184, 0.2)',
     image: require('../assets/themes/mood_sad.jpg'), // Gentle misty rain over green mountains
+    card: { border: '#334155', gradient: ['#243B56', '#162840', '#162840'] },
   },
   Calm: {
     gradient: ['#064E3B', '#022C22', '#052E16'] as const,
@@ -134,6 +143,7 @@ export const MoodColors: Record<
     bgFill: '#064E3B',
     glow: 'rgba(52, 211, 153, 0.2)',
     image: require('../assets/themes/mountain_alpine_lake.jpg'), // Still forest lake with perfect reflection
+    card: { border: '#065F46', gradient: ['#0C6B4E', '#085038', '#085038'] },
   },
   Grateful: {
     gradient: ['#451A03', '#78350F', '#451A03'] as const,
@@ -141,6 +151,7 @@ export const MoodColors: Record<
     bgFill: '#451A03',
     glow: 'rgba(251, 191, 36, 0.2)',
     image: require('../assets/themes/mountain_snow_peaks.jpg'), // Golden sunrise over majestic mountain peaks
+    card: { border: '#78350F', gradient: ['#6B3008', '#4A2006', '#4A2006'] },
   },
   Hopeful: {
     gradient: ['#083344', '#155E75', '#083344'] as const,
@@ -148,6 +159,7 @@ export const MoodColors: Record<
     bgFill: '#083344',
     glow: 'rgba(34, 211, 238, 0.2)',
     image: require('../assets/themes/sky_golden_sunset.jpg'), // Dawn horizon light breaking through clouds
+    card: { border: '#155E75', gradient: ['#0D5A7A', '#083E58', '#083E58'] },
   },
   Tired: {
     gradient: ['#1C1917', '#292524', '#1C1917'] as const,
@@ -155,6 +167,7 @@ export const MoodColors: Record<
     bgFill: '#1C1917',
     glow: 'rgba(214, 211, 209, 0.2)',
     image: require('../assets/themes/landscape_lavender_field.jpg'), // Soft sunset over peaceful lavender meadow
+    card: { border: '#292524', gradient: ['#2E2520', '#1E1815', '#1E1815'] },
   },
   Lonely: {
     gradient: ['#2E1065', '#4C1D95', '#2E1065'] as const,
@@ -162,6 +175,7 @@ export const MoodColors: Record<
     bgFill: '#2E1065',
     glow: 'rgba(192, 132, 252, 0.2)',
     image: require('../assets/themes/sky_milky_way.jpg'), // Vast starry night sky with milky way over mountains
+    card: { border: '#4C1D95', gradient: ['#501A8A', '#37116A', '#37116A'] },
   },
   Guilty: {
     gradient: ['#1A1A1A', '#262626', '#1A1A1A'] as const,
@@ -169,6 +183,7 @@ export const MoodColors: Record<
     bgFill: '#1A1A1A',
     glow: 'rgba(163, 163, 163, 0.2)',
     image: require('../assets/themes/nature_waterfall.jpg'), // Gentle waterfall in lush green forest — renewal/tawbah
+    card: { border: '#262626', gradient: ['#2E2E2E', '#1F1F1F', '#1F1F1F'] },
   },
 };
 
