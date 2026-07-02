@@ -317,7 +317,7 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
             <View style={styles.sectionHeader}>
               <Text style={styles.sectionHeaderTitle}>How Is Your Heart?</Text>
             </View>
-            <Text style={styles.sectionSubtitle}>Tap your mood to receive a personalised verse</Text>
+            <Text style={styles.sectionSubtitle}>Tap your mood — and let the Quran meet you there</Text>
 
             {/* Last check-in pill */}
             {lastCheckin && (() => {

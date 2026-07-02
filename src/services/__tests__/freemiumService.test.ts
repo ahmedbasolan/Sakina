@@ -49,7 +49,6 @@ jest.mock('../subscriptionService', () => ({
       startTrial: jest.fn(() => Promise.resolve(true)),
       activatePremium: jest.fn(() => Promise.resolve(true)),
       resetToFreeTier: jest.fn(() => Promise.resolve()),
-      cancelSubscription: jest.fn(() => Promise.resolve(true)),
     })),
   },
 }));
@@ -126,7 +125,6 @@ describe('FreemiumService', () => {
       activatePremium: jest.fn(() => Promise.resolve(true)),
       restorePurchases: jest.fn(() => Promise.resolve(true)),
       resetToFreeTier: jest.fn(() => Promise.resolve()),
-      cancelSubscription: jest.fn(() => Promise.resolve(true)),
     };
     SubscriptionService.getInstance.mockReturnValue(mockSubscriptionService);
 
@@ -437,15 +435,6 @@ describe('FreemiumService', () => {
       expect(mockSubscriptionService.resetToFreeTier).toHaveBeenCalled();
       expect(mockSessionService.resetRefreshesToLimit).toHaveBeenCalled();
       expect(mockSessionService.saveSession).toHaveBeenCalled();
-    });
-
-    it('should cancel subscription', async () => {
-      mockSubscriptionService.cancelSubscription.mockResolvedValue(true);
-
-      const result = await service.cancelSubscription();
-
-      expect(result).toBe(true);
-      expect(mockSubscriptionService.cancelSubscription).toHaveBeenCalled();
     });
 
     it('should restore purchase via RC and unlock session', async () => {

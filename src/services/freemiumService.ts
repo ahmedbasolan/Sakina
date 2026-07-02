@@ -254,10 +254,6 @@ export class FreemiumService {
     await this.sessionService.saveSession();
   }
 
-  async cancelSubscription(): Promise<boolean> {
-    return this.subscriptionService.cancelSubscription();
-  }
-
   async restorePurchase(): Promise<boolean> {
     const ok = await this.subscriptionService.restorePurchases();
     if (ok) {
