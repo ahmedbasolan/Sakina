@@ -1,0 +1,117 @@
+<!--
+  Sakina — "Confirm signup" email template
+  Paste into: Supabase Dashboard → Authentication → Emails → Confirm signup
+  Subject line to set alongside it: Confirm your Sakina account
+  Required Supabase variable used below: {{ .ConfirmationURL }}
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Confirm your Sakina account</title>
+</head>
+<body style="margin:0; padding:0; background-color:#07111E; font-family:Georgia, 'Times New Roman', serif;">
+  <!-- Preheader (hidden preview text) -->
+  <div style="display:none; max-height:0; overflow:hidden; opacity:0;">
+    One tap to begin your journey with Sakina.
+  </div>
+
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#07111E;">
+    <tr>
+      <td align="center" style="padding:40px 16px;">
+
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:420px; background-color:#0F1F30; border-radius:20px; border:1px solid rgba(212,175,55,0.25); overflow:hidden;">
+
+          <!-- Top gold divider -->
+          <tr>
+            <td style="height:3px; background-color:#D4AF37; line-height:3px; font-size:1px;">&nbsp;</td>
+          </tr>
+
+          <!-- Eyebrow / wordmark -->
+          <tr>
+            <td align="center" style="padding:36px 32px 0 32px;">
+              <span style="display:inline-block; font-size:12px; letter-spacing:3px; color:#D4AF37; text-transform:uppercase; font-family:Georgia, serif;">
+                ✦ SAKINA ✦
+              </span>
+            </td>
+          </tr>
+
+          <!-- Headline -->
+          <tr>
+            <td align="center" style="padding:18px 32px 0 32px;">
+              <span style="display:block; font-size:26px; line-height:32px; color:#F5EDE3; font-family:Georgia, serif; font-weight:normal;">
+                Confirm Your Email
+              </span>
+            </td>
+          </tr>
+
+          <!-- Body copy -->
+          <tr>
+            <td align="center" style="padding:14px 36px 0 36px;">
+              <span style="display:block; font-size:15px; line-height:24px; color:rgba(245,237,227,0.7); font-family:Georgia, serif;">
+                Assalamu Alaikum — tap the button below to verify your email and begin your journey with Sakina.
+              </span>
+            </td>
+          </tr>
+
+          <!-- CTA button -->
+          <tr>
+            <td align="center" style="padding:30px 36px 6px 36px;">
+              <table role="presentation" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td align="center" style="border-radius:14px; background-color:#D4AF37;">
+                    <a href="{{ .ConfirmationURL }}"
+                       style="display:inline-block; padding:15px 40px; font-family:Georgia, serif; font-size:15px; font-weight:bold; letter-spacing:0.5px; color:#0F1F30; text-decoration:none; border-radius:14px;">
+                      Confirm Email
+                    </a>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Fallback link -->
+          <tr>
+            <td align="center" style="padding:18px 36px 0 36px;">
+              <span style="display:block; font-size:12px; line-height:18px; color:rgba(245,237,227,0.35); font-family:Georgia, serif;">
+                Button not working? Copy and paste this link into your browser:<br>
+                <a href="{{ .ConfirmationURL }}" style="color:#D4AF37; word-break:break-all;">{{ .ConfirmationURL }}</a>
+              </span>
+            </td>
+          </tr>
+
+          <!-- Divider -->
+          <tr>
+            <td style="padding:32px 36px 0 36px;">
+              <div style="height:1px; background-color:rgba(212,175,55,0.15); font-size:1px; line-height:1px;">&nbsp;</div>
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td align="center" style="padding:20px 36px 32px 36px;">
+              <span style="display:block; font-size:12px; line-height:18px; color:rgba(245,237,227,0.3); font-family:Georgia, serif;">
+                If you didn't create a Sakina account, you can safely ignore this email.
+              </span>
+            </td>
+          </tr>
+
+        </table>
+
+        <!-- Sub-footer -->
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:420px;">
+          <tr>
+            <td align="center" style="padding:20px 12px 0 12px;">
+              <span style="font-size:11px; letter-spacing:0.5px; color:rgba(245,237,227,0.25); font-family:Georgia, serif;">
+                Sakina — a companion for the soul
+              </span>
+            </td>
+          </tr>
+        </table>
+
+      </td>
+    </tr>
+  </table>
+</body>
+</html>

@@ -195,6 +195,29 @@ function ProgressRing({ progress, size = 110, strokeWidth = 6 }: {
   );
 }
 
+// ── Card surface ──────────────────────────────────────────────────
+// Same neutral-base + low-alpha diagonal accent-tint recipe used across the
+// app's other cards (StreakBar, Verse of the Day, mood grid), applied here
+// so Calendar/Day-Detail/Distribution share the same visual language.
+function CardSurface({ children, style }: { children: React.ReactNode; style?: any }) {
+  return (
+    <View style={style}>
+      <LinearGradient
+        colors={[Colors.background.secondary, Colors.background.primary]}
+        style={[StyleSheet.absoluteFill, { borderRadius: BorderRadius.xl }]}
+      />
+      <LinearGradient
+        colors={[`${Colors.accent.primary}1F`, `${Colors.accent.primary}05`]}
+        style={[StyleSheet.absoluteFill, { borderRadius: BorderRadius.xl }]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        pointerEvents="none"
+      />
+      {children}
+    </View>
+  );
+}
+
 // ── Component ───────────────────────────────────────────────────────
 interface MoodHistoryCalendarScreenProps {
   onBack?: () => void;
@@ -387,6 +410,17 @@ export default function MoodHistoryCalendarScreen({ onBack }: MoodHistoryCalenda
             const { title, subtitle } = getStreakInfo(stats.currentStreak);
             return (
               <View style={styles.heroCard}>
+                <LinearGradient
+                  colors={[Colors.background.secondary, Colors.background.primary]}
+                  style={[StyleSheet.absoluteFill, { borderRadius: BorderRadius.xl }]}
+                />
+                <LinearGradient
+                  colors={['rgba(251,146,60,0.12)', 'rgba(251,146,60,0.03)']}
+                  style={[StyleSheet.absoluteFill, { borderRadius: BorderRadius.xl }]}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 1 }}
+                  pointerEvents="none"
+                />
                 <View style={styles.heroInner}>
                   {/* Ring */}
                   <View style={styles.ringContainer}>
@@ -437,7 +471,7 @@ export default function MoodHistoryCalendarScreen({ onBack }: MoodHistoryCalenda
           })()}
 
           {/* Calendar */}
-          <View style={styles.card}>
+          <CardSurface style={styles.card}>
             {/* Month Selector */}
             <View style={styles.monthSelector}>
               <TouchableOpacity
@@ -528,11 +562,11 @@ export default function MoodHistoryCalendarScreen({ onBack }: MoodHistoryCalenda
                 </View>
               ))}
             </View>
-          </View>
+          </CardSurface>
 
           {/* Selected Day Detail */}
           {selectedDay && (
-            <View style={styles.card}>
+            <CardSurface style={styles.card}>
               <View style={styles.dayDetailHeader}>
                 <Text style={styles.dayDetailTitle}>{formatDayHeader(selectedDay)}</Text>
                 <TouchableOpacity
@@ -628,12 +662,12 @@ export default function MoodHistoryCalendarScreen({ onBack }: MoodHistoryCalenda
               ) : (
                 <Text style={styles.noDataText}>No detailed data available for this day.</Text>
               )}
-            </View>
+            </CardSurface>
           )}
 
           {/* Mood Distribution */}
           {stats && Object.keys(stats.moodCounts).length > 0 && (
-            <View style={styles.card}>
+            <CardSurface style={styles.card}>
               <Text style={styles.cardTitle}>Mood Distribution</Text>
               {Object.entries(stats.moodCounts)
                 .sort((a, b) => b[1] - a[1])
@@ -661,7 +695,7 @@ export default function MoodHistoryCalendarScreen({ onBack }: MoodHistoryCalenda
                     </View>
                   );
                 })}
-            </View>
+            </CardSurface>
           )}
 
           {/* Insights */}

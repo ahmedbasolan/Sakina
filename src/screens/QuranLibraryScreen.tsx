@@ -10,10 +10,9 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { BlurView } from 'expo-blur';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Svg, { Path } from 'react-native-svg';
-import { Colors, Spacing, BorderRadius, Typography } from '../theme/DesignSystem';
+import { Colors, Spacing, BorderRadius, Typography, MoodColors } from '../theme/DesignSystem';
 import { Content, Mood } from '../types';
 import { dbQuery } from '../database/schema';
 import { AnimatedMandala } from '../components/AnimatedMandala';
@@ -33,17 +32,12 @@ const ALL_MOODS: Mood[] = [
   'Lonely', 'Grateful', 'Hopeful', 'Guilty', 'Calm',
 ];
 
-const MOOD_COLORS: Record<Mood, string> = {
-  Overwhelmed: '#14B8A6',
-  Sad:         '#60A5FA',
-  Angry:       '#F87171',
-  Tired:       '#9CA3AF',
-  Lonely:      '#A78BFA',
-  Grateful:    '#34D399',
-  Hopeful:     '#FBBF24',
-  Guilty:      '#818CF8',
-  Calm:        '#22D3EE',
-};
+// Mood dot / card-tint colors come from the single source of truth in
+// DesignSystem so the library matches the Home mood grid and the rest of the
+// app — no separate palette that drifts out of sync.
+const MOOD_COLORS: Record<Mood, string> = Object.fromEntries(
+  ALL_MOODS.map((m) => [m, MoodColors[m].accent]),
+) as Record<Mood, string>;
 
 interface QuranRow {
   id: string;
@@ -92,6 +86,10 @@ function MoodChip({
 
 function VerseCard({ verse }: { verse: Content }) {
   const [expanded, setExpanded] = useState(false);
+  // Same tinted-gradient card treatment as the Home streak/journey cards —
+  // tinted with the verse's own primary mood so the library keeps that
+  // mood-color variety instead of one flat panel per card.
+  const tint = verse.moods[0] ? MOOD_COLORS[verse.moods[0]] : Colors.accent.primary;
 
   return (
     <TouchableOpacity
@@ -101,7 +99,15 @@ function VerseCard({ verse }: { verse: Content }) {
       accessibilityLabel={verse.source}
       accessibilityState={{ expanded }}
     >
-      <BlurView intensity={12} tint="dark" style={styles.card}>
+      <View style={[styles.card, { borderColor: `${tint}40` }]}>
+        <LinearGradient colors={[Colors.background.secondary, Colors.background.primary]} style={StyleSheet.absoluteFill} />
+        <LinearGradient
+          colors={[`${tint}1F`, `${tint}05`]}
+          style={StyleSheet.absoluteFill}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          pointerEvents="none"
+        />
         <View style={styles.cardInner}>
           <Text style={styles.cardSource}>{verse.source.toUpperCase()}</Text>
 
@@ -150,7 +156,7 @@ function VerseCard({ verse }: { verse: Content }) {
             </Svg>
           </View>
         </View>
-      </BlurView>
+      </View>
     </TouchableOpacity>
   );
 }
@@ -340,17 +346,15 @@ const styles = StyleSheet.create({
     zIndex: 2,
   },
   backButton: {
+    // Bare icon — no circular container (CLAUDE.md nav rule); hitSlop on the
+    // TouchableOpacity keeps the 44pt touch target without the visual chrome.
     width: 44,
     height: 44,
-    borderRadius: BorderRadius.full,
-    backgroundColor: Colors.glass.light,
-    borderWidth: 1,
-    borderColor: Colors.glass.border,
     alignItems: 'center',
     justifyContent: 'center',
   },
   headerPretitle: {
-    fontSize: 10,
+    fontSize: Typography.sizes.label,
     color: `${Colors.accent.primary}99`,
     letterSpacing: 2.5,
     marginBottom: 2,
@@ -430,11 +434,10 @@ const styles = StyleSheet.create({
   },
   cardInner: {
     padding: Spacing.lg,
-    backgroundColor: Colors.glass.light,
     gap: Spacing.sm,
   },
   cardSource: {
-    fontSize: 11,
+    fontSize: Typography.sizes.label,
     fontWeight: '700',
     color: `${Colors.accent.primary}CC`,
     letterSpacing: 0.8,
@@ -473,7 +476,7 @@ const styles = StyleSheet.create({
     borderRadius: 3,
   },
   moodTagText: {
-    fontSize: 11,
+    fontSize: Typography.sizes.label,
     fontWeight: '600',
   },
   whySection: {
@@ -484,7 +487,7 @@ const styles = StyleSheet.create({
     gap: Spacing.xs,
   },
   whyLabel: {
-    fontSize: 11,
+    fontSize: Typography.sizes.label,
     fontWeight: '700',
     color: `${Colors.accent.primary}CC`,
     letterSpacing: 0.8,

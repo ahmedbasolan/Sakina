@@ -16,6 +16,7 @@ export interface QuranVerse {
   numberInSurah: number;
   arabic: string;
   translation: string;
+  transliteration: string;
 }
 
 export interface DownloadProgress {
@@ -34,6 +35,60 @@ const BATCH_DELAY  = 200; // ms pause between batches (be respectful of the free
 // Module-level singleton so multiple LibraryScreen mounts don't double-fetch
 let _isFetching = false;
 
+// ─── Bismillah de-duplication ───────────────────────────────────────────────
+// The quran-uthmani edition embeds the Bismillah at the start of every
+// surah's first ayah text (except At-Tawbah, which has none) — Al-Fatiha's
+// first ayah *is* the Bismillah itself. Screens render their own separate
+// Bismillah header above ayah 1, so the embedded copy must be stripped here
+// or it shows twice. Normalize first: the API's diacritic mark order for the
+// shadda/fatha pair isn't always in canonical form, so a plain string match
+// would silently fail to strip it on some surahs.
+const BISMILLAH = 'بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ'.normalize('NFC');
+// At-Tin (95) and Al-Qadr (97) carry an extra shadda on the opening "بِ"
+// ("بِّسْمِ") in this API's Uthmani text — confirmed by auditing all 114
+// surahs live. Without this variant those two would keep showing the
+// Bismillah twice even after the fix below.
+const BISMILLAH_VARIANT = BISMILLAH.slice(0, 2) + 'ّ' + BISMILLAH.slice(2);
+
+function stripEmbeddedBismillah(text: string, surahNumber: number, numberInSurah: number): string {
+  // Al-Fatiha's ayah 1 *is* the Bismillah — nothing to strip. At-Tawbah has none.
+  if (numberInSurah !== 1 || surahNumber === 1 || surahNumber === 9) return text;
+  const normalized = text.normalize('NFC');
+  for (const prefix of [BISMILLAH, BISMILLAH_VARIANT]) {
+    if (normalized.startsWith(prefix)) {
+      return normalized.slice(prefix.length).trimStart();
+    }
+  }
+  return text;
+}
+
+// ─── One-time cache migration ───────────────────────────────────────────────
+// Bump this when the stored verse shape/content changes so previously
+// cached (now-stale) surahs get re-fetched instead of showing old data
+// forever within the 7-day TTL.
+const CACHE_FORMAT_VERSION = 3;
+const CACHE_VERSION_KEY = 'quran_cache_format_version';
+let versionChecked = false;
+
+async function ensureCacheFormatVersion(): Promise<void> {
+  if (versionChecked) return;
+  versionChecked = true;
+  await dbQuery(async (db) => {
+    const row = await db.getFirstAsync<{ value: string }>(
+      'SELECT value FROM kv_store WHERE key = ?',
+      [CACHE_VERSION_KEY],
+    );
+    const stored = row ? parseInt(row.value, 10) : 0;
+    if (stored < CACHE_FORMAT_VERSION) {
+      await db.runAsync('DELETE FROM quran_cache');
+      await db.runAsync(
+        'INSERT OR REPLACE INTO kv_store (key, value) VALUES (?, ?)',
+        [CACHE_VERSION_KEY, String(CACHE_FORMAT_VERSION)],
+      );
+    }
+  });
+}
+
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
 function sleep(ms: number) {
@@ -47,16 +102,18 @@ async function fetchSurahFromApi(surahNumber: number): Promise<QuranVerse[]> {
   const timeoutId = setTimeout(() => controller.abort(), 15_000);
   try {
     const url =
-      `https://api.alquran.cloud/v1/surah/${surahNumber}/editions/quran-uthmani,en.asad`;
+      `https://api.alquran.cloud/v1/surah/${surahNumber}/editions/quran-uthmani,en.asad,en.transliteration`;
     const res = await fetch(url, { signal: controller.signal });
     if (!res.ok) throw new Error(`HTTP ${res.status} for surah ${surahNumber}`);
     const json = await res.json();
     const arabics: any[] = json.data[0].ayahs;
     const englishs: any[] = json.data[1].ayahs;
+    const transliterations: any[] = json.data[2].ayahs;
     return arabics.map((a, i) => ({
       numberInSurah: a.numberInSurah,
-      arabic: a.text,
+      arabic: stripEmbeddedBismillah(a.text, surahNumber, a.numberInSurah),
       translation: englishs[i]?.text ?? '',
+      transliteration: transliterations[i]?.text ?? '',
     }));
   } finally {
     clearTimeout(timeoutId);
@@ -78,6 +135,7 @@ async function writeSurahCache(surahNumber: number, verses: QuranVerse[]): Promi
  * Returns how many of the 114 surahs are currently cached and fresh.
  */
 export async function getDownloadProgress(): Promise<DownloadProgress> {
+  await ensureCacheFormatVersion();
   return dbQuery(async (db) => {
     const rows = await db.getAllAsync<{ surahNumber: number; cachedAt: number }>(
       'SELECT surahNumber, cachedAt FROM quran_cache',
@@ -106,6 +164,7 @@ export async function prefetchAllSurahs(
   _isFetching = true;
 
   try {
+    await ensureCacheFormatVersion();
     // Determine which surahs still need fetching — one bulk query instead of 114
     const { cached: alreadyCached } = await getDownloadProgress();
     const freshSet = await dbQuery(async (db) => {
@@ -178,6 +237,7 @@ export async function fetchAndCacheSurah(surahNumber: number): Promise<QuranVers
  * Returns null if not cached (caller should fetch from API).
  */
 export async function getCachedSurah(surahNumber: number): Promise<QuranVerse[] | null> {
+  await ensureCacheFormatVersion();
   return dbQuery(async (db) => {
     const row = await db.getFirstAsync<{ data: string; cachedAt: number }>(
       'SELECT data, cachedAt FROM quran_cache WHERE surahNumber = ?',

@@ -42,7 +42,17 @@ export type IconName =
   | 'arrow-right'
   | 'moon'
   | 'sun'
-  | 'person';
+  | 'person'
+  | 'globe'
+  | 'gift'
+  | 'handshake'
+  | 'crescent'
+  | 'eye'
+  | 'gem'
+  | 'muscle'
+  | 'trophy'
+  | 'water-drop'
+  | 'calm-face';
 
 const iconPaths: Record<IconName, React.ReactNode> = {
   'hands-prayer': (
@@ -184,12 +194,69 @@ const iconPaths: Record<IconName, React.ReactNode> = {
       <Path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1zM5.99 4.58c-.39-.39-1.03-.39-1.41 0s-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41L5.99 4.58zm12.37 12.37c-.39-.39-1.03-.39-1.41 0s-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41l-1.06-1.06zm1.06-12.37c-.39-.39-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06c.39-.39.39-1.03 0-1.41zM7.05 18.36c-.39-.39-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06c.39-.39.39-1.03 0-1.41z" />
     </G>
   ),
+  globe: (
+    <G>
+      <Circle cx="12" cy="12" r="9" opacity="0.28" />
+      <Path d="M3.3 9.2H20.7V10.6H3.3V9.2Z" />
+      <Path d="M3.3 13.4H20.7V14.8H3.3V13.4Z" />
+      <Path d="M11.3 3.3H12.7V20.7H11.3V3.3Z" />
+    </G>
+  ),
+  gift: (
+    <G>
+      <Path d="M20 7H16.83C16.94 6.68 17 6.35 17 6C17 4.34 15.66 3 14 3C12.9 3 11.94 3.6 11.42 4.49L12 5.5L12.58 4.49C12.06 3.6 11.1 3 10 3C8.34 3 7 4.34 7 6C7 6.35 7.06 6.68 7.17 7H4C3.45 7 3 7.45 3 8V10C3 10.55 3.45 11 4 11H20C20.55 11 21 10.55 21 10V8C21 7.45 20.55 7 20 7ZM14 5C14.55 5 15 5.45 15 6C15 6.55 14.55 7 14 7H13V6C13 5.45 13.45 5 14 5ZM10 5C10.55 5 11 5.45 11 6V7H10C9.45 7 9 6.55 9 6C9 5.45 9.45 5 10 5Z" />
+      <Path d="M5 12V20C5 21.1 5.9 22 7 22H11V12H5Z" />
+      <Path d="M13 12V22H17C18.1 22 19 21.1 19 20V12H13Z" />
+    </G>
+  ),
+  handshake: (
+    <G>
+      <Path d="M12 8L8 4L2 8V10L4 12L12 8Z" />
+      <Path d="M12 8L16 4L22 8V10L20 12L12 8Z" />
+      <Path d="M4 12L8 16L10 14L12 16L14 14L16 16L20 12L18 10L14 13L12 11L10 13L6 10L4 12Z" />
+    </G>
+  ),
+  crescent: (
+    <Path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C13.34 22 14.61 21.73 15.77 21.26C11.62 20.11 8.5 16.36 8.5 12C8.5 7.64 11.62 3.89 15.77 2.74C14.61 2.27 13.34 2 12 2Z" />
+  ),
+  eye: (
+    <Path
+      fillRule="evenodd"
+      d="M12 5C6.5 5 2.7 8.6 1 12C2.7 15.4 6.5 19 12 19C17.5 19 21.3 15.4 23 12C21.3 8.6 17.5 5 12 5ZM12 16.5C9.5 16.5 7.5 14.5 7.5 12C7.5 9.5 9.5 7.5 12 7.5C14.5 7.5 16.5 9.5 16.5 12C16.5 14.5 14.5 16.5 12 16.5ZM12 14.5C13.38 14.5 14.5 13.38 14.5 12C14.5 10.62 13.38 9.5 12 9.5C10.62 9.5 9.5 10.62 9.5 12C9.5 13.38 10.62 14.5 12 14.5Z"
+    />
+  ),
+  gem: (
+    <Path d="M19 3H5L2 9L12 22L22 9L19 3ZM17.5 5L19.5 9H14.5L12.5 5H17.5ZM11.5 5L9.5 9H6.5L4.5 5H11.5ZM4.7 11H8.6L11 17.5L4.7 11ZM10.7 11H13.3L12 16.5L10.7 11ZM15.4 11H19.3L13 17.5L15.4 11Z" />
+  ),
+  muscle: (
+    <G>
+      <Path d="M6 4C6 4 4 6 4 9C4 11 5 12.5 6.5 13.3C6.2 14.5 6 15.8 6 17C6 19.8 8.2 22 11 22H15C16.7 22 18 20.7 18 19V16C18 14 16.5 12 14 12C14 10 13 8.5 11.5 7.7C12 6.5 12 5 11 4C10 3 8 3 7 4H6Z" />
+      <Circle cx="17" cy="7" r="3" />
+    </G>
+  ),
+  trophy: (
+    <Path d="M19 5H17V3H7V5H5C3.9 5 3 5.9 3 7V8C3 10.55 4.92 12.63 7.39 12.94C8.02 14.44 9.37 15.57 11 15.9V18H8V20H16V18H13V15.9C14.63 15.57 15.98 14.44 16.61 12.94C19.08 12.63 21 10.55 21 8V7C21 5.9 20.1 5 19 5ZM5 8V7H7V10.82C5.84 10.4 5 9.3 5 8ZM19 8C19 9.3 18.16 10.4 17 10.82V7H19V8Z" />
+  ),
+  'water-drop': (
+    <Path d="M12 2.5C12 2.5 5 11 5 15.5C5 19.6 8.13 23 12 23C15.87 23 19 19.6 19 15.5C19 11 12 2.5 12 2.5Z" />
+  ),
+  'calm-face': (
+    <G>
+      <Circle cx="12" cy="12" r="9" fill="none" strokeWidth="1.5" />
+      <Path d="M8 10.5C8 9.67 8.67 9 9.5 9C10.33 9 11 9.67 11 10.5" fill="none" strokeWidth="1.5" strokeLinecap="round" />
+      <Path d="M13 10.5C13 9.67 13.67 9 14.5 9C15.33 9 16 9.67 16 10.5" fill="none" strokeWidth="1.5" strokeLinecap="round" />
+      <Path d="M8 15C9 16.2 10.4 16.8 12 16.8C13.6 16.8 15 16.2 16 15" fill="none" strokeWidth="1.5" strokeLinecap="round" />
+    </G>
+  ),
 };
 
 const Icon: React.FC<IconProps> = ({ name, size = 24, color = Colors.text.primary, style }) => {
   return (
     <View style={[styles.container, { width: size, height: size }, style]}>
-      <Svg width={size} height={size} viewBox="0 0 24 24" fill={color}>
+      {/* stroke inherits down to any child that sets fill="none" (e.g. target's
+          rings, calm-face's closed-eye lines) — without it those glyphs had no
+          paint at all and rendered as blank/near-blank boxes. */}
+      <Svg width={size} height={size} viewBox="0 0 24 24" fill={color} stroke={color}>
         {iconPaths[name]}
       </Svg>
     </View>

@@ -179,6 +179,14 @@ const SURAH_LIST: SurahEntry[] = [
 function SavedVerseCard({ verse }: { verse: any }) {
   return (
     <View style={styles.savedCard}>
+      <LinearGradient colors={[Colors.background.secondary, Colors.background.primary]} style={StyleSheet.absoluteFill} />
+      <LinearGradient
+        colors={[`${Colors.accent.primary}1F`, `${Colors.accent.primary}05`]}
+        style={StyleSheet.absoluteFill}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        pointerEvents="none"
+      />
       <View style={styles.savedCardLeft}>
         <View style={styles.savedCardNumBadge}>
           <Text style={styles.savedCardNumText}>{verse.verseNumber}</Text>
@@ -226,7 +234,7 @@ function SurahRow({
         <MaterialCommunityIcons
           name="star-four-points"
           size={10}
-          color={isLastRead ? Colors.accent.primary : 'rgba(201,168,76,0.4)'}
+          color={isLastRead ? Colors.accent.primary : 'rgba(212,175,55,0.4)'}
           style={{ position: 'absolute', top: 5, opacity: 0.6 }}
         />
         <Text style={[styles.surahNumberText, isLastRead && styles.surahNumberTextLastRead]}>
@@ -250,7 +258,7 @@ function SurahRow({
       <MaterialCommunityIcons
         name="chevron-right"
         size={16}
-        color="rgba(201,168,76,0.35)"
+        color="rgba(212,175,55,0.35)"
       />
     </TouchableOpacity>
   );
@@ -425,7 +433,7 @@ export default function LibraryScreen({ navigation }: any) {
           <MaterialCommunityIcons
             name="magnify"
             size={18}
-            color="rgba(201,168,76,0.5)"
+            color="rgba(212,175,55,0.5)"
           />
           <TextInput
             style={styles.searchInput}
@@ -488,7 +496,7 @@ export default function LibraryScreen({ navigation }: any) {
             <MaterialCommunityIcons
               name="bookmark-outline"
               size={52}
-              color="rgba(201,168,76,0.25)"
+              color="rgba(212,175,55,0.25)"
             />
             <Text style={styles.emptyTitle}>No Bookmarked Verses</Text>
             <Text style={styles.emptySub}>
@@ -538,7 +546,7 @@ export default function LibraryScreen({ navigation }: any) {
                 <MaterialCommunityIcons
                   name="magnify"
                   size={52}
-                  color="rgba(201,168,76,0.25)"
+                  color="rgba(212,175,55,0.25)"
                 />
                 <Text style={styles.emptyTitle}>No Surahs Found</Text>
                 <Text style={styles.emptySub}>
@@ -591,6 +599,14 @@ export default function LibraryScreen({ navigation }: any) {
                 accessibilityRole="button"
                 accessibilityLabel={`Continue reading ${readingProgress.surahName}, from verse ${readingProgress.verseIndex + 1}`}
               >
+                <LinearGradient colors={[Colors.background.secondary, Colors.background.primary]} style={StyleSheet.absoluteFill} />
+                <LinearGradient
+                  colors={[`${Colors.accent.primary}1F`, `${Colors.accent.primary}05`]}
+                  style={StyleSheet.absoluteFill}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 1 }}
+                  pointerEvents="none"
+                />
                 <View style={styles.continueReadingLeft}>
                   <MaterialCommunityIcons
                     name="bookmark-check"
@@ -610,7 +626,7 @@ export default function LibraryScreen({ navigation }: any) {
                 <MaterialCommunityIcons
                   name="arrow-right"
                   size={18}
-                  color="rgba(201,168,76,0.55)"
+                  color="rgba(212,175,55,0.55)"
                 />
               </TouchableOpacity>
               ) : null}
@@ -652,15 +668,15 @@ const styles = StyleSheet.create({
     width: 46,
     height: 46,
     borderRadius: 23,
-    backgroundColor: 'rgba(201,168,76,0.1)',
+    backgroundColor: 'rgba(212,175,55,0.1)',
     borderWidth: 1,
-    borderColor: 'rgba(201,168,76,0.2)',
+    borderColor: 'rgba(212,175,55,0.2)',
     alignItems: 'center',
     justifyContent: 'center',
   },
   headerPretitle: {
-    fontSize: 10,
-    color: 'rgba(201,168,76,0.6)',
+    fontSize: Typography.sizes.label,
+    color: 'rgba(212,175,55,0.6)',
     letterSpacing: 2.5,
     marginBottom: 3,
     fontFamily: Typography.fonts.serif,
@@ -685,7 +701,7 @@ const styles = StyleSheet.create({
     borderRadius: BorderRadius.md,
     overflow: 'hidden',
     borderWidth: 1,
-    borderColor: 'rgba(201,168,76,0.15)',
+    borderColor: 'rgba(212,175,55,0.15)',
     paddingHorizontal: Spacing.lg,
     paddingVertical: 10,
     marginBottom: Spacing.md,
@@ -713,10 +729,10 @@ const styles = StyleSheet.create({
     top: 4,
     bottom: 4,
     width: '46%',
-    backgroundColor: 'rgba(201,168,76,0.14)',
+    backgroundColor: 'rgba(212,175,55,0.14)',
     borderRadius: BorderRadius.sm,
     borderWidth: 1,
-    borderColor: 'rgba(201,168,76,0.3)',
+    borderColor: 'rgba(212,175,55,0.3)',
   },
   tabBtn: { flex: 1, paddingVertical: 9, alignItems: 'center', zIndex: 1 },
   tabText: {
@@ -737,10 +753,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: 'rgba(201,168,76,0.07)',
     borderWidth: 1,
-    borderColor: 'rgba(201,168,76,0.22)',
+    borderColor: 'rgba(212,175,55,0.4)',
     borderRadius: BorderRadius.md,
+    overflow: 'hidden',
     padding: Spacing.lg,
     marginBottom: Spacing.lg,
     gap: Spacing.md,
@@ -752,9 +768,9 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   continueReadingLabel: {
-    fontSize: 9,
+    fontSize: Typography.sizes.label,
     fontWeight: '700',
-    color: 'rgba(201,168,76,0.6)',
+    color: 'rgba(212,175,55,0.6)',
     letterSpacing: 1.8,
     marginBottom: 2,
   },
@@ -773,10 +789,9 @@ const styles = StyleSheet.create({
   // Saved verse cards
   savedCard: {
     flexDirection: 'row',
-    backgroundColor: 'rgba(255,255,255,0.03)',
     borderRadius: BorderRadius.md,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.06)',
+    borderColor: 'rgba(212,175,55,0.25)',
     overflow: 'hidden',
     paddingVertical: Spacing.md,
     paddingHorizontal: Spacing.lg,
@@ -791,14 +806,14 @@ const styles = StyleSheet.create({
     width: 28,
     height: 28,
     borderRadius: 14,
-    backgroundColor: 'rgba(201,168,76,0.1)',
+    backgroundColor: 'rgba(212,175,55,0.1)',
     borderWidth: 1,
-    borderColor: 'rgba(201,168,76,0.2)',
+    borderColor: 'rgba(212,175,55,0.2)',
     alignItems: 'center',
     justifyContent: 'center',
   },
   savedCardNumText: {
-    fontSize: 10,
+    fontSize: Typography.sizes.label,
     fontWeight: '700',
     color: Colors.accent.primary,
   },
@@ -813,7 +828,7 @@ const styles = StyleSheet.create({
   },
   savedCardSource: {
     fontSize: 11,
-    color: 'rgba(201,168,76,0.65)',
+    color: 'rgba(212,175,55,0.65)',
     fontWeight: '700',
     letterSpacing: 0.4,
   },
@@ -841,7 +856,7 @@ const styles = StyleSheet.create({
     minHeight: 64,
   },
   surahRowLastRead: {
-    backgroundColor: 'rgba(201,168,76,0.04)',
+    backgroundColor: 'rgba(212,175,55,0.04)',
     borderRadius: BorderRadius.sm,
     paddingHorizontal: Spacing.sm,
   },
@@ -849,20 +864,20 @@ const styles = StyleSheet.create({
     width: 38,
     height: 38,
     borderRadius: 19,
-    backgroundColor: 'rgba(201,168,76,0.08)',
+    backgroundColor: 'rgba(212,175,55,0.08)',
     borderWidth: 1,
-    borderColor: 'rgba(201,168,76,0.2)',
+    borderColor: 'rgba(212,175,55,0.2)',
     alignItems: 'center',
     justifyContent: 'center',
     position: 'relative',
   },
   surahNumberLastRead: {
-    backgroundColor: 'rgba(201,168,76,0.16)',
-    borderColor: 'rgba(201,168,76,0.45)',
+    backgroundColor: 'rgba(212,175,55,0.16)',
+    borderColor: 'rgba(212,175,55,0.45)',
   },
   surahNumberText: {
     fontSize: 11,
-    color: 'rgba(201,168,76,0.75)',
+    color: 'rgba(212,175,55,0.75)',
     fontWeight: '700',
     marginTop: 7,
   },
@@ -876,7 +891,9 @@ const styles = StyleSheet.create({
     gap: Spacing.sm,
   },
   surahEnglish: {
-    fontSize: 12,
+    // Surah name is the primary item label — a clear step above its
+    // meaning/verse subtitle (label 11) so a 114-row list stays scannable.
+    fontSize: Typography.sizes.small,
     color: Colors.text.primary,
     fontWeight: '700',
     letterSpacing: 1.1,
@@ -884,13 +901,13 @@ const styles = StyleSheet.create({
   lastReadPill: {
     paddingHorizontal: 6,
     paddingVertical: 2,
-    backgroundColor: 'rgba(201,168,76,0.15)',
+    backgroundColor: 'rgba(212,175,55,0.15)',
     borderRadius: BorderRadius.sm,
     borderWidth: 1,
-    borderColor: 'rgba(201,168,76,0.3)',
+    borderColor: 'rgba(212,175,55,0.3)',
   },
   lastReadPillText: {
-    fontSize: 8,
+    fontSize: Typography.sizes.label,
     fontWeight: '800',
     color: Colors.accent.primary,
     letterSpacing: 0.8,
@@ -902,7 +919,7 @@ const styles = StyleSheet.create({
   },
   surahArabic: {
     fontSize: 17,
-    color: 'rgba(201,168,76,0.75)',
+    color: 'rgba(212,175,55,0.75)',
     fontFamily: Typography.fonts.arabic,
     marginRight: 4,
   },
@@ -941,10 +958,10 @@ const styles = StyleSheet.create({
     marginTop: Spacing.sm,
     paddingHorizontal: Spacing.xl,
     paddingVertical: Spacing.md,
-    backgroundColor: 'rgba(201,168,76,0.1)',
+    backgroundColor: 'rgba(212,175,55,0.1)',
     borderRadius: BorderRadius.full,
     borderWidth: 1,
-    borderColor: 'rgba(201,168,76,0.25)',
+    borderColor: 'rgba(212,175,55,0.25)',
   },
   emptyActionText: {
     fontSize: 13,
@@ -955,9 +972,9 @@ const styles = StyleSheet.create({
 
   // Download progress banner
   dlBanner: {
-    backgroundColor: 'rgba(201,168,76,0.06)',
+    backgroundColor: 'rgba(212,175,55,0.06)',
     borderWidth: 1,
-    borderColor: 'rgba(201,168,76,0.18)',
+    borderColor: 'rgba(212,175,55,0.18)',
     borderRadius: BorderRadius.md,
     padding: Spacing.lg,
     marginBottom: Spacing.lg,
@@ -983,7 +1000,7 @@ const styles = StyleSheet.create({
   dlBarTrack: {
     height: 3,
     borderRadius: 2,
-    backgroundColor: 'rgba(201,168,76,0.15)',
+    backgroundColor: 'rgba(212,175,55,0.15)',
     overflow: 'hidden',
   },
   dlBarFill: {

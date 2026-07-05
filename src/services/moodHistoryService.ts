@@ -2,6 +2,17 @@ import { dbQuery } from '../database/schema';
 import { Mood } from '../types';
 import { SupabaseDataService } from './supabaseDataService';
 import { formatDateYMD, subtractDays } from '../utils/date';
+import {
+  computeInsights,
+  INSIGHT_WINDOW_DAYS,
+  LIGHT_MOODS,
+  MoodInsight,
+} from './moodInsights';
+
+// Re-export so existing consumers (the calendar screen) keep importing the
+// insight type from moodHistoryService.
+export type { MoodInsight };
+export { computeInsights, HEAVY_MOODS, LIGHT_MOODS } from './moodInsights';
 
 // ── Types ───────────────────────────────────────────────────────────
 export interface MoodDayEntry {
@@ -37,14 +48,9 @@ export interface MoodStats {
   moodCounts: Record<string, number>;
 }
 
-export interface MoodInsight {
-  type: 'pattern' | 'trend' | 'streak' | 'tip';
-  title: string;
-  description: string;
-  icon: string; // emoji
-}
-
-const POSITIVE_MOODS: Mood[] = ['Grateful', 'Hopeful', 'Calm'];
+// LIGHT_MOODS is the canonical "positive" bucket; getStats' positive-day math
+// reuses it so classification lives in exactly one place (moodInsights.ts).
+const POSITIVE_MOODS: Mood[] = LIGHT_MOODS;
 
 /**
  * Streak calculation with one "mercy day" (rahma): a single missed day never
@@ -305,114 +311,20 @@ export class MoodHistoryService {
    * Generate insights based on mood history patterns.
    */
   async getInsights(precomputedStats?: MoodStats): Promise<MoodInsight[]> {
-    const endDate = new Date().toISOString();
-    const startDate = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
+    const now = new Date();
+    // Extend the window by a day on each side so entries near local midnight
+    // aren't clipped by the UTC boundary; computeInsights re-buckets by local
+    // calendar day. Mirrors getStats().
+    const endDate = new Date(now.getTime() + 86400000).toISOString();
+    const startDate = new Date(now.getTime() - INSIGHT_WINDOW_DAYS * 86400000).toISOString();
 
     const history = await this.supabaseData.getMoodHistory(startDate, endDate);
-    const insights: MoodInsight[] = [];
-
-    if (history.length === 0) {
-      insights.push({
-        type: 'tip',
-        title: 'Start Your Journey',
-        description:
-          'Select a mood on the home screen to begin tracking your emotional patterns. The more you use it, the better your insights become.',
-        icon: '✦',
-      });
-      return insights;
-    }
-
-    const dayOfWeekCounts: Record<number, Record<string, number>> = {};
-    for (const row of history) {
-      const dow = new Date(row.created_at).getDay();
-      if (!dayOfWeekCounts[dow]) dayOfWeekCounts[dow] = {};
-      dayOfWeekCounts[dow][row.mood] = (dayOfWeekCounts[dow][row.mood] || 0) + 1;
-    }
-
-    const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-    const negativeMoods = ['Overwhelmed', 'Sad', 'Angry', 'Tired', 'Lonely'];
-
-    let worstDay = -1;
-    let worstDayNegCount = 0;
-    for (const [dow, moods] of Object.entries(dayOfWeekCounts)) {
-      const negCount = Object.entries(moods)
-        .filter(([m]) => negativeMoods.includes(m))
-        .reduce((sum, [, c]) => sum + c, 0);
-      if (negCount > worstDayNegCount) {
-        worstDayNegCount = negCount;
-        worstDay = parseInt(dow, 10);
-      }
-    }
-
-    if (worstDay >= 0 && worstDayNegCount >= 2) {
-      insights.push({
-        type: 'pattern',
-        title: 'Pattern Detected',
-        description: `You tend to feel more difficult emotions on ${dayNames[worstDay]}s. Consider scheduling extra self-care or dhikr on these days.`,
-        icon: '🔍',
-      });
-    }
-
-    const twoWeeksAgoMs = Date.now() - 14 * 86400000;
-    const recentRows = history.filter((r) => new Date(r.created_at).getTime() >= twoWeeksAgoMs);
-    const olderRows = history.filter((r) => new Date(r.created_at).getTime() < twoWeeksAgoMs);
-
-    if (recentRows.length >= 3 && olderRows.length >= 3) {
-      const recentPositive = recentRows.filter((r) => POSITIVE_MOODS.includes(r.mood as Mood)).length / recentRows.length;
-      const olderPositive = olderRows.filter((r) => POSITIVE_MOODS.includes(r.mood as Mood)).length / olderRows.length;
-
-      if (recentPositive > olderPositive + 0.1) {
-        const improvement = Math.round((recentPositive - olderPositive) * 100);
-        insights.push({
-          type: 'trend',
-          title: 'Positive Trend',
-          description: `Your positive mood ratio has improved by ${improvement}% compared to the previous weeks. The guidance is working — keep going!`,
-          icon: '📈',
-        });
-      } else if (olderPositive > recentPositive + 0.1) {
-        insights.push({
-          type: 'trend',
-          title: 'Be Gentle With Yourself',
-          description:
-            'Your recent moods have been heavier than usual. Remember: tests are a sign that Allah wants to elevate you. Stay consistent with your dhikr.',
-          icon: '🤲',
-        });
-      }
-    }
 
     // Reuse pre-computed stats if the caller already has them to avoid a
-    // redundant full-table Supabase fetch.
+    // redundant full-table Supabase fetch for the streak figure.
     const stats = precomputedStats ?? await this.getStats();
-    if (stats.currentStreak >= 3) {
-      insights.push({
-        type: 'streak',
-        title: `${stats.currentStreak}-Day Streak`,
-        description: `You've checked in for ${stats.currentStreak} consecutive days. Consistency is key — the Prophet ﷺ said: "The most beloved deeds to Allah are the most consistent, even if small."`,
-        icon: '🔥',
-      });
-    }
 
-    const uniqueMoods = new Set(history.map((r) => r.mood));
-    if (uniqueMoods.size >= 5) {
-      insights.push({
-        type: 'tip',
-        title: 'Emotional Awareness',
-        description: `You've experienced ${uniqueMoods.size} different moods this month. This awareness is itself an act of wisdom — knowing your heart is the first step to healing it.`,
-        icon: '💡',
-      });
-    }
-
-    const gratefulCount = history.filter((r) => r.mood === 'Grateful').length;
-    if (gratefulCount >= 3) {
-      insights.push({
-        type: 'tip',
-        title: 'Shukr Champion',
-        description: `You've felt grateful ${gratefulCount} times this month. Allah promises: "If you are grateful, I will surely increase you." [14:7]`,
-        icon: '✨',
-      });
-    }
-
-    return insights.slice(0, 4);
+    return computeInsights(history, stats.currentStreak, now);
   }
 }
 

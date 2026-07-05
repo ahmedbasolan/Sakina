@@ -260,8 +260,8 @@ class PrayerTimesService {
   public async getCurrentPrayerContext(): Promise<PrayerContext> {
     try {
       const savedLocation = await getUserLocation();
-      const city = savedLocation?.city || 'London';
-      const country = savedLocation?.country || 'UK';
+      const city = savedLocation?.city || 'Dubai';
+      const country = savedLocation?.country || 'UAE';
       const data = await this.getTimingsByCity(city, country);
       return this.determineContextFromTimings(data.timings);
     } catch (error) {

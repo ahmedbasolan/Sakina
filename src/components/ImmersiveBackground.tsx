@@ -101,7 +101,12 @@ const ImmersiveBackground: React.FC<ImmersiveBackgroundProps> = ({
 
   // Refuge = calmer/dimmer; momentum = a touch more alive.
   const glowAlpha = tone === 'refuge' ? '12' : '20';
-  const vignetteBottom = tone === 'refuge' ? 'rgba(0,0,0,0.92)' : 'rgba(0,0,0,0.85)';
+  // Kept tight to the very top/bottom edges (not a broad band) so the header
+  // and footer nav read as text floating over the scene rather than sitting
+  // on a filled bar — just enough contrast for legibility, per journey/
+  // guidance screen feedback that the old wide 0.8-0.92 band looked "filled".
+  const vignetteTop = 'rgba(0,0,0,0.5)';
+  const vignetteBottom = tone === 'refuge' ? 'rgba(0,0,0,0.68)' : 'rgba(0,0,0,0.58)';
 
   // Show atmospheric particles for free users on any immersive screen (journey
   // or guidance) — not for premium users who have a nature image instead.
@@ -163,9 +168,12 @@ const ImmersiveBackground: React.FC<ImmersiveBackgroundProps> = ({
         />
       )}
 
-      {/* Depth and readability overlays */}
+      {/* Depth and readability overlays — narrow bands hugging the very top
+          (status bar / header) and bottom (footer nav) edges, clear through
+          the middle so it never reads as a solid header/footer fill. */}
       <LinearGradient
-        colors={['rgba(0,0,0,0.8)', 'transparent', vignetteBottom]}
+        colors={[vignetteTop, 'transparent', 'transparent', vignetteBottom]}
+        locations={[0, 0.16, 0.72, 1]}
         style={StyleSheet.absoluteFill}
       />
 

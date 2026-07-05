@@ -1,11 +1,11 @@
 /**
  * Onboarding Orchestrator
  *
- * 7-screen flow with progress bar, animated transitions,
+ * 8-screen flow with progress bar, animated transitions,
  * swipe navigation, and consistent back arrow.
  *
  * Flow: Bismillah → Welcome → Heart Check-In → Personalization →
- *       First Guidance → Notification → Commit → Main
+ *       First Guidance → Location → Notification → Commit → Main
  *
  * No cold paywall in onboarding (spec §8) — upgrade asks live only at peaks.
  */
@@ -29,6 +29,7 @@ import WelcomeScreen from '../components/onboarding/WelcomeScreen';
 import HeartCheckInScreen from '../components/onboarding/HeartCheckInScreen';
 import PersonalizationScreen from '../components/onboarding/PersonalizationScreen';
 import FirstGuidanceScreen from '../components/onboarding/FirstGuidanceScreen';
+import LocationScreen from '../components/onboarding/LocationScreen';
 import NotificationScreen from '../components/onboarding/NotificationScreen';
 import CommitScreen from '../components/onboarding/CommitScreen';
 import NotificationService from '../services/notificationService';
@@ -39,7 +40,7 @@ import { useAuth } from '../context/AuthContext';
 import { Animations, Spacing } from '../theme/DesignSystem';
 import { useReduceMotion } from '../hooks/useReduceMotion';
 
-const TOTAL_SCREENS = 7;
+const TOTAL_SCREENS = 8;
 const SWIPE_THRESHOLD = 50;
 const VELOCITY_THRESHOLD = 0.5;
 const SCREEN_W = Dimensions.get('window').width;
@@ -226,6 +227,8 @@ export default function OnboardingScreen() {
       case 4:
         return <FirstGuidanceScreen isActive={isActive} onNext={goNext} />;
       case 5:
+        return <LocationScreen isActive={isActive} onNext={goNext} />;
+      case 6:
         return (
           <NotificationScreen
             isActive={isActive}
@@ -233,7 +236,7 @@ export default function OnboardingScreen() {
             onSkip={handleSkipNotifications}
           />
         );
-      case 6:
+      case 7:
         return <CommitScreen isActive={isActive} onCommit={handleCommitComplete} />;
       default:
         return null;

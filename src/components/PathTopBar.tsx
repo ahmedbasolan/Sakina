@@ -29,13 +29,20 @@ const PathTopBar: React.FC<PathTopBarProps> = ({
   phaseLabel,
 }) => {
   const insets = useSafeAreaInsets();
-  // Use completed-days count if provided; fall back to currentDay-1 so the bar
-  // matches the celebration modal's ring (both show achievement, not position).
-  const doneCount = completedDays ?? Math.max(currentDay - 1, 0);
+  // Use completed-days count if provided; fall back to currentDay-1 otherwise.
+  const completedCount = completedDays ?? Math.max(currentDay - 1, 0);
+  const isJourneyComplete = completedCount >= totalDays;
+  // Goal-gradient head start (same principle as onboarding's currentScreen+1):
+  // credit the day already in progress so day 1 never reads a bare 0%. Capped
+  // one short of totalDays until the journey is actually complete, so the
+  // final day never flashes 100% before its completion celebration fires.
+  const doneCount = isJourneyComplete
+    ? totalDays
+    : Math.min(completedCount + 1, totalDays - 1);
   const progress = (doneCount / totalDays) * 100;
 
   return (
-    <View style={[styles.container, { paddingTop: insets.top + Spacing.sm }]}>
+    <View style={[styles.container, { paddingTop: insets.top + Spacing.xs }]}>
       <View style={styles.leftAction}>
         <TouchableOpacity
           onPress={onBack}
@@ -88,7 +95,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: Spacing.xl,
-    paddingBottom: Spacing.md,
+    paddingBottom: Spacing.sm,
     zIndex: 10,
   },
   leftAction: {
@@ -114,7 +121,7 @@ const styles = StyleSheet.create({
     fontWeight: '800',
     color: Colors.text.secondary,
     letterSpacing: 1.5,
-    marginBottom: 8,
+    marginBottom: 5,
     textTransform: 'uppercase',
   },
   progressBarWrapper: {

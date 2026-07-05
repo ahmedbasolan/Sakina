@@ -22,7 +22,7 @@ import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { AnimatedMandala } from '../components/AnimatedMandala';
 import { logServiceError } from '../services/errorLoggingService';
 import { HapticsService } from '../services/hapticsService';
-import { fetchWindowGuidance as fetchWindowGuidanceShared } from '../services/guidanceWindowFetch';
+import { fetchWindowGuidance as fetchWindowGuidanceShared, buildFridayKahfExperiences } from '../services/guidanceWindowFetch';
 import {
   HeroHeader,
   VerseOfTheDay,
@@ -30,6 +30,7 @@ import {
   SpiritualWindowBanner,
   CheckInBanner,
   SmartMoodGrid,
+  StreakMilestoneBanner,
 } from '../components/home';
 import { useHomeData } from '../hooks/useHomeData';
 
@@ -123,6 +124,9 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
     localSelectedMood, setLocalSelectedMood,
     loadStreakData,
     checkTodayMood,
+    streakMilestone,
+    offerSupportForMilestone,
+    dismissStreakMilestone,
     activePath,
     dailyVerse,
     refreshing,
@@ -218,6 +222,12 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
     }
   }, [navigation, fetchWindowGuidance, setSelectedMood, setLocalSelectedMood, setCheckedInToday]);
 
+  // Friday overrides the time-of-day window entirely with Surah Al-Kahf —
+  // "whoever reads it on Friday will have light shining for him between the
+  // two Fridays" (al-Hakim). `now` already ticks every minute / on foreground
+  // resume, so this flips over at midnight without needing its own timer.
+  const isFriday = useMemo(() => new Date(now).getDay() === 5, [now]);
+
   // Spinner state for the spiritual-window banner (same touch-feedback
   // contract as the mood cards: guard + haptic + visible progress).
   const [windowLoading, setWindowLoading] = useState(false);
@@ -226,8 +236,26 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
     isHandlingTap.current = true;
     setWindowLoading(true);
     HapticsService.impactAsync('LIGHT');
-    const mood = localSelectedMoodRef.current || 'Calm';
     try {
+      // Friday: the same immersive Guidance screen as every other window,
+      // seeded with Surah Al-Kahf's first ten verses instead of a mood fetch.
+      // The queue advances for free inside GuidanceScreen; once it's
+      // exhausted, "next verse" falls through to the normal mood rotation.
+      if (isFriday) {
+        const verses = await buildFridayKahfExperiences();
+        if (verses && verses.length > 0) {
+          const [experience, ...kahfQueue] = verses;
+          navigation.navigate('Guidance', {
+            experience,
+            mood: 'Calm',
+            islamicTerm: 'The Day of Light',
+            kahfQueue,
+          });
+        }
+        return;
+      }
+
+      const mood = localSelectedMoodRef.current || 'Calm';
       const experience = await fetchWindowGuidance(mood);
       if (experience) {
         navigation.navigate('Guidance', {
@@ -242,7 +270,7 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
       setWindowLoading(false);
       isHandlingTap.current = false;
     }
-  }, [prayerContext, navigation, fetchWindowGuidance]);
+  }, [prayerContext, navigation, fetchWindowGuidance, isFriday]);
 
   // ── Derived display values ─────────────────────────────────────
 
@@ -303,6 +331,19 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
             onPress={() => navigation.navigate('MoodHistory')}
           />
 
+          {/* ═══ STREAK MILESTONE (spec §8 peak) ═════════════════ */}
+          {streakMilestone !== null && (
+            <StreakMilestoneBanner
+              milestone={streakMilestone}
+              onDismiss={dismissStreakMilestone}
+              onSupport={
+                offerSupportForMilestone
+                  ? () => { dismissStreakMilestone(); navigation.navigate('Support'); }
+                  : undefined
+              }
+            />
+          )}
+
           {/* ═══ SPIRITUAL WINDOW ════════════════════════════════ */}
           <SpiritualWindowBanner
             prayerContext={prayerContext}
@@ -310,6 +351,7 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
             slideAnim={slideAnim}
             onPress={navigateToTimedGuidance}
             loading={windowLoading}
+            isFriday={isFriday}
           />
 
           {/* ═══ HOW IS YOUR HEART? ══════════════════════════════ */}
@@ -391,11 +433,21 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
 
               <TouchableOpacity activeOpacity={0.9} onPress={() => navigation.navigate('Journeys')}>
                 <LinearGradient
-                  colors={['#18150F', '#0B1019']}
+                  colors={[Colors.background.secondary, Colors.background.primary]}
                   start={{ x: 0, y: 0 }}
                   end={{ x: 1, y: 1 }}
-                  style={[styles.journeyCard, { borderColor: '#262214' }]}
+                  style={[styles.journeyCard, { borderColor: activePath.color + '40' }]}
                 >
+                  {/* Path-identity tint — same low-alpha diagonal wash as the
+                      journey cards on the Journeys screen, so this card carries
+                      the active path's own color instead of a fixed brown/gold. */}
+                  <LinearGradient
+                    colors={[`${activePath.color}1F`, `${activePath.color}05`]}
+                    style={StyleSheet.absoluteFill}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 1 }}
+                    pointerEvents="none"
+                  />
                   <View style={styles.journeyMandala} pointerEvents="none">
                     <AnimatedMandala size={180} color={activePath.color} opacity={0.24} />
                   </View>
@@ -418,7 +470,7 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
 
                   <View style={styles.progressBarTrack}>
                     <LinearGradient
-                      colors={['#C9A84C', '#EDD9A3']}
+                      colors={[activePath.color, `${activePath.color}CC`]}
                       start={{ x: 0, y: 0 }}
                       end={{ x: 1, y: 0 }}
                       style={[styles.progressBarFill, { width: `${Math.max(0, Math.min(100, progressPct))}%` }]}
@@ -438,10 +490,18 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
           <View style={styles.quickActionsSection}>
             <View style={styles.quickActionsRow}>
               <TouchableOpacity
-                style={[styles.quickCard, { backgroundColor: Colors.background.tertiary, borderColor: Colors.glass.border }]}
+                style={[styles.quickCard, { borderColor: Colors.accent.primary + '40' }]}
                 onPress={() => navigation.navigate('PrayerTimes')}
                 activeOpacity={0.85}
               >
+                <LinearGradient colors={[Colors.background.secondary, Colors.background.primary]} style={StyleSheet.absoluteFill} />
+                <LinearGradient
+                  colors={[Colors.accent.primary + '1F', Colors.accent.primary + '05']}
+                  style={StyleSheet.absoluteFill}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 1 }}
+                  pointerEvents="none"
+                />
                 <View style={[styles.quickCardIcon, { backgroundColor: Colors.background.secondary, borderColor: Colors.glass.border }]}>
                   <PrayerArchIcon size={18} color={Colors.accent.primary} />
                 </View>
@@ -457,10 +517,18 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
               </TouchableOpacity>
 
               <TouchableOpacity
-                style={[styles.quickCard, { backgroundColor: Colors.background.tertiary, borderColor: Colors.glass.border }]}
+                style={[styles.quickCard, { borderColor: Colors.accent.secondary + '40' }]}
                 onPress={() => navigation.navigate('Journal')}
                 activeOpacity={0.85}
               >
+                <LinearGradient colors={[Colors.background.secondary, Colors.background.primary]} style={StyleSheet.absoluteFill} />
+                <LinearGradient
+                  colors={[Colors.accent.secondary + '1F', Colors.accent.secondary + '05']}
+                  style={StyleSheet.absoluteFill}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 1 }}
+                  pointerEvents="none"
+                />
                 <View style={[styles.quickCardIcon, { backgroundColor: Colors.background.secondary, borderColor: Colors.glass.border }]}>
                   <QuillIcon size={18} color={Colors.accent.secondary} />
                 </View>
@@ -627,11 +695,11 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
   journeyTitle: {
-    fontSize: 20,
+    fontSize: 16,
     color: '#FFFFFF',
     fontFamily: Typography.fonts.serif,
     fontWeight: '500',
-    letterSpacing: 0.5,
+    letterSpacing: 0.3,
     marginBottom: 2,
   },
   journeySubtitle: { fontSize: 12, color: '#8BA4BF' },
@@ -658,7 +726,7 @@ const styles = StyleSheet.create({
 
   quickActionsSection: { paddingHorizontal: Spacing.xl, marginBottom: Spacing.xxl },
   quickActionsRow: { flexDirection: 'row', gap: 12 },
-  quickCard: { flex: 1, borderRadius: 16, padding: 16, borderWidth: 1 },
+  quickCard: { flex: 1, borderRadius: 16, padding: 16, borderWidth: 1, overflow: 'hidden' },
   quickCardIcon: {
     width: 36,
     height: 36,

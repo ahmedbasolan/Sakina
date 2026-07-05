@@ -6,3 +6,4 @@ export { SpiritualWindowBanner } from './SpiritualWindowBanner';
 export { MoodButton } from './MoodButton';
 export { CheckInBanner } from './CheckInBanner';
 export { SmartMoodGrid } from './SmartMoodGrid';
+export { StreakMilestoneBanner } from './StreakMilestoneBanner';

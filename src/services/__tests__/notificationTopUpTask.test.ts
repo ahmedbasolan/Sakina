@@ -94,13 +94,13 @@ describe('topUpScheduledNotifications', () => {
     expect(mockNotificationInstance.schedulePrayerNotifications).toHaveBeenCalledWith(TIMINGS, 'Dubai');
   });
 
-  it('falls back to city lookup (London default) when no location is saved', async () => {
+  it('falls back to city lookup (Dubai default) when no location is saved', async () => {
     mockGetUserLocation.mockResolvedValue(null);
 
     const ran = await topUpScheduledNotifications();
 
     expect(ran).toBe(true);
-    expect(mockPrayerInstance.getTimingsByCity).toHaveBeenCalledWith('London', 'UK');
+    expect(mockPrayerInstance.getTimingsByCity).toHaveBeenCalledWith('Dubai', 'UAE');
     expect(mockPrayerInstance.getTimingsByCoordinates).not.toHaveBeenCalled();
   });
 

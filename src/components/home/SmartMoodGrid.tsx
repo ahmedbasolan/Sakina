@@ -11,7 +11,7 @@ import {
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { Mood, MoodConfig } from '../../types';
-import { Typography } from '../../theme/DesignSystem';
+import { Colors, Typography } from '../../theme/DesignSystem';
 import { getMoodsForTime } from '../../utils/moodTimeMapping';
 import { useReduceMotion } from '../../hooks/useReduceMotion';
 
@@ -85,11 +85,19 @@ const SmartMoodCard = memo(function SmartMoodCard({
         accessibilityHint="Tap to receive guidance for this mood"
       >
         <LinearGradient
-          colors={[mood.color + '90', mood.color + '55']}
-          style={[styles.card, { borderColor: isChecked ? mood.color + 'CC' : mood.color + '70' }]}
+          colors={[Colors.background.secondary, Colors.background.primary]}
+          style={[styles.card, { borderColor: isChecked ? mood.color + 'CC' : mood.color + '40' }]}
           start={{ x: 0, y: 0 }}
           end={{ x: 0, y: 1 }}
         >
+          {/* Mood-color tint — same low-alpha diagonal wash as the streak bar */}
+          <LinearGradient
+            colors={[mood.color + '1F', mood.color + '05']}
+            style={StyleSheet.absoluteFill}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            pointerEvents="none"
+          />
           {/* Checked glow overlay */}
           <Animated.View
             style={[
@@ -102,7 +110,7 @@ const SmartMoodCard = memo(function SmartMoodCard({
               styles.iconCircle,
               isChecked
                 ? { backgroundColor: mood.color + '40', borderColor: mood.color + 'CC' }
-                : { backgroundColor: 'rgba(0,0,0,0.18)', borderColor: 'rgba(255,255,255,0.20)' },
+                : { backgroundColor: mood.color + '26', borderColor: mood.color + '40' },
             ]}>
               <Ionicons name={mood.iconName as any} size={20} color="#FFFFFF" />
             </View>

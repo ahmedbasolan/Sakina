@@ -8,7 +8,7 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import {
   View, Text, StyleSheet, TouchableOpacity,
-  ActivityIndicator, Animated,
+  ActivityIndicator, Animated, FlatList,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { BlurView } from 'expo-blur';
@@ -27,9 +27,11 @@ import { CornerFrame } from '../components/CornerFrame';
 import ArabicText from '../components/ArabicText';
 import AudioPlayerButton from '../components/AudioPlayerButton';
 import ShareSheet from '../components/ShareSheet';
+import ReadingViewModal from '../components/ReadingViewModal';
 import { HapticsService } from '../services/hapticsService';
 import { StackScreenProps } from '@react-navigation/stack';
 import { RootStackParamList } from '../navigation/types';
+import { isolateBidiRuns } from '../utils/bidiText';
 
 // ─── types ────────────────────────────────────────────────────────────────────
 
@@ -46,6 +48,9 @@ export interface ReadingProgress {
 
 const PROGRESS_KEY = 'quran_reading_progress';
 const GOLD = Colors.accent.primary;
+const HIT_SLOP = { top: 8, bottom: 8, left: 8, right: 8 };
+
+type ViewMode = 'single' | 'page';
 
 interface TafsirEntry {
   text: string;
@@ -228,6 +233,142 @@ async function fetchTafsir(surahNumber: number, verseNumber: number): Promise<Ta
   }
 }
 
+// ─── Whole-page row ─────────────────────────────────────────────────────────
+// One verse's worth of the single-verse card, compacted for a scrolling list.
+// Audio only mounts a real player once the user asks to hear it — mounting
+// one per row up front would silently prefetch audio for every visible verse.
+
+interface VerseRowProps {
+  verse: Verse;
+  surahNumber: number;
+  surahName: string;
+  isBookmarked: boolean;
+  showTranslit: boolean;
+  onToggleBookmark: (verse: Verse) => void;
+  onShare: (verse: Verse) => void;
+}
+
+const VerseRow = React.memo(function VerseRow({
+  verse, surahNumber, surahName, isBookmarked, showTranslit, onToggleBookmark, onShare,
+}: VerseRowProps) {
+  const [contextOpen, setContextOpen] = useState(false);
+  const [tafsirEntry, setTafsirEntry] = useState<TafsirEntry | null>(null);
+  const [tafsirLoading, setTafsirLoading] = useState(false);
+  const [audioActive, setAudioActive] = useState(false);
+
+  const toggleContext = useCallback(async () => {
+    const next = !contextOpen;
+    setContextOpen(next);
+    HapticsService.impactAsync('LIGHT');
+    if (next && !tafsirEntry) {
+      setTafsirLoading(true);
+      const entry = await fetchTafsir(surahNumber, verse.numberInSurah);
+      setTafsirLoading(false);
+      setTafsirEntry(entry);
+    }
+  }, [contextOpen, tafsirEntry, surahNumber, verse.numberInSurah]);
+
+  const audioKey = `${surahNumber}:${verse.numberInSurah}`;
+
+  return (
+    <View style={styles.rowCard}>
+      <Text style={styles.rowRef}>{surahName} · {surahNumber}:{verse.numberInSurah}</Text>
+
+      <ArabicText text={verse.arabic} style={styles.rowArabic} />
+
+      {showTranslit && verse.transliteration ? (
+        <Text style={styles.rowTranslit}>{verse.transliteration}</Text>
+      ) : null}
+
+      <View style={styles.rowDivider}>
+        <View style={styles.rowDividerLine} />
+        <View style={styles.dividerDot} />
+        <View style={styles.rowDividerLine} />
+      </View>
+
+      <Text style={styles.rowTranslation}>"{verse.translation}"</Text>
+
+      <View style={styles.rowActions}>
+        <TouchableOpacity
+          onPress={() => onToggleBookmark(verse)}
+          hitSlop={HIT_SLOP}
+          accessibilityRole="button"
+          accessibilityLabel={isBookmarked ? 'Remove bookmark' : 'Save verse'}
+          accessibilityState={{ selected: isBookmarked }}
+        >
+          <Ionicons
+            name={isBookmarked ? 'bookmark' : 'bookmark-outline'}
+            size={18}
+            color={isBookmarked ? GOLD : 'rgba(245,237,227,0.5)'}
+          />
+        </TouchableOpacity>
+
+        {audioActive ? (
+          <AudioPlayerButton
+            verseKey={audioKey}
+            size={26}
+            iconSize={16}
+            autoPlay
+            color="rgba(245,237,227,0.5)"
+            showLabel={false}
+            containerStyle={styles.rowAudioCtr}
+            style={styles.rowAudioWrap}
+          />
+        ) : (
+          <TouchableOpacity
+            onPress={() => setAudioActive(true)}
+            hitSlop={HIT_SLOP}
+            accessibilityRole="button"
+            accessibilityLabel="Play recitation"
+          >
+            <Ionicons name="volume-medium-outline" size={18} color="rgba(245,237,227,0.5)" />
+          </TouchableOpacity>
+        )}
+
+        <TouchableOpacity
+          onPress={() => onShare(verse)}
+          hitSlop={HIT_SLOP}
+          accessibilityRole="button"
+          accessibilityLabel="Share verse"
+        >
+          <Ionicons name="share-outline" size={18} color="rgba(245,237,227,0.5)" />
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          onPress={toggleContext}
+          style={styles.rowContextToggle}
+          hitSlop={HIT_SLOP}
+          accessibilityRole="button"
+          accessibilityLabel="Context"
+          accessibilityState={{ expanded: contextOpen }}
+        >
+          <Text style={styles.rowContextLabel}>Context</Text>
+          <Ionicons
+            name={contextOpen ? 'chevron-up' : 'chevron-down'}
+            size={14}
+            color="rgba(212,175,55,0.55)"
+          />
+        </TouchableOpacity>
+      </View>
+
+      {contextOpen && (
+        <View style={styles.rowContextBody}>
+          {tafsirLoading ? (
+            <ActivityIndicator size="small" color={GOLD} />
+          ) : tafsirEntry ? (
+            <>
+              <Text style={styles.rowContextText}>{isolateBidiRuns(tafsirEntry.text)}</Text>
+              <Text style={styles.rowContextSource}>{tafsirEntry.source}</Text>
+            </>
+          ) : (
+            <Text style={styles.rowContextText}>{verse.translation}</Text>
+          )}
+        </View>
+      )}
+    </View>
+  );
+});
+
 // ─── SurahReaderScreen ────────────────────────────────────────────────────────
 
 type Props = StackScreenProps<RootStackParamList, 'SurahReader'>;
@@ -242,6 +383,32 @@ export default function SurahReaderScreen({ route, navigation }: Props) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [bookmarkedSet, setBookmarkedSet] = useState<Set<number>>(new Set());
   const [resumeIndex, setResumeIndex] = useState<number | null>(null);
+  const [viewMode, setViewMode] = useState<ViewMode>('single');
+  const [showTranslit, setShowTranslit] = useState(false);
+  const toggleTranslit = useCallback(() => setShowTranslit((v) => !v), []);
+  const [settingsVisible, setSettingsVisible] = useState(false);
+
+  // Whole-page list
+  const flatListRef = useRef<FlatList<Verse>>(null);
+  const viewabilityConfig = useRef({ itemVisiblePercentThreshold: 60 }).current;
+  const onViewableItemsChanged = useRef(
+    ({ viewableItems }: { viewableItems: Array<{ index: number | null }> }) => {
+      const idx = viewableItems[0]?.index;
+      if (idx !== null && idx !== undefined) currentIndexRef.current = idx;
+    },
+  ).current;
+  const handleScrollToIndexFailed = useCallback(
+    (info: { index: number; averageItemLength: number }) => {
+      flatListRef.current?.scrollToOffset({
+        offset: info.averageItemLength * info.index,
+        animated: false,
+      });
+      setTimeout(() => {
+        flatListRef.current?.scrollToIndex({ index: info.index, animated: true });
+      }, 100);
+    },
+    [],
+  );
 
   // Reflection accordion
   const [reflectionOpen, setReflectionOpen] = useState(false);
@@ -381,9 +548,15 @@ export default function SurahReaderScreen({ route, navigation }: Props) {
   };
 
   const handleResume = useCallback(() => {
-    if (resumeIndex !== null) setCurrentIndex(resumeIndex);
+    if (resumeIndex !== null) {
+      if (viewMode === 'page') {
+        flatListRef.current?.scrollToIndex({ index: resumeIndex, animated: true });
+      } else {
+        setCurrentIndex(resumeIndex);
+      }
+    }
     setResumeIndex(null);
-  }, [resumeIndex]);
+  }, [resumeIndex, viewMode]);
 
   const handlePrev = useCallback(() => {
     if (currentIndex > 0) {
@@ -399,9 +572,7 @@ export default function SurahReaderScreen({ route, navigation }: Props) {
     }
   }, [currentIndex, verses.length]);
 
-  const handleBookmark = useCallback(async () => {
-    if (!verses.length) return;
-    const v = verses[currentIndex];
+  const toggleBookmarkFor = useCallback(async (v: Verse) => {
     const wasBookmarked = bookmarkedSet.has(v.numberInSurah);
     HapticsService.impactAsync('LIGHT');
     setBookmarkedSet((prev) => {
@@ -415,11 +586,14 @@ export default function SurahReaderScreen({ route, navigation }: Props) {
     } else {
       await addBookmark(v, surahNumber, surahName);
     }
-  }, [verses, currentIndex, bookmarkedSet, surahNumber, surahName]);
+  }, [bookmarkedSet, surahNumber, surahName]);
 
-  const handleShare = useCallback(() => {
+  const handleBookmark = useCallback(() => {
     if (!verses.length) return;
-    const v = verses[currentIndex];
+    toggleBookmarkFor(verses[currentIndex]);
+  }, [verses, currentIndex, toggleBookmarkFor]);
+
+  const shareVerse = useCallback((v: Verse) => {
     setShareContent({
       text: v.translation,
       source: `Surah ${surahName} ${surahNumber}:${v.numberInSurah}`,
@@ -428,11 +602,18 @@ export default function SurahReaderScreen({ route, navigation }: Props) {
     });
     setShareVisible(true);
     HapticsService.impactAsync('LIGHT');
-  }, [verses, currentIndex, surahName, surahNumber]);
+  }, [surahName, surahNumber]);
+
+  const handleShare = useCallback(() => {
+    if (!verses.length) return;
+    shareVerse(verses[currentIndex]);
+  }, [verses, currentIndex, shareVerse]);
 
   const verse = verses[currentIndex] ?? null;
   const isBookmarked = verse ? bookmarkedSet.has(verse.numberInSurah) : false;
-  const showBismillah = surahNumber !== 9 && currentIndex === 0;
+  // At-Tawbah has no Bismillah; Al-Fatiha's ayah 1 *is* the Bismillah (its
+  // own text already renders it), so a separate header would duplicate it.
+  const showBismillah = surahNumber !== 9 && surahNumber !== 1 && currentIndex === 0;
   const audioKey = verse ? `${surahNumber}:${verse.numberInSurah}` : undefined;
   const atStart = currentIndex === 0;
   const atEnd = !verses.length || currentIndex >= verses.length - 1;
@@ -455,7 +636,7 @@ export default function SurahReaderScreen({ route, navigation }: Props) {
       <Animated.View
         style={[
           styles.header,
-          { paddingTop: insets.top + Spacing.lg, opacity: headerFade },
+          { paddingTop: insets.top + Spacing.md, opacity: headerFade },
         ]}
       >
         <TouchableOpacity
@@ -479,11 +660,20 @@ export default function SurahReaderScreen({ route, navigation }: Props) {
 
         <View style={styles.headerCenter}>
           <Text style={styles.headerArabic}>{surahArabic}</Text>
-          <Text style={styles.headerEnglish}>{surahName.toUpperCase()}</Text>
-          <Text style={styles.headerSub}>{verseCount} verses</Text>
+          <Text style={styles.headerSub}>
+            {surahName.toUpperCase()} · {verseCount} VERSES
+          </Text>
         </View>
 
-        <Text style={styles.numBadgeText}>{surahNumber}</Text>
+        <TouchableOpacity
+          onPress={() => setSettingsVisible(true)}
+          style={styles.iconButton}
+          hitSlop={{ top: 10, right: 10, bottom: 10, left: 10 }}
+          accessibilityRole="button"
+          accessibilityLabel="Reading view options"
+        >
+          <Ionicons name="options-outline" size={22} color={Colors.text.primary} />
+        </TouchableOpacity>
       </Animated.View>
 
       {/* ── Resume banner ──────────────────────────────────────────── */}
@@ -547,8 +737,8 @@ export default function SurahReaderScreen({ route, navigation }: Props) {
         </View>
       )}
 
-      {/* ── Verse + Reflection ────────────────────────────────────── */}
-      {!loading && !error && !!verse && (
+      {/* ── Verse + Reflection (single-verse mode) ──────────────────── */}
+      {viewMode === 'single' && !loading && !error && !!verse && (
         <Animated.ScrollView
           style={styles.scroll}
           contentContainerStyle={[
@@ -597,10 +787,15 @@ export default function SurahReaderScreen({ route, navigation }: Props) {
             {/* Arabic */}
             <ArabicText text={verse.arabic} style={styles.arabic} />
 
+            {/* Transliteration */}
+            {showTranslit && verse.transliteration ? (
+              <Text style={styles.translitText}>{verse.transliteration}</Text>
+            ) : null}
+
             {/* Divider */}
             <View style={styles.divider}>
               <View style={styles.dividerLine} />
-              <View style={styles.dividerDiamond} />
+              <View style={styles.dividerDot} />
               <View style={styles.dividerLine} />
             </View>
 
@@ -645,7 +840,7 @@ export default function SurahReaderScreen({ route, navigation }: Props) {
                   />
                 ) : tafsirEntry ? (
                   <>
-                    <Text style={styles.reflectionText}>{tafsirEntry.text}</Text>
+                    <Text style={styles.reflectionText}>{isolateBidiRuns(tafsirEntry.text)}</Text>
                     <View style={styles.reflectionSourceRow}>
                       <Text style={styles.reflectionSource}>{tafsirEntry.source}</Text>
                     </View>
@@ -659,13 +854,51 @@ export default function SurahReaderScreen({ route, navigation }: Props) {
         </Animated.ScrollView>
       )}
 
+      {/* ── Whole-page mode ──────────────────────────────────────────── */}
+      {viewMode === 'page' && !loading && !error && verses.length > 0 && (
+        <FlatList
+          ref={flatListRef}
+          data={verses}
+          keyExtractor={(v) => String(v.numberInSurah)}
+          renderItem={({ item }) => (
+            <VerseRow
+              verse={item}
+              surahNumber={surahNumber}
+              surahName={surahName}
+              isBookmarked={bookmarkedSet.has(item.numberInSurah)}
+              showTranslit={showTranslit}
+              onToggleBookmark={toggleBookmarkFor}
+              onShare={shareVerse}
+            />
+          )}
+          ListHeaderComponent={
+            surahNumber !== 9 && surahNumber !== 1 ? (
+              <View style={styles.bismillahRow}>
+                <Text style={styles.bismillahText}>بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ</Text>
+              </View>
+            ) : null
+          }
+          contentContainerStyle={[styles.pageListContent, { paddingBottom: insets.bottom + Spacing.xxl }]}
+          showsVerticalScrollIndicator={false}
+          onViewableItemsChanged={onViewableItemsChanged}
+          viewabilityConfig={viewabilityConfig}
+          onScrollToIndexFailed={handleScrollToIndexFailed}
+          initialNumToRender={8}
+          windowSize={7}
+        />
+      )}
+
       {/* ── Fixed bottom: action pill + navigation ─────────────────── */}
-      {!loading && !error && !!verse && (
+      {viewMode === 'single' && !loading && !error && !!verse && (
         <View style={[styles.bottomArea, { paddingBottom: insets.bottom + Spacing.md }]}>
 
           {/* Save · Share · Audio */}
           <View style={styles.pill}>
-            <BlurView intensity={60} tint="dark" style={styles.pillInner}>
+            <BlurView intensity={80} tint="dark" style={styles.pillInner}>
+              {/* Solid backing on top of the blur — on some devices blur alone
+                  still lets scrolling text underneath show through and clash
+                  with the icons, so this guarantees a clean, legible surface. */}
+              <View style={styles.pillBacking} />
 
               {/* Save */}
               <TouchableOpacity
@@ -681,9 +914,6 @@ export default function SurahReaderScreen({ route, navigation }: Props) {
                   size={22}
                   color={isBookmarked ? GOLD : 'rgba(245,237,227,0.7)'}
                 />
-                <Text style={[styles.pillLabel, isBookmarked && styles.pillLabelActive]}>
-                  Save
-                </Text>
               </TouchableOpacity>
 
               <View style={styles.pillSep} />
@@ -697,7 +927,6 @@ export default function SurahReaderScreen({ route, navigation }: Props) {
                 accessibilityLabel="Share verse"
               >
                 <Ionicons name="share-outline" size={22} color="rgba(245,237,227,0.7)" />
-                <Text style={styles.pillLabel}>Share</Text>
               </TouchableOpacity>
 
               <View style={styles.pillSep} />
@@ -714,7 +943,6 @@ export default function SurahReaderScreen({ route, navigation }: Props) {
                     containerStyle={styles.audioCtr}
                     style={styles.audioWrap}
                   />
-                  <Text style={styles.pillLabel}>Audio</Text>
                 </View>
               ) : null}
 
@@ -773,6 +1001,15 @@ export default function SurahReaderScreen({ route, navigation }: Props) {
           transliteration: shareContent.transliteration,
         }}
       />
+
+      <ReadingViewModal
+        isVisible={settingsVisible}
+        onClose={() => setSettingsVisible(false)}
+        viewMode={viewMode}
+        onChangeViewMode={setViewMode}
+        showTranslit={showTranslit}
+        onToggleTranslit={toggleTranslit}
+      />
     </View>
   );
 }
@@ -790,7 +1027,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: Spacing.xl,
-    paddingBottom: Spacing.lg,
+    paddingBottom: Spacing.sm,
     zIndex: 2,
     gap: Spacing.md,
   },
@@ -806,29 +1043,26 @@ const styles = StyleSheet.create({
   },
   headerArabic: {
     fontFamily: Typography.fonts.arabic,
-    fontSize: 20,
+    fontSize: 17,
     color: '#EDD9A3',
     letterSpacing: 0.5,
-    marginBottom: 2,
-  },
-  headerEnglish: {
-    fontSize: 11,
-    fontWeight: '700',
-    color: Colors.text.primary,
-    letterSpacing: 2,
-    marginBottom: 3,
+    // Generous line height so multi-word names (e.g. "آل عمران") wrapping to
+    // a second line never get clipped, and harakat aren't cut at the edges.
+    lineHeight: 32,
+    textAlign: 'center',
+    marginBottom: 1,
   },
   headerSub: {
-    fontSize: 11,
+    fontSize: Typography.sizes.label,
+    fontWeight: '700',
     color: Colors.text.muted,
-    letterSpacing: 0.3,
+    letterSpacing: 1.2,
   },
-  numBadgeText: {
+  iconButton: {
     width: 44,
-    textAlign: 'center',
-    fontSize: 13,
-    fontWeight: '600',
-    color: 'rgba(212,175,55,0.5)',
+    height: 44,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 
   // ── Resume banner ──
@@ -951,16 +1185,19 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingBottom: Spacing.lg,
     marginBottom: Spacing.xl,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: 'rgba(212,175,55,0.1)',
   },
   bismillahText: {
     fontFamily: Typography.fonts.arabic,
     fontSize: 20,
-    color: '#EDD9A3',
+    // Muted vs. the main ayah below, but kept high enough that the gold
+    // doesn't read as washed-out grey against the dark background —
+    // opacity 0.6 was doing that.
+    color: 'rgba(237,217,163,0.85)',
     textAlign: 'center',
-    lineHeight: 40,
-    opacity: 0.6,
+    // lineHeight ≥ ~2.1x font size — Amiri-Quran's harakat sit far above/below
+    // the baseline; a tighter line box clips them at the bottom (matches the
+    // rule already followed by the main `.arabic` style below).
+    lineHeight: 46,
   },
 
   // Arabic
@@ -969,6 +1206,18 @@ const styles = StyleSheet.create({
     lineHeight: 54,
     color: '#EDD9A3',
     textAlign: 'center',
+  },
+
+  // Transliteration
+  translitText: {
+    fontFamily: Typography.fonts.serif,
+    fontSize: 14,
+    lineHeight: 22,
+    color: 'rgba(245,237,227,0.5)',
+    textAlign: 'center',
+    fontStyle: 'italic',
+    marginTop: Spacing.md,
+    paddingHorizontal: Spacing.lg,
   },
 
   // Divider
@@ -984,7 +1233,7 @@ const styles = StyleSheet.create({
     height: StyleSheet.hairlineWidth,
     backgroundColor: 'rgba(245,237,227,0.12)',
   },
-  dividerDiamond: {
+  dividerDot: {
     width: 5,
     height: 5,
     borderRadius: 1,
@@ -1081,21 +1330,15 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.sm,
     paddingHorizontal: Spacing.lg,
   },
+  pillBacking: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(8,14,23,0.88)',
+  },
   pillBtn: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    gap: Spacing.xs,
     minHeight: 44,
-  },
-  pillLabel: {
-    fontSize: 10,
-    color: 'rgba(245,237,227,0.5)',
-    letterSpacing: 0.6,
-    fontWeight: '600',
-  },
-  pillLabelActive: {
-    color: GOLD,
   },
   pillSep: {
     width: StyleSheet.hairlineWidth,
@@ -1134,5 +1377,118 @@ const styles = StyleSheet.create({
     letterSpacing: 1,
     minWidth: 70,
     textAlign: 'center',
+  },
+
+  // ── Whole-page mode ──
+  pageListContent: {
+    paddingHorizontal: Spacing.xl,
+    paddingTop: Spacing.lg,
+    gap: Spacing.lg,
+  },
+  rowCard: {
+    backgroundColor: 'rgba(255,235,210,0.04)',
+    borderRadius: BorderRadius.xl,
+    borderWidth: 1,
+    borderColor: 'rgba(212,175,55,0.12)',
+    paddingHorizontal: Spacing.lg,
+    paddingVertical: Spacing.xl,
+    alignItems: 'center',
+  },
+  rowRef: {
+    fontSize: 11,
+    fontWeight: '600',
+    color: GOLD,
+    letterSpacing: 1.4,
+    opacity: 0.8,
+    marginBottom: Spacing.lg,
+  },
+  rowArabic: {
+    fontSize: 22,
+    lineHeight: 46,
+    color: '#EDD9A3',
+    textAlign: 'center',
+  },
+  rowTranslit: {
+    fontFamily: Typography.fonts.serif,
+    fontSize: 12,
+    lineHeight: 19,
+    color: 'rgba(245,237,227,0.45)',
+    textAlign: 'center',
+    fontStyle: 'italic',
+    marginTop: Spacing.sm,
+    paddingHorizontal: Spacing.sm,
+  },
+  rowDivider: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.sm,
+    marginTop: Spacing.md,
+    width: '60%',
+  },
+  rowDividerLine: {
+    flex: 1,
+    height: StyleSheet.hairlineWidth,
+    backgroundColor: 'rgba(245,237,227,0.12)',
+  },
+  rowTranslation: {
+    fontFamily: Typography.fonts.serif,
+    fontSize: 14,
+    lineHeight: 24,
+    color: 'rgba(245,237,227,0.7)',
+    textAlign: 'center',
+    fontStyle: 'italic',
+    marginTop: Spacing.md,
+    paddingHorizontal: Spacing.sm,
+  },
+  rowActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    alignSelf: 'stretch',
+    justifyContent: 'center',
+    gap: Spacing.xl,
+    marginTop: Spacing.lg,
+    paddingTop: Spacing.md,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: 'rgba(255,255,255,0.08)',
+  },
+  rowAudioCtr: {
+    backgroundColor: 'transparent',
+    borderWidth: 0,
+  },
+  rowAudioWrap: {
+    marginVertical: 0,
+  },
+  rowContextToggle: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+  rowContextLabel: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: 'rgba(212,175,55,0.75)',
+    letterSpacing: 0.8,
+    textTransform: 'uppercase',
+  },
+  rowContextBody: {
+    alignSelf: 'stretch',
+    marginTop: Spacing.lg,
+    paddingTop: Spacing.md,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: 'rgba(255,255,255,0.08)',
+  },
+  rowContextText: {
+    fontFamily: Typography.fonts.serif,
+    fontSize: 14,
+    lineHeight: 24,
+    color: Colors.text.secondary,
+  },
+  rowContextSource: {
+    fontSize: Typography.sizes.detail,
+    color: GOLD,
+    opacity: 0.75,
+    letterSpacing: 0.4,
+    marginTop: Spacing.sm,
+    textAlign: 'right',
   },
 });

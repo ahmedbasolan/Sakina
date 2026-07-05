@@ -14,6 +14,7 @@ import {
   StyleSheet,
   FlatList,
   TouchableOpacity,
+  TextInput,
   Animated,
   Dimensions,
 } from 'react-native';
@@ -99,7 +100,7 @@ const filterStyles = StyleSheet.create({
   row: {
     flexDirection: 'row',
     gap: Spacing.sm,
-    marginBottom: Spacing.xl,
+    flex: 1,
   },
   tab: {
     flex: 1,
@@ -215,6 +216,16 @@ function JourneyCard({ path, index, isActive, isLocked, userProgress, onPress }:
           ]}
         >
           <View style={[styles.journeyCardInner, isLocked && styles.journeyCardInnerLocked]}>
+            {/* Same neutral-base + low-alpha diagonal accent-tint recipe used
+                across the app's other cards (StreakBar, Verse of the Day,
+                mood grid, mood history, journal, library). */}
+            <LinearGradient
+              colors={[`${cardColor}1F`, `${cardColor}05`]}
+              style={StyleSheet.absoluteFill}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              pointerEvents="none"
+            />
             {/* Top row: icon + info + badge/chevron */}
             <View style={styles.journeyTop}>
               <View
@@ -295,7 +306,27 @@ export default function PathsScreen() {
   const [PATHS, setPaths] = useState<any[]>([]);
   const [userProgressList, setUserProgressList] = useState<UserPathProgress[]>([]);
   const [activeFilter, setActiveFilter] = useState<FilterTab>('all');
+  const [searchActive, setSearchActive] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
   const headerFade = useRef(new Animated.Value(0)).current;
+  const searchAnim = useRef(new Animated.Value(0)).current;
+  const searchInputRef = useRef<TextInput>(null);
+
+  // TextInput's `autoFocus` prop only fires on initial mount — this input
+  // stays mounted the whole time (just cross-faded), so it needs an
+  // imperative focus/blur on each open/close instead.
+  const openSearch = () => {
+    setSearchActive(true);
+    Animated.timing(searchAnim, { toValue: 1, duration: 220, useNativeDriver: true }).start();
+    searchInputRef.current?.focus();
+  };
+  const closeSearch = () => {
+    searchInputRef.current?.blur();
+    Animated.timing(searchAnim, { toValue: 0, duration: 200, useNativeDriver: true }).start(() => {
+      setSearchActive(false);
+      setSearchQuery('');
+    });
+  };
 
   useEffect(() => {
     const svc = PathsService.getInstance();
@@ -330,7 +361,7 @@ export default function PathsScreen() {
   };
 
   // ── Filter logic ────────────────────────────────────────────
-  const filteredPaths = useMemo(() => {
+  const tabFilteredPaths = useMemo(() => {
     if (activeFilter === 'all') {
       // Available paths first, locked (early-access) paths after — stable
       // within each group so unrelated re-ordering doesn't shuffle cards.
@@ -354,6 +385,14 @@ export default function PathsScreen() {
     });
   }, [PATHS, userProgressList, activeFilter]);
 
+  // Search narrows within whatever tab is currently selected, rather than
+  // overriding it — typing "salah" while on "Active" only searches active paths.
+  const filteredPaths = useMemo(() => {
+    const query = searchQuery.trim().toLowerCase();
+    if (!query) return tabFilteredPaths;
+    return tabFilteredPaths.filter((path) => path.title.toLowerCase().includes(query));
+  }, [tabFilteredPaths, searchQuery]);
+
   const filterCounts = useMemo(() => ({
     all: PATHS.length,
     active: PATHS.filter((path) => {
@@ -373,7 +412,7 @@ export default function PathsScreen() {
       <LinearGradient colors={Colors.celestialWash} style={StyleSheet.absoluteFill} />
 
       {/* ── Header with mandala backdrop ─────────────────────── */}
-      <Animated.View style={[styles.header, { paddingTop: insets.top + 16, opacity: headerFade }]}>
+      <Animated.View style={[styles.header, { paddingTop: insets.top + 12, opacity: headerFade }]}>
         {STAR_POSITIONS.map((s, i) => (
           <TwinklingStar
             key={i}
@@ -386,20 +425,62 @@ export default function PathsScreen() {
           />
         ))}
 
-        <View style={styles.headerMandalaOuter} pointerEvents="none">
-          <AnimatedMandala size={290} color={Colors.accent.primary} opacity={0.12} />
-        </View>
-        <View style={styles.headerMandalaInner} pointerEvents="none">
-          <AnimatedMandala size={180} color={Colors.accent.primary} opacity={0.1} direction="ccw" />
-        </View>
-
         <View style={styles.headerText}>
-          <Text style={styles.topBarText}>★ SAKINA</Text>
           <Text style={styles.headerPretitle}>GUIDED PROGRAMS</Text>
           <Text style={styles.headerTitle}>Sacred Journeys</Text>
           <Text style={styles.headerSub}>
             Curated paths for lasting spiritual transformation.
           </Text>
+        </View>
+
+        {/* Tabs + search live in the fixed header so they never scroll away,
+            and share one row via a cross-fade instead of two separate bars. */}
+        <View style={styles.headerControls}>
+          <Animated.View
+            pointerEvents={searchActive ? 'none' : 'auto'}
+            style={[
+              styles.filterSearchRow,
+              StyleSheet.absoluteFill,
+              {
+                opacity: searchAnim.interpolate({ inputRange: [0, 1], outputRange: [1, 0] }),
+              },
+            ]}
+          >
+            <FilterBar active={activeFilter} onChange={setActiveFilter} counts={filterCounts} />
+            <TouchableOpacity
+              onPress={openSearch}
+              style={styles.searchIconBtn}
+              hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+              accessibilityRole="button"
+              accessibilityLabel="Search journeys"
+            >
+              <MaterialCommunityIcons name="magnify" size={18} color={Colors.text.muted} />
+            </TouchableOpacity>
+          </Animated.View>
+
+          <Animated.View
+            pointerEvents={searchActive ? 'auto' : 'none'}
+            style={[styles.searchRow, { opacity: searchAnim }]}
+          >
+            <MaterialCommunityIcons name="magnify" size={16} color={Colors.text.muted} />
+            <TextInput
+              ref={searchInputRef}
+              value={searchQuery}
+              onChangeText={setSearchQuery}
+              placeholder="Search journeys"
+              placeholderTextColor={Colors.text.muted}
+              style={styles.searchInput}
+              returnKeyType="search"
+            />
+            <TouchableOpacity
+              onPress={closeSearch}
+              hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+              accessibilityRole="button"
+              accessibilityLabel="Close search"
+            >
+              <MaterialCommunityIcons name="close" size={18} color={Colors.text.muted} />
+            </TouchableOpacity>
+          </Animated.View>
         </View>
       </Animated.View>
 
@@ -411,15 +492,6 @@ export default function PathsScreen() {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={[styles.content, { paddingBottom: insets.bottom + 100 }]}
         ItemSeparatorComponent={() => <View style={{ height: Spacing.lg }} />}
-        ListHeaderComponent={
-          <Animated.View style={{ opacity: headerFade }}>
-            <FilterBar
-              active={activeFilter}
-              onChange={setActiveFilter}
-              counts={filterCounts}
-            />
-          </Animated.View>
-        }
         ListEmptyComponent={
           <View style={styles.emptyState}>
             <MaterialCommunityIcons
@@ -428,12 +500,16 @@ export default function PathsScreen() {
               color={`${Colors.accent.primary}40`}
             />
             <Text style={styles.emptyTitle}>
-              {activeFilter === 'active' ? 'No active journeys' : 'None yet'}
+              {searchQuery.trim()
+                ? 'No matches'
+                : activeFilter === 'active' ? 'No active journeys' : 'None yet'}
             </Text>
             <Text style={styles.emptySub}>
-              {activeFilter === 'active'
-                ? 'Begin a path to see it here.'
-                : 'Complete a path to see it here.'}
+              {searchQuery.trim()
+                ? 'Try a different search term.'
+                : activeFilter === 'active'
+                  ? 'Begin a path to see it here.'
+                  : 'Complete a path to see it here.'}
             </Text>
           </View>
         }
@@ -467,33 +543,9 @@ const styles = StyleSheet.create({
     paddingBottom: Spacing.lg,
     zIndex: 2,
     overflow: 'hidden',
-    minHeight: 180,
-  },
-  headerMandalaOuter: {
-    position: 'absolute',
-    top: -10,
-    left: 0,
-    right: 0,
-    alignItems: 'center',
-    zIndex: 0,
-  },
-  headerMandalaInner: {
-    position: 'absolute',
-    top: 30,
-    left: 0,
-    right: 0,
-    alignItems: 'center',
-    zIndex: 0,
+    minHeight: 200,
   },
   headerText: { zIndex: 1 },
-  topBarText: {
-    fontSize: Typography.sizes.detail,
-    color: Colors.accent.primary,
-    letterSpacing: 2,
-    fontWeight: '700',
-    textAlign: 'center',
-    marginBottom: Spacing.lg,
-  },
   headerPretitle: {
     fontSize: 10,
     color: 'rgba(201,168,76,0.8)',
@@ -516,6 +568,49 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: Colors.text.muted,
     lineHeight: 18,
+  },
+
+  /* ── Header tabs + search (cross-fade between the two) ── */
+  headerControls: {
+    position: 'relative',
+    height: 44,
+    marginTop: Spacing.lg,
+  },
+  filterSearchRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.sm,
+  },
+  searchIconBtn: {
+    width: 40,
+    height: 40,
+    borderRadius: BorderRadius.md,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.07)',
+    backgroundColor: 'rgba(255,255,255,0.03)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  searchRow: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    top: 0,
+    bottom: 0,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.sm,
+    paddingHorizontal: Spacing.md,
+    borderRadius: BorderRadius.md,
+    borderWidth: 1,
+    borderColor: `${Colors.accent.primary}30`,
+    backgroundColor: 'rgba(255,255,255,0.03)',
+  },
+  searchInput: {
+    flex: 1,
+    fontSize: Typography.sizes.small,
+    color: Colors.text.primary,
+    paddingVertical: 0,
   },
 
   /* ── Scroll content ── */

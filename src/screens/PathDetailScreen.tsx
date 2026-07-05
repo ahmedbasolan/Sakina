@@ -49,6 +49,14 @@ const LessonRow = ({ step, visual, isCompleted, isCurrent, isLocked, onPress }: 
       accessibilityHint={isLocked ? undefined : "Double tap to open this day's lesson"}
       accessibilityState={{ disabled: isLocked, selected: isCompleted }}
     >
+      <LinearGradient colors={[Colors.background.secondary, Colors.background.primary]} style={StyleSheet.absoluteFill} />
+      <LinearGradient
+        colors={[`${visual.color}1F`, `${visual.color}05`]}
+        style={StyleSheet.absoluteFill}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        pointerEvents="none"
+      />
       <View style={styles.lessonCardHeader}>
         <View style={[
           styles.lessonCheck,
@@ -339,6 +347,14 @@ export const PathDetailScreen: React.FC = () => {
               accessibilityRole="button"
               accessibilityLabel={`${completedDays === 0 ? 'Begin' : 'Continue'} day ${nextStepDay}, ${nextStep.title}`}
             >
+              <LinearGradient colors={[Colors.background.secondary, Colors.background.primary]} style={StyleSheet.absoluteFill} />
+              <LinearGradient
+                colors={[`${visual.color}1F`, `${visual.color}05`]}
+                style={StyleSheet.absoluteFill}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                pointerEvents="none"
+              />
               <View style={styles.todayCardLeft}>
                 <Text style={[styles.todayCardTitle, { color: Colors.text.primary }]}>
                   {nextStep.title}
@@ -521,11 +537,11 @@ const styles = StyleSheet.create({
     marginHorizontal: 24,
     borderRadius: 16,
     borderWidth: 1,
-    backgroundColor: 'rgba(255,255,255,0.03)',
     padding: 20,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+    overflow: 'hidden',
   },
   todayCardLeft: {
     flex: 1,
@@ -613,7 +629,6 @@ const styles = StyleSheet.create({
   lessonCardWrap: {
     borderRadius: 16,
     borderWidth: 1,
-    backgroundColor: 'rgba(255,255,255,0.02)',
     overflow: 'hidden',
   },
   lessonCardHeader: {

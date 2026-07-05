@@ -69,8 +69,9 @@ const darkOnboardingGradients: [string, string, string][] = [
   ['#07111E', '#0C1A2E', '#0F1F30'],   // 2. Heart Check-In
   ['#07111E', '#0C1A2E', '#0F1F30'],   // 3. Personalization
   ['#07111E', '#0C1A2E', '#0F1F30'],   // 4. First Guidance
-  ['#07111E', '#0C1A2E', '#0F1F30'],   // 5. Notification
-  ['#07111E', '#0C1A2E', '#0F1F30'],   // 6. Commit
+  ['#07111E', '#0C1A2E', '#0F1F30'],   // 5. Location
+  ['#07111E', '#0C1A2E', '#0F1F30'],   // 6. Notification
+  ['#07111E', '#0C1A2E', '#0F1F30'],   // 7. Commit
 ];
 
 const lightOnboardingGradients: [string, string, string][] = [
@@ -79,8 +80,9 @@ const lightOnboardingGradients: [string, string, string][] = [
   ['#EDF1F7', '#E0EAF5', '#EDF1F7'],   // 2. Heart Check-In
   ['#F0EDF7', '#EAE0F2', '#F0EDF7'],   // 3. Personalization
   ['#EDF1F7', '#E0EAF5', '#EDF1F7'],   // 4. First Guidance
-  ['#EEF1F7', '#E2EAF2', '#EEF1F7'],   // 5. Notification
-  ['#EFF5F1', '#E3EEE9', '#EFF5F1'],   // 6. Commit
+  ['#EDF1F7', '#E0EAF5', '#EDF1F7'],   // 5. Location
+  ['#EEF1F7', '#E2EAF2', '#EEF1F7'],   // 6. Notification
+  ['#EFF5F1', '#E3EEE9', '#EFF5F1'],   // 7. Commit
 ];
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);

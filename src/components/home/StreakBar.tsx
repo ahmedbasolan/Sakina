@@ -2,10 +2,28 @@ import React, { useMemo } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Animated } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
-import { Colors, Spacing, BorderRadius } from '../../theme/DesignSystem';
+import { Colors, Spacing, BorderRadius, MoodColors, Typography } from '../../theme/DesignSystem';
 import { CrescentIcon } from './CrescentIcon';
 
+// Deliberate exception to the app's single-gold-accent rule, scoped to this
+// card only (owner preference, reference image). Reuses the Calm mood's
+// established emerald rather than inventing a new arbitrary hex.
+const STREAK_ACCENT = MoodColors.Calm.accent;
+
 const WEEK_LABELS = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
+
+// Steadfastness-themed verses, one per streak day — grows with the streak
+// rather than the calendar date (distinct rotation from Verse of the Day).
+const STREAK_VERSES: { text: string; ref: string }[] = [
+  { text: 'Indeed, Allah is with those who are patient.', ref: 'Al-Baqarah 2:153' },
+  { text: 'And Allah loves those who are patient.', ref: "Aal 'Imran 3:146" },
+  { text: 'So indeed, with hardship comes ease.', ref: 'Ash-Sharh 94:5' },
+  { text: 'Allah does not burden a soul beyond what it can bear.', ref: 'Al-Baqarah 2:286' },
+  { text: 'Indeed, Allah will not change the condition of a people until they change what is in themselves.', ref: "Ar-Ra'd 13:11" },
+  { text: 'Our Lord, pour upon us patience and plant firmly our feet.', ref: 'Al-Baqarah 2:250' },
+  { text: 'And seek help through patience and prayer.', ref: 'Al-Baqarah 2:45' },
+  { text: 'And be patient, for indeed, Allah does not allow the reward of the doers of good to be lost.', ref: 'Hud 11:115' },
+];
 
 function useWeekDots(streakDays: number) {
   // Recomputed each render so a date change (midnight rollover) is picked up
@@ -34,6 +52,7 @@ interface StreakBarProps {
 
 export function StreakBar({ streakDays, fadeAnim, slideAnim, onPress }: StreakBarProps) {
   const weekDots = useWeekDots(streakDays);
+  const streakVerse = STREAK_VERSES[streakDays % STREAK_VERSES.length];
   return (
     <Animated.View style={[styles.streakSection, { opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
       <TouchableOpacity
@@ -44,10 +63,18 @@ export function StreakBar({ streakDays, fadeAnim, slideAnim, onPress }: StreakBa
         accessibilityHint="Double tap to view your streak history"
       >
         <LinearGradient colors={[Colors.background.secondary, Colors.background.primary]} style={styles.streakBar}>
+          <LinearGradient
+            colors={[`${STREAK_ACCENT}1F`, `${STREAK_ACCENT}05`]}
+            style={[StyleSheet.absoluteFill, { borderRadius: BorderRadius.lg }]}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            pointerEvents="none"
+          />
+          <View style={styles.streakTopRow}>
           {/* Crescent icon + streak info */}
           <View style={styles.streakLeft}>
             <View style={styles.streakFlameContainer}>
-              <CrescentIcon size={18} color={Colors.accent.primary} />
+              <CrescentIcon size={18} color={STREAK_ACCENT} />
             </View>
             <View>
               {streakDays === 0 ? (
@@ -78,7 +105,13 @@ export function StreakBar({ streakDays, fadeAnim, slideAnim, onPress }: StreakBa
           </View>
           <View style={styles.streakRight}>
             <Text style={styles.streakViewText}>View</Text>
-            <Ionicons name="arrow-forward" size={12} color={Colors.accent.primary} />
+            <Ionicons name="arrow-forward" size={12} color={STREAK_ACCENT} />
+          </View>
+          </View>
+          <View style={styles.streakVerseRow}>
+            <Text style={styles.streakVerseText} numberOfLines={2}>
+              "{streakVerse.text}" <Text style={styles.streakVerseRef}>— {streakVerse.ref}</Text>
+            </Text>
           </View>
         </LinearGradient>
       </TouchableOpacity>
@@ -92,13 +125,33 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.xl,
   },
   streakBar: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
     borderRadius: BorderRadius.lg,
     padding: Spacing.lg,
     borderWidth: 1,
-    borderColor: Colors.accent.primary + '26',
+    borderColor: STREAK_ACCENT + '40',
+    overflow: 'hidden',
+  },
+  streakTopRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  streakVerseRow: {
+    borderTopWidth: 1,
+    borderTopColor: STREAK_ACCENT + '20',
+    marginTop: Spacing.md,
+    paddingTop: Spacing.sm,
+  },
+  streakVerseText: {
+    fontFamily: Typography.fonts.serif,
+    fontStyle: 'italic',
+    fontSize: 12.5,
+    lineHeight: 18,
+    color: Colors.text.secondary,
+  },
+  streakVerseRef: {
+    fontStyle: 'normal',
+    color: STREAK_ACCENT,
   },
   streakLeft: {
     flexDirection: 'row',
@@ -109,19 +162,19 @@ const styles = StyleSheet.create({
     width: 36,
     height: 36,
     borderRadius: 18,
-    backgroundColor: Colors.accent.primary + '1A',
+    backgroundColor: STREAK_ACCENT + '26',
     justifyContent: 'center',
     alignItems: 'center',
   },
   streakText: {
     fontSize: 15,
     fontWeight: '600',
-    color: Colors.accent.primary,
+    color: Colors.text.primary,
     marginBottom: 2,
   },
   streakHint: {
     fontSize: 11,
-    color: Colors.accent.primary + '73',
+    color: Colors.text.secondary,
     letterSpacing: 0.2,
   },
   streakMoons: {
@@ -136,23 +189,23 @@ const styles = StyleSheet.create({
     width: 7,
     height: 7,
     borderRadius: 4,
-    backgroundColor: Colors.accent.primary + '33',
+    backgroundColor: STREAK_ACCENT + '33',
   },
   streakMoonActive: {
-    backgroundColor: Colors.accent.primary,
+    backgroundColor: STREAK_ACCENT,
   },
   streakDotToday: {
     borderWidth: 1,
-    borderColor: Colors.accent.primary,
+    borderColor: STREAK_ACCENT,
   },
   streakDayLabel: {
     fontSize: 8,
     fontWeight: '700',
-    color: `${Colors.accent.primary}59`,
+    color: `${STREAK_ACCENT}59`,
     letterSpacing: 0.3,
   },
   streakDayLabelToday: {
-    color: Colors.accent.primary,
+    color: STREAK_ACCENT,
   },
   streakRight: {
     flexDirection: 'row',
@@ -162,6 +215,6 @@ const styles = StyleSheet.create({
   streakViewText: {
     fontSize: 13,
     fontWeight: '600',
-    color: Colors.accent.primary,
+    color: STREAK_ACCENT,
   },
 });
