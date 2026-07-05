@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useMemo } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Colors, Spacing, BorderRadius, Typography, MoodColors, Layout } from '../theme/DesignSystem';
 import { logServiceError } from '../services/errorLoggingService';
 import {
@@ -21,6 +21,7 @@ import { MaterialCommunityIcons, Ionicons } from '@expo/vector-icons';
 import { AnimatedMandala } from '../components/AnimatedMandala';
 import { TwinklingStar } from '../components/TwinklingStar';
 import { dbQuery } from '../database/schema';
+import { RotationEngine } from '../services/rotationEngine';
 
 const { width } = Dimensions.get('window');
 
@@ -40,28 +41,46 @@ const MOOD_COLORS: Record<string, string> = Object.fromEntries(
   Object.entries(MoodColors).map(([k, v]) => [k, v.accent])
 );
 
+// Same icon set the mood grid/onboarding use per mood, plus Guilty (not
+// offered in either of those pickers but reachable via Home's mood grid,
+// so a saved verse-reflection can still carry it).
+const MOOD_ICON: Record<string, string> = {
+  Grateful: 'heart',
+  Hopeful: 'sunny',
+  Calm: 'water',
+  Overwhelmed: 'layers',
+  Tired: 'moon',
+  Lonely: 'person',
+  Sad: 'rainy',
+  Angry: 'flame',
+  Guilty: 'refresh-circle',
+};
 
-const DAILY_PROMPTS = [
-  { before: 'What brought you', highlight: 'peace', after: 'today?' },
-  { before: 'What are you most', highlight: 'grateful', after: 'for right now?' },
-  { before: 'What is weighing on your', highlight: 'heart', after: 'today?' },
-  { before: 'Where do you need', highlight: 'sabr', after: 'this week?' },
-  { before: 'What are you asking', highlight: 'Allah', after: 'for right now?' },
-  { before: 'What moment gave you', highlight: 'hope', after: 'recently?' },
-  { before: 'What do you want to', highlight: 'let go', after: 'of today?' },
-];
+// One deliberate exception to the app's single-gold-accent rule, scoped to
+// this screen's compose card only (owner decision, matches the reference
+// design). Everything else on this screen stays gold/steel/cream.
+const COMPOSE_ACCENT = '#A78BFA';
 
-function getTodayPrompt() {
-  const start = new Date(new Date().getFullYear(), 0, 0);
-  const dayOfYear = Math.floor((+new Date() - +start) / 86400000);
-  return DAILY_PROMPTS[dayOfYear % DAILY_PROMPTS.length];
+// ── Merged entry shape ──────────────────────────────────────────────────
+// The journal combines two sources: freeform entries the user writes here
+// (`reflections` table — no verse attached), and reflections saved while
+// sitting with a verse in GuidanceScreen (`saved_reflections` — carries a
+// Quran citation via the joined content row). RotationEngine.saveReflection
+// already writes the latter; getSavedReflections() was defined but never
+// surfaced anywhere in the app until now.
+interface JournalEntry {
+  id: string;
+  title: string;
+  body: string;
+  mood?: string;
+  createdAt: number;
+  source?: string; // Quran citation — only present for verse-linked entries
 }
 
-// ── Entry row ────────────────────────────────────────────────────────
-function ReflectionCard({ reflection, index, isLast }: { reflection: any; index: number; isLast: boolean }) {
-  const moodColor = reflection.mood
-    ? (MOOD_COLORS[reflection.mood] || Colors.accent.primary)
-    : Colors.accent.primary;
+// ── Entry card ───────────────────────────────────────────────────────
+function ReflectionCard({ entry, index }: { entry: JournalEntry; index: number }) {
+  const moodColor = entry.mood ? (MOOD_COLORS[entry.mood] || Colors.accent.primary) : null;
+  const moodIcon = entry.mood ? MOOD_ICON[entry.mood] : null;
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const slideAnim = useRef(new Animated.Value(16)).current;
 
@@ -72,48 +91,61 @@ function ReflectionCard({ reflection, index, isLast }: { reflection: any; index:
     ]).start();
   }, []);
 
-  const formatDate = (ts: number | string) => {
+  const formatDate = (ts: number) => {
     const d = new Date(ts);
-    return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }).toUpperCase();
+    return d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
   };
+
+  const tintColor = moodColor || Colors.accent.primary;
 
   return (
     <Animated.View style={{ opacity: fadeAnim, transform: [{ translateY: slideAnim }] }}>
       <TouchableOpacity
-        activeOpacity={0.7}
-        style={styles.entryRow}
+        activeOpacity={0.85}
+        style={[styles.entryCard, { borderColor: `${tintColor}40` }]}
         accessibilityRole="button"
-        accessibilityLabel={`${reflection.title || 'Reflection'}, ${formatDate(reflection.createdAt || Date.now())}`}
+        accessibilityLabel={`${entry.title}, ${formatDate(entry.createdAt)}`}
       >
-        <View style={[styles.entryDot, { backgroundColor: moodColor }]} />
-        <View style={styles.entryBody}>
-          <View style={styles.entryTop}>
-            <Text style={styles.entryTitle} numberOfLines={1}>
-              {reflection.title || 'Reflection'}
-            </Text>
-            <Text style={styles.entryDate}>{formatDate(reflection.createdAt || Date.now())}</Text>
-          </View>
-          <Text style={styles.entryPreview} numberOfLines={2}>
-            {reflection.content || reflection.text || ''}
-          </Text>
+        <LinearGradient colors={[Colors.background.secondary, Colors.background.primary]} style={StyleSheet.absoluteFill} />
+        <LinearGradient
+          colors={[`${tintColor}1F`, `${tintColor}05`]}
+          style={StyleSheet.absoluteFill}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          pointerEvents="none"
+        />
+        <View style={styles.entryTop}>
+          <Text style={styles.entryTitle} numberOfLines={1}>{entry.title}</Text>
+          {moodColor && moodIcon && (
+            <View style={[styles.entryMoodBadge, { backgroundColor: `${moodColor}26` }]}>
+              <Ionicons name={moodIcon as any} size={13} color={moodColor} />
+            </View>
+          )}
         </View>
+        <Text style={styles.entryDate}>{formatDate(entry.createdAt)}</Text>
+        <Text style={styles.entryPreview} numberOfLines={3}>{entry.body}</Text>
+        {entry.source && (
+          <View style={styles.entrySource}>
+            <Ionicons name="book-outline" size={12} color={`${Colors.accent.primary}B3`} />
+            <Text style={styles.entrySourceText}>{entry.source}</Text>
+          </View>
+        )}
       </TouchableOpacity>
-      {!isLast && <View style={styles.entrySep} />}
     </Animated.View>
   );
 }
 
 // ── New-reflection sheet ─────────────────────────────────────────────
 const SHEET_MOODS = [
-  { id: 'Grateful',    label: 'GRATEFUL',    color: MoodColors['Grateful'].accent,    icon: 'heart' },
-  { id: 'Hopeful',     label: 'HOPEFUL',     color: MoodColors['Hopeful'].accent,     icon: 'sunny' },
-  { id: 'Calm',        label: 'PEACEFUL',    color: MoodColors['Calm'].accent,        icon: 'water' },
-  { id: 'Overwhelmed', label: 'OVERWHELMED', color: MoodColors['Overwhelmed'].accent, icon: 'layers' },
-  { id: 'Tired',       label: 'TIRED',       color: MoodColors['Tired'].accent,       icon: 'moon' },
-  { id: 'Lonely',      label: 'LONELY',      color: MoodColors['Lonely'].accent,      icon: 'person' },
-  { id: 'Sad',         label: 'SAD',         color: MoodColors['Sad'].accent,         icon: 'rainy' },
-  { id: 'Angry',       label: 'ANGRY',       color: MoodColors['Angry'].accent,       icon: 'flame' },
-];
+  { id: 'Grateful',    label: 'GRATEFUL' },
+  { id: 'Hopeful',     label: 'HOPEFUL' },
+  { id: 'Calm',        label: 'PEACEFUL' },
+  { id: 'Overwhelmed', label: 'OVERWHELMED' },
+  { id: 'Tired',       label: 'TIRED' },
+  { id: 'Lonely',      label: 'LONELY' },
+  { id: 'Sad',         label: 'SAD' },
+  { id: 'Angry',       label: 'ANGRY' },
+].map((m) => ({ ...m, color: MOOD_COLORS[m.id], icon: MOOD_ICON[m.id] }));
 
 function NewReflectionModal({ visible, onClose, onSave }: {
   visible: boolean;
@@ -249,12 +281,9 @@ function NewReflectionModal({ visible, onClose, onSave }: {
 // ── Screen ───────────────────────────────────────────────────────────
 export default function ReflectionHistoryScreen() {
   const insets = useSafeAreaInsets();
-  const [reflections, setReflections] = useState<any[]>([]);
+  const [reflections, setReflections] = useState<JournalEntry[]>([]);
   const [showModal, setShowModal] = useState(false);
   const headerOpacity = useRef(new Animated.Value(0)).current;
-  // Memoized with empty deps — re-evaluates only when the component unmounts
-  // and remounts (e.g. tab switch the next day), not on every state update.
-  const prompt = useMemo(() => getTodayPrompt(), []);
 
   useEffect(() => {
     Animated.timing(headerOpacity, { toValue: 1, duration: 600, useNativeDriver: true }).start();
@@ -263,13 +292,39 @@ export default function ReflectionHistoryScreen() {
 
   const loadReflections = async () => {
     try {
-      const data = await dbQuery(async (db) => {
-        const rows = await db.getAllAsync(
-          `SELECT id, title, content, mood, createdAt FROM reflections ORDER BY createdAt DESC LIMIT 50`
-        );
-        return rows as any[];
-      });
-      setReflections(data);
+      const [freeform, saved] = await Promise.all([
+        dbQuery(async (db) => {
+          const rows = await db.getAllAsync(
+            `SELECT id, title, content, mood, createdAt FROM reflections ORDER BY createdAt DESC LIMIT 50`
+          );
+          return rows as any[];
+        }),
+        RotationEngine.getInstance().getSavedReflections(),
+      ]);
+
+      const freeformEntries: JournalEntry[] = freeform.map((r) => ({
+        id: r.id,
+        title: r.title || 'Reflection',
+        body: r.content || '',
+        mood: r.mood || undefined,
+        createdAt: r.createdAt,
+      }));
+
+      // No title is stored for verse-linked reflections — derive one from the
+      // mood rather than inventing poetic copy the data doesn't back up.
+      const verseEntries: JournalEntry[] = saved.map((r) => ({
+        id: r.id,
+        title: r.mood ? `${r.mood} Reflection` : 'Reflection',
+        body: r.reflection,
+        mood: r.mood,
+        createdAt: r.timestamp,
+        source: r.source,
+      }));
+
+      const merged = [...freeformEntries, ...verseEntries]
+        .sort((a, b) => b.createdAt - a.createdAt)
+        .slice(0, 50);
+      setReflections(merged);
     } catch (e) {
       logServiceError('ReflectionHistoryScreen', 'loadReflections', e instanceof Error ? e : new Error(String(e)));
       setReflections([]);
@@ -310,51 +365,41 @@ export default function ReflectionHistoryScreen() {
 
       {/* Header */}
       <Animated.View style={[styles.header, { paddingTop: insets.top + Spacing.lg, opacity: headerOpacity }]}>
-        <View style={styles.headerTop}>
-          <View>
-            <Text style={styles.headerPretitle}>BETWEEN YOU AND ALLAH</Text>
-            <Text style={styles.headerTitle}>JOURNAL</Text>
-          </View>
-          <MaterialCommunityIcons
-            name="lock"
-            size={20}
-            color={Colors.accent.primary}
-            hitSlop={{ top: 12, right: 12, bottom: 12, left: 12 }}
-          />
-        </View>
-        <BlurView intensity={10} tint="dark" style={styles.privacyBadge}>
-          <MaterialCommunityIcons name="lock" size={11} color={`${Colors.accent.primary}B3`} />
+        <Text style={styles.headerPretitle}>BETWEEN YOU AND ALLAH</Text>
+        <Text style={styles.headerTitle}>Reflections</Text>
+        <View style={styles.privacyRow}>
+          <MaterialCommunityIcons name="lock" size={12} color={`${Colors.accent.primary}99`} />
           <Text style={styles.privacyText}>Encrypted · Local only · Never shared</Text>
-        </BlurView>
+        </View>
       </Animated.View>
 
       <ScrollView
         contentContainerStyle={[styles.listContent, { paddingBottom: insets.bottom + Layout.tabBarClearance }]}
         showsVerticalScrollIndicator={false}
       >
-        {/* Daily prompt card */}
+        {/* Compose CTA */}
         <TouchableOpacity
           activeOpacity={0.85}
           onPress={() => setShowModal(true)}
           accessibilityRole="button"
-          accessibilityLabel="Start writing a reflection"
+          accessibilityLabel="Write a new reflection"
         >
-          <BlurView intensity={14} tint="dark" style={styles.promptCard}>
+          <BlurView intensity={14} tint="dark" style={styles.composeCard}>
             <LinearGradient
-              colors={[`${Colors.accent.primary}14`, `${Colors.accent.primary}06`]}
+              colors={[`${COMPOSE_ACCENT}1F`, `${COMPOSE_ACCENT}08`]}
               style={[StyleSheet.absoluteFill, { borderRadius: BorderRadius.xl }]}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 1 }}
             />
-            <Text style={styles.promptLabel}>REFLECT ON THIS</Text>
-            <Text style={styles.promptText}>
-              {prompt.before}{' '}
-              <Text style={styles.promptHighlight}>{prompt.highlight}</Text>
-              {' '}{prompt.after}
-            </Text>
-            <View style={styles.promptCTA}>
-              <MaterialCommunityIcons name="pen-plus" size={14} color={Colors.background.primary} />
-              <Text style={styles.promptCTAText}>Start Writing</Text>
+            <View style={[styles.composeIconCircle, { backgroundColor: `${COMPOSE_ACCENT}26` }]}>
+              <Ionicons name="add" size={20} color={COMPOSE_ACCENT} />
+            </View>
+            <View style={styles.composeTextWrap}>
+              <Text style={styles.composeTitle}>Write a New Reflection</Text>
+              <Text style={styles.composeSubtitle}>A private space, just for you</Text>
+            </View>
+            <View style={[styles.composeIconCircle, { backgroundColor: `${COMPOSE_ACCENT}26` }]}>
+              <MaterialCommunityIcons name="pen" size={16} color={COMPOSE_ACCENT} />
             </View>
           </BlurView>
         </TouchableOpacity>
@@ -369,14 +414,11 @@ export default function ReflectionHistoryScreen() {
             </Text>
           </View>
         ) : (
-          <>
-            <Text style={styles.pastLabel}>PAST ENTRIES</Text>
-            <BlurView intensity={10} tint="dark" style={styles.entriesCard}>
-              {reflections.map((r, i) => (
-                <ReflectionCard key={r.id || i} reflection={r} index={i} isLast={i === reflections.length - 1} />
-              ))}
-            </BlurView>
-          </>
+          <View style={styles.entriesList}>
+            {reflections.map((r, i) => (
+              <ReflectionCard key={r.id} entry={r} index={i} />
+            ))}
+          </View>
         )}
       </ScrollView>
 
@@ -402,10 +444,6 @@ const styles = StyleSheet.create({
     paddingBottom: Spacing.md,
     zIndex: 2,
   },
-  headerTop: {
-    flexDirection: 'row', justifyContent: 'space-between',
-    alignItems: 'flex-start', marginBottom: Spacing.md,
-  },
   headerPretitle: {
     fontSize: Typography.sizes.detail - 2,
     color: `${Colors.accent.primary}99`,
@@ -420,19 +458,15 @@ const styles = StyleSheet.create({
     textShadowColor: `${Colors.accent.primary}33`,
     textShadowOffset: { width: 0, height: 0 },
     textShadowRadius: 10,
+    marginBottom: Spacing.sm,
   },
-  privacyBadge: {
-    flexDirection: 'row', alignItems: 'center', gap: Spacing.sm,
-    borderRadius: BorderRadius.md, overflow: 'hidden',
-    paddingHorizontal: Spacing.md, paddingVertical: Spacing.sm,
-    backgroundColor: Colors.glass.light,
-    borderWidth: 1, borderColor: `${Colors.accent.primary}1F`,
-    alignSelf: 'flex-start',
+  privacyRow: {
+    flexDirection: 'row', alignItems: 'center', gap: Spacing.xs,
   },
   privacyText: {
     fontSize: Typography.sizes.detail - 1,
-    color: `${Colors.accent.primary}99`,
-    letterSpacing: 0.5,
+    color: Colors.text.muted,
+    letterSpacing: 0.3,
   },
 
   listContent: {
@@ -441,91 +475,65 @@ const styles = StyleSheet.create({
     gap: Spacing.lg,
   },
 
-  // ── Prompt card ──────────────────────────────────────────────────
-  promptCard: {
+  // ── Compose CTA ──────────────────────────────────────────────────
+  composeCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.md,
     borderRadius: BorderRadius.xl,
     overflow: 'hidden',
     borderWidth: 1,
-    borderColor: `${Colors.accent.primary}30`,
-    padding: Spacing.xl,
-    gap: Spacing.md,
+    borderColor: `${COMPOSE_ACCENT}40`,
+    padding: Spacing.lg,
   },
-  promptLabel: {
-    fontSize: Typography.sizes.detail - 2,
-    color: `${Colors.accent.primary}99`,
-    letterSpacing: 2,
-    fontWeight: '700',
+  composeIconCircle: {
+    width: 40, height: 40, borderRadius: 20,
+    alignItems: 'center', justifyContent: 'center',
+    flexShrink: 0,
   },
-  promptText: {
+  composeTextWrap: { flex: 1, gap: 2 },
+  composeTitle: {
     fontFamily: Typography.fonts.serif,
-    fontSize: Typography.sizes.h2,
-    color: Colors.text.primary,
-    lineHeight: 30,
-  },
-  promptHighlight: {
-    color: Colors.accent.primary,
-    fontStyle: 'italic',
-  },
-  promptCTA: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Spacing.sm,
-    alignSelf: 'flex-start',
-    backgroundColor: Colors.accent.primary,
-    paddingHorizontal: Spacing.lg,
-    paddingVertical: Spacing.sm + 2,
-    borderRadius: BorderRadius.full,
-    marginTop: Spacing.xs,
-  },
-  promptCTAText: {
-    fontSize: Typography.sizes.small,
+    fontSize: Typography.sizes.body,
     fontWeight: '700',
-    color: Colors.background.primary,
+    color: COMPOSE_ACCENT,
     letterSpacing: 0.3,
+  },
+  composeSubtitle: {
+    fontSize: Typography.sizes.small - 1,
+    color: Colors.text.secondary,
   },
 
   // ── Entry list ───────────────────────────────────────────────────
-  pastLabel: {
-    fontSize: Typography.sizes.detail - 2,
-    color: Colors.text.muted,
-    letterSpacing: 2,
-    fontWeight: '700',
-    marginBottom: -Spacing.xs,
-  },
-  entriesCard: {
-    borderRadius: BorderRadius.lg,
-    overflow: 'hidden',
-    borderWidth: 1,
-    borderColor: Colors.glass.border,
-  },
-  entryRow: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
+  entriesList: {
     gap: Spacing.md,
-    paddingHorizontal: Spacing.lg,
-    paddingVertical: Spacing.md,
-    backgroundColor: Colors.glass.light,
   },
-  entryDot: {
-    width: 10, height: 10,
-    borderRadius: 5,
-    marginTop: 5,
-    flexShrink: 0,
+  entryCard: {
+    borderRadius: BorderRadius.lg,
+    borderWidth: 1,
+    overflow: 'hidden',
+    padding: Spacing.lg,
+    gap: Spacing.xs,
   },
-  entryBody: { flex: 1 },
   entryTop: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: Spacing.xs,
   },
   entryTitle: {
     fontFamily: Typography.fonts.serif,
-    fontSize: Typography.sizes.body,
-    color: Colors.text.primary,
-    fontWeight: '600',
+    fontSize: Typography.sizes.small,
+    color: Colors.accent.light,
+    fontWeight: '700',
+    letterSpacing: 0.8,
+    textTransform: 'uppercase',
     flex: 1,
     marginRight: Spacing.sm,
+  },
+  entryMoodBadge: {
+    width: 26, height: 26, borderRadius: 13,
+    alignItems: 'center', justifyContent: 'center',
+    flexShrink: 0,
   },
   entryDate: {
     fontSize: Typography.sizes.detail - 1,
@@ -536,11 +544,19 @@ const styles = StyleSheet.create({
     fontSize: Typography.sizes.small - 1,
     color: Colors.text.secondary,
     lineHeight: 20,
+    marginTop: Spacing.xs,
   },
-  entrySep: {
-    height: 1,
-    backgroundColor: Colors.glass.border,
-    marginLeft: Spacing.lg + 10 + Spacing.md,
+  entrySource: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.xs,
+    marginTop: Spacing.sm,
+  },
+  entrySourceText: {
+    fontSize: Typography.sizes.detail - 1,
+    color: `${Colors.accent.primary}B3`,
+    fontFamily: Typography.fonts.serif,
+    letterSpacing: 0.3,
   },
 
   // ── Empty state ──────────────────────────────────────────────────

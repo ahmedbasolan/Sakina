@@ -198,8 +198,9 @@ const styles = StyleSheet.create({
   bismillah: {
     fontFamily: Typography.fonts.arabic,
     fontSize: 22,
-    color: Colors.accent.secondary,
-    opacity: 0.4,
+    // Muted vs. solid accent, but kept legible — opacity 0.7 was washing
+    // this out to pale grey against the dark background.
+    color: `${Colors.accent.secondary}D9`,
     marginBottom: Spacing.md,
   },
   ornamentDivider: {

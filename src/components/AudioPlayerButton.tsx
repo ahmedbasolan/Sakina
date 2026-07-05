@@ -17,7 +17,7 @@ import {
   ViewStyle,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { getAudioUrls, RECITER_FALLBACKS } from '../services/audioService';
+import { getAudioUrls, getCachedAudioUri, resolveAudioSource, prefetchAudio, RECITER_FALLBACKS } from '../services/audioService';
 
 import { Colors, Spacing, Typography, BorderRadius } from '../theme/DesignSystem';
 import { useReduceMotion } from '../hooks/useReduceMotion';
@@ -135,13 +135,39 @@ function AudioPlayerButtonInternal({
   // Get audio URLs (could be one or many for a range)
   const audioUrls = getAudioUrls(verseKey, RECITER_FALLBACKS[fallbackIndex]);
 
+  // Prefer an already-cached local file when one exists (e.g. this verse was
+  // played before) so playback starts instantly instead of re-streaming from
+  // everyayah.com, which has no CDN and can be slow/inconsistent.
+  const initialUri = getCachedAudioUri(audioUrls[currentVerseIndex]) ?? audioUrls[currentVerseIndex];
+
   // These hooks are now safe because they are inside a component
   // that only renders if the module exists
-  const player = AudioModule.useAudioPlayer({ uri: audioUrls[currentVerseIndex] });
+  const player = AudioModule.useAudioPlayer({ uri: initialUri });
   const status = AudioModule.useAudioPlayerStatus(player);
 
   const isPlaying = status?.playing || false;
   const isBuffering = status?.isBuffering || false;
+
+  // Warm the disk cache for the current verse in the background so the next
+  // time it's opened (revisiting a Surah, replaying the daily verse) it's
+  // already local. Doesn't affect this play — the player above was already
+  // created from whatever was available at mount.
+  useEffect(() => {
+    prefetchAudio(audioUrls[currentVerseIndex]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [verseKey, currentVerseIndex, fallbackIndex]);
+
+  // For a multi-verse range, start downloading the NEXT verse as soon as the
+  // current one starts playing — by the time it finishes, the next file is
+  // already on disk instead of triggering a fresh network fetch mid-range.
+  useEffect(() => {
+    if (!isPlaying) return;
+    const nextIndex = currentVerseIndex + 1;
+    if (nextIndex < audioUrls.length) {
+      prefetchAudio(audioUrls[nextIndex]);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isPlaying, currentVerseIndex]);
 
   // Auto-play: start recitation once per verseKey when `autoPlay` is enabled.
   // The caller decides *when* to enable it — VerseLayer waits for the verse-reveal
@@ -203,24 +229,57 @@ function AudioPlayerButtonInternal({
     return () => { if (animation) animation.stop(); };
   }, [isPlaying]);
 
+  // Reset the stall-retry counter whenever we move to a genuinely new file —
+  // otherwise a retry used on one verse would wrongly count against the next.
+  const stallRetryRef = useRef(0);
+  useEffect(() => {
+    stallRetryRef.current = 0;
+  }, [verseKey, currentVerseIndex, fallbackIndex]);
+
   // Handle verse transition or finished playback
   useEffect(() => {
-    if (status?.didJustFinish) {
-      if (currentVerseIndex < audioUrls.length - 1) {
-        // There are more verses in this range - advance to next
-        console.log(`AudioPlayerButton: Verse ${currentVerseIndex + 1} finished, playing next...`);
-        const nextIndex = currentVerseIndex + 1;
-        setCurrentVerseIndex(nextIndex);
-        // Replace the audio source with the next verse and play
-        player.replace({ uri: audioUrls[nextIndex] });
+    if (!status?.didJustFinish) return;
+
+    // everyayah.com has no CDN, so a slow/dropped connection can make
+    // expo-audio report `didJustFinish` before the file actually reached its
+    // end — that's the "audio cuts off mid-ayah" bug. Only trust the event
+    // as real completion when playback is within ~1.5s of the known
+    // duration; otherwise treat it as a stall and resume from where it left
+    // off (capped at 2 retries so a genuinely broken file doesn't loop).
+    const duration = status.duration ?? 0;
+    const position = status.currentTime ?? 0;
+    const reachedEnd = duration === 0 || duration - position < 1.5;
+
+    if (!reachedEnd && stallRetryRef.current < 2) {
+      stallRetryRef.current += 1;
+      const resumeAt = position;
+      console.log(`AudioPlayerButton: playback stalled at ${resumeAt}s/${duration}s — resuming.`);
+      resolveAudioSource(audioUrls[currentVerseIndex]).then((uri) => {
+        player.replace({ uri });
+        player.seekTo(resumeAt);
         player.play();
-      } else {
-        // Finished the whole range
-        console.log('AudioPlayerButton: Range finished.');
-        player.seekTo(0);
-        player.pause();
-        setCurrentVerseIndex(0); // Reset for next play
-      }
+      });
+      return;
+    }
+
+    if (currentVerseIndex < audioUrls.length - 1) {
+      // There are more verses in this range - advance to next
+      console.log(`AudioPlayerButton: Verse ${currentVerseIndex + 1} finished, playing next...`);
+      const nextIndex = currentVerseIndex + 1;
+      setCurrentVerseIndex(nextIndex);
+      // The prefetch effect above already started downloading this while
+      // the previous verse was playing, so this is usually an instant
+      // cache hit rather than a fresh network fetch.
+      resolveAudioSource(audioUrls[nextIndex]).then((uri) => {
+        player.replace({ uri });
+        player.play();
+      });
+    } else {
+      // Finished the whole range
+      console.log('AudioPlayerButton: Range finished.');
+      player.seekTo(0);
+      player.pause();
+      setCurrentVerseIndex(0); // Reset for next play
     }
   }, [status?.didJustFinish]);
 

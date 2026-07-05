@@ -74,7 +74,7 @@ const LayerPager: React.FC<LayerPagerProps> = ({
   const showNextAction = hasNext || !!onNextVerse;
 
   return (
-    <View style={[styles.container, { paddingBottom: Math.max(insets.bottom + 6, 14) }]}>
+    <View style={[styles.container, { paddingBottom: Math.max(insets.bottom + 4, 10) }]}>
       {/* ── Prev button ───────────────────────────────────────────────── */}
       <TouchableOpacity
         style={[styles.navBtn, !hasPrev && styles.navBtnHidden]}
@@ -162,8 +162,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: 20,
-    paddingTop: 8,
-    minHeight: 52,        // thumb-safe minimum height
+    paddingTop: 4,
+    minHeight: 44,        // thumb-safe minimum height
   },
 
   /* ── Nav buttons ── */

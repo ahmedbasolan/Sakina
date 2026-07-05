@@ -228,7 +228,7 @@ function AchievementItem({
   accentColor: string;
 }) {
   return (
-    <View style={[styles.achievementRow, { borderColor: accentColor + '22' }]}>
+    <View style={[styles.achievementRow, { borderColor: accentColor + '40' }]}>
       <MaterialCommunityIcons name={icon} size={18} color={accentColor} />
       <Text style={styles.achievementText}>{text}</Text>
       <View style={[styles.achievementCheck, { backgroundColor: accentColor }]}>
@@ -611,7 +611,7 @@ const styles = StyleSheet.create({
     width: 80,
     height: 80,
     borderRadius: 40,
-    backgroundColor: 'rgba(255,255,255,0.05)',
+    backgroundColor: 'rgba(255,255,255,0.12)',
     borderWidth: 1.5,
     alignItems: 'center',
     justifyContent: 'center',
@@ -684,7 +684,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 10,
-    backgroundColor: 'rgba(255,255,255,0.04)',
+    backgroundColor: 'rgba(255,255,255,0.09)',
     borderRadius: 14,
     paddingVertical: 12,
     paddingHorizontal: 14,
@@ -804,7 +804,7 @@ const styles = StyleSheet.create({
   secondaryButtonText: {
     fontSize: 14,
     fontWeight: '500',
-    color: 'rgba(245,237,227,0.35)',
+    color: 'rgba(245,237,227,0.6)',
   },
   shareButton: {
     flexDirection: 'row',

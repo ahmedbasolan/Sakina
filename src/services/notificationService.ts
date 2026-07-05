@@ -75,6 +75,22 @@ Notifications.setNotificationHandler({
 class NotificationService {
   private static instance: NotificationService;
   private channelsReady = false;
+  // Per-category lock: schedulePrayerNotifications/scheduleSpiritualReminders
+  // each do read-tracked-ids -> cancel -> schedule -> write-tracked-ids, which
+  // isn't atomic. Two overlapping calls for the same category (e.g. app-open
+  // + AppState 'active' firing back-to-back, or the background top-up task
+  // racing a foreground reload) can both read the same stale tracked ids, so
+  // neither cancels the other's batch — producing duplicate notifications.
+  // Chaining every call for a category onto this promise forces them to run
+  // one at a time, so the second call always cancels the first's ids.
+  private schedulingLocks: Map<string, Promise<void>> = new Map();
+
+  private withLock<T>(key: string, fn: () => Promise<T>): Promise<T> {
+    const prev = this.schedulingLocks.get(key) || Promise.resolve();
+    const run = prev.then(fn, fn);
+    this.schedulingLocks.set(key, run.then(() => undefined, () => undefined));
+    return run;
+  }
 
   private constructor() { }
 
@@ -169,6 +185,13 @@ class NotificationService {
     timings: PrayerTimings,
     cityName: string,
   ): Promise<void> {
+    return this.withLock(PRAYER_NOTIF_IDS_KEY, () => this.doSchedulePrayerNotifications(timings, cityName));
+  }
+
+  private async doSchedulePrayerNotifications(
+    timings: PrayerTimings,
+    cityName: string,
+  ): Promise<void> {
     const enabled = await this.getPrayerEnabled();
     if (!enabled) { await cancelTrackedCategory(PRAYER_NOTIF_IDS_KEY); return; }
 
@@ -209,6 +232,10 @@ class NotificationService {
    * Schedules proactive reminders for spiritual windows.
    */
   public async scheduleSpiritualReminders(timings: PrayerTimings): Promise<void> {
+    return this.withLock(SPIRITUAL_NOTIF_IDS_KEY, () => this.doScheduleSpiritualReminders(timings));
+  }
+
+  private async doScheduleSpiritualReminders(timings: PrayerTimings): Promise<void> {
     const enabled = await this.getSpiritualEnabled();
     if (!enabled) { await cancelTrackedCategory(SPIRITUAL_NOTIF_IDS_KEY); return; }
 
@@ -265,7 +292,10 @@ class NotificationService {
 
   public async setPrayerEnabled(value: boolean): Promise<void> {
     await AsyncStorage.setItem(PRAYER_ENABLED_KEY, JSON.stringify(value));
-    if (!value) await cancelTrackedCategory(PRAYER_NOTIF_IDS_KEY);
+    // Routed through the same lock as schedulePrayerNotifications — without
+    // it, disabling while a schedule call is mid-flight can race on
+    // PRAYER_NOTIF_IDS_KEY and resurrect the notifications just turned off.
+    if (!value) await this.withLock(PRAYER_NOTIF_IDS_KEY, () => cancelTrackedCategory(PRAYER_NOTIF_IDS_KEY));
   }
 
   public async getSpiritualEnabled(): Promise<boolean> {
@@ -277,7 +307,7 @@ class NotificationService {
 
   public async setSpiritualEnabled(value: boolean): Promise<void> {
     await AsyncStorage.setItem(SPIRITUAL_ENABLED_KEY, JSON.stringify(value));
-    if (!value) await cancelTrackedCategory(SPIRITUAL_NOTIF_IDS_KEY);
+    if (!value) await this.withLock(SPIRITUAL_NOTIF_IDS_KEY, () => cancelTrackedCategory(SPIRITUAL_NOTIF_IDS_KEY));
   }
 
   /**
@@ -287,8 +317,8 @@ class NotificationService {
    */
   public async cancelPrayerAndSpiritual(): Promise<void> {
     await Promise.all([
-      cancelTrackedCategory(PRAYER_NOTIF_IDS_KEY),
-      cancelTrackedCategory(SPIRITUAL_NOTIF_IDS_KEY),
+      this.withLock(PRAYER_NOTIF_IDS_KEY, () => cancelTrackedCategory(PRAYER_NOTIF_IDS_KEY)),
+      this.withLock(SPIRITUAL_NOTIF_IDS_KEY, () => cancelTrackedCategory(SPIRITUAL_NOTIF_IDS_KEY)),
     ]);
   }
 
@@ -301,8 +331,8 @@ class NotificationService {
     await Notifications.cancelAllScheduledNotificationsAsync();
     await Promise.all([
       setTrackedIds(DAILY_REMINDER_IDS_KEY, []),
-      setTrackedIds(PRAYER_NOTIF_IDS_KEY, []),
-      setTrackedIds(SPIRITUAL_NOTIF_IDS_KEY, []),
+      this.withLock(PRAYER_NOTIF_IDS_KEY, () => setTrackedIds(PRAYER_NOTIF_IDS_KEY, [])),
+      this.withLock(SPIRITUAL_NOTIF_IDS_KEY, () => setTrackedIds(SPIRITUAL_NOTIF_IDS_KEY, [])),
     ]);
   }
 

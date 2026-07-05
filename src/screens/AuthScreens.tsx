@@ -1,8 +1,9 @@
 /**
  * Auth Screens — Login & Sign Up
  *
- * Warm Arabian Sanctuary aesthetic: navy gradient, twinkling stars,
- * gold-accented glass card, crescent emblem.
+ * Warm Arabian Sanctuary aesthetic: plain navy gradient, gold-accented
+ * glass card, crescent emblem. No decorative background layer — keeps
+ * focus entirely on the form.
  */
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { BorderRadius, Colors, Spacing, Typography } from '../theme/DesignSystem';
@@ -12,7 +13,6 @@ import {
   TextInput,
   TouchableOpacity,
   StyleSheet,
-  Dimensions,
   Animated,
   KeyboardAvoidingView,
   Platform,
@@ -20,64 +20,15 @@ import {
   Alert,
   ActivityIndicator,
   Linking,
+  Image,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { AuthService } from '../services/authService';
 import { LinearGradient } from 'expo-linear-gradient';
-import Svg, {
-  Path,
-  Circle,
-  Defs,
-  LinearGradient as SvgLinearGradient,
-  Stop,
-} from 'react-native-svg';
+import Svg, { Path, Circle } from 'react-native-svg';
 import { useAuth } from '../context/AuthContext';
 import { LEGAL_URLS } from '../constants';
 import * as Haptics from 'expo-haptics';
-import { InteractiveStarfield } from '../components/onboarding/InteractiveStarfield';
-import { useReduceMotion } from '../hooks/useReduceMotion';
-
-const { width, height } = Dimensions.get('window');
-
-// --- Geometric background pattern ---
-const PATTERN_CELL = 48;
-const COLS = Math.ceil(width / PATTERN_CELL) + 1;
-const ROWS = Math.ceil(height / PATTERN_CELL) + 1;
-
-function miniStar(cx: number, cy: number, r: number): string {
-  const pts: string[] = [];
-  for (let i = 0; i < 8; i++) {
-    const angle = (Math.PI * 2 * i) / 8 - Math.PI / 2;
-    const rad = i % 2 === 0 ? r : r * 0.42;
-    const x = cx + rad * Math.cos(angle);
-    const y = cy + rad * Math.sin(angle);
-    pts.push(`${i === 0 ? 'M' : 'L'}${x.toFixed(1)},${y.toFixed(1)}`);
-  }
-  return pts.join(' ') + ' Z';
-}
-
-const PATTERN_STARS = (() => {
-  const paths: string[] = [];
-  for (let row = 0; row < ROWS; row++) {
-    for (let col = 0; col < COLS; col++) {
-      const cx = col * PATTERN_CELL + (row % 2 === 0 ? 0 : PATTERN_CELL / 2);
-      const cy = row * PATTERN_CELL;
-      paths.push(miniStar(cx, cy, 8));
-    }
-  }
-  return paths;
-})();
-
-// Twinkling stars — hoisted to module scope so array reference is stable.
-const AUTH_STARS = [
-  { x: 0.07, y: 0.05, size: 2.5, delay: 0 },
-  { x: 0.90, y: 0.04, size: 2,   delay: 500 },
-  { x: 0.18, y: 0.16, size: 1.5, delay: 250 },
-  { x: 0.82, y: 0.12, size: 2,   delay: 750 },
-  { x: 0.50, y: 0.08, size: 1.5, delay: 100 },
-  { x: 0.12, y: 0.32, size: 1.5, delay: 400 },
-  { x: 0.92, y: 0.28, size: 2,   delay: 650 },
-];
 
 interface AuthScreenProps {
   navigation: {
@@ -88,36 +39,32 @@ interface AuthScreenProps {
 }
 
 // ==================== SHARED BACKGROUND ====================
-function AuthBackground({ children, patternOpacity }: { children: React.ReactNode; patternOpacity: Animated.Value }) {
+function AuthBackground({ children }: { children: React.ReactNode }) {
   return (
     <LinearGradient colors={Colors.celestialWash} style={styles.gradient}>
-      {/* Twinkling stars — visual continuity with onboarding */}
-      <InteractiveStarfield positions={AUTH_STARS} />
-
-      {/* Geometric star pattern */}
-      <Animated.View style={[styles.patternLayer, { opacity: patternOpacity }]} pointerEvents="none">
-        <Svg width={width} height={height}>
-          <Defs>
-            <SvgLinearGradient id="patGold" x1="0" y1="0" x2="1" y2="1">
-              <Stop offset="0" stopColor={Colors.accent.primary} stopOpacity="0.06" />
-              <Stop offset="1" stopColor={Colors.accent.primary} stopOpacity="0.03" />
-            </SvgLinearGradient>
-          </Defs>
-          {PATTERN_STARS.map((d, i) => (
-            <Path key={i} d={d} fill="url(#patGold)" />
-          ))}
-        </Svg>
-      </Animated.View>
-
-      {/* Top radial glow */}
-      <View style={styles.topGlow} pointerEvents="none" />
-
       {children}
     </LinearGradient>
   );
 }
 
 // ==================== SHARED COMPONENTS ====================
+// Same neutral-base + low-alpha diagonal accent-tint recipe used across the
+// app's other cards — dropped into any pill/box that needs it as a first child.
+function TintWash({ radius }: { radius: number }) {
+  return (
+    <>
+      <LinearGradient colors={[Colors.background.secondary, Colors.background.primary]} style={[StyleSheet.absoluteFill, { borderRadius: radius }]} />
+      <LinearGradient
+        colors={[`${Colors.accent.primary}1F`, `${Colors.accent.primary}05`]}
+        style={[StyleSheet.absoluteFill, { borderRadius: radius }]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        pointerEvents="none"
+      />
+    </>
+  );
+}
+
 function GoldDivider({ text }: { text: string }) {
   return (
     <View style={styles.divider}>
@@ -169,6 +116,7 @@ function AuthInput({
 
   return (
     <Animated.View style={[styles.inputContainer, { borderColor }]}>
+      <TintWash radius={BorderRadius.md} />
       {icon}
       <TextInput
         style={styles.input}
@@ -204,7 +152,6 @@ export function LoginScreen({ navigation, onLogin }: AuthScreenProps) {
   const formOpacity = useRef(new Animated.Value(0)).current;
   const formSlide = useRef(new Animated.Value(30)).current;
   const footerOpacity = useRef(new Animated.Value(0)).current;
-  const patternPulse = useRef(new Animated.Value(0.4)).current;
 
   useEffect(() => {
     Animated.sequence([
@@ -228,19 +175,6 @@ export function LoginScreen({ navigation, onLogin }: AuthScreenProps) {
       Animated.timing(footerOpacity, { toValue: 1, duration: 500, useNativeDriver: true }),
     ]).start();
   }, []);
-
-  const reduceMotion = useReduceMotion();
-  useEffect(() => {
-    if (reduceMotion) return;
-    const loop = Animated.loop(
-      Animated.sequence([
-        Animated.timing(patternPulse, { toValue: 1, duration: 4000, useNativeDriver: true }),
-        Animated.timing(patternPulse, { toValue: 0.4, duration: 4000, useNativeDriver: true }),
-      ])
-    );
-    loop.start();
-    return () => loop.stop();
-  }, [reduceMotion, patternPulse]);
 
   const handleSignIn = async () => {
     const trimmedEmail = email.trim().toLowerCase();
@@ -325,7 +259,7 @@ export function LoginScreen({ navigation, onLogin }: AuthScreenProps) {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       style={styles.container}
     >
-      <AuthBackground patternOpacity={patternPulse}>
+      <AuthBackground>
         <ScrollView
           contentContainerStyle={[styles.scrollContent, { paddingTop: insets.top + Spacing.xl }]}
           showsVerticalScrollIndicator={false}
@@ -337,23 +271,7 @@ export function LoginScreen({ navigation, onLogin }: AuthScreenProps) {
           >
             <View style={styles.emblemWrap}>
               <View style={styles.emblemGlow} />
-              <Svg width={64} height={64} viewBox="0 0 52 52">
-                <Defs>
-                  <SvgLinearGradient id="emblemGold" x1="0" y1="0" x2="1" y2="1">
-                    <Stop offset="0" stopColor="#E5C07B" />
-                    <Stop offset="1" stopColor={Colors.accent.primary} />
-                  </SvgLinearGradient>
-                </Defs>
-                <Path
-                  d="M26 4 A22 22 0 1 0 26 48 A17 17 0 1 1 26 4 Z"
-                  fill="url(#emblemGold)"
-                  opacity={0.9}
-                />
-                <Path
-                  d={fivePointStarPath(38, 12, 5, 2.2)}
-                  fill="#E5C07B"
-                />
-              </Svg>
+              <Image source={require('../../assets/icon.png')} style={styles.emblemIcon} resizeMode="contain" />
             </View>
 
             <Text style={styles.heroTitle}>Welcome Back</Text>
@@ -364,6 +282,7 @@ export function LoginScreen({ navigation, onLogin }: AuthScreenProps) {
           <Animated.View
             style={[styles.formCard, { opacity: formOpacity, transform: [{ translateY: formSlide }] }]}
           >
+<TintWash radius={BorderRadius.xl} />
             <Text style={styles.inputLabel}>Email</Text>
             <AuthInput
               icon={<MailIcon size={18} color="rgba(212, 175, 55, 0.6)" />}
@@ -435,6 +354,7 @@ export function LoginScreen({ navigation, onLogin }: AuthScreenProps) {
                 accessibilityLabel="Continue with Google"
                 accessibilityState={{ disabled: isLoading }}
               >
+                <TintWash radius={BorderRadius.md} />
                 <GoogleIcon size={18} />
                 <Text style={styles.socialBtnText}>Google</Text>
               </TouchableOpacity>
@@ -448,6 +368,7 @@ export function LoginScreen({ navigation, onLogin }: AuthScreenProps) {
                   accessibilityLabel="Continue with Apple"
                   accessibilityState={{ disabled: isLoading }}
                 >
+                  <TintWash radius={BorderRadius.md} />
                   <AppleIcon size={18} fill={Colors.text.primary} />
                   <Text style={styles.socialBtnText}>Apple</Text>
                 </TouchableOpacity>
@@ -461,6 +382,7 @@ export function LoginScreen({ navigation, onLogin }: AuthScreenProps) {
               accessibilityRole="button"
               accessibilityLabel="Continue as guest"
             >
+              <TintWash radius={BorderRadius.md} />
               <Text style={styles.guestBtnText}>Continue as Guest</Text>
             </TouchableOpacity>
           </Animated.View>
@@ -501,7 +423,6 @@ export function SignUpScreen({ navigation, onSignUp }: AuthScreenProps) {
   const formOpacity = useRef(new Animated.Value(0)).current;
   const formSlide = useRef(new Animated.Value(30)).current;
   const footerOpacity = useRef(new Animated.Value(0)).current;
-  const patternPulse = useRef(new Animated.Value(0.4)).current;
 
   useEffect(() => {
     Animated.sequence([
@@ -525,19 +446,6 @@ export function SignUpScreen({ navigation, onSignUp }: AuthScreenProps) {
       Animated.timing(footerOpacity, { toValue: 1, duration: 500, useNativeDriver: true }),
     ]).start();
   }, []);
-
-  const reduceMotion = useReduceMotion();
-  useEffect(() => {
-    if (reduceMotion) return;
-    const loop = Animated.loop(
-      Animated.sequence([
-        Animated.timing(patternPulse, { toValue: 1, duration: 4000, useNativeDriver: true }),
-        Animated.timing(patternPulse, { toValue: 0.4, duration: 4000, useNativeDriver: true }),
-      ])
-    );
-    loop.start();
-    return () => loop.stop();
-  }, [reduceMotion, patternPulse]);
 
   const handleCreateAccount = async () => {
     const trimmedName = name.trim();
@@ -613,7 +521,7 @@ export function SignUpScreen({ navigation, onSignUp }: AuthScreenProps) {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       style={styles.container}
     >
-      <AuthBackground patternOpacity={patternPulse}>
+      <AuthBackground>
         <ScrollView
           contentContainerStyle={[styles.scrollContent, { paddingTop: insets.top + Spacing.xl }]}
           showsVerticalScrollIndicator={false}
@@ -625,23 +533,7 @@ export function SignUpScreen({ navigation, onSignUp }: AuthScreenProps) {
           >
             <View style={styles.emblemWrap}>
               <View style={styles.emblemGlow} />
-              <Svg width={64} height={64} viewBox="0 0 52 52">
-                <Defs>
-                  <SvgLinearGradient id="emblemGold2" x1="0" y1="0" x2="1" y2="1">
-                    <Stop offset="0" stopColor="#E5C07B" />
-                    <Stop offset="1" stopColor={Colors.accent.primary} />
-                  </SvgLinearGradient>
-                </Defs>
-                <Path
-                  d="M26 4 A22 22 0 1 0 26 48 A17 17 0 1 1 26 4 Z"
-                  fill="url(#emblemGold2)"
-                  opacity={0.9}
-                />
-                <Path
-                  d={fivePointStarPath(38, 12, 5, 2.2)}
-                  fill="#E5C07B"
-                />
-              </Svg>
+              <Image source={require('../../assets/icon.png')} style={styles.emblemIcon} resizeMode="contain" />
             </View>
 
             <Text style={styles.heroTitle}>Begin Your Journey</Text>
@@ -652,6 +544,7 @@ export function SignUpScreen({ navigation, onSignUp }: AuthScreenProps) {
           <Animated.View
             style={[styles.formCard, { opacity: formOpacity, transform: [{ translateY: formSlide }] }]}
           >
+<TintWash radius={BorderRadius.xl} />
             <Text style={styles.inputLabel}>Full Name</Text>
             <AuthInput
               icon={<UserIcon size={18} color="rgba(212, 175, 55, 0.6)" />}
@@ -754,6 +647,7 @@ export function SignUpScreen({ navigation, onSignUp }: AuthScreenProps) {
                 accessibilityLabel="Sign up with Google"
                 accessibilityState={{ disabled: isLoading }}
               >
+                <TintWash radius={BorderRadius.md} />
                 <GoogleIcon size={18} />
                 <Text style={styles.socialBtnText}>Google</Text>
               </TouchableOpacity>
@@ -767,6 +661,7 @@ export function SignUpScreen({ navigation, onSignUp }: AuthScreenProps) {
                   accessibilityLabel="Sign up with Apple"
                   accessibilityState={{ disabled: isLoading }}
                 >
+                  <TintWash radius={BorderRadius.md} />
                   <AppleIcon size={18} fill={Colors.text.primary} />
                   <Text style={styles.socialBtnText}>Apple</Text>
                 </TouchableOpacity>
@@ -780,6 +675,7 @@ export function SignUpScreen({ navigation, onSignUp }: AuthScreenProps) {
               accessibilityRole="button"
               accessibilityLabel="Continue as guest"
             >
+              <TintWash radius={BorderRadius.md} />
               <Text style={styles.guestBtnText}>Continue as Guest</Text>
             </TouchableOpacity>
           </Animated.View>
@@ -799,19 +695,6 @@ export function SignUpScreen({ navigation, onSignUp }: AuthScreenProps) {
       </AuthBackground>
     </KeyboardAvoidingView>
   );
-}
-
-// ==================== HELPER ====================
-function fivePointStarPath(cx: number, cy: number, outerR: number, innerR: number): string {
-  const pts: string[] = [];
-  for (let i = 0; i < 10; i++) {
-    const angle = (Math.PI * 2 * i) / 10 - Math.PI / 2;
-    const r = i % 2 === 0 ? outerR : innerR;
-    const x = cx + r * Math.cos(angle);
-    const y = cy + r * Math.sin(angle);
-    pts.push(`${i === 0 ? 'M' : 'L'}${x.toFixed(1)},${y.toFixed(1)}`);
-  }
-  return pts.join(' ') + ' Z';
 }
 
 // ==================== ICON COMPONENTS ====================
@@ -908,18 +791,6 @@ const styles = StyleSheet.create({
   gradient: {
     flex: 1,
   },
-  patternLayer: {
-    ...StyleSheet.absoluteFillObject,
-  },
-  topGlow: {
-    position: 'absolute',
-    top: -80,
-    alignSelf: 'center',
-    width: width * 0.8,
-    height: 200,
-    borderRadius: BorderRadius.full,
-    backgroundColor: 'rgba(212, 175, 55, 0.10)',
-  },
   scrollContent: {
     flexGrow: 1,
     paddingHorizontal: Spacing.xl,
@@ -942,6 +813,10 @@ const styles = StyleSheet.create({
     borderRadius: BorderRadius.full,
     backgroundColor: 'rgba(212, 175, 55, 0.08)',
   },
+  emblemIcon: {
+    width: 76,
+    height: 76,
+  },
   heroTitle: {
     fontFamily: Typography.fonts.serif,
     fontSize: Typography.sizes.hero,
@@ -959,12 +834,12 @@ const styles = StyleSheet.create({
   },
   // --- Form card ---
   formCard: {
-    backgroundColor: 'rgba(245, 237, 227, 0.04)',
     borderRadius: BorderRadius.xl,
     padding: Spacing.xl,
     borderWidth: 1,
-    borderColor: 'rgba(212, 175, 55, 0.1)',
+    borderColor: 'rgba(212, 175, 55, 0.3)',
     marginBottom: Spacing.xl,
+    overflow: 'hidden',
   },
   inputLabel: {
     fontSize: Typography.sizes.detail,
@@ -977,12 +852,12 @@ const styles = StyleSheet.create({
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(245, 237, 227, 0.04)',
     borderWidth: 1,
     borderRadius: BorderRadius.md,
     paddingHorizontal: Spacing.lg,
     paddingVertical: Platform.OS === 'ios' ? Spacing.lg : Spacing.md,
     marginBottom: Spacing.lg,
+    overflow: 'hidden',
   },
   input: {
     flex: 1,
@@ -1067,8 +942,8 @@ const styles = StyleSheet.create({
     height: 48,
     borderRadius: BorderRadius.md,
     borderWidth: 1,
-    borderColor: 'rgba(245, 237, 227, 0.08)',
-    backgroundColor: 'rgba(245, 237, 227, 0.04)',
+    borderColor: 'rgba(245, 237, 227, 0.16)',
+    overflow: 'hidden',
   },
   socialBtnText: {
     fontSize: Typography.sizes.small,
@@ -1083,9 +958,9 @@ const styles = StyleSheet.create({
     borderRadius: BorderRadius.md,
     borderWidth: 1,
     borderColor: Colors.accent.muted,
-    backgroundColor: 'rgba(212, 175, 55, 0.04)',
     alignItems: 'center',
     justifyContent: 'center',
+    overflow: 'hidden',
   },
   guestBtnText: {
     fontSize: Typography.sizes.small,

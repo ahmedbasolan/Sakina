@@ -479,7 +479,6 @@ const styles = StyleSheet.create({
     borderRadius: BorderRadius.md,
   },
   prayerRowActive: {
-    backgroundColor: 'rgba(212, 175, 55, 0.08)',
     borderBottomColor: 'transparent',
   },
   lastRow: {

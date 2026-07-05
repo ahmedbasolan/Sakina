@@ -5,6 +5,7 @@
  * Default reciter: Mishary Rashid Alafasy
  */
 
+import { Directory, File, Paths } from 'expo-file-system';
 import { BuildService } from './buildService';
 
 // We use lazy loading for expo-audio to prevent crashes
@@ -135,6 +136,64 @@ export function getAudioUrls(verseKey: string, reciter = DEFAULT_RECITER): strin
     console.error('Error parsing verseKey for audio:', verseKey, error);
     return [];
   }
+}
+
+// ── Local disk cache for recitation audio ───────────────────────────────
+// everyayah.com has no CDN in front of it and response times vary a lot —
+// verses that are re-played (daily verse, a favorite ayah, re-opening a
+// Surah) used to re-stream from scratch every time, which is the main
+// source of "audio loads too slow sometimes". Caching the file to disk on
+// first play makes every subsequent play of that verse instant.
+const audioCacheDir = new Directory(Paths.cache, 'audio-recitations');
+
+function ensureAudioCacheDir(): void {
+  try {
+    if (!audioCacheDir.exists) {
+      audioCacheDir.create();
+    }
+  } catch (e) {
+    console.warn('[audioService] Failed to create audio cache dir:', e);
+  }
+}
+
+function urlToCacheFilename(url: string): string {
+  return `${url.replace(/[^a-zA-Z0-9]/g, '_')}.mp3`;
+}
+
+/** Synchronous cache check — safe to call at render time. */
+export function getCachedAudioUri(remoteUrl: string): string | null {
+  try {
+    ensureAudioCacheDir();
+    const file = new File(audioCacheDir, urlToCacheFilename(remoteUrl));
+    return file.exists ? file.uri : null;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Resolves a playable URI for a recitation, downloading and caching it on
+ * first use. Falls back to the remote URL directly if caching fails for any
+ * reason (e.g. disk full, offline) so playback never breaks because of it.
+ */
+export async function resolveAudioSource(remoteUrl: string): Promise<string> {
+  const cached = getCachedAudioUri(remoteUrl);
+  if (cached) return cached;
+
+  try {
+    ensureAudioCacheDir();
+    const target = new File(audioCacheDir, urlToCacheFilename(remoteUrl));
+    const downloaded = await File.downloadFileAsync(remoteUrl, target);
+    return downloaded.uri;
+  } catch (e) {
+    console.warn('[audioService] Audio caching failed, streaming instead:', e);
+    return remoteUrl;
+  }
+}
+
+/** Fire-and-forget prefetch — call ahead of when playback will need the file. */
+export function prefetchAudio(remoteUrl: string): void {
+  resolveAudioSource(remoteUrl).catch(() => {});
 }
 
 export interface PlaybackStatus {
@@ -288,5 +347,8 @@ export default {
   getAudioUrl,
   getAudioUrls,
   getAudioPlayer,
+  getCachedAudioUri,
+  resolveAudioSource,
+  prefetchAudio,
   RECITERS,
 };

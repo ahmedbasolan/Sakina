@@ -9,6 +9,9 @@ export type RootStackParamList = {
     experience?: GuidanceExperience;
     mood: Mood;
     islamicTerm?: string;
+    /** Friday's Surah Al-Kahf queue (verses 2-10) — advances for free, bypassing
+     *  the mood-refresh gate, until exhausted; then falls through to normal guidance. */
+    kahfQueue?: GuidanceExperience[];
   };
   PathDetail: {
     pathId: string;

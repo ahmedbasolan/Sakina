@@ -25,6 +25,24 @@ const CONTEXT_ICONS: Record<PrayerContext, React.ComponentProps<typeof Ionicons>
   general: 'compass',         // No specific window
 };
 
+/** A Quran verse thematically matched to each window, so the banner itself
+ *  carries a piece of the guidance rather than only pointing to it. */
+const CONTEXT_VERSES: Record<PrayerContext, { text: string; ref: string }> = {
+  fajr_pre: { text: 'And from [part of] the night, pray with it as additional [worship] for you.', ref: 'Al-Isra 17:79' },
+  fajr_post: { text: 'Indeed, the recitation of dawn is ever witnessed.', ref: 'Al-Isra 17:78' },
+  dhuhr: { text: 'Worship Me and establish prayer for My remembrance.', ref: 'Ta-Ha 20:14' },
+  asr: { text: 'By time, indeed mankind is in loss — except those who believe and do righteous deeds.', ref: 'Al-Asr 103:1-3' },
+  maghrib_pre: { text: 'Exalt with praise of your Lord before the rising of the sun and before its setting.', ref: 'Qaf 50:39' },
+  maghrib_post: { text: 'It is He who made the night for you as clothing and sleep for rest.', ref: 'Al-Furqan 25:47' },
+  isha: { text: 'Exalted is He in the mornings and the evenings.', ref: 'An-Nur 24:36' },
+  general: { text: 'Indeed, prayer prohibits immorality and wrongdoing.', ref: 'Al-Ankabut 29:45' },
+};
+
+const FRIDAY_VERSE = {
+  text: 'Praise be to Allah, who has sent down upon His Servant the Book and has not made therein any deviance.',
+  ref: 'Al-Kahf 18:1',
+};
+
 interface SpiritualWindowBannerProps {
   prayerContext: PrayerContext;
   fadeAnim: Animated.Value;
@@ -32,10 +50,20 @@ interface SpiritualWindowBannerProps {
   onPress: () => void;
   /** True while the guidance fetch for this banner is in flight. */
   loading?: boolean;
+  /** Friday overrides the normal time-of-day window with Surah Al-Kahf —
+   *  "whoever reads it on Friday will have light shining for him between
+   *  the two Fridays" (al-Hakim), plus its protection from the Dajjal. */
+  isFriday?: boolean;
 }
 
 
-export function SpiritualWindowBanner({ prayerContext, fadeAnim, slideAnim, onPress, loading = false }: SpiritualWindowBannerProps) {
+export function SpiritualWindowBanner({ prayerContext, fadeAnim, slideAnim, onPress, loading = false, isFriday = false }: SpiritualWindowBannerProps) {
+  const preTitle = isFriday ? "Jumu'ah" : 'Current Spiritual Window';
+  const title = isFriday ? 'The Day of Light' : getSpiritualWindowName(prayerContext);
+  const actionText = isFriday ? 'Read Surah Al-Kahf' : getSpiritualActionText(prayerContext);
+  const iconName = isFriday ? 'sparkles' : (CONTEXT_ICONS[prayerContext] ?? 'compass');
+  const verse = isFriday ? FRIDAY_VERSE : (CONTEXT_VERSES[prayerContext] ?? CONTEXT_VERSES.general);
+
   return (
     <Animated.View style={[styles.spiritualSection, { opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
       <TouchableOpacity
@@ -44,7 +72,7 @@ export function SpiritualWindowBanner({ prayerContext, fadeAnim, slideAnim, onPr
         disabled={loading}
         accessibilityRole="button"
         accessibilityState={{ busy: loading }}
-        accessibilityLabel={`${getSpiritualWindowName(prayerContext)} — ${getSpiritualActionText(prayerContext)}`}
+        accessibilityLabel={`${title} — ${actionText}`}
         accessibilityHint="Double tap to open the spiritual window screen"
       >
         <LinearGradient
@@ -55,10 +83,13 @@ export function SpiritualWindowBanner({ prayerContext, fadeAnim, slideAnim, onPr
         >
           <View style={styles.bannerContent}>
             <View style={styles.bannerTextContainer}>
-              <Text style={styles.bannerPreTitle}>Current Spiritual Window</Text>
-              <Text style={styles.bannerTitle}>{getSpiritualWindowName(prayerContext)}</Text>
+              <Text style={styles.bannerPreTitle}>{preTitle}</Text>
+              <Text style={styles.bannerTitle}>{title}</Text>
+              <Text style={styles.bannerVerse} numberOfLines={2}>
+                "{verse.text}" <Text style={styles.bannerVerseRef}>— {verse.ref}</Text>
+              </Text>
               <View style={styles.bannerCTA}>
-                <Text style={styles.bannerCTAText}>{getSpiritualActionText(prayerContext)}</Text>
+                <Text style={styles.bannerCTAText}>{actionText}</Text>
                 {loading ? (
                   <ActivityIndicator size="small" color={Colors.accent.primary} />
                 ) : (
@@ -68,7 +99,7 @@ export function SpiritualWindowBanner({ prayerContext, fadeAnim, slideAnim, onPr
             </View>
             <View style={styles.bannerIconContainer}>
               <Ionicons
-                name={CONTEXT_ICONS[prayerContext] ?? 'compass'}
+                name={iconName}
                 size={44}
                 color="rgba(212, 175, 55, 0.28)"
               />
@@ -112,7 +143,19 @@ const styles = StyleSheet.create({
     fontSize: 19,
     color: Colors.text.primary,
     letterSpacing: 0.3,
+    marginBottom: 8,
+  },
+  bannerVerse: {
+    fontFamily: Typography.fonts.serif,
+    fontStyle: 'italic',
+    fontSize: 12.5,
+    lineHeight: 18,
+    color: Colors.text.secondary,
     marginBottom: 12,
+  },
+  bannerVerseRef: {
+    fontStyle: 'normal',
+    color: Colors.accent.primary,
   },
   bannerCTA: {
     flexDirection: 'row',

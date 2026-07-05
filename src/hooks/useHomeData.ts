@@ -23,6 +23,9 @@ import { getUserLocation } from '../services/locationStorage';
 import NotificationService from '../services/notificationService';
 import { getDailyVerse, getDailyVerseSync, DailyVerse } from '../services/dailyVerseService';
 import { logServiceError } from '../services/errorLoggingService';
+import { FreemiumService } from '../services/freemiumService';
+import { loadSeenStreakMilestones, saveSeenStreakMilestones } from '../services/streakMilestoneStore';
+import { STREAK_MILESTONES } from '../constants';
 
 // ── Types ─────────────────────────────────────────────────────────────────
 
@@ -49,6 +52,7 @@ interface UseHomeDataOptions {
 
 export function useHomeData({ setStreakCount }: UseHomeDataOptions) {
   const prayerService = PrayerTimesService.getInstance();
+  const freemiumService = FreemiumService.getInstance();
 
   // ── Prayer state ─────────────────────────────────────────────────────────
   const [prayerTimings, setPrayerTimings] = useState<PrayerTimings | null>(null);
@@ -60,8 +64,8 @@ export function useHomeData({ setStreakCount }: UseHomeDataOptions) {
   } | null>(null);
   const [loadingPrayers, setLoadingPrayers] = useState(true);
   const [showLocationModal, setShowLocationModal] = useState(false);
-  const [currentCity, setCurrentCity] = useState('London');
-  const [currentCountry, setCurrentCountry] = useState('UK');
+  const [currentCity, setCurrentCity] = useState('Dubai');
+  const [currentCountry, setCurrentCountry] = useState('UAE');
   const [fajrTime, setFajrTime] = useState<string | null>(null);
 
   // ── Streak / mood state ───────────────────────────────────────────────────
@@ -70,6 +74,11 @@ export function useHomeData({ setStreakCount }: UseHomeDataOptions) {
   const [bannerDismissed, setBannerDismissed] = useState(false);
   const [lastCheckin, setLastCheckin] = useState<LastCheckin | null>(null);
   const [localSelectedMood, setLocalSelectedMood] = useState<Mood | null>(null);
+  // Newly-reached streak milestone (spec §8 streak_milestone peak) — null once
+  // celebrated/dismissed. `offerSupportForMilestone` says whether the peaks-only
+  // gate allowed a soft "support the mission" line alongside the celebration.
+  const [streakMilestone, setStreakMilestone] = useState<number | null>(null);
+  const [offerSupportForMilestone, setOfferSupportForMilestone] = useState(false);
 
   // ── Content state ─────────────────────────────────────────────────────────
   const [activePath, setActivePath] = useState<ActivePath | null>(null);
@@ -96,8 +105,8 @@ export function useHomeData({ setStreakCount }: UseHomeDataOptions) {
     try {
       setLoadingPrayers(true);
       const savedLocation = await getUserLocation();
-      const city = savedLocation?.city || 'London';
-      const country = savedLocation?.country || 'UK';
+      const city = savedLocation?.city || 'Dubai';
+      const country = savedLocation?.country || 'UAE';
       setCurrentCity(city);
       setCurrentCountry(country);
 
@@ -146,10 +155,39 @@ export function useHomeData({ setStreakCount }: UseHomeDataOptions) {
       const stats = await moodHistoryService.getStats();
       setStreakDays(stats.currentStreak);
       setStreakCount(stats.currentStreak);
+
+      // Surface the smallest not-yet-acknowledged milestone the streak has
+      // reached (spec §8 streak_milestone peak). Re-affirmed on every load,
+      // not just the first, so the celebration is never silently lost to a
+      // backgrounded app-kill before the user notices it — it's only marked
+      // "seen" once dismissed (see dismissStreakMilestone). Skips the storage
+      // read entirely when the streak hasn't reached the smallest milestone.
+      if (stats.currentStreak >= STREAK_MILESTONES[0]) {
+        const seen = await loadSeenStreakMilestones();
+        const reached = STREAK_MILESTONES.find(
+          (m) => stats.currentStreak >= m && !seen.includes(m),
+        );
+        if (reached) {
+          const offerSupport = freemiumService.shouldOfferUpgrade('streak_milestone');
+          if (offerSupport) await freemiumService.recordUpgradeAsk('streak_milestone');
+          setOfferSupportForMilestone(offerSupport);
+          setStreakMilestone(reached);
+        }
+      }
     } catch (error) {
       logServiceError('useHomeData', 'loadStreakData', error instanceof Error ? error : new Error(String(error)));
     }
-  }, [setStreakCount]);
+  }, [setStreakCount, freemiumService]);
+
+  // Only permanently retires the milestone (so it never re-surfaces) once the
+  // user has actually acknowledged it — not at detection time.
+  const dismissStreakMilestone = useCallback(async () => {
+    if (streakMilestone !== null) {
+      const seen = await loadSeenStreakMilestones();
+      await saveSeenStreakMilestones([...seen, streakMilestone]);
+    }
+    setStreakMilestone(null);
+  }, [streakMilestone]);
 
   const checkTodayMood = useCallback(async () => {
     try {
@@ -307,6 +345,9 @@ export function useHomeData({ setStreakCount }: UseHomeDataOptions) {
     setLocalSelectedMood,
     loadStreakData,
     checkTodayMood,
+    streakMilestone,
+    offerSupportForMilestone,
+    dismissStreakMilestone,
 
     // Content
     activePath,

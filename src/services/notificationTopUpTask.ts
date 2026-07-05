@@ -51,8 +51,8 @@ export async function topUpScheduledNotifications(): Promise<boolean> {
 
   const prayerService = PrayerTimesService.getInstance();
   const savedLocation = await getUserLocation();
-  const city = savedLocation?.city || 'London';
-  const country = savedLocation?.country || 'UK';
+  const city = savedLocation?.city || 'Dubai';
+  const country = savedLocation?.country || 'UAE';
 
   const data =
     savedLocation?.latitude && savedLocation?.longitude

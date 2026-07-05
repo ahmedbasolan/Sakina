@@ -46,7 +46,8 @@ const GuidanceScreen: React.FC = () => {
   }, []));
   const freemium = FreemiumService.getInstance();
 
-  const { experience, mood, islamicTerm } = route.params;
+  const { experience, mood, islamicTerm, kahfQueue } = route.params;
+  const hasKahfQueue = !!(kahfQueue && kahfQueue.length > 0);
 
   // Returns whether a new experience was actually delivered, so the caller
   // (useGuidanceLogic.requestNext) only spends a refresh on success — a
@@ -198,12 +199,46 @@ const GuidanceScreen: React.FC = () => {
   // Hide "→ next verse" only after the resting point has been seen and dismissed.
   // Before that point, even a spent window should show the button so pressing it
   // triggers the resting point modal rather than silently doing nothing.
-  const canAdvance = isPremium || !isWindowExhausted;
+  // Friday's Kahf queue always gets to advance — it isn't part of the
+  // mood-refresh economy, so it ignores the freemium window state entirely.
+  const canAdvance = hasKahfQueue || isPremium || !isWindowExhausted;
+
+  // Single advance entry point for every "next verse" trigger (swipe-right,
+  // VerseLayer's button, LayerPager, and swiping past the Context layer).
+  // While Friday's Kahf queue still has verses, this hands out the next one
+  // directly — free, no refresh spent — instead of going through the gated
+  // requestNext. Once the queue is empty it behaves exactly as before.
+  //
+  // isAdvancingRef guards the Kahf branch specifically: unlike requestNext
+  // (which has its own isAdvancing lock inside useGuidanceLogic), popping the
+  // queue here is a raw navigation.setParams with no built-in de-dupe. Without
+  // this guard, a double-tap or a swipe-right + button-press landing in the
+  // same tick both close over the same stale `kahfQueue`, both compute the
+  // same [next, ...rest], and the second call overwrites rather than
+  // compounds the first — silently skipping a verse instead of advancing two.
+  const isAdvancingRef = useRef(false);
+  const advanceGuidance = useCallback(async () => {
+    if (isAdvancingRef.current) return;
+    isAdvancingRef.current = true;
+    try {
+      scrollY.setValue(0);
+      if (hasKahfQueue) {
+        const [nextExp, ...rest] = kahfQueue;
+        navigation.setParams({ experience: nextExp, kahfQueue: rest });
+        setCurrentLayer(0);
+        return;
+      }
+      await requestNext();
+      setCurrentLayer(0);
+    } finally {
+      isAdvancingRef.current = false;
+    }
+  }, [hasKahfQueue, kahfQueue, requestNext, navigation, scrollY]);
 
   // Keep the PanResponder's ref pointed at the latest gated advance fn.
   useEffect(() => {
-    requestNextRef.current = requestNext;
-  }, [requestNext]);
+    requestNextRef.current = advanceGuidance;
+  }, [advanceGuidance]);
 
   // Concrete return moment for the resting card ("Maghrib · 7:02 PM"). Timings
   // come from the day's cache, so this resolves instantly offline; any failure
@@ -284,8 +319,7 @@ const GuidanceScreen: React.FC = () => {
             scrollY.setValue(0);
             setCurrentLayer(layerIndex);
             if (layerIndex >= totalLayers) {
-              requestNext();
-              setCurrentLayer(0);
+              advanceGuidance();
             }
           }}
         >
@@ -301,15 +335,7 @@ const GuidanceScreen: React.FC = () => {
               scrollY={scrollY}
               accentColor={(MoodColors[mood] || MoodColors.Calm).accent}
               hasContext={hasContext}
-              onNextVerse={
-                canAdvance
-                  ? () => {
-                      scrollY.setValue(0);
-                      requestNext();
-                      setCurrentLayer(0);
-                    }
-                  : undefined
-              }
+              onNextVerse={canAdvance ? advanceGuidance : undefined}
               onShare={handleShareVerse}
               onSave={() => handleSave(0)}
               isSaved={!!savedStates[0]}
@@ -368,15 +394,7 @@ const GuidanceScreen: React.FC = () => {
           scrollY.setValue(0);
           setCurrentLayer(idx);
         }}
-        onNextVerse={
-          canAdvance
-            ? () => {
-                scrollY.setValue(0);
-                requestNext();
-                setCurrentLayer(0);
-              }
-            : undefined
-        }
+        onNextVerse={canAdvance ? advanceGuidance : undefined}
       />
 
       <ShareSheet

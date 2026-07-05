@@ -5,6 +5,7 @@ const { height } = Dimensions.get('window');
 import Svg, { Path } from 'react-native-svg';
 import { Colors, Spacing, Typography } from '../theme/DesignSystem';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { isolateBidiRuns } from '../utils/bidiText';
 
 interface ContextLayerProps {
   attribution: string;
@@ -131,12 +132,14 @@ const ContextLayer: React.FC<ContextLayerProps> = ({
   }, [text, angle]);
 
   const cleanText = (t: string) =>
-    t
-      .replace(
-        /\s*\[(?:Tafsir[^\]]*|Sahih[^\]]*|At-Tirmidhi[^\]]*|Abu Dawud[^\]]*|Musnad[^\]]*|Ibn[^\]]*|An-Nasa[^\]]*|Al-[^\]]*)\]\s*/g,
-        ' ',
-      )
-      .trim();
+    isolateBidiRuns(
+      t
+        .replace(
+          /\s*\[(?:Tafsir[^\]]*|Sahih[^\]]*|At-Tirmidhi[^\]]*|Abu Dawud[^\]]*|Musnad[^\]]*|Ibn[^\]]*|An-Nasa[^\]]*|Al-[^\]]*)\]\s*/g,
+          ' ',
+        )
+        .trim(),
+    );
 
   const renderMattersContent = () => {
     if (!propheticQuote) {
@@ -151,7 +154,7 @@ const ContextLayer: React.FC<ContextLayerProps> = ({
 
         <View style={[styles.quoteCard, { borderLeftColor: accentColor }]}>
           <QuoteOrnament color={accentColor} />
-          <Text style={styles.quoteText}>{propheticQuote.quote}</Text>
+          <Text style={styles.quoteText}>{isolateBidiRuns(propheticQuote.quote)}</Text>
           <Text style={[styles.quoteAttribution, { color: accentColor }]}>— Prophet Muhammad ﷺ</Text>
         </View>
 
@@ -242,7 +245,7 @@ const ContextLayer: React.FC<ContextLayerProps> = ({
                 <MaterialCommunityIcons name="heart-outline" size={13} color={accentColor} />
                 <Text style={[styles.heartLabel, { color: accentColor }]}>For Your Heart</Text>
               </View>
-              <Text style={styles.heartBody}>{angle}</Text>
+              <Text style={styles.heartBody}>{isolateBidiRuns(angle)}</Text>
               {angleSource ? (
                 <Text style={[styles.heartSource, { color: accentColor }]}>— {angleSource}</Text>
               ) : null}

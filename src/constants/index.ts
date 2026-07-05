@@ -96,6 +96,11 @@ export const FREEMIUM_LIMITS = {
 // freemiumService.shouldOfferUpgrade.
 export const UPGRADE_ASK_COOLDOWN_MS = 3 * 24 * 60 * 60 * 1000; // 3 days
 
+// Streak lengths that surface a one-time celebratory banner on Home (spec §8
+// streak_milestone peak). Sorted ascending — useHomeData celebrates each one
+// exactly once per install, tracked via streakMilestoneStore.
+export const STREAK_MILESTONES = [7, 30, 100] as const;
+
 // Keyed by the capitalized `Mood` union (NOT lowercase) so lookups like
 // MOOD_COLORS[mood] resolve — and aligned to the canonical MoodColors accents
 // in DesignSystem so mood dots/tags match the Home grid across every screen.

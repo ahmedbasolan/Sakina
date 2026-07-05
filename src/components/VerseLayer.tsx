@@ -413,7 +413,7 @@ const VerseLayer: React.FC<VerseLayerProps> = ({
             <Animated.View style={{ opacity: transOpacity, transform: [{ translateY: transSlide }] }}>
               <ArabicText
                 text={arabic}
-                style={[isLongArabic ? styles.arabicSecondaryCompact : styles.arabicSecondary, { color: accentColor + 'CC' }]}
+                style={[isLongArabic ? styles.arabicSecondaryCompact : styles.arabicSecondary, { color: accentColor }]}
               />
             </Animated.View>
 
@@ -645,12 +645,21 @@ const styles = StyleSheet.create({
     lineHeight: 46,
     color: '#EDD9A3',
     textAlign: 'center',
+    // Uthmani waqf/pause marks (small circles like ۚ) are thin outline glyphs —
+    // at solid color they still read as pale/whitish next to the bold letter
+    // strokes. A tight same-hue glow fills them in so they read as gold too.
+    textShadowColor: 'rgba(237, 217, 163, 0.7)',
+    textShadowOffset: { width: 0, height: 0 },
+    textShadowRadius: 8,
   },
   arabicSecondaryCompact: {
     fontSize: 19,
     lineHeight: 40,
     color: '#EDD9A3',
     textAlign: 'center',
+    textShadowColor: 'rgba(237, 217, 163, 0.7)',
+    textShadowOffset: { width: 0, height: 0 },
+    textShadowRadius: 8,
   },
 
   /* ── English Primary ── */
@@ -710,13 +719,13 @@ const styles = StyleSheet.create({
   dividerLine: {
     flex: 1,
     height: StyleSheet.hairlineWidth,
-    backgroundColor: 'rgba(245, 237, 227, 0.15)',
+    backgroundColor: 'rgba(245, 237, 227, 0.35)',
   },
   dividerDiamond: {
     width: 5,
     height: 5,
     borderRadius: 1,
-    backgroundColor: 'rgba(245, 237, 227, 0.2)',
+    backgroundColor: 'rgba(245, 237, 227, 0.4)',
     transform: [{ rotate: '45deg' }],
   },
 

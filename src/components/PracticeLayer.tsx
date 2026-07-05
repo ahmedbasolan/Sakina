@@ -323,8 +323,8 @@ const PracticeLayer: React.FC<PracticeLayerProps> = ({ steps, onCheckAll, scroll
       style={[
         styles.container,
         {
-          paddingTop: Math.max(insets.top + Spacing.md, height * 0.03),
-          paddingBottom: Math.max(insets.bottom + Spacing.sm, Spacing.xl),
+          paddingTop: Math.max(insets.top + Spacing.xs, height * 0.015),
+          paddingBottom: Math.max(insets.bottom + Spacing.xs, Spacing.md),
           opacity: fadeAnim,
         },
       ]}
@@ -390,6 +390,8 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollContent: {
+    flexGrow: 1,
+    justifyContent: 'center',
     paddingHorizontal: 20,
     paddingBottom: Spacing.xxxl,
   },
@@ -452,14 +454,14 @@ const styles = StyleSheet.create({
 
   /* ── Step Card ── */
   stepCard: {
-    backgroundColor: Colors.background.secondary + '66',
+    backgroundColor: Colors.background.secondary + 'B3',
     borderRadius: BorderRadius.lg,
     borderWidth: 1,
-    borderColor: 'rgba(255, 235, 210, 0.06)',
+    borderColor: 'rgba(255, 235, 210, 0.14)',
     overflow: 'hidden',
   },
   stepCardExpanded: {
-    borderColor: 'rgba(255, 235, 210, 0.1)',
+    borderColor: 'rgba(255, 235, 210, 0.2)',
   },
   stepCardHeader: {
     flexDirection: 'row',

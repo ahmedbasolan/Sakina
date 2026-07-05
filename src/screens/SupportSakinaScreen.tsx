@@ -90,6 +90,16 @@ const SupportSakinaScreen: React.FC = () => {
 
   const enter = useRef(new Animated.Value(0)).current;
 
+  // Landing on the full paywall is itself a peak (spec §8) — record it
+  // unconditionally so the anti-nag cooldown starts here too, even when this
+  // visit didn't originate from a gated peak (e.g. a direct Settings tap).
+  // Guards against a stray write for premium users re-visiting this screen.
+  useEffect(() => {
+    if (!freemium.isPremium()) {
+      freemium.recordUpgradeAsk('support_screen');
+    }
+  }, []);
+
   useEffect(() => {
     let cancelled = false;
     revenueCat

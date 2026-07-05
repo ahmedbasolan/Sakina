@@ -26,8 +26,6 @@ import { PreferencesService } from '../services/preferencesService';
 import { Colors, Spacing, Typography, BorderRadius } from '../theme/DesignSystem';
 import { getAnalyticsConsent, setAnalyticsConsent } from '../config/posthog';
 import { LEGAL_URLS } from '../constants';
-import { moodHistoryService } from '../services/moodHistoryService';
-import { dbQuery } from '../database/schema';
 
 // Fill in your Apple App Store numeric ID after submission.
 // Format: https://apps.apple.com/app/id<YOUR_ID>?action=write-review
@@ -168,9 +166,6 @@ export default function SettingsScreen() {
   const { user, signOut, isGuest } = useAuth();
   const insets = useSafeAreaInsets();
 
-  const [streakDays, setStreakDays]         = useState(0);
-  const [reflectionCount, setReflectionCount] = useState(0);
-  const [totalSessions, setTotalSessions]   = useState(0);
   const [isPremium, setIsPremium]           = useState(false);
   const [analyticsEnabled, setAnalyticsEnabled] = useState(false);
   const [showTransliteration, setShowTransliteration] = useState(true);
@@ -180,7 +175,6 @@ export default function SettingsScreen() {
 
   useFocusEffect(
     React.useCallback(() => {
-      loadStats();
       setIsPremium(SubscriptionService.getInstance().isPremium());
       getAnalyticsConsent().then(setAnalyticsEnabled).catch(() => {});
       const prefs = PreferencesService.getInstance().getPreferences();
@@ -188,27 +182,6 @@ export default function SettingsScreen() {
       setAutoPlayAudio(prefs.autoPlayAudio);
     }, []),
   );
-
-  // ── Loaders ────────────────────────────────────────────────────────────────
-
-  const loadStats = async () => {
-    try {
-      const [moodStats, count] = await Promise.all([
-        moodHistoryService.getStats(),
-        dbQuery(async (db) => {
-          const res = await db.getFirstAsync<{ count: number }>(
-            'SELECT COUNT(*) as count FROM saved_reflections',
-          );
-          return res?.count ?? 0;
-        }),
-      ]);
-      setReflectionCount(count);
-      setTotalSessions(moodStats.totalDaysTracked);
-      setStreakDays(moodStats.currentStreak);
-    } catch (error) {
-      logServiceError('SettingsScreen', 'loadStats', error instanceof Error ? error : new Error(String(error)));
-    }
-  };
 
   // ── Handlers ───────────────────────────────────────────────────────────────
 
@@ -261,8 +234,6 @@ export default function SettingsScreen() {
           onPress: async () => {
             try {
               await SupabaseDataService.getInstance().clearHistory();
-              setStreakDays(0);
-              setTotalSessions(0);
               Alert.alert('Done', 'Your mood history has been cleared.');
             } catch (error) {
               logServiceError('SettingsScreen', 'clearHistory', error instanceof Error ? error : new Error(String(error)));
@@ -378,48 +349,6 @@ export default function SettingsScreen() {
           isGuest={isGuest}
           onSignIn={handleSignIn}
         />
-
-        {/* Stats */}
-        <View style={styles.statsRow}>
-          <TouchableOpacity
-            style={styles.statCard}
-            onPress={() => navigation.navigate('MoodHistory')}
-            activeOpacity={0.7}
-            accessibilityRole="button"
-            accessibilityLabel={`Streak — ${streakDays} days`}
-            accessibilityHint="Double tap to view mood history"
-          >
-            <Icon name="flame" size={26} color={Colors.accent.primary} />
-            <Text style={styles.statValue}>{streakDays}</Text>
-            <Text style={styles.statLabel}>Streak</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={styles.statCard}
-            onPress={() => navigation.navigate('Journal')}
-            activeOpacity={0.7}
-            accessibilityRole="button"
-            accessibilityLabel={`Reflections — ${reflectionCount}`}
-            accessibilityHint="Double tap to open your journal"
-          >
-            <Icon name="chat" size={26} color="rgba(180, 130, 220, 0.9)" />
-            <Text style={styles.statValue}>{reflectionCount}</Text>
-            <Text style={styles.statLabel}>Reflections</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={styles.statCard}
-            onPress={() => navigation.navigate('MoodHistory')}
-            activeOpacity={0.7}
-            accessibilityRole="button"
-            accessibilityLabel={`Sessions — ${totalSessions}`}
-            accessibilityHint="Double tap to view mood history"
-          >
-            <Icon name="chart" size={26} color="rgba(90, 160, 220, 0.9)" />
-            <Text style={styles.statValue}>{totalSessions}</Text>
-            <Text style={styles.statLabel}>Sessions</Text>
-          </TouchableOpacity>
-        </View>
 
         {/* Sakina Pro */}
         <SectionHeader title="SAKINA PRO" />
@@ -640,35 +569,6 @@ const styles = StyleSheet.create({
   profileEmailOnly: {
     fontSize: Typography.sizes.body,
     color: Colors.text.primary,
-  },
-
-  // ── Stats ───────────────────────────────────────────────────────────────────
-  statsRow: {
-    flexDirection: 'row',
-    gap: Spacing.sm,
-    marginBottom: Spacing.lg,
-  },
-  statCard: {
-    flex: 1,
-    backgroundColor: 'rgba(255,255,255,0.04)',
-    borderRadius: BorderRadius.xl,
-    paddingVertical: Spacing.lg,
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.07)',
-    gap: Spacing.xs,
-  },
-  statValue: {
-    fontSize: Typography.sizes.stat,
-    fontWeight: '700',
-    color: Colors.text.primary,
-  },
-  statLabel: {
-    fontSize: Typography.sizes.label,
-    color: 'rgba(255,255,255,0.38)',
-    fontWeight: '600',
-    textTransform: 'uppercase',
-    letterSpacing: 0.6,
   },
 
   // ── Section header ──────────────────────────────────────────────────────────
