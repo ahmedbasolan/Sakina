@@ -13,6 +13,7 @@ import {
 import { LinearGradient } from 'expo-linear-gradient';
 import { BlurView } from 'expo-blur';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useFocusEffect } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Svg, { Path } from 'react-native-svg';
@@ -29,6 +30,8 @@ import AudioPlayerButton from '../components/AudioPlayerButton';
 import ShareSheet from '../components/ShareSheet';
 import ReadingViewModal from '../components/ReadingViewModal';
 import { HapticsService } from '../services/hapticsService';
+import { SubscriptionService } from '../services/subscriptionService';
+import { FreemiumService } from '../services/freemiumService';
 import { StackScreenProps } from '@react-navigation/stack';
 import { RootStackParamList } from '../navigation/types';
 import { isolateBidiRuns } from '../utils/bidiText';
@@ -423,6 +426,10 @@ export default function SurahReaderScreen({ route, navigation }: Props) {
   const [shareContent, setShareContent] = useState({
     text: '', source: '', arabicText: '', transliteration: '',
   });
+  const [isPremium, setIsPremium] = useState(() => SubscriptionService.getInstance().isPremium());
+  useFocusEffect(useCallback(() => {
+    setIsPremium(SubscriptionService.getInstance().isPremium());
+  }, []));
 
   // Card entrance animations
   const cardOpacity = useRef(new Animated.Value(0)).current;
@@ -994,6 +1001,11 @@ export default function SurahReaderScreen({ route, navigation }: Props) {
       <ShareSheet
         isVisible={shareVisible}
         onClose={() => setShareVisible(false)}
+        isPremium={isPremium}
+        onUpgrade={() => {
+          FreemiumService.getInstance().recordUpgradeAsk('theme_pick');
+          navigation.navigate('Support');
+        }}
         content={{
           text: shareContent.text,
           source: shareContent.source,
