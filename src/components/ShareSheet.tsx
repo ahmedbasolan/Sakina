@@ -10,14 +10,17 @@ import {
   TouchableWithoutFeedback,
   ScrollView,
   Share,
-  Linking,
   Platform,
   Clipboard,
 } from 'react-native';
+import ViewShot from 'react-native-view-shot';
+import * as Sharing from 'expo-sharing';
+import * as MediaLibrary from 'expo-media-library';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Colors, BorderRadius, Spacing, Typography } from '../theme/DesignSystem';
+import { buildShareText, CardTheme } from '../utils/shareCard';
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
@@ -31,13 +34,6 @@ interface ShareSheetProps {
     arabicText?: string;
     transliteration?: string;
   };
-}
-
-interface CardTheme {
-  id: string;
-  colors: [string, string, ...string[]];
-  label: string;
-  textColor?: string;
 }
 
 const CARD_THEMES: CardTheme[] = [
@@ -74,6 +70,7 @@ const ShareSheet = ({ isVisible, onClose, content }: ShareSheetProps) => {
   // Personalization State
   const [selectedTheme, setSelectedTheme] = useState<CardTheme>(CARD_THEMES[2]); // Default Purple
   const [selectedFont, setSelectedFont] = useState(FONTS[0]);
+  const viewShotRef = useRef<ViewShot>(null);
 
   // Content Filtering State
   const [showArabic, setShowArabic] = useState(!!content.arabicText);
@@ -115,43 +112,48 @@ const ShareSheet = ({ isVisible, onClose, content }: ShareSheetProps) => {
     }
   }, [isVisible]);
 
+  /** Captures the preview card (whatever background/content is currently
+   *  showing) to a local PNG file. Called lazily at share/save time rather
+   *  than on every render so theme/toggle changes don't trigger disk I/O. */
+  const captureCardImage = async (): Promise<string> => {
+    const uri = await viewShotRef.current?.capture?.();
+    if (!uri) throw new Error('Failed to capture share card');
+    return uri;
+  };
+
   const handleAction = async (action: string) => {
-    let shareText = '';
-    if (showEnglish) shareText += `"${content.text}"\n\n`;
-    if (showArabic && content.arabicText) shareText += `${content.arabicText}\n`;
-    if (showTransliteration && content.transliteration)
-      shareText += `(${content.transliteration})\n`;
-    shareText += `\n${content.source}\n\nShared via Sakina`;
+    const shareText = buildShareText(content, {
+      showEnglish,
+      showArabic,
+      showTransliteration,
+    });
 
     try {
-      if (action === 'whatsapp') {
-        const url = `whatsapp://send?text=${encodeURIComponent(shareText)}`;
-        const canOpen = await Linking.canOpenURL(url);
-        if (canOpen) return Linking.openURL(url);
-      } else if (action === 'telegram') {
-        const url = `tg://msg?text=${encodeURIComponent(shareText)}`;
-        const canOpen = await Linking.canOpenURL(url);
-        if (canOpen) return Linking.openURL(url);
-      } else if (action === 'messages') {
-        const url = `sms:&body=${encodeURIComponent(shareText)}`;
-        const canOpen = await Linking.canOpenURL(url);
-        if (canOpen) return Linking.openURL(url);
-      } else if (action === 'instagram') {
-        // Instagram doesn't support pre-filled text — open the app and let the user paste
-        const url = 'instagram://app';
-        const canOpen = await Linking.canOpenURL(url);
-        if (canOpen) {
-          Clipboard.setString(shareText);
-          return Linking.openURL(url);
-        }
-      } else if (action === 'copy_text') {
+      if (action === 'copy_text') {
         Clipboard.setString(shareText);
-        onClose();
         return;
       }
 
-      // Fallback: system share sheet
-      await Share.share({ message: shareText });
+      if (action === 'save_image') {
+        const uri = await captureCardImage();
+        const permission = await MediaLibrary.requestPermissionsAsync();
+        if (permission.granted) {
+          await MediaLibrary.saveToLibraryAsync(uri);
+        }
+        return;
+      }
+
+      // Every social target (WhatsApp/Telegram/Messages/Instagram) and the
+      // "more" fallback share the captured image the same way: URL schemes
+      // like whatsapp:// can only carry text, never a file, so the only way
+      // to hand a real image to a specific app is the OS's own share sheet —
+      // the user picks the app from there themselves.
+      const uri = await captureCardImage();
+      if (Platform.OS === 'ios') {
+        await Share.share({ url: uri, message: shareText });
+      } else {
+        await Sharing.shareAsync(uri, { mimeType: 'image/png', dialogTitle: shareText });
+      }
     } catch (error) {
       console.error('Share error:', error);
     } finally {
