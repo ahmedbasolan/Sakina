@@ -400,6 +400,11 @@ const GuidanceScreen: React.FC = () => {
       <ShareSheet
         isVisible={isShareSheetVisible}
         onClose={() => setIsShareSheetVisible(false)}
+        isPremium={isPremium}
+        onUpgrade={() => {
+          freemium.recordUpgradeAsk('theme_pick');
+          navigation.navigate('Support');
+        }}
         content={{
           text: shareContent.text,
           source: shareContent.source,
