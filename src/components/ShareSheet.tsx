@@ -12,6 +12,8 @@ import {
   Share,
   Platform,
   Clipboard,
+  Image,
+  ImageBackground,
 } from 'react-native';
 import ViewShot from 'react-native-view-shot';
 import * as Sharing from 'expo-sharing';
@@ -20,13 +22,18 @@ import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Colors, BorderRadius, Spacing, Typography } from '../theme/DesignSystem';
-import { buildShareText, CardTheme } from '../utils/shareCard';
+import { BackgroundTheme } from '../types';
+import { BACKGROUND_THEMES } from '../services/backgroundThemeService';
+import BackgroundThemePicker from './BackgroundThemePicker';
+import { resolveCardBackground, buildShareText, CardTheme } from '../utils/shareCard';
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
 interface ShareSheetProps {
   isVisible: boolean;
   onClose: () => void;
+  isPremium: boolean;
+  onUpgrade: () => void;
   content: {
     text: string;
     source: string;
@@ -62,7 +69,82 @@ function parseSource(src: string): { name: string; ref: string } {
   return { name: src, ref: '' };
 }
 
-const ShareSheet = ({ isVisible, onClose, content }: ShareSheetProps) => {
+interface CardContentProps {
+  textColor: string;
+  subTextColor: string;
+  content: ShareSheetProps['content'];
+  parsedSource: { name: string; ref: string };
+  selectedFont: (typeof FONTS)[number];
+  showArabic: boolean;
+  showTransliteration: boolean;
+  showEnglish: boolean;
+}
+
+/** The card's text layer — identical whether it sits over a gradient or a
+ *  premium photo background, so both branches in ShareSheet render it.
+ *  No numberOfLines/adjustsFontSizeToFit here (CLAUDE.md's Quran-quoting
+ *  rules, §4): a clamp with no expand affordance silently ellipsis-clips
+ *  the ayah, which is never acceptable. The card only has a minHeight and
+ *  sits in a ScrollView, so a long verse (e.g. Ayat al-Kursi) just makes
+ *  the preview taller instead of losing text. */
+const CardContent = ({
+  textColor,
+  subTextColor,
+  content,
+  parsedSource,
+  selectedFont,
+  showArabic,
+  showTransliteration,
+  showEnglish,
+}: CardContentProps) => (
+  <>
+    <View style={styles.cardHeader}>
+      <Ionicons
+        name="moon-outline"
+        size={11}
+        color={subTextColor}
+        style={{ opacity: 0.65, marginRight: 5 }}
+      />
+      <Text style={[styles.moodLabel, { color: subTextColor }]}>Sakina app</Text>
+    </View>
+
+    <View style={styles.quoteContainer}>
+      {showArabic && content.arabicText && (
+        <Text style={[styles.previewArabic, { color: textColor }]}>{content.arabicText}</Text>
+      )}
+      {showTransliteration && content.transliteration && (
+        <Text style={[styles.previewTransliteration, { color: subTextColor }]}>
+          {content.transliteration}
+        </Text>
+      )}
+      {showEnglish && (
+        <Text
+          style={[
+            styles.previewQuote,
+            {
+              color: textColor,
+              fontFamily: selectedFont.family,
+              fontStyle: selectedFont.id === 'serif' ? 'italic' : 'normal',
+            },
+          ]}
+        >
+          "{content.text}"
+        </Text>
+      )}
+    </View>
+
+    <View style={styles.previewFooter}>
+      <Text style={[styles.previewSurahName, { color: textColor }]}>
+        {parsedSource.name.toUpperCase()}
+      </Text>
+      {parsedSource.ref !== '' && (
+        <Text style={[styles.previewVerseRef, { color: subTextColor }]}>{parsedSource.ref}</Text>
+      )}
+    </View>
+  </>
+);
+
+const ShareSheet = ({ isVisible, onClose, isPremium, onUpgrade, content }: ShareSheetProps) => {
   const insets = useSafeAreaInsets();
   const slideAnim = useRef(new Animated.Value(SCREEN_HEIGHT)).current;
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -70,7 +152,15 @@ const ShareSheet = ({ isVisible, onClose, content }: ShareSheetProps) => {
   // Personalization State
   const [selectedTheme, setSelectedTheme] = useState<CardTheme>(CARD_THEMES[2]); // Default Purple
   const [selectedFont, setSelectedFont] = useState(FONTS[0]);
+  const [selectedPhotoTheme, setSelectedPhotoTheme] = useState<BackgroundTheme | null>(null);
+  const [isPhotoPickerVisible, setIsPhotoPickerVisible] = useState(false);
   const viewShotRef = useRef<ViewShot>(null);
+
+  // A lapsed subscriber never gets stuck rendering a background they can no
+  // longer pick — reset the moment isPremium turns false.
+  useEffect(() => {
+    if (!isPremium) setSelectedPhotoTheme(null);
+  }, [isPremium]);
 
   // Content Filtering State
   const [showArabic, setShowArabic] = useState(!!content.arabicText);
@@ -207,10 +297,8 @@ const ShareSheet = ({ isVisible, onClose, content }: ShareSheetProps) => {
     </TouchableOpacity>
   );
 
-  const textColor = selectedTheme.textColor || '#FFFFFF';
-  const subTextColor = selectedTheme.textColor
-    ? 'rgba(31, 41, 55, 0.7)'
-    : 'rgba(255, 255, 255, 0.8)';
+  const background = resolveCardBackground(selectedTheme, selectedPhotoTheme, isPremium);
+  const { textColor, subTextColor } = background;
 
   const parsedSource = parseSource(content.source);
 
@@ -238,65 +326,51 @@ const ShareSheet = ({ isVisible, onClose, content }: ShareSheetProps) => {
             contentContainerStyle={styles.scrollContent}
             bounces={true}
           >
-            {/* PREVIEW CARD */}
-            <LinearGradient
-              colors={selectedTheme.colors}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 1 }}
-              style={styles.previewCard}
-            >
-              {/* ── Card top: app branding ── */}
-              <View style={styles.cardHeader}>
-                <Ionicons name="moon-outline" size={11} color={subTextColor} style={{ opacity: 0.65, marginRight: 5 }} />
-                <Text style={[styles.moodLabel, { color: subTextColor }]}>Sakina app</Text>
-              </View>
-
-              {/* ── Verse content ──
-                  No numberOfLines/adjustsFontSizeToFit here (see
-                  CLAUDE.md's Quran-quoting rules, §4): a clamp with no
-                  expand affordance silently ellipsis-clips the ayah, which
-                  is never acceptable. The card only has a minHeight and
-                  sits in a ScrollView, so a long verse (e.g. Ayat al-Kursi)
-                  just makes the preview taller instead of losing text. */}
-              <View style={styles.quoteContainer}>
-                {showArabic && content.arabicText && (
-                  <Text style={[styles.previewArabic, { color: textColor }]}>
-                    {content.arabicText}
-                  </Text>
-                )}
-                {showTransliteration && content.transliteration && (
-                  <Text style={[styles.previewTransliteration, { color: subTextColor }]}>
-                    {content.transliteration}
-                  </Text>
-                )}
-                {showEnglish && (
-                  <Text
-                    style={[
-                      styles.previewQuote,
-                      {
-                        color: textColor,
-                        fontFamily: selectedFont.family,
-                        fontStyle: selectedFont.id === 'serif' ? 'italic' : 'normal',
-                      },
-                    ]}
-                  >
-                    "{content.text}"
-                  </Text>
-                )}
-              </View>
-
-              {/* ── Card bottom: surah name + verse ref ── */}
-              <View style={styles.previewFooter}>
-                <Text style={[styles.previewSurahName, { color: textColor }]}>
-                  {parsedSource.name.toUpperCase()}
-                </Text>
-                {parsedSource.ref !== '' && (
-                  <Text style={[styles.previewVerseRef, { color: subTextColor }]}>
-                    {parsedSource.ref}
-                  </Text>
-                )}
-              </View>
-            </LinearGradient>
+            {/* PREVIEW CARD — captured verbatim by ViewShot for the real
+                share/save image, so whatever renders here (gradient or
+                premium photo) is exactly what gets sent. */}
+            <ViewShot ref={viewShotRef} options={{ format: 'png', quality: 1 }}>
+              {background.kind === 'photo' ? (
+                <ImageBackground
+                  source={background.imageSource}
+                  style={styles.previewCard}
+                  imageStyle={styles.previewCardImage}
+                >
+                  <LinearGradient
+                    colors={['transparent', 'rgba(0,0,0,0.65)']}
+                    style={StyleSheet.absoluteFillObject}
+                  />
+                  <CardContent
+                    textColor={textColor}
+                    subTextColor={subTextColor}
+                    content={content}
+                    parsedSource={parsedSource}
+                    selectedFont={selectedFont}
+                    showArabic={showArabic}
+                    showTransliteration={showTransliteration}
+                    showEnglish={showEnglish}
+                  />
+                </ImageBackground>
+              ) : (
+                <LinearGradient
+                  colors={background.colors}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 1 }}
+                  style={styles.previewCard}
+                >
+                  <CardContent
+                    textColor={textColor}
+                    subTextColor={subTextColor}
+                    content={content}
+                    parsedSource={parsedSource}
+                    selectedFont={selectedFont}
+                    showArabic={showArabic}
+                    showTransliteration={showTransliteration}
+                    showEnglish={showEnglish}
+                  />
+                </LinearGradient>
+              )}
+            </ViewShot>
 
             {/* PERSONALIZE - COLORS */}
             <View style={styles.personalizeSection}>
@@ -367,12 +441,15 @@ const ShareSheet = ({ isVisible, onClose, content }: ShareSheetProps) => {
                     key={theme.id}
                     style={[
                       styles.themeOption,
-                      selectedTheme.id === theme.id && styles.themeOptionSelected,
+                      selectedTheme.id === theme.id && !selectedPhotoTheme && styles.themeOptionSelected,
                     ]}
-                    onPress={() => setSelectedTheme(theme)}
+                    onPress={() => {
+                      setSelectedTheme(theme);
+                      setSelectedPhotoTheme(null);
+                    }}
                     accessibilityRole="button"
                     accessibilityLabel={theme.label}
-                    accessibilityState={{ selected: selectedTheme.id === theme.id }}
+                    accessibilityState={{ selected: selectedTheme.id === theme.id && !selectedPhotoTheme }}
                   >
                     <LinearGradient
                       colors={theme.colors}
@@ -382,6 +459,28 @@ const ShareSheet = ({ isVisible, onClose, content }: ShareSheetProps) => {
                     />
                   </TouchableOpacity>
                 ))}
+                <TouchableOpacity
+                  style={[styles.themeOption, !!selectedPhotoTheme && styles.themeOptionSelected]}
+                  onPress={() => setIsPhotoPickerVisible(true)}
+                  accessibilityRole="button"
+                  accessibilityLabel={
+                    isPremium ? 'Nature photo background' : 'Nature photo background, premium'
+                  }
+                  accessibilityState={{ selected: !!selectedPhotoTheme }}
+                >
+                  <View style={styles.photoThemeCircle}>
+                    {selectedPhotoTheme ? (
+                      <Image source={selectedPhotoTheme.imageSource} style={styles.photoThemeThumb} />
+                    ) : (
+                      <Ionicons name="image-outline" size={20} color="rgba(255,255,255,0.6)" />
+                    )}
+                    {!isPremium && (
+                      <View style={styles.photoThemeLock}>
+                        <Ionicons name="lock-closed" size={9} color="#FFF" />
+                      </View>
+                    )}
+                  </View>
+                </TouchableOpacity>
               </ScrollView>
 
               {/* PERSONALIZE - FONTS */}
@@ -461,6 +560,23 @@ const ShareSheet = ({ isVisible, onClose, content }: ShareSheetProps) => {
             <View style={{ height: insets.bottom + Spacing.xl }} />
           </ScrollView>
         </Animated.View>
+
+        <BackgroundThemePicker
+          isVisible={isPhotoPickerVisible}
+          onClose={() => setIsPhotoPickerVisible(false)}
+          isPremium={isPremium}
+          selectedThemeId={selectedPhotoTheme?.id ?? null}
+          onSelectTheme={(themeId) => {
+            setSelectedPhotoTheme(
+              themeId ? BACKGROUND_THEMES.find((t) => t.id === themeId) ?? null : null,
+            );
+          }}
+          onUpgrade={() => {
+            setIsPhotoPickerVisible(false);
+            onClose();
+            onUpgrade();
+          }}
+        />
       </View>
     </Modal>
   );
@@ -496,6 +612,7 @@ const styles = StyleSheet.create({
     width: '100%',
     minHeight: 300,
     borderRadius: 24,
+    overflow: 'hidden',
     paddingHorizontal: Spacing.xl,
     paddingVertical: Spacing.xxl,
     alignItems: 'center',
@@ -506,6 +623,9 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.4,
     shadowRadius: 16,
     elevation: 12,
+  },
+  previewCardImage: {
+    borderRadius: 24,
   },
   cardHeader: {
     width: '100%',
@@ -600,6 +720,29 @@ const styles = StyleSheet.create({
   themeCircle: {
     flex: 1,
     borderRadius: 22,
+  },
+  photoThemeCircle: {
+    flex: 1,
+    borderRadius: 22,
+    backgroundColor: 'rgba(255,255,255,0.08)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    overflow: 'hidden',
+  },
+  photoThemeThumb: {
+    width: '100%',
+    height: '100%',
+  },
+  photoThemeLock: {
+    position: 'absolute',
+    bottom: 2,
+    right: 2,
+    backgroundColor: 'rgba(0,0,0,0.6)',
+    borderRadius: 8,
+    width: 16,
+    height: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   fontSelector: {
     flexDirection: 'row',
