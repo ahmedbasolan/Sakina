@@ -212,13 +212,6 @@ const ShareSheet = ({ isVisible, onClose, content }: ShareSheetProps) => {
 
   const parsedSource = parseSource(content.source);
 
-  // Cap English lines based on how many other content types are visible —
-  // prevents overflow when long verses + Arabic + transliteration are all on.
-  const englishMaxLines =
-    showArabic && showTransliteration ? 4
-    : showArabic ? 5
-    : 7;
-
   return (
     <Modal visible={isVisible} transparent animationType="none" onRequestClose={onClose}>
       <View style={styles.overlay}>
@@ -256,23 +249,21 @@ const ShareSheet = ({ isVisible, onClose, content }: ShareSheetProps) => {
                 <Text style={[styles.moodLabel, { color: subTextColor }]}>Sakina app</Text>
               </View>
 
-              {/* ── Verse content ── */}
+              {/* ── Verse content ──
+                  No numberOfLines/adjustsFontSizeToFit here (see
+                  CLAUDE.md's Quran-quoting rules, §4): a clamp with no
+                  expand affordance silently ellipsis-clips the ayah, which
+                  is never acceptable. The card only has a minHeight and
+                  sits in a ScrollView, so a long verse (e.g. Ayat al-Kursi)
+                  just makes the preview taller instead of losing text. */}
               <View style={styles.quoteContainer}>
                 {showArabic && content.arabicText && (
-                  <Text
-                    style={[styles.previewArabic, { color: textColor }]}
-                    numberOfLines={showEnglish ? 4 : 6}
-                    adjustsFontSizeToFit={true}
-                    minimumFontScale={0.65}
-                  >
+                  <Text style={[styles.previewArabic, { color: textColor }]}>
                     {content.arabicText}
                   </Text>
                 )}
                 {showTransliteration && content.transliteration && (
-                  <Text
-                    style={[styles.previewTransliteration, { color: subTextColor }]}
-                    numberOfLines={2}
-                  >
+                  <Text style={[styles.previewTransliteration, { color: subTextColor }]}>
                     {content.transliteration}
                   </Text>
                 )}
@@ -286,9 +277,6 @@ const ShareSheet = ({ isVisible, onClose, content }: ShareSheetProps) => {
                         fontStyle: selectedFont.id === 'serif' ? 'italic' : 'normal',
                       },
                     ]}
-                    numberOfLines={englishMaxLines}
-                    adjustsFontSizeToFit={true}
-                    minimumFontScale={0.65}
                   >
                     "{content.text}"
                   </Text>
