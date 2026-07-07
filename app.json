@@ -54,7 +54,14 @@
       "expo-web-browser",
       "expo-apple-authentication",
       "expo-location",
-      "expo-background-task"
+      "expo-background-task",
+      [
+        "expo-media-library",
+        {
+          "photosPermission": "Sakina saves the verse cards you create to your photo library.",
+          "savePhotosPermission": "Sakina saves the verse cards you create to your photo library."
+        }
+      ]
     ],
     "extra": {
       "eas": {
