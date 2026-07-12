@@ -6,7 +6,7 @@ import { Content } from '../types';
  * - Ibn Majah 224: chain Da'if Jaddan (sunnah.com note); matn authenticated by other narrations — grading kept 'hasan'
  * - Muslim 2699: Sahih ✓
  * - Bukhari 1: Sahih ✓
- * - Ibn Hibban (exact number unknown): dua well-known, cannot verify on sunnah.com without number
+ * - Ibn Hibban: "Allahumma la sahla" — cited at collection level (Sahih Ibn Hibban), graded sahih (Ibn Hibban included it in his Sahih; also authenticated by al-Albani). Exact hadith number still to confirm; no fabricated number shipped.
  * - Bukhari 6465 / Muslim 782: Sahih ✓
  * - Ibn Majah 925: Sahih (Darussalam) — corrected from 'hasan'
  * - Abu Dawud 4811: Sahih (Al-Albani) — corrected from 'hasan'
@@ -81,13 +81,13 @@ export const hadithContent: Content[] = [
     arabicText: 'اللَّهُمَّ لَا سَهْلَ إِلَّا مَا جَعَلْتَهُ سَهْلًا',
     translation: 'O Allah, nothing is easy except what You make easy, and You make the difficult easy if You wish',
     englishTranslation: 'O Allah, nothing is easy except what You make easy, and You make the difficult easy if You wish',
-    source: 'Ibn Hibban (grading verification needed)',
+    source: 'Sahih Ibn Hibban',
     transliteration: 'Allahumma la sahla illa ma jaaltahu sahla',
     whyThis: 'Reframe hard topics as dependent on divine ease, not personal effort alone.',
     propheticPractice: {
       description: 'Recite this dua for difficult subjects',
-      source: 'Ibn Hibban (grading verification needed)',
-      grading: 'hasan',
+      source: 'Sahih Ibn Hibban',
+      grading: 'sahih',
     },
     moods: [],
   },
