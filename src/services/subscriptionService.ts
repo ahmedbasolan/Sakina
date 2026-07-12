@@ -11,6 +11,15 @@ import { SupabaseDataService } from './supabaseDataService';
 import { revenueCat } from './revenueCatService';
 import { CustomerInfo } from 'react-native-purchases';
 
+// Dev-only owner override — treat these accounts as premium WITHOUT a real
+// purchase, so premium features can be tested on a signed-in account. Gated
+// behind __DEV__ at the call site, so in production builds the branch is dead
+// code and the minifier strips both it and this list from the release binary:
+// the bypass can never be triggered by, nor its email read from, a shipped app.
+// For owner testing in a production build, use a RevenueCat promotional
+// entitlement instead of adding addresses here.
+const OWNER_EMAILS = ['ahmed.basolan97@gmail.com'];
+
 export class SubscriptionService {
   private static instance: SubscriptionService;
   private subscriptionState: SubscriptionState | null = null;
@@ -26,8 +35,33 @@ export class SubscriptionService {
 
   private constructor() {}
 
-  async initialize(): Promise<void> {
+  async initialize(email?: string | null): Promise<void> {
     if (this.isLoaded) return;
+    await this.resync(email);
+  }
+
+  /**
+   * Re-fetch entitlement state from RC, unconditionally (unlike initialize(),
+   * which no-ops after the first successful load). Must be called whenever
+   * the signed-in RC identity changes — e.g. after revenueCat.logIn()/logOut()
+   * on a Supabase auth transition — otherwise `subscriptionState` keeps
+   * whatever it was computed for at cold start. On a shared device this
+   * previously let a departing Pro subscriber's premium status leak to the
+   * next signed-in account (and the reverse: a paying user staying gated as
+   * free until an app restart).
+   */
+  async resync(email?: string | null): Promise<void> {
+    if (__DEV__ && email && OWNER_EMAILS.includes(email.trim().toLowerCase())) {
+      this.subscriptionState = {
+        tier: 'premium',
+        type: 'yearly',
+        isActive: true,
+        willRenew: false,
+        unlockedBundleIds: this.subscriptionState?.unlockedBundleIds ?? [],
+      };
+      this.isLoaded = true;
+      return;
+    }
 
     try {
       // Configure RC (safe to call multiple times — no-ops after first call).
