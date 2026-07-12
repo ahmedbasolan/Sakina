@@ -2479,13 +2479,13 @@ const quranContentData: Content[] = [
     id: 'quran_58_7_lonely',
     type: 'Quran',
     primaryText:
-      'mā yakūnu min najwā thalāthatin illā huwa rābiʿuhum walā khamsatin illā huwa sādisuhum walā adnā min dhālika walā akthara illā huwa maʿahum ayna mā kānū',
+      'alam tara anna l-laha yaʿlamu mā fī l-samāwāti wamā fī l-arḍi mā yakūnu min najwā thalāthatin illā huwa rābiʿuhum walā khamsatin illā huwa sādisuhum walā adnā min dhālika walā akthara illā huwa maʿahum ayna mā kānū thumma yunabbi-uhum bimā ʿamilū yawma l-qiyāmati inna l-laha bikulli shayin ʿalīmun',
     arabicText:
-      'مَا يَكُونُ مِن نَّجْوَىٰ ثَلَـٰثَةٍ إِلَّا هُوَ رَابِعُهُمْ وَلَا خَمْسَةٍ إِلَّا هُوَ سَادِسُهُمْ وَلَا أَدْنَىٰ مِن ذَٰلِكَ وَلَا أَكْثَرَ إِلَّا هُوَ مَعَهُمْ أَيْنَ مَا كَانُوا۟ ۖ ﴿7﴾',
+      'أَلَمْ تَرَ أَنَّ ٱللَّهَ يَعْلَمُ مَا فِى ٱلسَّمَٰوَٰتِ وَمَا فِى ٱلْأَرْضِ ۖ مَا يَكُونُ مِن نَّجْوَىٰ ثَلَٰثَةٍ إِلَّا هُوَ رَابِعُهُمْ وَلَا خَمْسَةٍ إِلَّا هُوَ سَادِسُهُمْ وَلَآ أَدْنَىٰ مِن ذَٰلِكَ وَلَآ أَكْثَرَ إِلَّا هُوَ مَعَهُمْ أَيْنَ مَا كَانُوا۟ ۖ ثُمَّ يُنَبِّئُهُم بِمَا عَمِلُوا۟ يَوْمَ ٱلْقِيَٰمَةِ ۚ إِنَّ ٱللَّهَ بِكُلِّ شَىْءٍ عَلِيمٌ ﴿7﴾',
     transliteration:
-      'mā yakūnu min najwā thalāthatin illā huwa rābiʿuhum walā khamsatin illā huwa sādisuhum walā adnā min dhālika walā akthara illā huwa maʿahum ayna mā kānū',
+      'alam tara anna l-laha yaʿlamu mā fī l-samāwāti wamā fī l-arḍi mā yakūnu min najwā thalāthatin illā huwa rābiʿuhum walā khamsatin illā huwa sādisuhum walā adnā min dhālika walā akthara illā huwa maʿahum ayna mā kānū thumma yunabbi-uhum bimā ʿamilū yawma l-qiyāmati inna l-laha bikulli shayin ʿalīmun',
     englishTranslation:
-      'There is no private conversation of three but that He is the fourth of them, nor of five but that He is the sixth of them — nor of less than that, nor of more — but that He is with them wherever they are.',
+      'Have you not seen that Allah knows whatever is in the heavens and whatever is on the earth? There is no private conversation of three but that He is the fourth of them, nor of five but that He is the sixth of them — nor of less than that, nor of more — but that He is with them wherever they are. Then He will inform them of what they did on the Day of Resurrection. Indeed, Allah is Knowing of all things.',
     source: 'Surah Al-Mujadila 58:7',
     audioKey: '58:7',
     whyThis: 'You are never truly alone; Allah is always present in every moment and conversation.',
