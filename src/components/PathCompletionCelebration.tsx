@@ -10,12 +10,13 @@ import {
   Share,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Colors, Typography } from '../theme/DesignSystem';
+import { Colors, Typography, Spacing, BorderRadius } from '../theme/DesignSystem';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { SpiritualPath, PathStep, UserPathProgress } from '../types';
 import { PathsService } from '../services/pathsService';
 import { HapticsService } from '../services/hapticsService';
+import { PathProgress } from './PathProgress';
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
@@ -128,114 +129,30 @@ function ConfettiItem({ piece }: { piece: ConfettiPiece }) {
   );
 }
 
-// ── Progress Ring (pure View) ───────────────────────────────────────
-const RING_SIZE = 140;
-const RING_STROKE = 10;
+// Progress display (day dots for short paths, phase bars for long ones) is
+// `PathProgress`, shared with PathDetailScreen. Deliberately not called a
+// "streak": it's this path's own day count, not the app-wide mood-check-in
+// streak shown on Home — conflating the two would show a number that
+// doesn't actually track what just happened here.
 
-function ProgressRing({ progress, accentColor }: { progress: number; accentColor: string }) {
-  // Two-half-circle approach: left half and right half, each clipped
-  // Progress 0-50% fills the right half, 50-100% fills the left half
-  const rightDeg = progress <= 50 ? (progress / 50) * 180 : 180;
-  const leftDeg = progress > 50 ? ((progress - 50) / 50) * 180 : 0;
-
-  const halfSize = RING_SIZE / 2;
-
-  return (
-    <View style={ringStyles.container}>
-      {/* Background ring */}
-      <View style={ringStyles.bgRing} />
-
-      {/* Right half */}
-      <View style={[ringStyles.halfClip, { left: halfSize }]}>
-        <View
-          style={[
-            ringStyles.halfCircle,
-            {
-              left: -halfSize,
-              borderColor: accentColor,
-              transform: [{ rotate: `${rightDeg}deg` }],
-            },
-          ]}
-        />
-      </View>
-
-      {/* Left half */}
-      <View style={[ringStyles.halfClip, { left: 0 }]}>
-        <View
-          style={[
-            ringStyles.halfCircle,
-            {
-              left: halfSize,
-              borderColor: accentColor,
-              transform: [{ rotate: `${leftDeg}deg` }],
-            },
-          ]}
-        />
-      </View>
-
-      {/* Center */}
-      <View style={ringStyles.center}>
-        <Text style={styles.ringPercent}>{Math.round(progress)}%</Text>
-        <Text style={styles.ringLabel}>Complete</Text>
-      </View>
-    </View>
-  );
-}
-
-const ringStyles = StyleSheet.create({
-  container: {
-    width: RING_SIZE,
-    height: RING_SIZE,
-    alignSelf: 'center',
-  },
-  bgRing: {
-    ...StyleSheet.absoluteFillObject,
-    borderRadius: RING_SIZE / 2,
-    borderWidth: RING_STROKE,
-    borderColor: 'rgba(255,255,255,0.08)',
-  },
-  halfClip: {
-    position: 'absolute',
-    top: 0,
-    width: RING_SIZE / 2,
-    height: RING_SIZE,
-    overflow: 'hidden',
-  },
-  halfCircle: {
-    position: 'absolute',
-    top: 0,
-    width: RING_SIZE,
-    height: RING_SIZE,
-    borderRadius: RING_SIZE / 2,
-    borderWidth: RING_STROKE,
-    borderColor: 'transparent',
-  },
-  center: {
-    ...StyleSheet.absoluteFillObject,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
-
-// ── Achievement Row ─────────────────────────────────────────────────
-function AchievementItem({
-  icon,
-  text,
-  accentColor,
-}: {
-  icon: keyof typeof MaterialCommunityIcons.glyphMap;
-  text: string;
-  accentColor: string;
-}) {
-  return (
-    <View style={[styles.achievementRow, { borderColor: accentColor + '40' }]}>
-      <MaterialCommunityIcons name={icon} size={18} color={accentColor} />
-      <Text style={styles.achievementText}>{text}</Text>
-      <View style={[styles.achievementCheck, { backgroundColor: accentColor }]}>
-        <MaterialCommunityIcons name="check" size={14} color={CARD_BG} />
-      </View>
-    </View>
-  );
+// ── Contextual encouragement — goal-gradient framing that shifts with
+// position in the path instead of one static line every single day. Not to
+// be confused with `pathsService.getStepMotivation()`: that one is
+// topic-specific Quran/hadith citation keyed by step title (for the lesson
+// itself, currently unwired); this one is generic positional copy for the
+// post-completion modal. Different moment, different content. ──
+function getConsistencyMessage(step: PathStep, path: SpiritualPath, nextStep: PathStep | null): string {
+  if (!nextStep) return ''; // full completion has its own dedicated message below
+  // Check the "one more day" case first — on a 2-day path, day 1 is
+  // simultaneously the first day AND the day before completion, and the
+  // more specific message should win.
+  if (nextStep.day === path.duration) {
+    return 'One more day stands between you and completing this journey.';
+  }
+  if (step.day === 1) {
+    return 'A journey often begins with a single, steady step — you’ve just taken yours.';
+  }
+  return 'Small, steady steps — this is how lasting change is built.';
 }
 
 // ── Main Component ──────────────────────────────────────────────────
@@ -267,9 +184,8 @@ export default function PathCompletionCelebration({
   // `userProgress` is `celebrationProgress` — already has today appended and
   // `currentDay` already incremented to the next day. Use `getCurrentStep` (not
   // `getNextStep`) so we don't add a second +1 and skip a day.
-  const progress = Math.round((userProgress.completedDays.length / path.duration) * 100);
   const nextStep = pathsService.getCurrentStep(path.id, userProgress);
-  const currentStreak = userProgress.completedDays.length; // Simplified streak
+  const consistencyMessage = getConsistencyMessage(step, path, nextStep);
 
   useEffect(() => {
     if (visible) {
@@ -329,7 +245,7 @@ export default function PathCompletionCelebration({
   const handleShare = async () => {
     try {
       await Share.share({
-        message: `Alhamdulillah! I just completed Day ${step.day} of the "${path.title}" path on Sakina. ${progress}% through my journey! 🌙`,
+        message: `Alhamdulillah! I just completed Day ${step.day} of the "${path.title}" path on Sakina — ${userProgress.completedDays.length} of ${path.duration} days in. 🌙`,
       });
     } catch (error) {
       console.error('Error sharing:', error);
@@ -419,10 +335,14 @@ export default function PathCompletionCelebration({
                 { borderColor: accentColor + '55', shadowColor: accentColor },
               ]}
             >
-              <MaterialCommunityIcons name="check-circle" size={48} color={accentColor} />
+              {/* Bare checkmark glyph — "check-circle" drew its own filled
+                  polygon behind the tick, doubling up with this View's own
+                  circular ring and reading as a generic badge shape. */}
+              <MaterialCommunityIcons name="check-bold" size={36} color={accentColor} />
             </View>
 
             <Text style={styles.heroTitle}>Day {step.day} Complete</Text>
+            <Text style={styles.heroStepTitle}>{step.title}</Text>
             <Text style={[styles.heroSubtitle, { color: accentColor + 'CC' }]}>{path.title}</Text>
           </LinearGradient>
 
@@ -434,35 +354,28 @@ export default function PathCompletionCelebration({
           >
             {showContent && (
               <Animated.View style={{ opacity: contentOpacity }}>
-                {/* Progress Ring */}
+                {/* Progress — day dots (or phase bars for long, tiered
+                    paths) + a short line that shifts with where the user
+                    actually is in the path, not a static slogan. */}
                 <View style={styles.progressSection}>
-                  <ProgressRing progress={progress} accentColor={accentColor} />
-                  <Text style={styles.progressDays}>
-                    {userProgress.completedDays.length}/{path.duration} days
-                  </Text>
-                </View>
-
-                {/* Achievements */}
-                <View style={styles.achievementsSection}>
-                  <Text style={styles.sectionLabel}>TODAY{"'"}S ACHIEVEMENTS</Text>
-                  <AchievementItem
-                    icon="checkbox-marked-outline"
-                    text={`Completed Day ${step.day}: ${step.title}`}
+                  <PathProgress
+                    path={path}
+                    completedDays={userProgress.completedDays}
                     accentColor={accentColor}
                   />
-                  {reflectionWritten && (
-                    <AchievementItem
-                      icon="pencil-outline"
-                      text="Wrote personal reflection"
-                      accentColor={accentColor}
-                    />
+                  <Text style={styles.progressDays}>
+                    Day {userProgress.completedDays.length} of {path.duration}
+                  </Text>
+                  {!!consistencyMessage && (
+                    <Text style={styles.consistencyText}>{consistencyMessage}</Text>
                   )}
-                  {currentStreak >= 2 && (
-                    <AchievementItem
-                      icon="fire"
-                      text={`${currentStreak} day streak maintained`}
-                      accentColor={accentColor}
-                    />
+                  {reflectionWritten && (
+                    <View style={[styles.reflectionBadge, { borderColor: accentColor + '40' }]}>
+                      <MaterialCommunityIcons name="pencil-outline" size={13} color={accentColor} />
+                      <Text style={[styles.reflectionBadgeText, { color: accentColor }]}>
+                        Reflection saved
+                      </Text>
+                    </View>
                   )}
                 </View>
 
@@ -533,33 +446,38 @@ export default function PathCompletionCelebration({
                     <MaterialCommunityIcons name="arrow-right" size={20} color={CARD_BG} />
                   </TouchableOpacity>
 
-                  {/* When there's a next day, let users stop here without continuing */}
-                  {nextStep && (
+                  {/* Secondary row — both actions are quiet by design so they
+                      never compete with the primary continue button above.
+                      "Back to journey" only makes sense mid-path; sharing is
+                      worth offering either way. */}
+                  <View style={styles.secondaryRow}>
+                    {nextStep && (
+                      <TouchableOpacity
+                        style={styles.secondaryButton}
+                        onPress={handleBackToJourney}
+                        activeOpacity={0.8}
+                        accessibilityRole="button"
+                        accessibilityLabel="Back to journey"
+                      >
+                        <Text style={styles.secondaryButtonText}>Back to journey</Text>
+                      </TouchableOpacity>
+                    )}
                     <TouchableOpacity
-                      style={styles.secondaryButton}
-                      onPress={handleBackToJourney}
+                      style={styles.shareIconButton}
+                      onPress={handleShare}
                       activeOpacity={0.8}
                       accessibilityRole="button"
-                      accessibilityLabel="Back to journey"
+                      accessibilityLabel="Share progress"
+                      hitSlop={{ top: 12, right: 12, bottom: 12, left: 12 }}
                     >
-                      <Text style={styles.secondaryButtonText}>Back to journey</Text>
+                      <MaterialCommunityIcons
+                        name="share-variant-outline"
+                        size={16}
+                        color={`${Colors.text.primary}66`}
+                      />
+                      <Text style={styles.shareIconButtonText}>Share</Text>
                     </TouchableOpacity>
-                  )}
-
-                  <TouchableOpacity
-                    style={styles.shareButton}
-                    onPress={handleShare}
-                    activeOpacity={0.8}
-                    accessibilityRole="button"
-                    accessibilityLabel="Share progress"
-                  >
-                    <MaterialCommunityIcons
-                      name="share-variant-outline"
-                      size={18}
-                      color="rgba(245,237,227,0.5)"
-                    />
-                    <Text style={styles.shareButtonText}>Share Progress</Text>
-                  </TouchableOpacity>
+                  </View>
                 </View>
               </Animated.View>
             )}
@@ -587,9 +505,9 @@ const styles = StyleSheet.create({
   // Card — dark navy matching the immersive experience
   card: {
     flex: 1,
-    marginHorizontal: 20,
+    marginHorizontal: Spacing.xl,
     backgroundColor: CARD_BG,
-    borderRadius: 28,
+    borderRadius: BorderRadius.xxl,
     overflow: 'hidden',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 16 },
@@ -602,9 +520,9 @@ const styles = StyleSheet.create({
 
   // Hero — receives a LinearGradient as its container
   hero: {
-    paddingTop: 36,
-    paddingBottom: 28,
-    paddingHorizontal: 24,
+    paddingTop: Spacing.xxl,
+    paddingBottom: Spacing.xl,
+    paddingHorizontal: Spacing.xl,
     alignItems: 'center',
   },
   checkCircle: {
@@ -615,22 +533,29 @@ const styles = StyleSheet.create({
     borderWidth: 1.5,
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 16,
+    marginBottom: Spacing.lg,
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.5,
     shadowRadius: 20,
     elevation: 8,
   },
   heroTitle: {
-    fontSize: 26,
+    fontSize: Typography.sizes.h1,
     fontWeight: '700',
     color: '#F0E6D3',
-    marginBottom: 4,
+    marginBottom: Spacing.xs,
     letterSpacing: -0.3,
     fontFamily: Typography.fonts.serif,
   },
+  heroStepTitle: {
+    fontSize: Typography.sizes.small,
+    fontWeight: '600',
+    color: `${Colors.text.primary}BF`,
+    marginBottom: Spacing.xs,
+    textAlign: 'center',
+  },
   heroSubtitle: {
-    fontSize: 14,
+    fontSize: Typography.sizes.small,
     fontWeight: '500',
   },
 
@@ -642,184 +567,165 @@ const styles = StyleSheet.create({
 
   // Content
   contentContainer: {
-    padding: 24,
-    paddingBottom: 32,
-    gap: 24,
+    padding: Spacing.xl,
+    paddingBottom: Spacing.xxl,
+    gap: Spacing.xl,
   },
 
   // Progress
   progressSection: {
     alignItems: 'center',
-    gap: 6,
-  },
-  ringPercent: {
-    fontSize: 32,
-    fontWeight: '700',
-    color: '#F0E6D3',
-    letterSpacing: -0.5,
-  },
-  ringLabel: {
-    fontSize: 12,
-    color: 'rgba(245,237,227,0.45)',
-    fontWeight: '600',
+    gap: Spacing.sm,
   },
   progressDays: {
-    fontSize: 14,
-    color: 'rgba(245,237,227,0.5)',
+    fontSize: Typography.sizes.small,
+    color: `${Colors.text.primary}80`,
     fontWeight: '500',
   },
-
-  // Achievements
-  achievementsSection: {
-    gap: 8,
+  consistencyText: {
+    fontSize: Typography.sizes.small,
+    color: `${Colors.text.primary}BF`,
+    textAlign: 'center',
+    lineHeight: 20,
+    fontFamily: Typography.fonts.serif,
+    fontStyle: 'italic',
+    paddingHorizontal: Spacing.md,
   },
-  sectionLabel: {
-    fontSize: 10,
-    fontWeight: '700',
-    letterSpacing: 1.5,
-    color: 'rgba(245,237,227,0.35)',
-    marginBottom: 4,
-  },
-  achievementRow: {
+  reflectionBadge: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 10,
-    backgroundColor: 'rgba(255,255,255,0.09)',
-    borderRadius: 14,
-    paddingVertical: 12,
-    paddingHorizontal: 14,
+    gap: Spacing.xs,
+    paddingVertical: Spacing.xs,
+    paddingHorizontal: Spacing.md,
+    borderRadius: BorderRadius.full,
     borderWidth: 1,
+    backgroundColor: 'rgba(255,255,255,0.05)',
   },
-  achievementText: {
-    flex: 1,
-    fontSize: 13,
-    fontWeight: '500',
-    color: 'rgba(245,237,227,0.75)',
-  },
-  achievementCheck: {
-    width: 22,
-    height: 22,
-    borderRadius: 11,
-    alignItems: 'center',
-    justifyContent: 'center',
+  reflectionBadgeText: {
+    fontSize: Typography.sizes.detail,
+    fontWeight: '600',
   },
 
   // Next Day
   nextDayCard: {
     backgroundColor: 'rgba(255,255,255,0.04)',
-    borderRadius: 18,
-    padding: 18,
+    borderRadius: BorderRadius.lg,
+    padding: Spacing.lg,
     borderWidth: 1,
   },
   nextDayHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
-    marginBottom: 10,
+    gap: Spacing.sm,
+    marginBottom: Spacing.sm,
   },
   nextDayIcon: {
     width: 28,
     height: 28,
-    borderRadius: 8,
+    borderRadius: BorderRadius.sm,
     alignItems: 'center',
     justifyContent: 'center',
   },
   nextDayLabel: {
-    fontSize: 11,
+    fontSize: Typography.sizes.detail,
     fontWeight: '700',
     letterSpacing: 1.2,
   },
   nextDayTitle: {
-    fontSize: 17,
+    fontSize: Typography.sizes.h2,
     fontWeight: '700',
     color: '#F0E6D3',
-    marginBottom: 4,
+    marginBottom: Spacing.xs,
     fontFamily: Typography.fonts.serif,
   },
   nextDayFocus: {
-    fontSize: 13,
-    color: 'rgba(245,237,227,0.5)',
+    fontSize: Typography.sizes.small,
+    color: `${Colors.text.primary}80`,
     lineHeight: 19,
   },
 
   // Path Complete
   pathCompleteCard: {
     backgroundColor: 'rgba(255,255,255,0.04)',
-    borderRadius: 18,
-    padding: 20,
+    borderRadius: BorderRadius.lg,
+    padding: Spacing.lg,
     borderWidth: 1,
     alignItems: 'center',
-    gap: 8,
+    gap: Spacing.sm,
   },
   pathCompleteTitle: {
-    fontSize: 20,
+    fontSize: Typography.sizes.h2,
     fontWeight: '700',
     fontFamily: Typography.fonts.serif,
   },
   pathCompleteText: {
-    fontSize: 13,
-    color: 'rgba(245,237,227,0.55)',
+    fontSize: Typography.sizes.small,
+    color: `${Colors.text.primary}8C`,
     textAlign: 'center',
     lineHeight: 20,
   },
   supportLine: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
-    marginTop: 14,
-    paddingVertical: 4,
+    gap: Spacing.xs,
+    marginTop: Spacing.md,
+    paddingVertical: Spacing.xs,
   },
   supportLineText: {
-    fontSize: 14,
+    fontSize: Typography.sizes.small,
     fontWeight: '700',
     letterSpacing: 0.3,
   },
 
   // Buttons
   buttonsSection: {
-    gap: 10,
+    gap: Spacing.sm,
   },
   continueButton: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 8,
-    paddingVertical: 16,
-    borderRadius: 18,
+    gap: Spacing.sm,
+    paddingVertical: Spacing.lg,
+    borderRadius: BorderRadius.lg,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.35,
     shadowRadius: 10,
     elevation: 6,
   },
   continueButtonText: {
-    fontSize: 16,
+    fontSize: Typography.sizes.body,
     fontWeight: '700',
     letterSpacing: 0.3,
+  },
+  secondaryRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: Spacing.xs,
   },
   secondaryButton: {
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 12,
+    paddingVertical: Spacing.md,
+    paddingHorizontal: Spacing.sm,
   },
   secondaryButtonText: {
-    fontSize: 14,
+    fontSize: Typography.sizes.small,
     fontWeight: '500',
-    color: 'rgba(245,237,227,0.6)',
+    color: `${Colors.text.primary}99`,
   },
-  shareButton: {
+  shareIconButton: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 8,
-    backgroundColor: 'rgba(255,255,255,0.05)',
-    paddingVertical: 14,
-    borderRadius: 18,
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.1)',
+    gap: Spacing.xs,
+    paddingVertical: Spacing.md,
+    paddingHorizontal: Spacing.sm,
   },
-  shareButtonText: {
-    fontSize: 14,
+  shareIconButtonText: {
+    fontSize: Typography.sizes.small,
     fontWeight: '500',
-    color: 'rgba(245,237,227,0.45)',
+    color: `${Colors.text.primary}66`,
   },
 });

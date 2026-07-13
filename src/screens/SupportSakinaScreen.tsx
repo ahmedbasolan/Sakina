@@ -7,6 +7,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import {
   Alert,
   Animated,
+  Image,
   Linking,
   ScrollView,
   StyleSheet,
@@ -28,10 +29,24 @@ import {
 } from '../theme/DesignSystem';
 import { LEGAL_URLS } from '../constants';
 import { useReduceMotion } from '../hooks/useReduceMotion';
-import { SakinaLantern } from '../components/SakinaLantern';
 import { FreemiumService } from '../services/freemiumService';
 import { HapticsService } from '../services/hapticsService';
 import { revenueCat } from '../services/revenueCatService';
+import { BACKGROUND_THEMES } from '../services/backgroundThemeService';
+
+// A handful of visually distinct themes to preview on the paywall — one per
+// category so the strip reads as varied, not repetitive.
+const THEME_PREVIEW_IDS = [
+  'sky_milky_way',
+  'landscape_blue_mosque',
+  'ocean_sunset_beach',
+  'mountain_snow_peaks',
+  'nature_waterfall',
+  'animals_kaaba_sanctuary',
+];
+const THEME_PREVIEWS = THEME_PREVIEW_IDS.map((id) =>
+  BACKGROUND_THEMES.find((t) => t.id === id),
+).filter((t): t is NonNullable<typeof t> => !!t);
 
 type Plan = 'yearly' | 'monthly';
 
@@ -52,11 +67,13 @@ const FEATURES: {
   icon: keyof typeof Ionicons.glyphMap;
   title: string;
   description: string;
+  showThemePreview?: boolean;
 }[] = [
   {
     icon: 'color-palette-outline',
     title: 'Beautiful background themes',
     description: 'Transform your sanctuary with exclusive Islamic art backgrounds',
+    showThemePreview: true,
   },
   {
     icon: 'infinite-outline',
@@ -67,6 +84,16 @@ const FEATURES: {
     icon: 'book-outline',
     title: 'Early access to new journeys',
     description: 'Explore curated Quranic journeys before anyone else',
+  },
+  {
+    icon: 'time-outline',
+    title: '90 days of history',
+    description: 'Look back further across your mood and reflection journey',
+  },
+  {
+    icon: 'pie-chart-outline',
+    title: 'Mood analytics & insights',
+    description: 'See your comprehensive mood distribution and personalized spiritual insights',
   },
 ];
 
@@ -238,7 +265,11 @@ const SupportSakinaScreen: React.FC = () => {
       >
         <Animated.View style={[styles.inner, { opacity: enter, transform: [{ translateY }] }]}>
           {/* Header */}
-          <SakinaLantern size={80} />
+          <Image
+            source={require('../../assets/icon.png')}
+            style={styles.appIcon}
+            resizeMode="contain"
+          />
           <Text style={styles.title}>Support Sakina</Text>
           <Text style={styles.subtitle}>
             A calmer heart shouldn&apos;t sit behind a wall. Your support keeps the Qur&apos;an,
@@ -319,6 +350,24 @@ const SupportSakinaScreen: React.FC = () => {
                 <View style={styles.featureTextWrap}>
                   <Text style={styles.featureTitle}>{f.title}</Text>
                   <Text style={styles.featureDesc}>{f.description}</Text>
+                  {f.showThemePreview && (
+                    <ScrollView
+                      horizontal
+                      showsHorizontalScrollIndicator={false}
+                      style={styles.themePreviewStrip}
+                      contentContainerStyle={styles.themePreviewContent}
+                    >
+                      {THEME_PREVIEWS.map((theme) => (
+                        <Image
+                          key={theme.id}
+                          source={theme.imageSource}
+                          style={styles.themePreviewThumb}
+                          resizeMode="cover"
+                          accessibilityLabel={theme.name}
+                        />
+                      ))}
+                    </ScrollView>
+                  )}
                 </View>
               </View>
             ))}
@@ -343,6 +392,9 @@ const SupportSakinaScreen: React.FC = () => {
         </TouchableOpacity>
 
         <Text style={styles.priceNote}>{priceNote}</Text>
+        <Text style={styles.continueFreeNote}>
+          Prefer to wait? Sakina stays fully usable free — no pressure.
+        </Text>
 
         <View style={styles.links}>
           <TouchableOpacity
@@ -403,7 +455,11 @@ const styles = StyleSheet.create({
 
   scroll: {
     paddingHorizontal: Spacing.xl,
-    paddingBottom: 180, // clears fixed footer
+    // Clears the fixed footer (CTA + price note + continueFreeNote + links).
+    // Bumped from 180 when continueFreeNote was added — that line's height
+    // wasn't previously accounted for, letting the last feature row hide
+    // behind the now-taller footer at full scroll.
+    paddingBottom: 200,
   },
 
   inner: {
@@ -411,6 +467,11 @@ const styles = StyleSheet.create({
   },
 
   // ── Header ──
+  appIcon: {
+    width: 84,
+    height: 84,
+    borderRadius: BorderRadius.xl,
+  },
   title: {
     fontFamily: Typography.fonts.serif,
     fontSize: Typography.sizes.hero,
@@ -566,6 +627,18 @@ const styles = StyleSheet.create({
     color: Colors.text.muted,
     marginTop: 2,
   },
+  themePreviewStrip: {
+    marginTop: Spacing.sm,
+  },
+  themePreviewContent: {
+    gap: Spacing.xs,
+  },
+  themePreviewThumb: {
+    width: 56,
+    height: 72,
+    borderRadius: BorderRadius.sm,
+    backgroundColor: Colors.background.tertiary,
+  },
 
   scrollPad: {
     height: Spacing.xxl,
@@ -606,6 +679,13 @@ const styles = StyleSheet.create({
     color: Colors.text.muted,
     textAlign: 'center',
     marginTop: Spacing.sm,
+  },
+  continueFreeNote: {
+    fontFamily: Typography.fonts.latin,
+    fontSize: Typography.sizes.detail,
+    color: Colors.text.muted,
+    textAlign: 'center',
+    marginTop: Spacing.xs,
   },
   links: {
     flexDirection: 'row',

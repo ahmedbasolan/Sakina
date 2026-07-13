@@ -1,0 +1,35 @@
+<svg width="1080" height="1920" viewBox="0 0 1080 1920" xmlns="http://www.w3.org/2000/svg" role="img">
+<title>Sakina brand background</title>
+<desc>Celestial Night background — steel-blue gradient, twinkling stars, and the app's real 12-fold gold mandala lattice. No text or UI, ready for manual composition.</desc>
+<defs>
+  <linearGradient id="bgGrad" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#07111E"/>
+    <stop offset="0.5" stop-color="#0C1A2E"/>
+    <stop offset="1" stop-color="#0F1F30"/>
+  </linearGradient>
+</defs>
+<rect x="0" y="0" width="1080" height="1920" fill="url(#bgGrad)"/>
+<circle cx="86.4" cy="57.599999999999994" r="4" fill="#D4AF37" fill-opacity="0.8"/>
+<circle cx="950.4" cy="96" r="3" fill="#D4AF37" fill-opacity="0.55"/>
+<circle cx="237.6" cy="172.79999999999998" r="3.5" fill="#D4AF37" fill-opacity="0.7"/>
+<circle cx="777.6" cy="134.4" r="3" fill="#D4AF37" fill-opacity="0.5"/>
+<circle cx="540" cy="38.4" r="3" fill="#D4AF37" fill-opacity="0.6"/>
+<circle cx="54" cy="288" r="3" fill="#D4AF37" fill-opacity="0.45"/>
+<circle cx="1026" cy="268.8" r="3.5" fill="#D4AF37" fill-opacity="0.65"/>
+<circle cx="378" cy="345.59999999999997" r="2.5" fill="#D4AF37" fill-opacity="0.4"/>
+<circle cx="702" cy="384" r="3" fill="#D4AF37" fill-opacity="0.55"/>
+<circle cx="162" cy="537.6" r="3" fill="#D4AF37" fill-opacity="0.5"/>
+<circle cx="918" cy="576" r="2.5" fill="#D4AF37" fill-opacity="0.45"/>
+<circle cx="486" cy="672" r="3" fill="#D4AF37" fill-opacity="0.6"/>
+<circle cx="54" cy="864" r="2.5" fill="#D4AF37" fill-opacity="0.4"/>
+<circle cx="993.6" cy="921.5999999999999" r="3" fill="#D4AF37" fill-opacity="0.5"/>
+<circle cx="270" cy="1056" r="2.5" fill="#D4AF37" fill-opacity="0.4"/>
+<circle cx="756" cy="1152" r="3" fill="#D4AF37" fill-opacity="0.55"/>
+<circle cx="108" cy="1305.6000000000001" r="2.5" fill="#D4AF37" fill-opacity="0.4"/>
+<circle cx="950.4" cy="1382.3999999999999" r="3" fill="#D4AF37" fill-opacity="0.5"/>
+<circle cx="432" cy="1497.6000000000001" r="2.5" fill="#D4AF37" fill-opacity="0.4"/>
+<circle cx="648" cy="1632" r="2.5" fill="#D4AF37" fill-opacity="0.4"/>
+<circle cx="194.4" cy="1728" r="3" fill="#D4AF37" fill-opacity="0.45"/>
+<circle cx="864" cy="1824" r="2.5" fill="#D4AF37" fill-opacity="0.4"/>
+<g transform="translate(160,426.4) scale(7.6)" opacity="0.14" fill="none" stroke="#D4AF37" stroke-linejoin="round" stroke-linecap="round"><circle cx="50" cy="50" r="48" stroke-width="0.3" opacity="0.5"/><path d="M 50.00,2.00 L 98.00,50.00 M 74.00,8.43 L 91.57,74.00 M 91.57,26.00 L 74.00,91.57 M 98.00,50.00 L 50.00,98.00 M 91.57,74.00 L 26.00,91.57 M 74.00,91.57 L 8.43,74.00 M 50.00,98.00 L 2.00,50.00 M 26.00,91.57 L 8.43,26.00 M 8.43,74.00 L 26.00,8.43 M 2.00,50.00 L 50.00,2.00 M 8.43,26.00 L 74.00,8.43 M 26.00,8.43 L 91.57,26.00" stroke-width="0.16" opacity="0.24"/><path d="M 50.00,2.00 L 91.57,74.00 M 74.00,8.43 L 74.00,91.57 M 91.57,26.00 L 50.00,98.00 M 98.00,50.00 L 26.00,91.57 M 91.57,74.00 L 8.43,74.00 M 74.00,91.57 L 2.00,50.00 M 50.00,98.00 L 8.43,26.00 M 26.00,91.57 L 26.00,8.43 M 8.43,74.00 L 50.00,2.00 M 2.00,50.00 L 74.00,8.43 M 8.43,26.00 L 91.57,26.00 M 26.00,8.43 L 98.00,50.00" stroke-width="0.16" opacity="0.24"/><path d="M 50.00,2.00 L 74.00,91.57 M 74.00,8.43 L 50.00,98.00 M 91.57,26.00 L 26.00,91.57 M 98.00,50.00 L 8.43,74.00 M 91.57,74.00 L 2.00,50.00 M 74.00,91.57 L 8.43,26.00 M 50.00,98.00 L 26.00,8.43 M 26.00,91.57 L 50.00,2.00 M 8.43,74.00 L 74.00,8.43 M 2.00,50.00 L 91.57,26.00 M 8.43,26.00 L 98.00,50.00 M 26.00,8.43 L 91.57,74.00" stroke-width="0.16" opacity="0.34"/><circle cx="50" cy="50" r="24" stroke-width="0.14" opacity="0.2"/><circle cx="50" cy="50" r="8.64" stroke-width="0.3" opacity="0.5"/></g>
+</svg>

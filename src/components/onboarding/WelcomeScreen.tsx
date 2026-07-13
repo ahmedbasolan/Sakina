@@ -13,6 +13,7 @@ import {
   Animated,
   Dimensions,
   Image,
+  ScrollView,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
@@ -86,7 +87,11 @@ export default function WelcomeScreen({ isActive, onNext }: Props) {
       />
       <InteractiveStarfield positions={MAPPED_STAR_POSITIONS} />
 
-      <View style={[styles.contentArea, { paddingTop: topClearance }]}>
+      <ScrollView
+        style={styles.contentScroll}
+        contentContainerStyle={[styles.contentArea, { paddingTop: topClearance }]}
+        showsVerticalScrollIndicator={false}
+      >
         {/* App icon */}
         <View style={styles.heroWrap}>
           <Animated.View style={s[0]}>
@@ -136,7 +141,7 @@ export default function WelcomeScreen({ isActive, onNext }: Props) {
             </Text>
           </Animated.View>
         </View>
-      </View>
+      </ScrollView>
 
       {/* CTA */}
       <View style={[styles.bottomSection, { paddingBottom: Math.max(insets.bottom + Spacing.xxl, Spacing.xxxl) }]}>
@@ -153,12 +158,20 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: Colors.background.primary,
   },
-  contentArea: {
+  // ScrollView's own layout box — takes the space above the fixed CTA, same
+  // as the plain View this replaced.
+  contentScroll: {
     flex: 1,
+    zIndex: 2,
+  },
+  // contentContainerStyle: flexGrow (not flex) so short content still centers
+  // via justifyContent, while taller content scrolls instead of overflowing
+  // and colliding with the CTA below (the bug this replaced).
+  contentArea: {
+    flexGrow: 1,
     justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: Spacing.xl,
-    zIndex: 2,
   },
   heroWrap: {
     alignItems: 'center',
@@ -234,7 +247,7 @@ const styles = StyleSheet.create({
   },
   featureDesc: {
     fontSize: Typography.sizes.detail,
-    color: 'rgba(245, 237, 227, 0.65)',
+    color: `${Colors.text.primary}A6`,
     lineHeight: 18,
     letterSpacing: 0.1,
   },

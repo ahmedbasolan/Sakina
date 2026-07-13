@@ -14,6 +14,7 @@ import {
   Dimensions,
   TouchableOpacity,
   Image,
+  ScrollView,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useStaggerEntry } from '../../hooks/useStaggerEntry';
@@ -70,7 +71,11 @@ export default function NotificationScreen({ isActive, onAllow, onSkip }: Props)
     <View style={styles.container}>
       <InteractiveStarfield positions={MAPPED_STAR_POS} />
 
-      <View style={[styles.contentArea, { paddingTop: topClearance }]}>
+      <ScrollView
+        style={styles.contentScroll}
+        contentContainerStyle={[styles.contentArea, { paddingTop: topClearance }]}
+        showsVerticalScrollIndicator={false}
+      >
         {/* App icon — consistent with WelcomeScreen */}
         <Animated.View style={[styles.iconArea, s[0]]}>
           <Image
@@ -106,7 +111,7 @@ export default function NotificationScreen({ isActive, onAllow, onSkip }: Props)
             </Animated.View>
           ))}
         </View>
-      </View>
+      </ScrollView>
 
       {/* Buttons */}
       <View style={[styles.bottomSection, { paddingBottom: Math.max(insets.bottom + Spacing.xxl, Spacing.xxxl) }]}>
@@ -140,8 +145,15 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  contentArea: {
+  // ScrollView's own layout box — takes the space above the fixed CTA.
+  contentScroll: {
     flex: 1,
+  },
+  // contentContainerStyle: flexGrow (not flex) so short content still centers,
+  // while taller content (e.g. all 3 preview cards) scrolls instead of being
+  // clipped behind the fixed "Yes, remind me" button.
+  contentArea: {
+    flexGrow: 1,
     justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: Spacing.xxl,
@@ -164,7 +176,7 @@ const styles = StyleSheet.create({
   },
   body: {
     fontSize: Typography.sizes.body,
-    color: 'rgba(245, 237, 227, 0.72)',
+    color: `${Colors.text.primary}B8`,
     textAlign: 'center',
     lineHeight: 23,
     letterSpacing: 0.2,
@@ -185,7 +197,7 @@ const styles = StyleSheet.create({
   },
   skipBtnText: {
     fontSize: Typography.sizes.small,
-    color: 'rgba(245, 237, 227, 0.85)',
+    color: `${Colors.text.primary}D9`,
     letterSpacing: 0.3,
   },
   previewsWrap: {
@@ -223,12 +235,12 @@ const styles = StyleSheet.create({
   },
   previewContext: {
     fontSize: Typography.sizes.label,
-    color: 'rgba(245, 237, 227, 0.45)',
+    color: `${Colors.text.primary}73`,
     letterSpacing: 0.2,
   },
   previewVerse: {
     fontSize: Typography.sizes.small,
-    color: 'rgba(245, 237, 227, 0.65)',
+    color: `${Colors.text.primary}A6`,
     fontFamily: Typography.fonts.serif,
     fontStyle: 'italic',
     lineHeight: 20,
@@ -246,7 +258,7 @@ const styles = StyleSheet.create({
   },
   chipText: {
     fontSize: Typography.sizes.detail,
-    color: 'rgba(245, 237, 227, 0.68)',
+    color: `${Colors.text.primary}AD`,
     letterSpacing: 0.3,
     flex: 1,
     textAlign: 'center',

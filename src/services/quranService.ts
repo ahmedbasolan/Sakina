@@ -3,7 +3,8 @@
  *
  * Strategy:
  *  1. On first open of LibraryScreen, kick off `prefetchAllSurahs()`.
- *  2. Fetches surahs in small batches from alquran.cloud (Uthmani + en.asad).
+ *  2. Fetches surahs in small batches from alquran.cloud (Uthmani + en.sahih —
+ *     Sahih International, the translation edition used app-wide).
  *  3. Each surah is stored in `quran_cache` (TTL = 7 days).
  *  4. Download progress is persisted to `kv_store` so progress survives app restarts.
  *  5. After `CACHE_TTL_MS` the whole Quran is quietly refreshed in the background.
@@ -66,7 +67,9 @@ function stripEmbeddedBismillah(text: string, surahNumber: number, numberInSurah
 // Bump this when the stored verse shape/content changes so previously
 // cached (now-stale) surahs get re-fetched instead of showing old data
 // forever within the 7-day TTL.
-const CACHE_FORMAT_VERSION = 3;
+// v4: switched translation edition from en.asad to en.sahih (Sahih
+// International), matching the edition used everywhere else in the app.
+const CACHE_FORMAT_VERSION = 4;
 const CACHE_VERSION_KEY = 'quran_cache_format_version';
 let versionChecked = false;
 
@@ -102,13 +105,24 @@ async function fetchSurahFromApi(surahNumber: number): Promise<QuranVerse[]> {
   const timeoutId = setTimeout(() => controller.abort(), 15_000);
   try {
     const url =
-      `https://api.alquran.cloud/v1/surah/${surahNumber}/editions/quran-uthmani,en.asad,en.transliteration`;
+      `https://api.alquran.cloud/v1/surah/${surahNumber}/editions/quran-uthmani,en.sahih,en.transliteration`;
     const res = await fetch(url, { signal: controller.signal });
     if (!res.ok) throw new Error(`HTTP ${res.status} for surah ${surahNumber}`);
     const json = await res.json();
     const arabics: any[] = json.data[0].ayahs;
     const englishs: any[] = json.data[1].ayahs;
     const transliterations: any[] = json.data[2].ayahs;
+    // The three editions are fetched independently and zipped by index below —
+    // if one edition's ayah list came back short (a transient upstream hiccup
+    // on just that edition, seen on surah 50) the zip silently misaligns and
+    // every subsequent ayah gets the wrong/blank transliteration, then that
+    // gets cached for 7 days with no error surfaced. Fail the whole fetch
+    // instead so the caller's catch skips it and retries next launch.
+    if (englishs.length !== arabics.length || transliterations.length !== arabics.length) {
+      throw new Error(
+        `Edition length mismatch for surah ${surahNumber}: arabic=${arabics.length} en=${englishs.length} translit=${transliterations.length}`,
+      );
+    }
     return arabics.map((a, i) => ({
       numberInSurah: a.numberInSurah,
       arabic: stripEmbeddedBismillah(a.text, surahNumber, a.numberInSurah),

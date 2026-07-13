@@ -4,6 +4,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { AuthService } from '../services/authService';
 import { SupabaseDataService } from '../services/supabaseDataService';
 import { revenueCat } from '../services/revenueCatService';
+import { SubscriptionService } from '../services/subscriptionService';
 import { STORAGE_KEYS } from '../constants';
 
 interface AuthContextType {
@@ -38,6 +39,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         if (currentSession) {
           // Signed-in user has always completed onboarding.
           setOnboardingComplete(true);
+          // Populate subscription state for a returning signed-in user — the
+          // SIGNED_IN listener below only fires on a fresh sign-in transition,
+          // not on the INITIAL_SESSION read, so cold boot needs its own resync.
+          SubscriptionService.getInstance().resync(currentSession.user.email).catch(() => {});
         } else {
           // No Supabase session — check AsyncStorage flags set during onboarding.
           // `onboarding` = completed onboarding at least once (never show it again).
@@ -84,8 +89,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         AsyncStorage.removeItem(STORAGE_KEYS.guestSession).catch(() => {});
 
         // Link RC identity so cross-device entitlements work and the future
-        // webhook can map purchases back to this Supabase user_id.
-        revenueCat.logIn(currentSession.user.id).catch(() => {});
+        // webhook can map purchases back to this Supabase user_id, then
+        // re-sync entitlement state for THIS identity — without this, a
+        // shared device switching accounts kept showing the previous
+        // account's premium/free status until an app restart.
+        revenueCat.logIn(currentSession.user.id)
+          .then(() => SubscriptionService.getInstance().resync(currentSession.user.email))
+          .catch(() => {});
 
         // One-time migration: sync guest data to Supabase on first sign-in
         if (!hasMigrated.current) {
@@ -104,8 +114,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         // Clear guest state regardless of how sign-out was triggered.
         setIsGuest(false);
         AsyncStorage.removeItem(STORAGE_KEYS.guestSession).catch(() => {});
-        // Revert RC to anonymous ID so the next sign-in gets a clean identity.
-        revenueCat.logOut().catch(() => {});
+        // Revert RC to anonymous ID so the next sign-in gets a clean identity,
+        // then re-sync so this device's entitlement state matches the
+        // now-anonymous identity instead of the departed account's.
+        revenueCat.logOut()
+          .then(() => SubscriptionService.getInstance().resync())
+          .catch(() => {});
       }
       setLoading(false);
     });

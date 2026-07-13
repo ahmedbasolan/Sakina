@@ -7,6 +7,7 @@ export class PreferencesService {
     primaryLanguage: 'english',
     showTransliteration: true,
     autoPlayAudio: false,
+    asrMadhab: 'standard',
   };
   private isLoaded: boolean = false;
 
@@ -39,6 +40,7 @@ export class PreferencesService {
           primaryLanguage: prefs.primaryLanguage as LanguagePreference,
           showTransliteration: prefs.showTransliteration === 1,
           autoPlayAudio: prefs.autoPlayAudio === 1,
+          asrMadhab: prefs.asrMadhab === 'hanafi' ? 'hanafi' : 'standard',
         };
       } else {
         await this.savePreferences(this.preferences);
@@ -53,9 +55,9 @@ export class PreferencesService {
     try {
       await dbQuery(async (db) => {
         await db.runAsync(
-          `INSERT OR REPLACE INTO user_preferences (id, primaryLanguage, showTransliteration, autoPlayAudio)
-           VALUES ('user_preferences', ?, ?, ?)`,
-          [prefs.primaryLanguage, prefs.showTransliteration ? 1 : 0, prefs.autoPlayAudio ? 1 : 0],
+          `INSERT OR REPLACE INTO user_preferences (id, primaryLanguage, showTransliteration, autoPlayAudio, asrMadhab)
+           VALUES ('user_preferences', ?, ?, ?, ?)`,
+          [prefs.primaryLanguage, prefs.showTransliteration ? 1 : 0, prefs.autoPlayAudio ? 1 : 0, prefs.asrMadhab],
         );
       });
     } catch (error) {
@@ -85,6 +87,13 @@ export class PreferencesService {
     await this.savePreferences({
       ...this.preferences,
       autoPlayAudio: autoPlay,
+    });
+  }
+
+  async setAsrMadhab(madhab: UserPreferences['asrMadhab']): Promise<void> {
+    await this.savePreferences({
+      ...this.preferences,
+      asrMadhab: madhab,
     });
   }
 }

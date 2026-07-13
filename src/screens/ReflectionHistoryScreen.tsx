@@ -175,18 +175,20 @@ function NewReflectionModal({ visible, onClose, onSave }: {
       onRequestClose={onClose}
       onShow={() => setTimeout(() => bodyRef.current?.focus(), 100)}
     >
-      <TouchableOpacity
-        style={styles.sheetBackdrop}
-        activeOpacity={1}
-        onPress={onClose}
-        accessibilityRole="button"
-        accessibilityLabel="Dismiss new reflection"
-      />
       <KeyboardAvoidingView
         style={styles.sheetWrap}
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        pointerEvents="box-none"
+        behavior={Platform.OS === 'ios' ? 'padding' : 'padding'}
+        keyboardVerticalOffset={0}
       >
+        {/* Tappable backdrop — sits behind the sheet */}
+        <TouchableOpacity
+          style={StyleSheet.absoluteFillObject}
+          activeOpacity={1}
+          onPress={onClose}
+          accessibilityRole="button"
+          accessibilityLabel="Dismiss new reflection"
+        />
+
         <View style={[styles.sheet, { paddingBottom: Math.max(insets.bottom, Spacing.lg) + Spacing.sm }]}>
           <View style={styles.sheetHandle} />
           <View style={styles.sheetHeader}>
@@ -228,7 +230,7 @@ function NewReflectionModal({ visible, onClose, onSave }: {
                   accessibilityState={{ selected: active }}
                 >
                   <Ionicons name={m.icon as any} size={14} color={m.color} />
-                  <Text style={[styles.moodChipLabel, { color: m.color, opacity: active ? 1 : 0.7 }]}>
+                  <Text style={[styles.moodChipLabel, { color: m.color }]}>
                     {m.label}
                   </Text>
                 </TouchableOpacity>
@@ -249,6 +251,9 @@ function NewReflectionModal({ visible, onClose, onSave }: {
               placeholderTextColor={`${Colors.text.primary}38`}
               value={titleText}
               onChangeText={setTitleText}
+              returnKeyType="next"
+              onSubmitEditing={() => bodyRef.current?.focus()}
+              blurOnSubmit={false}
             />
             <TextInput
               ref={bodyRef}
@@ -578,7 +583,11 @@ const styles = StyleSheet.create({
     ...StyleSheet.absoluteFillObject,
     backgroundColor: 'rgba(0,0,0,0.55)',
   },
-  sheetWrap: { flex: 1, justifyContent: 'flex-end' },
+  sheetWrap: {
+    flex: 1,
+    justifyContent: 'flex-end',
+    backgroundColor: 'rgba(0,0,0,0.55)',
+  },
   sheet: {
     backgroundColor: Colors.background.secondary,
     borderTopLeftRadius: BorderRadius.xxl,
@@ -649,9 +658,9 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   moodChipLabel: {
-    fontSize: Typography.sizes.detail - 2,
+    fontSize: Typography.sizes.detail,
     fontWeight: '700',
-    letterSpacing: 1,
+    letterSpacing: 0.5,
     fontFamily: Typography.fonts.serif,
   },
   sheetTitleInput: {

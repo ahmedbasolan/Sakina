@@ -37,7 +37,7 @@ import { ProgressMandala } from '../components/onboarding/ProgressMandala';
 import { touchEmitter } from '../components/onboarding/InteractiveStarfield';
 import { useTheme } from '../context/ThemeContext';
 import { useAuth } from '../context/AuthContext';
-import { Animations, Spacing } from '../theme/DesignSystem';
+import { Animations, Spacing, Colors } from '../theme/DesignSystem';
 import { useReduceMotion } from '../hooks/useReduceMotion';
 
 const TOTAL_SCREENS = 8;
@@ -56,7 +56,7 @@ function BackArrow() {
       <Path
         d="M15,18 L9,12 L15,6"
         fill="none"
-        stroke="rgba(245, 237, 227, 0.5)"
+        stroke={`${Colors.text.primary}80`}
         strokeWidth={2}
         strokeLinecap="round"
         strokeLinejoin="round"

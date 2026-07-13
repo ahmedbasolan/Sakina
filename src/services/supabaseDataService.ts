@@ -407,6 +407,13 @@ export class SupabaseDataService {
         await dbQuery(async (db) => {
             await db.execAsync('DELETE FROM user_history');
         });
+
+        // Invalidate the in-memory history cache too — recordHistory() already
+        // does this per-mood on write, but this deletes everything, so without
+        // clearing the whole map, getRecentHistory() kept serving the stale,
+        // pre-clear cached entries (up to HISTORY_TTL_MS) and rotation
+        // continued avoiding "cleared" content.
+        this.historyCache.clear();
     }
 
     // ══════════════════════════════════════════════════════════════════
@@ -513,7 +520,7 @@ export class SupabaseDataService {
                         completed_days: localDays,
                         is_completed: Boolean(row.isCompleted),
                         completed_at: row.completedAt ? new Date(row.completedAt).toISOString() : null,
-                    });
+                    }, { onConflict: 'user_id,path_id' });
                 }
             }
 
@@ -541,7 +548,7 @@ export class SupabaseDataService {
                 completed_days: progress.completedDays,
                 is_completed: progress.isCompleted,
                 completed_at: progress.completedAt ? new Date(progress.completedAt).toISOString() : null,
-            });
+            }, { onConflict: 'user_id,path_id' });
 
             if (error) {
                 console.error('[SupabaseDataService] Error recording path progress:', error.message);

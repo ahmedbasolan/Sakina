@@ -167,10 +167,16 @@ const ShareSheet = ({ isVisible, onClose, isPremium, onUpgrade, content }: Share
   const [showEnglish, setShowEnglish] = useState(true);
   const [showTransliteration, setShowTransliteration] = useState(!!content.transliteration);
 
+  // Depend on the two primitive fields this effect actually reads, not the
+  // whole `content` object — both call sites (SurahReaderScreen,
+  // GuidanceScreen) construct `content` as a fresh literal every render, so
+  // depending on the object reference re-ran this on every unrelated parent
+  // re-render while the sheet was open, silently reverting the user's
+  // Arabic/Transliteration toggle choices back to their defaults.
   useEffect(() => {
     setShowArabic(!!content.arabicText);
     setShowTransliteration(!!content.transliteration);
-  }, [content]);
+  }, [content.arabicText, content.transliteration]);
 
   useEffect(() => {
     if (isVisible) {
@@ -650,7 +656,8 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginBottom: 8,
     fontFamily: Typography.fonts.arabic,
-    lineHeight: 32,
+    lineHeight: 46,
+    paddingVertical: 8,
   },
   previewTransliteration: {
     fontSize: 12,

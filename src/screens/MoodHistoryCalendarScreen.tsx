@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { formatDateYMD } from '../utils/date';
-import { Colors, BorderRadius, Spacing } from '../theme/DesignSystem';
+import { Colors, BorderRadius, Spacing, Typography } from '../theme/DesignSystem';
 import { AnimatedMandala } from '../components/AnimatedMandala';
 import {
   View,
@@ -16,8 +16,9 @@ import {
 import Svg, { Circle } from 'react-native-svg';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { SubscriptionService } from '../services/subscriptionService';
 import { Mood } from '../types';
 import { moodLabel } from '../constants';
 import {
@@ -230,6 +231,14 @@ export default function MoodHistoryCalendarScreen({ onBack }: MoodHistoryCalenda
   const topInset = insets?.top ?? 0;
   const bottomInset = insets?.bottom ?? 0;
 
+  const [isPremium, setIsPremium] = useState(() => SubscriptionService.getInstance().isPremium());
+
+  useFocusEffect(
+    useCallback(() => {
+      setIsPremium(SubscriptionService.getInstance().isPremium());
+    }, [])
+  );
+
   const [currentMonth, setCurrentMonth] = useState(() => {
     const now = new Date();
     return { year: now.getFullYear(), month: now.getMonth() };
@@ -242,6 +251,10 @@ export default function MoodHistoryCalendarScreen({ onBack }: MoodHistoryCalenda
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [loadingDetail, setLoadingDetail] = useState(false);
+  // Which entries (by index within the open day) have their translation
+  // expanded past the 3-line preview. Keyed by index since a day can have
+  // multiple entries; reset whenever a different day's detail loads.
+  const [expandedTranslations, setExpandedTranslations] = useState<Set<number>>(new Set());
 
   // Animations
   const headerOpacity = useRef(new Animated.Value(0)).current;
@@ -318,6 +331,7 @@ export default function MoodHistoryCalendarScreen({ onBack }: MoodHistoryCalenda
 
     setSelectedDay(dateStr);
     setLoadingDetail(true);
+    setExpandedTranslations(new Set());
     try {
       const detail = await moodHistoryService.getDayDetail(dateStr);
       setDayDetail(detail);
@@ -352,30 +366,29 @@ export default function MoodHistoryCalendarScreen({ onBack }: MoodHistoryCalenda
 
   return (
     <View style={styles.container}>
+      {/* Background Gradient */}
+      <LinearGradient
+        colors={Colors.celestialWash}
+        style={StyleSheet.absoluteFill}
+        start={{ x: 0.5, y: 0 }}
+        end={{ x: 0.5, y: 1 }}
+      />
+
+      {/* Twinkling stars at screen level */}
+      <TwinklingStar left="6%"  top={topInset + 6}  delay={0}    size={2.5} />
+      <TwinklingStar left="88%" top={topInset + 4}  delay={600}  size={2}   />
+      <TwinklingStar left="55%" top={topInset + 2}  delay={1100} size={2}   />
+      <TwinklingStar left="30%" top={topInset + 16} delay={400}  size={1.5} />
+      <TwinklingStar left="75%" top={topInset + 18} delay={800}  size={1.5} />
+
       {/* Celestial texture — matches Library/Paths backdrop */}
       <View style={styles.mandalaWrap} pointerEvents="none">
         <AnimatedMandala size={280} color={Colors.accent.primary} opacity={0.07} />
       </View>
 
       {/* Header */}
-      <Animated.View style={[styles.header, { paddingTop: topInset + 12, opacity: headerOpacity }]}>
-        {/* Background gradient */}
-        <LinearGradient
-          colors={[Colors.background.primary, Colors.background.secondary]}
-          style={StyleSheet.absoluteFill}
-        />
-
-        {/* Glow orb — top right */}
-        <View style={styles.headerGlowOrb} />
-
-        {/* Twinkling stars */}
-        <TwinklingStar left="6%"  top={topInset + 6}  delay={0}    size={2.5} />
-        <TwinklingStar left="88%" top={topInset + 4}  delay={600}  size={2}   />
-        <TwinklingStar left="55%" top={topInset + 2}  delay={1100} size={2}   />
-        <TwinklingStar left="30%" top={topInset + 16} delay={400}  size={1.5} />
-        <TwinklingStar left="75%" top={topInset + 18} delay={800}  size={1.5} />
-
-        {/* Header row content */}
+      <Animated.View style={[styles.header, { paddingTop: topInset + Spacing.md, opacity: headerOpacity }]}>
+        {/* Back Button Row */}
         <TouchableOpacity
           style={styles.backButton}
           onPress={handleBack}
@@ -388,9 +401,15 @@ export default function MoodHistoryCalendarScreen({ onBack }: MoodHistoryCalenda
           <Text style={styles.backText}>Back</Text>
         </TouchableOpacity>
 
-        <Text style={styles.headerTitle}>Mood History</Text>
-
-        <View style={{ width: 72 }} />
+        {/* Header Text Block consistent with Reflections/Sacred Journeys */}
+        <View style={styles.headerText}>
+          <Text style={styles.headerPretitle}>YOUR EMOTIONAL LANDSCAPE</Text>
+          <Text style={styles.headerTitle}>Mood History</Text>
+          <View style={styles.privacyRow}>
+            <MaterialCommunityIcons name="lock" size={12} color={`${Colors.accent.primary}99`} />
+            <Text style={styles.privacyText}>Encrypted · Local only · Never shared</Text>
+          </View>
+        </View>
       </Animated.View>
 
       <Animated.View style={{ flex: 1, opacity: contentOpacity }}>
@@ -639,9 +658,27 @@ export default function MoodHistoryCalendarScreen({ onBack }: MoodHistoryCalenda
                       )}
 
                       {entry.englishTranslation && (
-                        <Text style={styles.entryTranslation} numberOfLines={3}>
-                          {entry.englishTranslation}
-                        </Text>
+                        <TouchableOpacity
+                          activeOpacity={0.7}
+                          onPress={() => {
+                            setExpandedTranslations((prev) => {
+                              const next = new Set(prev);
+                              if (next.has(i)) next.delete(i);
+                              else next.add(i);
+                              return next;
+                            });
+                          }}
+                          accessibilityRole="button"
+                          accessibilityLabel="Verse translation"
+                          accessibilityState={{ expanded: expandedTranslations.has(i) }}
+                        >
+                          <Text
+                            style={styles.entryTranslation}
+                            numberOfLines={expandedTranslations.has(i) ? undefined : 3}
+                          >
+                            {entry.englishTranslation}
+                          </Text>
+                        </TouchableOpacity>
                       )}
 
                       {entry.reflectionText && (
@@ -665,47 +702,101 @@ export default function MoodHistoryCalendarScreen({ onBack }: MoodHistoryCalenda
             </CardSurface>
           )}
 
-          {/* Mood Distribution */}
-          {stats && Object.keys(stats.moodCounts).length > 0 && (
-            <CardSurface style={styles.card}>
-              <Text style={styles.cardTitle}>Mood Distribution</Text>
-              {Object.entries(stats.moodCounts)
-                .sort((a, b) => b[1] - a[1])
-                .map(([mood, count]) => {
-                  const total = Object.values(stats.moodCounts).reduce((s, c) => s + c, 0);
-                  const percentage = Math.round((count / total) * 100);
-                  const visual = getMoodVisual(mood);
-                  return (
-                    <View key={mood} style={styles.distRow}>
-                      <View style={styles.distLabelRow}>
-                        <View style={[styles.distDot, { backgroundColor: visual.bg }]} />
-                        <Text style={styles.distMood}>{moodLabel(mood)}</Text>
-                        <Text style={[styles.distCount, { color: visual.text }]}>
-                          {count} ({percentage}%)
-                        </Text>
-                      </View>
-                      <View style={styles.distBarBg}>
-                        <View
-                          style={[
-                            styles.distBarFill,
-                            { width: `${percentage}%`, backgroundColor: visual.bg },
-                          ]}
-                        />
-                      </View>
-                    </View>
-                  );
-                })}
-            </CardSurface>
-          )}
+          {/* Premium Gated Analytics & Insights Teaser / Paid Access */}
+          {!isPremium ? (
+            <CardSurface style={styles.premiumTeaserCard}>
+              <View style={styles.premiumTeaserHeader}>
+                <View style={styles.premiumTeaserIconCircle}>
+                  <MaterialCommunityIcons name="crown-outline" size={24} color={Colors.accent.primary} />
+                </View>
+                <View style={styles.premiumTeaserTitleWrap}>
+                  <Text style={styles.premiumTeaserTitle}>Mood Analytics & Insights</Text>
+                  <Text style={styles.premiumTeaserSubtitle}>Available with Sakina Pro</Text>
+                </View>
+              </View>
 
-          {/* Insights */}
-          {insights.length > 0 && (
-            <View style={styles.insightsSection}>
-              <Text style={styles.sectionTitle}>Insights</Text>
-              {insights.map((insight, i) => (
-                <InsightCard key={i} insight={insight} />
-              ))}
-            </View>
+              <Text style={styles.premiumTeaserDesc}>
+                Deepen your self-awareness. Support Sakina to unlock detailed emotional patterns, trends, and personalized guidance based on your journal reflections.
+              </Text>
+
+              <View style={styles.premiumTeaserFeatures}>
+                <View style={styles.premiumTeaserFeatureRow}>
+                  <MaterialCommunityIcons name="chart-bar" size={16} color={Colors.accent.primary} />
+                  <Text style={styles.premiumTeaserFeatureText}>Comprehensive Mood Distribution</Text>
+                </View>
+                <View style={styles.premiumTeaserFeatureRow}>
+                  <MaterialCommunityIcons name="lightbulb-on-outline" size={16} color={Colors.accent.primary} />
+                  <Text style={styles.premiumTeaserFeatureText}>Personalized spiritual insights & advice</Text>
+                </View>
+                <View style={styles.premiumTeaserFeatureRow}>
+                  <MaterialCommunityIcons name="trending-up" size={16} color={Colors.accent.primary} />
+                  <Text style={styles.premiumTeaserFeatureText}>Track emotional trends over time</Text>
+                </View>
+              </View>
+
+              <TouchableOpacity
+                style={styles.premiumTeaserBtn}
+                onPress={() => {
+                  HapticsService.impactAsync('MEDIUM');
+                  navigation.navigate('Support');
+                }}
+                activeOpacity={0.8}
+              >
+                <LinearGradient
+                  colors={[Colors.accent.primary, Colors.accent.light]}
+                  style={[StyleSheet.absoluteFill, { borderRadius: BorderRadius.md }]}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 1 }}
+                />
+                <MaterialCommunityIcons name="lock-open-outline" size={16} color="#1A0F2E" style={{ marginRight: 6 }} />
+                <Text style={styles.premiumTeaserBtnText}>Upgrade to Sakina Pro</Text>
+              </TouchableOpacity>
+            </CardSurface>
+          ) : (
+            <>
+              {/* Mood Distribution */}
+              {stats && Object.keys(stats.moodCounts).length > 0 && (
+                <CardSurface style={styles.card}>
+                  <Text style={styles.cardTitle}>Mood Distribution</Text>
+                  {Object.entries(stats.moodCounts)
+                    .sort((a, b) => b[1] - a[1])
+                    .map(([mood, count]) => {
+                      const total = Object.values(stats.moodCounts).reduce((s, c) => s + c, 0);
+                      const percentage = Math.round((count / total) * 100);
+                      const visual = getMoodVisual(mood);
+                      return (
+                        <View key={mood} style={styles.distRow}>
+                          <View style={styles.distLabelRow}>
+                            <View style={[styles.distDot, { backgroundColor: visual.bg }]} />
+                            <Text style={styles.distMood}>{moodLabel(mood)}</Text>
+                            <Text style={[styles.distCount, { color: visual.text }]}>
+                              {count} ({percentage}%)
+                            </Text>
+                          </View>
+                          <View style={styles.distBarBg}>
+                            <View
+                              style={[
+                                styles.distBarFill,
+                                { width: `${percentage}%`, backgroundColor: visual.bg },
+                              ]}
+                            />
+                          </View>
+                        </View>
+                      );
+                    })}
+                </CardSurface>
+              )}
+
+              {/* Insights */}
+              {insights.length > 0 && (
+                <View style={styles.insightsSection}>
+                  <Text style={styles.sectionTitle}>Insights</Text>
+                  {insights.map((insight, i) => (
+                    <InsightCard key={i} insight={insight} />
+                  ))}
+                </View>
+              )}
+            </>
           )}
 
           {/* Empty State */}
@@ -789,40 +880,52 @@ const styles = StyleSheet.create({
 
   // Header
   header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 20,
-    paddingBottom: 12,
-    overflow: 'hidden',
-    borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255,255,255,0.06)',
-  },
-  headerGlowOrb: {
-    position: 'absolute',
-    width: 180,
-    height: 180,
-    borderRadius: 90,
-    backgroundColor: 'rgba(251,146,60,0.07)',
-    right: -50,
-    top: -60,
+    paddingHorizontal: Spacing.xl,
+    paddingBottom: Spacing.md,
+    zIndex: 2,
   },
   backButton: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
     width: 72,
+    marginBottom: Spacing.md,
   },
   backText: {
     fontSize: 14,
     fontWeight: '500',
     color: Colors.text.primary,
   },
+  headerText: {
+    zIndex: 1,
+  },
+  headerPretitle: {
+    fontSize: Typography.sizes.detail - 2,
+    color: `${Colors.accent.primary}99`,
+    letterSpacing: 2.5,
+    marginBottom: Spacing.xs,
+    fontFamily: Typography.fonts.serif,
+  },
   headerTitle: {
-    fontSize: 20,
-    fontWeight: '700',
+    fontSize: Typography.sizes.hero,
     color: Colors.text.primary,
-    letterSpacing: -0.3,
+    fontFamily: Typography.fonts.serif,
+    fontWeight: '700',
+    letterSpacing: 1.2,
+    textShadowColor: `${Colors.accent.primary}33`,
+    textShadowOffset: { width: 0, height: 0 },
+    textShadowRadius: 10,
+    marginBottom: Spacing.sm,
+  },
+  privacyRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.xs,
+  },
+  privacyText: {
+    fontSize: Typography.sizes.detail - 1,
+    color: Colors.text.muted,
+    letterSpacing: 0.3,
   },
 
   // Scroll
@@ -1228,5 +1331,87 @@ const styles = StyleSheet.create({
     left: width / 2 - 140,
     top: 16,
     zIndex: 0,
+  },
+
+  // Premium Teaser
+  premiumTeaserCard: {
+    backgroundColor: Colors.background.tertiary,
+    borderRadius: BorderRadius.xl,
+    padding: Spacing.xl,
+    borderWidth: 1,
+    borderColor: 'rgba(212, 175, 55, 0.2)',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.35,
+    shadowRadius: 16,
+    elevation: 8,
+    gap: Spacing.lg,
+  },
+  premiumTeaserHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.md,
+  },
+  premiumTeaserIconCircle: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: 'rgba(212, 175, 55, 0.12)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  premiumTeaserTitleWrap: {
+    flex: 1,
+  },
+  premiumTeaserTitle: {
+    fontFamily: Typography.fonts.serif,
+    fontSize: Typography.sizes.body,
+    fontWeight: '700',
+    color: Colors.text.primary,
+    letterSpacing: 0.3,
+  },
+  premiumTeaserSubtitle: {
+    fontSize: Typography.sizes.detail - 1,
+    color: Colors.accent.primary,
+    fontWeight: '600',
+    letterSpacing: 0.5,
+  },
+  premiumTeaserDesc: {
+    fontSize: Typography.sizes.small - 1,
+    color: Colors.text.secondary,
+    lineHeight: 20,
+  },
+  premiumTeaserFeatures: {
+    gap: Spacing.sm,
+    backgroundColor: Colors.glass.light,
+    borderRadius: BorderRadius.lg,
+    padding: Spacing.md,
+    borderWidth: 1,
+    borderColor: Colors.glass.border,
+  },
+  premiumTeaserFeatureRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.sm,
+  },
+  premiumTeaserFeatureText: {
+    fontSize: Typography.sizes.small - 1,
+    color: Colors.text.secondary,
+  },
+  premiumTeaserBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: Spacing.md,
+    borderRadius: BorderRadius.md,
+    position: 'relative',
+    overflow: 'hidden',
+    marginTop: Spacing.xs,
+  },
+  premiumTeaserBtnText: {
+    fontSize: Typography.sizes.small - 1,
+    color: '#1A0F2E',
+    fontWeight: '700',
+    letterSpacing: 1,
   },
 });

@@ -142,6 +142,16 @@ export const runMigrationSteps = async (db: SQLite.SQLiteDatabase): Promise<void
   // created by createTables() — which always runs before runMigrationSteps(). A
   // migration step would be dead code on every path (fresh install and upgrade).
 
+  // user_preferences: asrMadhab (Standard/Hanafi Asr calculation toggle)
+  await runStep('user_preferences.asrMadhab', async () => {
+    if (!(await hasColumn('user_preferences', 'asrMadhab'))) {
+      console.log('[Migration] Adding asrMadhab to user_preferences...');
+      await db.execAsync(
+        `ALTER TABLE user_preferences ADD COLUMN asrMadhab TEXT NOT NULL DEFAULT 'standard'`,
+      );
+    }
+  });
+
   // user_sessions: windowKey (per-prayer-window refresh reset)
   await runStep('user_sessions.windowKey', async () => {
     if (!(await hasColumn('user_sessions', 'windowKey'))) {

@@ -14,15 +14,21 @@ const WEEK_LABELS = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
 
 // Steadfastness-themed verses, one per streak day — grows with the streak
 // rather than the calendar date (distinct rotation from Verse of the Day).
+// Full ayahs only (verified against api.alquran.cloud) — these used to be
+// partial clauses passed off as whole verses, the same bug fixed in
+// dailyVerseService.ts. Al-Baqarah 2:286 and Ar-Ra'd 13:11 were dropped: the
+// clauses quoted here came from ayahs several times longer, so they're
+// swapped for An-Najm 53:39 and Aal-Imran 3:200, which carry a similar
+// message and are genuinely complete on their own.
 const STREAK_VERSES: { text: string; ref: string }[] = [
-  { text: 'Indeed, Allah is with those who are patient.', ref: 'Al-Baqarah 2:153' },
-  { text: 'And Allah loves those who are patient.', ref: "Aal 'Imran 3:146" },
+  { text: 'O you who have believed, seek help through patience and prayer. Indeed, Allah is with the patient.', ref: 'Al-Baqarah 2:153' },
+  { text: 'And how many a prophet fought, and with him fought many religious scholars. But they never lost assurance due to what afflicted them in the cause of Allah, nor did they weaken or submit. And Allah loves the steadfast.', ref: "Aal-Imran 3:146" },
   { text: 'So indeed, with hardship comes ease.', ref: 'Ash-Sharh 94:5' },
-  { text: 'Allah does not burden a soul beyond what it can bear.', ref: 'Al-Baqarah 2:286' },
-  { text: 'Indeed, Allah will not change the condition of a people until they change what is in themselves.', ref: "Ar-Ra'd 13:11" },
-  { text: 'Our Lord, pour upon us patience and plant firmly our feet.', ref: 'Al-Baqarah 2:250' },
-  { text: 'And seek help through patience and prayer.', ref: 'Al-Baqarah 2:45' },
-  { text: 'And be patient, for indeed, Allah does not allow the reward of the doers of good to be lost.', ref: 'Hud 11:115' },
+  { text: 'And that there is not for man except that which he strives for.', ref: "An-Najm 53:39" },
+  { text: 'O you who have believed, persevere and endure and remain stationed, and fear Allah, that you may be successful.', ref: 'Aal-Imran 3:200' },
+  { text: 'And when they went forth to face Goliath and his soldiers, they said: "Our Lord, pour upon us patience, make our steps firm, and give us victory over the disbelieving people."', ref: 'Al-Baqarah 2:250' },
+  { text: 'And seek help through patience and prayer, and indeed, it is difficult except for the humbly submissive.', ref: 'Al-Baqarah 2:45' },
+  { text: 'And be patient, for indeed, Allah does not let the reward of those who do good go to waste.', ref: 'Hud 11:115' },
 ];
 
 function useWeekDots(streakDays: number) {
@@ -109,7 +115,10 @@ export function StreakBar({ streakDays, fadeAnim, slideAnim, onPress }: StreakBa
           </View>
           </View>
           <View style={styles.streakVerseRow}>
-            <Text style={styles.streakVerseText} numberOfLines={2}>
+            {/* No numberOfLines cap — these are complete ayahs now, and
+                ellipsis-truncating Quran text is the same bug as showing a
+                partial ayah, just at render time instead of in the data. */}
+            <Text style={styles.streakVerseText}>
               "{streakVerse.text}" <Text style={styles.streakVerseRef}>— {streakVerse.ref}</Text>
             </Text>
           </View>

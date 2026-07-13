@@ -59,7 +59,12 @@ const SmartMoodCard = memo(function SmartMoodCard({
     } else {
       glowAnim.setValue(0);
     }
-  }, [isChecked, reduceMotion]);
+    // isLoading is read in the condition above but was missing here, so when
+    // a mood tap's guidance fetch finished (isLoading true -> false) with
+    // isChecked already true and unchanged, this effect never re-ran — the
+    // "checked" glow that's supposed to start once loading settles never
+    // played on the normal success path.
+  }, [isChecked, isLoading, reduceMotion]);
 
   const handlePress = useCallback(() => {
     Animated.sequence([

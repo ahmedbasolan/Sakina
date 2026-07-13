@@ -19,7 +19,7 @@ import { useAppContext } from '../context/AppContext';
 import { Mood, MoodConfig } from '../types';
 import { LocationPickerModal } from '../components/LocationPickerModal';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
-import { AnimatedMandala } from '../components/AnimatedMandala';
+import { JourneyMandalaBackdrop } from '../components/JourneyMandalaBackdrop';
 import { logServiceError } from '../services/errorLoggingService';
 import { HapticsService } from '../services/hapticsService';
 import { fetchWindowGuidance as fetchWindowGuidanceShared, buildFridayKahfExperiences } from '../services/guidanceWindowFetch';
@@ -204,11 +204,17 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
       if (experience) {
         setSelectedMood(moodId);
         setCheckedInToday(true);
-        navigation.navigate('Guidance', {
-          experience,
-          mood: moodId,
-          islamicTerm: moodConfigs.find((m) => m.id === moodId)?.label || moodId,
-        });
+        // The fetch above can resolve after the user has already switched
+        // tabs (Home stays mounted inside the tab navigator) — without this
+        // check, a slow fetch force-navigates them into Guidance on top of
+        // whatever screen they're now looking at.
+        if (navigation.isFocused()) {
+          navigation.navigate('Guidance', {
+            experience,
+            mood: moodId,
+            islamicTerm: moodConfigs.find((m) => m.id === moodId)?.label || moodId,
+          });
+        }
       } else {
         setLocalSelectedMood(previousMood);
         logServiceError('HomeScreen', 'handleMoodTap', new Error(`getGuidance returned null for mood: ${moodId}`));
@@ -243,7 +249,10 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
       // exhausted, "next verse" falls through to the normal mood rotation.
       if (isFriday) {
         const verses = await buildFridayKahfExperiences();
-        if (verses && verses.length > 0) {
+        // Guard against the user having switched tabs while this awaited —
+        // Home stays mounted inside the tab navigator, so without this a
+        // slow fetch would force-navigate on top of whatever they're on now.
+        if (verses && verses.length > 0 && navigation.isFocused()) {
           const [experience, ...kahfQueue] = verses;
           navigation.navigate('Guidance', {
             experience,
@@ -257,7 +266,7 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
 
       const mood = localSelectedMoodRef.current || 'Calm';
       const experience = await fetchWindowGuidance(mood);
-      if (experience) {
+      if (experience && navigation.isFocused()) {
         navigation.navigate('Guidance', {
           experience,
           mood,
@@ -448,9 +457,7 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
                     end={{ x: 1, y: 1 }}
                     pointerEvents="none"
                   />
-                  <View style={styles.journeyMandala} pointerEvents="none">
-                    <AnimatedMandala size={180} color={activePath.color} opacity={0.24} />
-                  </View>
+                  <JourneyMandalaBackdrop size={180} color={activePath.color} />
 
                   <View style={styles.journeyCardTop}>
                     <View style={styles.journeyCardTopLeft}>
@@ -670,7 +677,6 @@ const styles = StyleSheet.create({
     shadowRadius: 16,
     elevation: 8,
   },
-  journeyMandala: { position: 'absolute', top: -20, right: -40 },
   journeyCardTop: {
     flexDirection: 'row',
     justifyContent: 'space-between',

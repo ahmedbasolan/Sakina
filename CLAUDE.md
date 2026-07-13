@@ -84,6 +84,61 @@ translate to our stack — never paste web code.
 
 ---
 
+## Quoting Quran Text — non-negotiable
+
+This exact bug shipped three times in one session (`dailyVerseService.ts`,
+`StreakBar.tsx`, `SpiritualWindowBanner.tsx` all quoted verse fragments as if
+they were the full ayah). Treat these as hard rules, not style preferences:
+
+1. **Always the complete ayah, never a clause.** If a UI cites "Surah X:Y",
+   the Arabic + translation must be the full text of that ayah, start to end
+   — not a fragment that happens to sound quotable in English. Showing a
+   fragment under its real ayah number misrepresents the Quran even when the
+   fragment reads as a grammatically complete sentence.
+2. **Never type Arabic diacritics or a translation from memory.** Verify
+   every ayah against a reliable source before writing or editing verse
+   content: `https://api.alquran.cloud/v1/ayah/{surah}:{ayah}/editions/quran-uthmani,en.sahih`
+   (Uthmani script + Sahih International). Fetch it with `curl`/Node `fetch`
+   and read the raw JSON yourself — the `WebFetch` tool summarizes through a
+   small model that has been observed silently truncating or misnumbering
+   long ayahs even when explicitly told to return the complete verbatim text.
+   "Verify against Sahih International" means confirming the ayah's full
+   *meaning and completeness* — light prose-smoothing for a UI card (dropping
+   translator clarification brackets like `[so]`/`[O Muhammad]`, adjusting a
+   connective word for flow) is fine and matches this app's existing voice
+   (`quranData.ts` already does this, e.g. "the Hereafter is better for you
+   than the first" for 93:4 rather than the bracketed "...than the first
+   [life]"). What's never acceptable is dropping a clause, changing what the
+   ayah actually claims, or substituting a specific term for a vaguer one
+   (e.g. "religious scholars" becoming "devoted men of faith" changes the
+   translator's specific word choice without changing meaning enough to
+   justify it — prefer the source's own wording once brackets are resolved).
+3. **If the complete ayah doesn't fit the slot, swap the verse — don't cut
+   it.** Some ayahs are fiqh rulings (e.g. 2:222, 65:2), mid-narrative
+   dialogue with no antecedent, or simply very long (2:286, 2:185). If citing
+   one would mean truncating it, or it would read oddly/inappropriately out
+   of context, pick a different complete, thematically-similar ayah instead.
+4. **Never bound verse text with `numberOfLines`/ellipsis with no way to see
+   the rest.** Clipping an ayah at render time with a permanent line cap is
+   the same violation as truncating it in the data. Bound verse UI with
+   font-size scaling (fixed container, tiered size by length) or by letting
+   it wrap freely. A collapsed-preview-with-tap-to-expand (`numberOfLines`
+   that flips to `undefined` on tap, per `QuranLibraryScreen.tsx`'s
+   `VerseCard`) is fine — the complete ayah is still genuinely reachable, not
+   hidden. What's banned is a clamp with no expand affordance at all. If a
+   fixed-height container is used instead of expand-on-tap (e.g.
+   `VerseOfTheDay.tsx`), don't pair it with `overflow: 'hidden'` unless
+   you've actually budgeted the height for the longest real entry with
+   margin — an unverified fixed height + hidden overflow is a silent clip
+   with extra steps.
+5. **Places with verse content, so far:** `src/data/quranData.ts` (already
+   sourced from the Quran.com API — the standard to match), and the three
+   files above. `hadithService.ts`, `quranService.ts`, `contentRepository.ts`,
+   and `sunnahEnricher.ts` also carry Quran/hadith text and have not yet been
+   audited against these rules — check them the next time you're in that area.
+
+---
+
 ## Commands
 - Typecheck: `npx tsc --noEmit -p tsconfig.json`
 - (Run on device via Expo to verify visual changes — visuals can't be confirmed from a typecheck alone.)

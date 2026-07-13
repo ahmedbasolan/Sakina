@@ -181,6 +181,20 @@ export default function CommitScreen({ isActive, onCommit }: Props) {
     setIsHolding(false);
   }, [isActive]);
 
+  // Stop every animation on unmount. handleCompletion starts a 20s eternal
+  // rotation loop and then calls onCommit() ~1.9s later, which navigates away
+  // and unmounts this screen well before the loop's first cycle finishes —
+  // nothing previously stopped it, leaking a running native-driver animation
+  // on every single successful onboarding completion.
+  useEffect(() => {
+    return () => {
+      holdAnimRef.current?.stop();
+      holdNativeAnimRef.current?.stop();
+      starRotateLoopRef.current?.stop();
+      if (holdTimerRef.current) clearTimeout(holdTimerRef.current);
+    };
+  }, []);
+
   const handlePressIn = () => {
     if (isCompleteRef.current) return;
     setIsHolding(true);
@@ -191,7 +205,10 @@ export default function CommitScreen({ isActive, onCommit }: Props) {
     const nativeHold = Animated.timing(starScale, { toValue: 1.35, duration: HOLD_DURATION, useNativeDriver: true });
     holdNativeAnimRef.current = nativeHold;
     nativeHold.start();
-    startStarRotation();
+    // The repeating rotation is decorative flourish, not the hold's actual
+    // progress feedback (the ring + glow already show that) — skip it under
+    // reduce-motion per the project's "loops/flicker must stop" rule.
+    if (!reduceMotion) startStarRotation();
 
     holdAnimRef.current = Animated.parallel([
       Animated.timing(holdProgress, { toValue: 1, duration: HOLD_DURATION, useNativeDriver: false }),
@@ -227,27 +244,34 @@ export default function CommitScreen({ isActive, onCommit }: Props) {
     setTimeout(() => Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success), 350);
 
     // Stop hold rotation, then do a celebratory full spin before settling into
-    // a gentle eternal rotation — calm but clearly completed.
+    // a gentle eternal rotation — calm but clearly completed. Both the spin
+    // and the eternal loop are decorative, so skip them entirely under
+    // reduce-motion instead of leaving a permanent spinning star running for
+    // as long as this screen happens to stay mounted.
     starRotateLoopRef.current?.stop();
-    const currentDeg = (starRotation as any)._value || 0;
-    Animated.timing(starRotation, {
-      toValue: currentDeg + 360,
-      duration: 500,
-      easing: Easing.out(Easing.cubic),
-      useNativeDriver: true,
-    }).start(({ finished }) => {
-      if (!finished) return;
+    if (reduceMotion) {
       starRotation.setValue(0);
-      starRotateLoopRef.current = Animated.loop(
-        Animated.timing(starRotation, {
-          toValue: 360,
-          duration: 20000,
-          easing: Easing.linear,
-          useNativeDriver: true,
-        }),
-      );
-      starRotateLoopRef.current.start();
-    });
+    } else {
+      const currentDeg = (starRotation as any)._value || 0;
+      Animated.timing(starRotation, {
+        toValue: currentDeg + 360,
+        duration: 500,
+        easing: Easing.out(Easing.cubic),
+        useNativeDriver: true,
+      }).start(({ finished }) => {
+        if (!finished) return;
+        starRotation.setValue(0);
+        starRotateLoopRef.current = Animated.loop(
+          Animated.timing(starRotation, {
+            toValue: 360,
+            duration: 20000,
+            easing: Easing.linear,
+            useNativeDriver: true,
+          }),
+        );
+        starRotateLoopRef.current.start();
+      });
+    }
 
     // Star blooms out then settles — more celebratory than a plain spring
     Animated.sequence([
@@ -426,7 +450,7 @@ const styles = StyleSheet.create({
   },
   subtitle: {
     fontSize: 15,
-    color: 'rgba(245, 237, 227, 0.65)',
+    color: `${Colors.text.primary}A6`,
     textAlign: 'center',
     lineHeight: 23,
     marginBottom: Spacing.xxl,
@@ -469,7 +493,7 @@ const styles = StyleSheet.create({
   },
   instruction: {
     fontSize: 13,
-    color: 'rgba(245, 237, 227, 0.55)',
+    color: `${Colors.text.primary}8C`,
     textAlign: 'center',
     letterSpacing: 2.5,
     textTransform: 'uppercase',
@@ -489,7 +513,7 @@ const styles = StyleSheet.create({
   },
   completionSub: {
     fontSize: 14,
-    color: 'rgba(245, 237, 227, 0.75)',
+    color: `${Colors.text.primary}BF`,
     textAlign: 'center',
     letterSpacing: 0.5,
   },
@@ -516,7 +540,7 @@ const styles = StyleSheet.create({
   },
   chipText: {
     fontSize: Typography.sizes.detail,
-    color: 'rgba(245, 237, 227, 0.55)',
+    color: `${Colors.text.primary}8C`,
     textAlign: 'center',
     letterSpacing: 0.3,
     lineHeight: 18,

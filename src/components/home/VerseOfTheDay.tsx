@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View, Text, StyleSheet, Animated } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { BlurView } from 'expo-blur';
@@ -11,7 +11,39 @@ interface VerseOfTheDayProps {
   slideAnim: Animated.Value;
 }
 
-export function VerseOfTheDay({ dailyVerse, fadeAnim, slideAnim }: VerseOfTheDayProps) {
+interface VerseTextSizes {
+  arabicSize: number;
+  arabicLineHeight: number;
+  translationSize: number;
+  translationLineHeight: number;
+}
+
+// Tiered by Arabic character count (a reliable proxy for rendered length —
+// every pool entry's translation scales with its Arabic). Breakpoints were
+// chosen against the actual pool's length distribution, not guessed blind.
+function getVerseTextSizes(arabicLength: number): VerseTextSizes {
+  if (arabicLength <= 75) {
+    return { arabicSize: 22, arabicLineHeight: 36, translationSize: 15, translationLineHeight: 23 };
+  }
+  if (arabicLength <= 130) {
+    return { arabicSize: 19, arabicLineHeight: 32, translationSize: 14, translationLineHeight: 21 };
+  }
+  if (arabicLength <= 180) {
+    return { arabicSize: 16.5, arabicLineHeight: 27, translationSize: 13, translationLineHeight: 19 };
+  }
+  if (arabicLength <= 250) {
+    return { arabicSize: 14, arabicLineHeight: 23, translationSize: 11.5, translationLineHeight: 17 };
+  }
+  return { arabicSize: 10.5, arabicLineHeight: 18, translationSize: 9, translationLineHeight: 13.5 };
+}
+
+function VerseOfTheDayBase({ dailyVerse, fadeAnim, slideAnim }: VerseOfTheDayProps) {
+  // HomeScreen re-renders this every ~60s (prayer-context poll, clock tick)
+  // even though dailyVerse itself only changes once a day — memoize so that
+  // isn't recomputing the tier lookup and reallocating style objects on
+  // every unrelated tick.
+  const sizes = useMemo(() => getVerseTextSizes(dailyVerse.arabic.length), [dailyVerse.arabic]);
+
   return (
     <Animated.View style={[styles.verseSection, { opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
       <BlurView intensity={16} tint="dark" style={styles.verseCard}>
@@ -39,14 +71,16 @@ export function VerseOfTheDay({ dailyVerse, fadeAnim, slideAnim }: VerseOfTheDay
 
         {/* Arabic — only render if non-empty to avoid orphaned whitespace */}
         {!!dailyVerse.arabic && (
-          <Text style={styles.verseArabic}>{dailyVerse.arabic}</Text>
+          <Text style={[styles.verseArabic, { fontSize: sizes.arabicSize, lineHeight: sizes.arabicLineHeight }]}>
+            {dailyVerse.arabic}
+          </Text>
         )}
 
         {/* Ornament divider */}
         <Text style={styles.ornamentStar}>✦</Text>
 
         {/* Translation */}
-        <Text style={styles.verseTranslation}>
+        <Text style={[styles.verseTranslation, { fontSize: sizes.translationSize, lineHeight: sizes.translationLineHeight }]}>
           {dailyVerse.translation || 'Translation not available'}
         </Text>
 
@@ -62,12 +96,20 @@ export function VerseOfTheDay({ dailyVerse, fadeAnim, slideAnim }: VerseOfTheDay
   );
 }
 
+export const VerseOfTheDay = React.memo(VerseOfTheDayBase);
+
 const styles = StyleSheet.create({
   verseSection: {
     paddingHorizontal: Spacing.xl,
     marginBottom: Spacing.xxl,
   },
   verseCard: {
+    // Sizes to content instead of a fixed height — a fixed box tall enough
+    // for the longest ayah in the pool left short verses swimming in empty
+    // space on first open. getVerseTextSizes already shrinks long verses to
+    // fit comfortably, so auto-height stays compact day to day without
+    // clipping anything (overflow:hidden here only rounds the BlurView
+    // corners, it never crops content since the card grows to fit it).
     backgroundColor: Colors.background.secondary + '99',
     borderRadius: BorderRadius.xl,
     overflow: 'hidden',
@@ -97,11 +139,11 @@ const styles = StyleSheet.create({
     letterSpacing: 1.5,
   },
   verseArabic: {
-    fontSize: 22,
+    // fontSize/lineHeight are supplied per-verse by getVerseTextSizes so a
+    // long ayah shrinks to fit the fixed card instead of growing it.
     color: Colors.text.primary,
     textAlign: 'center',
     fontFamily: Typography.fonts.arabic,
-    lineHeight: 52,
     paddingBottom: 8,
     marginBottom: 20,
     textShadowColor: 'rgba(212, 175, 55, 0.55)',
@@ -115,17 +157,16 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   verseTranslation: {
+    // fontSize/lineHeight are supplied per-verse by getVerseTextSizes.
     fontFamily: Typography.fonts.serif,
-    fontSize: 15,
-    color: 'rgba(245, 237, 227, 0.85)',
+    color: `${Colors.text.primary}D9`,
     textAlign: 'center',
-    lineHeight: 24,
     marginBottom: 12,
   },
   verseRef: {
     fontFamily: Typography.fonts.serif,
     fontSize: 12,
-    color: 'rgba(245, 237, 227, 0.70)',
+    color: `${Colors.text.primary}B3`,
     textAlign: 'center',
     fontStyle: 'italic',
   },

@@ -41,6 +41,7 @@ export const useGuidanceLogic = (
     primaryLanguage: 'english',
     showTransliteration: true,
     autoPlayAudio: false,
+    asrMadhab: 'standard',
   });
   // Initialized synchronously from the service so premium reads Infinity on
   // first render (no flash of budget dots before the async sync).

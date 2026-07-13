@@ -14,6 +14,7 @@ import {
   Animated,
   Dimensions,
   TouchableOpacity,
+  ScrollView,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -35,7 +36,15 @@ const STAR_POS = [
   { x: 0.04, y: 0.35, s: 1.5, d: 350 },
 ];
 
-// Curated first-guidance verses per mood — Arabic split into words for reveal
+// Curated first-guidance verses per mood — Arabic split into words for reveal.
+// Every entry below is the ayah's complete text, verified against
+// api.alquran.cloud (Uthmani + Sahih International) — see CLAUDE.md's
+// "Quoting Quran Text" section. Three entries (Overwhelmed, Tired, Lonely)
+// were swapped for a different complete ayah: their original references
+// (2:286, 65:2, 57:4) are each one clause of a much longer ayah — a
+// multi-line dua, a divorce-witnessing ruling, and an unrelated cosmology
+// passage, respectively — that would either misrepresent the citation if
+// force-completed, or take 30+ staggered words to reveal on this screen.
 const MOOD_VERSES: Record<string, {
   words: string[];        // Arabic broken by spaces for word-by-word reveal
   arabic: string;         // Full Arabic (for accessibility / layout ref)
@@ -44,9 +53,9 @@ const MOOD_VERSES: Record<string, {
   pretitle: string;       // Poetic context line
 }> = {
   Grateful: {
-    words: ['لَئِن', 'شَكَرْتُمْ', 'لَأَزِيدَنَّكُمْ'],
-    arabic: 'لَئِن شَكَرْتُمْ لَأَزِيدَنَّكُمْ',
-    translation: 'If you are grateful, I will surely increase you in favour.',
+    words: ['وَإِذْ', 'تَأَذَّنَ', 'رَبُّكُمْ', 'لَئِن', 'شَكَرْتُمْ', 'لَأَزِيدَنَّكُمْ', 'وَلَئِن', 'كَفَرْتُمْ', 'إِنَّ', 'عَذَابِي', 'لَشَدِيدٌ'],
+    arabic: 'وَإِذْ تَأَذَّنَ رَبُّكُمْ لَئِن شَكَرْتُمْ لَأَزِيدَنَّكُمْ وَلَئِن كَفَرْتُمْ إِنَّ عَذَابِي لَشَدِيدٌ',
+    translation: "And when your Lord proclaimed: 'If you are grateful, I will surely increase you in favor; but if you deny, indeed, My punishment is severe.'",
     ref: 'Surah Ibrahim · 14:7',
     pretitle: 'For the grateful heart',
   },
@@ -58,44 +67,44 @@ const MOOD_VERSES: Record<string, {
     pretitle: 'For the hopeful soul',
   },
   Calm: {
-    words: ['أَلَا', 'بِذِكْرِ', 'اللَّهِ', 'تَطْمَئِنُّ', 'الْقُلُوبُ'],
-    arabic: 'أَلَا بِذِكْرِ اللَّهِ تَطْمَئِنُّ الْقُلُوبُ',
-    translation: 'Verily, in the remembrance of Allah do hearts find rest.',
+    words: ['الَّذِينَ', 'آمَنُوا', 'وَتَطْمَئِنُّ', 'قُلُوبُهُم', 'بِذِكْرِ', 'اللَّهِ', 'أَلَا', 'بِذِكْرِ', 'اللَّهِ', 'تَطْمَئِنُّ', 'الْقُلُوبُ'],
+    arabic: 'الَّذِينَ آمَنُوا وَتَطْمَئِنُّ قُلُوبُهُم بِذِكْرِ اللَّهِ أَلَا بِذِكْرِ اللَّهِ تَطْمَئِنُّ الْقُلُوبُ',
+    translation: 'Those who have believed and whose hearts find rest in the remembrance of Allah. Verily, in the remembrance of Allah do hearts find rest.',
     ref: "Surah Ar-Ra'd · 13:28",
     pretitle: 'For the peaceful heart',
   },
   Overwhelmed: {
-    words: ['لَا', 'يُكَلِّفُ', 'اللَّهُ', 'نَفْسًا', 'إِلَّا', 'وُسْعَهَا'],
-    arabic: 'لَا يُكَلِّفُ اللَّهُ نَفْسًا إِلَّا وُسْعَهَا',
-    translation: 'Allah does not burden a soul beyond that it can bear.',
-    ref: 'Surah Al-Baqarah · 2:286',
+    words: ['يَا أَيُّهَا', 'الَّذِينَ', 'آمَنُوا', 'اسْتَعِينُوا', 'بِالصَّبْرِ', 'وَالصَّلَاةِ', 'إِنَّ', 'اللَّهَ', 'مَعَ', 'الصَّابِرِينَ'],
+    arabic: 'يَا أَيُّهَا الَّذِينَ آمَنُوا اسْتَعِينُوا بِالصَّبْرِ وَالصَّلَاةِ إِنَّ اللَّهَ مَعَ الصَّابِرِينَ',
+    translation: 'O you who have believed, seek help through patience and prayer. Indeed, Allah is with the patient.',
+    ref: 'Surah Al-Baqarah · 2:153',
     pretitle: 'For the overwhelmed spirit',
   },
   Tired: {
-    words: ['وَمَن', 'يَتَّقِ', 'اللَّهَ', 'يَجْعَل', 'لَّهُ', 'مَخْرَجًا'],
-    arabic: 'وَمَن يَتَّقِ اللَّهَ يَجْعَل لَّهُ مَخْرَجًا',
-    translation: 'Whoever fears Allah — He will make for him a way out.',
-    ref: 'Surah At-Talaq · 65:2',
+    words: ['فَإِنَّ', 'مَعَ', 'الْعُسْرِ', 'يُسْرًا'],
+    arabic: 'فَإِنَّ مَعَ الْعُسْرِ يُسْرًا',
+    translation: 'So indeed, with hardship comes ease.',
+    ref: 'Surah Ash-Sharh · 94:5',
     pretitle: 'For the weary traveller',
   },
   Lonely: {
-    words: ['وَهُوَ', 'مَعَكُمْ', 'أَيْنَ', 'مَا', 'كُنتُمْ'],
-    arabic: 'وَهُوَ مَعَكُمْ أَيْنَ مَا كُنتُمْ',
-    translation: 'And He is with you wherever you are.',
-    ref: 'Surah Al-Hadid · 57:4',
+    words: ['وَلَقَدْ', 'خَلَقْنَا', 'الْإِنسَانَ', 'وَنَعْلَمُ', 'مَا', 'تُوَسْوِسُ', 'بِهِ', 'نَفْسُهُ', 'وَنَحْنُ', 'أَقْرَبُ', 'إِلَيْهِ', 'مِنْ', 'حَبْلِ', 'الْوَرِيدِ'],
+    arabic: 'وَلَقَدْ خَلَقْنَا الْإِنسَانَ وَنَعْلَمُ مَا تُوَسْوِسُ بِهِ نَفْسُهُ وَنَحْنُ أَقْرَبُ إِلَيْهِ مِنْ حَبْلِ الْوَرِيدِ',
+    translation: 'And We have already created man and know what his soul whispers to him, and We are closer to him than his jugular vein.',
+    ref: 'Surah Qaf · 50:16',
     pretitle: 'For the lonely heart',
   },
   Sad: {
-    words: ['لَا', 'تَقْنَطُوا', 'مِن', 'رَّحْمَةِ', 'اللَّهِ'],
-    arabic: 'لَا تَقْنَطُوا مِن رَّحْمَةِ اللَّهِ',
-    translation: 'Do not despair of the mercy of Allah.',
+    words: ['قُلْ', 'يَا عِبَادِيَ', 'الَّذِينَ', 'أَسْرَفُوا', 'عَلَىٰ', 'أَنفُسِهِمْ', 'لَا', 'تَقْنَطُوا', 'مِن', 'رَّحْمَةِ', 'اللَّهِ', 'إِنَّ', 'اللَّهَ', 'يَغْفِرُ', 'الذُّنُوبَ', 'جَمِيعًا', 'إِنَّهُ', 'هُوَ', 'الْغَفُورُ', 'الرَّحِيمُ'],
+    arabic: 'قُلْ يَا عِبَادِيَ الَّذِينَ أَسْرَفُوا عَلَىٰ أَنفُسِهِمْ لَا تَقْنَطُوا مِن رَّحْمَةِ اللَّهِ إِنَّ اللَّهَ يَغْفِرُ الذُّنُوبَ جَمِيعًا إِنَّهُ هُوَ الْغَفُورُ الرَّحِيمُ',
+    translation: "Say: 'O My servants who have transgressed against themselves, do not despair of the mercy of Allah. Indeed, Allah forgives all sins. He is truly the Forgiving, the Merciful.'",
     ref: 'Surah Az-Zumar · 39:53',
     pretitle: 'For the saddened soul',
   },
   Angry: {
-    words: ['وَالْكَاظِمِينَ', 'الْغَيْظَ', 'وَالْعَافِينَ', 'عَنِ', 'النَّاسِ'],
-    arabic: 'وَالْكَاظِمِينَ الْغَيْظَ وَالْعَافِينَ عَنِ النَّاسِ',
-    translation: 'Those who restrain anger and pardon people — Allah loves the doers of good.',
+    words: ['الَّذِينَ', 'يُنفِقُونَ', 'فِي', 'السَّرَّاءِ', 'وَالضَّرَّاءِ', 'وَالْكَاظِمِينَ', 'الْغَيْظَ', 'وَالْعَافِينَ', 'عَنِ', 'النَّاسِ', 'وَاللَّهُ', 'يُحِبُّ', 'الْمُحْسِنِينَ'],
+    arabic: 'الَّذِينَ يُنفِقُونَ فِي السَّرَّاءِ وَالضَّرَّاءِ وَالْكَاظِمِينَ الْغَيْظَ وَالْعَافِينَ عَنِ النَّاسِ وَاللَّهُ يُحِبُّ الْمُحْسِنِينَ',
+    translation: 'Those who spend during ease and hardship, and who restrain anger and pardon people — Allah loves the doers of good.',
     ref: 'Surah Aal-Imran · 3:134',
     pretitle: 'For the tested heart',
   },
@@ -186,7 +195,11 @@ export default function FirstGuidanceScreen({ isActive, onNext }: Props) {
 
       <GoldenMotes />
 
-      <View style={[styles.contentArea, { paddingTop: insets.top + 72 }]}>
+      <ScrollView
+        style={styles.contentScroll}
+        contentContainerStyle={[styles.contentArea, { paddingTop: insets.top + 72 }]}
+        showsVerticalScrollIndicator={false}
+      >
         {/* Poetic pretitle */}
         <Animated.Text style={[styles.pretitle, s[0]]}>
           {verse.pretitle}
@@ -225,7 +238,7 @@ export default function FirstGuidanceScreen({ isActive, onNext }: Props) {
         <Animated.Text style={[styles.reference, s[3]]}>
           — {verse.ref}
         </Animated.Text>
-      </View>
+      </ScrollView>
 
       {/* Bottom */}
       <View style={[styles.bottomSection, { paddingBottom: Math.max(insets.bottom + Spacing.xxl, Spacing.xxxl) }]}>
@@ -265,12 +278,20 @@ const styles = StyleSheet.create({
     top: height * 0.25,
     zIndex: 0,
   },
-  contentArea: {
+  // ScrollView's own layout box — takes the space above the fixed bottom
+  // section (safe here since the CTA/whisper own their zIndex separately).
+  contentScroll: {
     flex: 1,
+    zIndex: 2,
+  },
+  // contentContainerStyle: flexGrow (not flex) so short content still centers,
+  // while longer Arabic verses (variable word count per mood) scroll instead
+  // of overflowing into the fixed CTA below.
+  contentArea: {
+    flexGrow: 1,
     justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: Spacing.xxl,
-    zIndex: 2,
   },
   pretitle: {
     fontSize: 13,
@@ -317,7 +338,7 @@ const styles = StyleSheet.create({
   },
   translation: {
     fontSize: 17,
-    color: 'rgba(245, 237, 227, 0.92)',
+    color: `${Colors.text.primary}EB`,
     textAlign: 'center',
     lineHeight: 27,
     fontStyle: 'italic',

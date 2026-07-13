@@ -193,7 +193,8 @@ export const tableDefinitions: TableDefinition[] = [
       id TEXT PRIMARY KEY DEFAULT 'user_preferences',
       primaryLanguage TEXT NOT NULL DEFAULT 'english',
       showTransliteration INTEGER NOT NULL DEFAULT 1,
-      autoPlayAudio INTEGER NOT NULL DEFAULT 0
+      autoPlayAudio INTEGER NOT NULL DEFAULT 0,
+      asrMadhab TEXT NOT NULL DEFAULT 'standard'
     );`,
   },
   {

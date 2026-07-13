@@ -1,11 +1,20 @@
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Coordinates, CalculationMethod, CalculationParameters, PrayerTimes as AdhanPrayerTimes, PolarCircleResolution, Madhab } from 'adhan';
 
-import { PrayerContext } from '../types';
+import { AsrMadhab, PrayerContext } from '../types';
 import { getUserLocation } from './locationStorage';
 import { logServiceError, logNetworkError } from './errorLoggingService';
 import { formatDateYMD, formatDateDMY } from '../utils/date';
 import { withRetry, AXIOS_RETRY_CONFIG } from './retryUtils';
+import { PreferencesService } from './preferencesService';
+
+/** Resolves the effective Asr school: an explicit override, or the user's saved
+ * preference. Read lazily (not cached) so a mid-session settings change takes
+ * effect on the next prayer-times fetch without needing a service restart. */
+function resolveAsrMadhab(explicit?: AsrMadhab): AsrMadhab {
+  return explicit ?? PreferencesService.getInstance().getPreferences().asrMadhab;
+}
 
 export interface PrayerTimings {
   Fajr: string;
@@ -43,45 +52,82 @@ export const formatCountdown = (minutes: number): string => {
 };
 
 // ── Calculation-method mapping ──────────────────────────────────────────────
-// Region-appropriate Aladhan calculation methods, keyed by normalised country
-// name. IDs verified against https://api.aladhan.com/v1/methods. Countries
-// not listed fall back to Muslim World League (3) — the most widely accepted
-// general method. (Previously everything used ISNA (2), a North-America
-// convention that produces noticeably wrong times in the Gulf.)
-const METHOD_BY_COUNTRY: Record<string, number> = {
-  uae: 8, 'united arab emirates': 8, oman: 8, bahrain: 8, yemen: 8, // Gulf Region
-  'saudi arabia': 4, ksa: 4, // Umm Al-Qura, Makkah
-  kuwait: 9,
-  qatar: 10,
-  egypt: 5, // Egyptian General Authority
-  pakistan: 1, india: 1, bangladesh: 1, afghanistan: 1, // Karachi
-  turkey: 13, 'türkiye': 13, // Diyanet
-  singapore: 11,
-  france: 12,
-  russia: 14,
-  malaysia: 17, // JAKIM
-  indonesia: 20, // KEMENAG
-  tunisia: 18, algeria: 19, morocco: 21, jordan: 23,
-  usa: 2, 'united states': 2, us: 2, canada: 2, // ISNA
+// One entry per supported region, keyed by normalised country name/ISO-2 code.
+// Pairs the numeric Aladhan method id (still used by getTimingsByCity — the
+// manual city-picker path has no coordinates to compute locally) with the
+// equivalent adhan.js CalculationMethod factory (used by the GPS-coordinates
+// path below). IDs verified against https://api.aladhan.com/v1/methods;
+// adhan.js methods verified against its own METHODS.md.
+//
+// adhan.js ships 13 built-in methods and doesn't have dedicated ones for
+// France, Russia, Tunisia, Algeria, Morocco or Jordan — those fall back to
+// Muslim World League (the same generic default Aladhan itself uses for any
+// unmapped country) rather than guessing unverified custom angle parameters
+// for those authorities. Malaysia/Indonesia map to adhan.js's Singapore
+// method, which its own docs state explicitly covers all three.
+interface MethodConfig {
+  aladhanId: number;
+  adhanMethod: () => CalculationParameters;
+  label: string;
+}
+
+const MWL: MethodConfig = { aladhanId: 3, adhanMethod: CalculationMethod.MuslimWorldLeague, label: 'Muslim World League' };
+const GULF: MethodConfig = { aladhanId: 8, adhanMethod: CalculationMethod.Dubai, label: 'Gulf Region' };
+const UMM_AL_QURA: MethodConfig = { aladhanId: 4, adhanMethod: CalculationMethod.UmmAlQura, label: 'Umm al-Qura, Makkah' };
+const KUWAIT: MethodConfig = { aladhanId: 9, adhanMethod: CalculationMethod.Kuwait, label: 'Kuwait' };
+const QATAR: MethodConfig = { aladhanId: 10, adhanMethod: CalculationMethod.Qatar, label: 'Qatar' };
+const EGYPTIAN: MethodConfig = { aladhanId: 5, adhanMethod: CalculationMethod.Egyptian, label: 'Egyptian General Authority' };
+const KARACHI: MethodConfig = { aladhanId: 1, adhanMethod: CalculationMethod.Karachi, label: 'Karachi' };
+const TURKEY: MethodConfig = { aladhanId: 13, adhanMethod: CalculationMethod.Turkey, label: 'Diyanet (Turkey)' };
+const SINGAPORE: MethodConfig = { aladhanId: 11, adhanMethod: CalculationMethod.Singapore, label: 'Singapore' };
+const MALAYSIA: MethodConfig = { aladhanId: 17, adhanMethod: CalculationMethod.Singapore, label: 'JAKIM (Malaysia)' };
+const INDONESIA: MethodConfig = { aladhanId: 20, adhanMethod: CalculationMethod.Singapore, label: 'KEMENAG (Indonesia)' };
+const NORTH_AMERICA: MethodConfig = { aladhanId: 2, adhanMethod: CalculationMethod.NorthAmerica, label: 'ISNA' };
+const FRANCE_FALLBACK: MethodConfig = { ...MWL, aladhanId: 12 };
+const RUSSIA_FALLBACK: MethodConfig = { ...MWL, aladhanId: 14 };
+const TUNISIA_FALLBACK: MethodConfig = { ...MWL, aladhanId: 18 };
+const ALGERIA_FALLBACK: MethodConfig = { ...MWL, aladhanId: 19 };
+const MOROCCO_FALLBACK: MethodConfig = { ...MWL, aladhanId: 21 };
+const JORDAN_FALLBACK: MethodConfig = { ...MWL, aladhanId: 23 };
+
+const METHOD_CONFIG_BY_COUNTRY: Record<string, MethodConfig> = {
+  uae: GULF, 'united arab emirates': GULF, oman: GULF, bahrain: GULF, yemen: GULF,
+  'saudi arabia': UMM_AL_QURA, ksa: UMM_AL_QURA,
+  kuwait: KUWAIT,
+  qatar: QATAR,
+  egypt: EGYPTIAN,
+  pakistan: KARACHI, india: KARACHI, bangladesh: KARACHI, afghanistan: KARACHI,
+  turkey: TURKEY, 'türkiye': TURKEY,
+  singapore: SINGAPORE,
+  malaysia: MALAYSIA,
+  indonesia: INDONESIA,
+  france: FRANCE_FALLBACK,
+  russia: RUSSIA_FALLBACK,
+  tunisia: TUNISIA_FALLBACK, algeria: ALGERIA_FALLBACK, morocco: MOROCCO_FALLBACK, jordan: JORDAN_FALLBACK,
+  usa: NORTH_AMERICA, 'united states': NORTH_AMERICA, us: NORTH_AMERICA, canada: NORTH_AMERICA,
   // ISO-2 aliases returned by expo-location reverseGeocodeAsync
-  ae: 8, om: 8, bh: 8, ye: 8,
-  sa: 4,
-  kw: 9,
-  qa: 10,
-  eg: 5,
-  pk: 1, 'in': 1, bd: 1, af: 1,
-  tr: 13,
-  sg: 11,
-  fr: 12,
-  ru: 14,
-  my: 17,
-  id: 20,
-  tn: 18, dz: 19, ma: 21, jo: 23,
-  ca: 2,
+  ae: GULF, om: GULF, bh: GULF, ye: GULF,
+  sa: UMM_AL_QURA,
+  kw: KUWAIT,
+  qa: QATAR,
+  eg: EGYPTIAN,
+  pk: KARACHI, 'in': KARACHI, bd: KARACHI, af: KARACHI,
+  tr: TURKEY,
+  sg: SINGAPORE,
+  fr: FRANCE_FALLBACK,
+  ru: RUSSIA_FALLBACK,
+  my: MALAYSIA,
+  id: INDONESIA,
+  tn: TUNISIA_FALLBACK, dz: ALGERIA_FALLBACK, ma: MOROCCO_FALLBACK, jo: JORDAN_FALLBACK,
+  ca: NORTH_AMERICA,
 };
 
+function getMethodConfig(country: string): MethodConfig {
+  return METHOD_CONFIG_BY_COUNTRY[country.trim().toLowerCase()] ?? MWL;
+}
+
 export function getCalculationMethodForCountry(country: string): number {
-  return METHOD_BY_COUNTRY[country.trim().toLowerCase()] ?? 3;
+  return getMethodConfig(country).aladhanId;
 }
 
 export interface PrayerTimesData {
@@ -124,23 +170,29 @@ class PrayerTimesService {
     city: string,
     country: string,
     method?: number,
+    madhab?: AsrMadhab,
   ): Promise<PrayerTimesData> {
     // Region-appropriate default unless the caller explicitly overrides.
     const resolvedMethod = method ?? getCalculationMethodForCountry(country);
+    // Explicit param wins; otherwise fall back to the user's saved preference.
+    const resolvedMadhab = resolveAsrMadhab(madhab);
+    // Aladhan's `school` param: 0 = Shafi'i/Standard (also its default), 1 = Hanafi.
+    const school = resolvedMadhab === 'hanafi' ? 1 : 0;
     // Use local calendar date (not UTC) so users in UTC+4/+5 don't see
     // yesterday's prayer times for several hours after local midnight.
-    // Cache keys include the method so a mapping change can never serve
-    // times computed with a different convention.
+    // Cache keys include the method and madhab so neither a mapping change
+    // nor an Asr-school toggle can ever serve times computed under a
+    // different convention.
     const today = formatDateYMD();
     // Normalize user-supplied city/country so special characters can't produce
     // unexpected AsyncStorage keys or break the startsWith pruning logic.
     const safeCity = city.replace(/[^a-zA-Z0-9\-]/g, '_').slice(0, 50);
     const safeCountry = country.replace(/[^a-zA-Z0-9\-]/g, '_').slice(0, 10);
-    const cacheKey = `@prayer_timings_${safeCity}_${safeCountry}_m${resolvedMethod}_${today}`;
+    const cacheKey = `@prayer_timings_${safeCity}_${safeCountry}_m${resolvedMethod}_s${school}_${today}`;
     // Cross-day fallback key — stores the most recently successful response
     // regardless of date, so first-launch / day-rollover with no connectivity
     // still has something to show rather than a complete blank.
-    const fallbackKey = `@prayer_timings_${safeCity}_${safeCountry}_m${resolvedMethod}_fallback`;
+    const fallbackKey = `@prayer_timings_${safeCity}_${safeCountry}_m${resolvedMethod}_s${school}_fallback`;
 
     try {
       // 1. Serve today's cached data if available
@@ -150,7 +202,7 @@ class PrayerTimesService {
       // 2. Fetch with exponential back-off retry (3 attempts, up to 8s max)
       const data = await withRetry(
         async () => {
-          const response = await axios.get(this.BASE_URL, { params: { city, country, method: resolvedMethod } });
+          const response = await axios.get(this.BASE_URL, { params: { city, country, method: resolvedMethod, school } });
           if (response.data.code === 200) return response.data.data;
           throw new Error(response.data.status || 'Failed to fetch prayer times');
         },
@@ -181,59 +233,105 @@ class PrayerTimesService {
   }
 
   /**
-   * Fetches prayer times by GPS coordinates.
-   * More accurate than city-name lookup. Uses the same day-based caching
-   * and stale-fallback strategy as getTimingsByCity.
-   * Coords are rounded to 2 decimal places in the cache key (~1 km precision)
-   * to avoid cache misses from GPS jitter between calls.
+   * Computes prayer times by GPS coordinates using adhan.js — entirely
+   * on-device, no network call and no caching needed for the times
+   * themselves (a fresh, exact computation is as cheap as reading a cache).
+   * More accurate than city-name lookup because it skips a second geocoding
+   * step server-side; GPS coordinates go straight into the astronomical
+   * calculation. Only the Hijri calendar date (decorative/display-only,
+   * not itself computable from adhan.js) still touches the network, with
+   * its own day-keyed cache + stale fallback.
    */
   public async getTimingsByCoordinates(
     lat: number,
     lon: number,
     country: string,
+    madhab?: AsrMadhab,
   ): Promise<PrayerTimesData> {
-    const resolvedMethod = getCalculationMethodForCountry(country);
-    const today = formatDateYMD();
-    const lat2 = lat.toFixed(2);
-    const lon2 = lon.toFixed(2);
-    const cacheKey = `@prayer_timings_lat${lat2}_lon${lon2}_m${resolvedMethod}_${today}`;
-    const fallbackKey = `@prayer_timings_lat${lat2}_lon${lon2}_m${resolvedMethod}_fallback`;
+    const now = new Date();
+    const methodConfig = getMethodConfig(country);
+    const coordinates = new Coordinates(lat, lon);
+    const params = methodConfig.adhanMethod();
+    // Explicit param wins; otherwise the user's saved Asr-school preference.
+    // adhan.js defaults to Shafi'i (shadow = 1x) when madhab is left unset.
+    params.madhab = resolveAsrMadhab(madhab) === 'hanafi' ? Madhab.Hanafi : Madhab.Shafi;
+    // Without this, adhan.js defaults to `Unresolved` for true midnight-sun/
+    // polar-night conditions (roughly lat >= 66.5°) — sunrise/sunset can't be
+    // derived astronomically there, so fajr/isha/sunrise/sunset come back as
+    // Invalid Date and fmtTime() below throws. AqrabBalad ("nearest latitude
+    // with a valid solar time") is adhan.js's own recommended resolution for
+    // this case, matching how most prayer-time calculators handle it.
+    params.polarCircleResolution = PolarCircleResolution.AqrabBalad;
+    const adhanTimes = new AdhanPrayerTimes(coordinates, now, params);
+    const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
+    const fmtTime = (d: Date) => {
+      if (Number.isNaN(d.getTime())) {
+        throw new Error(`prayerTimesService: adhan.js produced an invalid time for coordinates (${lat}, ${lon})`);
+      }
+      return new Intl.DateTimeFormat('en-GB', { hour: '2-digit', minute: '2-digit', hourCycle: 'h23', timeZone }).format(d);
+    };
+
+    const timings: PrayerTimings = {
+      Fajr: fmtTime(adhanTimes.fajr),
+      Sunrise: fmtTime(adhanTimes.sunrise),
+      Dhuhr: fmtTime(adhanTimes.dhuhr),
+      Asr: fmtTime(adhanTimes.asr),
+      Maghrib: fmtTime(adhanTimes.maghrib),
+      Isha: fmtTime(adhanTimes.isha),
+    };
+
+    const hijri = await this.getHijriDate(now);
+    const readable = new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }).format(now);
+
+    return {
+      timings,
+      date: { readable, hijri },
+      meta: { method: { name: methodConfig.label }, timezone: timeZone },
+    };
+  }
+
+  /**
+   * Hijri calendar date for a Gregorian date — the one piece adhan.js can't
+   * derive locally. Cached per calendar day (a given Gregorian date always
+   * maps to the same Hijri date, no need to refetch) with a date-less
+   * fallback key so a fully offline first launch still shows *a* Hijri date
+   * rather than nothing. Never throws — Hijri display is decorative, unlike
+   * the prayer times above which must always resolve.
+   */
+  private async getHijriDate(date: Date): Promise<PrayerTimesData['date']['hijri']> {
+    const dmy = formatDateDMY(date);
+    const cacheKey = `@hijri_date_${dmy}`;
+    const fallbackKey = '@hijri_date_fallback';
 
     try {
-      const cachedData = await AsyncStorage.getItem(cacheKey);
-      if (cachedData) return JSON.parse(cachedData);
+      const cached = await AsyncStorage.getItem(cacheKey);
+      if (cached) return JSON.parse(cached);
 
-      const dateDMY = formatDateDMY();
-      const data = await withRetry(
+      const hijri = await withRetry(
         async () => {
-          const response = await axios.get(
-            `https://api.aladhan.com/v1/timings/${dateDMY}`,
-            { params: { latitude: lat, longitude: lon, method: resolvedMethod } },
-          );
-          if (response.data.code === 200) return response.data.data;
-          throw new Error(response.data.status || 'Failed to fetch prayer times');
+          const response = await axios.get(`https://api.aladhan.com/v1/gToH/${dmy}`);
+          if (response.data.code === 200) return response.data.data.hijri;
+          throw new Error(response.data.status || 'Failed to fetch Hijri date');
         },
-        'PrayerTimesService.getTimingsByCoordinates',
+        'PrayerTimesService.getHijriDate',
         AXIOS_RETRY_CONFIG,
       );
 
-      await AsyncStorage.setItem(cacheKey, JSON.stringify(data));
-      await AsyncStorage.setItem(fallbackKey, JSON.stringify(data));
-      this.pruneStaleTimingCaches(today).catch(() => {});
-      return data;
-    } catch (error: any) {
+      await AsyncStorage.setItem(cacheKey, JSON.stringify(hijri));
+      await AsyncStorage.setItem(fallbackKey, JSON.stringify(hijri));
+      return hijri;
+    } catch (error) {
       logNetworkError(
-        'https://api.aladhan.com/v1/timings',
+        'https://api.aladhan.com/v1/gToH',
         'GET',
         error instanceof Error ? error : new Error(String(error)),
-        { lat, lon },
+        { dmy },
       );
       const stale = await AsyncStorage.getItem(fallbackKey);
-      if (stale) {
-        console.warn('[PrayerTimes] Network unavailable — using stale cached timings');
-        return JSON.parse(stale);
-      }
-      throw new Error(error.message || 'Network error fetching prayer times');
+      if (stale) return JSON.parse(stale);
+      // Nothing cached yet (offline first launch) — a blank Hijri line beats
+      // throwing and losing the prayer times we already computed above.
+      return { day: '', month: { en: '', ar: '' }, year: '', designation: { abbreviated: '' } };
     }
   }
 
@@ -326,9 +424,20 @@ class PrayerTimesService {
       return 'maghrib_post';
     }
 
-    // 7. Night (Isha until Isha + 120 mins - reflection window)
-    if (currentTime >= isha && currentTime <= isha + 120) {
-      return 'isha';
+    // 7. Night (Isha until the Tahajjud window begins). Runs all the way to
+    // preFajrStart (computed above), not a flat +120 minutes — a fixed
+    // cutoff left a dead stretch of late night that fell through to the
+    // generic 'general' context on longer nights (e.g. Isha 21:00, Fajr
+    // 05:00 → preFajrStart 03:00 left 23:00–03:00 uncovered).
+    // This window wraps midnight in the typical case (isha in the evening,
+    // preFajrStart after midnight), so it needs the same branch as window 1
+    // above — without it, a very early Fajr (preFajrStart wraps to a
+    // late-evening clock value like 23:00) makes `currentTime < preFajrStart`
+    // true for nearly the entire day, wrongly swallowing daytime hours.
+    if (isha > preFajrStart) {
+      if (currentTime >= isha || currentTime < preFajrStart) return 'isha';
+    } else {
+      if (currentTime >= isha && currentTime < preFajrStart) return 'isha';
     }
 
     return 'general';

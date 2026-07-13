@@ -1,5 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Constants from 'expo-constants';
+import { formatDateYMD } from '../utils/date';
 
 const SUNNAH_API_KEY = process.env.EXPO_PUBLIC_SUNNAH_API_KEY || Constants.expoConfig?.extra?.sunnahApiKey;
 const STORAGE_KEY = '@daily_hadith';
@@ -37,8 +38,11 @@ const FALLBACK_HADITHS: HadithContent[] = [
 ];
 
 export async function getDailyHadith(): Promise<HadithContent> {
-  const today = new Date().toISOString().split('T')[0];
-  
+  // Local calendar date, not UTC — otherwise users ahead/behind UTC see
+  // "today's" hadith flip hours off from their actual local midnight
+  // (the same bug class already fixed via formatDateYMD() elsewhere).
+  const today = formatDateYMD();
+
   try {
     const cachedDate = await AsyncStorage.getItem(CACHE_DATE_KEY);
     const cachedHadithStr = await AsyncStorage.getItem(STORAGE_KEY);

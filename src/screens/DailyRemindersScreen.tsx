@@ -8,17 +8,23 @@ import {
   Alert,
   ActivityIndicator,
   Linking,
+  ScrollView,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { Ionicons } from '@expo/vector-icons';
 import { HapticsService } from '../services/hapticsService';
 import NotificationService from '../services/notificationService';
 import { logServiceError } from '../services/errorLoggingService';
-import { Colors, Typography } from '../theme/DesignSystem';
+import { Colors, Typography, Spacing, BorderRadius } from '../theme/DesignSystem';
 import { useReduceMotion } from '../hooks/useReduceMotion';
 
-const CLOCK_SIZE = 240;
+// Shrunk from 240 — at that size the clock alone consumed roughly a third of
+// screen height, pushing the three reminder toggles and the Set Reminder
+// button off the bottom of the viewport on most devices.
+const CLOCK_SIZE = 172;
+const MERIDIEM_OPTIONS = ['AM', 'PM'] as const;
 const CLOCK_RADIUS = CLOCK_SIZE / 2;
 const MINUTE_HAND_LENGTH = CLOCK_RADIUS * 0.75;
 const HOUR_HAND_LENGTH = CLOCK_RADIUS * 0.45;
@@ -278,7 +284,10 @@ export default function DailyRemindersScreen({ onBack }: DailyRemindersScreenPro
           ],
         );
       }
-    } catch (_error) {
+    } catch (error) {
+      // Was silently discarding the real error — swap for the actual cause so
+      // device logs show what failed instead of just "please try again".
+      logServiceError('DailyRemindersScreen', 'handleSetReminder', error instanceof Error ? error : new Error(String(error)));
       Alert.alert('Error', 'Failed to set reminder. Please try again.');
     } finally {
       setIsSaving(false);
@@ -421,11 +430,20 @@ export default function DailyRemindersScreen({ onBack }: DailyRemindersScreenPro
         colors={Colors.celestialWash}
         style={styles.container}
       >
-        {/* Ambient glow */}
-        <View style={styles.ambientGlow} />
+        {/* Ambient glow — a soft top-down gold wash, same technique as the
+            Guidance/journey screens' washAccent, instead of a flat translucent
+            circle (which reads as a muddy olive blob when a low-alpha gold
+            sits directly over the near-black corner of the celestial wash). */}
+        <LinearGradient
+          colors={[`${Colors.accent.primary}22`, 'transparent']}
+          start={{ x: 0.5, y: 0 }}
+          end={{ x: 0.5, y: 0.5 }}
+          style={StyleSheet.absoluteFill}
+          pointerEvents="none"
+        />
 
         {/* Header */}
-        <View style={[styles.header, { paddingTop: Math.max(insets.top, 20) }]}>
+        <View style={[styles.header, { paddingTop: Math.max(insets.top, Spacing.lg) }]}>
           <TouchableOpacity
             onPress={handleBack}
             style={styles.closeButton}
@@ -433,170 +451,176 @@ export default function DailyRemindersScreen({ onBack }: DailyRemindersScreenPro
             accessibilityRole="button"
             accessibilityLabel="Close"
           >
-            <Text style={styles.closeIcon}>✕</Text>
+            <Ionicons name="close" size={22} color={Colors.text.secondary} />
           </TouchableOpacity>
-          <Text style={styles.headerLabel}></Text>
-          <View style={{ width: 24 }} />
         </View>
 
-        {/* Main content */}
-        <View style={styles.content}>
+        {/* Main content — scrolls as a safety net on shorter devices instead
+            of clipping the last toggle card / Set Reminder button off-screen,
+            though everything now fits without scrolling on typical devices. */}
+        <ScrollView
+          style={styles.content}
+          contentContainerStyle={styles.contentInner}
+          showsVerticalScrollIndicator={false}
+          bounces={false}
+        >
           {/* Title */}
           <View style={styles.titleContainer}>
+            <Text style={styles.eyebrow}>DAILY GUIDANCE REMINDER</Text>
             <Text style={styles.title}>Set Reminder</Text>
-            <Text style={styles.subtitle}>When would you like to reflect?</Text>
+            <Text style={styles.subtitle}>When should your daily check-in arrive?</Text>
           </View>
 
-          {/* Clock Row: Hour controls | Clock | Minute controls */}
+          {/* Clock Row: Hour controls | Clock + AM/PM | Minute controls */}
           <View style={styles.clockRow}>
-            {/* Hour controls - Left side */}
+            {/* Hour controls - Left side. Bare chevrons with a generous
+                hitSlop instead of a bordered/glowing circular button — per
+                the app's icon rule, nav/stepper affordances stay unwrapped. */}
             <View style={styles.sideControlGroup}>
               <TouchableOpacity
-                style={styles.timeButton}
+                style={styles.stepperButton}
                 onPress={incrementHour}
+                hitSlop={{ top: 12, bottom: 12, left: 16, right: 16 }}
                 accessibilityRole="button"
                 accessibilityLabel="Increase hour"
               >
-                <Text style={styles.timeButtonText}>▲</Text>
+                <Ionicons name="chevron-up" size={20} color={Colors.accent.primary} />
               </TouchableOpacity>
               <Text style={styles.timeLabel}>Hour</Text>
               <TouchableOpacity
-                style={styles.timeButton}
+                style={styles.stepperButton}
                 onPress={decrementHour}
+                hitSlop={{ top: 12, bottom: 12, left: 16, right: 16 }}
                 accessibilityRole="button"
                 accessibilityLabel="Decrease hour"
               >
-                <Text style={styles.timeButtonText}>▼</Text>
+                <Ionicons name="chevron-down" size={20} color={Colors.accent.primary} />
               </TouchableOpacity>
             </View>
 
-            {/* Clock */}
-            <View style={styles.clockContainer}>
-              {/* AM Toggle */}
-              <TouchableOpacity
-                style={[styles.meridiemToggle, { top: -45 }]}
-                onPress={() => {
-                  HapticsService.impactAsync('MEDIUM');
-                  setPeriod('AM');
-                }}
-                accessibilityRole="button"
-                accessibilityLabel="AM"
-                accessibilityState={{ selected: period === 'AM' }}
-              >
-                <Text style={[styles.meridiemText, period === 'AM' && styles.meridiemActiveText]}>
-                  AM
-                </Text>
-              </TouchableOpacity>
+            {/* Clock + AM/PM — grouped in a column so the toggle sits directly
+                under the clock face in normal flow instead of breaking out of
+                the circle with negative top/bottom offsets (that overflow used
+                to collide with the subtitle above and land disconnected below). */}
+            <View style={styles.clockColumn}>
+              <View style={styles.clockContainer}>
+                {/* Clock constellation elements */}
+                {renderClockElements()}
 
-              {/* Clock constellation elements */}
-              {renderClockElements()}
+                {/* Minute hand (Long) with glow endpoint */}
+                <Animated.View
+                  style={[
+                    styles.handContainer,
+                    {
+                      transform: [
+                        {
+                          rotate: minuteHandRotation.interpolate({
+                            inputRange: [0, 360],
+                            outputRange: ['0deg', '360deg'],
+                          }),
+                        },
+                      ],
+                    },
+                  ]}
+                >
+                  <View style={[styles.clockHand, styles.minuteHand]}>
+                    <Animated.View style={[styles.handGlow, { transform: [{ scale: starPulse }] }]} />
+                  </View>
+                </Animated.View>
 
-              {/* Minute hand (Long) with glow endpoint */}
-              <Animated.View
-                style={[
-                  styles.handContainer,
-                  {
-                    transform: [
-                      {
-                        rotate: minuteHandRotation.interpolate({
-                          inputRange: [0, 360],
-                          outputRange: ['0deg', '360deg'],
-                        }),
-                      },
-                    ],
-                  },
-                ]}
-              >
-                <View style={[styles.clockHand, styles.minuteHand]}>
-                  <Animated.View style={[styles.handGlow, { transform: [{ scale: starPulse }] }]} />
+                {/* Hour hand (Short) with glow endpoint */}
+                <Animated.View
+                  style={[
+                    styles.handContainer,
+                    {
+                      transform: [
+                        {
+                          rotate: hourHandRotation.interpolate({
+                            inputRange: [0, 360],
+                            outputRange: ['0deg', '360deg'],
+                          }),
+                        },
+                      ],
+                    },
+                  ]}
+                >
+                  <View style={[styles.clockHand, styles.hourHand]}>
+                    <Animated.View style={[styles.handGlow, { transform: [{ scale: starPulse }] }]} />
+                  </View>
+                </Animated.View>
+
+                {/* Center dot */}
+                <View style={styles.clockCenter} />
+
+                {/* Starburst effect */}
+                <Animated.View
+                  style={[
+                    styles.starburst,
+                    {
+                      opacity: starburstOpacity,
+                      transform: [
+                        { scale: starburstScale },
+                        {
+                          rotate: starburstRotation.interpolate({
+                            inputRange: [0, 1],
+                            outputRange: ['0deg', '180deg'],
+                          }),
+                        },
+                      ],
+                    },
+                  ]}
+                />
+
+                {/* Time display */}
+                <View style={styles.timeDisplay}>
+                  <Text style={styles.timeText}>
+                    {hour.toString().padStart(2, '0')}:{minute.toString().padStart(2, '0')}
+                  </Text>
                 </View>
-              </Animated.View>
-
-              {/* Hour hand (Short) with glow endpoint */}
-              <Animated.View
-                style={[
-                  styles.handContainer,
-                  {
-                    transform: [
-                      {
-                        rotate: hourHandRotation.interpolate({
-                          inputRange: [0, 360],
-                          outputRange: ['0deg', '360deg'],
-                        }),
-                      },
-                    ],
-                  },
-                ]}
-              >
-                <View style={[styles.clockHand, styles.hourHand]}>
-                  <Animated.View style={[styles.handGlow, { transform: [{ scale: starPulse }] }]} />
-                </View>
-              </Animated.View>
-
-              {/* Center dot */}
-              <View style={styles.clockCenter} />
-
-              {/* Starburst effect */}
-              <Animated.View
-                style={[
-                  styles.starburst,
-                  {
-                    opacity: starburstOpacity,
-                    transform: [
-                      { scale: starburstScale },
-                      {
-                        rotate: starburstRotation.interpolate({
-                          inputRange: [0, 1],
-                          outputRange: ['0deg', '180deg'],
-                        }),
-                      },
-                    ],
-                  },
-                ]}
-              />
-
-              {/* Time display */}
-              <View style={styles.timeDisplay}>
-                <Text style={styles.timeText}>
-                  {hour.toString().padStart(2, '0')}:{minute.toString().padStart(2, '0')}
-                </Text>
               </View>
 
-              {/* PM Toggle */}
-              <TouchableOpacity
-                style={[styles.meridiemToggle, { bottom: -45 }]}
-                onPress={() => {
-                  HapticsService.impactAsync('MEDIUM');
-                  setPeriod('PM');
-                }}
-                accessibilityRole="button"
-                accessibilityLabel="PM"
-                accessibilityState={{ selected: period === 'PM' }}
-              >
-                <Text style={[styles.meridiemText, period === 'PM' && styles.meridiemActiveText]}>
-                  PM
-                </Text>
-              </TouchableOpacity>
+              {/* AM/PM segmented pill — contained, in normal flow beneath the clock */}
+              <View style={styles.meridiemSegment}>
+                {MERIDIEM_OPTIONS.map((option) => (
+                  <TouchableOpacity
+                    key={option}
+                    style={[styles.meridiemOption, period === option && styles.meridiemOptionActive]}
+                    onPress={() => {
+                      HapticsService.impactAsync('MEDIUM');
+                      setPeriod(option);
+                    }}
+                    accessibilityRole="button"
+                    accessibilityLabel={option}
+                    accessibilityState={{ selected: period === option }}
+                  >
+                    <Text style={[styles.meridiemText, period === option && styles.meridiemActiveText]}>
+                      {option}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
             </View>
 
             {/* Minute controls - Right side */}
             <View style={styles.sideControlGroup}>
               <TouchableOpacity
-                style={styles.timeButton}
+                style={styles.stepperButton}
                 onPress={incrementMinute}
+                hitSlop={{ top: 12, bottom: 12, left: 16, right: 16 }}
                 accessibilityRole="button"
                 accessibilityLabel="Increase minute"
               >
-                <Text style={styles.timeButtonText}>▲</Text>
+                <Ionicons name="chevron-up" size={20} color={Colors.accent.primary} />
               </TouchableOpacity>
               <Text style={styles.timeLabel}>Min</Text>
               <TouchableOpacity
-                style={styles.timeButton}
+                style={styles.stepperButton}
                 onPress={decrementMinute}
+                hitSlop={{ top: 12, bottom: 12, left: 16, right: 16 }}
                 accessibilityRole="button"
                 accessibilityLabel="Decrease minute"
               >
-                <Text style={styles.timeButtonText}>▼</Text>
+                <Ionicons name="chevron-down" size={20} color={Colors.accent.primary} />
               </TouchableOpacity>
             </View>
           </View>
@@ -622,7 +646,7 @@ export default function DailyRemindersScreen({ onBack }: DailyRemindersScreenPro
           </View>
 
           {/* Prayer Times Toggle */}
-          <View style={[styles.glassPanel, { marginTop: 10 }]}>
+          <View style={[styles.glassPanel, { marginTop: Spacing.sm }]}>
             <View style={styles.toggleContent}>
               <Text style={styles.toggleTitle}>Prayer Times</Text>
               <Text style={styles.toggleSubtitle}>
@@ -642,7 +666,7 @@ export default function DailyRemindersScreen({ onBack }: DailyRemindersScreenPro
           </View>
 
           {/* Spiritual Windows Toggle */}
-          <View style={[styles.glassPanel, { marginTop: 10 }]}>
+          <View style={[styles.glassPanel, { marginTop: Spacing.sm }]}>
             <View style={styles.toggleContent}>
               <Text style={styles.toggleTitle}>Spiritual Windows</Text>
               <Text style={styles.toggleSubtitle}>
@@ -661,9 +685,9 @@ export default function DailyRemindersScreen({ onBack }: DailyRemindersScreenPro
             </TouchableOpacity>
           </View>
 
-          {/* Set Reminder Button - Moved up to close the gap */}
+          {/* Set Reminder Button */}
           <TouchableOpacity
-            style={[styles.setButton, { marginTop: 24 }]}
+            style={[styles.setButton, { marginTop: Spacing.lg }]}
             onPress={handleSetReminder}
             activeOpacity={0.8}
             disabled={isSaving}
@@ -677,7 +701,7 @@ export default function DailyRemindersScreen({ onBack }: DailyRemindersScreenPro
               <Text style={styles.setButtonText}>Set Reminder</Text>
             )}
           </TouchableOpacity>
-        </View>
+        </ScrollView>
 
         {/* Footer - Branding only */}
         <View style={[styles.footer, { paddingBottom: Math.max(insets.bottom, 20) + 12 }]}>
@@ -717,55 +741,45 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  ambientGlow: {
-    position: 'absolute',
-    top: '-10%',
-    left: '-10%',
-    width: '50%',
-    height: '40%',
-    backgroundColor: Colors.accent.glow,
-    borderRadius: 999,
-  },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 32,
-    paddingBottom: 16,
+    paddingHorizontal: Spacing.xl,
+    paddingBottom: Spacing.sm,
   },
   closeButton: {
-    padding: 4,
-  },
-  closeIcon: {
-    fontSize: 20,
-    color: Colors.text.muted,
-    fontWeight: '200',
-  },
-  headerLabel: {
-    fontSize: 10,
-    fontWeight: '300',
-    letterSpacing: 4,
-    color: Colors.text.muted,
+    padding: Spacing.xs,
   },
   content: {
     flex: 1,
+  },
+  contentInner: {
+    flexGrow: 1,
     alignItems: 'center',
-    paddingHorizontal: 32,
+    paddingHorizontal: Spacing.xxl,
+    paddingBottom: Spacing.lg,
   },
   titleContainer: {
     alignItems: 'center',
-    marginBottom: 20,
+    marginBottom: Spacing.lg,
+  },
+  eyebrow: {
+    fontSize: Typography.sizes.detail,
+    fontWeight: '600',
+    letterSpacing: 2,
+    color: Colors.accent.primary,
+    marginBottom: Spacing.sm,
   },
   title: {
-    fontSize: 36,
+    fontSize: Typography.sizes.hero,
     fontFamily: Typography.fonts.serif,
     fontWeight: '300',
     color: Colors.text.primary,
     letterSpacing: -0.5,
   },
   subtitle: {
-    marginTop: 12,
-    fontSize: 14,
+    marginTop: Spacing.sm,
+    fontSize: Typography.sizes.small,
     fontWeight: '300',
     fontStyle: 'italic',
     color: Colors.text.secondary,
@@ -774,22 +788,24 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 16,
+    marginBottom: Spacing.md,
   },
   sideControlGroup: {
     alignItems: 'center',
-    paddingHorizontal: 16,
+    paddingHorizontal: Spacing.md,
+  },
+  clockColumn: {
+    alignItems: 'center',
   },
   clockContainer: {
     width: CLOCK_SIZE,
     height: CLOCK_SIZE,
     borderRadius: CLOCK_RADIUS,
-    backgroundColor: 'rgba(255, 255, 255, 0.03)',
+    backgroundColor: Colors.glass.light,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
+    borderColor: Colors.glass.border,
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 12,
     position: 'relative',
   },
   handContainer: {
@@ -801,22 +817,33 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  meridiemToggle: {
-    position: 'absolute',
-    left: '50%',
-    marginLeft: -30,
-    width: 60,
-    height: 30,
-    justifyContent: 'center',
+  // AM/PM segmented pill — sits below the clock in normal flow (replaces the
+  // old top:-45/bottom:-45 breakout toggles that overflowed the circle and
+  // collided with the subtitle above / floated disconnected below).
+  meridiemSegment: {
+    flexDirection: 'row',
+    marginTop: Spacing.sm,
+    borderRadius: BorderRadius.full,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.08)',
+    backgroundColor: 'rgba(255,255,255,0.03)',
+    overflow: 'hidden',
+  },
+  meridiemOption: {
+    paddingVertical: Spacing.xs,
+    paddingHorizontal: Spacing.lg,
     alignItems: 'center',
-    zIndex: 20,
+    justifyContent: 'center',
+  },
+  meridiemOptionActive: {
+    backgroundColor: Colors.accent.muted,
   },
   meridiemText: {
-    fontSize: 10,
+    fontSize: Typography.sizes.detail,
     letterSpacing: 2,
-    color: 'rgba(255, 255, 255, 0.4)',
+    color: Colors.text.muted,
     textTransform: 'uppercase',
-    fontWeight: '400',
+    fontWeight: '300',
   },
   meridiemActiveText: {
     color: Colors.accent.primary,
@@ -843,9 +870,9 @@ const styles = StyleSheet.create({
     position: 'absolute',
     fontFamily: Typography.fonts.serif,
     fontWeight: '200',
-    fontSize: 14,
+    fontSize: Typography.sizes.small,
     letterSpacing: 1,
-    color: 'rgba(255, 255, 255, 0.4)',
+    color: Colors.text.muted,
     transform: [{ translateX: -12 }, { translateY: -8 }],
     textShadowColor: Colors.accent.muted,
     textShadowOffset: { width: 0, height: 0 },
@@ -923,7 +950,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   timeText: {
-    fontSize: 28,
+    fontSize: Typography.sizes.h1,
     fontWeight: '300',
     color: Colors.text.primary,
     letterSpacing: 4,
@@ -936,34 +963,34 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.glass.light,
     borderWidth: 1,
     borderColor: Colors.glass.border,
-    borderRadius: 32,
-    padding: 16,
+    borderRadius: BorderRadius.xl,
+    padding: Spacing.md,
   },
   toggleContent: {
     flex: 1,
-    paddingRight: 24,
+    paddingRight: Spacing.lg,
   },
   toggleTitle: {
-    fontSize: 18,
-    fontWeight: '300',
+    fontSize: Typography.sizes.body,
+    fontWeight: '600',
     color: Colors.text.primary,
-    marginBottom: 4,
+    marginBottom: Spacing.xs,
   },
   toggleSubtitle: {
-    fontSize: 12,
+    fontSize: Typography.sizes.detail,
     fontWeight: '300',
     fontStyle: 'italic',
     color: Colors.text.muted,
-    lineHeight: 18,
+    lineHeight: 16,
   },
   toggleSwitch: {
     width: 48,
     height: 28,
-    borderRadius: 14,
+    borderRadius: BorderRadius.full,
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.1)',
     backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    padding: 4,
+    padding: Spacing.xs,
     justifyContent: 'center',
   },
   toggleSwitchActive: {
@@ -972,7 +999,7 @@ const styles = StyleSheet.create({
   toggleKnob: {
     width: 20,
     height: 20,
-    borderRadius: 10,
+    borderRadius: BorderRadius.full,
     backgroundColor: 'rgba(212, 175, 55, 0.5)',
   },
   toggleKnobActive: {
@@ -984,13 +1011,13 @@ const styles = StyleSheet.create({
     shadowRadius: 10,
   },
   footer: {
-    paddingHorizontal: 32,
-    paddingTop: 12,
+    paddingHorizontal: Spacing.xxl,
+    paddingTop: Spacing.xs,
   },
   setButton: {
     width: '100%',
-    height: 56,
-    borderRadius: 32,
+    height: 52,
+    borderRadius: BorderRadius.full,
     backgroundColor: 'rgba(255, 255, 255, 0.05)',
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.1)',
@@ -998,14 +1025,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   setButtonText: {
-    fontSize: 18,
+    fontSize: Typography.sizes.body,
     fontWeight: '300',
     color: Colors.text.primary,
     letterSpacing: 2,
   },
   brandingContainer: {
     alignItems: 'center',
-    marginTop: 32,
+    marginTop: Spacing.lg,
   },
   brandingText: {
     fontSize: 9,
@@ -1014,38 +1041,23 @@ const styles = StyleSheet.create({
     fontWeight: '300',
   },
   brandingDot: {
-    marginTop: 8,
+    marginTop: Spacing.sm,
     width: 4,
     height: 4,
     borderRadius: 2,
     backgroundColor: Colors.accent.muted,
   },
 
-  // Time control button styles
-  timeButton: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: Colors.glass.light,
-    borderWidth: 1,
-    borderColor: 'rgba(212, 175, 55, 0.25)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    shadowColor: Colors.accent.primary,
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.15,
-    shadowRadius: 8,
-    elevation: 3,
-  },
-  timeButtonText: {
-    fontSize: 18,
-    color: Colors.accent.primary,
-    fontWeight: '300',
+  // Bare stepper chevrons — no circular border/glow container, per the app's
+  // icon rule (nav/stepper affordances stay unwrapped; hitSlop carries the
+  // 44pt touch target instead of a visible bordered shape).
+  stepperButton: {
+    padding: Spacing.xs,
   },
   timeLabel: {
-    fontSize: 12,
-    color: 'rgba(255, 255, 255, 0.5)',
-    marginVertical: 8,
+    fontSize: Typography.sizes.detail,
+    color: Colors.text.secondary,
+    marginVertical: Spacing.xs,
     letterSpacing: 1,
   },
   // Success overlay styles
@@ -1057,20 +1069,20 @@ const styles = StyleSheet.create({
   },
   successContent: {
     alignItems: 'center',
-    padding: 40,
+    padding: Spacing.xxl,
   },
   successIcon: {
     fontSize: 64,
-    marginBottom: 16,
+    marginBottom: Spacing.lg,
   },
   successTitle: {
-    fontSize: 28,
+    fontSize: Typography.sizes.h1,
     fontWeight: '600',
     color: Colors.text.primary,
-    marginBottom: 8,
+    marginBottom: Spacing.sm,
   },
   successSubtitle: {
-    fontSize: 16,
-    color: 'rgba(255, 255, 255, 0.7)',
+    fontSize: Typography.sizes.body,
+    color: Colors.text.secondary,
   },
 });
