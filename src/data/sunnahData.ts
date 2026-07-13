@@ -16,7 +16,8 @@ export const sunnahContentData: Content[] = [
     primaryText: 'Recite "Al-Mu\'awwidhatayn" for spiritual protection.',
     translation:
       'Say, "I seek refuge in the Lord of daybreak, from the evil of that which He created, from the evil of darkness when it settles, and from the evil of the blowers in knots, and from the evil of an envier when he envies." Say, "I seek refuge in the Lord of mankind, the Sovereign of mankind, the God of mankind, from the evil of the retreating whisperer, who whispers in the breasts of mankind, from among the jinn and mankind."',
-    arabicText: 'قُلْ أَعُوذُ بِرَبِّ الْفَلَقِ ... قُلْ أَعُوذُ بِرَبِّ النَّاسِ',
+    arabicText:
+      'قُلْ أَعُوذُ بِرَبِّ الْفَلَقِ مِنْ شَرِّ مَا خَلَقَ وَمِنْ شَرِّ غَاسِقٍ إِذَا وَقَبَ وَمِنْ شَرِّ النَّفَّاثَاتِ فِي الْعُقَدِ وَمِنْ شَرِّ حَاسِدٍ إِذَا حَسَدَ قُلْ أَعُوذُ بِرَبِّ النَّاسِ مَلِكِ النَّاسِ إِلَٰهِ النَّاسِ مِنْ شَرِّ الْوَسْوَاسِ الْخَنَّاسِ الَّذِي يُوَسْوِسُ فِي صُدُورِ النَّاسِ مِنَ الْجِنَّةِ وَالنَّاسِ',
     englishTranslation:
       'Recite Surat Al-Falaq and Surat An-Nas 3 times each, blowing over your hands and wiping your body.',
     source: 'Quran 113 & 114 / Sahih al-Bukhari 5017',
@@ -95,7 +96,7 @@ export const sunnahContentData: Content[] = [
       'Whenever you feel overwhelmed, stop and say "Bismillah" slowly before starting any small task.',
     source: 'Quran 13:28',
     whyThis:
-      '"Verily, in the remembrance of Allah do hearts find rest." [Quran 13:28]',
+      '"Those who have believed and whose hearts find rest in the remembrance of Allah. Verily, in the remembrance of Allah do hearts find rest." [Quran 13:28]',
     difficulty: 1,
     moods: ['Overwhelmed'],
   },
@@ -344,10 +345,10 @@ export const sunnahContentData: Content[] = [
     type: 'Quran',
     primaryText: 'Reflect on Quran 65:3: The Promise of Provision.',
     englishTranslation:
-      'Recite or reflect: "And He will provide for him from where he does not expect. And whoever relies upon Allah — then He is sufficient for him."',
+      'Recite or reflect: "And He will provide for him from where he does not expect. And whoever relies upon Allah — then He is sufficient for him. Indeed, Allah will accomplish His purpose. Allah has already set for everything a due measure."',
     source: 'Quran 65:3',
     whyThis:
-      '"And whoever relies upon Allah — then He is sufficient for him. Indeed, Allah will accomplish His purpose. Allah has already set for everything a decreed extent." [Quran 65:3]',
+      '"And He will provide for him from where he does not expect. And whoever relies upon Allah — then He is sufficient for him. Indeed, Allah will accomplish His purpose. Allah has already set for everything a due measure." [Quran 65:3]',
     difficulty: 1,
     moods: ['Hopeful', 'Overwhelmed'],
   },

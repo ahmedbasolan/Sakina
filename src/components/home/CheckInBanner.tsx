@@ -73,7 +73,7 @@ const styles = StyleSheet.create({
   },
   checkinBannerText: {
     fontSize: 13,
-    color: 'rgba(245, 237, 227, 0.85)',
+    color: `${Colors.text.primary}D9`,
     flex: 1,
   },
   checkinDismiss: {

@@ -77,7 +77,7 @@ export function ReflectionPrompt({ visible, onSave, onSkip }: ReflectionPromptPr
           <TextInput
             style={styles.input}
             placeholder="A word, a feeling, a prayer..."
-            placeholderTextColor="rgba(245, 237, 227, 0.3)"
+            placeholderTextColor={`${Colors.text.primary}4D`}
             value={text}
             onChangeText={setText}
             multiline

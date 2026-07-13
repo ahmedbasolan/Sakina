@@ -302,7 +302,7 @@ const VerseRow = React.memo(function VerseRow({
           <Ionicons
             name={isBookmarked ? 'bookmark' : 'bookmark-outline'}
             size={18}
-            color={isBookmarked ? GOLD : 'rgba(245,237,227,0.5)'}
+            color={isBookmarked ? GOLD : `${Colors.text.primary}80`}
           />
         </TouchableOpacity>
 
@@ -312,7 +312,7 @@ const VerseRow = React.memo(function VerseRow({
             size={26}
             iconSize={16}
             autoPlay
-            color="rgba(245,237,227,0.5)"
+            color={`${Colors.text.primary}80`}
             showLabel={false}
             containerStyle={styles.rowAudioCtr}
             style={styles.rowAudioWrap}
@@ -324,7 +324,7 @@ const VerseRow = React.memo(function VerseRow({
             accessibilityRole="button"
             accessibilityLabel="Play recitation"
           >
-            <Ionicons name="volume-medium-outline" size={18} color="rgba(245,237,227,0.5)" />
+            <Ionicons name="volume-medium-outline" size={18} color={`${Colors.text.primary}80`} />
           </TouchableOpacity>
         )}
 
@@ -334,7 +334,7 @@ const VerseRow = React.memo(function VerseRow({
           accessibilityRole="button"
           accessibilityLabel="Share verse"
         >
-          <Ionicons name="share-outline" size={18} color="rgba(245,237,227,0.5)" />
+          <Ionicons name="share-outline" size={18} color={`${Colors.text.primary}80`} />
         </TouchableOpacity>
 
         <TouchableOpacity
@@ -919,7 +919,7 @@ export default function SurahReaderScreen({ route, navigation }: Props) {
                 <Ionicons
                   name={isBookmarked ? 'bookmark' : 'bookmark-outline'}
                   size={22}
-                  color={isBookmarked ? GOLD : 'rgba(245,237,227,0.7)'}
+                  color={isBookmarked ? GOLD : `${Colors.text.primary}B3`}
                 />
               </TouchableOpacity>
 
@@ -933,7 +933,7 @@ export default function SurahReaderScreen({ route, navigation }: Props) {
                 accessibilityRole="button"
                 accessibilityLabel="Share verse"
               >
-                <Ionicons name="share-outline" size={22} color="rgba(245,237,227,0.7)" />
+                <Ionicons name="share-outline" size={22} color={`${Colors.text.primary}B3`} />
               </TouchableOpacity>
 
               <View style={styles.pillSep} />
@@ -945,7 +945,7 @@ export default function SurahReaderScreen({ route, navigation }: Props) {
                     verseKey={audioKey}
                     size={34}
                     iconSize={22}
-                    color="rgba(245,237,227,0.7)"
+                    color={`${Colors.text.primary}B3`}
                     showLabel={false}
                     containerStyle={styles.audioCtr}
                     style={styles.audioWrap}
@@ -1225,7 +1225,7 @@ const styles = StyleSheet.create({
     fontFamily: Typography.fonts.serif,
     fontSize: 14,
     lineHeight: 22,
-    color: 'rgba(245,237,227,0.5)',
+    color: `${Colors.text.primary}80`,
     textAlign: 'center',
     fontStyle: 'italic',
     marginTop: Spacing.md,
@@ -1243,7 +1243,7 @@ const styles = StyleSheet.create({
   dividerLine: {
     flex: 1,
     height: StyleSheet.hairlineWidth,
-    backgroundColor: 'rgba(245,237,227,0.12)',
+    backgroundColor: `${Colors.text.primary}1F`,
   },
   dividerDot: {
     width: 5,
@@ -1258,7 +1258,7 @@ const styles = StyleSheet.create({
     fontFamily: Typography.fonts.serif,
     fontSize: 16,
     lineHeight: 28,
-    color: 'rgba(245,237,227,0.72)',
+    color: `${Colors.text.primary}B8`,
     textAlign: 'center',
     fontStyle: 'italic',
     paddingHorizontal: Spacing.sm,
@@ -1384,7 +1384,7 @@ const styles = StyleSheet.create({
   },
   navCounter: {
     fontSize: 13,
-    color: 'rgba(245,237,227,0.45)',
+    color: `${Colors.text.primary}73`,
     fontWeight: '600',
     letterSpacing: 1,
     minWidth: 70,
@@ -1424,7 +1424,7 @@ const styles = StyleSheet.create({
     fontFamily: Typography.fonts.serif,
     fontSize: 12,
     lineHeight: 19,
-    color: 'rgba(245,237,227,0.45)',
+    color: `${Colors.text.primary}73`,
     textAlign: 'center',
     fontStyle: 'italic',
     marginTop: Spacing.sm,
@@ -1440,13 +1440,13 @@ const styles = StyleSheet.create({
   rowDividerLine: {
     flex: 1,
     height: StyleSheet.hairlineWidth,
-    backgroundColor: 'rgba(245,237,227,0.12)',
+    backgroundColor: `${Colors.text.primary}1F`,
   },
   rowTranslation: {
     fontFamily: Typography.fonts.serif,
     fontSize: 14,
     lineHeight: 24,
-    color: 'rgba(245,237,227,0.7)',
+    color: `${Colors.text.primary}B3`,
     textAlign: 'center',
     fontStyle: 'italic',
     marginTop: Spacing.md,

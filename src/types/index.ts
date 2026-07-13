@@ -255,11 +255,17 @@ export interface AudioContent {
 
 export type LanguagePreference = 'english' | 'arabic';
 
+/** Asr calculation school. 'standard' = Shafi'i/Maliki/Hanbali (shadow = 1x object
+ * length, adhan.js/Aladhan default). 'hanafi' = shadow = 2x, giving a later Asr time. */
+export type AsrMadhab = 'standard' | 'hanafi';
+
 export interface UserPreferences {
   primaryLanguage: LanguagePreference;
   showTransliteration: boolean;
   /** Auto-play recitation when a verse opens. Opt-in (default false). */
   autoPlayAudio: boolean;
+  /** Asr calculation school (see AsrMadhab). Default 'standard'. */
+  asrMadhab: AsrMadhab;
 }
 
 export type BackgroundThemeCategory =

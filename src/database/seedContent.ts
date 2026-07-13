@@ -31,8 +31,16 @@ import type { Content, ContentAngle } from '../types';
 // Transformation angles went missing for already-seeded devices). Every
 // insert below is INSERT OR IGNORE, so a version-triggered re-run is
 // idempotent and cheap.
-const SEED_VERSION = 3;
-const SEED_VERSION_KEY = '@sakina_seed_version';
+const SEED_VERSION = 4;
+// Separate keys per content type — Quran and Hadith data change independently,
+// and each seeder used to write the SAME key at the end of its run. Since
+// initializeDatabase() awaits seedQuranContent() before seedHadithContent(),
+// a version bump made only for one of them (e.g. new hadith rows, no Quran
+// changes) still made seedQuranContent's no-op re-run write the bumped key
+// first, so seedHadithContent read a version that already looked current and
+// skipped its own re-seed — the new content never reached existing installs.
+const SEED_VERSION_KEY_QURAN = '@sakina_seed_version_quran';
+const SEED_VERSION_KEY_HADITH = '@sakina_seed_version_hadith';
 
 export async function seedQuranContent(db: any): Promise<void> {
   // Fast path: if Quran content already exists AND it came from this seed
@@ -41,7 +49,7 @@ export async function seedQuranContent(db: any): Promise<void> {
   const existing = (await db.getFirstAsync(
     `SELECT COUNT(*) as count FROM content WHERE type = 'Quran'`,
   )) as { count: number } | null;
-  const seededVersion = Number((await AsyncStorage.getItem(SEED_VERSION_KEY)) ?? '0');
+  const seededVersion = Number((await AsyncStorage.getItem(SEED_VERSION_KEY_QURAN)) ?? '0');
   if (existing && existing.count > 0 && seededVersion >= SEED_VERSION) return;
 
   console.log('[Seed] Seeding Quran content from local data (seed v' + SEED_VERSION + ')…');
@@ -62,9 +70,15 @@ export async function seedQuranContent(db: any): Promise<void> {
   // time from several seconds to under 200ms on typical devices.
   await db.withTransactionAsync(async () => {
     // 1. content table
+    // OR REPLACE (not OR IGNORE): a version bump means content fields may have
+    // been edited (e.g. a whyThis correction), not just new rows added. IGNORE
+    // would silently keep the stale row forever on any device that already
+    // has this id — REPLACE overwrites it with the current data. Safe here:
+    // foreign keys are never enforced in this DB (no PRAGMA foreign_keys=ON),
+    // so the delete-then-reinsert REPLACE does under the hood never cascades.
     for (const item of quranContent) {
       await db.runAsync(
-        `INSERT OR IGNORE INTO content
+        `INSERT OR REPLACE INTO content
            (id, type, primaryText, arabicText, transliteration, englishTranslation,
             source, audioKey, whyThis, propheticPractice, optionalAction,
             optionalReflection, prayerContext)
@@ -90,17 +104,17 @@ export async function seedQuranContent(db: any): Promise<void> {
       for (const mood of item.moods) {
         const score = (item.moodScores as Record<string, number> | undefined)?.[mood] ?? 10;
         await db.runAsync(
-          `INSERT OR IGNORE INTO content_moods (contentId, mood, relevanceScore)
+          `INSERT OR REPLACE INTO content_moods (contentId, mood, relevanceScore)
            VALUES (?, ?, ?)`,
           [item.id, mood, score],
         );
       }
     }
 
-    // 3. content_angles table
+    // 3. content_angles table — same OR REPLACE reasoning as above.
     for (const angle of quranContentAngles) {
       await db.runAsync(
-        `INSERT OR IGNORE INTO content_angles
+        `INSERT OR REPLACE INTO content_angles
            (id, contentId, mood, angle, angleSource, action, actionArabicText,
             actionTransliteration, actionSource, actionHowTo, actionReward,
             practiceSteps, reflection)
@@ -129,7 +143,7 @@ export async function seedQuranContent(db: any): Promise<void> {
     }
   });
 
-  await AsyncStorage.setItem(SEED_VERSION_KEY, String(SEED_VERSION));
+  await AsyncStorage.setItem(SEED_VERSION_KEY_QURAN, String(SEED_VERSION));
 
   console.log(
     `[Seed] Done — ${quranContent.length} verses, ${quranContentAngles.length} angles` +
@@ -144,7 +158,7 @@ export async function seedHadithContent(db: any): Promise<void> {
   const existing = (await db.getFirstAsync(
     `SELECT COUNT(*) as count FROM content WHERE type = 'Hadith'`,
   )) as { count: number } | null;
-  const seededVersion = Number((await AsyncStorage.getItem(SEED_VERSION_KEY)) ?? '0');
+  const seededVersion = Number((await AsyncStorage.getItem(SEED_VERSION_KEY_HADITH)) ?? '0');
   if (existing && existing.count > 0 && seededVersion >= SEED_VERSION) return;
 
   console.log('[Seed] Seeding Hadith content from local data (seed v' + SEED_VERSION + ')…');
@@ -160,10 +174,10 @@ export async function seedHadithContent(db: any): Promise<void> {
 
   // ── Batch insert inside a single transaction ────────────────────────────
   await db.withTransactionAsync(async () => {
-    // 1. content table
+    // 1. content table — OR REPLACE, see the same note in seedQuranContent above.
     for (const item of hadithContent) {
       await db.runAsync(
-        `INSERT OR IGNORE INTO content
+        `INSERT OR REPLACE INTO content
            (id, type, primaryText, arabicText, transliteration, englishTranslation,
             source, audioKey, whyThis, propheticPractice, optionalAction,
             optionalReflection, prayerContext)
@@ -187,7 +201,7 @@ export async function seedHadithContent(db: any): Promise<void> {
     }
   });
 
-  await AsyncStorage.setItem(SEED_VERSION_KEY, String(SEED_VERSION));
+  await AsyncStorage.setItem(SEED_VERSION_KEY_HADITH, String(SEED_VERSION));
 
   console.log(
     `[Seed] Done — ${hadithContent.length} hadiths in ${Date.now() - t0}ms`,

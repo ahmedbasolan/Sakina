@@ -92,26 +92,40 @@ export class PathsService {
     return userProgress.completedDays.length >= path.duration;
   }
 
-  // Helper method to get a motivational quote for the current step
+  // NOTE: getStepMotivation currently has no call sites in src/ — if you wire
+  // it into a screen, re-verify against CLAUDE.md's "Quoting Quran Text"
+  // rules first. Every [Quran X:Y] entry below is the complete ayah,
+  // verified against api.alquran.cloud; a few were swapped for a different,
+  // genuinely complete verse where the true full ayah was a fiqh ruling or
+  // mid-story dialogue that didn't fit a short motivational line.
+  //
+  // Not to be confused with `getConsistencyMessage` in
+  // PathCompletionCelebration.tsx: that one is generic goal-gradient copy
+  // keyed by day-position, shown once on the post-completion modal. This one
+  // is topic-specific Quran/hadith citation keyed by step title, meant for
+  // the lesson itself if it's ever wired up — a different moment, different
+  // content, intentionally not merged into one function.
   getStepMotivation(step: PathStep): string {
     const motivations: Record<string, string> = {
       'Recognizing Anxiety':
         '"No fatigue, nor sorrow, nor sadness... but that Allah expiates some of his sins for that." [Bukhari]',
       'Turning to Allah': '"When anything distressed the Prophet ﷺ, he would pray." [Abu Dawud]',
-      "Allah's Presence": '"He is with you wherever you are." [Quran 57:4]',
+      "Allah's Presence":
+        '"And We have already created man and know what his soul whispers to him, and We are closer to him than his jugular vein." [Quran 50:16]',
       'The Promise of Ease': '"Verily, with hardship comes ease." [Quran 94:6]',
       'Letting Go of Control':
         '"If you depend on Allah with true reliance, He would give you provision as He gives it to birds." [Tirmidhi]',
       'Patience in Trust': '"Trust in Allah, for He knows what is best for His servants."',
       'Living with Tawakkul':
-        '"Whoever relies upon Allah - then He is sufficient for him." [Quran 65:3]',
+        '"And He will provide for him from where he does not expect. And whoever relies upon Allah — then He is sufficient for him. Indeed, Allah will accomplish His purpose. Allah has already set for everything a due measure." [Quran 65:3]',
 
       'Acknowledging Guilt':
         '"Every son of Adam commits sin, and the best of those who sin are those who repent." [Tirmidhi]',
-      'The Door of Repentance': '"My Mercy encompasses all things." [Quran 7:156]',
+      'The Door of Repentance':
+        '"O My servants who have transgressed against themselves, do not despair of the mercy of Allah. Indeed, Allah forgives all sins. He is truly the Forgiving, the Merciful." [Quran 39:53]',
       'Sincere Remorse': '"Regret is repentance." [Ibn Majah]',
       'Taking Responsibility':
-        '"O my Lord, I have indeed wronged my soul, so forgive me." [Quran 28:16]',
+        '"My Lord, indeed I have wronged myself, so forgive me — and He forgave him. Indeed, He is the Forgiving, the Merciful." [Quran 28:16]',
       'Seeking Forgiveness':
         '"Allah loves to forgive, so seek His forgiveness." [Prophetic Tradition]',
       'Making Amends': '"Follow a bad deed with a good deed and it will wipe it out." [Tirmidhi]',
@@ -126,7 +140,7 @@ export class PathsService {
       'The Strength of Patience':
         '"Whoever remains patient, Allah will bestow patience upon him." [Bukhari]',
       'Forgiveness as Freedom':
-        '"Forgive and overlook; do you not wish that Allah should forgive you?" [Quran 24:22]',
+        '"The retribution for an evil act is an evil one like it, but whoever pardons and makes reconciliation — his reward is due from Allah. Indeed, He does not like wrongdoers." [Quran 42:40]',
       'Inner Tranquility':
         '"Tranquility (Sakina) is a gift from the Most Merciful into the heart of the believer."',
 

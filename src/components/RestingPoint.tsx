@@ -104,9 +104,9 @@ const RestingPoint: React.FC<Props> = ({
             onPress={onSupport}
             activeOpacity={0.7}
             accessibilityRole="button"
-            accessibilityLabel="Support Sakina"
+            accessibilityLabel="Support Sakina to remove refresh limits"
           >
-            <Text style={styles.supportText}>Support Sakina</Text>
+            <Text style={styles.supportText}>Support Sakina for unlimited refreshes</Text>
           </TouchableOpacity>
         )}
       </Animated.View>
@@ -176,6 +176,10 @@ const styles = StyleSheet.create({
     // staying visibly lighter than the primary CTA above it.
     color: Colors.accent.primary,
     letterSpacing: Typography.letterSpacing.normal,
+    // The longer benefit-bearing copy can wrap on narrow devices / larger
+    // accessibility text sizes; keep any wrapped line centered like the rest
+    // of this fully-centered card instead of defaulting left.
+    textAlign: 'center',
   },
 });
 

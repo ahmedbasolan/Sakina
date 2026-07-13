@@ -5,7 +5,7 @@
  * Uses expo-audio's useAudioPlayer hook for modern audio playback.
  */
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import {
   View,
   TouchableOpacity,
@@ -132,13 +132,41 @@ function AudioPlayerButtonInternal({
   const [fallbackIndex, setFallbackIndex] = useState(0);
   const [currentVerseIndex, setCurrentVerseIndex] = useState(0);
 
-  // Get audio URLs (could be one or many for a range)
-  const audioUrls = getAudioUrls(verseKey, RECITER_FALLBACKS[fallbackIndex]);
+  // This component isn't remounted (no `key={verseKey}` at any call site), so
+  // when the caller swaps to a different verse/range the fallback reciter and
+  // range-position from the PREVIOUS verseKey would otherwise carry over —
+  // reset both the moment the verse identity changes.
+  useEffect(() => {
+    setFallbackIndex(0);
+    setCurrentVerseIndex(0);
+  }, [verseKey]);
 
-  // Prefer an already-cached local file when one exists (e.g. this verse was
-  // played before) so playback starts instantly instead of re-streaming from
-  // everyayah.com, which has no CDN and can be slow/inconsistent.
-  const initialUri = getCachedAudioUri(audioUrls[currentVerseIndex]) ?? audioUrls[currentVerseIndex];
+  // Get audio URLs (could be one or many for a range). Memoized so the effect
+  // below that watches it (the reciter-fallback reload) only re-fires when
+  // verseKey/fallbackIndex actually change — an unmemoized array literal here
+  // was a NEW reference on every render (including every ~500ms status poll),
+  // which kept re-triggering that effect forever once a fallback engaged and
+  // reset playback to 0 in a loop.
+  const audioUrls = useMemo(
+    () => getAudioUrls(verseKey, RECITER_FALLBACKS[fallbackIndex]),
+    [verseKey, fallbackIndex],
+  );
+
+  // Mount-time uri for useAudioPlayer below — deliberately keyed ONLY on
+  // verseKey, not on currentVerseIndex/fallbackIndex. useAudioPlayer recreates
+  // a brand-new native player whenever its uri's resolved value changes; verse
+  // -range advances and reciter-fallback swaps are both applied to the
+  // EXISTING player via player.replace() in effects further down instead. If
+  // this depended on currentVerseIndex/fallbackIndex too, advancing the range
+  // would recreate the player at the same moment the finish-handler's
+  // .replace()/.play() call targeted the OLD (about-to-be-released) player —
+  // whichever "wins" undid the other, so range playback silently stopped
+  // instead of continuing into the next ayah.
+  const initialUri = useMemo(() => {
+    const firstReciterUrls = getAudioUrls(verseKey, RECITER_FALLBACKS[0]);
+    return getCachedAudioUri(firstReciterUrls[0]) ?? firstReciterUrls[0];
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [verseKey]);
 
   // These hooks are now safe because they are inside a component
   // that only renders if the module exists

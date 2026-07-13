@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useRef, useEffect } from 'react';
-import { Share, View, PanResponder } from 'react-native';
+import { Share, View, PanResponder, StyleSheet } from 'react-native';
 import { HapticsService } from '../services/hapticsService';
 import { UserPathProgress, Content } from '../types';
 import { PathsService } from '../services/pathsService';
@@ -22,6 +22,8 @@ import { useAppContext } from '../context/AppContext';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import { extractVerseKey } from '../utils';
 import { Colors } from '../theme/DesignSystem';
+import { useSwipeGesture } from '../hooks/useSwipeGesture';
+import SwipeNextOverlay from '../components/SwipeNextOverlay';
 
 type LayerType = 'hadith' | 'verse' | 'context' | 'practice' | 'reflection';
 
@@ -115,33 +117,42 @@ export const PathStepScreen: React.FC = () => {
   // in the completion celebration. Decided once (gate + cooldown) on finish.
   const [offerUpgrade, setOfferUpgrade] = useState(false);
 
+  // Hadith content is normally prefetched by PathDetailScreen and passed in via
+  // route params (mirrors `guidanceExperience`). It's local state (not read
+  // directly from route.params) so the fallback fetch below can populate it.
+  const [hadithContent, setHadithContent] = useState<Content | null>(hadithContentParam ?? null);
+
+  const hasHadith = !!(step.hadithContentId && hadithContent);
+  const layerTypes: LayerType[] = hasHadith
+    ? ['hadith', 'verse', 'context', 'practice', 'reflection']
+    : ['verse', 'context', 'practice', 'reflection'];
+
   // Swipe right → advance to the next layer (mirrors swipe-up on LayerContainer).
   // Uses functional state update so it never reads stale currentLayerIndex.
-  const swipeResponder = useRef(
-    PanResponder.create({
-      onMoveShouldSetPanResponder: (_, g) =>
-        Math.abs(g.dx) > Math.abs(g.dy) * 1.5 && Math.abs(g.dx) > 20,
-      onPanResponderRelease: (_, g) => {
-        if (g.dx > 50) {
-          setCurrentLayerIndex((prev) => {
-            const next = Math.min(prev + 1, layerTypes.length - 1);
-            if (next !== prev) HapticsService.impactAsync('LIGHT');
-            return next;
-          });
-        }
-      },
-    }),
-  ).current;
+  // Ref to layerTypes so the hook has access to the latest length
+  const layerTypesRef = useRef(layerTypes);
+  useEffect(() => {
+    layerTypesRef.current = layerTypes;
+  }, [layerTypes]);
+
+  // Swipe left → next layer.
+  // Uses a horizontal-dominant threshold so it never conflicts with
+  // LayerContainer's vertical-swipe gesture.
+  const { panHandlers: swipePanHandlers, swipeAnim: swipeOverlayAnim } = useSwipeGesture({
+    onNext: () => {
+      setCurrentLayerIndex((prev) => {
+        const next = Math.min(prev + 1, layerTypesRef.current.length - 1);
+        if (next !== prev) HapticsService.impactAsync('LIGHT');
+        return next;
+      });
+    },
+    threshold: 50,
+  });
   const [reflectionWritten, setReflectionWritten] = useState(false);
   // Snapshot of progress with TODAY already appended — passed to the modal so
   // the ring/streak/next-day preview reflect the step just completed, not the
   // stale route.params snapshot (which is missing the current day).
   const [celebrationProgress, setCelebrationProgress] = useState(userProgress);
-
-  // Hadith content is normally prefetched by PathDetailScreen and passed in via
-  // route params (mirrors `guidanceExperience`). It's local state (not read
-  // directly from route.params) so the fallback fetch below can populate it.
-  const [hadithContent, setHadithContent] = useState<Content | null>(hadithContentParam ?? null);
 
   // Safety net (mirrors GuidanceScreen's `experience` fallback fetch): if this
   // step has a hadithContentId but the prefetched content never arrived — a
@@ -169,11 +180,23 @@ export const PathStepScreen: React.FC = () => {
     };
   }, [step.hadithContentId, hadithContent, rotationEngine]);
 
-  const hasHadith = !!(step.hadithContentId && hadithContent);
-  const layerTypes: LayerType[] = hasHadith
-    ? ['hadith', 'verse', 'context', 'practice', 'reflection']
-    : ['verse', 'context', 'practice', 'reflection'];
   const currentLayerType = layerTypes[currentLayerIndex];
+
+  // currentLayerIndex is a raw numeric index into layerTypes, whose length
+  // depends on hasHadith. The fallback fetch above can flip hasHadith from
+  // false to true well after mount (a slow retry succeeding after the user
+  // has already navigated a few layers in), which inserts 'hadith' at the
+  // front and silently shifts every existing index — the user would suddenly
+  // be looking at different content than a moment ago. Shift the index by
+  // the same +1 the instant that insertion happens, so it keeps pointing at
+  // the same layer the user was already reading.
+  const hadHadithRef = useRef(hasHadith);
+  useEffect(() => {
+    if (hasHadith && !hadHadithRef.current) {
+      setCurrentLayerIndex((prev) => prev + 1);
+    }
+    hadHadithRef.current = hasHadith;
+  }, [hasHadith]);
 
   // Build structured practice steps from angle data
   const practiceSteps: PracticeStepData[] = useMemo(() => {
@@ -343,7 +366,14 @@ export const PathStepScreen: React.FC = () => {
         onBack={onBack}
       />
 
-      <View style={{ flex: 1 }} {...swipeResponder.panHandlers}>
+      <View style={{ flex: 1 }} {...swipePanHandlers}>
+        {currentLayerIndex < layerTypes.length - 1 && (
+          <SwipeNextOverlay
+            animValue={swipeOverlayAnim}
+            accentColor={accentColor}
+            label={layerTypes[currentLayerIndex + 1] ? `NEXT: ${layerTypes[currentLayerIndex + 1].toUpperCase()}` : 'NEXT'}
+          />
+        )}
         <LayerContainer
           currentLayer={currentLayerIndex}
           totalLayers={layerTypes.length}
@@ -351,6 +381,23 @@ export const PathStepScreen: React.FC = () => {
         >
           {renderLayer()}
         </LayerContainer>
+
+        {/* Verse, practice, and reflection layers own their controls (cinema-mode
+            bar / check toggles / save-skip). Only the context layer lacks its own
+            action surface, so the floating row is reserved for it. Anchored to
+            the bottom of this flex:1 area (not a flow sibling of LayerPager
+            below) so it floats just above the pager — matching VerseLayer's own
+            absolutely-positioned footer instead of stacking under the tabs. */}
+        {currentLayerType === 'context' && (
+          <View style={styles.floatingActionWrap} pointerEvents="box-none">
+            <FloatingActionRow
+              layerType={currentLayerType}
+              onShare={handleShare}
+              onSave={() => setIsSaved(!isSaved)}
+              isSaved={isSaved}
+            />
+          </View>
+        )}
       </View>
 
       <LayerPager
@@ -364,18 +411,6 @@ export const PathStepScreen: React.FC = () => {
         accentColor={accentColor}
         onLayerChange={setCurrentLayerIndex}
       />
-
-      {/* Verse, practice, and reflection layers own their controls (cinema-mode
-          bar / check toggles / save-skip). Only the context layer lacks its own
-          action surface, so the floating row is reserved for it. */}
-      {currentLayerType === 'context' && (
-        <FloatingActionRow
-          layerType={currentLayerType}
-          onShare={handleShare}
-          onSave={() => setIsSaved(!isSaved)}
-          isSaved={isSaved}
-        />
-      )}
 
       <PathCompletionCelebration
         visible={showCelebration}
@@ -391,3 +426,13 @@ export const PathStepScreen: React.FC = () => {
     </ImmersiveBackground>
   );
 };
+
+const styles = StyleSheet.create({
+  floatingActionWrap: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    alignItems: 'center',
+  },
+});

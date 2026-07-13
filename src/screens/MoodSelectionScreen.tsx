@@ -416,7 +416,7 @@ const styles = StyleSheet.create({
   },
   headerReassurance: {
     fontSize: 13,
-    color: 'rgba(245, 237, 227, 0.35)',
+    color: `${Colors.text.primary}59`,
     textAlign: 'center',
     marginTop: 4,
     letterSpacing: 0.2,

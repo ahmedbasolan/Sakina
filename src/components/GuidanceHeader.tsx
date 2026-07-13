@@ -87,7 +87,7 @@ const GuidanceHeader: React.FC<GuidanceHeaderProps> = ({
                   {
                     backgroundColor: dotAnims[i].interpolate({
                       inputRange: [0, 1],
-                      outputRange: ['rgba(245, 237, 227, 0.15)', moodStyle.accent],
+                      outputRange: [`${Colors.text.primary}26`, moodStyle.accent],
                     }),
                     width: i === activeIndex ? 18 : 6,
                     opacity: dotAnims[i].interpolate({

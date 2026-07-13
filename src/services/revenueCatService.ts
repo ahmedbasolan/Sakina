@@ -110,7 +110,20 @@ class RevenueCatService {
   async resolveDurationType(productIdentifier?: string): Promise<'monthly' | 'yearly'> {
     this.configure();
     if (!this.configured || !productIdentifier) return 'yearly';
-    const offering = await this.getOffering();
+    // getOffering() hits the network when nothing is cached yet (e.g. right
+    // after restorePurchases(), which unlike purchasePackage() never primes
+    // the cache). A transient failure here must not propagate — the caller
+    // (syncFromCustomerInfo) hasn't recorded the entitlement RC already
+    // confirmed is active, so throwing would tell an entitled user "restore
+    // failed" and leave them gated as free. Fall back to 'yearly', the same
+    // fallback already used below when the product can't be matched.
+    let offering: PurchasesOffering | null = null;
+    try {
+      offering = await this.getOffering();
+    } catch (error) {
+      console.warn('[RevenueCat] resolveDurationType: getOffering failed, defaulting to yearly:', error);
+      return 'yearly';
+    }
     const monthly = offering?.availablePackages.find(
       (p) => p.packageType === PACKAGE_TYPE.MONTHLY,
     );

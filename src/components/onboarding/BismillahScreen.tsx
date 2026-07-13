@@ -13,6 +13,7 @@ import {
   Animated,
   Dimensions,
   Text,
+  ScrollView,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useStaggerEntry } from '../../hooks/useStaggerEntry';
@@ -54,7 +55,11 @@ export default function BismillahScreen({ isActive, onNext }: Props) {
     <View style={styles.container}>
       <InteractiveStarfield positions={STAR_POS.map(p => ({ ...p, y: p.y * 1.5 }))} />
 
-      <View style={[styles.contentArea, { paddingTop: insets.top + 72 }]}>
+      <ScrollView
+        style={styles.contentScroll}
+        contentContainerStyle={[styles.contentArea, { paddingTop: insets.top + 72 }]}
+        showsVerticalScrollIndicator={false}
+      >
         {/* Gold Kufi calligraphy */}
         <Animated.View style={[styles.calligraphyWrap, stagger[0]]}>
           <View style={styles.imageClip}>
@@ -82,7 +87,7 @@ export default function BismillahScreen({ isActive, onNext }: Props) {
           <Text style={styles.welcomeLabel}>Welcome to Sakina</Text>
           <View style={styles.welcomeLine} />
         </Animated.View>
-      </View>
+      </ScrollView>
 
       {/* CTA */}
       <Animated.View style={[styles.ctaWrap, stagger[4], { paddingBottom: Math.max(insets.bottom + Spacing.xxl, Spacing.xxxl) }]}>
@@ -97,8 +102,14 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#040D1A',
   },
-  contentArea: {
+  // ScrollView's own layout box — takes the space above the fixed CTA.
+  contentScroll: {
     flex: 1,
+  },
+  // contentContainerStyle: flexGrow (not flex) so short content still centers,
+  // while taller content scrolls instead of overflowing into the CTA below.
+  contentArea: {
+    flexGrow: 1,
     justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: Spacing.xxl,
@@ -120,7 +131,7 @@ const styles = StyleSheet.create({
   subtitle: {
     fontFamily: Typography.fonts.serif,
     fontSize: 18,
-    color: 'rgba(245, 237, 227, 0.92)',
+    color: `${Colors.text.primary}EB`,
     textAlign: 'center',
     lineHeight: 28,
     letterSpacing: 0.4,
@@ -129,7 +140,7 @@ const styles = StyleSheet.create({
   },
   description: {
     fontSize: 14,
-    color: 'rgba(245, 237, 227, 0.65)',
+    color: `${Colors.text.primary}A6`,
     textAlign: 'center',
     lineHeight: 22,
     paddingHorizontal: Spacing.lg,

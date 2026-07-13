@@ -88,10 +88,10 @@ const LayerPager: React.FC<LayerPagerProps> = ({
         <Ionicons
           name="chevron-back"
           size={14}
-          color={hasPrev ? 'rgba(245,237,227,0.55)' : 'transparent'}
+          color={hasPrev ? `${Colors.text.primary}8C` : 'transparent'}
         />
         <Text
-          style={[styles.navLabel, { color: 'rgba(245,237,227,0.55)' }]}
+          style={[styles.navLabel, { color: `${Colors.text.primary}8C` }]}
           numberOfLines={1}
         >
           {labels[current - 1] ?? ''}
@@ -141,7 +141,7 @@ const LayerPager: React.FC<LayerPagerProps> = ({
         accessibilityLabel={hasNext ? `Go to ${labels[current + 1] ?? 'next'}` : 'Next verse'}
       >
         <Text
-          style={[styles.navLabel, { color: 'rgba(245,237,227,0.6)' }]}
+          style={[styles.navLabel, { color: `${Colors.text.primary}99` }]}
           numberOfLines={1}
         >
           {hasNext ? (labels[current + 1] ?? '') : 'Next verse'}
@@ -149,7 +149,7 @@ const LayerPager: React.FC<LayerPagerProps> = ({
         <Ionicons
           name={hasNext ? 'chevron-up' : 'arrow-forward'}
           size={14}
-          color="rgba(245,237,227,0.6)"
+          color={`${Colors.text.primary}99`}
         />
       </TouchableOpacity>
     </View>
@@ -200,7 +200,7 @@ const styles = StyleSheet.create({
     width: DOT,
     height: DOT,
     borderRadius: DOT / 2,
-    backgroundColor: 'rgba(245, 237, 227, 0.18)',
+    backgroundColor: `${Colors.text.primary}2E`,
   },
   pill: {
     position: 'absolute',

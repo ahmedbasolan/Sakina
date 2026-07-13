@@ -50,7 +50,7 @@ const ImmersiveBackground: React.FC<ImmersiveBackgroundProps> = ({
   mood,
   imageSource,
   selfManageTheme = true,
-  overlayOpacity = 0.4,
+  overlayOpacity = 0.25,
   isPremium = false,
   accentColor,
   tone = 'momentum',
@@ -158,14 +158,23 @@ const ImmersiveBackground: React.FC<ImmersiveBackgroundProps> = ({
         </>
       )}
 
-      {/* Nature image layer — premium only */}
+      {/* Nature image layer — premium only. Two contrast layers do distinct
+          jobs: the image's own opacity (overlayOpacity) dims the source photo
+          itself, and `scrim` below is a flat, even darkening across the whole
+          frame so verse text stays legible regardless of what the photo shows
+          underneath — the vignette further down is transparent through its
+          middle by design (it only hugs the top/bottom edges), so it can't do
+          this job on its own. */}
       {finalImageSource && (
-        <ImageBackground
-          source={finalImageSource}
-          style={StyleSheet.absoluteFill}
-          imageStyle={{ opacity: overlayOpacity }}
-          resizeMode="cover"
-        />
+        <>
+          <ImageBackground
+            source={finalImageSource}
+            style={StyleSheet.absoluteFill}
+            imageStyle={{ opacity: overlayOpacity }}
+            resizeMode="cover"
+          />
+          <View pointerEvents="none" style={styles.scrim} />
+        </>
       )}
 
       {/* Depth and readability overlays — narrow bands hugging the very top
@@ -177,11 +186,6 @@ const ImmersiveBackground: React.FC<ImmersiveBackgroundProps> = ({
         style={StyleSheet.absoluteFill}
       />
 
-      {/* Subtle texture overlay for premium feel */}
-      <View
-        style={[StyleSheet.absoluteFill, { backgroundColor: 'rgba(0,0,0,0.2)', opacity: 0.1 }]}
-      />
-
       {children}
     </View>
   );
@@ -191,6 +195,10 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#000',
+  },
+  scrim: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0,0,0,0.38)',
   },
   mandalaWrap: {
     position: 'absolute',

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import {
   View,
   Text,
@@ -40,9 +40,16 @@ export default function PrayerTimesScreen({ navigation }: { navigation: any }) {
   const [showLocationPicker, setShowLocationPicker] = useState(false);
   // Ticks every minute so the live countdown / next-prayer highlight stay fresh.
   const [now, setNow] = useState(Date.now());
+  // Bumped on every fetchTimings call so a slower, older request (e.g. a
+  // city-name lookup) can detect it's been superseded by a newer one (e.g. a
+  // faster coordinate lookup from re-opening the location picker) and skip
+  // applying its stale result instead of overwriting the current location's
+  // correct prayer times.
+  const requestIdRef = useRef(0);
 
   const fetchTimings = useCallback(
     async (loc: UserLocation) => {
+      const requestId = ++requestIdRef.current;
       setIsLoading(true);
       try {
         let data: PrayerTimesData;
@@ -51,11 +58,13 @@ export default function PrayerTimesScreen({ navigation }: { navigation: any }) {
         } else {
           data = await service.getTimingsByCity(loc.city, loc.country);
         }
+        if (requestId !== requestIdRef.current) return;
         setPrayerData(data);
       } catch (_error) {
+        if (requestId !== requestIdRef.current) return;
         Alert.alert('Error', 'Failed to fetch prayer times. Please try again.');
       } finally {
-        setIsLoading(false);
+        if (requestId === requestIdRef.current) setIsLoading(false);
       }
     },
     [service],

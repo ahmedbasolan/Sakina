@@ -170,6 +170,7 @@ export default function SettingsScreen() {
   const [analyticsEnabled, setAnalyticsEnabled] = useState(false);
   const [showTransliteration, setShowTransliteration] = useState(true);
   const [autoPlayAudio, setAutoPlayAudio]   = useState(false);
+  const [hanafiAsr, setHanafiAsr]           = useState(false);
   const [restoring, setRestoring]           = useState(false);
   const [deletingAccount, setDeletingAccount] = useState(false);
 
@@ -180,6 +181,7 @@ export default function SettingsScreen() {
       const prefs = PreferencesService.getInstance().getPreferences();
       setShowTransliteration(prefs.showTransliteration);
       setAutoPlayAudio(prefs.autoPlayAudio);
+      setHanafiAsr(prefs.asrMadhab === 'hanafi');
     }, []),
   );
 
@@ -220,6 +222,11 @@ export default function SettingsScreen() {
   const handleToggleAudio = async (val: boolean) => {
     setAutoPlayAudio(val);
     await PreferencesService.getInstance().setAutoPlayAudio(val);
+  };
+
+  const handleToggleHanafiAsr = async (val: boolean) => {
+    setHanafiAsr(val);
+    await PreferencesService.getInstance().setAsrMadhab(val ? 'hanafi' : 'standard');
   };
 
   const handleClearHistory = () => {
@@ -388,6 +395,13 @@ export default function SettingsScreen() {
             showToggle
             toggleValue={autoPlayAudio}
             onToggle={handleToggleAudio}
+          />
+          <SettingRow
+            label="Hanafi Asr Timing"
+            icon="time-outline"
+            showToggle
+            toggleValue={hanafiAsr}
+            onToggle={handleToggleHanafiAsr}
           />
         </View>
 
@@ -564,7 +578,7 @@ const styles = StyleSheet.create({
   },
   profileEmail: {
     fontSize: Typography.sizes.small,
-    color: 'rgba(245,237,227,0.50)',
+    color: `${Colors.text.primary}80`,
   },
   profileEmailOnly: {
     fontSize: Typography.sizes.body,

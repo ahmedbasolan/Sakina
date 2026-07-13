@@ -126,7 +126,7 @@ function AuthInput({
         secureTextEntry={secureTextEntry}
         keyboardType={keyboardType || 'default'}
         autoCapitalize={autoCapitalize || 'sentences'}
-        placeholderTextColor="rgba(245, 237, 227, 0.25)"
+        placeholderTextColor={`${Colors.text.primary}40`}
         onFocus={() => setFocused(true)}
         onBlur={() => setFocused(false)}
       />
@@ -256,7 +256,13 @@ export function LoginScreen({ navigation, onLogin }: AuthScreenProps) {
 
   return (
     <KeyboardAvoidingView
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      // Android's 'height' behavior shrinks this view by the keyboard's last-known
+      // height even when the keyboard is closed, on top of the edge-to-edge system
+      // nav bar inset — the two stack into a blank strip pinned above the nav bar.
+      // Android's default windowSoftInputMode="adjustResize" already resizes the
+      // root view for the keyboard, so no RN-side behavior is needed here (same
+      // fix already applied in ReflectionPrompt.tsx).
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       style={styles.container}
     >
       <AuthBackground>
@@ -308,9 +314,9 @@ export function LoginScreen({ navigation, onLogin }: AuthScreenProps) {
                   accessibilityLabel={showPassword ? 'Hide password' : 'Show password'}
                 >
                   {showPassword ? (
-                    <EyeOffIcon size={18} color="rgba(245, 237, 227, 0.4)" />
+                    <EyeOffIcon size={18} color={`${Colors.text.primary}66`} />
                   ) : (
-                    <EyeIcon size={18} color="rgba(245, 237, 227, 0.4)" />
+                    <EyeIcon size={18} color={`${Colors.text.primary}66`} />
                   )}
                 </TouchableOpacity>
               }
@@ -518,7 +524,13 @@ export function SignUpScreen({ navigation, onSignUp }: AuthScreenProps) {
 
   return (
     <KeyboardAvoidingView
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      // Android's 'height' behavior shrinks this view by the keyboard's last-known
+      // height even when the keyboard is closed, on top of the edge-to-edge system
+      // nav bar inset — the two stack into a blank strip pinned above the nav bar.
+      // Android's default windowSoftInputMode="adjustResize" already resizes the
+      // root view for the keyboard, so no RN-side behavior is needed here (same
+      // fix already applied in ReflectionPrompt.tsx).
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       style={styles.container}
     >
       <AuthBackground>
@@ -579,9 +591,9 @@ export function SignUpScreen({ navigation, onSignUp }: AuthScreenProps) {
                   accessibilityLabel={showPassword ? 'Hide password' : 'Show password'}
                 >
                   {showPassword ? (
-                    <EyeOffIcon size={18} color="rgba(245, 237, 227, 0.4)" />
+                    <EyeOffIcon size={18} color={`${Colors.text.primary}66`} />
                   ) : (
-                    <EyeIcon size={18} color="rgba(245, 237, 227, 0.4)" />
+                    <EyeIcon size={18} color={`${Colors.text.primary}66`} />
                   )}
                 </TouchableOpacity>
               }
@@ -828,7 +840,7 @@ const styles = StyleSheet.create({
   heroSubtitle: {
     fontFamily: Typography.fonts.serif,
     fontSize: Typography.sizes.small,
-    color: 'rgba(245, 237, 227, 0.45)',
+    color: `${Colors.text.primary}73`,
     textAlign: 'center',
     fontStyle: 'italic',
   },
@@ -844,7 +856,7 @@ const styles = StyleSheet.create({
   inputLabel: {
     fontSize: Typography.sizes.detail,
     fontWeight: '600',
-    color: 'rgba(245, 237, 227, 0.5)',
+    color: `${Colors.text.primary}80`,
     marginBottom: Spacing.sm,
     letterSpacing: 0.5,
     textTransform: 'uppercase',
@@ -898,7 +910,7 @@ const styles = StyleSheet.create({
     letterSpacing: 0.5,
   },
   primaryBtnTextDisabled: {
-    color: 'rgba(245, 237, 227, 0.3)',
+    color: `${Colors.text.primary}4D`,
   },
   // --- Divider ---
   divider: {
@@ -925,7 +937,7 @@ const styles = StyleSheet.create({
   },
   dividerText: {
     fontSize: Typography.sizes.detail,
-    color: 'rgba(245, 237, 227, 0.35)',
+    color: `${Colors.text.primary}59`,
     letterSpacing: 0.4,
   },
   // --- Social buttons ---
@@ -942,7 +954,7 @@ const styles = StyleSheet.create({
     height: 48,
     borderRadius: BorderRadius.md,
     borderWidth: 1,
-    borderColor: 'rgba(245, 237, 227, 0.16)',
+    borderColor: `${Colors.text.primary}29`,
     overflow: 'hidden',
   },
   socialBtnText: {
@@ -977,7 +989,7 @@ const styles = StyleSheet.create({
   },
   footerText: {
     fontSize: Typography.sizes.small,
-    color: 'rgba(245, 237, 227, 0.4)',
+    color: `${Colors.text.primary}66`,
   },
   footerLink: {
     fontSize: Typography.sizes.small,
@@ -987,7 +999,7 @@ const styles = StyleSheet.create({
   // --- Sign Up specific ---
   passwordHint: {
     fontSize: Typography.sizes.detail,
-    color: 'rgba(245, 237, 227, 0.3)',
+    color: `${Colors.text.primary}4D`,
     marginBottom: Spacing.lg,
   },
   checkboxRow: {
@@ -1004,7 +1016,7 @@ const styles = StyleSheet.create({
     marginRight: Spacing.md,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'rgba(245, 237, 227, 0.04)',
+    backgroundColor: `${Colors.text.primary}0A`,
   },
   checkboxChecked: {
     backgroundColor: Colors.accent.primary,
@@ -1013,7 +1025,7 @@ const styles = StyleSheet.create({
   checkboxText: {
     flex: 1,
     fontSize: Typography.sizes.detail,
-    color: 'rgba(245, 237, 227, 0.5)',
+    color: `${Colors.text.primary}80`,
     lineHeight: 18,
   },
   linkText: {

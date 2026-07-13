@@ -30,6 +30,7 @@ import { ShimmerButton } from './ShimmerButton';
 import { CITIES } from '../data/cityData';
 import { saveUserLocation, formatLocation, UserLocation } from '../services/locationStorage';
 import { logServiceError } from '../services/errorLoggingService';
+import { useReduceMotion } from '../hooks/useReduceMotion';
 
 const HIT_SLOP = { top: 12, bottom: 12, left: 12, right: 12 };
 
@@ -98,6 +99,7 @@ export function LocationCompass({
   const [phase, setPhase] = useState<Phase>('idle');
   const [resolved, setResolved] = useState<{ city: string; country: string } | null>(null);
   const [query, setQuery] = useState('');
+  const reduceMotion = useReduceMotion();
 
   const rotation = useRef(new Animated.Value(0)).current; // "turns" — 0 = needle up
   const needleOpacity = useRef(new Animated.Value(1)).current;
@@ -118,9 +120,10 @@ export function LocationCompass({
     };
   }, []);
 
-  // Idle sway — a slow, small breathing tilt, not a spin.
+  // Idle sway — a slow, small breathing tilt, not a spin. Purely decorative,
+  // so reduce-motion skips it entirely and leaves the needle still.
   useEffect(() => {
-    if (phase !== 'idle') return;
+    if (phase !== 'idle' || reduceMotion) return;
     const loop = Animated.loop(
       Animated.sequence([
         Animated.timing(rotation, { toValue: 0.018, duration: 2200, easing: Easing.inOut(Easing.sin), useNativeDriver: true }),
@@ -131,20 +134,23 @@ export function LocationCompass({
     spinLoop.current = loop;
     loop.start();
     return () => loop.stop();
-  }, [phase]);
+  }, [phase, reduceMotion]);
 
   // Searching — a continuous, faster spin signals "looking for your sky".
+  // Under reduce-motion the needle stays still; the ActivityIndicator elsewhere
+  // in this component already communicates the in-progress state.
   useEffect(() => {
     if (phase !== 'locating') return;
     spinLoop.current?.stop();
     rotation.setValue(0);
+    if (reduceMotion) return;
     const loop = Animated.loop(
       Animated.timing(rotation, { toValue: 1, duration: 850, easing: Easing.linear, useNativeDriver: true }),
     );
     spinLoop.current = loop;
     loop.start();
     return () => loop.stop();
-  }, [phase]);
+  }, [phase, reduceMotion]);
 
   // Manual mode dims the needle — it's resting, not searching.
   useEffect(() => {

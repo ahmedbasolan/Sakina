@@ -269,12 +269,16 @@ class ErrorLoggingService {
   }
 
   /**
-   * Keys that must never be forwarded to PostHog.
-   * Callers sometimes pass userId, city, country in context — fine for debugging
-   * but email / tokens / urls (may carry signed tokens) must never leave the device.
+   * Keys that must never be forwarded to PostHog. Covers credentials/tokens
+   * (email, password, token variants, url — may carry signed tokens) and
+   * identifiers that could re-identify a user or their location (userId,
+   * city, country, name) — e.g. prayerTimesService's network-error context
+   * carries { city, country }, which is useful locally for debugging but has
+   * no reason to leave the device in a crash report.
    */
   private readonly PII_KEYS = new Set([
     'email', 'password', 'token', 'access_token', 'refresh_token', 'url',
+    'userid', 'user_id', 'city', 'country', 'name',
   ]);
 
   /** Strips known PII keys from a context object before sending to PostHog. */

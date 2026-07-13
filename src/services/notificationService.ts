@@ -364,6 +364,10 @@ class NotificationService {
   }
 
   public async scheduleReminder(hour24: number, minute: number): Promise<boolean> {
+    return this.withLock(DAILY_REMINDER_IDS_KEY, () => this.doScheduleReminder(hour24, minute));
+  }
+
+  private async doScheduleReminder(hour24: number, minute: number): Promise<boolean> {
     const hasPermission = await this.requestPermissions();
     if (!hasPermission) return false;
 
@@ -376,14 +380,16 @@ class NotificationService {
         body: 'Take a moment to check in with your heart.',
         sound: true,
       },
-      // Modern expo-notifications requires an explicit trigger type.
-      // Without `type: CALENDAR`, the trigger is unrecognized and the
-      // notification silently never fires on iOS / throws on newer Android.
+      // CALENDAR triggers are iOS-only in expo-notifications (see
+      // CalendarTriggerInput's `@platform ios` in Notifications.types.d.ts) —
+      // using it here threw "Trigger of type: calendar is not supported on
+      // Android" at runtime. DAILY is the cross-platform trigger for "fire
+      // once a day at this hour/minute" and needs no `repeats` flag, since a
+      // daily trigger is inherently repeating.
       trigger: {
-        type: Notifications.SchedulableTriggerInputTypes.CALENDAR,
+        type: Notifications.SchedulableTriggerInputTypes.DAILY,
         hour: hour24,
         minute,
-        repeats: true,
         channelId: CH_DAILY,
       },
     });
@@ -400,6 +406,10 @@ class NotificationService {
   }
 
   public async cancelReminder(): Promise<void> {
+    return this.withLock(DAILY_REMINDER_IDS_KEY, () => this.doCancelReminder());
+  }
+
+  private async doCancelReminder(): Promise<void> {
     // Cancel ONLY the daily reminder. Prayer and spiritual-window notifs
     // are tracked separately and must survive this call.
     await cancelTrackedCategory(DAILY_REMINDER_IDS_KEY);

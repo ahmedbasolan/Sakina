@@ -341,7 +341,7 @@ const styles = StyleSheet.create({
   },
   attributionText: {
     fontSize: 11,
-    color: 'rgba(245, 237, 227, 0.35)',
+    color: `${Colors.text.primary}59`,
     fontStyle: 'italic',
     letterSpacing: 0.3,
   },

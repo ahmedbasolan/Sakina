@@ -22,6 +22,8 @@ import { backgroundThemeService } from '../services/backgroundThemeService';
 import LayerContainer from '../components/LayerContainer';
 import LayerPager from '../components/LayerPager';
 import RestingPoint from '../components/RestingPoint';
+import { useSwipeGesture } from '../hooks/useSwipeGesture';
+import SwipeNextOverlay from '../components/SwipeNextOverlay';
 import { useGuidanceLogic } from '../hooks/useGuidanceLogic';
 import { Colors, Spacing, Typography, MoodColors } from '../theme/DesignSystem';
 import { extractVerseKey } from '../utils';
@@ -153,21 +155,15 @@ const GuidanceScreen: React.FC = () => {
   // PanResponder always calls the current closure (mirrors currentLayerRef).
   const requestNextRef = useRef<() => void>(() => {});
 
-  // Swipe right → next verse (only on the verse layer, layer 0).
+  // Swipe left → next verse.
   // Uses a horizontal-dominant threshold so it never conflicts with
   // LayerContainer's vertical-swipe gesture or the ScrollView inside VerseLayer.
-  const swipeResponder = useRef(
-    PanResponder.create({
-      onMoveShouldSetPanResponder: (_, g) =>
-        Math.abs(g.dx) > Math.abs(g.dy) * 1.5 && Math.abs(g.dx) > 20,
-      onPanResponderRelease: (_, g) => {
-        if (g.dx > 50 && currentLayerRef.current === 0) {
-          HapticsService.impactAsync('LIGHT');
-          requestNextRef.current();
-        }
-      },
-    }),
-  ).current;
+  const { panHandlers: swipePanHandlers, swipeAnim: swipeOverlayAnim } = useSwipeGesture({
+    onNext: () => {
+      requestNextRef.current();
+    },
+    threshold: 50,
+  });
 
   // Reset to verse layer whenever a new experience loads
   useEffect(() => {
@@ -310,8 +306,13 @@ const GuidanceScreen: React.FC = () => {
         scrollY={scrollY}
       />
 
-      {/* Layer content — wrapped in swipe-right detector for "next verse" gesture */}
-      <View style={styles.gestureWrap} {...swipeResponder.panHandlers}>
+      {/* Layer content — wrapped in swipe-left detector for "next verse" gesture */}
+      <View style={styles.gestureWrap} {...swipePanHandlers}>
+        <SwipeNextOverlay
+          animValue={swipeOverlayAnim}
+          accentColor={(MoodColors[mood] || MoodColors.Calm).accent}
+          label="NEXT AYAH"
+        />
         <LayerContainer
           currentLayer={currentLayer}
           totalLayers={totalLayers}
@@ -496,7 +497,7 @@ const styles = StyleSheet.create({
     width: Spacing.xs,
     height: Spacing.xs,
     borderRadius: Spacing.xs / 2,
-    backgroundColor: 'rgba(245, 237, 227, 0.18)', // matches LayerPager's idle dots
+    backgroundColor: `${Colors.text.primary}2E`, // matches LayerPager's idle dots
   },
 });
 

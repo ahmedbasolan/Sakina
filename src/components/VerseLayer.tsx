@@ -459,7 +459,7 @@ const VerseLayer: React.FC<VerseLayerProps> = ({
                 <Ionicons
                   name={isSaved ? 'heart' : 'heart-outline'}
                   size={22}
-                  color={isSaved ? accentColor : 'rgba(245, 237, 227, 0.8)'}
+                  color={isSaved ? accentColor : `${Colors.text.primary}CC`}
                 />
               </TouchableOpacity>
             )}
@@ -475,7 +475,7 @@ const VerseLayer: React.FC<VerseLayerProps> = ({
                   // Only auto-play once the staged verse reveal has settled
                   // (revealComplete), so recitation never starts mid-animation.
                   autoPlay={autoPlayAudio && revealComplete}
-                  color="rgba(245, 237, 227, 0.8)"
+                  color={`${Colors.text.primary}CC`}
                   showLabel={false}
                   containerStyle={styles.audioBtnInner}
                   style={styles.audioBtnReset}
@@ -493,7 +493,7 @@ const VerseLayer: React.FC<VerseLayerProps> = ({
                 accessibilityRole="button"
                 accessibilityLabel="Share verse"
               >
-                <Ionicons name="share-outline" size={22} color="rgba(245, 237, 227, 0.8)" />
+                <Ionicons name="share-outline" size={22} color={`${Colors.text.primary}CC`} />
               </TouchableOpacity>
             )}
 
@@ -519,14 +519,14 @@ const VerseLayer: React.FC<VerseLayerProps> = ({
         {/* Gesture hint row — brief one-shot discovery aid, then disappears */}
         <Animated.View style={[styles.gestureHintsRow, { opacity: hintsOpacity }]}>
           <View style={styles.gestureHintItem}>
-            <Ionicons name="arrow-forward" size={11} color="rgba(245,237,227,0.38)" />
-            <Text style={styles.gestureHintText}>next verse</Text>
+            <Ionicons name="arrow-back" size={11} color={`${Colors.text.primary}61`} />
+            <Text style={styles.gestureHintText}>← swipe for next</Text>
           </View>
           {hasContext && (
             <>
               <View style={styles.gestureHintSep} />
               <View style={styles.gestureHintItem}>
-                <Ionicons name="arrow-up" size={11} color="rgba(245,237,227,0.38)" />
+                <Ionicons name="arrow-up" size={11} color={`${Colors.text.primary}61`} />
                 <Text style={styles.gestureHintText}>context</Text>
               </View>
             </>
@@ -683,7 +683,7 @@ const styles = StyleSheet.create({
     fontFamily: Typography.fonts.serif,
     fontSize: 16,
     lineHeight: 26,
-    color: 'rgba(245, 237, 227, 0.75)',
+    color: `${Colors.text.primary}BF`,
     textAlign: 'center',
     fontWeight: '400',
     fontStyle: 'italic',
@@ -700,7 +700,7 @@ const styles = StyleSheet.create({
     lineHeight: 20,
     // 0.62 keeps it clearly secondary to the translation while staying
     // readable — 0.45 fell below comfortable contrast on the navy ground.
-    color: 'rgba(245, 237, 227, 0.62)',
+    color: `${Colors.text.primary}9E`,
     textAlign: 'center',
     fontStyle: 'italic',
     marginTop: Spacing.md,
@@ -719,13 +719,13 @@ const styles = StyleSheet.create({
   dividerLine: {
     flex: 1,
     height: StyleSheet.hairlineWidth,
-    backgroundColor: 'rgba(245, 237, 227, 0.35)',
+    backgroundColor: `${Colors.text.primary}59`,
   },
   dividerDiamond: {
     width: 5,
     height: 5,
     borderRadius: 1,
-    backgroundColor: 'rgba(245, 237, 227, 0.4)',
+    backgroundColor: `${Colors.text.primary}66`,
     transform: [{ rotate: '45deg' }],
   },
 
@@ -793,14 +793,14 @@ const styles = StyleSheet.create({
   },
   gestureHintText: {
     fontSize: 10,
-    color: 'rgba(245,237,227,0.38)',
+    color: `${Colors.text.primary}61`,
     letterSpacing: 0.8,
     fontFamily: Typography.fonts.serif,
   },
   gestureHintSep: {
     width: 1,
     height: 10,
-    backgroundColor: 'rgba(245,237,227,0.12)',
+    backgroundColor: `${Colors.text.primary}1F`,
   },
 
   /* ── Ambient context pip (pulses when a context layer is available) ── */

@@ -20,6 +20,7 @@ import { useAppContext } from '../context/AppContext';
 
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { getPathVisual } from '../constants/pathVisuals';
+import { PathProgress } from '../components/PathProgress';
 
 const getVisual = (id: string) => getPathVisual(id);
 
@@ -168,6 +169,11 @@ export const PathDetailScreen: React.FC = () => {
       return;
     }
 
+    // Guard against the user having backed out or switched tabs while the
+    // guidance/hadith fetch above was in flight — without this, a slow fetch
+    // force-navigates into PathStep on top of whatever screen they're on now.
+    if (!navigation.isFocused()) return;
+
     navigation.navigate('PathStep', {
       path,
       step,
@@ -201,6 +207,7 @@ export const PathDetailScreen: React.FC = () => {
       {/* Background */}
       <LinearGradient
         colors={Colors.celestialWash}
+        locations={[0, 0.5, 1]}
         style={StyleSheet.absoluteFill}
       />
 
@@ -278,58 +285,11 @@ export const PathDetailScreen: React.FC = () => {
                 {completedDays === 0 ? 'Not started yet' : `Day ${completedDays} complete`}
               </Text>
               <Text style={styles.progressDaysRem}>{remainingDays} days remaining</Text>
-              {path.phases ? (
-                /* Tier-3 long paths: one labeled bar per phase */
-                <View style={styles.phaseBarsContainer}>
-                  {path.phases.map((phase) => {
-                    const phaseDays = phase.endDay - phase.startDay + 1;
-                    // Count days that actually fall inside this phase's range,
-                    // not an offset from a running total (which breaks when days
-                    // are completed out of order or phases are non-contiguous).
-                    const completedDaysArray = userProgress?.completedDays ?? [];
-                    const doneInPhase = completedDaysArray.filter(
-                      (d) => d >= phase.startDay && d <= phase.endDay,
-                    ).length;
-                    const pct = doneInPhase / phaseDays;
-                    return (
-                      <View key={phase.label} style={styles.phaseBarRow}>
-                        <Text style={styles.phaseBarLabel} numberOfLines={1}>
-                          {phase.label.split(' — ')[0]}
-                        </Text>
-                        <View style={styles.phaseBarTrack}>
-                          {/* Flex-split bar — works without pixel measurements */}
-                          <View style={[styles.phaseBarFill, { flex: Math.max(pct, 0.001), backgroundColor: visual.color }]} />
-                          <View style={{ flex: Math.max(1 - pct, 0.001) }} />
-                        </View>
-                        <Text style={[styles.phaseBarCount, { color: visual.color }]}>{doneInPhase}/{phaseDays}</Text>
-                      </View>
-                    );
-                  })}
-                </View>
-              ) : (
-                /* Short paths: individual day dots */
-                <View style={styles.progressDotsContainer}>
-                  {Array.from({ length: totalDays }).map((_, i) => {
-                    const done = i < completedDays;
-                    const isCurrent = i === completedDays;
-                    return (
-                      <View
-                        key={i}
-                        style={[
-                          styles.progressDot,
-                          {
-                            backgroundColor: done
-                              ? visual.color
-                              : isCurrent
-                                ? `${visual.color}55`
-                                : 'rgba(255,255,255,0.1)',
-                          },
-                        ]}
-                      />
-                    );
-                  })}
-                </View>
-              )}
+              <PathProgress
+                path={path}
+                completedDays={userProgress?.completedDays ?? []}
+                accentColor={visual.color}
+              />
             </View>
           </View>
         </View>
@@ -511,17 +471,6 @@ const styles = StyleSheet.create({
     color: Colors.text.muted,
     marginBottom: 10,
   },
-  progressDotsContainer: {
-    flexDirection: 'row',
-    gap: 5,
-    alignItems: 'center',
-    flexWrap: 'wrap',
-  },
-  progressDot: {
-    width: 7,
-    height: 7,
-    borderRadius: 3.5,
-  },
   sectionHeaderLabel: {
     fontSize: 11,
     color: Colors.text.muted,
@@ -565,41 +514,6 @@ const styles = StyleSheet.create({
   lessonsList: {
     paddingHorizontal: 24,
     gap: 12,
-  },
-
-  /* ── Phase bars (Tier-3 long paths) ── */
-  phaseBarsContainer: {
-    gap: 8,
-    marginTop: 4,
-  },
-  phaseBarRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  phaseBarLabel: {
-    fontSize: 10,
-    color: 'rgba(245,237,227,0.68)',
-    fontWeight: '600',
-    letterSpacing: 0.5,
-    width: 72,
-  },
-  phaseBarTrack: {
-    flex: 1,
-    height: 4,
-    borderRadius: 2,
-    backgroundColor: 'rgba(255,255,255,0.08)',
-    flexDirection: 'row',
-    overflow: 'hidden',
-  },
-  phaseBarFill: {
-    borderRadius: 2,
-  },
-  phaseBarCount: {
-    fontSize: 10,
-    fontWeight: '700',
-    width: 30,
-    textAlign: 'right',
   },
 
   /* ── Phase section headers (lesson list grouping) ── */

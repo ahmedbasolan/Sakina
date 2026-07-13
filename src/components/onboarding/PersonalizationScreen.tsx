@@ -14,6 +14,7 @@ import {
   Animated,
   Dimensions,
   TouchableOpacity,
+  ScrollView,
 } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
 import { Ionicons } from '@expo/vector-icons';
@@ -168,7 +169,11 @@ export default function PersonalizationScreen({ isActive, onNext }: Props) {
         <AnimatedMandala size={300} color={Colors.accent.primary} opacity={0.15} webLayers={2} />
       </View>
 
-      <View style={styles.contentArea}>
+      <ScrollView
+        style={styles.contentScroll}
+        contentContainerStyle={styles.contentArea}
+        showsVerticalScrollIndicator={false}
+      >
         {/* Title */}
         <Animated.Text style={[styles.title, s[0]]}>
           What Brings You{'\n'}Here?
@@ -264,7 +269,7 @@ export default function PersonalizationScreen({ isActive, onNext }: Props) {
             </Animated.View>
           ))}
         </View>
-      </View>
+      </ScrollView>
 
       {/* Bottom chip */}
       <Animated.View style={[styles.bottomChip, s[6], { marginBottom: Math.max(insets.bottom + Spacing.xxl, Spacing.xxxl) }]}>
@@ -288,8 +293,14 @@ const styles = StyleSheet.create({
     top: height * 0.08,
     zIndex: 0,
   },
-  contentArea: {
+  // ScrollView's own layout box — takes the space above the fixed bottom chip.
+  contentScroll: {
     flex: 1,
+  },
+  // contentContainerStyle: flexGrow (not flex) so short content still centers,
+  // while the 2x2 grid scrolls instead of overflowing on shorter screens.
+  contentArea: {
+    flexGrow: 1,
     justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: Spacing.xl,
@@ -305,7 +316,7 @@ const styles = StyleSheet.create({
   },
   subtitle: {
     fontSize: 14,
-    color: 'rgba(245, 237, 227, 0.75)',
+    color: `${Colors.text.primary}BF`,
     textAlign: 'center',
     lineHeight: 22,
     marginBottom: 36,
@@ -390,7 +401,7 @@ const styles = StyleSheet.create({
   },
   chipText: {
     fontSize: 13,
-    color: 'rgba(245, 237, 227, 0.70)',
+    color: `${Colors.text.primary}B3`,
     letterSpacing: 0.3,
     flex: 1,
     textAlign: 'center',

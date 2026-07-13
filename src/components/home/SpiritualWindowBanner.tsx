@@ -26,16 +26,20 @@ const CONTEXT_ICONS: Record<PrayerContext, React.ComponentProps<typeof Ionicons>
 };
 
 /** A Quran verse thematically matched to each window, so the banner itself
- *  carries a piece of the guidance rather than only pointing to it. */
+ *  carries a piece of the guidance rather than only pointing to it.
+ *  Full ayahs only (verified against api.alquran.cloud) — these used to be
+ *  partial clauses, the same bug fixed in dailyVerseService.ts. The isha
+ *  entry was swapped: An-Nur 24:36 is a clause from a much longer ayah about
+ *  mosques, not a standalone verse about night — Al-Qadr 97:5 actually is. */
 const CONTEXT_VERSES: Record<PrayerContext, { text: string; ref: string }> = {
-  fajr_pre: { text: 'And from [part of] the night, pray with it as additional [worship] for you.', ref: 'Al-Isra 17:79' },
-  fajr_post: { text: 'Indeed, the recitation of dawn is ever witnessed.', ref: 'Al-Isra 17:78' },
-  dhuhr: { text: 'Worship Me and establish prayer for My remembrance.', ref: 'Ta-Ha 20:14' },
-  asr: { text: 'By time, indeed mankind is in loss — except those who believe and do righteous deeds.', ref: 'Al-Asr 103:1-3' },
-  maghrib_pre: { text: 'Exalt with praise of your Lord before the rising of the sun and before its setting.', ref: 'Qaf 50:39' },
-  maghrib_post: { text: 'It is He who made the night for you as clothing and sleep for rest.', ref: 'Al-Furqan 25:47' },
-  isha: { text: 'Exalted is He in the mornings and the evenings.', ref: 'An-Nur 24:36' },
-  general: { text: 'Indeed, prayer prohibits immorality and wrongdoing.', ref: 'Al-Ankabut 29:45' },
+  fajr_pre: { text: 'And from part of the night, pray with it as additional worship for you; it is expected that your Lord will resurrect you to a praised station.', ref: 'Al-Isra 17:79' },
+  fajr_post: { text: 'Establish prayer at the decline of the sun until the darkness of the night, and the recitation of dawn. Indeed, the recitation of dawn is ever witnessed.', ref: 'Al-Isra 17:78' },
+  dhuhr: { text: 'Indeed, I am Allah. There is no deity except Me, so worship Me and establish prayer for My remembrance.', ref: 'Ta-Ha 20:14' },
+  asr: { text: 'By time, indeed mankind is in loss — except for those who believe, do righteous deeds, and urge one another to truth and urge one another to patience.', ref: 'Al-Asr 103:1-3' },
+  maghrib_pre: { text: 'So be patient over what they say, and exalt your Lord with His praise before the rising of the sun and before its setting.', ref: 'Qaf 50:39' },
+  maghrib_post: { text: 'And it is He who made the night for you as clothing, and sleep for rest, and made the day for rising up.', ref: 'Al-Furqan 25:47' },
+  isha: { text: 'It is peace until the emergence of dawn.', ref: 'Al-Qadr 97:5' },
+  general: { text: 'Recite what has been revealed to you of the Book, and establish prayer. Indeed, prayer prohibits immorality and wrongdoing, and the remembrance of Allah is greater. And Allah knows that which you do.', ref: 'Al-Ankabut 29:45' },
 };
 
 const FRIDAY_VERSE = {
@@ -85,7 +89,10 @@ export function SpiritualWindowBanner({ prayerContext, fadeAnim, slideAnim, onPr
             <View style={styles.bannerTextContainer}>
               <Text style={styles.bannerPreTitle}>{preTitle}</Text>
               <Text style={styles.bannerTitle}>{title}</Text>
-              <Text style={styles.bannerVerse} numberOfLines={2}>
+              {/* No numberOfLines cap — these are complete ayahs now, and
+                  ellipsis-truncating Quran text is the same bug as showing a
+                  partial ayah, just at render time instead of in the data. */}
+              <Text style={styles.bannerVerse}>
                 "{verse.text}" <Text style={styles.bannerVerseRef}>— {verse.ref}</Text>
               </Text>
               <View style={styles.bannerCTA}>

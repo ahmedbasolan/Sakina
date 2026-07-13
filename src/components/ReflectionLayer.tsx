@@ -117,7 +117,7 @@ const ReflectionLayer: React.FC<ReflectionLayerProps> = ({
           <TextInput
             style={styles.journalInput}
             placeholder="Speak from the heart..."
-            placeholderTextColor="rgba(245, 237, 227, 0.18)"
+            placeholderTextColor={`${Colors.text.primary}2E`}
             multiline
             value={reflection}
             onChangeText={setReflection}
@@ -271,7 +271,7 @@ const styles = StyleSheet.create({
   },
   journalLine: {
     height: StyleSheet.hairlineWidth,
-    backgroundColor: 'rgba(245, 237, 227, 0.06)',
+    backgroundColor: `${Colors.text.primary}0F`,
   },
 
   /* ���─ Actions ── */

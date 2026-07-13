@@ -1,0 +1,134 @@
+<svg width="1080" height="1920" viewBox="0 0 1080 1920" xmlns="http://www.w3.org/2000/svg" role="img">
+<title>Sakina Play Store screenshot 1 — mood grid hook</title>
+<desc>Dark navy celestial background with a headline "Tap your mood. Meet a verse for it." above a phone mockup showing a 3x3 grid of mood tiles.</desc>
+<defs>
+  <linearGradient id="bgGrad" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#07111E"/>
+    <stop offset="0.55" stop-color="#0C1A2E"/>
+    <stop offset="1" stop-color="#0F1F30"/>
+  </linearGradient>
+  <linearGradient id="screenGlow" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#D4AF37" stop-opacity="0.10"/>
+    <stop offset="1" stop-color="#D4AF37" stop-opacity="0"/>
+  </linearGradient>
+  <clipPath id="screenClip"><rect x="164" y="466" width="752" height="1310" rx="46"/></clipPath>
+</defs>
+
+<rect x="0" y="0" width="1080" height="1920" fill="url(#bgGrad)"/>
+
+<!-- faint mandala watermark -->
+<g stroke="#D4AF37" stroke-opacity="0.10" fill="none" stroke-width="2">
+  <circle cx="540" cy="300" r="230"/>
+  <circle cx="540" cy="300" r="170"/>
+  <g transform="translate(540,300)">
+    <ellipse cx="0" cy="0" rx="230" ry="46" transform="rotate(0)"/>
+    <ellipse cx="0" cy="0" rx="230" ry="46" transform="rotate(30)"/>
+    <ellipse cx="0" cy="0" rx="230" ry="46" transform="rotate(60)"/>
+    <ellipse cx="0" cy="0" rx="230" ry="46" transform="rotate(90)"/>
+    <ellipse cx="0" cy="0" rx="230" ry="46" transform="rotate(120)"/>
+    <ellipse cx="0" cy="0" rx="230" ry="46" transform="rotate(150)"/>
+  </g>
+</g>
+
+<!-- twinkling stars -->
+<g fill="#D4AF37">
+  <circle cx="120" cy="90" r="4" fill-opacity="0.8"/>
+  <circle cx="960" cy="130" r="3" fill-opacity="0.6"/>
+  <circle cx="220" cy="210" r="3.5" fill-opacity="0.7"/>
+  <circle cx="860" cy="60" r="3" fill-opacity="0.55"/>
+  <circle cx="500" cy="50" r="3" fill-opacity="0.6"/>
+  <circle cx="70" cy="330" r="3" fill-opacity="0.5"/>
+  <circle cx="1000" cy="340" r="3.5" fill-opacity="0.6"/>
+</g>
+
+<!-- badge -->
+<rect x="90" y="150" width="470" height="66" rx="33" fill="none" stroke="#D4AF37" stroke-opacity="0.6" stroke-width="2"/>
+<text x="325" y="192" text-anchor="middle" font-family="Georgia, serif" font-size="24" letter-spacing="1.5" fill="#D4AF37" font-weight="bold">A VERSE FOR HOW YOU FEEL</text>
+
+<!-- headline -->
+<text x="90" y="300" font-family="Georgia, serif" font-size="66" font-weight="bold" fill="#F5EDE3">Tap your mood.</text>
+<text x="90" y="378" font-family="Georgia, serif" font-size="66" font-weight="bold" fill="#F5EDE3">Meet a verse for it.</text>
+
+<!-- phone mockup -->
+<rect x="140" y="446" width="800" height="1340" rx="64" fill="#0C1A2E" stroke="#D4AF37" stroke-opacity="0.35" stroke-width="3"/>
+<rect x="164" y="466" width="752" height="1310" rx="46" fill="#07111E"/>
+<rect x="164" y="466" width="752" height="1310" rx="46" fill="url(#screenGlow)"/>
+
+<g clip-path="url(#screenClip)">
+  <!-- status bar -->
+  <text x="200" y="520" font-family="Arial, sans-serif" font-size="22" fill="#F5EDE3" fill-opacity="0.7">9:41</text>
+  <rect x="860" y="500" width="28" height="14" rx="3" fill="none" stroke="#F5EDE3" stroke-opacity="0.6" stroke-width="1.5"/>
+
+  <!-- header -->
+  <text x="200" y="600" font-family="Georgia, serif" font-size="18" letter-spacing="3" fill="#D4AF37" fill-opacity="0.75">SAKINA</text>
+  <text x="200" y="650" font-family="Georgia, serif" font-size="40" font-weight="bold" fill="#F5EDE3">How do you feel?</text>
+
+  <!-- 3x3 mood grid -->
+  <!-- row 1 -->
+  <g>
+    <rect x="200" y="700" width="220" height="220" rx="28" fill="#818CF8" fill-opacity="0.16" stroke="#818CF8" stroke-opacity="0.4" stroke-width="1.5"/>
+    <circle cx="310" cy="770" r="24" fill="#818CF8" fill-opacity="0.25"/>
+    <text x="310" y="880" text-anchor="middle" font-family="Arial, sans-serif" font-size="22" font-weight="bold" fill="#818CF8">Overwhelmed</text>
+  </g>
+  <g>
+    <rect x="440" y="700" width="220" height="220" rx="28" fill="#94A3B8" fill-opacity="0.16" stroke="#94A3B8" stroke-opacity="0.4" stroke-width="1.5"/>
+    <circle cx="550" cy="770" r="24" fill="#94A3B8" fill-opacity="0.25"/>
+    <text x="550" y="880" text-anchor="middle" font-family="Arial, sans-serif" font-size="24" font-weight="bold" fill="#94A3B8">Sad</text>
+  </g>
+  <g>
+    <rect x="680" y="700" width="220" height="220" rx="28" fill="#FB923C" fill-opacity="0.16" stroke="#FB923C" stroke-opacity="0.4" stroke-width="1.5"/>
+    <circle cx="790" cy="770" r="24" fill="#FB923C" fill-opacity="0.25"/>
+    <text x="790" y="880" text-anchor="middle" font-family="Arial, sans-serif" font-size="24" font-weight="bold" fill="#FB923C">Angry</text>
+  </g>
+
+  <!-- row 2 -->
+  <g>
+    <rect x="200" y="940" width="220" height="220" rx="28" fill="#D6D3D1" fill-opacity="0.14" stroke="#D6D3D1" stroke-opacity="0.35" stroke-width="1.5"/>
+    <circle cx="310" cy="1010" r="24" fill="#D6D3D1" fill-opacity="0.22"/>
+    <text x="310" y="1120" text-anchor="middle" font-family="Arial, sans-serif" font-size="24" font-weight="bold" fill="#D6D3D1">Tired</text>
+  </g>
+  <g>
+    <rect x="440" y="940" width="220" height="220" rx="28" fill="#C084FC" fill-opacity="0.16" stroke="#C084FC" stroke-opacity="0.4" stroke-width="1.5"/>
+    <circle cx="550" cy="1010" r="24" fill="#C084FC" fill-opacity="0.25"/>
+    <text x="550" y="1120" text-anchor="middle" font-family="Arial, sans-serif" font-size="24" font-weight="bold" fill="#C084FC">Lonely</text>
+  </g>
+  <g>
+    <rect x="680" y="940" width="220" height="220" rx="28" fill="#FBBF24" fill-opacity="0.16" stroke="#FBBF24" stroke-opacity="0.4" stroke-width="1.5"/>
+    <circle cx="790" cy="1010" r="24" fill="#FBBF24" fill-opacity="0.25"/>
+    <text x="790" y="1120" text-anchor="middle" font-family="Arial, sans-serif" font-size="22" font-weight="bold" fill="#FBBF24">Grateful</text>
+  </g>
+
+  <!-- row 3 -->
+  <g>
+    <rect x="200" y="1180" width="220" height="220" rx="28" fill="#22D3EE" fill-opacity="0.16" stroke="#22D3EE" stroke-opacity="0.4" stroke-width="1.5"/>
+    <circle cx="310" cy="1250" r="24" fill="#22D3EE" fill-opacity="0.25"/>
+    <text x="310" y="1360" text-anchor="middle" font-family="Arial, sans-serif" font-size="22" font-weight="bold" fill="#22D3EE">Hopeful</text>
+  </g>
+  <g>
+    <rect x="440" y="1180" width="220" height="220" rx="28" fill="#A3A3A3" fill-opacity="0.14" stroke="#A3A3A3" stroke-opacity="0.35" stroke-width="1.5"/>
+    <circle cx="550" cy="1250" r="24" fill="#A3A3A3" fill-opacity="0.22"/>
+    <text x="550" y="1360" text-anchor="middle" font-family="Arial, sans-serif" font-size="24" font-weight="bold" fill="#A3A3A3">Guilty</text>
+  </g>
+  <g>
+    <rect x="680" y="1180" width="220" height="220" rx="28" fill="#34D399" fill-opacity="0.18" stroke="#34D399" stroke-opacity="0.45" stroke-width="1.5"/>
+    <circle cx="790" cy="1250" r="24" fill="#34D399" fill-opacity="0.28"/>
+    <text x="790" y="1360" text-anchor="middle" font-family="Arial, sans-serif" font-size="24" font-weight="bold" fill="#34D399">Calm</text>
+  </g>
+
+  <!-- bottom tab bar (Home active) -->
+  <rect x="240" y="1650" width="600" height="90" rx="45" fill="#F5EDE3" fill-opacity="0.05" stroke="#D4AF37" stroke-opacity="0.15" stroke-width="1.5"/>
+  <g stroke="#D4AF37" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M288,1683 L300,1673 L312,1683 L312,1702 L288,1702 Z"/>
+  </g>
+  <g stroke="#F5EDE3" stroke-opacity="0.35" stroke-width="2" fill="none">
+    <circle cx="420" cy="1695" r="13"/>
+    <path d="M414,1701 L426,1689" stroke-opacity="0.35"/>
+    <path d="M540,1683 C543,1689 546,1691 543,1695 C546,1694 547,1698 543,1699 C537,1701 533,1695 535,1690 C537,1687 540,1683 540,1683 Z" fill="#F5EDE3" fill-opacity="0.35" stroke="none"/>
+    <line x1="648" y1="1687" x2="672" y2="1687"/>
+    <line x1="648" y1="1695" x2="672" y2="1695"/>
+    <line x1="648" y1="1703" x2="672" y2="1703"/>
+    <rect x="768" y="1683" width="24" height="24" rx="3"/>
+    <line x1="780" y1="1683" x2="780" y2="1707"/>
+  </g>
+</g>
+</svg>

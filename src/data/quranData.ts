@@ -327,12 +327,12 @@ const quranContentData: Content[] = [
   {
     id: 'quran_21_83',
     type: 'Quran',
-    primaryText: 'annī massaniya l-ḍurru wa-anta arḥamu l-rāḥimīna',
-    arabicText: 'أَنِّى مَسَّنِىَ ٱلضُّرُّ وَأَنتَ أَرْحَمُ ٱلرَّٰحِمِينَ ﴿83﴾',
-    transliteration: 'annī massaniya l-ḍurru wa-anta arḥamu l-rāḥimīna',
-    englishTranslation: 'Indeed, adversity has touched me, and You are the Most Merciful of the merciful.',
+    primaryText: 'wa-ayyūba idh nādā rabbahu annī massaniya l-ḍurru wa-anta arḥamu l-rāḥimīna',
+    arabicText: '۞ وَأَيُّوبَ إِذْ نَادَىٰ رَبَّهُۥٓ أَنِّى مَسَّنِىَ ٱلضُّرُّ وَأَنتَ أَرْحَمُ ٱلرَّٰحِمِينَ ﴿83﴾',
+    transliteration: 'wa-ayyūba idh nādā rabbahu annī massaniya l-ḍurru wa-anta arḥamu l-rāḥimīna',
+    englishTranslation: 'And [mention] Job, when he called to his Lord, "Indeed, adversity has touched me, and You are the Most Merciful of the merciful."',
     translation:
-      'Indeed, adversity has touched me, and You are the Most Merciful of the merciful.',
+      'And [mention] Job, when he called to his Lord, "Indeed, adversity has touched me, and You are the Most Merciful of the merciful."',
     source: 'Surah Al-Anbiya 21:83',
     audioKey: '21:83',
     whyThis: 'The powerful dua of Ayyub (AS) during his trial.',
@@ -626,7 +626,7 @@ const quranContentData: Content[] = [
     transliteration:
       "wa-in ʿāqabtum faʿāqibū bimith'li mā ʿūqib'tum bihi wala-in ṣabartum lahuwa khayrun lilṣṣābirīna",
     englishTranslation:
-      'And if you retaliate, then retaliate with the like of what you were afflicted with. But if you are patient, it is surely better for the patient.',
+      'And if you punish, punish with an equivalent of what you were harmed with. But if you are patient, it is surely better for the patient.',
     source: 'Surah An-Nahl 16:126',
     audioKey: '16:126',
     whyThis: 'Patience is always the better choice for those who can practice it.',
@@ -676,7 +676,7 @@ const quranContentData: Content[] = [
     transliteration:
       "in tub'dū khayran aw tukh'fūhu aw taʿfū ʿan sūin fa-inna l-laha kāna ʿafuwwan qadīran",
     englishTranslation:
-      'If you disclose a good deed or conceal it, or pardon an evil, then indeed Allah is Oft-Pardoning, All-Powerful.',
+      'If you show a good deed or conceal it, or pardon an offense, then indeed Allah is Oft-Pardoning, All-Powerful.',
     source: 'Surah An-Nisa 4:149',
     audioKey: '4:149',
     whyThis: 'The verse ends with two of Allah\'s names: "Afuwwan" (Oft-Pardoning) and "Qadira" (All-Powerful). Allah is not forgiving because He lacks the power to punish — He is forgiving despite having all power. When we pardon others, we imitate one of His attributes, and He responds with His own pardon toward us.',
@@ -958,6 +958,22 @@ const quranContentData: Content[] = [
     audioKey: '39:7',
     whyThis: "Allah's approval comes with gratitude - He is pleased when you are thankful.",
     moods: ['Grateful'],
+  },
+  {
+    id: 'quran_29_20',
+    type: 'Quran',
+    primaryText:
+      "qul sīrū fī l-arḍi fanẓurū kayfa bada'a l-khalqa thumma l-lahu yunshi'u l-nash'ata l-ākhirata inna l-laha ʿalā kulli shayʾin qadīrun",
+    arabicText:
+      'قُلْ سِيرُوا۟ فِى ٱلْأَرْضِ فَٱنظُرُوا۟ كَيْفَ بَدَأَ ٱلْخَلْقَ ۚ ثُمَّ ٱللَّهُ يُنشِئُ ٱلنَّشْأَةَ ٱلْءَاخِرَةَ ۚ إِنَّ ٱللَّهَ عَلَىٰ كُلِّ شَىْءٍۢ قَدِيرٌۭ ﴿20﴾',
+    transliteration:
+      "qul sīrū fī l-arḍi fanẓurū kayfa bada'a l-khalqa thumma l-lahu yunshi'u l-nash'ata l-ākhirata inna l-laha ʿalā kulli shayʾin qadīrun",
+    englishTranslation:
+      'Say, [O Muhammad], "Travel through the land and observe how He began creation. Then Allah will produce the final creation. Indeed Allah, over all things, is competent."',
+    source: 'Surah Al-Ankabut 29:20',
+    audioKey: '29:20',
+    whyThis: 'This verse invites reflection, not just belief: look at how creation began, and let that evidence settle the question of whether Allah can bring it back again. The pattern already surrounds you — a seed becoming a tree, a single cell becoming a person — and every one of those beginnings is proof that "over all things" truly means all things, including whatever feels impossible in your own life right now.',
+    moods: ['Grateful', 'Overwhelmed'],
   },
 
   // === HAPPY / TAHMID ===
@@ -2107,7 +2123,7 @@ const quranContentData: Content[] = [
       'وَأَسِرُّوا۟ قَوْلَكُمْ أَوِ ٱجْهَرُوا۟ بِهِۦٓ ۖ إِنَّهُۥ عَلِيمٌۢ بِذَاتِ ٱلصُّدُورِ ﴿13﴾',
     transliteration: "wa-asirrū qawlakum awi ij'harū bihi innahu ʿalīmun bidhāti l-ṣudūri",
     englishTranslation:
-      'And conceal your speech or proclaim it. Indeed, He is the All-Knower of what is in the hearts.',
+      'And conceal your speech or publicize it. Indeed, He is Knowing of what is within the breasts.',
     source: 'Surah Al-Mulk 67:13',
     audioKey: '67:13',
     whyThis: 'Whether you speak your pain aloud or carry it silently inside, Allah knows it. "Dhat al-sudur" (what is in the chests) refers to what is most deeply buried — the thoughts, fears, and grief that are never voiced. You do not need to perfectly articulate your pain to Allah; He already knows it completely.',
@@ -2130,7 +2146,7 @@ const quranContentData: Content[] = [
       'After revelation had paused for a time — and the Prophet Muhammad ﷺ feared he had been abandoned — Allah swore by the morning light and the still of night, reassuring him: "Your Lord has not left you, nor does He dislike you. What is coming is far better than what has passed; and your Lord will give you so much, that you will be completely satisfied."',
     source: 'Surah Ad-Duha 93:1-5',
     audioKey: '93:1-5',
-    whyThis: 'Ibn Kathir records that Surah Ad-Duha was revealed after revelation paused for a period, during which the Prophet ﷺ was deeply distressed. Allah swore by the morning light — a symbol of radiance — and the still night — a symbol of calm — that He had not abandoned nor displeased His prophet. Every promise in this surah was fulfilled in the Prophet\'s ﷺ life. [Tafsir Ibn Kathir, Surah Ad-Duha]',
+    whyThis: 'Surah Ad-Duha reads like a love letter from Allah to a soul in pain. Ibn Kathir records that it was revealed after revelation paused for a period, during which the Prophet ﷺ was deeply distressed — feeling forgotten, even silenced. Allah swore by the morning light — a symbol of radiance — and the still night — a symbol of calm — that He had not abandoned nor displeased His prophet. Every promise in this surah was fulfilled in the Prophet\'s ﷺ life. [Tafsir Ibn Kathir, Surah Ad-Duha]',
     moods: ['Sad', 'Overwhelmed'],
   },
   {
@@ -3260,6 +3276,16 @@ const quranContentAnglesData: ContentAngle[] = [
       },
     ]),
     reflection: 'What fear can remain when you are striving to be a friend of the Creator?',
+  },
+  {
+    id: 'q_angle_29_20_anxious',
+    contentId: 'quran_29_20',
+    mood: 'Overwhelmed',
+    angle:
+      'The verse ends with a promise sized for whatever feels unmanageable right now: "Indeed Allah, over all things, is competent." Ibn Kathir explains that this is the same logic Allah gives elsewhere: "He it is who originates creation, then repeats it, and that is easier for Him" (30:27) — bringing something back is lighter work than creating it the first time. The same power that first brought creation into being out of nothing is the power behind whatever feels impossible in your life today. If Allah can begin something from nothing, He can certainly handle what already exists — including your situation. [Tafsir Ibn Kathir, Surah Al-Ankabut]',
+    angleSource: 'Tafsir Ibn Kathir',
+    action: "Name the thing that feels impossible right now, and say \"Allahu 'ala kulli shay'in qadir\" (Allah is competent over all things) over it.",
+    reflection: 'What are you treating as impossible that this verse says is well within Allah\'s power?',
   },
 
   // === SAD ANGLES ===
@@ -4751,6 +4777,16 @@ const quranContentAnglesData: ContentAngle[] = [
       },
     ]),
     reflection: 'How have you seen Allah increase His favors when you are grateful?',
+  },
+  {
+    id: 'q_angle_29_20_grateful',
+    contentId: 'quran_29_20',
+    mood: 'Grateful',
+    angle:
+      'Allah does not simply ask you to believe in His power — He tells you to go and look for it. Ibn Kathir explains this ayah as a command to travel and observe creation as living proof that the One who originated it can just as easily bring it back — the same argument He makes in Surah Ar-Rum: "He it is who originates creation, then repeats it, and that is easier for Him" (30:27). "Travel through the land and observe how He began creation" is an invitation to notice the evidence you walk past every day: a barren patch of earth turning green after rain, a single seed becoming a full tree, life beginning again and again all around you. Each of these small beginnings is itself a sign, and gratitude grows naturally once you actually stop to see them instead of taking them for granted. [Tafsir Ibn Kathir, Surah Al-Ankabut]',
+    angleSource: 'Tafsir Ibn Kathir',
+    action: 'Notice one ordinary sign of creation today and thank Allah for it specifically.',
+    reflection: 'What is one everyday "beginning" in creation — a plant, a sunrise, a birth — that you have stopped truly noticing?',
   },
 
   {

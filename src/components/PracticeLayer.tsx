@@ -168,7 +168,7 @@ const PracticeStepCard = ({
 
         {/* Connecting line */}
         {!isLast && (
-          <View style={[styles.timelineLine, { backgroundColor: checked ? accentColor + '40' : 'rgba(245, 237, 227, 0.08)' }]} />
+          <View style={[styles.timelineLine, { backgroundColor: checked ? accentColor + '40' : `${Colors.text.primary}14` }]} />
         )}
       </View>
 

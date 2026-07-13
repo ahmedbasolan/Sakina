@@ -176,39 +176,52 @@ const SURAH_LIST: SurahEntry[] = [
 
 // ─── SavedVerseCard ───────────────────────────────────────────────────────────
 
-function SavedVerseCard({ verse }: { verse: any }) {
+const SavedVerseCard = React.memo(function SavedVerseCard({ verse }: { verse: any }) {
+  // Expand-on-tap rather than a hard clamp — same pattern as
+  // QuranLibraryScreen's VerseCard, so a bookmarked ayah longer than 2/3
+  // lines is never permanently clipped with no way to read the rest.
+  const [expanded, setExpanded] = useState(false);
+
   return (
-    <View style={styles.savedCard}>
-      <LinearGradient colors={[Colors.background.secondary, Colors.background.primary]} style={StyleSheet.absoluteFill} />
-      <LinearGradient
-        colors={[`${Colors.accent.primary}1F`, `${Colors.accent.primary}05`]}
-        style={StyleSheet.absoluteFill}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 1 }}
-        pointerEvents="none"
-      />
-      <View style={styles.savedCardLeft}>
-        <View style={styles.savedCardNumBadge}>
-          <Text style={styles.savedCardNumText}>{verse.verseNumber}</Text>
+    <TouchableOpacity
+      activeOpacity={0.88}
+      onPress={() => setExpanded(!expanded)}
+      accessibilityRole="button"
+      accessibilityLabel={`${verse.surahName} ${verse.verseNumber}`}
+      accessibilityState={{ expanded }}
+    >
+      <View style={styles.savedCard}>
+        <LinearGradient colors={[Colors.background.secondary, Colors.background.primary]} style={StyleSheet.absoluteFill} />
+        <LinearGradient
+          colors={[`${Colors.accent.primary}1F`, `${Colors.accent.primary}05`]}
+          style={StyleSheet.absoluteFill}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          pointerEvents="none"
+        />
+        <View style={styles.savedCardLeft}>
+          <View style={styles.savedCardNumBadge}>
+            <Text style={styles.savedCardNumText}>{verse.verseNumber}</Text>
+          </View>
         </View>
-      </View>
-      <View style={styles.savedCardBody}>
-        <View style={styles.savedCardHeader}>
-          <MaterialCommunityIcons name="bookmark" size={12} color={Colors.accent.primary} />
-          <Text style={styles.savedCardSource}>
-            {verse.surahName} · {verse.verseNumber}
+        <View style={styles.savedCardBody}>
+          <View style={styles.savedCardHeader}>
+            <MaterialCommunityIcons name="bookmark" size={12} color={Colors.accent.primary} />
+            <Text style={styles.savedCardSource}>
+              {verse.surahName} · {verse.verseNumber}
+            </Text>
+          </View>
+          <Text style={styles.savedCardArabic} numberOfLines={expanded ? undefined : 2}>
+            {verse.arabicText}
+          </Text>
+          <Text style={styles.savedCardTranslation} numberOfLines={expanded ? undefined : 3}>
+            {verse.translation}
           </Text>
         </View>
-        <Text style={styles.savedCardArabic} numberOfLines={2}>
-          {verse.arabicText}
-        </Text>
-        <Text style={styles.savedCardTranslation} numberOfLines={3}>
-          {verse.translation}
-        </Text>
       </View>
-    </View>
+    </TouchableOpacity>
   );
-}
+});
 
 // ─── SurahRow ─────────────────────────────────────────────────────────────────
 

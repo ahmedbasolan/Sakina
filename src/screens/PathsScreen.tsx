@@ -25,7 +25,7 @@ import { BlurView } from 'expo-blur';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { UserPathProgress } from '../types';
 import { PathsService } from '../services/pathsService';
-import { AnimatedMandala } from '../components/AnimatedMandala';
+import { JourneyMandalaBackdrop } from '../components/JourneyMandalaBackdrop';
 import { TwinklingStar } from '../components/TwinklingStar';
 import { getPathVisual } from '../constants/pathVisuals';
 
@@ -79,7 +79,12 @@ function FilterBar({ active, onChange, counts }: FilterBarProps) {
             accessibilityLabel={`${tab.label}${count > 0 ? `, ${count}` : ''}`}
             accessibilityState={{ selected: isSelected }}
           >
-            <Text style={[filterStyles.label, isSelected && filterStyles.labelActive]}>
+            <Text
+              style={[filterStyles.label, isSelected && filterStyles.labelActive]}
+              numberOfLines={1}
+              adjustsFontSizeToFit
+              minimumFontScale={0.8}
+            >
               {tab.label}
             </Text>
             {count > 0 && (
@@ -109,16 +114,20 @@ const filterStyles = StyleSheet.create({
     justifyContent: 'center',
     gap: Spacing.xs,
     paddingVertical: 11,
+    paddingHorizontal: Spacing.xs,
     borderRadius: BorderRadius.md,
     borderWidth: 1,
     borderColor: 'rgba(255,255,255,0.07)',
     backgroundColor: 'rgba(255,255,255,0.03)',
+    overflow: 'hidden',
   },
   tabActive: {
     borderColor: `${Colors.accent.primary}50`,
     backgroundColor: `${Colors.accent.primary}12`,
   },
   label: {
+    flexShrink: 1,
+    minWidth: 0,
     fontSize: Typography.sizes.small,
     fontWeight: '600',
     color: Colors.text.muted,
@@ -190,13 +199,6 @@ function JourneyCard({ path, index, isActive, isLocked, userProgress, onPress }:
 
   return (
     <Animated.View style={{ opacity: fadeAnim, transform: [{ translateY: slideAnim }] }}>
-      {/* Active-card mandala — OUTSIDE BlurView so overflow:hidden doesn't clip it */}
-      {isActive && !isLocked && (
-        <View style={styles.cardMandalaWrap} pointerEvents="none">
-          <AnimatedMandala size={140} color={visual.color} opacity={0.36} />
-        </View>
-      )}
-
       <TouchableOpacity
         activeOpacity={isLocked ? 0.95 : 0.88}
         onPress={onPress}
@@ -226,6 +228,14 @@ function JourneyCard({ path, index, isActive, isLocked, userProgress, onPress }:
               end={{ x: 1, y: 1 }}
               pointerEvents="none"
             />
+            {/* Active-card mandala backdrop — shared component with the Home
+                screen's Sacred Journey card. Nested inside the BlurView
+                (which already clips the tint above to its rounded corners)
+                so it's genuinely contained by the card, not floating
+                outside it. */}
+            {isActive && !isLocked && (
+              <JourneyMandalaBackdrop size={140} color={visual.color} />
+            )}
             {/* Top row: icon + info + badge/chevron */}
             <View style={styles.journeyTop}>
               <View
@@ -409,7 +419,7 @@ export default function PathsScreen() {
 
   return (
     <View style={styles.container}>
-      <LinearGradient colors={Colors.celestialWash} style={StyleSheet.absoluteFill} />
+      <LinearGradient colors={Colors.celestialWash} locations={[0, 0.5, 1]} style={StyleSheet.absoluteFill} />
 
       {/* ── Header with mandala backdrop ─────────────────────── */}
       <Animated.View style={[styles.header, { paddingTop: insets.top + 12, opacity: headerFade }]}>
@@ -618,12 +628,6 @@ const styles = StyleSheet.create({
   content: { paddingHorizontal: Spacing.xl, paddingTop: Spacing.md },
 
   /* ── Journey card ── */
-  cardMandalaWrap: {
-    position: 'absolute',
-    top: -50,
-    right: -50,
-    zIndex: 0,
-  },
   journeyCard: {
     borderRadius: BorderRadius.lg,
     overflow: 'hidden',
@@ -633,6 +637,10 @@ const styles = StyleSheet.create({
   journeyCardLocked: {
     borderColor: 'rgba(255,255,255,0.04)',
   },
+  // No overflow:'hidden' here — the mandala backdrop's clip to the rounded
+  // corners comes from journeyCard (the BlurView) two levels up. If this
+  // view ever gets its own elevation/overflow treatment, re-check that the
+  // mandala is still clipped.
   journeyCardInner: {
     padding: Spacing.lg,
     backgroundColor: 'rgba(15,25,40,0.6)',

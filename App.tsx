@@ -7,6 +7,7 @@ import {
   Text,
   Animated,
   Platform,
+  Image,
   UIManager,
 } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -21,7 +22,6 @@ import { MaterialCommunityIcons as MCIIcons, Ionicons } from '@expo/vector-icons
 import { LinearGradient } from 'expo-linear-gradient';
 import { PostHogProvider } from 'posthog-react-native';
 import MainNavigator from './src/navigation/MainNavigator';
-import { SakinaLantern } from './src/components/SakinaLantern';
 import { useReduceMotion } from './src/hooks/useReduceMotion';
 import ErrorBoundary from './src/components/ErrorBoundary';
 import { initializeDatabase } from './src/database/schema';
@@ -126,7 +126,11 @@ function BrandedSplash() {
       <Animated.View style={[styles.loadingContent, { opacity: fadeAnim }]}>
         <View style={styles.lanternWrap}>
           <Animated.View style={[styles.lanternGlow, { opacity: glowAnim }]} pointerEvents="none" />
-          <SakinaLantern size={132} />
+          <Image
+            source={require('./assets/icon.png')}
+            style={styles.appIcon}
+            resizeMode="contain"
+          />
         </View>
         <Text style={styles.loadingTitle}>Sakina</Text>
         <Text style={styles.loadingSubtitle}>A moment of stillness</Text>
@@ -227,10 +231,15 @@ const styles = StyleSheet.create({
   },
   lanternGlow: {
     position: 'absolute',
-    width: 200,
-    height: 200,
-    borderRadius: 100,
+    width: 220,
+    height: 220,
+    borderRadius: 110,
     backgroundColor: '#D4AF37',
+  },
+  appIcon: {
+    width: 140,
+    height: 140,
+    borderRadius: 32,
   },
   loadingTitle: {
     fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
