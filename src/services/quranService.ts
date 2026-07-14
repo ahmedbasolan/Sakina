@@ -134,6 +134,27 @@ async function fetchSurahFromApi(surahNumber: number): Promise<QuranVerse[]> {
   }
 }
 
+/**
+ * fetchSurahFromApi wrapped with a short retry — a single flaky request
+ * (common on the weak/spotty connections this bulk background download tends
+ * to run on) would otherwise be caught by prefetchAllSurahs's per-surah
+ * `catch {}` and silently skipped for the rest of the session, leaving the
+ * "Downloading Quran…" banner frozen with no error shown and no way to
+ * retry short of leaving and re-entering the Library tab.
+ */
+async function fetchSurahWithRetry(surahNumber: number): Promise<QuranVerse[]> {
+  let lastError: unknown;
+  for (let attempt = 1; attempt <= 3; attempt++) {
+    try {
+      return await fetchSurahFromApi(surahNumber);
+    } catch (error) {
+      lastError = error;
+      if (attempt < 3) await sleep(500 * attempt);
+    }
+  }
+  throw lastError;
+}
+
 async function writeSurahCache(surahNumber: number, verses: QuranVerse[]): Promise<void> {
   await dbQuery(async (db) => {
     await db.runAsync(
@@ -212,7 +233,7 @@ export async function prefetchAllSurahs(
       await Promise.allSettled(
         batch.map(async (surahNumber) => {
           try {
-            const verses = await fetchSurahFromApi(surahNumber);
+            const verses = await fetchSurahWithRetry(surahNumber);
             await writeSurahCache(surahNumber, verses);
             cached++;
             onProgress?.({

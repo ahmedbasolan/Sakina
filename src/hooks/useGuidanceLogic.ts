@@ -7,13 +7,15 @@ import { GuidanceExperience, Mood, UserPreferences } from '../types';
 import { dbQuery } from '../database/schema';
 
 // ─── Helper: parse "Surah Al-Baqarah 2:255" → surah metadata ─────────────────
+// Only needed to clean up legacy `bv_guidance_*` bookmarked_verses rows written
+// by older builds (see handleSave's unsave branch below) — new saves never
+// create these rows anymore.
 function parseQuranSource(
   source: string,
-): { surahName: string; surahNumber: number; verseNumber: number } | null {
+): { surahNumber: number; verseNumber: number } | null {
   const m = source.match(/^Surah\s+(.+?)\s+(\d+):(\d+)/);
   if (!m) return null;
   return {
-    surahName: m[1],
     surahNumber: parseInt(m[2], 10),
     verseNumber: parseInt(m[3], 10),
   };
@@ -118,10 +120,14 @@ export const useGuidanceLogic = (
 
     HapticsService.impactAsync('LIGHT');
 
-    // If the source is a Quran verse we also mirror to bookmarked_verses so
-    // it appears in LibraryScreen's "Saved Verses" tab alongside SurahReader bookmarks.
-    const quranInfo = parseQuranSource(experience.content.source || '');
-
+    // Previously this also mirrored into bookmarked_verses (LibraryScreen's
+    // "Saved Verses" tab) so a guidance save would show up there too. That
+    // conflated two separate features — a reflection save here is not the
+    // same action as bookmarking a verse from the Surah Reader — and made
+    // "Saved Verses" show entries the user never actually bookmarked from
+    // the Quran library. Saving a reflection now only ever writes to
+    // saved_reflections; bookmarked_verses is populated exclusively by
+    // SurahReaderScreen's own bookmark action.
     try {
       if (newSaved) {
         const id = `${experience.content.id}_${experience.angle.id}_${Date.now()}`;
@@ -131,27 +137,13 @@ export const useGuidanceLogic = (
                          VALUES (?, ?, ?, ?, ?, ?)`,
             [id, experience.content.id, experience.angle.id, mood, '', Date.now()],
           );
-          if (quranInfo) {
-            // Deterministic ID (no timestamp) so re-saving the same verse stays idempotent
-            const bmId = `bv_guidance_${quranInfo.surahNumber}_${quranInfo.verseNumber}`;
-            await db.runAsync(
-              `INSERT OR IGNORE INTO bookmarked_verses
-                 (id, surahNumber, verseNumber, arabicText, translation, surahName, bookmarkedAt)
-               VALUES (?, ?, ?, ?, ?, ?, ?)`,
-              [
-                bmId,
-                quranInfo.surahNumber,
-                quranInfo.verseNumber,
-                experience.content.arabicText || '',
-                experience.content.englishTranslation || '',
-                quranInfo.surahName,
-                Date.now(),
-              ],
-            );
-          }
           return null;
         });
       } else {
+        // Also clean up a legacy `bv_guidance_*` bookmarked_verses row if one
+        // exists from before the mirror-write was removed — otherwise a verse
+        // saved on an older build could never be un-bookmarked again.
+        const quranInfo = parseQuranSource(experience.content.source || '');
         await dbQuery(async (db) => {
           await db.runAsync(`DELETE FROM saved_reflections WHERE contentId = ? AND angleId = ?`, [
             experience.content.id,

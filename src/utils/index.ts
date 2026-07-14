@@ -2,13 +2,13 @@ import { Platform } from 'react-native';
 import { Mood } from '../types';
 
 // ── Date Utilities ──────────────────────────────────────────────────────
-export const formatDate = (timestamp: number): string => {
+const formatDate = (timestamp: number): string => {
   const date = new Date(timestamp);
   const months = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
   return `${months[date.getMonth()]} ${date.getDate()}`;
 };
 
-export const formatTime = (timestamp: number): string => {
+const formatTime = (timestamp: number): string => {
   const date = new Date(timestamp);
   return date.toLocaleTimeString('en-US', { 
     hour: '2-digit', 
@@ -17,13 +17,13 @@ export const formatTime = (timestamp: number): string => {
   });
 };
 
-export const isToday = (timestamp: number): boolean => {
+const isToday = (timestamp: number): boolean => {
   const today = new Date();
   const date = new Date(timestamp);
   return today.toDateString() === date.toDateString();
 };
 
-export const getRelativeTime = (timestamp: number): string => {
+const getRelativeTime = (timestamp: number): string => {
   const now = Date.now();
   const diff = now - timestamp;
   const minutes = Math.floor(diff / 60000);
@@ -38,16 +38,16 @@ export const getRelativeTime = (timestamp: number): string => {
 };
 
 // ── Platform Utilities ───────────────────────────────────────────────────
-export const getPlatformFont = (iosFont: string, androidFont: string): string => {
+const getPlatformFont = (iosFont: string, androidFont: string): string => {
   return Platform.OS === 'ios' ? iosFont : androidFont;
 };
 
-export const getPlatformValue = <T>(iosValue: T, androidValue: T): T => {
+const getPlatformValue = <T>(iosValue: T, androidValue: T): T => {
   return Platform.OS === 'ios' ? iosValue : androidValue;
 };
 
 // ── Mood Utilities ───────────────────────────────────────────────────────
-export const getMoodIcon = (mood: Mood): string => {
+const getMoodIcon = (mood: Mood): string => {
   const icons: Record<Mood, string> = {
     Overwhelmed: 'weather-windy',
     Sad: 'weather-rainy',
@@ -62,7 +62,7 @@ export const getMoodIcon = (mood: Mood): string => {
   return icons[mood] || 'heart-outline';
 };
 
-export const getMoodLabel = (mood: Mood): string => {
+const getMoodLabel = (mood: Mood): string => {
   const labels: Record<Mood, string> = {
     Overwhelmed: 'OVERWHELMED',
     Sad: 'SAD',
@@ -87,7 +87,7 @@ export const isValidPassword = (password: string): boolean => {
   return password.length >= 8;
 };
 
-export const isEmpty = (value: any): boolean => {
+const isEmpty = (value: any): boolean => {
   return value === null || value === undefined || value === '';
 };
 
@@ -105,21 +105,21 @@ export const extractVerseKey = (source: string): string => {
 };
 
 // ── String Utilities ─────────────────────────────────────────────────────
-export const capitalize = (str: string): string => {
+const capitalize = (str: string): string => {
   return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
 };
 
-export const truncate = (str: string, maxLength: number): string => {
+const truncate = (str: string, maxLength: number): string => {
   if (str.length <= maxLength) return str;
   return str.slice(0, maxLength - 3) + '...';
 };
 
-export const removeSpecialChars = (str: string): string => {
+const removeSpecialChars = (str: string): string => {
   return str.replace(/[^a-zA-Z0-9 ]/g, '');
 };
 
 // ── Array Utilities ───────────────────────────────────────────────────────
-export const shuffleArray = <T>(array: T[]): T[] => {
+const shuffleArray = <T>(array: T[]): T[] => {
   const shuffled = [...array];
   for (let i = shuffled.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -128,7 +128,7 @@ export const shuffleArray = <T>(array: T[]): T[] => {
   return shuffled;
 };
 
-export const groupBy = <T, K extends keyof any>(
+const groupBy = <T, K extends keyof any>(
   array: T[],
   key: (item: T) => K
 ): Record<K, T[]> => {
@@ -140,29 +140,29 @@ export const groupBy = <T, K extends keyof any>(
   }, {} as Record<K, T[]>);
 };
 
-export const unique = <T>(array: T[]): T[] => {
+const unique = <T>(array: T[]): T[] => {
   return [...new Set(array)];
 };
 
 // ── Number Utilities ─────────────────────────────────────────────────────
-export const clamp = (value: number, min: number, max: number): number => {
+const clamp = (value: number, min: number, max: number): number => {
   return Math.min(Math.max(value, min), max);
 };
 
-export const randomBetween = (min: number, max: number): number => {
+const randomBetween = (min: number, max: number): number => {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 };
 
-export const roundTo = (value: number, decimals: number): number => {
+const roundTo = (value: number, decimals: number): number => {
   return Math.round(value * Math.pow(10, decimals)) / Math.pow(10, decimals);
 };
 
 // ── Async Utilities ────────────────────────────────────────────────────────
-export const delay = (ms: number): Promise<void> => {
+const delay = (ms: number): Promise<void> => {
   return new Promise(resolve => setTimeout(resolve, ms));
 };
 
-export const retry = async <T>(
+const retry = async <T>(
   fn: () => Promise<T>,
   attempts: number = 3,
   delayMs: number = 1000
@@ -183,7 +183,7 @@ export const retry = async <T>(
   throw lastError!;
 };
 
-export const withTimeout = <T>(
+const withTimeout = <T>(
   promise: Promise<T>,
   timeoutMs: number
 ): Promise<T> => {
@@ -196,7 +196,7 @@ export const withTimeout = <T>(
 };
 
 // ── Storage Utilities ───────────────────────────────────────────────────
-export const storage = {
+const storage = {
   async get<T>(key: string): Promise<T | null> {
     try {
       const AsyncStorage = require('@react-native-async-storage/async-storage').default;

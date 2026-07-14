@@ -13,7 +13,10 @@ const DEFAULT_RETRY_CONFIG: RetryConfig = {
   backoffMultiplier: 2,
   maxDelayMs: 10000,
   retryableStatusCodes: [408, 429, 500, 502, 503, 504], // Request timeout, too many requests, server errors
-  retryableErrors: ['ECONNRESET', 'ETIMEDOUT', 'ECONNREFUSED', 'ENOTFOUND', 'NETWORK_ERROR'],
+  // ECONNABORTED covers axios's own client-side `timeout` option — without it,
+  // a request that times out fails the retry-eligibility check and throws
+  // immediately after one attempt instead of backing off and retrying.
+  retryableErrors: ['ECONNRESET', 'ETIMEDOUT', 'ECONNABORTED', 'ECONNREFUSED', 'ENOTFOUND', 'NETWORK_ERROR'],
 };
 
 /**
@@ -110,7 +113,7 @@ export async function withRetry<T>(
 /**
  * Convenience function for network operations with standard retry config
  */
-export async function withNetworkRetry<T>(
+async function withNetworkRetry<T>(
   operation: () => Promise<T>,
   operationName: string,
 ): Promise<T> {
@@ -130,7 +133,7 @@ export const AXIOS_RETRY_CONFIG: Partial<RetryConfig> = {
 /**
  * Supabase-specific retry config (slightly more conservative)
  */
-export const SUPABASE_RETRY_CONFIG: Partial<RetryConfig> = {
+const SUPABASE_RETRY_CONFIG: Partial<RetryConfig> = {
   maxRetries: 3,
   retryDelayMs: 500,
   backoffMultiplier: 2,

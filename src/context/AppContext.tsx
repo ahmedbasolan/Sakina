@@ -29,7 +29,7 @@ interface ServicesContextType {
 
 const ServicesContext = createContext<ServicesContextType | undefined>(undefined);
 
-export function ServicesProvider({ children }: { children: React.ReactNode }) {
+function ServicesProvider({ children }: { children: React.ReactNode }) {
   const [rotationEngine] = useState(() => RotationEngine.getInstance());
   const [freemiumService] = useState(() => FreemiumService.getInstance());
   const [isLoading, setIsLoading] = useState(true);
@@ -50,7 +50,7 @@ export function ServicesProvider({ children }: { children: React.ReactNode }) {
   );
 }
 
-export function useServices(): ServicesContextType {
+function useServices(): ServicesContextType {
   const ctx = useContext(ServicesContext);
   if (!ctx) throw new Error('useServices must be used within ServicesProvider');
   return ctx;
@@ -73,7 +73,7 @@ interface SessionContextType {
 
 const SessionContext = createContext<SessionContextType | undefined>(undefined);
 
-export function SessionProvider({ children }: { children: React.ReactNode }) {
+function SessionProvider({ children }: { children: React.ReactNode }) {
   const [selectedMood, setSelectedMood] = useState<Mood | null>(null);
   const [currentExperience, setCurrentExperience] = useState<GuidanceExperience | null>(null);
   const [streakCount, setStreakCount] = useState(0);

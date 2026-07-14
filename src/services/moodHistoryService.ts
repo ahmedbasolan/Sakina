@@ -12,7 +12,6 @@ import {
 // Re-export so existing consumers (the calendar screen) keep importing the
 // insight type from moodHistoryService.
 export type { MoodInsight };
-export { computeInsights, HEAVY_MOODS, LIGHT_MOODS } from './moodInsights';
 
 // ── Types ───────────────────────────────────────────────────────────
 export interface MoodDayEntry {
@@ -130,7 +129,7 @@ export function computeStreaks(
 }
 
 // ── Service ─────────────────────────────────────────────────────────
-export class MoodHistoryService {
+class MoodHistoryService {
   private supabaseData = SupabaseDataService.getInstance();
 
   /**

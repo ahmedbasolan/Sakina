@@ -31,7 +31,7 @@ const ANDROID_API_KEY = REVENUECAT_ANDROID_API_KEY;
 // ───────────────────────────────────────────────────────────────────────────
 
 // RC entitlement identifier — must match exactly what's in the RC dashboard.
-export const RC_ENTITLEMENT_ID = 'Sakina Pro';
+const RC_ENTITLEMENT_ID = 'Sakina Pro';
 
 export type RCPackageType = 'monthly' | 'yearly';
 

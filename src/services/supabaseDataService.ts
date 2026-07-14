@@ -83,11 +83,6 @@ export class SupabaseDataService {
         return session?.user?.id ?? null;
     }
 
-    /** Returns true if a user is logged in (not guest mode). */
-    async isLoggedIn(): Promise<boolean> {
-        return (await this.getUserId()) !== null;
-    }
-
     // ══════════════════════════════════════════════════════════════════
     // USER HISTORY
     // ══════════════════════════════════════════════════════════════════

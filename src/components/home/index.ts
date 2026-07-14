@@ -1,9 +1,7 @@
 export { HeroHeader } from './HeroHeader';
 export { VerseOfTheDay } from './VerseOfTheDay';
 export { StreakBar } from './StreakBar';
-export { CrescentIcon } from './CrescentIcon';
 export { SpiritualWindowBanner } from './SpiritualWindowBanner';
-export { MoodButton } from './MoodButton';
 export { CheckInBanner } from './CheckInBanner';
 export { SmartMoodGrid } from './SmartMoodGrid';
 export { StreakMilestoneBanner } from './StreakMilestoneBanner';

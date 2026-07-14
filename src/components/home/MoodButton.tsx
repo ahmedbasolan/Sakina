@@ -13,7 +13,7 @@ interface MoodButtonProps {
   animDelay: number;
 }
 
-export function MoodButton({ mood, isChecked, isRecentlySelected, onPress, animDelay }: MoodButtonProps) {
+function MoodButton({ mood, isChecked, isRecentlySelected, onPress, animDelay }: MoodButtonProps) {
   const scaleAnim = useRef(new Animated.Value(0)).current;
   const glowAnim = useRef(new Animated.Value(0)).current;
   const reduceMotion = useReduceMotion();

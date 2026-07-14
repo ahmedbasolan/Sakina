@@ -1,6 +1,6 @@
 import type React from 'react';
 
-export enum ErrorSeverity {
+enum ErrorSeverity {
   LOW = 'low',
   MEDIUM = 'medium',
   HIGH = 'high',
@@ -327,7 +327,7 @@ export const errorLoggingService = ErrorLoggingService.getInstance();
 /**
  * Convenience function to log errors
  */
-export const logError = (
+const logError = (
   error: Error | string,
   severity?: ErrorSeverity,
   context?: Record<string, any>,

@@ -19,7 +19,7 @@ interface SwipeNextOverlayProps {
  * As the user drags left, a glowing arrow with the accent color fades and slides
  * in from the right edge, hinting at the screen transition.
  */
-export const SwipeNextOverlay: React.FC<SwipeNextOverlayProps> = ({
+const SwipeNextOverlay: React.FC<SwipeNextOverlayProps> = ({
   animValue,
   accentColor = Colors.accent.primary,
   label = 'NEXT',
