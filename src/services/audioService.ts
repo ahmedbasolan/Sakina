@@ -24,7 +24,7 @@ const getAudioModule = () => {
 };
 
 // Popular reciters with their audio base URLs
-export const RECITERS = {
+const RECITERS = {
   YASSER_ALDOSARI: {
     id: 8,
     name: 'Yasser Al-Dosari',
@@ -68,7 +68,7 @@ export const RECITERS = {
 };
 
 // Default reciter
-export const DEFAULT_RECITER = RECITERS.YASSER_ALDOSARI;
+const DEFAULT_RECITER = RECITERS.YASSER_ALDOSARI;
 
 // Fallback chain should the primary reciter's audio file not exist
 export const RECITER_FALLBACKS = [
@@ -89,7 +89,7 @@ function constructUrl(chapter: number, verse: number, reciter = DEFAULT_RECITER)
 /**
  * Build audio URL for a verse (legacy support)
  */
-export function getAudioUrl(verseKey: string, reciter = DEFAULT_RECITER): string {
+function getAudioUrl(verseKey: string, reciter = DEFAULT_RECITER): string {
   const urls = getAudioUrls(verseKey, reciter);
   return urls[0];
 }
@@ -208,7 +208,7 @@ export interface PlaybackStatus {
 /**
  * Audio player class for managing playback using expo-audio
  */
-export class AudioPlayer {
+class AudioPlayer {
   private player: any = null;
   private isPlaying: boolean = false;
   private currentUrl: string | null = null;
@@ -336,7 +336,7 @@ export class AudioPlayer {
 // Singleton instance for app-wide audio control
 let audioPlayerInstance: AudioPlayer | null = null;
 
-export function getAudioPlayer(): AudioPlayer {
+function getAudioPlayer(): AudioPlayer {
   if (!audioPlayerInstance) {
     audioPlayerInstance = new AudioPlayer();
   }

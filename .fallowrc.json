@@ -1,0 +1,28 @@
+{
+  // This file is JSONC: fallow reads these comments; generic JSON tools may not.
+  "$schema": "https://raw.githubusercontent.com/fallow-rs/fallow/main/schema.json",
+  "ignoreDependencies": [
+    "expo-updates", // wired via app.json `updates`/`runtimeVersion`, no JS import
+    "react-native-web", // required by `expo start --web`, resolved by Metro not a JS import
+    "react-native-dotenv", // babel.config.js plugin, not a JS import
+    "babel-plugin-transform-remove-console", // babel.config.js env.production plugin
+    "@env" // virtual module react-native-dotenv creates, not a real package
+  ],
+  "ignoreExports": [
+    {
+      "file": "src/services/reflectionRepository.ts",
+      "exports": ["*"]
+    },
+    {
+      "file": "src/types/index.ts",
+      "exports": ["*"]
+    },
+    {
+      "file": "src/database/operations.ts",
+      // Kept as explicit triggers for tests/recovery paths and re-exported
+      // through the schema.ts backwards-compat shim; not dead despite no
+      // current callers.
+      "exports": ["refreshContentOnly", "resetDatabase", "migrateDatabase"]
+    }
+  ]
+}

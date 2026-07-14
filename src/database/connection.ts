@@ -107,7 +107,7 @@ export const dbQuery = async <T>(
   }
 };
 
-export const resetConnectionState = (): void => {
+const resetConnectionState = (): void => {
   dbInstance = null;
   connectionPromise = null;
   executionQueue = Promise.resolve();

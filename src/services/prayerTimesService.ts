@@ -126,7 +126,7 @@ function getMethodConfig(country: string): MethodConfig {
   return METHOD_CONFIG_BY_COUNTRY[country.trim().toLowerCase()] ?? MWL;
 }
 
-export function getCalculationMethodForCountry(country: string): number {
+function getCalculationMethodForCountry(country: string): number {
   return getMethodConfig(country).aladhanId;
 }
 
@@ -199,10 +199,20 @@ class PrayerTimesService {
       const cachedData = await AsyncStorage.getItem(cacheKey);
       if (cachedData) return JSON.parse(cachedData);
 
-      // 2. Fetch with exponential back-off retry (3 attempts, up to 8s max)
+      // 2. Fetch with exponential back-off retry (3 attempts, up to 8s max).
+      // `timeout` is required here — axios defaults to no timeout at all, so on
+      // a degraded connection each attempt would hang on the OS socket timeout
+      // (60s+) instead of failing fast into the retry/backoff loop below. Left
+      // unset, 3 attempts could compound into 1-2+ minutes of a silently frozen
+      // "Fetching sacred timings…" screen, and since every Home mood tap calls
+      // through here too (syncPrayerWindow → getCurrentPrayerContext), it
+      // stalled the entire guidance flow, not just this screen.
       const data = await withRetry(
         async () => {
-          const response = await axios.get(this.BASE_URL, { params: { city, country, method: resolvedMethod, school } });
+          const response = await axios.get(this.BASE_URL, {
+            params: { city, country, method: resolvedMethod, school },
+            timeout: 10_000,
+          });
           if (response.data.code === 200) return response.data.data;
           throw new Error(response.data.status || 'Failed to fetch prayer times');
         },
@@ -309,7 +319,7 @@ class PrayerTimesService {
 
       const hijri = await withRetry(
         async () => {
-          const response = await axios.get(`https://api.aladhan.com/v1/gToH/${dmy}`);
+          const response = await axios.get(`https://api.aladhan.com/v1/gToH/${dmy}`, { timeout: 10_000 });
           if (response.data.code === 200) return response.data.data.hijri;
           throw new Error(response.data.status || 'Failed to fetch Hijri date');
         },

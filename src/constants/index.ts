@@ -6,7 +6,7 @@ import { Mood } from '../types';
  * as "Peaceful" (paired with Sukoon) everywhere in the UI — never show the
  * raw id to users. Keep stored ids untouched: they live in user history rows.
  */
-export const MOOD_LABELS: Record<Mood, string> = {
+const MOOD_LABELS: Record<Mood, string> = {
   Grateful: 'Grateful',
   Hopeful: 'Hopeful',
   Calm: 'Peaceful',
@@ -21,14 +21,14 @@ export const MOOD_LABELS: Record<Mood, string> = {
 /** Display label for a mood id; falls back to the raw value for unknowns. */
 export const moodLabel = (mood: string): string => MOOD_LABELS[mood as Mood] ?? mood;
 
-export const APP_CONFIG = {
+const APP_CONFIG = {
   name: 'Sakina',
   version: '1.0.0',
   defaultLanguage: 'en',
   supportedLanguages: ['en', 'ar', 'ur', 'tr', 'id', 'ms'] as const,
 } as const;
 
-export const SCREEN_DIMENSIONS = {
+const SCREEN_DIMENSIONS = {
   get width() {
     const { width } = require('react-native').Dimensions.get('window');
     return width;
@@ -39,7 +39,7 @@ export const SCREEN_DIMENSIONS = {
   },
 } as const;
 
-export const ANIMATION_CONFIG = {
+const ANIMATION_CONFIG = {
   durations: {
     fast: 200,
     normal: 300,
@@ -57,7 +57,7 @@ export const ANIMATION_CONFIG = {
   },
 } as const;
 
-export const API_CONFIG = {
+const API_CONFIG = {
   timeout: 10000,
   retryAttempts: 3,
   retryDelay: 1000,
@@ -104,7 +104,7 @@ export const STREAK_MILESTONES = [7, 30, 100] as const;
 // Keyed by the capitalized `Mood` union (NOT lowercase) so lookups like
 // MOOD_COLORS[mood] resolve — and aligned to the canonical MoodColors accents
 // in DesignSystem so mood dots/tags match the Home grid across every screen.
-export const MOOD_COLORS = {
+const MOOD_COLORS = {
   Overwhelmed: '#818CF8',
   Sad: '#94A3B8',
   Angry: '#FB923C',
@@ -116,7 +116,7 @@ export const MOOD_COLORS = {
   Calm: '#34D399',
 } as const;
 
-export const MOOD_ISLAMIC_TERMS = {
+const MOOD_ISLAMIC_TERMS = {
   Overwhelmed: 'TAWAKKUL',
   Sad: 'SABR',
   Angry: 'IHSAN',
@@ -128,7 +128,7 @@ export const MOOD_ISLAMIC_TERMS = {
   Calm: 'SAKINAH',
 } as const;
 
-export const getMoodIslamicTerm = (mood: Mood): string => {
+const getMoodIslamicTerm = (mood: Mood): string => {
   return MOOD_ISLAMIC_TERMS[mood] || '';
 };
 
@@ -151,12 +151,12 @@ export const MERCY_MOODS: ReadonlySet<Mood> = new Set<Mood>([
 
 export const isMercyMood = (mood: Mood): boolean => MERCY_MOODS.has(mood);
 
-export const getMoodDisplay = (mood: Mood): string => {
+const getMoodDisplay = (mood: Mood): string => {
   const term = getMoodIslamicTerm(mood);
   return term.charAt(0) + term.slice(1).toLowerCase();
 };
 
-export const PRAYER_TIMES = {
+const PRAYER_TIMES = {
   fajr: 'Fajr',
   sunrise: 'Sunrise',
   dhuhr: 'Dhuhr',
@@ -165,7 +165,7 @@ export const PRAYER_TIMES = {
   isha: 'Isha',
 } as const;
 
-export const ERROR_MESSAGES = {
+const ERROR_MESSAGES = {
   network: 'Network connection error. Please check your internet connection.',
   server: 'Server error. Please try again later.',
   auth: 'Authentication error. Please sign in again.',

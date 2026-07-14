@@ -20,10 +20,6 @@ export class PathsService {
     return STATIC_SPIRITUAL_PATHS;
   }
 
-  getAvailablePaths(isPremium: boolean, unlockedBundleIds: string[] = []): SpiritualPath[] {
-    return this.getAllPaths(isPremium, unlockedBundleIds);
-  }
-
   getAvailableBundles(): SpecialEditionBundle[] {
     // In a real app, we'd check dates or user purchases.
     // For now, we'll implement the basic filtering logic for demo sessions.

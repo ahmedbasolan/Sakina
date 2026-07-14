@@ -35,20 +35,26 @@ function buildMandala(size, cx, cy, opacity) {
   for (let s = 3; s <= maxStep - 1; s++) steps.push(s); // [3,4,5] — full lattice, matches default (no webLayers cap)
 
   const localCx = CENTER, localCy = CENTER;
+  // Base widths bumped ~1.7x over the in-app component: on-screen the real
+  // mandala sits low-opacity behind other moving content and is never looked
+  // at in isolation. Here it IS the content, at 5-8x the pixel size, so the
+  // original 0.16-unit strokes (a little over 1px once scaled) read as an
+  // almost-invisible haze. Relative opacity ratios between layers unchanged —
+  // only the overall visibility floor is raised.
   const webs = steps.map((step) => ({
     d: generateStarWeb(12, step, OUTER_R, localCx, localCy),
-    w: 0.16,
+    w: 0.27,
     o: step === maxStep - 1 ? 0.34 : 0.24,
   }));
 
   const parts = [];
   parts.push(`<g transform="translate(${cx - size / 2},${cy - size / 2}) scale(${scale})" opacity="${opacity}" fill="none" stroke="${GOLD}" stroke-linejoin="round" stroke-linecap="round">`);
-  parts.push(`<circle cx="${localCx}" cy="${localCy}" r="${OUTER_R}" stroke-width="0.3" opacity="0.5"/>`);
+  parts.push(`<circle cx="${localCx}" cy="${localCy}" r="${OUTER_R}" stroke-width="0.5" opacity="0.5"/>`);
   for (const web of webs) {
     parts.push(`<path d="${web.d}" stroke-width="${web.w}" opacity="${web.o}"/>`);
   }
-  parts.push(`<circle cx="${localCx}" cy="${localCy}" r="${OUTER_R * 0.5}" stroke-width="0.14" opacity="0.2"/>`);
-  parts.push(`<circle cx="${localCx}" cy="${localCy}" r="${OUTER_R * 0.18}" stroke-width="0.3" opacity="0.5"/>`);
+  parts.push(`<circle cx="${localCx}" cy="${localCy}" r="${OUTER_R * 0.5}" stroke-width="0.24" opacity="0.2"/>`);
+  parts.push(`<circle cx="${localCx}" cy="${localCy}" r="${OUTER_R * 0.18}" stroke-width="0.5" opacity="0.5"/>`);
   parts.push('</g>');
   return parts.join('');
 }
@@ -99,7 +105,7 @@ const svg = `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" xmlns="http
 </defs>
 <rect x="0" y="0" width="${W}" height="${H}" fill="url(#bgGrad)"/>
 ${buildStars(STARS)}
-${buildMandala(760, W / 2, H * 0.42, 0.14)}
+${buildMandala(760, W / 2, H * 0.42, 0.5)}
 </svg>
 `;
 

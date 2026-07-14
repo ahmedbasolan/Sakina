@@ -10,7 +10,7 @@ export interface IndexDefinition {
   sql: string;
 }
 
-export const tableDefinitions: TableDefinition[] = [
+const tableDefinitions: TableDefinition[] = [
   {
     name: 'content',
     sql: `CREATE TABLE IF NOT EXISTS content (
@@ -228,7 +228,7 @@ export const tableDefinitions: TableDefinition[] = [
   },
 ];
 
-export const indexDefinitions: IndexDefinition[] = [
+const indexDefinitions: IndexDefinition[] = [
   {
     name: 'idx_user_history_content_angle',
     sql: `CREATE INDEX IF NOT EXISTS idx_user_history_content_angle ON user_history (contentId, angleId);`,

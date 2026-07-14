@@ -283,19 +283,19 @@ export default function HeartCheckInScreen({ isActive, onNext }: Props) {
                   />
 
                   {/* Icon */}
-                  <View style={[styles.iconCircle, { borderColor: mood.color + '50', backgroundColor: mood.color + '15' }]}>
-                    <Ionicons name={mood.iconName as any} size={28} color={mood.color} />
+                  <View style={[styles.iconCircle, { borderColor: mood.color, backgroundColor: mood.color }]}>
+                    <Ionicons name={mood.iconName as any} size={28} color="#FFFFFF" />
                   </View>
 
                   {/* Mood name */}
-                  <Text style={[styles.moodLabel, { color: mood.color }]}>{mood.label}</Text>
-                  <Text style={[styles.moodSublabel, { color: mood.color }]}>{mood.sublabel}</Text>
+                  <Text style={styles.moodLabel}>{mood.label}</Text>
+                  <Text style={styles.moodSublabel}>{mood.sublabel}</Text>
 
                   {/* Divider */}
                   <View style={[styles.divider, { backgroundColor: mood.color + '30' }]} />
 
                   {/* What Sakina gives */}
-                  <Text style={[styles.givingText, { color: mood.color }]}>
+                  <Text style={styles.givingText}>
                     {mood.giving}
                   </Text>
 
@@ -415,13 +415,15 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     letterSpacing: 2,
     marginBottom: 4,
+    color: '#FFFFFF',
   },
   moodSublabel: {
     fontSize: 13,
     fontFamily: Typography.fonts.serif,
     letterSpacing: 0.5,
-    opacity: 0.65,
+    opacity: 0.75,
     marginBottom: 20,
+    color: '#FFFFFF',
   },
   divider: {
     width: '60%',
@@ -435,8 +437,9 @@ const styles = StyleSheet.create({
     fontStyle: 'italic',
     textAlign: 'center',
     lineHeight: 22,
-    opacity: 0.8,
+    opacity: 0.85,
     paddingHorizontal: 8,
+    color: '#FFFFFF',
   },
   checkCircle: {
     position: 'absolute',

@@ -60,12 +60,6 @@ export class AuthService {
     return data.session;
   }
 
-  async getCurrentUser() {
-    const { data, error } = await supabase.auth.getUser();
-    if (error) throw error;
-    return data.user;
-  }
-
   onAuthStateChange(
     callback: (
       event: import('@supabase/supabase-js').AuthChangeEvent,

@@ -28,6 +28,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import Svg, { Path, Circle } from 'react-native-svg';
 import { useAuth } from '../context/AuthContext';
 import { LEGAL_URLS } from '../constants';
+import { isValidEmail, isValidPassword } from '../utils';
 import * as Haptics from 'expo-haptics';
 
 interface AuthScreenProps {
@@ -135,18 +136,10 @@ function AuthInput({
   );
 }
 
-// ==================== LOGIN SCREEN ====================
-export function LoginScreen({ navigation, onLogin }: AuthScreenProps) {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const insets = useSafeAreaInsets();
-
-  const { enterGuestMode } = useAuth();
-  const authService = AuthService.getInstance();
-  const handleGuestMode = useCallback(async () => { await enterGuestMode(); }, [enterGuestMode]);
-
+// Shared entrance choreography for both auth screens: logo settles in first,
+// then the form card, then the footer link — identical timing on Login/SignUp
+// so switching between them doesn't feel like a different app.
+function useAuthEntryAnimation() {
   const logoOpacity = useRef(new Animated.Value(0)).current;
   const logoSlide = useRef(new Animated.Value(20)).current;
   const formOpacity = useRef(new Animated.Value(0)).current;
@@ -176,14 +169,53 @@ export function LoginScreen({ navigation, onLogin }: AuthScreenProps) {
     ]).start();
   }, []);
 
+  return { logoOpacity, logoSlide, formOpacity, formSlide, footerOpacity };
+}
+
+// Shared Apple sign-in handler for both auth screens (identical besides the
+// success callback — Login navigates in, SignUp completes the account flow).
+function useAppleSignIn(
+  authService: AuthService,
+  setIsLoading: (loading: boolean) => void,
+  onSuccess?: () => void,
+) {
+  return useCallback(async () => {
+    setIsLoading(true);
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    try {
+      await authService.signInWithApple();
+      if (onSuccess) onSuccess();
+    } catch (error: any) {
+      if (error?.code !== 'ERR_REQUEST_CANCELED') {
+        Alert.alert('Apple Sign-In Failed', error?.message || 'Please try again.');
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  }, [authService, setIsLoading, onSuccess]);
+}
+
+// ==================== LOGIN SCREEN ====================
+export function LoginScreen({ navigation, onLogin }: AuthScreenProps) {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const insets = useSafeAreaInsets();
+
+  const { enterGuestMode } = useAuth();
+  const authService = AuthService.getInstance();
+  const handleGuestMode = useCallback(async () => { await enterGuestMode(); }, [enterGuestMode]);
+
+  const { logoOpacity, logoSlide, formOpacity, formSlide, footerOpacity } = useAuthEntryAnimation();
+
   const handleSignIn = async () => {
     const trimmedEmail = email.trim().toLowerCase();
     if (!trimmedEmail || !password) {
       Alert.alert('Error', 'Please enter both email and password.');
       return;
     }
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(trimmedEmail)) {
+    if (!isValidEmail(trimmedEmail)) {
       Alert.alert('Invalid Email', 'Please enter a valid email address.');
       return;
     }
@@ -238,21 +270,7 @@ export function LoginScreen({ navigation, onLogin }: AuthScreenProps) {
     }
   };
 
-  const handleAppleAuth = async () => {
-    setIsLoading(true);
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    try {
-      await authService.signInWithApple();
-      if (onLogin) onLogin();
-    } catch (error: any) {
-      // Swallow the user-cancelled case; only surface real failures.
-      if (error?.code !== 'ERR_REQUEST_CANCELED') {
-        Alert.alert('Apple Sign-In Failed', error?.message || 'Please try again.');
-      }
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const handleAppleAuth = useAppleSignIn(authService, setIsLoading, onLogin);
 
   return (
     <KeyboardAvoidingView
@@ -424,34 +442,7 @@ export function SignUpScreen({ navigation, onSignUp }: AuthScreenProps) {
   const authService = AuthService.getInstance();
   const handleGuestMode = useCallback(async () => { await enterGuestMode(); }, [enterGuestMode]);
 
-  const logoOpacity = useRef(new Animated.Value(0)).current;
-  const logoSlide = useRef(new Animated.Value(20)).current;
-  const formOpacity = useRef(new Animated.Value(0)).current;
-  const formSlide = useRef(new Animated.Value(30)).current;
-  const footerOpacity = useRef(new Animated.Value(0)).current;
-
-  useEffect(() => {
-    Animated.sequence([
-      Animated.delay(200),
-      Animated.parallel([
-        Animated.timing(logoOpacity, { toValue: 1, duration: 700, useNativeDriver: true }),
-        Animated.spring(logoSlide, { toValue: 0, damping: 18, stiffness: 80, useNativeDriver: true }),
-      ]),
-    ]).start();
-
-    Animated.sequence([
-      Animated.delay(500),
-      Animated.parallel([
-        Animated.timing(formOpacity, { toValue: 1, duration: 600, useNativeDriver: true }),
-        Animated.spring(formSlide, { toValue: 0, damping: 20, stiffness: 80, useNativeDriver: true }),
-      ]),
-    ]).start();
-
-    Animated.sequence([
-      Animated.delay(800),
-      Animated.timing(footerOpacity, { toValue: 1, duration: 500, useNativeDriver: true }),
-    ]).start();
-  }, []);
+  const { logoOpacity, logoSlide, formOpacity, formSlide, footerOpacity } = useAuthEntryAnimation();
 
   const handleCreateAccount = async () => {
     const trimmedName = name.trim();
@@ -461,12 +452,11 @@ export function SignUpScreen({ navigation, onSignUp }: AuthScreenProps) {
       Alert.alert('Error', 'Please fill in all fields.');
       return;
     }
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(trimmedEmail)) {
+    if (!isValidEmail(trimmedEmail)) {
       Alert.alert('Invalid Email', 'Please enter a valid email address.');
       return;
     }
-    if (password.length < 8) {
+    if (!isValidPassword(password)) {
       Alert.alert('Weak Password', 'Password must be at least 8 characters long.');
       return;
     }
@@ -505,20 +495,7 @@ export function SignUpScreen({ navigation, onSignUp }: AuthScreenProps) {
     }
   };
 
-  const handleAppleAuth = async () => {
-    setIsLoading(true);
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    try {
-      await authService.signInWithApple();
-      if (onSignUp) onSignUp();
-    } catch (error: any) {
-      if (error?.code !== 'ERR_REQUEST_CANCELED') {
-        Alert.alert('Apple Sign-In Failed', error?.message || 'Please try again.');
-      }
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const handleAppleAuth = useAppleSignIn(authService, setIsLoading, onSignUp);
 
   const canSubmit = agreeTerms && !isLoading;
 

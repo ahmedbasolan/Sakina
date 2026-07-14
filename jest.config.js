@@ -9,8 +9,7 @@ module.exports = {
   modulePathIgnorePatterns: ['<rootDir>/.claude/'],
   testPathIgnorePatterns: ['/node_modules/', '<rootDir>/.claude/'],
   moduleNameMapper: {
-    // Both RC packages require native code unavailable in Jest.
+    // Requires native code unavailable in Jest.
     '^react-native-purchases$': '<rootDir>/__mocks__/react-native-purchases.js',
-    '^react-native-purchases-ui$': '<rootDir>/__mocks__/react-native-purchases-ui.js',
   },
 };

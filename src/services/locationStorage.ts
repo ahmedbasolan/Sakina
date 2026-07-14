@@ -49,7 +49,7 @@ export const getUserLocation = async (): Promise<UserLocation | null> => {
   }
 };
 
-export const clearUserLocation = async (): Promise<void> => {
+const clearUserLocation = async (): Promise<void> => {
   try {
     await AsyncStorage.removeItem(LOCATION_KEY);
   } catch (error) {

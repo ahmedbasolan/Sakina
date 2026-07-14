@@ -114,10 +114,14 @@ const SmartMoodCard = memo(function SmartMoodCard({
             <View style={[
               styles.iconCircle,
               isChecked
-                ? { backgroundColor: mood.color + '40', borderColor: mood.color + 'CC' }
+                ? { backgroundColor: mood.color, borderColor: mood.color }
                 : { backgroundColor: mood.color + '26', borderColor: mood.color + '40' },
             ]}>
-              <Ionicons name={mood.iconName as any} size={20} color="#FFFFFF" />
+              {isLoading ? (
+                <ActivityIndicator size="small" color="#FFFFFF" />
+              ) : (
+                <Ionicons name={mood.iconName as any} size={20} color="#FFFFFF" />
+              )}
             </View>
             <View style={styles.cardText}>
               <Text
@@ -138,11 +142,6 @@ const SmartMoodCard = memo(function SmartMoodCard({
               </Text>
             </View>
           </View>
-          {isLoading && (
-            <View style={[styles.checkedBadge, { backgroundColor: 'rgba(255,255,255,0.15)' }]}>
-              <ActivityIndicator size="small" color="#FFFFFF" style={styles.badgeSpinner} />
-            </View>
-          )}
         </LinearGradient>
       </TouchableOpacity>
     </Animated.View>
@@ -258,19 +257,6 @@ const styles = StyleSheet.create({
     fontFamily: Typography.fonts.serif,
     fontStyle: 'italic',
     marginTop: 2,
-  },
-  checkedBadge: {
-    position: 'absolute',
-    top: 8,
-    right: 8,
-    width: 22,
-    height: 22,
-    borderRadius: 11,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  badgeSpinner: {
-    transform: [{ scale: 0.6 }],
   },
   expandBtn: {
     flexDirection: 'row',

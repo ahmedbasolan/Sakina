@@ -21,7 +21,7 @@ export function formatDateYMD(date: Date = new Date()): string {
 /**
  * Return today's date as "YYYY-MM-DD" in local timezone.
  */
-export function todayYMD(): string {
+function todayYMD(): string {
   return formatDateYMD(new Date());
 }
 
@@ -29,7 +29,7 @@ export function todayYMD(): string {
  * Return yesterday's date as "YYYY-MM-DD" in local timezone.
  * Uses setDate arithmetic so DST transitions (23h / 25h days) are handled correctly.
  */
-export function yesterdayYMD(): string {
+function yesterdayYMD(): string {
   const d = new Date();
   d.setDate(d.getDate() - 1);
   return formatDateYMD(d);

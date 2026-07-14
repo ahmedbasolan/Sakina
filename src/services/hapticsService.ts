@@ -80,13 +80,13 @@ export const HapticsService = {
 /**
  * Re-exporting enum values for convenience (mocked if module missing)
  */
-export const HapticImpact = {
+const HapticImpact = {
   Light: 'LIGHT',
   Medium: 'MEDIUM',
   Heavy: 'HEAVY',
 };
 
-export const HapticNotification = {
+const HapticNotification = {
   Success: 'SUCCESS',
   Warning: 'WARNING',
   Error: 'ERROR',

@@ -13,7 +13,8 @@ import { dbQuery } from '../database/schema';
 import { Mood } from '../types';
 
 // Re-export the canonical type from src/types so callers only need one import.
-// The query result includes joined fields (primaryText, source) beyond the base type.
+// The query result includes joined fields (primaryText, englishTranslation,
+// source) beyond the base type.
 export interface SavedReflection {
   id: string;
   contentId: string;
@@ -22,6 +23,11 @@ export interface SavedReflection {
   reflection: string;
   timestamp: number;
   primaryText: string;
+  // primaryText is often a transliteration (Latin-script phonetics), not
+  // readable English — callers wanting a human-readable fallback preview
+  // (e.g. ReflectionHistoryScreen when no note was typed) should use this
+  // field, not primaryText.
+  englishTranslation: string;
   source: string;
   isFavorite?: number; // SQLite stores booleans as 0/1
 }
@@ -65,7 +71,7 @@ export class ReflectionRepository {
   async getAll(): Promise<SavedReflection[]> {
     return dbQuery(async (db) => {
       const result = await db.getAllAsync(`
-        SELECT sr.*, c.primaryText, c.source
+        SELECT sr.*, c.primaryText, c.englishTranslation, c.source
         FROM saved_reflections sr
         JOIN content c ON sr.contentId = c.id
         ORDER BY sr.timestamp DESC

@@ -9,10 +9,13 @@ import {
   TouchableOpacity,
   Dimensions,
   Animated,
-  Platform,
   TextInput,
   Modal,
   KeyboardAvoidingView,
+  LayoutAnimation,
+  Platform,
+  UIManager,
+  Keyboard,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -22,6 +25,14 @@ import { AnimatedMandala } from '../components/AnimatedMandala';
 import { TwinklingStar } from '../components/TwinklingStar';
 import { dbQuery } from '../database/schema';
 import { RotationEngine } from '../services/rotationEngine';
+import { useReduceMotion } from '../hooks/useReduceMotion';
+
+// Legacy-architecture Android requires this opt-in for LayoutAnimation
+// (used below for the mood capsule's icon-to-label expand); a no-op if the
+// New Architecture already supports it or on iOS.
+if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
+  UIManager.setLayoutAnimationEnabledExperimental(true);
+}
 
 const { width } = Dimensions.get('window');
 
@@ -78,7 +89,7 @@ interface JournalEntry {
 }
 
 // ── Entry card ───────────────────────────────────────────────────────
-function ReflectionCard({ entry, index }: { entry: JournalEntry; index: number }) {
+function ReflectionCard({ entry, index, onPress }: { entry: JournalEntry; index: number; onPress: () => void }) {
   const moodColor = entry.mood ? (MOOD_COLORS[entry.mood] || Colors.accent.primary) : null;
   const moodIcon = entry.mood ? MOOD_ICON[entry.mood] : null;
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -102,9 +113,10 @@ function ReflectionCard({ entry, index }: { entry: JournalEntry; index: number }
     <Animated.View style={{ opacity: fadeAnim, transform: [{ translateY: slideAnim }] }}>
       <TouchableOpacity
         activeOpacity={0.85}
+        onPress={onPress}
         style={[styles.entryCard, { borderColor: `${tintColor}40` }]}
         accessibilityRole="button"
-        accessibilityLabel={`${entry.title}, ${formatDate(entry.createdAt)}`}
+        accessibilityLabel={`${entry.title}, ${formatDate(entry.createdAt)}. Double tap to open.`}
       >
         <LinearGradient colors={[Colors.background.secondary, Colors.background.primary]} style={StyleSheet.absoluteFill} />
         <LinearGradient
@@ -135,6 +147,76 @@ function ReflectionCard({ entry, index }: { entry: JournalEntry; index: number }
   );
 }
 
+// ── Reflection detail ────────────────────────────────────────────────
+// Read-only — cards weren't tappable at all before, so a viewer that shows
+// the untruncated title/body/citation is the fix; editing wasn't requested.
+function ReflectionDetailModal({ entry, onClose }: { entry: JournalEntry | null; onClose: () => void }) {
+  const insets = useSafeAreaInsets();
+  const moodColor = entry?.mood ? (MOOD_COLORS[entry.mood] || Colors.accent.primary) : null;
+  const moodIcon = entry?.mood ? MOOD_ICON[entry.mood] : null;
+  const tintColor = moodColor || Colors.accent.primary;
+
+  const formatDate = (ts: number) => {
+    const d = new Date(ts);
+    return d.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+  };
+
+  return (
+    <Modal visible={!!entry} animationType="none" transparent onRequestClose={onClose}>
+      <View style={styles.sheetWrap}>
+        <TouchableOpacity
+          style={StyleSheet.absoluteFillObject}
+          activeOpacity={1}
+          onPress={onClose}
+          accessibilityRole="button"
+          accessibilityLabel="Close reflection"
+        />
+        {entry && (
+          <View style={[styles.sheet, { maxHeight: '80%', paddingBottom: Math.max(insets.bottom, Spacing.lg) + Spacing.sm }]}>
+            <LinearGradient
+              colors={[`${tintColor}14`, 'transparent']}
+              style={[StyleSheet.absoluteFill, { borderTopLeftRadius: BorderRadius.xxl, borderTopRightRadius: BorderRadius.xxl }]}
+              pointerEvents="none"
+            />
+            <View style={styles.sheetHandle} />
+            <View style={styles.sheetHeader}>
+              <View style={styles.detailHeaderLeft}>
+                {moodColor && moodIcon && (
+                  <View style={[styles.entryMoodBadge, { backgroundColor: `${moodColor}26` }]}>
+                    <Ionicons name={moodIcon as any} size={13} color={moodColor} />
+                  </View>
+                )}
+                <Text style={[styles.sheetTitle, { color: tintColor }]} numberOfLines={1}>
+                  {entry.title.toUpperCase()}
+                </Text>
+              </View>
+              <TouchableOpacity
+                onPress={onClose}
+                style={styles.sheetClose}
+                hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                accessibilityRole="button"
+                accessibilityLabel="Close"
+              >
+                <Ionicons name="close" size={18} color={Colors.text.secondary} />
+              </TouchableOpacity>
+            </View>
+            <Text style={styles.entryDate}>{formatDate(entry.createdAt)}</Text>
+            <ScrollView showsVerticalScrollIndicator={false} style={{ marginTop: Spacing.lg }}>
+              <Text style={styles.detailBody}>{entry.body || 'No content was saved for this reflection.'}</Text>
+              {entry.source && (
+                <View style={[styles.entrySource, { marginTop: Spacing.xl }]}>
+                  <Ionicons name="book-outline" size={13} color={`${Colors.accent.primary}B3`} />
+                  <Text style={styles.entrySourceText}>{entry.source}</Text>
+                </View>
+              )}
+            </ScrollView>
+          </View>
+        )}
+      </View>
+    </Modal>
+  );
+}
+
 // ── New-reflection sheet ─────────────────────────────────────────────
 const SHEET_MOODS = [
   { id: 'Grateful',    label: 'GRATEFUL' },
@@ -155,8 +237,45 @@ function NewReflectionModal({ visible, onClose, onSave }: {
   const [titleText, setTitleText] = useState('');
   const [bodyText, setBodyText] = useState('');
   const [selectedMood, setSelectedMood] = useState<string | null>(null);
+  const [keyboardVisible, setKeyboardVisible] = useState(false);
   const insets = useSafeAreaInsets();
   const bodyRef = useRef<TextInput>(null);
+  const reduceMotion = useReduceMotion();
+
+  const activeMood = SHEET_MOODS.find((m) => m.id === selectedMood);
+  const themeColor = activeMood?.color || COMPOSE_ACCENT;
+
+  // Reclaim vertical space for the title/body inputs while the keyboard is
+  // up by collapsing the MOOD row — it's only needed before/after typing;
+  // the mood is already visible everywhere else (border, title, Save button
+  // all themed to it), so hiding the picker itself loses no information.
+  useEffect(() => {
+    const showEvt = Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow';
+    const hideEvt = Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide';
+    const onShow = () => {
+      if (!reduceMotion) LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+      setKeyboardVisible(true);
+    };
+    const onHide = () => {
+      if (!reduceMotion) LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+      setKeyboardVisible(false);
+    };
+    const showSub = Keyboard.addListener(showEvt, onShow);
+    const hideSub = Keyboard.addListener(hideEvt, onHide);
+    return () => {
+      showSub.remove();
+      hideSub.remove();
+    };
+  }, [reduceMotion]);
+
+  const handleSelectMood = (id: string) => {
+    // easeInEaseOut, not a spring/bounce preset — the capsule's icon→label
+    // expand should read as one smooth resize, not settle with an overshoot.
+    // Skipped entirely under reduce-motion: the capsule just jumps to its
+    // new size instead of resizing.
+    if (!reduceMotion) LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+    setSelectedMood((prev) => (prev === id ? null : id));
+  };
 
   const handleSave = () => {
     if (!bodyText.trim()) return;
@@ -170,14 +289,27 @@ function NewReflectionModal({ visible, onClose, onSave }: {
   return (
     <Modal
       visible={visible}
-      animationType="slide"
+      animationType="none"
       transparent
       onRequestClose={onClose}
-      onShow={() => setTimeout(() => bodyRef.current?.focus(), 100)}
+      onShow={() => bodyRef.current?.focus()}
     >
+      {/*
+        `behavior="padding"` on both platforms is deliberate, not a leftover
+        dead ternary — Android's windowSoftInputMode adjustResize does NOT
+        apply here because a transparent Modal renders in its own Dialog
+        window, separate from the Activity, so nothing repositions this sheet
+        unless KeyboardAvoidingView does it itself. (An earlier pass here
+        swapped Android to `undefined` on the theory that adjustResize would
+        handle it — it doesn't for Modal content, and that left the keyboard
+        simply covering the bottom of the sheet with nothing pushing it up.)
+        The mood-row illegibility bug was actually caused by animationType
+        "slide" racing a setTimeout-delayed auto-focus, not by this line —
+        fixed below via animationType="none" and an immediate, un-delayed focus.
+      */}
       <KeyboardAvoidingView
         style={styles.sheetWrap}
-        behavior={Platform.OS === 'ios' ? 'padding' : 'padding'}
+        behavior="padding"
         keyboardVerticalOffset={0}
       >
         {/* Tappable backdrop — sits behind the sheet */}
@@ -189,10 +321,15 @@ function NewReflectionModal({ visible, onClose, onSave }: {
           accessibilityLabel="Dismiss new reflection"
         />
 
-        <View style={[styles.sheet, { paddingBottom: Math.max(insets.bottom, Spacing.lg) + Spacing.sm }]}>
+        <View style={[styles.sheet, { borderColor: `${themeColor}30`, paddingBottom: insets.bottom + Spacing.md }]}>
+          <LinearGradient
+            colors={[`${themeColor}14`, 'transparent']}
+            style={[StyleSheet.absoluteFill, { borderTopLeftRadius: BorderRadius.xxl, borderTopRightRadius: BorderRadius.xxl }]}
+            pointerEvents="none"
+          />
           <View style={styles.sheetHandle} />
           <View style={styles.sheetHeader}>
-            <Text style={styles.sheetTitle}>NEW REFLECTION</Text>
+            <Text style={[styles.sheetTitle, { color: themeColor }]}>NEW REFLECTION</Text>
             <TouchableOpacity
               onPress={onClose}
               style={styles.sheetClose}
@@ -204,41 +341,51 @@ function NewReflectionModal({ visible, onClose, onSave }: {
             </TouchableOpacity>
           </View>
 
-          <Text style={styles.sheetSectionLabel}>MOOD</Text>
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.moodChipsRow}
-            keyboardShouldPersistTaps="handled"
-          >
-            {SHEET_MOODS.map((m) => {
-              const active = selectedMood === m.id;
-              return (
-                <TouchableOpacity
-                  key={m.id}
-                  onPress={() => setSelectedMood(active ? null : m.id)}
-                  activeOpacity={0.85}
-                  style={[
-                    styles.moodChip,
-                    {
-                      borderColor: active ? m.color : Colors.glass.border,
-                      backgroundColor: active ? `${m.color}16` : Colors.glass.light,
-                    },
-                  ]}
-                  accessibilityRole="button"
-                  accessibilityLabel={m.label}
-                  accessibilityState={{ selected: active }}
-                >
-                  <Ionicons name={m.icon as any} size={14} color={m.color} />
-                  <Text style={[styles.moodChipLabel, { color: m.color }]}>
-                    {m.label}
-                  </Text>
-                </TouchableOpacity>
-              );
-            })}
-          </ScrollView>
+          {/* Collapsed while the keyboard is up (see the effect above) to give
+              the title/body inputs the space they actually need — the chosen
+              mood stays visible everywhere else in the sheet's theming. */}
+          {!keyboardVisible && (
+            <>
+              <Text style={styles.sheetSectionLabel}>MOOD</Text>
+              <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={styles.moodChipsRow}
+                keyboardShouldPersistTaps="handled"
+              >
+                {SHEET_MOODS.map((m) => {
+                  const active = selectedMood === m.id;
+                  return (
+                    <TouchableOpacity
+                      key={m.id}
+                      onPress={() => handleSelectMood(m.id)}
+                      activeOpacity={0.85}
+                      style={[
+                        styles.moodCapsule,
+                        {
+                          borderColor: active ? m.color : `${m.color}40`,
+                          backgroundColor: active ? m.color : `${m.color}1F`,
+                        },
+                      ]}
+                      accessibilityRole="button"
+                      accessibilityLabel={m.label}
+                      accessibilityState={{ selected: active }}
+                    >
+                      <Ionicons name={m.icon as any} size={16} color={active ? '#FFFFFF' : m.color} />
+                      {active && (
+                        <Text style={styles.moodCapsuleLabel}>{m.label}</Text>
+                      )}
+                    </TouchableOpacity>
+                  );
+                })}
+              </ScrollView>
+            </>
+          )}
 
-          {/* Inputs in a vertical scroll so they stay visible above the keyboard */}
+          {/* Inputs in a vertical scroll; Save stays outside this scroll so
+              it's always pinned at the bottom of the sheet — which itself
+              sits above the keyboard via the KeyboardAvoidingView above —
+              instead of requiring a scroll to reach it. */}
           <ScrollView
             keyboardShouldPersistTaps="handled"
             showsVerticalScrollIndicator={false}
@@ -246,9 +393,9 @@ function NewReflectionModal({ visible, onClose, onSave }: {
             contentContainerStyle={styles.sheetScrollContent}
           >
             <TextInput
-              style={styles.sheetTitleInput}
+              style={[styles.sheetTitleInput, { color: themeColor }]}
               placeholder="TITLE…"
-              placeholderTextColor={`${Colors.text.primary}38`}
+              placeholderTextColor={`${themeColor}55`}
               value={titleText}
               onChangeText={setTitleText}
               returnKeyType="next"
@@ -257,7 +404,7 @@ function NewReflectionModal({ visible, onClose, onSave }: {
             />
             <TextInput
               ref={bodyRef}
-              style={styles.sheetBodyInput}
+              style={[styles.sheetBodyInput, keyboardVisible && { minHeight: 90 }]}
               placeholder="Write freely… this space is private, sacred, and only yours."
               placeholderTextColor={`${Colors.text.secondary}59`}
               value={bodyText}
@@ -265,18 +412,23 @@ function NewReflectionModal({ visible, onClose, onSave }: {
               multiline
               textAlignVertical="top"
             />
-            <TouchableOpacity
-              onPress={handleSave}
-              disabled={!bodyText.trim()}
-              activeOpacity={0.9}
-              style={[styles.sheetSaveBtn, !bodyText.trim() && { opacity: 0.4 }]}
-              accessibilityRole="button"
-              accessibilityLabel="Save reflection"
-              accessibilityState={{ disabled: !bodyText.trim() }}
-            >
-              <Text style={styles.sheetSaveText}>SAVE REFLECTION</Text>
-            </TouchableOpacity>
           </ScrollView>
+
+          <TouchableOpacity
+            onPress={handleSave}
+            disabled={!bodyText.trim()}
+            activeOpacity={0.9}
+            style={[
+              styles.sheetSaveBtn,
+              { backgroundColor: themeColor, shadowColor: themeColor },
+              !bodyText.trim() && { opacity: 0.4 },
+            ]}
+            accessibilityRole="button"
+            accessibilityLabel="Save reflection"
+            accessibilityState={{ disabled: !bodyText.trim() }}
+          >
+            <Text style={styles.sheetSaveText}>SAVE REFLECTION</Text>
+          </TouchableOpacity>
         </View>
       </KeyboardAvoidingView>
     </Modal>
@@ -288,6 +440,7 @@ export default function ReflectionHistoryScreen() {
   const insets = useSafeAreaInsets();
   const [reflections, setReflections] = useState<JournalEntry[]>([]);
   const [showModal, setShowModal] = useState(false);
+  const [selectedEntry, setSelectedEntry] = useState<JournalEntry | null>(null);
   const headerOpacity = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
@@ -317,10 +470,16 @@ export default function ReflectionHistoryScreen() {
 
       // No title is stored for verse-linked reflections — derive one from the
       // mood rather than inventing poetic copy the data doesn't back up.
+      // `reflection` can be blank (older saves, or a bookmark with no typed
+      // note) — falling back to the verse's own English translation (not
+      // primaryText, which is often a Latin-script transliteration and no
+      // more readable than a blank card) means the card always shows
+      // something the user can actually understand instead of a blank
+      // preview under a title that's just "Grateful Reflection".
       const verseEntries: JournalEntry[] = saved.map((r) => ({
         id: r.id,
         title: r.mood ? `${r.mood} Reflection` : 'Reflection',
-        body: r.reflection,
+        body: r.reflection?.trim() || r.englishTranslation || '',
         mood: r.mood,
         createdAt: r.timestamp,
         source: r.source,
@@ -421,7 +580,7 @@ export default function ReflectionHistoryScreen() {
         ) : (
           <View style={styles.entriesList}>
             {reflections.map((r, i) => (
-              <ReflectionCard key={r.id} entry={r} index={i} />
+              <ReflectionCard key={r.id} entry={r} index={i} onPress={() => setSelectedEntry(r)} />
             ))}
           </View>
         )}
@@ -432,6 +591,7 @@ export default function ReflectionHistoryScreen() {
         onClose={() => setShowModal(false)}
         onSave={handleSaveReflection}
       />
+      <ReflectionDetailModal entry={selectedEntry} onClose={() => setSelectedEntry(null)} />
     </View>
   );
 }
@@ -563,6 +723,17 @@ const styles = StyleSheet.create({
     fontFamily: Typography.fonts.serif,
     letterSpacing: 0.3,
   },
+  detailHeaderLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.sm,
+    flexShrink: 1,
+  },
+  detailBody: {
+    fontSize: Typography.sizes.body - 1,
+    color: Colors.text.primary,
+    lineHeight: 24,
+  },
 
   // ── Empty state ──────────────────────────────────────────────────
   emptyState: { alignItems: 'center', paddingTop: 60, gap: Spacing.md },
@@ -605,7 +776,11 @@ const styles = StyleSheet.create({
     elevation: 20,
     maxHeight: '90%',
   },
+  // flexGrow: 0 is deliberate, not redundant with flexShrink — pinned here so
+  // this ScrollView can never expand past its own content height and leave
+  // dead space between the inputs and the Save button below it.
   sheetScrollArea: {
+    flexGrow: 0,
     flexShrink: 1,
   },
   sheetScrollContent: {
@@ -648,20 +823,25 @@ const styles = StyleSheet.create({
     paddingRight: Spacing.xs,
     marginBottom: Spacing.xl,
   },
-  moodChip: {
+  // Icon-only circle by default (~36pt, near-square via symmetric padding);
+  // gains a label + extra horizontal padding only once selected, and
+  // LayoutAnimation (see handleSelectMood) animates that width change.
+  moodCapsule: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
     gap: Spacing.sm,
-    paddingHorizontal: Spacing.md,
-    paddingVertical: Spacing.sm + 2,
-    borderRadius: BorderRadius.md,
+    height: 36,
+    paddingHorizontal: Spacing.sm + 2,
+    borderRadius: BorderRadius.full,
     borderWidth: 1,
   },
-  moodChipLabel: {
+  moodCapsuleLabel: {
     fontSize: Typography.sizes.detail,
     fontWeight: '700',
     letterSpacing: 0.5,
     fontFamily: Typography.fonts.serif,
+    color: '#FFFFFF',
   },
   sheetTitleInput: {
     fontSize: Typography.sizes.small,
@@ -689,14 +869,15 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.md,
     paddingTop: Spacing.md,
     paddingBottom: Spacing.md,
-    marginBottom: Spacing.lg,
+    marginBottom: Spacing.md,
   },
   sheetSaveBtn: {
     backgroundColor: Colors.accent.primary,
     borderRadius: BorderRadius.md,
-    paddingVertical: Spacing.md + 2,
+    paddingVertical: Spacing.sm + 4,
     alignItems: 'center',
     justifyContent: 'center',
+    marginTop: Spacing.sm,
     shadowColor: Colors.accent.primary,
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.35,
