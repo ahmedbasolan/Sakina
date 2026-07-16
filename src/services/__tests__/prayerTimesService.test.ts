@@ -96,7 +96,7 @@ describe('PrayerTimesService.getTimingsByCoordinates', () => {
 
   it('fetches the Hijri date from the location-independent gToH endpoint', async () => {
     const result = await service.getTimingsByCoordinates(25.20, 55.27, 'AE');
-    expect(mockedAxios.get).toHaveBeenCalledWith('https://api.aladhan.com/v1/gToH/30-06-2026');
+    expect(mockedAxios.get).toHaveBeenCalledWith('https://api.aladhan.com/v1/gToH/30-06-2026', { timeout: 10000 });
     expect(result.date.hijri.month.en).toBe('Muharram');
   });
 
