@@ -206,6 +206,55 @@ describe('useGuidanceLogic — reflections', () => {
     expect(HapticsService.notificationAsync).toHaveBeenCalledWith('WARNING');
   });
 
+  it('reverts to dirty and fires a WARNING haptic when the save promise rejects', async () => {
+    const onSaveReflection = jest.fn(() => Promise.reject(new Error('boom')));
+    const { result } = renderReflections(baseExperience, onSaveReflection);
+
+    act(() => {
+      result.current.setReflectionText('A private reflection');
+    });
+
+    await act(async () => {
+      await result.current.saveReflection();
+    });
+
+    expect(result.current.reflectionStatus).toBe('dirty');
+    const { HapticsService } = require('../../services/hapticsService');
+    expect(HapticsService.notificationAsync).toHaveBeenCalledWith('WARNING');
+  });
+
+  it('treats a resolved undefined as success (backward-compat with the pre-Task-4 caller signature)', async () => {
+    const onSaveReflection = jest.fn(() => Promise.resolve(undefined));
+    const { result } = renderReflections(baseExperience, onSaveReflection);
+
+    act(() => {
+      result.current.setReflectionText('A private reflection');
+    });
+
+    await act(async () => {
+      await result.current.saveReflection();
+    });
+
+    expect(result.current.reflectionStatus).toBe('saved');
+  });
+
+  it('ignores a second saveReflection call while the first is still in flight', async () => {
+    const onSaveReflection = jest.fn(() => Promise.resolve(true));
+    const { result } = renderReflections(baseExperience, onSaveReflection);
+
+    act(() => {
+      result.current.setReflectionText('A private reflection');
+    });
+
+    await act(async () => {
+      const first = result.current.saveReflection();
+      const second = result.current.saveReflection();
+      await Promise.all([first, second]);
+    });
+
+    expect(onSaveReflection).toHaveBeenCalledTimes(1);
+  });
+
   it('editing after a save returns status to dirty', async () => {
     const onSaveReflection = jest.fn(() => Promise.resolve(true));
     const { result } = renderReflections(baseExperience, onSaveReflection);
