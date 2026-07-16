@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { useRef, MutableRefObject } from 'react';
 import { PanResponder, Animated } from 'react-native';
 import { HapticsService } from '../services/hapticsService';
 
@@ -11,6 +11,16 @@ interface UseSwipeGestureOptions {
    * Default: 50.
    */
   threshold?: number;
+  /**
+   * When `.current` is true, the gesture never claims the responder at all
+   * — e.g. while a sibling TextInput is focused, so a word-selection drag
+   * can't be mistaken for a swipe. A ref rather than a boolean prop
+   * deliberately: flipping it doesn't need to re-create this hook's PanResponder
+   * or force the consuming screen to re-render (which on Android was
+   * observed to interrupt the OS's keyboard-show animation when toggled via
+   * React state at the exact moment a TextInput gained focus).
+   */
+  disabledRef?: MutableRefObject<boolean>;
 }
 
 /**
@@ -26,7 +36,7 @@ interface UseSwipeGestureOptions {
  * - `swipeAnim` tracks 0→1 proportionally so SwipeNextOverlay can give
  *   live visual feedback during the drag.
  */
-export function useSwipeGesture({ onNext, threshold = 50 }: UseSwipeGestureOptions) {
+export function useSwipeGesture({ onNext, threshold = 50, disabledRef }: UseSwipeGestureOptions) {
   // Always holds the latest onNext without re-creating the PanResponder
   const onNextRef = useRef(onNext);
   onNextRef.current = onNext;
@@ -36,8 +46,9 @@ export function useSwipeGesture({ onNext, threshold = 50 }: UseSwipeGestureOptio
 
   const panResponder = useRef(
     PanResponder.create({
-      // Claim only clearly horizontal gestures
+      // Claim only clearly horizontal gestures, and never while disabled
       onMoveShouldSetPanResponder: (_, g) =>
+        !disabledRef?.current &&
         Math.abs(g.dx) > Math.abs(g.dy) * 1.5 && Math.abs(g.dx) > 12,
 
       onPanResponderMove: (_, g) => {

@@ -162,7 +162,15 @@ const GuidanceScreen: React.FC = () => {
   // editing — a word-selection drag inside the input is horizontal enough to
   // satisfy the swipe threshold below, which would otherwise silently
   // discard an unsaved reflection.
-  const [isReflectionInputFocused, setIsReflectionInputFocused] = useState(false);
+  //
+  // A ref, not useState: toggling this used to be React state, which
+  // re-rendered the whole screen (ImmersiveBackground, GoldenMotes, etc.) on
+  // every focus/blur. On Android that re-render landed at the exact moment
+  // the OS was showing the soft keyboard for the newly-focused TextInput and
+  // reliably swallowed it — tapping the reflection input focused it (cursor
+  // visible) but no keyboard ever appeared. useSwipeGesture's PanResponder
+  // reads this ref directly instead, so flipping it costs zero renders.
+  const isReflectionInputFocusedRef = useRef(false);
 
   // Swipe left → next verse.
   // Uses a horizontal-dominant threshold so it never conflicts with
@@ -172,6 +180,7 @@ const GuidanceScreen: React.FC = () => {
       requestNextRef.current();
     },
     threshold: 50,
+    disabledRef: isReflectionInputFocusedRef,
   });
 
   // Reset to verse layer whenever a new experience loads
@@ -183,11 +192,11 @@ const GuidanceScreen: React.FC = () => {
   // Belt-and-suspenders reset: React Native doesn't reliably fire a focused
   // TextInput's onBlur when it unmounts (e.g. advancing past the Context
   // layer while the reflection input is still focused), so relying on
-  // ContextLayer's onBlur alone can leave isReflectionInputFocused stuck
-  // true and silently kill swipe-to-next-verse. Clearing it whenever the
-  // context layer isn't active covers every exit path, not just a clean blur.
+  // ContextLayer's onBlur alone can leave the focus ref stuck true and
+  // silently kill swipe-to-next-verse. Clearing it whenever the context
+  // layer isn't active covers every exit path, not just a clean blur.
   useEffect(() => {
-    if (currentLayer !== 1) setIsReflectionInputFocused(false);
+    if (currentLayer !== 1) isReflectionInputFocusedRef.current = false;
   }, [currentLayer]);
 
   const hasContext = !!(experience?.content?.whyThis || experience?.angle?.angle);
@@ -333,7 +342,7 @@ const GuidanceScreen: React.FC = () => {
       />
 
       {/* Layer content — wrapped in swipe-left detector for "next verse" gesture */}
-      <View style={styles.gestureWrap} {...(isReflectionInputFocused ? {} : swipePanHandlers)}>
+      <View style={styles.gestureWrap} {...swipePanHandlers}>
         <SwipeNextOverlay
           animValue={swipeOverlayAnim}
           accentColor={(MoodColors[mood] || MoodColors.Calm).accent}
@@ -385,7 +394,9 @@ const GuidanceScreen: React.FC = () => {
               onReflectionChange={setReflectionText}
               reflectionStatus={reflectionStatus}
               onSaveReflectionPress={saveReflection}
-              onReflectionFocusChange={setIsReflectionInputFocused}
+              onReflectionFocusChange={(focused) => {
+                isReflectionInputFocusedRef.current = focused;
+              }}
             />
           )}
         </LayerContainer>
