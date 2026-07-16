@@ -37,6 +37,8 @@ jest.mock('../locationStorage', () => ({
   getUserLocation: jest.fn().mockResolvedValue(null),
 }));
 
+const mockedGetUserLocation = require('../locationStorage').getUserLocation as jest.Mock;
+
 const MOCK_HIJRI_RESPONSE = {
   code: 200,
   data: {
@@ -119,5 +121,76 @@ describe('PrayerTimesService.getTimingsByCoordinates', () => {
     const result = await service.getTimingsByCoordinates(51.50, -0.12, 'GB');
     expect(result.timings.Fajr).toMatch(/^\d{2}:\d{2}$/);
     expect(result.date.hijri.day).toBe('');
+  });
+});
+
+describe('PrayerTimesService.getCurrentPrayerContext', () => {
+  let service: PrayerTimesService;
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+    Object.keys(mockStore).forEach((k) => delete mockStore[k]);
+    (PrayerTimesService as any).instance = null;
+    service = PrayerTimesService.getInstance();
+    mockedGetUserLocation.mockResolvedValue(null);
+  });
+
+  // This call gates every RotationEngine.getGuidance delivery (every mood
+  // tap / "next verse"), so when GPS coordinates are on file it must resolve
+  // entirely on-device — no axios call, regardless of connectivity.
+  it('computes context locally from GPS coordinates without any network call', async () => {
+    mockedGetUserLocation.mockResolvedValue({ city: 'Dubai', country: 'AE', latitude: 25.20, longitude: 55.27 });
+
+    const context = await service.getCurrentPrayerContext();
+
+    expect(mockedAxios.get).not.toHaveBeenCalled();
+    expect(context).not.toBe('general');
+  });
+
+  it('falls back to the city-name network lookup when no coordinates are saved', async () => {
+    mockedGetUserLocation.mockResolvedValue({ city: 'Dubai', country: 'AE' });
+    mockedAxios.get.mockResolvedValue({
+      data: {
+        code: 200,
+        data: {
+          timings: { Fajr: '05:00', Sunrise: '06:20', Dhuhr: '12:10', Asr: '15:30', Maghrib: '18:40', Isha: '20:00' },
+        },
+      },
+    });
+
+    await service.getCurrentPrayerContext();
+
+    expect(mockedAxios.get).toHaveBeenCalledWith(
+      'https://api.aladhan.com/v1/timingsByCity',
+      expect.objectContaining({ params: expect.objectContaining({ city: 'Dubai', country: 'AE' }) }),
+    );
+  });
+
+  it('falls back to Dubai/UAE city lookup when no location was ever saved', async () => {
+    mockedGetUserLocation.mockResolvedValue(null);
+    mockedAxios.get.mockResolvedValue({
+      data: {
+        code: 200,
+        data: {
+          timings: { Fajr: '05:00', Sunrise: '06:20', Dhuhr: '12:10', Asr: '15:30', Maghrib: '18:40', Isha: '20:00' },
+        },
+      },
+    });
+
+    await service.getCurrentPrayerContext();
+
+    expect(mockedAxios.get).toHaveBeenCalledWith(
+      'https://api.aladhan.com/v1/timingsByCity',
+      expect.objectContaining({ params: expect.objectContaining({ city: 'Dubai', country: 'UAE' }) }),
+    );
+  });
+
+  it('returns "general" instead of throwing if the local computation fails unexpectedly', async () => {
+    mockedGetUserLocation.mockResolvedValue({ city: 'Nowhere', country: 'AE', latitude: NaN, longitude: NaN });
+
+    const context = await service.getCurrentPrayerContext();
+
+    expect(context).toBe('general');
+    expect(mockedAxios.get).not.toHaveBeenCalled();
   });
 });
