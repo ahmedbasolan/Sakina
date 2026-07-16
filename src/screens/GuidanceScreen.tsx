@@ -180,6 +180,16 @@ const GuidanceScreen: React.FC = () => {
     scrollY.setValue(0);
   }, [experience?.content?.id]);
 
+  // Belt-and-suspenders reset: React Native doesn't reliably fire a focused
+  // TextInput's onBlur when it unmounts (e.g. advancing past the Context
+  // layer while the reflection input is still focused), so relying on
+  // ContextLayer's onBlur alone can leave isReflectionInputFocused stuck
+  // true and silently kill swipe-to-next-verse. Clearing it whenever the
+  // context layer isn't active covers every exit path, not just a clean blur.
+  useEffect(() => {
+    if (currentLayer !== 1) setIsReflectionInputFocused(false);
+  }, [currentLayer]);
+
   const hasContext = !!(experience?.content?.whyThis || experience?.angle?.angle);
   const LAYER_TYPES: Array<'verse' | 'context'> = hasContext ? ['verse', 'context'] : ['verse'];
 
