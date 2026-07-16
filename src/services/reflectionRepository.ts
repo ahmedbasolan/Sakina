@@ -52,19 +52,39 @@ export class ReflectionRepository {
   ): Promise<void> {
     const safeReflection = reflection.slice(0, 1000);
     await dbQuery(async (db) => {
-      await db.runAsync(
-        `INSERT INTO saved_reflections
-           (id, contentId, angleId, mood, reflection, timestamp)
-         VALUES (?, ?, ?, ?, ?, ?)`,
-        [
-          `reflection_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-          contentId,
-          angleId,
-          mood,
-          safeReflection,
-          Date.now(),
-        ],
+      // Update the user's existing written reflection for this verse+angle
+      // rather than inserting a new row every time they edit and re-save —
+      // otherwise each resave left a stale duplicate behind in Reflection
+      // History. A bookmark-marker row (reflection = '', written by
+      // useGuidanceLogic's handleSave) is deliberately excluded here so this
+      // never repurposes it; that row's lifecycle is owned by the bookmark
+      // toggle, not by reflection saves.
+      const existing = await db.getFirstAsync<{ id: string }>(
+        `SELECT id FROM saved_reflections
+         WHERE contentId = ? AND angleId = ? AND reflection != ''
+         ORDER BY timestamp DESC LIMIT 1`,
+        [contentId, angleId],
       );
+      if (existing) {
+        await db.runAsync(
+          `UPDATE saved_reflections SET reflection = ?, mood = ?, timestamp = ? WHERE id = ?`,
+          [safeReflection, mood, Date.now(), existing.id],
+        );
+      } else {
+        await db.runAsync(
+          `INSERT INTO saved_reflections
+             (id, contentId, angleId, mood, reflection, timestamp)
+           VALUES (?, ?, ?, ?, ?, ?)`,
+          [
+            `reflection_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+            contentId,
+            angleId,
+            mood,
+            safeReflection,
+            Date.now(),
+          ],
+        );
+      }
     });
   }
 

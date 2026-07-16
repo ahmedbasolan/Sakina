@@ -292,6 +292,28 @@ describe('useGuidanceLogic — reflections', () => {
     expect(result.current.reflectionText).toBe('');
     expect(result.current.reflectionStatus).toBe('empty');
   });
+
+  it('resets reflection text when the same content recurs under a different angle', async () => {
+    const onSaveReflection = jest.fn(() => Promise.resolve(true));
+    const { result, rerender } = renderReflections(baseExperience, onSaveReflection);
+
+    act(() => {
+      result.current.setReflectionText('Written while viewing angle a1');
+    });
+    expect(result.current.reflectionStatus).toBe('dirty');
+
+    // Same content.id, but a different angle.id — content_angles holds
+    // multiple angles per verse, so this can legitimately recur mid-session.
+    const sameContentDifferentAngle = {
+      content: { id: 'c1', source: '', arabicText: '', englishTranslation: '' },
+      angle: { id: 'a2' },
+    };
+
+    rerender({ exp: sameContentDifferentAngle });
+
+    expect(result.current.reflectionText).toBe('');
+    expect(result.current.reflectionStatus).toBe('empty');
+  });
 });
 
 describe('useGuidanceLogic — handleSave bookmark cleanup', () => {
