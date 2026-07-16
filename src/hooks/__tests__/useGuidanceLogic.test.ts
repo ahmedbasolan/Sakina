@@ -293,3 +293,48 @@ describe('useGuidanceLogic — reflections', () => {
     expect(result.current.reflectionStatus).toBe('empty');
   });
 });
+
+describe('useGuidanceLogic — handleSave bookmark cleanup', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    const freemium = require('../../services/freemiumService').FreemiumService.getInstance();
+    freemium.getRemainingRefreshes.mockReturnValue(3);
+  });
+
+  afterEach(() => {
+    // Restore the module-level default so this custom implementation
+    // doesn't leak into other describe blocks in this file.
+    const { dbQuery } = require('../../database/schema');
+    (dbQuery as jest.Mock).mockImplementation(() => Promise.resolve(null));
+  });
+
+  it('unsaving a bookmark only deletes empty-reflection rows, not a written reflection', async () => {
+    const { dbQuery } = require('../../database/schema');
+    let capturedSql = '';
+    let capturedArgs: any[] = [];
+    (dbQuery as jest.Mock).mockImplementation(async (fn: any) => {
+      const db = {
+        runAsync: jest.fn((sql: string, args: any[]) => {
+          if (sql.includes('DELETE FROM saved_reflections')) {
+            capturedSql = sql;
+            capturedArgs = args;
+          }
+          return Promise.resolve();
+        }),
+      };
+      return fn(db);
+    });
+
+    const { result } = render('Calm', jest.fn());
+
+    await act(async () => {
+      await result.current.handleSave(0); // save (bookmark on)
+    });
+    await act(async () => {
+      await result.current.handleSave(0); // unsave (bookmark off)
+    });
+
+    expect(capturedSql).toContain("reflection = ''");
+    expect(capturedArgs).toEqual([experience.content.id, experience.angle.id]);
+  });
+});
