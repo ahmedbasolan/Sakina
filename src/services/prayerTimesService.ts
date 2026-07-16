@@ -243,22 +243,19 @@ class PrayerTimesService {
   }
 
   /**
-   * Computes prayer times by GPS coordinates using adhan.js — entirely
-   * on-device, no network call and no caching needed for the times
-   * themselves (a fresh, exact computation is as cheap as reading a cache).
-   * More accurate than city-name lookup because it skips a second geocoding
-   * step server-side; GPS coordinates go straight into the astronomical
-   * calculation. Only the Hijri calendar date (decorative/display-only,
-   * not itself computable from adhan.js) still touches the network, with
-   * its own day-keyed cache + stale fallback.
+   * Pure, synchronous prayer-timing computation from GPS coordinates via
+   * adhan.js — entirely on-device, no network call and no I/O. Shared by
+   * getTimingsByCoordinates (which layers the Hijri date on top for display)
+   * and getCurrentPrayerContext (which only needs the timings themselves and
+   * must never touch the network — it gates every guidance delivery).
    */
-  public async getTimingsByCoordinates(
+  private computeLocalTimings(
+    now: Date,
     lat: number,
     lon: number,
     country: string,
     madhab?: AsrMadhab,
-  ): Promise<PrayerTimesData> {
-    const now = new Date();
+  ): { timings: PrayerTimings; methodConfig: MethodConfig; timeZone: string } {
     const methodConfig = getMethodConfig(country);
     const coordinates = new Coordinates(lat, lon);
     const params = methodConfig.adhanMethod();
@@ -289,6 +286,28 @@ class PrayerTimesService {
       Maghrib: fmtTime(adhanTimes.maghrib),
       Isha: fmtTime(adhanTimes.isha),
     };
+
+    return { timings, methodConfig, timeZone };
+  }
+
+  /**
+   * Computes prayer times by GPS coordinates using adhan.js — entirely
+   * on-device, no network call and no caching needed for the times
+   * themselves (a fresh, exact computation is as cheap as reading a cache).
+   * More accurate than city-name lookup because it skips a second geocoding
+   * step server-side; GPS coordinates go straight into the astronomical
+   * calculation. Only the Hijri calendar date (decorative/display-only,
+   * not itself computable from adhan.js) still touches the network, with
+   * its own day-keyed cache + stale fallback.
+   */
+  public async getTimingsByCoordinates(
+    lat: number,
+    lon: number,
+    country: string,
+    madhab?: AsrMadhab,
+  ): Promise<PrayerTimesData> {
+    const now = new Date();
+    const { timings, methodConfig, timeZone } = this.computeLocalTimings(now, lat, lon, country, madhab);
 
     const hijri = await this.getHijriDate(now);
     const readable = new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }).format(now);
@@ -363,11 +382,31 @@ class PrayerTimesService {
 
   /**
    * Convenience method to get context without passing timings manually.
-   * Reads the user's saved location, falling back to London/UK.
+   * Reads the user's saved location, falling back to Dubai/UAE.
+   *
+   * This gates every RotationEngine.getGuidance call (every mood tap and
+   * "next verse"), so it must never depend on the network when it can be
+   * avoided. GPS coordinates are on file for the vast majority of users
+   * (onboarding's LocationCompass captures them) — when present, timings are
+   * computed locally via adhan.js with zero network I/O. Only when no
+   * coordinates were ever saved (manual city entry, or onboarding skipped)
+   * does this fall back to the city-name lookup, which is itself already
+   * timeout+retry+cached.
    */
   public async getCurrentPrayerContext(): Promise<PrayerContext> {
     try {
       const savedLocation = await getUserLocation();
+
+      if (savedLocation?.latitude !== undefined && savedLocation?.longitude !== undefined) {
+        const { timings } = this.computeLocalTimings(
+          new Date(),
+          savedLocation.latitude,
+          savedLocation.longitude,
+          savedLocation.country || 'UAE',
+        );
+        return this.determineContextFromTimings(timings);
+      }
+
       const city = savedLocation?.city || 'Dubai';
       const country = savedLocation?.country || 'UAE';
       const data = await this.getTimingsByCity(city, country);
