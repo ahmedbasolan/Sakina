@@ -44,17 +44,17 @@ function buildMandala(size, cx, cy, opacity) {
   const webs = steps.map((step) => ({
     d: generateStarWeb(12, step, OUTER_R, localCx, localCy),
     w: 0.27,
-    o: step === maxStep - 1 ? 0.34 : 0.24,
+    o: step === maxStep - 1 ? 0.15 : 0.1,
   }));
 
   const parts = [];
   parts.push(`<g transform="translate(${cx - size / 2},${cy - size / 2}) scale(${scale})" opacity="${opacity}" fill="none" stroke="${GOLD}" stroke-linejoin="round" stroke-linecap="round">`);
-  parts.push(`<circle cx="${localCx}" cy="${localCy}" r="${OUTER_R}" stroke-width="0.5" opacity="0.5"/>`);
+  parts.push(`<circle cx="${localCx}" cy="${localCy}" r="${OUTER_R}" stroke-width="0.5" opacity="0.6"/>`);
   for (const web of webs) {
     parts.push(`<path d="${web.d}" stroke-width="${web.w}" opacity="${web.o}"/>`);
   }
-  parts.push(`<circle cx="${localCx}" cy="${localCy}" r="${OUTER_R * 0.5}" stroke-width="0.24" opacity="0.2"/>`);
-  parts.push(`<circle cx="${localCx}" cy="${localCy}" r="${OUTER_R * 0.18}" stroke-width="0.5" opacity="0.5"/>`);
+  parts.push(`<circle cx="${localCx}" cy="${localCy}" r="${OUTER_R * 0.5}" stroke-width="0.24" opacity="0.3"/>`);
+  parts.push(`<circle cx="${localCx}" cy="${localCy}" r="${OUTER_R * 0.18}" stroke-width="0.5" opacity="0.6"/>`);
   parts.push('</g>');
   return parts.join('');
 }
@@ -105,7 +105,7 @@ const svg = `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" xmlns="http
 </defs>
 <rect x="0" y="0" width="${W}" height="${H}" fill="url(#bgGrad)"/>
 ${buildStars(STARS)}
-${buildMandala(760, W / 2, H * 0.42, 0.5)}
+${buildMandala(760, W / 2, H * 0.42, 0.35)}
 </svg>
 `;
 
