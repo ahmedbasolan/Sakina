@@ -118,3 +118,129 @@ describe('useGuidanceLogic — refresh gating', () => {
     expect(result.current.isResting).toBe(false);
   });
 });
+
+describe('useGuidanceLogic — reflections', () => {
+  const baseExperience: any = {
+    content: { id: 'c1', source: '', arabicText: '', englishTranslation: '' },
+    angle: { id: 'a1' },
+  };
+
+  const renderReflections = (experience: any, onSaveReflection: jest.Mock) =>
+    renderHook(
+      // `Props` is annotated explicitly here (rather than left to inference)
+      // because @testing-library/react-native@13's `renderHook` wraps the
+      // `initialProps` option type in `NoInfer<Props>`, so an unannotated
+      // destructured callback parameter resolves to `unknown` and fails
+      // `tsc --noEmit`, even though Jest (which only transpiles) doesn't
+      // catch it. Purely a type annotation — no behavior change.
+      ({ exp }: { exp: any }) => useGuidanceLogic(exp, 'Calm', jest.fn(), onSaveReflection, 1),
+      { initialProps: { exp: experience } },
+    );
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+    const freemium = require('../../services/freemiumService').FreemiumService.getInstance();
+    freemium.getRemainingRefreshes.mockReturnValue(3);
+  });
+
+  it('starts empty with no reflection text', () => {
+    const { result } = renderReflections(baseExperience, jest.fn());
+    expect(result.current.reflectionStatus).toBe('empty');
+  });
+
+  it('marks status dirty once text is typed', () => {
+    const { result } = renderReflections(baseExperience, jest.fn());
+
+    act(() => {
+      result.current.setReflectionText('This means a lot to me');
+    });
+
+    expect(result.current.reflectionStatus).toBe('dirty');
+  });
+
+  it('does nothing when saveReflection is called with empty text', async () => {
+    const onSaveReflection = jest.fn(() => Promise.resolve(true));
+    const { result } = renderReflections(baseExperience, onSaveReflection);
+
+    await act(async () => {
+      await result.current.saveReflection();
+    });
+
+    expect(onSaveReflection).not.toHaveBeenCalled();
+    expect(result.current.reflectionStatus).toBe('empty');
+  });
+
+  it('saveReflection commits text and marks status saved', async () => {
+    const onSaveReflection = jest.fn(() => Promise.resolve(true));
+    const { result } = renderReflections(baseExperience, onSaveReflection);
+
+    act(() => {
+      result.current.setReflectionText('A private reflection');
+    });
+
+    await act(async () => {
+      await result.current.saveReflection();
+    });
+
+    expect(onSaveReflection).toHaveBeenCalledWith('A private reflection');
+    expect(result.current.reflectionStatus).toBe('saved');
+
+    const { HapticsService } = require('../../services/hapticsService');
+    expect(HapticsService.notificationAsync).toHaveBeenCalledWith('SUCCESS');
+  });
+
+  it('reverts to dirty and fires a WARNING haptic when the save fails', async () => {
+    const onSaveReflection = jest.fn(() => Promise.resolve(false));
+    const { result } = renderReflections(baseExperience, onSaveReflection);
+
+    act(() => {
+      result.current.setReflectionText('A private reflection');
+    });
+
+    await act(async () => {
+      await result.current.saveReflection();
+    });
+
+    expect(result.current.reflectionStatus).toBe('dirty');
+    const { HapticsService } = require('../../services/hapticsService');
+    expect(HapticsService.notificationAsync).toHaveBeenCalledWith('WARNING');
+  });
+
+  it('editing after a save returns status to dirty', async () => {
+    const onSaveReflection = jest.fn(() => Promise.resolve(true));
+    const { result } = renderReflections(baseExperience, onSaveReflection);
+
+    act(() => {
+      result.current.setReflectionText('First draft');
+    });
+    await act(async () => {
+      await result.current.saveReflection();
+    });
+    expect(result.current.reflectionStatus).toBe('saved');
+
+    act(() => {
+      result.current.setReflectionText('First draft, revised');
+    });
+    expect(result.current.reflectionStatus).toBe('dirty');
+  });
+
+  it('resets reflection text and status when the experience changes', async () => {
+    const onSaveReflection = jest.fn(() => Promise.resolve(true));
+    const { result, rerender } = renderReflections(baseExperience, onSaveReflection);
+
+    act(() => {
+      result.current.setReflectionText('Something written for verse 1');
+    });
+    expect(result.current.reflectionStatus).toBe('dirty');
+
+    const nextExperience = {
+      content: { id: 'c2', source: '', arabicText: '', englishTranslation: '' },
+      angle: { id: 'a2' },
+    };
+
+    rerender({ exp: nextExperience });
+
+    expect(result.current.reflectionText).toBe('');
+    expect(result.current.reflectionStatus).toBe('empty');
+  });
+});
