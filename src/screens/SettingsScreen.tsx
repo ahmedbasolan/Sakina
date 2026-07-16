@@ -341,6 +341,15 @@ export default function SettingsScreen() {
   return (
     <LinearGradient colors={Colors.celestialWash} style={styles.container}>
       <View style={[styles.header, { paddingTop: Math.max(insets.top, Spacing.xl) }]}>
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          style={styles.backButton}
+          hitSlop={{ top: 12, right: 12, bottom: 12, left: 12 }}
+          accessibilityRole="button"
+          accessibilityLabel="Go back"
+        >
+          <Ionicons name="chevron-back" size={22} color={Colors.text.primary} />
+        </TouchableOpacity>
         <Text style={styles.headerTitle}>Settings</Text>
       </View>
 
@@ -515,10 +524,19 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.sm,
     paddingHorizontal: Spacing.xl,
     paddingBottom: Spacing.lg,
     borderBottomWidth: 1,
     borderBottomColor: 'rgba(255,255,255,0.05)',
+  },
+  backButton: {
+    width: 44,
+    height: 44,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   headerTitle: {
     fontSize: Typography.sizes.h1,
