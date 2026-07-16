@@ -183,13 +183,13 @@ const retry = async <T>(
   throw lastError!;
 };
 
-const withTimeout = <T>(
-  promise: Promise<T>,
+export const withTimeout = <T>(
+  promise: PromiseLike<T>,
   timeoutMs: number
 ): Promise<T> => {
   return Promise.race([
     promise,
-    new Promise<never>((_, reject) => 
+    new Promise<never>((_, reject) =>
       setTimeout(() => reject(new Error('Operation timed out')), timeoutMs)
     )
   ]);
