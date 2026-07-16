@@ -334,49 +334,60 @@ const ShareSheet = ({ isVisible, onClose, isPremium, onUpgrade, content }: Share
           >
             {/* PREVIEW CARD — captured verbatim by ViewShot for the real
                 share/save image, so whatever renders here (gradient or
-                premium photo) is exactly what gets sent. */}
-            <ViewShot ref={viewShotRef} options={{ format: 'png', quality: 1 }}>
-              {background.kind === 'photo' ? (
-                <ImageBackground
-                  source={background.imageSource}
-                  style={styles.previewCard}
-                  imageStyle={styles.previewCardImage}
-                >
+                premium photo) is exactly what gets sent.
+                The drop shadow lives on this OUTER wrapper, not on the card
+                itself: Android can't reliably combine `elevation` with
+                `overflow:'hidden'` + `borderRadius` on the same view — the
+                clip and the shadow fight, and the shadow's own rounded-rect
+                backing shows through past the image's corners. Keeping the
+                shadow on a plain, non-clipping wrapper and the corner
+                clipping on the inner card (which ViewShot captures alone,
+                so the exported image never bakes the shadow in) fixes both
+                at once. */}
+            <View style={styles.previewCardShadow}>
+              <ViewShot ref={viewShotRef} options={{ format: 'png', quality: 1 }}>
+                {background.kind === 'photo' ? (
+                  <ImageBackground
+                    source={background.imageSource}
+                    style={styles.previewCard}
+                    imageStyle={styles.previewCardImage}
+                  >
+                    <LinearGradient
+                      colors={['transparent', 'rgba(0,0,0,0.65)']}
+                      style={StyleSheet.absoluteFillObject}
+                    />
+                    <CardContent
+                      textColor={textColor}
+                      subTextColor={subTextColor}
+                      content={content}
+                      parsedSource={parsedSource}
+                      selectedFont={selectedFont}
+                      showArabic={showArabic}
+                      showTransliteration={showTransliteration}
+                      showEnglish={showEnglish}
+                    />
+                  </ImageBackground>
+                ) : (
                   <LinearGradient
-                    colors={['transparent', 'rgba(0,0,0,0.65)']}
-                    style={StyleSheet.absoluteFillObject}
-                  />
-                  <CardContent
-                    textColor={textColor}
-                    subTextColor={subTextColor}
-                    content={content}
-                    parsedSource={parsedSource}
-                    selectedFont={selectedFont}
-                    showArabic={showArabic}
-                    showTransliteration={showTransliteration}
-                    showEnglish={showEnglish}
-                  />
-                </ImageBackground>
-              ) : (
-                <LinearGradient
-                  colors={background.colors}
-                  start={{ x: 0, y: 0 }}
-                  end={{ x: 1, y: 1 }}
-                  style={styles.previewCard}
-                >
-                  <CardContent
-                    textColor={textColor}
-                    subTextColor={subTextColor}
-                    content={content}
-                    parsedSource={parsedSource}
-                    selectedFont={selectedFont}
-                    showArabic={showArabic}
-                    showTransliteration={showTransliteration}
-                    showEnglish={showEnglish}
-                  />
-                </LinearGradient>
-              )}
-            </ViewShot>
+                    colors={background.colors}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 1 }}
+                    style={styles.previewCard}
+                  >
+                    <CardContent
+                      textColor={textColor}
+                      subTextColor={subTextColor}
+                      content={content}
+                      parsedSource={parsedSource}
+                      selectedFont={selectedFont}
+                      showArabic={showArabic}
+                      showTransliteration={showTransliteration}
+                      showEnglish={showEnglish}
+                    />
+                  </LinearGradient>
+                )}
+              </ViewShot>
+            </View>
 
             {/* PERSONALIZE - COLORS */}
             <View style={styles.personalizeSection}>
@@ -614,6 +625,17 @@ const styles = StyleSheet.create({
     marginTop: 12,
     marginBottom: 24,
   },
+  // Shadow only — no overflow/borderRadius-vs-elevation conflict here since
+  // this view clips nothing. See the comment at the call site.
+  previewCardShadow: {
+    borderRadius: 24,
+    marginBottom: 32,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.4,
+    shadowRadius: 16,
+    elevation: 12,
+  },
   previewCard: {
     width: '100%',
     minHeight: 300,
@@ -623,12 +645,6 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.xxl,
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginBottom: 32,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.4,
-    shadowRadius: 16,
-    elevation: 12,
   },
   previewCardImage: {
     borderRadius: 24,
