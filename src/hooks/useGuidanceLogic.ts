@@ -25,12 +25,27 @@ export const useGuidanceLogic = (
   experience: GuidanceExperience,
   mood: Mood,
   onNext: () => void | boolean | Promise<void | boolean>,
-  onSaveReflection: (reflection: string) => void,
+  onSaveReflection: (reflection: string) => void | boolean | Promise<void | boolean>,
   cardsCount: number,
 ) => {
   const [savedStates, setSavedStates] = useState<Record<number, boolean>>({});
-  const [showReflectionInput, setShowReflectionInput] = useState(false);
-  const [reflectionText, setReflectionText] = useState('');
+  const [reflectionText, setReflectionTextState] = useState('');
+  const [reflectionSaved, setReflectionSaved] = useState(false);
+
+  // Any edit — including editing back to the previously-saved text — marks
+  // the reflection dirty again. Simpler and more predictable than diffing
+  // against the last-saved string.
+  const setReflectionText = (text: string) => {
+    setReflectionTextState(text);
+    setReflectionSaved(false);
+  };
+
+  const reflectionStatus: 'empty' | 'dirty' | 'saved' = !reflectionText.trim()
+    ? 'empty'
+    : reflectionSaved
+      ? 'saved'
+      : 'dirty';
+
   const [isShareSheetVisible, setIsShareSheetVisible] = useState(false);
   const [shareContent, setShareContent] = useState({
     text: '',
@@ -75,6 +90,8 @@ export const useGuidanceLogic = (
   // Reset heart state whenever a new piece of content loads
   useEffect(() => {
     setSavedStates({});
+    setReflectionTextState('');
+    setReflectionSaved(false);
   }, [experience?.content?.id]);
 
   // Sync the per-prayer-window allowance, then reflect the remaining count.
@@ -223,22 +240,20 @@ export const useGuidanceLogic = (
     setIsResting(false);
   };
 
-  const handlePrimaryAction = async () => {
+  // Explicit, deliberate save — the user taps "Save reflection" rather than
+  // this firing automatically on advance/leave. Optimistic UI (mirrors
+  // handleSave's bookmark toggle above): flip to "saved" immediately for
+  // instant feedback, then revert + warn only if the save actually failed.
+  const saveReflection = async () => {
+    const text = reflectionText;
+    if (!text.trim()) return;
     HapticsService.notificationAsync('SUCCESS');
-    if (reflectionText.trim()) {
-      onSaveReflection(reflectionText);
+    setReflectionSaved(true);
+    const succeeded = (await onSaveReflection(text)) !== false;
+    if (!succeeded) {
+      setReflectionSaved(false);
+      HapticsService.notificationAsync('WARNING');
     }
-    const advanced = await requestNext();
-    if (!advanced) return; // resting — don't reset scroll/buttons
-
-    setActiveIndex(0);
-
-    if (scrollViewRef.current) {
-      scrollViewRef.current.scrollTo({ y: 0, animated: true });
-    }
-
-    nextButtonScale.setValue(0);
-    nextButtonOpacity.setValue(0);
   };
 
   const onScroll = (event: any) => {
@@ -273,10 +288,10 @@ export const useGuidanceLogic = (
 
   return {
     savedStates,
-    showReflectionInput,
-    setShowReflectionInput,
     reflectionText,
     setReflectionText,
+    reflectionStatus,
+    saveReflection,
     isShareSheetVisible,
     setIsShareSheetVisible,
     shareContent,
@@ -292,7 +307,6 @@ export const useGuidanceLogic = (
     scrollViewRef,
     handleSave,
     handleShare,
-    handlePrimaryAction,
     onScroll,
     preferences,
     updatePreference,
