@@ -78,7 +78,7 @@ const GuidanceScreen: React.FC = () => {
     return false;
   };
 
-  const onSaveReflection = async (reflection: string) => {
+  const onSaveReflection = async (reflection: string): Promise<boolean> => {
     try {
       await rotationEngine.saveReflection(
         experience.content.id,
@@ -86,12 +86,14 @@ const GuidanceScreen: React.FC = () => {
         mood,
         reflection,
       );
+      return true;
     } catch (error) {
       logServiceError(
         'GuidanceScreen',
         'handleSaveReflection',
         error instanceof Error ? error : new Error(String(error)),
       );
+      return false;
     }
   };
 
@@ -155,6 +157,13 @@ const GuidanceScreen: React.FC = () => {
   // PanResponder always calls the current closure (mirrors currentLayerRef).
   const requestNextRef = useRef<() => void>(() => {});
 
+  // Tracks focus on the Context layer's reflection TextInput so the swipe-
+  // to-next-verse gesture can be suppressed while the user is actively
+  // editing — a word-selection drag inside the input is horizontal enough to
+  // satisfy the swipe threshold below, which would otherwise silently
+  // discard an unsaved reflection.
+  const [isReflectionInputFocused, setIsReflectionInputFocused] = useState(false);
+
   // Swipe left → next verse.
   // Uses a horizontal-dominant threshold so it never conflicts with
   // LayerContainer's vertical-swipe gesture or the ScrollView inside VerseLayer.
@@ -178,6 +187,10 @@ const GuidanceScreen: React.FC = () => {
 
   const {
     savedStates,
+    reflectionText,
+    setReflectionText,
+    reflectionStatus,
+    saveReflection,
     isShareSheetVisible,
     setIsShareSheetVisible,
     shareContent,
@@ -281,6 +294,9 @@ const GuidanceScreen: React.FC = () => {
     );
   };
 
+  const reflectionPrompt =
+    experience.angle?.reflection || 'What does this ayah mean for you right now?';
+
   return (
     <ImmersiveBackground
       mood={mood}
@@ -307,7 +323,7 @@ const GuidanceScreen: React.FC = () => {
       />
 
       {/* Layer content — wrapped in swipe-left detector for "next verse" gesture */}
-      <View style={styles.gestureWrap} {...swipePanHandlers}>
+      <View style={styles.gestureWrap} {...(isReflectionInputFocused ? {} : swipePanHandlers)}>
         <SwipeNextOverlay
           animValue={swipeOverlayAnim}
           accentColor={(MoodColors[mood] || MoodColors.Calm).accent}
@@ -354,6 +370,12 @@ const GuidanceScreen: React.FC = () => {
               scrollY={scrollY}
               topInset={Spacing.lg}
               accentColor={(MoodColors[mood] || MoodColors.Calm).accent}
+              reflectionPrompt={reflectionPrompt}
+              reflectionValue={reflectionText}
+              onReflectionChange={setReflectionText}
+              reflectionStatus={reflectionStatus}
+              onSaveReflectionPress={saveReflection}
+              onReflectionFocusChange={setIsReflectionInputFocused}
             />
           )}
         </LayerContainer>
