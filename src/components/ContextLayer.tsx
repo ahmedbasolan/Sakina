@@ -1,11 +1,23 @@
 import React, { useMemo, useRef, useEffect } from 'react';
-import { StyleSheet, View, Text, Dimensions, Animated } from 'react-native';
+import {
+  StyleSheet,
+  View,
+  Text,
+  Dimensions,
+  Animated,
+  TextInput,
+  TouchableOpacity,
+  KeyboardAvoidingView,
+  Platform,
+} from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 const { height } = Dimensions.get('window');
 import Svg, { Path } from 'react-native-svg';
-import { Colors, Spacing, Typography } from '../theme/DesignSystem';
+import { Colors, Spacing, Typography, BorderRadius, Animations } from '../theme/DesignSystem';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { isolateBidiRuns } from '../utils/bidiText';
+
+type ReflectionStatus = 'empty' | 'dirty' | 'saved';
 
 interface ContextLayerProps {
   attribution: string;
@@ -16,6 +28,12 @@ interface ContextLayerProps {
   scrollY?: Animated.Value;
   accentColor?: string;
   topInset?: number;
+  reflectionPrompt?: string;
+  reflectionValue?: string;
+  onReflectionChange?: (text: string) => void;
+  reflectionStatus?: ReflectionStatus;
+  onSaveReflectionPress?: () => void;
+  onReflectionFocusChange?: (focused: boolean) => void;
 }
 
 function splitIntoSections(text: string): { understand: string; matters: string } {
@@ -97,6 +115,12 @@ const ContextLayer: React.FC<ContextLayerProps> = ({
   scrollY,
   accentColor = Colors.accent.primary,
   topInset,
+  reflectionPrompt = 'What does this ayah mean for you right now?',
+  reflectionValue = '',
+  onReflectionChange = () => {},
+  reflectionStatus = 'empty',
+  onSaveReflectionPress = () => {},
+  onReflectionFocusChange,
 }) => {
   const insets = useSafeAreaInsets();
   const { understand, matters } = useMemo(() => splitIntoSections(text), [text]);
@@ -109,6 +133,9 @@ const ContextLayer: React.FC<ContextLayerProps> = ({
   const slideAnim1 = useRef(new Animated.Value(12)).current;
   const slideAnim2 = useRef(new Animated.Value(12)).current;
   const slideAnim3 = useRef(new Animated.Value(12)).current;
+  const saveButtonOpacity = useRef(
+    new Animated.Value(reflectionStatus === 'empty' ? 0 : 1),
+  ).current;
 
   useEffect(() => {
     fadeAnim1.setValue(0);  slideAnim1.setValue(12);
@@ -130,6 +157,17 @@ const ContextLayer: React.FC<ContextLayerProps> = ({
       ]),
     ]).start();
   }, [text, angle]);
+
+  // Fades the Save button in once the user types, and back out if they
+  // clear the input — a separate effect from the entrance choreography
+  // above since it reacts to typing, not to a new verse loading.
+  useEffect(() => {
+    Animated.timing(saveButtonOpacity, {
+      toValue: reflectionStatus === 'empty' ? 0 : 1,
+      duration: Animations.timing.micro,
+      useNativeDriver: true,
+    }).start();
+  }, [reflectionStatus, saveButtonOpacity]);
 
   const cleanText = (t: string) =>
     isolateBidiRuns(
@@ -166,94 +204,157 @@ const ContextLayer: React.FC<ContextLayerProps> = ({
   };
 
   return (
-    <View
-      style={[
-        styles.container,
-        {
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+    >
+      <View
+        style={{
+          flex: 1,
           paddingTop: topInset !== undefined
             ? topInset
             : Math.max(insets.top + Spacing.sm, height * 0.02),
           paddingBottom: Math.max(insets.bottom + Spacing.sm, Spacing.xl),
-        },
-      ]}
-    >
-      <Animated.ScrollView
-        style={styles.scrollArea}
-        contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={false}
-        fadingEdgeLength={40}
-        scrollEventThrottle={16}
-        onScroll={
-          scrollY
-            ? Animated.event([{ nativeEvent: { contentOffset: { y: scrollY } } }], {
-              useNativeDriver: true,
-            })
-            : undefined
-        }
+        }}
       >
-        {/* Mood-tinted top rule — signals layer transition */}
-        <View style={[styles.topRule, { backgroundColor: accentColor }]} />
+        <Animated.ScrollView
+          style={styles.scrollArea}
+          contentContainerStyle={styles.scrollContent}
+          showsVerticalScrollIndicator={false}
+          fadingEdgeLength={40}
+          scrollEventThrottle={16}
+          keyboardShouldPersistTaps="handled"
+          onScroll={
+            scrollY
+              ? Animated.event([{ nativeEvent: { contentOffset: { y: scrollY } } }], {
+                useNativeDriver: true,
+              })
+              : undefined
+          }
+        >
+          {/* Mood-tinted top rule — signals layer transition */}
+          <View style={[styles.topRule, { backgroundColor: accentColor }]} />
 
-        {/* Section 1: Scholarly understanding */}
-        {understand.length > 0 && (
-          <Animated.View
-            style={[
-              styles.section,
-              { opacity: fadeAnim1, transform: [{ translateY: slideAnim1 }] },
-            ]}
-          >
-            <View style={styles.sectionLead}>
-              <MaterialCommunityIcons name="book-open-variant" size={13} color={accentColor} style={{ opacity: 0.7 }} />
-              <Text style={[styles.sectionTag, { color: accentColor }]}>
-                {attribution || 'Scholarly Context'}
-              </Text>
-            </View>
-            <Text style={styles.bodyText}>{cleanText(understand)}</Text>
-          </Animated.View>
-        )}
-
-        {/* Section 2: Prophetic wisdom */}
-        {matters.length > 0 && (
-          <Animated.View
-            style={[
-              styles.section,
-              { opacity: fadeAnim2, transform: [{ translateY: slideAnim2 }] },
-            ]}
-          >
-            {renderMattersContent()}
-          </Animated.View>
-        )}
-
-        {/* Source attribution — footnote */}
-        {understand.length > 0 && (
-          <Animated.View style={[styles.attributionRow, { opacity: fadeAnim2 }]}>
-            <MaterialCommunityIcons name="shield-check" size={11} color={accentColor} style={{ opacity: 0.55 }} />
-            <Text style={styles.attributionText}>{sourceLabel}</Text>
-          </Animated.View>
-        )}
-
-        {/* For Your Heart — left-border personal message card */}
-        {angle ? (
-          <Animated.View
-            style={[
-              styles.heartSection,
-              { opacity: fadeAnim3, transform: [{ translateY: slideAnim3 }] },
-            ]}
-          >
-            <View style={[styles.heartCard, { borderLeftColor: accentColor, backgroundColor: accentColor + '0D' }]}>
-              <View style={styles.heartHeader}>
-                <MaterialCommunityIcons name="heart-outline" size={13} color={accentColor} />
-                <Text style={[styles.heartLabel, { color: accentColor }]}>For Your Heart</Text>
+          {/* Section 1: Scholarly understanding */}
+          {understand.length > 0 && (
+            <Animated.View
+              style={[
+                styles.section,
+                { opacity: fadeAnim1, transform: [{ translateY: slideAnim1 }] },
+              ]}
+            >
+              <View style={styles.sectionLead}>
+                <MaterialCommunityIcons name="book-open-variant" size={13} color={accentColor} style={{ opacity: 0.7 }} />
+                <Text style={[styles.sectionTag, { color: accentColor }]}>
+                  {attribution || 'Scholarly Context'}
+                </Text>
               </View>
-              <Text style={styles.heartBody}>{isolateBidiRuns(angle)}</Text>
-              {angleSource ? (
-                <Text style={[styles.heartSource, { color: accentColor }]}>— {angleSource}</Text>
-              ) : null}
-            </View>
-          </Animated.View>
-        ) : null}
-      </Animated.ScrollView>
-    </View>
+              <Text style={styles.bodyText}>{cleanText(understand)}</Text>
+            </Animated.View>
+          )}
+
+          {/* Section 2: Prophetic wisdom */}
+          {matters.length > 0 && (
+            <Animated.View
+              style={[
+                styles.section,
+                { opacity: fadeAnim2, transform: [{ translateY: slideAnim2 }] },
+              ]}
+            >
+              {renderMattersContent()}
+            </Animated.View>
+          )}
+
+          {/* Source attribution — footnote */}
+          {understand.length > 0 && (
+            <Animated.View style={[styles.attributionRow, { opacity: fadeAnim2 }]}>
+              <MaterialCommunityIcons name="shield-check" size={11} color={accentColor} style={{ opacity: 0.55 }} />
+              <Text style={styles.attributionText}>{sourceLabel}</Text>
+            </Animated.View>
+          )}
+
+          {/* For Your Heart — left-border personal message card */}
+          {angle ? (
+            <Animated.View
+              style={[
+                styles.heartSection,
+                { opacity: fadeAnim3, transform: [{ translateY: slideAnim3 }] },
+              ]}
+            >
+              <View style={[styles.heartCard, { borderLeftColor: accentColor, backgroundColor: accentColor + '0D' }]}>
+                <View style={styles.heartHeader}>
+                  <MaterialCommunityIcons name="heart-outline" size={13} color={accentColor} />
+                  <Text style={[styles.heartLabel, { color: accentColor }]}>For Your Heart</Text>
+                </View>
+                <Text style={styles.heartBody}>{isolateBidiRuns(angle)}</Text>
+                {angleSource ? (
+                  <Text style={[styles.heartSource, { color: accentColor }]}>— {angleSource}</Text>
+                ) : null}
+
+                <View style={[styles.reflectDivider, { backgroundColor: accentColor + '26' }]} />
+
+                <View style={styles.reflectHeader}>
+                  <MaterialCommunityIcons name="pencil-outline" size={13} color={accentColor} />
+                  <Text style={[styles.reflectLabel, { color: accentColor }]}>Reflect</Text>
+                </View>
+                <Text style={styles.reflectPrompt}>{reflectionPrompt}</Text>
+
+                <TextInput
+                  style={styles.reflectInput}
+                  value={reflectionValue}
+                  onChangeText={onReflectionChange}
+                  onFocus={() => onReflectionFocusChange?.(true)}
+                  onBlur={() => onReflectionFocusChange?.(false)}
+                  placeholder="Write freely — even a few words count..."
+                  placeholderTextColor={`${Colors.text.primary}4D`}
+                  multiline
+                  textAlignVertical="top"
+                  selectionColor={accentColor}
+                  accessibilityLabel="Write your reflection"
+                />
+
+                <Text style={styles.reflectHint}>
+                  Writing it down turns a fleeting feeling into words you can return to
+                  — a quiet line between you and Allah.
+                </Text>
+
+                <Animated.View
+                  style={[styles.saveReflectionWrap, { opacity: saveButtonOpacity }]}
+                  pointerEvents={reflectionStatus === 'empty' ? 'none' : 'auto'}
+                >
+                  <TouchableOpacity
+                    style={[
+                      styles.saveReflectionButton,
+                      { borderColor: accentColor + '55' },
+                      reflectionStatus === 'saved' && styles.saveReflectionButtonSaved,
+                    ]}
+                    onPress={onSaveReflectionPress}
+                    disabled={reflectionStatus === 'saved'}
+                    activeOpacity={0.75}
+                    accessibilityRole="button"
+                    accessibilityLabel={reflectionStatus === 'saved' ? 'Saved' : 'Save reflection'}
+                  >
+                    <MaterialCommunityIcons
+                      name={reflectionStatus === 'saved' ? 'check' : 'content-save-outline'}
+                      size={14}
+                      color={reflectionStatus === 'saved' ? Colors.text.muted : accentColor}
+                    />
+                    <Text
+                      style={[
+                        styles.saveReflectionText,
+                        { color: reflectionStatus === 'saved' ? Colors.text.muted : accentColor },
+                      ]}
+                    >
+                      {reflectionStatus === 'saved' ? 'Saved' : 'Save reflection'}
+                    </Text>
+                  </TouchableOpacity>
+                </Animated.View>
+              </View>
+            </Animated.View>
+          ) : null}
+        </Animated.ScrollView>
+      </View>
+    </KeyboardAvoidingView>
   );
 };
 
@@ -384,6 +485,71 @@ const styles = StyleSheet.create({
     marginTop: Spacing.md,
     letterSpacing: 0.4,
     fontStyle: 'italic',
+  },
+
+  /* ── Reflect ── */
+  reflectDivider: {
+    height: 1,
+    marginTop: Spacing.lg,
+    marginBottom: Spacing.lg,
+  },
+  reflectHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.sm,
+    marginBottom: Spacing.sm,
+  },
+  reflectLabel: {
+    fontSize: 11,
+    fontWeight: '700',
+    letterSpacing: 1.5,
+    textTransform: 'uppercase',
+    opacity: 0.85,
+  },
+  reflectPrompt: {
+    fontFamily: Typography.fonts.serif,
+    fontSize: Typography.sizes.small,
+    lineHeight: 22,
+    color: Colors.text.primary,
+    fontStyle: 'italic',
+    opacity: 0.85,
+    marginBottom: Spacing.md,
+  },
+  reflectInput: {
+    minHeight: 72,
+    fontSize: Typography.sizes.body,
+    lineHeight: 24,
+    color: Colors.text.primary,
+    fontFamily: Typography.fonts.latin,
+    paddingVertical: Spacing.sm,
+  },
+  reflectHint: {
+    fontSize: Typography.sizes.detail,
+    color: Colors.text.muted,
+    lineHeight: 17,
+    marginTop: Spacing.sm,
+    marginBottom: Spacing.lg,
+    opacity: 0.8,
+  },
+  saveReflectionWrap: {
+    alignItems: 'flex-end',
+  },
+  saveReflectionButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.xs,
+    paddingVertical: Spacing.sm,
+    paddingHorizontal: Spacing.lg,
+    borderRadius: BorderRadius.full,
+    borderWidth: 1,
+  },
+  saveReflectionButtonSaved: {
+    borderColor: 'transparent',
+  },
+  saveReflectionText: {
+    fontSize: 12,
+    fontWeight: '600',
+    letterSpacing: 0.5,
   },
 });
 
