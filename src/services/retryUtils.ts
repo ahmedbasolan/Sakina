@@ -16,7 +16,12 @@ const DEFAULT_RETRY_CONFIG: RetryConfig = {
   // ECONNABORTED covers axios's own client-side `timeout` option — without it,
   // a request that times out fails the retry-eligibility check and throws
   // immediately after one attempt instead of backing off and retrying.
-  retryableErrors: ['ECONNRESET', 'ETIMEDOUT', 'ECONNABORTED', 'ECONNREFUSED', 'ENOTFOUND', 'NETWORK_ERROR'],
+  // ERR_NETWORK is axios ^1.x's actual `error.code` for a plain connectivity
+  // failure (wifi blip, airplane mode, DNS hiccup) — the single most common
+  // real-world failure mode. 'NETWORK_ERROR' never matched it (axios never
+  // sets that string), so every such failure was silently misclassified as
+  // non-retryable and failed after one attempt instead of backing off.
+  retryableErrors: ['ECONNRESET', 'ETIMEDOUT', 'ECONNABORTED', 'ECONNREFUSED', 'ENOTFOUND', 'ERR_NETWORK', 'NETWORK_ERROR'],
 };
 
 /**
