@@ -139,6 +139,39 @@ they were the full ayah). Treat these as hard rules, not style preferences:
 
 ---
 
+## "For Your Heart" — Content Voice
+
+The Context layer's "For Your Heart" card (`ContextLayer.tsx`'s `heartCard`,
+fed by `ContentAngle.angle`) has a distinct job from the "Understand"/
+"Matters" sections just above it. Those sections carry the Prophet/companion
+story and scholarly explanation (`Content.whyThis`) — "For Your Heart" is
+not a second helping of the same voice.
+
+For any **new or edited** `angle` entry (existing entries in `quranData.ts`
+are not being retroactively rewritten — see
+`docs/superpowers/specs/2026-07-16-for-your-heart-reflection-design.md`):
+
+- Second person, present tense. Speak to the reader directly as a believer,
+  not about a Prophet or companion's situation.
+- Anchor it in a Divine Name or a promise/address verse to Allah's slaves
+  (e.g. 39:53's "O My servants who have transgressed against yourselves, do
+  not despair of the mercy of Allah") rather than narrating what happened
+  historically.
+- If a Prophet/companion story is genuinely the best vehicle for the point,
+  it belongs in `Content.whyThis` (the Context layer's own narrative
+  section), not here.
+
+Example of the shift:
+- Before (tafsir/narrative voice): *"Ibn Kathir explains that 'ni'ma
+  al-Mawla wa ni'ma al-Nasir' means Allah is the best of those who
+  protect... The Prophet ﷺ said on the day of Uhud: 'Allah is sufficient
+  for us...'"*
+- After (direct-address voice): *"You are not managing this alone. The One
+  who holds the heavens is holding your worry too — He calls Himself your
+  Protector, not your bystander."*
+
+---
+
 ## Commands
 - Typecheck: `npx tsc --noEmit -p tsconfig.json`
 - (Run on device via Expo to verify visual changes — visuals can't be confirmed from a typecheck alone.)
