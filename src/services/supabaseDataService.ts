@@ -11,6 +11,13 @@
 import { supabase } from '../config/supabaseClient';
 import { dbQuery } from '../database/schema';
 import { Mood, PrayerContext } from '../types';
+import { withTimeout } from '../utils';
+
+// Supabase client has no built-in request timeout, so a degraded connection
+// can otherwise hang far longer than the OS default before falling back to
+// local storage. Bounds every history read/write so the app never blocks
+// guidance delivery waiting on the network.
+const HISTORY_NETWORK_TIMEOUT_MS = 5000;
 
 // ── Supabase Row Types ──────────────────────────────────────────────
 
@@ -104,24 +111,34 @@ export class SupabaseDataService {
 
         if (userId) {
             // ── Supabase path ──
-            const { error } = await supabase.from('user_history').insert({
-                user_id: userId,
-                content_id: contentId,
-                angle_id: angleId,
-                mood,
-            });
-
-            if (error) {
-                console.error('[SupabaseDataService] Error recording history:', error.message);
-                // Fallback: persist locally and flag for sync when connectivity returns.
-                await this.recordHistoryLocal(contentId, angleId, mood, true);
-            } else {
-                // Write succeeded — we're online. Opportunistically flush any entries
-                // that were queued during a previous offline session. Fire-and-forget
-                // so the current write path isn't delayed.
-                this.syncPendingHistory().catch((e) =>
-                    console.warn('[SupabaseDataService] Background pending-sync failed:', e),
+            try {
+                const { error } = await withTimeout(
+                    supabase.from('user_history').insert({
+                        user_id: userId,
+                        content_id: contentId,
+                        angle_id: angleId,
+                        mood,
+                    }),
+                    HISTORY_NETWORK_TIMEOUT_MS,
                 );
+
+                if (error) {
+                    console.error('[SupabaseDataService] Error recording history:', error.message);
+                    // Fallback: persist locally and flag for sync when connectivity returns.
+                    await this.recordHistoryLocal(contentId, angleId, mood, true);
+                } else {
+                    // Write succeeded — we're online. Opportunistically flush any entries
+                    // that were queued during a previous offline session. Fire-and-forget
+                    // so the current write path isn't delayed.
+                    this.syncPendingHistory().catch((e) =>
+                        console.warn('[SupabaseDataService] Background pending-sync failed:', e),
+                    );
+                }
+            } catch (error) {
+                // Timed out or threw outright (e.g. a degraded connection stalling
+                // past HISTORY_NETWORK_TIMEOUT_MS) — same fallback as a Postgrest error.
+                console.error('[SupabaseDataService] recordHistory network failure:', error);
+                await this.recordHistoryLocal(contentId, angleId, mood, true);
             }
         } else {
             // ── Guest path: local only, no sync needed ──
@@ -270,16 +287,29 @@ export class SupabaseDataService {
         if (userId) {
             // ── Supabase path ──
             const cutoffDate = new Date(cutoffMs).toISOString();
-            const { data, error } = await supabase
-                .from('user_history')
-                .select('content_id, angle_id, created_at')
-                .eq('user_id', userId)
-                .eq('mood', mood)
-                .gte('created_at', cutoffDate)
-                .order('created_at', { ascending: false });
-
-            if (error) {
-                console.error('[SupabaseDataService] Error fetching history:', error.message);
+            let data: { content_id: string; angle_id: string; created_at: string }[] | null;
+            try {
+                const response = await withTimeout(
+                    supabase
+                        .from('user_history')
+                        .select('content_id, angle_id, created_at')
+                        .eq('user_id', userId)
+                        .eq('mood', mood)
+                        .gte('created_at', cutoffDate)
+                        .order('created_at', { ascending: false }),
+                    HISTORY_NETWORK_TIMEOUT_MS,
+                );
+                if (response.error) {
+                    console.error('[SupabaseDataService] Error fetching history:', response.error.message);
+                    return this.getRecentHistoryLocal(mood, cutoffMs);
+                }
+                data = response.data;
+            } catch (error) {
+                // Timed out (degraded connection) or threw outright — this call
+                // gates every getGuidance delivery, so it must never stall the
+                // guidance flow waiting on the network. Same fallback as an
+                // explicit Postgrest error.
+                console.error('[SupabaseDataService] getRecentHistory network failure:', error);
                 return this.getRecentHistoryLocal(mood, cutoffMs);
             }
 

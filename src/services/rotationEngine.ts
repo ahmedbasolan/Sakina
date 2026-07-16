@@ -106,7 +106,18 @@ export class RotationEngine {
 
       this.sessionShownAngles.add(selected.id);
       if (selected.contentId) {
-        await this.supabaseData.recordHistory(selected.contentId, selected.id, mood);
+        // Fire-and-forget — recording history is bookkeeping for future
+        // recency scoring, not something the current guidance delivery
+        // should ever wait on. recordHistory already falls back to local
+        // storage (and syncs later) on any network failure internally.
+        this.supabaseData.recordHistory(selected.contentId, selected.id, mood).catch((error) => {
+          logServiceError(
+            'RotationEngine',
+            'recordHistory',
+            error instanceof Error ? error : new Error(String(error)),
+            { mood },
+          );
+        });
       }
 
       return this.buildExperience(selected);
