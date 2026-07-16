@@ -240,19 +240,35 @@ export const useGuidanceLogic = (
     setIsResting(false);
   };
 
+  // Guards saveReflection the same way isAdvancing guards requestNext — a
+  // double-tap on Save shouldn't write two rows (the underlying insert isn't
+  // idempotent).
+  const isSaving = useRef(false);
+
   // Explicit, deliberate save — the user taps "Save reflection" rather than
   // this firing automatically on advance/leave. Optimistic UI (mirrors
   // handleSave's bookmark toggle above): flip to "saved" immediately for
-  // instant feedback, then revert + warn only if the save actually failed.
+  // instant feedback, then revert + warn only if the save actually failed —
+  // including a rejected promise, not just an explicit `false` return.
   const saveReflection = async () => {
     const text = reflectionText;
-    if (!text.trim()) return;
-    HapticsService.notificationAsync('SUCCESS');
-    setReflectionSaved(true);
-    const succeeded = (await onSaveReflection(text)) !== false;
-    if (!succeeded) {
-      setReflectionSaved(false);
-      HapticsService.notificationAsync('WARNING');
+    if (!text.trim() || isSaving.current) return;
+    isSaving.current = true;
+    try {
+      HapticsService.notificationAsync('SUCCESS');
+      setReflectionSaved(true);
+      let succeeded = true;
+      try {
+        succeeded = (await onSaveReflection(text)) !== false;
+      } catch {
+        succeeded = false;
+      }
+      if (!succeeded) {
+        setReflectionSaved(false);
+        HapticsService.notificationAsync('WARNING');
+      }
+    } finally {
+      isSaving.current = false;
     }
   };
 
