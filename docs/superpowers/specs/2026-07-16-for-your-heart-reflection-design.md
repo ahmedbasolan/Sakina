@@ -111,7 +111,62 @@ return to — a quiet line between you and Allah.
 - Editing the text again after a save re-arms the Save button (an "edited
   since last save" flag, separate from "has ever been saved").
 - No character counter or max-length UI — the repository already silently
-  clamps at 1000 chars server-side; not worth surfacing.
+  clamps at 1000 chars locally on save (SQLite, never synced — see
+  `reflectionRepository.ts`); not worth surfacing.
+
+**Keyboard handling** (matches the existing pattern in `ReflectionLayer.tsx`,
+the reflection-writing component `PathStepScreen` already ships — don't
+reinvent it):
+- Wrap `ContextLayer`'s root `View` in `KeyboardAvoidingView`
+  (`behavior={Platform.OS === 'ios' ? 'padding' : 'height'}`), matching
+  `ReflectionLayer.tsx` exactly.
+- Add `keyboardShouldPersistTaps="handled"` to the layer's
+  `Animated.ScrollView` so a tap on the Save button (or elsewhere in the
+  card) while the keyboard is open registers immediately instead of just
+  dismissing the keyboard on the first tap.
+- Explicitly set `color: Colors.text.primary` on the `TextInput` style —
+  RN has no guaranteed-visible default text color on a dark background,
+  and every existing TextInput in this app (`ReflectionLayer`,
+  `ReflectionHistoryScreen`) sets this explicitly. Easy to silently ship
+  invisible text otherwise.
+- `TextInput` gets `accessibilityLabel="Write your reflection"`; the Save
+  button gets `accessibilityRole="button"` + `accessibilityLabel`
+  reflecting its current state ("Save reflection" / "Saved") — matching
+  the accessibility props already used throughout this screen
+  (`FloatingActionRow`, `RestingPoint`, the budget-dots row).
+
+**Gesture conflict with swipe-to-next-verse (real risk, not theoretical):**
+`GuidanceScreen`'s horizontal swipe-to-advance (`useSwipeGesture`, spread
+onto the `gestureWrap` View that contains the entire `LayerContainer`)
+claims any touch move where `|dx| > |dy| × 1.5 && |dx| > 12`, and fires
+`advanceGuidance()` — which fetches a genuinely new verse — once a drag
+passes 50px or registers as a quick flick. `advanceGuidance()` runs from
+*any* layer, including Context, with no bounds guard.
+
+A normal word-selection drag inside the new TextInput is horizontal enough
+to satisfy that claim threshold. If the drag is long/fast enough, it fires
+"next verse" mid-edit and — per this spec's own discard-on-navigate
+behavior — silently wipes whatever the user just wrote, with no warning.
+
+This is *not* the same situation as `PathStepScreen`, which already nests
+`ReflectionLayer`'s TextInput inside this identical `LayerContainer` +
+swipe-gesture combo without issue — but only because `ReflectionLayer` is
+always the last layer there, so the same swipe's `onNext` handler is
+bounds-capped to a no-op on it. `GuidanceScreen`'s Context layer has no
+such backstop; a leftward swipe is a live, destructive action from every
+layer. The precedent doesn't cover this case.
+
+**Mitigation:** `ContextLayer` gains an `onReflectionFocusChange?: (focused:
+boolean) => void` prop, called from the TextInput's `onFocus`/`onBlur`.
+`GuidanceScreen` tracks `isReflectionInputFocused` and conditionally spreads
+the swipe handlers: `{...(isReflectionInputFocused ? {} : swipePanHandlers)}`
+on `gestureWrap` — the text field "owns" horizontal drag gestures while
+it's focused, the way a user would expect. (`LayerContainer`'s *vertical*
+swipe was also considered as a second data-loss vector and ruled out on
+inspection: its swipe-up branch is guarded by `!isLastLayer`, and Context
+is always the last layer, so it can never fire `advanceGuidance` from
+there; swiping down to the Verse layer doesn't touch
+`experience.content.id`, so it doesn't trigger the discard effect either.)
 
 **Data loss on navigate (explicit tradeoff, confirmed with product owner):**
 Unsaved reflection text is discarded — silently, with no confirmation
@@ -129,13 +184,20 @@ context above it.
 ### 3. Code changes
 
 - **`ContextLayer.tsx`**: extend `heartCard` with the divider + Reflect
-  block. New props: `reflectionPrompt: string`, `reflectionValue: string`,
+  block, wrapped in `KeyboardAvoidingView` per the keyboard-handling notes
+  above. New props: `reflectionPrompt: string`, `reflectionValue: string`,
   `onReflectionChange: (text: string) => void`,
-  `onSaveReflectionPress: () => void`, and a single
+  `onSaveReflectionPress: () => void`, a single
   `reflectionStatus: 'empty' | 'dirty' | 'saved'` driving the Save button
   (hidden / "Save reflection" active / muted "Saved ✓" respectively) —
   one derived status instead of separate booleans, so the four button
-  states can't drift out of sync with each other.
+  states can't drift out of sync with each other — and
+  `onReflectionFocusChange?: (focused: boolean) => void` for the swipe-
+  gesture mitigation. On-device check needed: confirm the Reflect block's
+  padding reads well inside `heartCard`'s existing narrow, border-left
+  quote-card framing (built for a short pull-quote, not a multiline input +
+  button row) — loosen the block's own horizontal insets if it feels
+  cramped, while keeping it visually grouped under the divider.
 - **`useGuidanceLogic.ts`**:
   - Keep `reflectionText` / `setReflectionText`.
   - Remove `showReflectionInput` / `setShowReflectionInput` (dead — was for
@@ -157,9 +219,21 @@ context above it.
 - **`GuidanceScreen.tsx`**: destructure the new state/action from
   `useGuidanceLogic`, pass down to `ContextLayer` alongside the existing
   props. Compute `reflectionPrompt` from `experience.angle?.reflection`
-  with the generic fallback.
+  with the generic fallback. Add local `isReflectionInputFocused` state,
+  wired to `ContextLayer`'s `onReflectionFocusChange`, and conditionally
+  spread `swipePanHandlers` on `gestureWrap` per the gesture-conflict
+  mitigation above.
 - **`CLAUDE.md`**: add the "For Your Heart" voice rule described above,
   near the existing "Quoting Quran Text" section.
+
+**Scope boundary on hook cleanup:** `useGuidanceLogic` has more dead exports
+than the two removed above — `onScroll`, `activeIndex`, `nextButtonScale`,
+`nextButtonOpacity`, `scrollViewRef`, and the hook's own `isPremium` are all
+already unused by `GuidanceScreen` today (confirmed by its current
+destructuring list), predating this feature. Only `showReflectionInput` and
+`handlePrimaryAction` are removed here because they're directly entangled
+with the reflection state this spec touches — the rest is a pre-existing,
+separate cleanup and deliberately left alone.
 
 ### 4. Testing
 
@@ -171,4 +245,9 @@ context above it.
   confirm it appears in `ReflectionHistoryScreen`'s journal with the right
   verse citation and mood; confirm swiping to the next verse clears the
   input; confirm the empty-state fallback prompt renders for any verse
-  missing `angle.reflection`.
+  missing `angle.reflection`; confirm the keyboard doesn't cover the Save
+  button on a small device (both platforms); **specifically try
+  press-and-drag word selection inside the reflection input and confirm it
+  does not trigger a swipe-to-next-verse** — this is the gesture-conflict
+  risk flagged above and needs hands-on confirmation, not just a code
+  read.
