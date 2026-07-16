@@ -162,10 +162,13 @@ export const useGuidanceLogic = (
         // saved on an older build could never be un-bookmarked again.
         const quranInfo = parseQuranSource(experience.content.source || '');
         await dbQuery(async (db) => {
-          await db.runAsync(`DELETE FROM saved_reflections WHERE contentId = ? AND angleId = ?`, [
-            experience.content.id,
-            experience.angle.id,
-          ]);
+          // Only the empty-reflection bookmark-marker row created by the
+          // `newSaved` branch above — a real written reflection (non-empty
+          // text) at the same contentId/angleId must survive an un-bookmark.
+          await db.runAsync(
+            `DELETE FROM saved_reflections WHERE contentId = ? AND angleId = ? AND reflection = ''`,
+            [experience.content.id, experience.angle.id],
+          );
           if (quranInfo) {
             const bmId = `bv_guidance_${quranInfo.surahNumber}_${quranInfo.verseNumber}`;
             await db.runAsync(`DELETE FROM bookmarked_verses WHERE id = ?`, [bmId]);
