@@ -87,12 +87,17 @@ export const useGuidanceLogic = (
   const scrollY = useRef(new Animated.Value(0)).current;
   const scrollViewRef = useRef<any>(null);
 
-  // Reset heart state whenever a new piece of content loads
+  // Reset heart state whenever a new piece of content loads. Keyed on both
+  // content.id and angle.id — content_angles holds multiple angles per verse
+  // and session dedup only excludes angle ids already shown, so the same
+  // content.id can recur later under a different angle. Resetting on
+  // content.id alone left a prior angle's unsaved reflection text sitting in
+  // the input under the new angle's prompt.
   useEffect(() => {
     setSavedStates({});
     setReflectionTextState('');
     setReflectionSaved(false);
-  }, [experience?.content?.id]);
+  }, [experience?.content?.id, experience?.angle?.id]);
 
   // Sync the per-prayer-window allowance, then reflect the remaining count.
   // Re-runs if the active mood changes in-session; syncPrayerWindow is
