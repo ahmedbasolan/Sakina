@@ -309,10 +309,14 @@ export default function PathCompletionCelebration({
           </View>
         )}
 
-        {/* Card */}
+        {/* Card — shadow lives on this outer Animated.View (so it scales/fades
+            with the entrance animation); the inner plain View (styles.card)
+            does the overflow:'hidden' clipping. Same split as
+            ShareSheet.tsx's previewCardShadow — Android can't reliably
+            combine elevation with overflow:'hidden'+borderRadius on one view. */}
         <Animated.View
           style={[
-            styles.card,
+            styles.cardShadow,
             {
               opacity: cardOpacity,
               transform: [{ scale: cardScale }],
@@ -321,6 +325,7 @@ export default function PathCompletionCelebration({
             },
           ]}
         >
+        <View style={styles.card}>
           {/* Hero — dark gradient with accent glow at the top */}
           <LinearGradient
             colors={[accentColor + '28', CARD_BG]}
@@ -482,6 +487,7 @@ export default function PathCompletionCelebration({
               </Animated.View>
             )}
           </Animated.ScrollView>
+        </View>
         </Animated.View>
       </View>
     </Modal>
@@ -502,18 +508,24 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
 
-  // Card — dark navy matching the immersive experience
-  card: {
+  // Shadow only — no overflow/borderRadius-vs-elevation conflict here since
+  // this view clips nothing. See ShareSheet.tsx's previewCardShadow.
+  cardShadow: {
     flex: 1,
     marginHorizontal: Spacing.xl,
-    backgroundColor: CARD_BG,
     borderRadius: BorderRadius.xxl,
-    overflow: 'hidden',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 16 },
     shadowOpacity: 0.6,
     shadowRadius: 32,
     elevation: 24,
+  },
+  // Card — dark navy matching the immersive experience
+  card: {
+    flex: 1,
+    backgroundColor: CARD_BG,
+    borderRadius: BorderRadius.xxl,
+    overflow: 'hidden',
     borderWidth: StyleSheet.hairlineWidth,
     borderColor: 'rgba(255,255,255,0.08)',
   },

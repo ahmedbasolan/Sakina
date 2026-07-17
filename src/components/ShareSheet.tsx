@@ -628,8 +628,8 @@ const styles = StyleSheet.create({
   // Shadow only — no overflow/borderRadius-vs-elevation conflict here since
   // this view clips nothing. See the comment at the call site.
   previewCardShadow: {
-    borderRadius: 24,
-    marginBottom: 32,
+    borderRadius: BorderRadius.xxl,
+    marginBottom: Spacing.xxl,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.4,
@@ -639,7 +639,7 @@ const styles = StyleSheet.create({
   previewCard: {
     width: '100%',
     minHeight: 300,
-    borderRadius: 24,
+    borderRadius: BorderRadius.xxl,
     overflow: 'hidden',
     paddingHorizontal: Spacing.xl,
     paddingVertical: Spacing.xxl,
@@ -647,7 +647,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   previewCardImage: {
-    borderRadius: 24,
+    borderRadius: BorderRadius.xxl,
   },
   cardHeader: {
     width: '100%',

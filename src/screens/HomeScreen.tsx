@@ -441,6 +441,10 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
               </View>
 
               <TouchableOpacity activeOpacity={0.9} onPress={() => navigation.navigate('Journeys')}>
+                {/* Shadow on a plain outer View — see ShareSheet.tsx's previewCardShadow
+                    for why elevation can't share a view with overflow:'hidden'+borderRadius
+                    on Android (shadow's rounded-rect backing shows through the clip). */}
+                <View style={styles.journeyCardShadow}>
                 <LinearGradient
                   colors={[Colors.background.secondary, Colors.background.primary]}
                   start={{ x: 0, y: 0 }}
@@ -489,6 +493,7 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
                     <Text style={[styles.journeyPctText, { color: activePath.color }]}>{progressPct}% COMPLETE</Text>
                   </View>
                 </LinearGradient>
+                </View>
               </TouchableOpacity>
             </View>
           )}
@@ -666,16 +671,21 @@ const styles = StyleSheet.create({
   },
 
   journeySection: { paddingHorizontal: Spacing.xl, marginBottom: Spacing.xl },
-  journeyCard: {
+  // Shadow only — no overflow/borderRadius-vs-elevation conflict here since
+  // this view clips nothing. See ShareSheet.tsx's previewCardShadow.
+  journeyCardShadow: {
     borderRadius: 16,
-    padding: 16,
-    borderWidth: 1,
-    overflow: 'hidden',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.3,
     shadowRadius: 16,
     elevation: 8,
+  },
+  journeyCard: {
+    borderRadius: 16,
+    padding: 16,
+    borderWidth: 1,
+    overflow: 'hidden',
   },
   journeyCardTop: {
     flexDirection: 'row',
