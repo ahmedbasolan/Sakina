@@ -42,6 +42,32 @@ const SEED_VERSION = 4;
 const SEED_VERSION_KEY_QURAN = '@sakina_seed_version_quran';
 const SEED_VERSION_KEY_HADITH = '@sakina_seed_version_hadith';
 
+// Stay comfortably under SQLite's bound-variable limit (999 on older builds).
+const SQLITE_MAX_VARS = 900;
+
+// Inserts `rows` via chunked multi-row VALUES statements instead of one
+// `runAsync` call per row. A fresh install seeds ~1,500 rows across content,
+// content_moods, and content_angles; awaiting each insert individually adds a
+// JS↔native bridge round-trip per row, which is what made first-launch feel
+// slow even inside a single transaction (the transaction only batches the
+// disk sync, not the bridge calls). Chunking cuts ~1,500 round-trips to a
+// couple dozen.
+async function batchInsert(
+  db: any,
+  sqlPrefix: string,
+  columnsPerRow: number,
+  rows: unknown[][],
+): Promise<void> {
+  if (rows.length === 0) return;
+  const rowsPerChunk = Math.max(1, Math.floor(SQLITE_MAX_VARS / columnsPerRow));
+  const placeholderRow = `(${Array(columnsPerRow).fill('?').join(',')})`;
+  for (let i = 0; i < rows.length; i += rowsPerChunk) {
+    const chunk = rows.slice(i, i + rowsPerChunk);
+    const placeholders = chunk.map(() => placeholderRow).join(',');
+    await db.runAsync(sqlPrefix + placeholders, chunk.flat());
+  }
+}
+
 export async function seedQuranContent(db: any): Promise<void> {
   // Fast path: if Quran content already exists AND it came from this seed
   // version (or newer), skip entirely. Covers online users who synced from
@@ -76,71 +102,78 @@ export async function seedQuranContent(db: any): Promise<void> {
     // has this id — REPLACE overwrites it with the current data. Safe here:
     // foreign keys are never enforced in this DB (no PRAGMA foreign_keys=ON),
     // so the delete-then-reinsert REPLACE does under the hood never cascades.
-    for (const item of quranContent) {
-      await db.runAsync(
-        `INSERT OR REPLACE INTO content
-           (id, type, primaryText, arabicText, transliteration, englishTranslation,
-            source, audioKey, whyThis, propheticPractice, optionalAction,
-            optionalReflection, prayerContext)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-        [
-          item.id,
-          item.type,
-          item.primaryText,
-          item.arabicText ?? null,
-          item.transliteration ?? null,
-          item.englishTranslation,
-          item.source,
-          item.audioKey ?? null,
-          item.whyThis,
-          item.propheticPractice ? JSON.stringify(item.propheticPractice) : null,
-          item.optionalAction ?? null,
-          item.optionalReflection ?? null,
-          item.prayerContext ? JSON.stringify(item.prayerContext) : null,
-        ],
-      );
+    const contentRows = quranContent.map((item) => [
+      item.id,
+      item.type,
+      item.primaryText,
+      item.arabicText ?? null,
+      item.transliteration ?? null,
+      item.englishTranslation,
+      item.source,
+      item.audioKey ?? null,
+      item.whyThis,
+      item.propheticPractice ? JSON.stringify(item.propheticPractice) : null,
+      item.optionalAction ?? null,
+      item.optionalReflection ?? null,
+      item.prayerContext ? JSON.stringify(item.prayerContext) : null,
+    ]);
+    await batchInsert(
+      db,
+      `INSERT OR REPLACE INTO content
+         (id, type, primaryText, arabicText, transliteration, englishTranslation,
+          source, audioKey, whyThis, propheticPractice, optionalAction,
+          optionalReflection, prayerContext)
+       VALUES `,
+      13,
+      contentRows,
+    );
 
-      // 2. content_moods — one row per (content, mood) pair
+    // 2. content_moods — one row per (content, mood) pair
+    const moodRows: unknown[][] = [];
+    for (const item of quranContent) {
       for (const mood of item.moods) {
         const score = (item.moodScores as Record<string, number> | undefined)?.[mood] ?? 10;
-        await db.runAsync(
-          `INSERT OR REPLACE INTO content_moods (contentId, mood, relevanceScore)
-           VALUES (?, ?, ?)`,
-          [item.id, mood, score],
-        );
+        moodRows.push([item.id, mood, score]);
       }
     }
+    await batchInsert(
+      db,
+      `INSERT OR REPLACE INTO content_moods (contentId, mood, relevanceScore) VALUES `,
+      3,
+      moodRows,
+    );
 
     // 3. content_angles table — same OR REPLACE reasoning as above.
-    for (const angle of quranContentAngles) {
-      await db.runAsync(
-        `INSERT OR REPLACE INTO content_angles
-           (id, contentId, mood, angle, angleSource, action, actionArabicText,
-            actionTransliteration, actionSource, actionHowTo, actionReward,
-            practiceSteps, reflection)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-        [
-          angle.id,
-          angle.contentId,
-          angle.mood,
-          angle.angle,
-          angle.angleSource ?? null,
-          angle.action ?? null,
-          angle.actionArabicText ?? null,
-          angle.actionTransliteration ?? null,
-          angle.actionSource ?? null,
-          angle.actionHowTo ?? null,
-          angle.actionReward ?? null,
-          // practiceSteps: always serialise to JSON string for consistency
-          angle.practiceSteps == null
-            ? null
-            : typeof angle.practiceSteps === 'string'
-              ? angle.practiceSteps
-              : JSON.stringify(angle.practiceSteps),
-          angle.reflection ?? null,
-        ],
-      );
-    }
+    const angleRows = quranContentAngles.map((angle) => [
+      angle.id,
+      angle.contentId,
+      angle.mood,
+      angle.angle,
+      angle.angleSource ?? null,
+      angle.action ?? null,
+      angle.actionArabicText ?? null,
+      angle.actionTransliteration ?? null,
+      angle.actionSource ?? null,
+      angle.actionHowTo ?? null,
+      angle.actionReward ?? null,
+      // practiceSteps: always serialise to JSON string for consistency
+      angle.practiceSteps == null
+        ? null
+        : typeof angle.practiceSteps === 'string'
+          ? angle.practiceSteps
+          : JSON.stringify(angle.practiceSteps),
+      angle.reflection ?? null,
+    ]);
+    await batchInsert(
+      db,
+      `INSERT OR REPLACE INTO content_angles
+         (id, contentId, mood, angle, angleSource, action, actionArabicText,
+          actionTransliteration, actionSource, actionHowTo, actionReward,
+          practiceSteps, reflection)
+       VALUES `,
+      13,
+      angleRows,
+    );
   });
 
   await AsyncStorage.setItem(SEED_VERSION_KEY_QURAN, String(SEED_VERSION));
@@ -175,30 +208,31 @@ export async function seedHadithContent(db: any): Promise<void> {
   // ── Batch insert inside a single transaction ────────────────────────────
   await db.withTransactionAsync(async () => {
     // 1. content table — OR REPLACE, see the same note in seedQuranContent above.
-    for (const item of hadithContent) {
-      await db.runAsync(
-        `INSERT OR REPLACE INTO content
-           (id, type, primaryText, arabicText, transliteration, englishTranslation,
-            source, audioKey, whyThis, propheticPractice, optionalAction,
-            optionalReflection, prayerContext)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-        [
-          item.id,
-          item.type,
-          item.primaryText,
-          item.arabicText ?? null,
-          item.transliteration ?? null,
-          item.englishTranslation,
-          item.source,
-          item.audioKey ?? null,
-          item.whyThis,
-          item.propheticPractice ? JSON.stringify(item.propheticPractice) : null,
-          item.optionalAction ?? null,
-          item.optionalReflection ?? null,
-          item.prayerContext ? JSON.stringify(item.prayerContext) : null,
-        ],
-      );
-    }
+    const contentRows = hadithContent.map((item) => [
+      item.id,
+      item.type,
+      item.primaryText,
+      item.arabicText ?? null,
+      item.transliteration ?? null,
+      item.englishTranslation,
+      item.source,
+      item.audioKey ?? null,
+      item.whyThis,
+      item.propheticPractice ? JSON.stringify(item.propheticPractice) : null,
+      item.optionalAction ?? null,
+      item.optionalReflection ?? null,
+      item.prayerContext ? JSON.stringify(item.prayerContext) : null,
+    ]);
+    await batchInsert(
+      db,
+      `INSERT OR REPLACE INTO content
+         (id, type, primaryText, arabicText, transliteration, englishTranslation,
+          source, audioKey, whyThis, propheticPractice, optionalAction,
+          optionalReflection, prayerContext)
+       VALUES `,
+      13,
+      contentRows,
+    );
   });
 
   await AsyncStorage.setItem(SEED_VERSION_KEY_HADITH, String(SEED_VERSION));

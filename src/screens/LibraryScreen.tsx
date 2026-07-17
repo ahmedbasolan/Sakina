@@ -581,10 +581,22 @@ export default function LibraryScreen({ navigation }: any) {
             <>
               {/* Download progress banner — shown until all 114 surahs are cached */}
               {dlProgress && !dlProgress.done && (
-                <View style={styles.dlBanner}>
+                <TouchableOpacity
+                  style={styles.dlBanner}
+                  activeOpacity={dlProgress.fetching ? 1 : 0.7}
+                  disabled={dlProgress.fetching}
+                  onPress={startQuranDownload}
+                  accessibilityLabel={dlProgress.fetching ? undefined : 'Retry Quran download'}
+                >
                   <View style={styles.dlBannerTop}>
-                    <ActivityIndicator size="small" color={Colors.accent.primary} />
-                    <Text style={styles.dlBannerTitle}>Downloading Quran…</Text>
+                    {dlProgress.fetching ? (
+                      <ActivityIndicator size="small" color={Colors.accent.primary} />
+                    ) : (
+                      <MaterialCommunityIcons name="refresh" size={16} color={Colors.accent.primary} />
+                    )}
+                    <Text style={styles.dlBannerTitle}>
+                      {dlProgress.fetching ? 'Downloading Quran…' : 'Download paused — tap to retry'}
+                    </Text>
                     <Text style={styles.dlBannerCount}>
                       {dlProgress.cached}/{dlProgress.total}
                     </Text>
@@ -599,9 +611,11 @@ export default function LibraryScreen({ navigation }: any) {
                     />
                   </View>
                   <Text style={styles.dlBannerSub}>
-                    Surahs will be available offline once downloaded
+                    {dlProgress.fetching
+                      ? 'Surahs will be available offline once downloaded'
+                      : 'Connection issue stopped the download — tap this banner to try again'}
                   </Text>
-                </View>
+                </TouchableOpacity>
               )}
 
               {/* Continue Reading banner */}
