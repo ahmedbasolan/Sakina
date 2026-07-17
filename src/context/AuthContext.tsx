@@ -19,6 +19,20 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+// Runs an RC identity call (logIn/logOut) then always resyncs entitlement
+// state afterward, success or failure. `.finally()` rather than `.then()`:
+// logIn()/logOut() have no internal error handling, so a rejection (RC
+// misconfigured, offline, invalid API key on this build) used to propagate
+// past a `.then()`-chained resync and skip it entirely — including
+// resync's own __DEV__ owner-override check, which never touches RC at all.
+function syncEntitlementAfter(rcCall: Promise<void>, email?: string | null): void {
+  rcCall
+    .catch(() => {})
+    .finally(() => {
+      SubscriptionService.getInstance().resync(email).catch(() => {});
+    });
+}
+
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
@@ -93,9 +107,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         // re-sync entitlement state for THIS identity — without this, a
         // shared device switching accounts kept showing the previous
         // account's premium/free status until an app restart.
-        revenueCat.logIn(currentSession.user.id)
-          .then(() => SubscriptionService.getInstance().resync(currentSession.user.email))
-          .catch(() => {});
+        syncEntitlementAfter(revenueCat.logIn(currentSession.user.id), currentSession.user.email);
 
         // One-time migration: sync guest data to Supabase on first sign-in
         if (!hasMigrated.current) {
@@ -117,9 +129,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         // Revert RC to anonymous ID so the next sign-in gets a clean identity,
         // then re-sync so this device's entitlement state matches the
         // now-anonymous identity instead of the departed account's.
-        revenueCat.logOut()
-          .then(() => SubscriptionService.getInstance().resync())
-          .catch(() => {});
+        syncEntitlementAfter(revenueCat.logOut());
       }
       setLoading(false);
     });
