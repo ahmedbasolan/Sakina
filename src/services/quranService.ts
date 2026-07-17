@@ -24,14 +24,28 @@ export interface DownloadProgress {
   cached: number;   // how many surahs are stored
   total: 114;
   done: boolean;
+  // True only while a fetch attempt is actively in flight. A fresh install
+  // has all 114 surahs missing at once — a first burst of concurrent
+  // requests against the free, unauthenticated alquran.cloud API — and
+  // persistent failures (rate-limiting, connectivity) used to leave the UI
+  // showing an unbroken "Downloading…" spinner forever with no signal that
+  // the attempt had actually stopped. `fetching` lets the caller tell
+  // "still working" apart from "gave up, some remain uncached" so it can
+  // offer a retry instead of a permanent spinner.
+  fetching: boolean;
 }
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
 const TOTAL_SURAHS = 114;
 const CACHE_TTL_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
-const BATCH_SIZE   = 8;   // concurrent fetches per batch
-const BATCH_DELAY  = 200; // ms pause between batches (be respectful of the free API)
+// A fresh install needs all 114 surahs at once — the first real cold-start
+// burst this code path ever sees, since a dev/preview tester's local DB
+// usually already has most of the cache from prior sessions. Lower
+// concurrency / longer spacing to stay under the free API's rate limits on
+// that first run.
+const BATCH_SIZE   = 4;   // concurrent fetches per batch
+const BATCH_DELAY  = 500; // ms pause between batches (be respectful of the free API)
 
 // Module-level singleton so multiple LibraryScreen mounts don't double-fetch
 let _isFetching = false;
@@ -149,7 +163,13 @@ async function fetchSurahWithRetry(surahNumber: number): Promise<QuranVerse[]> {
       return await fetchSurahFromApi(surahNumber);
     } catch (error) {
       lastError = error;
-      if (attempt < 3) await sleep(500 * attempt);
+      if (attempt < 3) {
+        // A 429 means the API is actively rate-limiting us — back off harder
+        // than a transient network blip so the next attempt (and the rest of
+        // the concurrent batch) isn't immediately rate-limited again too.
+        const isRateLimited = error instanceof Error && error.message.includes('HTTP 429');
+        await sleep((isRateLimited ? 2000 : 500) * attempt);
+      }
     }
   }
   throw lastError;
@@ -182,6 +202,7 @@ export async function getDownloadProgress(): Promise<DownloadProgress> {
       cached: freshCount,
       total: 114,
       done: freshCount >= TOTAL_SURAHS,
+      fetching: _isFetching,
     } as DownloadProgress;
   });
 }
@@ -219,7 +240,7 @@ export async function prefetchAllSurahs(
     }
 
     if (missing.length === 0) {
-      onProgress?.({ cached: TOTAL_SURAHS, total: 114, done: true });
+      onProgress?.({ cached: TOTAL_SURAHS, total: 114, done: true, fetching: false });
       return;
     }
 
@@ -240,6 +261,7 @@ export async function prefetchAllSurahs(
               cached,
               total: 114,
               done: cached >= TOTAL_SURAHS,
+              fetching: true,
             });
           } catch {
             // Network error for this surah — skip, will retry next launch
@@ -252,6 +274,11 @@ export async function prefetchAllSurahs(
         await sleep(BATCH_DELAY);
       }
     }
+
+    // Loop finished — report a final, non-fetching state even when some
+    // surahs are still missing, so the caller can distinguish "gave up" from
+    // "still working" instead of showing an indefinite spinner.
+    onProgress?.({ cached, total: 114, done: cached >= TOTAL_SURAHS, fetching: false });
   } finally {
     _isFetching = false;
   }
