@@ -120,7 +120,18 @@ async function fetchSurahFromApi(surahNumber: number): Promise<QuranVerse[]> {
   try {
     const url =
       `https://api.alquran.cloud/v1/surah/${surahNumber}/editions/quran-uthmani,en.sahih,en.transliteration`;
-    const res = await fetch(url, { signal: controller.signal });
+    // Race against an independent timer rather than relying solely on
+    // AbortController — some Android network stacks (a socket stalled mid
+    // WiFi/cellular handoff, in particular) have been seen to leave fetch()
+    // pending even after abort() fires. Since prefetchAllSurahs awaits each
+    // batch before starting the next, one request that never settles would
+    // hang the entire remaining download forever, not just this surah.
+    const res = await Promise.race([
+      fetch(url, { signal: controller.signal }),
+      new Promise<Response>((_, reject) =>
+        setTimeout(() => reject(new Error(`Timed out fetching surah ${surahNumber}`)), 16_000),
+      ),
+    ]);
     if (!res.ok) throw new Error(`HTTP ${res.status} for surah ${surahNumber}`);
     const json = await res.json();
     const arabics: any[] = json.data[0].ayahs;
