@@ -41,7 +41,12 @@ const HadithLayer: React.FC<HadithLayerProps> = ({
       onScroll={scrollY ? (e) => scrollY.setValue(e.nativeEvent.contentOffset.y) : undefined}
     >
       <View style={containerStyle}>
-        <BlurView intensity={85} style={styles.blurContainer}>
+        {/* tint="dark" is not optional on a dark surface: expo-blur defaults to
+            the LIGHT tint, which on Android renders as a flat opaque grey wash
+            rather than a blur — the card read as an unstyled slab. Every other
+            BlurView in this codebase passes tint="dark"; this was the only one
+            that didn't, and at intensity 85 vs the 14–65 its siblings use. */}
+        <BlurView intensity={20} tint="dark" style={styles.blurContainer}>
           {/* Arabic text */}
           {hadith.arabicText && (
             <Text
@@ -91,6 +96,11 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   contentContainer: {
+    // Centre the card in the available height instead of pinning it to the top.
+    // Top-aligned, it left ~55% of the screen empty below with nothing to
+    // anchor the eye — unanchored void reads as "failed to load", not as calm.
+    flexGrow: 1,
+    justifyContent: 'center',
     paddingHorizontal: Spacing.lg,
     paddingVertical: Spacing.xl,
   },
@@ -100,17 +110,22 @@ const styles = StyleSheet.create({
     borderRadius: BorderRadius.md,
     backgroundColor: `${Colors.glass.medium}`,
   },
+  // Matches VerseLayer's `arabic` (24/50) — the adjacent layer in the same
+  // pager, and the place where this codebase already worked out that
+  // Amiri-Quran needs lineHeight ≥ ~2.1× or the harakat clip. 20/32 was both
+  // below that floor and optically smaller than the 16pt English beneath it,
+  // which inverted the hierarchy: the translation outweighed the source text.
   arabicText: {
-    fontSize: Typography.sizes.h2,
+    fontSize: 24,
     fontFamily: Typography.fonts.arabic,
-    lineHeight: Typography.sizes.h2 * 1.6,
+    lineHeight: 50,
     marginBottom: Spacing.md,
     textAlign: 'center',
   },
   translationText: {
-    fontSize: Typography.sizes.body,
+    fontSize: Typography.sizes.small,
     fontFamily: Typography.fonts.latin,
-    lineHeight: Typography.sizes.body * 1.5,
+    lineHeight: Typography.sizes.small * 1.6,
     marginBottom: Spacing.md,
     textAlign: 'center',
   },
