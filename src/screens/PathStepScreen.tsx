@@ -88,6 +88,13 @@ export const PathStepScreen: React.FC = () => {
               : Promise.resolve(null),
           ]);
           if (experience) {
+            // Clear this day's reflection before handing off. The completion
+            // card now renders the text itself, so if `replace` ever reuses
+            // this screen instance instead of remounting it, day N+1 would
+            // show day N's words back to the user as if they'd just written
+            // them. Cheap insurance against a wrong-content bug.
+            setReflectionWritten(false);
+            setReflectionText('');
             navigation.replace('PathStep', {
               path,
               step: nextStep,
@@ -149,6 +156,9 @@ export const PathStepScreen: React.FC = () => {
     threshold: 50,
   });
   const [reflectionWritten, setReflectionWritten] = useState(false);
+  // The reflection text itself — the completion card echoes it back, which is
+  // what makes writing one feel worth the effort next time.
+  const [reflectionText, setReflectionText] = useState('');
   // Snapshot of progress with TODAY already appended — passed to the modal so
   // the ring/streak/next-day preview reflect the step just completed, not the
   // stale route.params snapshot (which is missing the current day).
@@ -238,6 +248,26 @@ export const PathStepScreen: React.FC = () => {
     return steps;
   }, [guidanceExperience]);
 
+  /**
+   * The single practice the user carries out of this session, shown as the hero
+   * of the completion card.
+   *
+   * Verbal first, deliberately. A du'a is what a person actually carries
+   * through a day — it needs no notebook, and it renders with its Arabic,
+   * transliteration and translation. Physical steps in the current content are
+   * overwhelmingly "write this down" (8 of 14 journey days use the same `pen`
+   * icon), which is a desk activity belonging to the session that just ended,
+   * and none of them carry a du'a — so a physical-first order would leave the
+   * card's Arabic block dead code on every single day.
+   *
+   * Falls back to null so the card omits the block rather than rendering an
+   * empty shell.
+   */
+  const carry = useMemo(() => {
+    const byType = (t: PracticeStepData['type']) => practiceSteps.find((s) => s.type === t);
+    return byType('verbal') || byType('physical') || byType('mindset') || null;
+  }, [practiceSteps]);
+
   const handleShare = async () => {
     try {
       await Share.share({
@@ -255,6 +285,22 @@ export const PathStepScreen: React.FC = () => {
   const handleComplete = (reflection: string) => {
     if (reflection && reflection.trim().length > 0) {
       setReflectionWritten(true);
+      setReflectionText(reflection);
+      // Journey reflections were never persisted — `saveReflection` was only
+      // ever called from GuidanceScreen, so everything written inside a path
+      // was discarded on navigate and never reached Reflection History. The
+      // old card's "Reflection saved" badge was asserting something that had
+      // not happened. Fire-and-forget: a storage failure must not block the
+      // completion flow the user has already earned.
+      rotationEngine
+        .saveReflection(step.contentId, step.angleId, path.theme, reflection)
+        .catch((error) =>
+          logServiceError(
+            'PathStepScreen',
+            'saveReflection',
+            error instanceof Error ? error : new Error(String(error)),
+          ),
+        );
     }
     // Build the updated snapshot eagerly so the celebration modal shows
     // today's day as already complete (correct %, streak, next-day preview).
@@ -418,6 +464,8 @@ export const PathStepScreen: React.FC = () => {
         step={step}
         userProgress={celebrationProgress}
         reflectionWritten={reflectionWritten}
+        reflectionText={reflectionText}
+        carry={carry}
         accentColor={accentColor}
         onContinue={handleCelebrationContinue}
         onClose={handleCelebrationClose}
