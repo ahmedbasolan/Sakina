@@ -18,6 +18,7 @@ import {
   Animated,
   Easing,
   TouchableOpacity,
+  Pressable,
   TextInput,
   ActivityIndicator,
 } from 'react-native';
@@ -31,6 +32,7 @@ import { CITIES } from '../data/cityData';
 import { saveUserLocation, formatLocation, UserLocation } from '../services/locationStorage';
 import { logServiceError } from '../services/errorLoggingService';
 import { useReduceMotion } from '../hooks/useReduceMotion';
+import { qiblaBearing, formatBearing } from '../utils/qibla';
 
 const HIT_SLOP = { top: 12, bottom: 12, left: 12, right: 12 };
 
@@ -58,7 +60,13 @@ function FadeSwapText({ text, style }: { text: string; style: any }) {
       useNativeDriver: true,
     }).start();
   }, [text]);
-  return <Animated.Text style={[style, { opacity }]}>{text}</Animated.Text>;
+  // Phase changes are announced: the compass is silent to a screen reader, so
+  // this line is the only signal that locating started, failed, or succeeded.
+  return (
+    <Animated.Text style={[style, { opacity }]} accessibilityLiveRegion="polite">
+      {text}
+    </Animated.Text>
+  );
 }
 
 type Phase = 'idle' | 'locating' | 'found' | 'manual';
@@ -77,7 +85,12 @@ interface LocationCompassProps {
   onResolved?: (location: UserLocation, longitude?: number) => void;
   /** Fires once the "found" confirmation has had its moment on screen. */
   onComplete: () => void;
-  /** Ms spent on the "found" confirmation before onComplete fires. */
+  /**
+   * Ms to dwell on the "found" confirmation before onComplete fires. Measured
+   * from the moment the needle finishes settling, not from when it starts —
+   * previously the screen navigated away mid-spring, cutting off the one
+   * payoff animation in the flow.
+   */
   settleDelay?: number;
   /** Full-screen contexts (onboarding) want the compass centered in the
    *  remaining space; a bounded sheet wants natural, content-sized flow. */
@@ -93,11 +106,12 @@ export function LocationCompass({
   onSkip,
   onResolved,
   onComplete,
-  settleDelay = 1100,
+  settleDelay = 700,
   fillHeight = false,
 }: LocationCompassProps) {
   const [phase, setPhase] = useState<Phase>('idle');
   const [resolved, setResolved] = useState<{ city: string; country: string } | null>(null);
+  const [qibla, setQibla] = useState<number | null>(null);
   const [query, setQuery] = useState('');
   const reduceMotion = useReduceMotion();
 
@@ -106,10 +120,23 @@ export function LocationCompass({
   const glowOpacity = useRef(new Animated.Value(0)).current;
   const checkScale = useRef(new Animated.Value(0)).current;
   const inputFocusAnim = useRef(new Animated.Value(0)).current;
+  const pressScale = useRef(new Animated.Value(1)).current;
 
   const spinLoop = useRef<Animated.CompositeAnimation | null>(null);
   const mountedRef = useRef(true);
   const advanceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // Mirrors `rotation`'s current value. The settle animation needs to know
+  // where the needle actually is so it can always travel FORWARD to the qibla
+  // (see completeLocation) — reading it back is the only way, since the spin
+  // loop leaves it at an arbitrary point whenever GPS happens to resolve.
+  const rotationValue = useRef(0);
+
+  useEffect(() => {
+    const id = rotation.addListener(({ value }) => {
+      rotationValue.current = value;
+    });
+    return () => rotation.removeListener(id);
+  }, [rotation]);
 
   useEffect(() => {
     mountedRef.current = true;
@@ -178,14 +205,51 @@ export function LocationCompass({
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => {});
       spinLoop.current?.stop();
 
-      // The needle settles on an angle derived from real longitude when GPS
-      // was used — a small authentic touch, not just a random flourish.
-      const targetTurns = longitude !== undefined ? (longitude + 180) / 360 : 0.62;
-      Animated.spring(rotation, {
-        toValue: targetTurns,
-        useNativeDriver: true,
-        ...Animations.spring.bouncy,
-      }).start();
+      // The needle settles on the QIBLA — the real great-circle bearing from
+      // here to the Kaaba. A compass needle carries a strong, universal promise
+      // that it points AT something; the previous behaviour mapped longitude
+      // onto a circle, which is unreadable and quietly breaks that promise.
+      // This is the one direction a Muslim app's compass should ever settle on,
+      // and it is free: the coordinates are already in hand.
+      const bearing =
+        location.latitude !== undefined && location.longitude !== undefined
+          ? qiblaBearing(location.latitude, location.longitude)
+          : null;
+      setQibla(bearing);
+
+      const advance = () => {
+        clearAdvanceTimer();
+        advanceTimer.current = setTimeout(() => {
+          if (mountedRef.current) onComplete();
+        }, settleDelay);
+      };
+
+      if (bearing === null) {
+        // Manually-picked city with no coordinates — nothing honest to point
+        // at, so ease the needle back to north rather than inventing an angle.
+        Animated.timing(rotation, {
+          toValue: Math.round(rotationValue.current),
+          duration: reduceMotion ? 0 : 600,
+          easing: Easing.out(Easing.cubic),
+          useNativeDriver: true,
+        }).start(advance);
+      } else if (reduceMotion) {
+        rotation.setValue(bearing / 360);
+        advance();
+      } else {
+        // Always travel FORWARD, and always through at least one full turn:
+        // the spin loop leaves the needle at an arbitrary angle, so springing
+        // straight to the target would sometimes visibly rewind — which reads
+        // as "the compass is confused" at the exact moment it should read as
+        // "found it". floor()+1 guarantees a forward sweep every time.
+        const targetTurns = Math.floor(rotationValue.current) + 1 + bearing / 360;
+        Animated.spring(rotation, {
+          toValue: targetTurns,
+          useNativeDriver: true,
+          ...Animations.spring.gentle,
+        }).start(advance); // dwell starts when the needle lands, not before
+      }
+
       Animated.sequence([
         Animated.timing(glowOpacity, { toValue: 1, duration: 300, useNativeDriver: true }),
         Animated.timing(glowOpacity, { toValue: 0.55, duration: 500, useNativeDriver: true }),
@@ -193,23 +257,30 @@ export function LocationCompass({
       Animated.spring(checkScale, { toValue: 1, useNativeDriver: true, ...Animations.spring.bouncy }).start();
 
       onResolved?.(location, longitude);
-
-      clearAdvanceTimer();
-      advanceTimer.current = setTimeout(() => {
-        if (mountedRef.current) onComplete();
-      }, settleDelay);
     },
-    [onResolved, onComplete, settleDelay],
+    [onResolved, onComplete, settleDelay, reduceMotion, rotation, glowOpacity, checkScale],
   );
 
   const revealManual = useCallback(() => {
     if (!mountedRef.current) return;
     spinLoop.current?.stop();
+    // Unwind to north instead of freezing mid-spin. Stopping the loop used to
+    // abandon the needle at whatever arbitrary angle GPS failed at — a dimmed
+    // needle stuck at 237° reads as a broken instrument, not a resting one.
+    Animated.timing(rotation, {
+      toValue: Math.round(rotationValue.current),
+      duration: reduceMotion ? 0 : 500,
+      easing: Easing.out(Easing.cubic),
+      useNativeDriver: true,
+    }).start();
     setPhase('manual');
-  }, []);
+  }, [rotation, reduceMotion]);
 
   const handleUseLocation = useCallback(async () => {
-    if (phase !== 'idle') return;
+    // 'manual' is allowed through so a denied/failed attempt can be retried —
+    // previously the only way out of manual mode was to pick a city, which
+    // stranded anyone who denied the permission prompt by accident.
+    if (phase !== 'idle' && phase !== 'manual') return;
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
     setPhase('locating');
     try {
@@ -274,6 +345,13 @@ export function LocationCompass({
           ? `✓  ${resolved.city}, ${resolved.country}`
           : 'Your location tunes every prayer time and verse to where you stand.';
 
+  // Now that the needle lands on a real bearing, say so — an unexplained angle
+  // is just a flourish; a named one is information the user can act on.
+  const foundWhisper =
+    qibla !== null
+      ? `✦ Qibla ${formatBearing(qibla)} · prayer times ready`
+      : '✦ Prayer times are ready for you';
+
   const rotateDeg = rotation.interpolate({ inputRange: [0, 1], outputRange: ['0deg', '360deg'] });
   const inputBorderColor = inputFocusAnim.interpolate({
     inputRange: [0, 1],
@@ -284,6 +362,21 @@ export function LocationCompass({
   const ringSize = compassSize * (200 / 260);
   const needleSize = compassSize * (130 / 260);
 
+  const canTapCompass = phase === 'idle' || phase === 'manual';
+
+  // Place the confirmation badge on the ring itself at 45° (upper-right).
+  // The ring's SVG circle is r=44 in a 100 viewBox, so its rendered radius is
+  // ringSize * 0.44; 0.7071 is cos/sin of 45°.
+  const badgeOffset = useMemo(() => {
+    const CHECK_BADGE_SIZE = 28;
+    const radius = ringSize * 0.44;
+    const delta = radius * 0.7071;
+    return {
+      left: compassSize / 2 + delta - CHECK_BADGE_SIZE / 2,
+      top: compassSize / 2 - delta - CHECK_BADGE_SIZE / 2,
+    };
+  }, [compassSize, ringSize]);
+
   return (
     <View style={[styles.container, fillHeight && styles.containerFill]}>
       {/* Header */}
@@ -292,9 +385,30 @@ export function LocationCompass({
         <FadeSwapText text={statusText} style={styles.status} />
       </View>
 
-      {/* Compass */}
+      {/* Compass — the hero element, and therefore the primary target.
+          Every layer below is pointerEvents="none", so before this the largest
+          thing on screen was inert decoration while the real control sat in a
+          small button underneath: the biggest target was not the target. */}
       <View style={[styles.compassRow, fillHeight && styles.compassRowFill]}>
-        <View style={{ width: compassSize, height: compassSize }}>
+        <Pressable
+          onPress={canTapCompass ? handleUseLocation : undefined}
+          onPressIn={() => {
+            if (!canTapCompass || reduceMotion) return;
+            Animated.spring(pressScale, { toValue: 0.96, useNativeDriver: true, ...Animations.spring.gentle }).start();
+          }}
+          onPressOut={() => {
+            if (reduceMotion) return;
+            Animated.spring(pressScale, { toValue: 1, useNativeDriver: true, ...Animations.spring.gentle }).start();
+          }}
+          disabled={!canTapCompass}
+          accessibilityRole="button"
+          accessibilityLabel="Use my current location"
+          accessibilityHint={canTapCompass ? 'Finds your city and the direction of the qibla' : undefined}
+          accessibilityState={{ disabled: !canTapCompass, busy: phase === 'locating' }}
+        >
+        <Animated.View
+          style={{ width: compassSize, height: compassSize, transform: [{ scale: pressScale }] }}
+        >
           <View style={StyleSheet.absoluteFill} pointerEvents="none">
             <AnimatedMandala size={compassSize} color={Colors.accent.primary} opacity={0.42} webLayers={2} />
           </View>
@@ -342,7 +456,17 @@ export function LocationCompass({
             </Svg>
           </Animated.View>
 
-          <Animated.View style={[styles.checkBadge, { transform: [{ scale: checkScale }] }]} pointerEvents="none">
+          <Animated.View
+            style={[
+              styles.checkBadge,
+              // Sit ON the ring at 45°, scaled with the compass. Hardcoded
+              // top/right pinned the badge to the container instead, so it
+              // floated detached in the mandala field and drifted whenever a
+              // caller passed a different compassSize.
+              { top: badgeOffset.top, left: badgeOffset.left, transform: [{ scale: checkScale }] },
+            ]}
+            pointerEvents="none"
+          >
             <Svg width={16} height={16} viewBox="0 0 16 16">
               <Path
                 d="M3,8.5 L6.5,12 L13,4"
@@ -354,7 +478,8 @@ export function LocationCompass({
               />
             </Svg>
           </Animated.View>
-        </View>
+        </Animated.View>
+        </Pressable>
       </View>
 
       {/* Bottom controls */}
@@ -453,9 +578,7 @@ export function LocationCompass({
           </View>
         )}
 
-        {phase === 'found' && (
-          <FadeSwapText text="✦ Prayer times are ready for you" style={styles.foundWhisper} />
-        )}
+        {phase === 'found' && <FadeSwapText text={foundWhisper} style={styles.foundWhisper} />}
       </View>
     </View>
   );
@@ -503,9 +626,8 @@ const styles = StyleSheet.create({
     elevation: 8,
   },
   checkBadge: {
+    // top/left are computed from compassSize at render — see badgeOffset.
     position: 'absolute',
-    top: 20,
-    right: 20,
     width: 28,
     height: 28,
     borderRadius: 14,

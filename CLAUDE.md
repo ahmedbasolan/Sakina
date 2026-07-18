@@ -172,6 +172,137 @@ Example of the shift:
 
 ---
 
+## Journey Sessions — Authoring & Wiring
+
+A Journey (`SpiritualPath`) is a multi-day arc. Each `dailySteps[]` entry is a
+**pointer**, not content: `contentId` (the verse), `angleId` (the lesson body),
+optional `hadithContentId`. The lesson itself lives in the **angle** in
+`quranData.ts` — its `angle` text, `practiceSteps` JSON, and `reflection`.
+
+### 1. Never point a journey step at a generic mood angle
+
+Angles come in two families, and they are **not interchangeable**:
+
+- `q_angle_<verse>_<mood>` (e.g. `q_angle_3_159_angry`) — authored for the
+  **mood-picker** flow. Carries that mood's action and reflection.
+- `q_angle_<journey>_<day>` (e.g. `q_angle_rizq_day4`, `q_angle_salah_1`,
+  `q_angle_results_day1`) — authored for **one specific journey day**.
+
+Journey steps must use the second family. This shipped broken: Trusting the
+Results Day 1 ("Do Your Part, Trust the Rest", theme `Overwhelmed`) pointed at
+`q_angle_3_159_angry` — mood `Angry`, action *"Perform a silent prayer for the
+person you are angry with"*, reflection about confrontation and mercy. A user
+opening an exam-anxiety journey got a full session about forgiving someone.
+
+The verse can be shared across journeys and moods. **The angle cannot.** If a
+step needs a verse that already has a mood angle, write a new journey angle
+against the same `contentId` — don't reuse the mood one.
+
+Both Study journeys are now fully on journey angles — `path_trusting_the_results`
+on `q_angle_results_day1`–`day7`, `path_study_journaling` on
+`q_angle_study_day1`–`day7`. `scripts/verify-journey.mjs` enforces this for
+both; **add any new journey to that script's `JOURNEYS` list** so the same
+check covers it.
+
+`path_rizq_revolution` and `path_salah_transformation` already use dedicated
+angles but predate this section — their angles are terser, lack the
+`[Tafsir ...]` tag, and Salah reuses `quran_29_45` on days 3 and 7. They are
+not in the verifier's list yet and would not pass it unchanged.
+
+### 1b. One verse and one hadith per journey
+
+Within a single journey, no `contentId` and no hadith source may appear twice —
+in a 7-day arc a repeat is 2/7 of the content. Results had both: days 3 and 5
+shipped the *same* hadith (Muslim 2999, "Wondrous is the affair of the
+believer") under two different day titles. Check with a scripted sweep, not by
+eye; `hadithData.ts` ids are per-day (`hadith_results_5`) so a duplicate hides
+behind a distinct-looking id.
+
+### 2. `content.whyThis` is per-verse, not per-journey
+
+`PathStepScreen` passes `content.whyThis` as ContextLayer's `source`, which
+renders as the footnote. `whyThis` is written once per verse, usually for its
+original mood — 3:159's is about Uhud and gentleness, irrelevant to tawakkul.
+
+Include a `[Tafsir <source> on <surah>:<ayah>]` tag in the angle text.
+`extractSourceLabel` prefers it over `whyThis`, and `cleanText` strips it from
+the visible body. **Put the tag at the very start of the angle string** — mid-
+sentence it strips to a stranded space before the punctuation (`"instead of it ."`).
+
+### 3. Adding any angle requires a `SEED_VERSION` bump
+
+`seedContent.ts` skips already-seeded installs. A new angle without the bump
+exists only on fresh installs; everyone else hits `getGuidanceForStep → null`
+and the "A Moment of Patience" alert. This is how the Salah Transformation
+angles went missing before. Bump `SEED_VERSION` in `seedContent.ts` and note
+what was added. (`CURRENT_DB_VERSION` in `operations.ts` drops and recreates
+the content tables — heavier, only needed for schema changes.)
+
+`content_angles` has **no `actionTranslation` column**. Put any translation you
+need rendered inside the `practiceSteps` JSON, which is stored whole.
+
+### 4. ContextLayer's prop mapping differs by screen — know which you're writing for
+
+- `GuidanceScreen`: `text = content.whyThis` (scholarly), `angle = angle.angle`
+  (the direct-address "For Your Heart" card).
+- `PathStepScreen`: `text = angle.angle`, and **no `angle` prop** — so journeys
+  never render the For Your Heart card, and the angle text lands in the
+  *scholarly* Understand/Matters slot instead.
+
+So journey angles are written in **tafsir/scholarly voice**, not the direct-
+address voice required by the "For Your Heart" section above. That divergence
+is deliberate-by-accident, not designed; don't "fix" it by swapping the mapping
+without rewriting all four unlocked journeys' angles, which are authored for
+the slot they currently land in.
+
+`ContextLayer.splitIntoSections` splits the angle into Understand / Matters on
+a fixed pattern list (`. When you`, `. Your `, `. The Prophet ﷺ said:`, …).
+Write angle text containing one of those so the split lands where you intend;
+otherwise it falls back to a 60% sentence split.
+
+### 5. Before calling a journey day done
+
+Three scripts, none of which need a device:
+
+- `node scripts/verify-journey.mjs` — static checks (1, 2, 4, 5, 6 below plus
+  the tag/split rules). Add new journeys to its `JOURNEYS` list.
+- `node scripts/verify-journey-roundtrip.mjs` — seeds every angle into a real
+  in-memory SQLite using the actual DDL and seeder column list, reads back via
+  `fetchAngleById`'s query, and replays PathStepScreen + ContextLayer on the
+  result. This is what proves a day renders, not just that it parses.
+- `node scripts/verify-journey-selftest.mjs` — injects 12 known faults into a
+  sandbox copy and asserts the verifier catches each. Run it after editing
+  `verify-journey.mjs`; a checker that only ever prints "passed" is untested.
+
+Between them they caught a collapsed Understand/Matters split, a stray-space
+artifact, and a brace-matcher that counted `{` inside string literals — none
+of which a typecheck can see.
+
+1. `angleId` resolves, and belongs to this journey — not a mood angle.
+2. Angle `mood` matches the path `theme`.
+3. Every ayah verified per "Quoting Quran Text" above — fetch the raw JSON, do
+   not trust `WebFetch` or memory.
+4. `practiceSteps` JSON parses; `type`/`icon`/`sourceType` are valid union members.
+5. Verse and hadith source not already used by another day in the same journey.
+6. Each day's du'a is distinct from the other days'.
+7. `SEED_VERSION` bumped.
+
+`staticPaths.ts` is **CRLF** and several `focus`/`title` strings contain escaped
+apostrophes (`Allah\'s`). A `/focus: '[^']*'/` style regex stops at the escape
+and silently truncates the string — always typecheck after a scripted edit, and
+prefer anchoring edits to the `id: 'step_<x>'` block, since angle ids like
+`q_angle_94_5_stressed` are shared across journeys and a global replace will hit
+the wrong one.
+
+### 6. Journey availability is data, currently hardcoded in UI
+
+`AVAILABLE_PATH_IDS` lives in `PathsScreen.tsx` while
+`PathsService.getAllPaths()` returns all 23 unfiltered. 16 paths have **zero**
+`dailySteps`. Any new surface that lists or deep-links journeys must check
+availability, or it will route users into an empty journey.
+
+---
+
 ## Commands
 - Typecheck: `npx tsc --noEmit -p tsconfig.json`
 - (Run on device via Expo to verify visual changes — visuals can't be confirmed from a typecheck alone.)

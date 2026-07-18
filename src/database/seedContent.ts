@@ -29,9 +29,14 @@ import type { Content, ContentAngle } from '../types';
 // installs skip the seeder once content exists, so without a version bump
 // they would never receive later additions (this is how the Salah
 // Transformation angles went missing for already-seeded devices). Every
-// insert below is INSERT OR IGNORE, so a version-triggered re-run is
-// idempotent and cheap.
-const SEED_VERSION = 4;
+// insert below is INSERT OR REPLACE, so a version-triggered re-run is
+// idempotent and cheap — and edits to an existing row (not just new rows)
+// do propagate to already-seeded installs once this version is bumped.
+// v5: added q_angle_results_day1 (Trusting the Results, Day 1).
+// v6: added q_angle_results_day2..day7; replaced hadith_results_5 (was a
+//     duplicate of hadith_results_3) with Bukhari 5641.
+// v7: added q_angle_study_day1..day7.
+const SEED_VERSION = 7;
 // Separate keys per content type — Quran and Hadith data change independently,
 // and each seeder used to write the SAME key at the end of its run. Since
 // initializeDatabase() awaits seedQuranContent() before seedHadithContent(),
