@@ -95,6 +95,23 @@ export default [
     },
   },
   {
+    // Node ESM dev tooling (scripts/*.mjs) — not React Native, and the main
+    // config's `files` glob only covers js/jsx/ts/tsx, so these would
+    // otherwise lint with no Node globals defined.
+    files: ['scripts/**/*.mjs'],
+    languageOptions: {
+      ecmaVersion: 2022,
+      sourceType: 'module',
+      globals: {
+        console: 'readonly',
+        process: 'readonly',
+        require: 'readonly',
+        module: 'readonly',
+        __dirname: 'readonly',
+      },
+    },
+  },
+  {
     ignores: ['node_modules/', 'build/', 'dist/', '.expo/', 'android/', 'ios/', 'coverage/'],
   },
 ];
