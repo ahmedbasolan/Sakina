@@ -23,6 +23,7 @@ import { JourneyMandalaBackdrop } from '../components/JourneyMandalaBackdrop';
 import { logServiceError } from '../services/errorLoggingService';
 import { HapticsService } from '../services/hapticsService';
 import { fetchWindowGuidance as fetchWindowGuidanceShared, buildFridayKahfExperiences } from '../services/guidanceWindowFetch';
+import { getCachedSurah, fetchAndCacheSurah } from '../services/quranService';
 import {
   HeroHeader,
   VerseOfTheDay,
@@ -233,6 +234,19 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
   // two Fridays" (al-Hakim). `now` already ticks every minute / on foreground
   // resume, so this flips over at midnight without needing its own timer.
   const isFriday = useMemo(() => new Date(now).getDay() === 5, [now]);
+
+  // Warm the Al-Kahf cache as soon as the banner shows the Friday state,
+  // instead of on first tap — without this, tapping the banner on a Friday
+  // triggered a full network fetch of all 110 verses (fetchAndCacheSurah)
+  // right before navigating, which read as the banner "hanging".
+  useEffect(() => {
+    if (!isFriday) return;
+    getCachedSurah(18).then((cached) => {
+      if (!cached || cached.length === 0) {
+        fetchAndCacheSurah(18).catch(() => {});
+      }
+    });
+  }, [isFriday]);
 
   // Spinner state for the spiritual-window banner (same touch-feedback
   // contract as the mood cards: guard + haptic + visible progress).

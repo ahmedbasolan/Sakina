@@ -39,13 +39,6 @@ export interface DownloadProgress {
 
 const TOTAL_SURAHS = 114;
 const CACHE_TTL_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
-// A fresh install needs all 114 surahs at once — the first real cold-start
-// burst this code path ever sees, since a dev/preview tester's local DB
-// usually already has most of the cache from prior sessions. Lower
-// concurrency / longer spacing to stay under the free API's rate limits on
-// that first run.
-const BATCH_SIZE   = 4;   // concurrent fetches per batch
-const BATCH_DELAY  = 500; // ms pause between batches (be respectful of the free API)
 
 // Module-level singleton so multiple LibraryScreen mounts don't double-fetch
 let _isFetching = false;
@@ -218,11 +211,115 @@ export async function getDownloadProgress(): Promise<DownloadProgress> {
   });
 }
 
+interface RawApiAyah {
+  numberInSurah: number;
+  text: string;
+}
+interface RawApiSurah {
+  number: number;
+  ayahs: RawApiAyah[];
+}
+
+async function fetchEditionBulk(edition: string): Promise<RawApiSurah[]> {
+  const controller = new AbortController();
+  // The whole-Quran payload is a few MB, not a few KB — give it more room
+  // than the single-surah timeout before calling it dead.
+  const timeoutId = setTimeout(() => controller.abort(), 25_000);
+  try {
+    const url = `https://api.alquran.cloud/v1/quran/${edition}`;
+    const res = await Promise.race([
+      fetch(url, { signal: controller.signal }),
+      new Promise<Response>((_, reject) =>
+        setTimeout(() => reject(new Error(`Timed out fetching edition ${edition}`)), 26_000),
+      ),
+    ]);
+    if (!res.ok) throw new Error(`HTTP ${res.status} for edition ${edition}`);
+    const json = await res.json();
+    return json.data.surahs as RawApiSurah[];
+  } finally {
+    clearTimeout(timeoutId);
+  }
+}
+
+async function fetchEditionBulkWithRetry(edition: string): Promise<RawApiSurah[]> {
+  let lastError: unknown;
+  for (let attempt = 1; attempt <= 3; attempt++) {
+    try {
+      return await fetchEditionBulk(edition);
+    } catch (error) {
+      lastError = error;
+      if (attempt < 3) {
+        const isRateLimited = error instanceof Error && error.message.includes('HTTP 429');
+        await sleep((isRateLimited ? 2000 : 800) * attempt);
+      }
+    }
+  }
+  throw lastError;
+}
+
 /**
- * Pre-fetches all 114 surahs in batches.
+ * Fetches the entire Quran — all 114 surahs, all 3 editions — as 3 bulk
+ * requests instead of the 114 individual per-surah ones prefetchAllSurahs
+ * used to make. That per-surah loop was the actual cause of a 2-hour, 4-surah
+ * download on a real device: every surah needed its own round trip, and any
+ * single flaky one ate a 16s timeout × 3 retries before the batch could move
+ * on. alquran.cloud's `/v1/quran/{edition}` endpoint returns every surah for
+ * one edition in a single ~1-5MB response that lands in ~1-2s, so the whole
+ * Quran downloads in 3 parallel requests instead of 342 sequential-ish ones.
+ */
+async function fetchFullQuranFromApi(): Promise<Map<number, QuranVerse[]>> {
+  const [arabicSurahs, englishSurahs, translitSurahs] = await Promise.all([
+    fetchEditionBulkWithRetry('quran-uthmani'),
+    fetchEditionBulkWithRetry('en.sahih'),
+    fetchEditionBulkWithRetry('en.transliteration'),
+  ]);
+
+  if (
+    arabicSurahs.length !== TOTAL_SURAHS ||
+    englishSurahs.length !== TOTAL_SURAHS ||
+    translitSurahs.length !== TOTAL_SURAHS
+  ) {
+    throw new Error(
+      `Edition surah-count mismatch: arabic=${arabicSurahs.length} en=${englishSurahs.length} translit=${translitSurahs.length}`,
+    );
+  }
+
+  const englishBySurah = new Map(englishSurahs.map((s) => [s.number, s]));
+  const translitBySurah = new Map(translitSurahs.map((s) => [s.number, s]));
+
+  const result = new Map<number, QuranVerse[]>();
+  for (const arabicSurah of arabicSurahs) {
+    const surahNumber = arabicSurah.number;
+    const englishSurah = englishBySurah.get(surahNumber);
+    const translitSurah = translitBySurah.get(surahNumber);
+    // Same "fail this surah rather than silently misalign" guarantee
+    // fetchSurahFromApi already had — skip it here, an on-demand read of
+    // this specific surah later falls back to fetchAndCacheSurah.
+    if (
+      !englishSurah ||
+      !translitSurah ||
+      englishSurah.ayahs.length !== arabicSurah.ayahs.length ||
+      translitSurah.ayahs.length !== arabicSurah.ayahs.length
+    ) {
+      continue;
+    }
+    const verses = arabicSurah.ayahs.map((a, i) => ({
+      numberInSurah: a.numberInSurah,
+      arabic: stripEmbeddedBismillah(a.text, surahNumber, a.numberInSurah),
+      translation: englishSurah.ayahs[i]?.text ?? '',
+      transliteration: translitSurah.ayahs[i]?.text ?? '',
+    }));
+    result.set(surahNumber, verses);
+  }
+  return result;
+}
+
+/**
+ * Pre-fetches all 114 surahs via 3 bulk requests (see fetchFullQuranFromApi).
  *
  * Safe to call multiple times — only one fetch loop runs at a time.
- * Calls `onProgress` after each surah is stored so the UI can update.
+ * Calls `onProgress` once fetching starts, then again as each surah is
+ * written to the cache and once more at the end.
  */
 export async function prefetchAllSurahs(
   onProgress?: (progress: DownloadProgress) => void,
@@ -232,8 +329,6 @@ export async function prefetchAllSurahs(
 
   try {
     await ensureCacheFormatVersion();
-    // Determine which surahs still need fetching — one bulk query instead of 114
-    const { cached: alreadyCached } = await getDownloadProgress();
     const freshSet = await dbQuery(async (db) => {
       const rows = await db.getAllAsync<{ surahNumber: number; cachedAt: number }>(
         'SELECT surahNumber, cachedAt FROM quran_cache',
@@ -245,64 +340,76 @@ export async function prefetchAllSurahs(
       );
     });
 
-    const missing: number[] = [];
-    for (let n = 1; n <= TOTAL_SURAHS; n++) {
-      if (!freshSet.has(n)) missing.push(n);
-    }
-
-    if (missing.length === 0) {
+    if (freshSet.size >= TOTAL_SURAHS) {
       onProgress?.({ cached: TOTAL_SURAHS, total: 114, done: true, fetching: false });
       return;
     }
 
-    let cached = alreadyCached;
+    onProgress?.({ cached: freshSet.size, total: 114, done: false, fetching: true });
 
-    // Process in batches
-    for (let i = 0; i < missing.length; i += BATCH_SIZE) {
-      const batch = missing.slice(i, i + BATCH_SIZE);
+    const allSurahs = await fetchFullQuranFromApi();
+    const fetchedAt = Date.now();
+    let cached = freshSet.size;
 
-      // Fetch all in current batch concurrently
-      await Promise.allSettled(
-        batch.map(async (surahNumber) => {
-          try {
-            const verses = await fetchSurahWithRetry(surahNumber);
-            await writeSurahCache(surahNumber, verses);
-            cached++;
-            onProgress?.({
-              cached,
-              total: 114,
-              done: cached >= TOTAL_SURAHS,
-              fetching: true,
-            });
-          } catch {
-            // Network error for this surah — skip, will retry next launch
+    // One transaction for all inserts — 114 individual dbQuery round trips
+    // would reintroduce the exact multi-second stall this rewrite removes.
+    await dbQuery(async (db) => {
+      await db.withTransactionAsync(async () => {
+        for (let n = 1; n <= TOTAL_SURAHS; n++) {
+          if (freshSet.has(n)) continue;
+          const verses = allSurahs.get(n);
+          if (!verses) continue; // this surah's zip failed — an on-demand open will retry it
+          await db.runAsync(
+            'INSERT OR REPLACE INTO quran_cache (surahNumber, data, cachedAt) VALUES (?, ?, ?)',
+            [n, JSON.stringify(verses), fetchedAt],
+          );
+          cached++;
+          // Throttled so 114 rapid setState calls don't churn the UI — the
+          // writes themselves take well under a second total, this is purely
+          // so the progress bar reads as moving rather than jumping 4→114.
+          if (cached % 10 === 0) {
+            onProgress?.({ cached, total: 114, done: false, fetching: true });
           }
-        }),
-      );
+        }
+      });
+    });
 
-      // Brief pause between batches to avoid hammering the free API
-      if (i + BATCH_SIZE < missing.length) {
-        await sleep(BATCH_DELAY);
-      }
-    }
-
-    // Loop finished — report a final, non-fetching state even when some
-    // surahs are still missing, so the caller can distinguish "gave up" from
-    // "still working" instead of showing an indefinite spinner.
     onProgress?.({ cached, total: 114, done: cached >= TOTAL_SURAHS, fetching: false });
+  } catch (error) {
+    // Bulk fetch failed outright (network down, API outage) — report the
+    // current cached count so the UI shows "stalled", not a stuck spinner.
+    const current = await getDownloadProgress().catch(
+      () => ({ cached: 0, total: 114, done: false, fetching: false } as DownloadProgress),
+    );
+    onProgress?.({ ...current, fetching: false });
   } finally {
     _isFetching = false;
   }
 }
+
+// Keyed by surahNumber so concurrent callers (e.g. a Friday cache-warm effect
+// racing the reader screen's own load) await the same request instead of
+// each firing a separate fetch of the same surah.
+const inFlightSurahFetches = new Map<number, Promise<QuranVerse[]>>();
 
 /**
  * Fetches a surah from the API and stores it in the cache.
  * Throws on network error so the caller can show an error state.
  */
 export async function fetchAndCacheSurah(surahNumber: number): Promise<QuranVerse[]> {
-  const verses = await fetchSurahFromApi(surahNumber);
-  await writeSurahCache(surahNumber, verses);
-  return verses;
+  const existing = inFlightSurahFetches.get(surahNumber);
+  if (existing) return existing;
+
+  const promise = (async () => {
+    const verses = await fetchSurahWithRetry(surahNumber);
+    await writeSurahCache(surahNumber, verses);
+    return verses;
+  })().finally(() => {
+    inFlightSurahFetches.delete(surahNumber);
+  });
+
+  inFlightSurahFetches.set(surahNumber, promise);
+  return promise;
 }
 
 /**
