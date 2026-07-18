@@ -10787,6 +10787,760 @@ const quranContentAnglesData: ContentAngle[] = [
     actionReward: 'Prayer prevents immorality and wrongdoing when sealed with remembrance.',
     reflection: 'How has your prayer changed over 7 days? What will you maintain?',
   },
+
+  // === TRUSTING THE RESULTS ANGLES ===
+  // Journey-specific angles for path_trusting_the_results. Do NOT point these
+  // steps back at the generic mood angles (q_angle_<verse>_<mood>) — those are
+  // authored for the mood-picker flow and carry a different mood, action and
+  // reflection than the journey day needs. See CLAUDE.md § "Journey Sessions".
+  {
+    id: 'q_angle_results_day1',
+    contentId: 'quran_3_159',
+    mood: 'Overwhelmed',
+    angle:
+      "[Tafsir Ibn Kathir on 3:159] The order Allah gives in this ayah is deliberate: consult the matter (shūrā), then resolve on it, and only then rely — 'And when you have decided, then rely upon Allah.' Tawakkul is placed after the work, never instead of it. When you have studied, revised, and done what was genuinely in your hand, the outcome stops being your burden to carry. Allah names His love for al-mutawakkilīn — those who rely on Him — and He names it for the one who acts first, then entrusts the rest.",
+    action:
+      'Name the one preparation step that is still yours to do today — then do it, and hand the outcome over deliberately.',
+    actionHowTo:
+      'Write the action down before you start, and when it is finished say the du\'a of Musa (peace be upon him) once, out loud: "Rabbi ishrah li sadri wa yassir li amri."',
+    actionReward:
+      'Allah closes the ayah with a promise, not a warning: "Indeed, Allah loves those who rely upon Him." [Quran 3:159]',
+    actionArabicText: 'رَبِّ اشْرَحْ لِي صَدْرِي وَيَسِّرْ لِي أَمْرِي',
+    actionTransliteration: "Rabbi ishrah li sadri wa yassir li amri",
+    actionTranslation: 'My Lord, expand for me my breast and ease for me my task',
+    actionSource: "Quran 20:25-26 — the du'a of Musa (peace be upon him)",
+    practiceSteps: JSON.stringify([
+      {
+        type: 'mindset',
+        icon: 'target',
+        title: 'Effort first, then trust',
+        instruction:
+          'The ayah gives an order: consult, decide, then rely. Tawakkul is not a substitute for preparing — it is what you do with the part that was never in your hands. Anxiety tries to reverse this, asking you to carry the result before you have even done the work.',
+        source: 'Tafsir Ibn Kathir on 3:159',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'physical',
+        icon: 'pen',
+        title: 'Name today\'s one action',
+        instruction:
+          'Write down the single preparation step that is genuinely yours today — one chapter, one past paper, one hour without your phone. Not the whole syllabus. One. Then do it before you think about the result again.',
+        source: 'Surah Ali Imran 3:159 — Quran',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'verbal',
+        icon: 'hands-prayer',
+        title: 'Hand over the rest',
+        instruction:
+          'When the action is done, say the du\'a of Musa (peace be upon him) before a hard task. You are asking for an expanded chest and an eased affair — not for the outcome to be changed, but for you to be carried through it.',
+        arabicText: 'رَبِّ اشْرَحْ لِي صَدْرِي وَيَسِّرْ لِي أَمْرِي',
+        transliteration: "Rabbi ishrah li sadri wa yassir li amri",
+        translation: 'My Lord, expand for me my breast and ease for me my task',
+        source: "Quran 20:25-26",
+        sourceType: 'quran_dua',
+      },
+    ]),
+    reflection:
+      'What part of this result was genuinely in your hands today, and what part never was? Name both — then leave the second one with Allah.',
+  },
+  {
+    id: 'q_angle_results_day2',
+    contentId: 'quran_94_5',
+    mood: 'Overwhelmed',
+    angle:
+      "[Tafsir Ibn Kathir on 94:5-6] The grammarians point at something precise here: 'the hardship' (al-'usr) carries the definite article both times — it is one and the same hardship — while 'ease' (yusr) is indefinite both times, and an indefinite noun repeated is a new one each time. One hardship, two eases. When you are waiting on a result, your mind insists this difficulty is permanent and singular. The ayah answers that the ease is the thing that comes in plural, and that it arrives *with* the hardship, not only after it has gone.",
+    action: 'Turn one anxious thought into a du\'a instead of replaying it.',
+    actionHowTo:
+      'Catch yourself mid-worry today. Instead of finishing the thought, say the du\'a the Prophet ﷺ said when distressed — out loud if you can.',
+    actionReward:
+      'Prophet ﷺ said: "No one is given a gift better and more far-reaching than patience." [Bukhari 1469]',
+    actionArabicText:
+      'اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنَ الْهَمِّ وَالْحَزَنِ، وَالْعَجْزِ وَالْكَسَلِ، وَالْبُخْلِ وَالْجُبْنِ، وَضَلَعِ الدَّيْنِ وَغَلَبَةِ الرِّجَالِ',
+    actionTransliteration:
+      "Allahumma inni a'udhu bika mina l-hammi wa l-hazan, wa l-'ajzi wa l-kasal, wa l-bukhli wa l-jubn, wa dala'i d-dayni wa ghalabati r-rijal",
+    actionTranslation:
+      'O Allah, I seek refuge in You from anxiety and grief, from incapacity and laziness, from miserliness and cowardice, from the burden of debt and from being overpowered by men',
+    actionSource: 'Bukhari 6369',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'mindset',
+        icon: 'light-bulb',
+        title: 'One hardship, two eases',
+        instruction:
+          'Read the ayah twice and notice what repeats. The hardship is named as one, definite thing. The ease is named twice and left indefinite — a different ease each time. Your worry is arguing that this is permanent. The ayah is arguing that it is outnumbered.',
+        source: 'Tafsir Ibn Kathir on 94:5-6',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'verbal',
+        icon: 'hands-prayer',
+        title: "The Prophet's du'a for anxiety",
+        instruction:
+          'The Prophet ﷺ named hamm (anxiety about what is coming) and hazan (grief about what has passed) as things to seek refuge from — so your anxiety is not a defect in your faith, it is a recognised condition with a prescribed response. Say this du\'a when the worry rises.',
+        arabicText:
+          'اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنَ الْهَمِّ وَالْحَزَنِ، وَالْعَجْزِ وَالْكَسَلِ، وَالْبُخْلِ وَالْجُبْنِ، وَضَلَعِ الدَّيْنِ وَغَلَبَةِ الرِّجَالِ',
+        transliteration:
+          "Allahumma inni a'udhu bika mina l-hammi wa l-hazan, wa l-'ajzi wa l-kasal, wa l-bukhli wa l-jubn, wa dala'i d-dayni wa ghalabati r-rijal",
+        translation:
+          'O Allah, I seek refuge in You from anxiety and grief, from incapacity and laziness, from miserliness and cowardice, from the burden of debt and from being overpowered by men',
+        source: 'Bukhari 6369',
+        sourceType: 'prophetic_dua',
+        sourceGrading: 'sahih',
+      },
+      {
+        type: 'physical',
+        icon: 'pen',
+        title: 'Convert the loop into a du\'a',
+        instruction:
+          'Write down the worry sentence your mind keeps repeating. Underneath it, rewrite the same thing addressed to Allah as a request. Then close the notebook. The loop needs a destination — give it one.',
+        source: 'Surah Ash-Sharh 94:5 — Quran',
+        sourceType: 'quran_dua',
+      },
+    ]),
+    reflection:
+      'Which worry did you catch today and turn toward Allah instead of replaying? What changed in your body when you did?',
+  },
+  {
+    id: 'q_angle_results_day3',
+    contentId: 'quran_2_153',
+    mood: 'Overwhelmed',
+    angle:
+      "[Tafsir Ibn Kathir on 2:153] Allah prescribes two instruments for difficulty, not one: sabr and salah. Ibn Kathir notes the ayah closes by naming where Allah is — with the patient — so sabr is not endurance in isolation, it is the condition in which His companionship is promised. When you cannot name what you are afraid of, fear stays shapeless and grows. Salah forces it into words, because you cannot stand before Allah and remain vague about what you want from Him.",
+    action: 'Name the fear precisely, then take it into two rak\'ah.',
+    actionHowTo:
+      'Write the fear as one specific sentence — not "I might fail" but exactly what you dread. Then pray two rak\'ah and ask Allah for that specific thing by name in your sujud.',
+    actionReward:
+      'Prophet ﷺ said: "The closest a servant is to his Lord is while he is in prostration, so make much supplication then." [Muslim 482]',
+    actionArabicText: 'يَا حَيُّ يَا قَيُّومُ بِرَحْمَتِكَ أَسْتَغِيثُ',
+    actionTransliteration: "Ya Hayyu ya Qayyum, bi rahmatika astaghith",
+    actionTranslation: 'O Ever-Living, O Sustainer, by Your mercy I seek relief',
+    actionSource: 'Tirmidhi 3524',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'physical',
+        icon: 'pen',
+        title: 'Give the fear a name',
+        instruction:
+          'Vague dread cannot be answered. Write the fear as one exact sentence — the specific outcome, the specific consequence you imagine following it. Most fears shrink measurably the moment they are made to be specific.',
+        source: 'Surah Al-Baqarah 2:153 — Quran',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'physical',
+        icon: 'mosque',
+        title: 'Take it into two rak\'ah',
+        instruction:
+          'The ayah pairs sabr with salah deliberately. Pray two rak\'ah and, in sujud, ask Allah for the exact thing you just wrote down — by name, in your own language. This is the part of the fear that is answerable.',
+        source: 'Muslim 482',
+        sourceType: 'sunnah_action',
+        sourceGrading: 'sahih',
+      },
+      {
+        type: 'verbal',
+        icon: 'star',
+        title: 'Call on Him by these two Names',
+        instruction:
+          'When distress became severe, the Prophet ﷺ would call on Allah by al-Hayy and al-Qayyum — the Ever-Living who never tires, the Sustainer who holds everything upright. You are asking the One who is already holding the outcome.',
+        arabicText: 'يَا حَيُّ يَا قَيُّومُ بِرَحْمَتِكَ أَسْتَغِيثُ',
+        transliteration: "Ya Hayyu ya Qayyum, bi rahmatika astaghith",
+        translation: 'O Ever-Living, O Sustainer, by Your mercy I seek relief',
+        source: 'Tirmidhi 3524',
+        sourceType: 'prophetic_dua',
+        sourceGrading: 'hasan',
+      },
+    ]),
+    reflection:
+      'Writing the fear as one exact sentence — did it get bigger or smaller? What did you actually ask Allah for in sujud?',
+  },
+  {
+    id: 'q_angle_results_day4',
+    contentId: 'quran_65_3',
+    mood: 'Overwhelmed',
+    angle:
+      "[Tafsir Ibn Kathir on 65:3] Allah says He will provide from where the servant does not expect, and then adds a clause that settles the whole matter: He has already set a measure (qadr) for everything. Ibn Kathir reads this as both limit and guarantee — nothing arrives early, nothing arrives late, and nothing arrives larger or smaller than what was decreed. When you are waiting on a result, the exhausting part is rarely the outcome itself. It is the belief that your worrying is somehow load-bearing — that if you stop turning it over, you will have failed to hold something up.",
+    action: 'Sort what is left into two columns: yours, and already written.',
+    actionHowTo:
+      'Draw a line down a page. Left: what is still genuinely in your control. Right: what is already decided. Act only on the left today, and say "Hasbunallahu wa ni\'mal wakeel" over the right.',
+    actionReward:
+      'Prophet ﷺ said: "Know that what has passed you by was never going to befall you, and what has befallen you was never going to pass you by." [Tirmidhi 2516]',
+    actionArabicText: 'حَسْبُنَا اللَّهُ وَنِعْمَ الْوَكِيلُ',
+    actionTransliteration: "Hasbunallahu wa ni'mal wakeel",
+    actionTranslation: 'Sufficient for us is Allah, and He is the best Disposer of affairs',
+    actionSource: "Quran 3:173 — the du'a of the believers",
+    practiceSteps: JSON.stringify([
+      {
+        type: 'mindset',
+        icon: 'moon',
+        title: 'A measure for everything',
+        instruction:
+          'The ayah closes by saying Allah has set a measure for all things. Nothing you are waiting on will arrive early, late, or in a different size than what was decreed. Your worry is not one of the inputs.',
+        source: 'Tafsir Ibn Kathir on 65:3',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'physical',
+        icon: 'pen',
+        title: 'Two columns',
+        instruction:
+          'Draw a line down a page. Left: what is still in your hands — a resit, an email, a conversation, a next application. Right: what is already written. Today you are allowed to work only on the left column.',
+        source: 'Tirmidhi 2516',
+        sourceType: 'sunnah_action',
+        sourceGrading: 'hasan',
+      },
+      {
+        type: 'verbal',
+        icon: 'shield',
+        title: 'Say it over the right column',
+        instruction:
+          'The companions said this when told the odds were against them, and it increased them in faith rather than fear. Say it over everything in the right-hand column — the part that is no longer yours.',
+        arabicText: 'حَسْبُنَا اللَّهُ وَنِعْمَ الْوَكِيلُ',
+        transliteration: "Hasbunallahu wa ni'mal wakeel",
+        translation: 'Sufficient for us is Allah, and He is the best Disposer of affairs',
+        source: 'Quran 3:173',
+        sourceType: 'quran_dua',
+      },
+    ]),
+    reflection:
+      'What was in your right-hand column? Notice how much energy you have been spending on things already written.',
+  },
+  {
+    id: 'q_angle_results_day5',
+    contentId: 'quran_3_200',
+    mood: 'Overwhelmed',
+    angle:
+      "[Tafsir Ibn Kathir on 3:200] Three commands arrive in sequence: isbiru (be patient in your own hardship), sabiru (outlast it when others make it harder), and rabitu — a word taken from holding a post, staying stationed at the frontier when nothing is happening. That third one is the hardest and the least discussed. When you have nothing left to do and no news yet, waiting stops feeling like worship and starts feeling like wasted time. Allah names it as the third station of endurance and attaches success to it directly — the holding itself is the act, not the gap between acts.",
+    action: 'Hold your post today without checking, refreshing, or re-litigating.',
+    actionHowTo:
+      'Choose one waiting behaviour to drop for 24 hours — refreshing the portal, re-reading your answers, asking others what they got. Replace it once with dhikr.',
+    actionReward:
+      'Prophet ﷺ said: "No fatigue, nor illness, nor anxiety, nor sorrow, nor hurt, nor distress befalls a Muslim, but that Allah expiates some of his sins by it." [Bukhari 5641]',
+    actionArabicText: 'لَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللَّهِ',
+    actionTransliteration: "La hawla wa la quwwata illa billah",
+    actionTranslation: 'There is no might and no power except by Allah',
+    actionSource: 'Bukhari 6384',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'mindset',
+        icon: 'compass',
+        title: 'Rabitu — holding the post',
+        instruction:
+          'The third command in the ayah is about staying stationed when nothing is happening. You are not in a gap between useful days. Waiting well is the assignment right now, and the ayah attaches success to precisely this.',
+        source: 'Tafsir Ibn Kathir on 3:200',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'physical',
+        icon: 'clock',
+        title: 'Drop one checking behaviour',
+        instruction:
+          'Name the thing you keep doing that produces no new information — refreshing the portal, re-reading your answers, asking others what they put. Drop exactly one of them for 24 hours. Checking is not preparation; it is the anxiety feeding itself.',
+        source: 'Surah Ali Imran 3:200 — Quran',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'verbal',
+        icon: 'candle',
+        title: 'A treasure from beneath the Throne',
+        instruction:
+          'The Prophet ﷺ called this phrase a treasure from the treasures of Paradise. Say it each time you reach for the thing you just dropped — it names exactly what waiting teaches: the power was never yours to begin with.',
+        arabicText: 'لَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللَّهِ',
+        transliteration: "La hawla wa la quwwata illa billah",
+        translation: 'There is no might and no power except by Allah',
+        source: 'Bukhari 6384',
+        sourceType: 'prophetic_dhikr',
+        sourceGrading: 'sahih',
+      },
+    ]),
+    reflection:
+      'Which checking behaviour did you drop, and how many times did you reach for it anyway? What did the waiting feel like once it had a name?',
+  },
+  {
+    id: 'q_angle_results_day6',
+    contentId: 'quran_14_7',
+    mood: 'Overwhelmed',
+    angle:
+      "[Tafsir Ibn Kathir on 14:7] The promise is doubly emphasised in the Arabic — la-azidannakum carries both the lam and the nun of emphasis, which is as close to an unconditional guarantee as the language goes. Note also what is left unspecified: Allah says He will increase you, but never says in what. When you are waiting on one particular result, gratitude feels impossible to offer before you know the answer — as though thanks must be earned by good news first. But the increase promised here was never tied to the outcome you are watching. It is tied only to whether you were grateful.",
+    action: 'Write the gratitude list for both endings, before you know which one arrives.',
+    actionHowTo:
+      'Two short lists: what you are grateful for if this goes the way you want, and what you are grateful for if it does not. Notice how much appears on both.',
+    actionReward:
+      'Prophet ﷺ said: "Wondrous is the affair of the believer — if good befalls him he is grateful, and that is good for him; if harm befalls him he is patient, and that is good for him." [Muslim 2999]',
+    actionArabicText: 'اللَّهُمَّ أَعِنِّي عَلَى ذِكْرِكَ وَشُكْرِكَ وَحُسْنِ عِبَادَتِكَ',
+    actionTransliteration: "Allahumma a'inni 'ala dhikrika wa shukrika wa husni 'ibadatik",
+    actionTranslation:
+      'O Allah, help me to remember You, to thank You, and to worship You well',
+    actionSource: 'Abu Dawud 1522',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'mindset',
+        icon: 'honey',
+        title: 'The increase is not the outcome',
+        instruction:
+          'Allah guarantees increase for gratitude but never specifies in what. You have been assuming the increase must be the result you are waiting on. It was never promised in that currency — which means gratitude is available to you right now, before any news.',
+        source: 'Tafsir Ibn Kathir on 14:7',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'physical',
+        icon: 'pen',
+        title: 'Both endings',
+        instruction:
+          'Write two lists: what you are grateful for if this goes your way, and what you are grateful for if it does not. Most of what you write will appear on both lists. That overlap is what was never actually at stake.',
+        source: 'Muslim 2999',
+        sourceType: 'sunnah_action',
+        sourceGrading: 'sahih',
+      },
+      {
+        type: 'verbal',
+        icon: 'hands-prayer',
+        title: 'The du\'a taught to Mu\'adh',
+        instruction:
+          'The Prophet ﷺ took Mu\'adh by the hand, told him he loved him, and taught him to ask for help with three things — remembrance, gratitude, and worshipping well. Gratitude is listed as something you need help with. Ask for it.',
+        arabicText: 'اللَّهُمَّ أَعِنِّي عَلَى ذِكْرِكَ وَشُكْرِكَ وَحُسْنِ عِبَادَتِكَ',
+        transliteration: "Allahumma a'inni 'ala dhikrika wa shukrika wa husni 'ibadatik",
+        translation: 'O Allah, help me to remember You, to thank You, and to worship You well',
+        source: 'Abu Dawud 1522',
+        sourceType: 'prophetic_dua',
+        sourceGrading: 'sahih',
+      },
+    ]),
+    reflection:
+      'What appeared on both of your gratitude lists? That is the part of your life this result was never going to decide.',
+  },
+  {
+    id: 'q_angle_results_day7',
+    contentId: 'quran_2_286',
+    mood: 'Overwhelmed',
+    angle:
+      "[Tafsir Ibn Kathir on 2:286] The ayah opens by stating a limit — Allah does not burden a soul beyond its capacity — and then, remarkably, teaches you to ask Him not to test that limit anyway. Ibn Kathir records that after each request in this ayah, Allah answered: qad fa'alt — I have done so. When you reach the end of a week like this, sabr can start to sound like being told to feel nothing. It is not. This ayah asks Allah to lift what is heavy and pardon what was missed, and it was answered — so patience here means continuing to move while the answer is still outstanding, not pretending the weight was never there.",
+    action: 'Decide the one next step you will take regardless of the result.',
+    actionHowTo:
+      'Write it as a specific action with a date, not an intention. Then recite the last two ayahs of Surah Al-Baqarah tonight before sleeping.',
+    actionReward:
+      'Prophet ﷺ said: "Whoever seeks to be patient, Allah will make him patient. Nobody is given a gift better and more far-reaching than patience." [Bukhari 1469]',
+    actionArabicText: 'رَبَّنَا لَا تُؤَاخِذْنَا إِنْ نَسِينَا أَوْ أَخْطَأْنَا',
+    actionTransliteration: "Rabbana la tu'akhidhna in nasina aw akhta'na",
+    actionTranslation: 'Our Lord, do not take us to task if we forget or make a mistake',
+    actionSource: 'Quran 2:286',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'mindset',
+        icon: 'shield',
+        title: 'The limit, and the answer',
+        instruction:
+          'Allah states that no soul is burdened beyond capacity, then teaches you to ask for lightening anyway — and answered each request with qad fa\'alt, "I have done so." The weight you carried this week was real, it was within your capacity, and the request to have it lightened has already been granted.',
+        source: 'Tafsir Ibn Kathir on 2:286',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'physical',
+        icon: 'arrow-right',
+        title: 'The step that holds either way',
+        instruction:
+          'Write one next action that is true no matter which result arrives — the application you send, the conversation you have, the subject you keep studying. Sabr is not waiting passively; it is the strength to move before the answer comes.',
+        source: 'Bukhari 1469',
+        sourceType: 'sunnah_action',
+        sourceGrading: 'sahih',
+      },
+      {
+        type: 'verbal',
+        icon: 'moon',
+        title: 'Close the week with these ayahs',
+        instruction:
+          'Recite the last two ayahs of Surah Al-Baqarah tonight. The Prophet ﷺ said whoever recites them at night, they will suffice him. You have carried this for seven days — hand it over before you sleep.',
+        arabicText: 'رَبَّنَا لَا تُؤَاخِذْنَا إِنْ نَسِينَا أَوْ أَخْطَأْنَا',
+        transliteration: "Rabbana la tu'akhidhna in nasina aw akhta'na",
+        translation: 'Our Lord, do not take us to task if we forget or make a mistake',
+        source: 'Quran 2:286 · Bukhari 5009',
+        sourceType: 'quran_dua',
+      },
+    ]),
+    reflection:
+      'Look back at what you wrote on Day 1. What were you certain of then that you are less certain of now — and what is the one step you are taking regardless?',
+  },
+
+  // === STUDY JOURNALING ANGLES ===
+  // Journey-specific angles for path_study_journaling (theme: Hopeful).
+  // Previously these seven days borrowed mood angles — two of them mood
+  // 'Tired' — see CLAUDE.md § "Journey Sessions".
+  {
+    id: 'q_angle_study_day1',
+    contentId: 'quran_53_39',
+    mood: 'Hopeful',
+    angle:
+      "[Tafsir Ibn Kathir on 53:39] The ayah sets the terms plainly: what belongs to a person is what they strove for. Ibn Kathir reads this as a mercy as much as a standard — no one is held to another's result, and no one's effort is credited to someone else's account. When you study, the striving is the part that is recorded. The mark that comes back later is an outcome, and outcomes pass through hands other than yours; the sa'y — the effort itself — is already written down and already yours, whatever the paper eventually says.",
+    action: 'Log the effort, not the result.',
+    actionHowTo:
+      'At the end of today, write down what you actually did — minutes, pages, problems attempted — with no evaluation attached. Then ask Allah to increase you.',
+    actionReward:
+      'Prophet ﷺ said: "Whoever treads a path seeking knowledge, Allah will ease for him a path to Paradise." [Muslim 2699]',
+    actionArabicText: 'رَبِّ زِدْنِي عِلْمًا',
+    actionTransliteration: "Rabbi zidni 'ilma",
+    actionTranslation: 'My Lord, increase me in knowledge',
+    actionSource: "Quran 20:114 — the du'a Allah taught the Prophet ﷺ",
+    practiceSteps: JSON.stringify([
+      {
+        type: 'mindset',
+        icon: 'target',
+        title: 'The striving is the record',
+        instruction:
+          'What is recorded for you is the effort, not the grade. Results pass through examiners, curves, and circumstances you do not control. The sa\'y is the part with your name on it, and it is already counted.',
+        source: 'Tafsir Ibn Kathir on 53:39',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'physical',
+        icon: 'pen',
+        title: 'An effort log, not a scorecard',
+        instruction:
+          'Tonight write only what you did: minutes worked, pages read, problems attempted. No judgement, no "should have". You are building a record of striving, which is the thing the ayah says belongs to you.',
+        source: 'Surah An-Najm 53:39 — Quran',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'verbal',
+        icon: 'book-quran',
+        title: 'The only increase asked for',
+        instruction:
+          'Allah instructed His Prophet ﷺ to ask for increase in one thing only — knowledge. Say it after your effort log, and notice that it asks for more understanding, not a better mark.',
+        arabicText: 'رَبِّ زِدْنِي عِلْمًا',
+        transliteration: "Rabbi zidni 'ilma",
+        translation: 'My Lord, increase me in knowledge',
+        source: 'Quran 20:114',
+        sourceType: 'quran_dua',
+      },
+    ]),
+    reflection:
+      'Write down what you actually did today, with no verdict attached. How different does that feel from how you have been talking to yourself about it?',
+  },
+  {
+    id: 'q_angle_study_day2',
+    contentId: 'quran_14_7',
+    mood: 'Hopeful',
+    angle:
+      "[Tafsir Ibn Kathir on 14:7] The guarantee is stated with double emphasis in the Arabic — la-azidannakum — and yet what the increase consists of is deliberately left open. Ibn Kathir notes that gratitude is treated here as a cause, not a courtesy. When you tie thankfulness to the grade, you make it conditional on news you have not received, and it never arrives. But the capacity itself was already given: that you can read at all, that the subject exists in a language you understand, that someone taught you to hold a pen. None of that was earned by a result.",
+    action: 'Name three things about your learning that no grade can take back.',
+    actionHowTo:
+      'Write them specifically — not "my education" but the teacher, the book, the sibling who explained something. Then thank Allah for each by name.',
+    actionReward:
+      'Prophet ﷺ said: "Whoever treads a path seeking knowledge, Allah will ease for him a path to Paradise." [Muslim 2699]',
+    actionArabicText: 'الْحَمْدُ لِلَّهِ الَّذِي بِنِعْمَتِهِ تَتِمُّ الصَّالِحَاتُ',
+    actionTransliteration: "Alhamdulillahi lladhi bi ni'matihi tatimmu s-salihat",
+    actionTranslation: 'All praise is for Allah, by whose favour good things are completed',
+    actionSource: 'Ibn Majah 3803',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'mindset',
+        icon: 'honey',
+        title: 'Gratitude is the cause, not the reward',
+        instruction:
+          'You have been treating thanks as something to offer once results justify it. The ayah reverses the order: gratitude comes first and increase follows. Nothing about that sequence requires you to know your grade.',
+        source: 'Tafsir Ibn Kathir on 14:7',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'physical',
+        icon: 'pen',
+        title: 'Three things a grade cannot revoke',
+        instruction:
+          'Write three specific things — not "my education" but the teacher who stayed behind, the book you were lent, the fact that you can read this sentence at all. Each was given before any result existed.',
+        source: 'Surah Ibrahim 14:7 — Quran',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'verbal',
+        icon: 'leaf',
+        title: 'For what is already complete',
+        instruction:
+          'The Prophet ﷺ said this when something good reached him. Say it over the three things you wrote — they are favours already completed, not pending.',
+        arabicText: 'الْحَمْدُ لِلَّهِ الَّذِي بِنِعْمَتِهِ تَتِمُّ الصَّالِحَاتُ',
+        transliteration: "Alhamdulillahi lladhi bi ni'matihi tatimmu s-salihat",
+        translation: 'All praise is for Allah, by whose favour good things are completed',
+        source: 'Ibn Majah 3803',
+        sourceType: 'prophetic_dhikr',
+        sourceGrading: 'hasan',
+      },
+    ]),
+    reflection:
+      'Which of your three was given to you by a specific person? Have you ever told them?',
+  },
+  {
+    id: 'q_angle_study_day3',
+    contentId: 'quran_22_77',
+    mood: 'Hopeful',
+    angle:
+      "[Tafsir Ibn Kathir on 22:77] The ayah lists bowing, prostrating, worship — and then widens without warning: wa-f'alu al-khayr, and do good. Ibn Kathir takes the phrase as deliberately unbounded, covering every good act, not only the ritual ones named before it. When you sit down to study with the intention that this is for Allah — so you can support your parents, serve people with what you know, stop being a burden — the hours do not become worship by being relabelled. They were already inside the category the ayah opened. The niyyah is what makes you aware of it.",
+    action: 'State the intention out loud before you open the book.',
+    actionHowTo:
+      'Before your next study session, say why you are doing it and who it serves. Say it in your own words, out loud, before the first page.',
+    actionReward:
+      'Prophet ﷺ said: "Actions are but by intentions, and every person will have only what he intended." [Bukhari 1]',
+    actionArabicText:
+      'قُلْ إِنَّ صَلَاتِي وَنُسُكِي وَمَحْيَايَ وَمَمَاتِي لِلَّهِ رَبِّ الْعَالَمِينَ',
+    actionTransliteration:
+      "Qul inna salati wa nusuki wa mahyaya wa mamati lillahi rabbi l-'alamin",
+    actionTranslation:
+      'Say: indeed my prayer, my rites, my living and my dying are for Allah, Lord of the worlds',
+    actionSource: 'Quran 6:162',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'mindset',
+        icon: 'compass',
+        title: 'The category was already open',
+        instruction:
+          'The ayah names ruku and sujud, then says "and do good" without drawing a boundary. Your study hours were never outside worship waiting to be admitted. Intention makes you conscious of where they already sat.',
+        source: 'Tafsir Ibn Kathir on 22:77',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'physical',
+        icon: 'chat',
+        title: 'Say it before the first page',
+        instruction:
+          'Out loud, before you open anything: why you are studying and who it serves. Silent intentions drift. Spoken ones are harder to abandon at the first difficult paragraph.',
+        source: 'Bukhari 1',
+        sourceType: 'sunnah_action',
+        sourceGrading: 'sahih',
+      },
+      {
+        type: 'verbal',
+        icon: 'star',
+        title: 'The widest possible niyyah',
+        instruction:
+          'This ayah hands over not just acts of worship but living and dying. Recite it when you sit down — it sets the intention wider than today\'s chapter.',
+        arabicText:
+          'قُلْ إِنَّ صَلَاتِي وَنُسُكِي وَمَحْيَايَ وَمَمَاتِي لِلَّهِ رَبِّ الْعَالَمِينَ',
+        transliteration:
+          "Qul inna salati wa nusuki wa mahyaya wa mamati lillahi rabbi l-'alamin",
+        translation:
+          'Say: indeed my prayer, my rites, my living and my dying are for Allah, Lord of the worlds',
+        source: 'Quran 6:162',
+        sourceType: 'quran_dua',
+      },
+    ]),
+    reflection:
+      'You said your intention out loud. Did the reason you gave match the reason you have actually been studying?',
+  },
+  {
+    id: 'q_angle_study_day4',
+    contentId: 'quran_94_5',
+    mood: 'Hopeful',
+    angle:
+      "[Tafsir Ibn Kathir on 94:5-6] Notice the preposition: ma'a al-'usr, *with* the hardship — not after it, not once it is over. The ease is described as accompanying the difficulty rather than replacing it. When you hit the topic that will not go in, you tend to read the confusion as a verdict about your ability, and stop. But confusion is what understanding feels like from the inside, before it resolves. The ease the ayah promises is arriving alongside the struggle, in the same sitting, not on the far side of giving up.",
+    action: 'Give the hard topic twenty minutes — and ask for it to be made easy first.',
+    actionHowTo:
+      'Set a timer for twenty minutes on the thing you have been avoiding. Before you start, say the du\'a the Prophet ﷺ taught for difficulty.',
+    actionReward:
+      'Prophet ﷺ said: "O Allah, nothing is easy except what You make easy, and You make the difficult easy if You wish." [Sahih Ibn Hibban]',
+    actionArabicText:
+      'اللَّهُمَّ لَا سَهْلَ إِلَّا مَا جَعَلْتَهُ سَهْلًا، وَأَنْتَ تَجْعَلُ الْحَزْنَ إِذَا شِئْتَ سَهْلًا',
+    actionTransliteration:
+      "Allahumma la sahla illa ma ja'altahu sahla, wa anta taj'alu l-hazna idha shi'ta sahla",
+    actionTranslation:
+      'O Allah, nothing is easy except what You make easy, and You make the difficult easy if You wish',
+    actionSource: 'Sahih Ibn Hibban 974',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'mindset',
+        icon: 'light-bulb',
+        title: "Ma'a, not ba'd",
+        instruction:
+          'The ayah says ease comes *with* the hardship, not after it. Confusion is not evidence that you cannot do this — it is what learning feels like from the inside, in the minutes before it resolves.',
+        source: 'Tafsir Ibn Kathir on 94:5-6',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'verbal',
+        icon: 'hands-prayer',
+        title: 'Ask before you begin',
+        instruction:
+          'Say this before you open the hard topic, not after you have already despaired of it. It names the difficulty honestly and asks the only One who can change it.',
+        arabicText:
+          'اللَّهُمَّ لَا سَهْلَ إِلَّا مَا جَعَلْتَهُ سَهْلًا، وَأَنْتَ تَجْعَلُ الْحَزْنَ إِذَا شِئْتَ سَهْلًا',
+        transliteration:
+          "Allahumma la sahla illa ma ja'altahu sahla, wa anta taj'alu l-hazna idha shi'ta sahla",
+        translation:
+          'O Allah, nothing is easy except what You make easy, and You make the difficult easy if You wish',
+        source: 'Sahih Ibn Hibban 974',
+        sourceType: 'prophetic_dua',
+        sourceGrading: 'sahih',
+      },
+      {
+        type: 'physical',
+        icon: 'clock',
+        title: 'Twenty minutes, timer on',
+        instruction:
+          'The thing you have been avoiding: twenty minutes, timer visible, one specific sub-part of it. Not mastery — contact. Avoidance is what makes a topic grow; twenty minutes is what shrinks it.',
+        source: 'Surah Ash-Sharh 94:5 — Quran',
+        sourceType: 'quran_dua',
+      },
+    ]),
+    reflection:
+      'What was the hard topic, and what actually happened in those twenty minutes? Was it as bad as the avoidance suggested?',
+  },
+  {
+    id: 'q_angle_study_day5',
+    contentId: 'quran_103_1_3',
+    mood: 'Hopeful',
+    angle:
+      "[Tafsir Ibn Kathir on 103:1-3] Allah swears by time itself, then declares the whole of mankind in loss — and carves out an exception built from four things done steadily: faith, righteous action, counselling truth, counselling patience. Ibn Kathir notes ash-Shafi'i's remark that if people reflected on this surah alone it would suffice them. When you measure a week of study by its best day, every ordinary day looks like failure. The surah measures differently: it is interested in what you kept doing, and it treats time as the thing being spent whether or not you spend it deliberately.",
+    action: 'Count the days you showed up, not the hours on your best day.',
+    actionHowTo:
+      'Mark the days this week you did anything at all — even fifteen minutes. Then set tomorrow\'s minimum low enough that you will not miss it.',
+    actionReward:
+      'Prophet ﷺ said: "The most beloved deeds to Allah are the most consistent, even if small." [Bukhari 6465 / Muslim 782]',
+    actionArabicText:
+      'لَا إِلَهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ',
+    actionTransliteration:
+      "La ilaha illa Allahu wahdahu la sharika lah, lahu l-mulku wa lahu l-hamdu wa huwa 'ala kulli shay'in qadir",
+    actionTranslation:
+      'There is no god but Allah alone, without partner. His is the dominion and His is the praise, and He is capable of all things',
+    actionSource: 'Bukhari 6403',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'mindset',
+        icon: 'clock',
+        title: 'Time is spent either way',
+        instruction:
+          'Allah swears by time and then names the exception to loss as four things done steadily. Your best day is not the measure. What you kept doing is. The hours pass whether or not you decided how.',
+        source: 'Tafsir Ibn Kathir on 103:1-3',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'physical',
+        icon: 'chart',
+        title: 'Count days, not hours',
+        instruction:
+          'Mark every day this week you did anything at all — fifteen minutes counts. Then set tomorrow\'s minimum deliberately low. A minimum you will actually hit beats an ambitious one you will skip and then abandon.',
+        source: 'Bukhari 6465 / Muslim 782',
+        sourceType: 'sunnah_action',
+        sourceGrading: 'sahih',
+      },
+      {
+        type: 'verbal',
+        icon: 'flame',
+        title: 'A hundred, daily',
+        instruction:
+          'The Prophet ﷺ described saying this a hundred times a day and the reward attached to it — the model of a small thing repeated daily rather than a large thing done once. Say it while walking or between sessions.',
+        arabicText:
+          'لَا إِلَهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ',
+        transliteration:
+          "La ilaha illa Allahu wahdahu la sharika lah, lahu l-mulku wa lahu l-hamdu wa huwa 'ala kulli shay'in qadir",
+        translation:
+          'There is no god but Allah alone, without partner. His is the dominion and His is the praise, and He is capable of all things',
+        source: 'Bukhari 6403',
+        sourceType: 'prophetic_dhikr',
+        sourceGrading: 'sahih',
+        count: 100,
+        countSource: 'Bukhari 6403',
+      },
+    ]),
+    reflection:
+      'How many days did you show up this week? What is a tomorrow-minimum small enough that you genuinely cannot miss it?',
+  },
+  {
+    id: 'q_angle_study_day6',
+    contentId: 'quran_2_286',
+    mood: 'Hopeful',
+    angle:
+      "[Tafsir Ibn Kathir on 2:286] Allah states the limit — no soul is charged beyond its capacity — and then teaches you to ask Him not to load you beyond your strength anyway. Ibn Kathir records that each request in this ayah was answered with qad fa'alt: I have done so. When you hold yourself to a standard Allah did not set, you are not being diligent; you are inventing a burden and then failing to carry it. The ayah gives you permission to ask for less, and records that the asking was granted.",
+    action: 'Find the standard you invented, and replace it with a sufficient one.',
+    actionHowTo:
+      'Write the impossible version of today\'s expectation, then write beside it what would genuinely be enough. Do the second one.',
+    actionReward:
+      'Prophet ﷺ taught this du\'a: "O Allah, I ask You for beneficial knowledge, good provision, and accepted deeds." [Ibn Majah 925]',
+    actionArabicText: 'رَبَّنَا وَلَا تُحَمِّلْنَا مَا لَا طَاقَةَ لَنَا بِهِ',
+    actionTransliteration: "Rabbana wa la tuhammilna ma la taqata lana bih",
+    actionTranslation: 'Our Lord, do not burden us with what we have no strength to bear',
+    actionSource: 'Quran 2:286',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'mindset',
+        icon: 'shield',
+        title: 'A limit you did not set',
+        instruction:
+          'Allah fixed the ceiling at your capacity. Perfectionism raises it past that and then treats the shortfall as a character flaw. The standard you are failing was not the one you were given.',
+        source: 'Tafsir Ibn Kathir on 2:286',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'physical',
+        icon: 'pen',
+        title: 'Two standards, side by side',
+        instruction:
+          'Write what you expected of yourself today in full. Beside it, write what would honestly have been enough. The gap between the two columns is the thing that has been exhausting you — not the work.',
+        source: 'Surah Al-Baqarah 2:286 — Quran',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'verbal',
+        icon: 'breathing',
+        title: 'Ask for the lighter load',
+        instruction:
+          'This request sits inside the ayah itself, and Ibn Kathir records that it was answered. You are permitted to ask for less. Say it over the left-hand column.',
+        arabicText: 'رَبَّنَا وَلَا تُحَمِّلْنَا مَا لَا طَاقَةَ لَنَا بِهِ',
+        transliteration: "Rabbana wa la tuhammilna ma la taqata lana bih",
+        translation: 'Our Lord, do not burden us with what we have no strength to bear',
+        source: 'Quran 2:286',
+        sourceType: 'quran_dua',
+      },
+    ]),
+    reflection:
+      'What was in your left-hand column? Who set that standard — and would you hold anyone else to it?',
+  },
+  {
+    id: 'q_angle_study_day7',
+    contentId: 'quran_2_152',
+    mood: 'Hopeful',
+    angle:
+      "[Tafsir Ibn Kathir on 2:152] Allah offers an exchange with no equivalent elsewhere: remember Me, and I will remember you. Ibn Kathir cites the hadith qudsi — if he remembers Me in himself, I remember him in Myself; if he remembers Me in a gathering, I remember him in a better gathering. Then gratitude is joined to it in the same breath. When you close a week of work, the instinct is to audit it — what you covered, what slipped. This ayah proposes a different closing: remembrance and thanks, with the promise that the remembering runs in both directions.",
+    action: 'Thank a person, out loud, by name.',
+    actionHowTo:
+      'Pick one human being who helped you learn this week — a teacher, a parent, a friend who explained something. Tell them today. Then thank Allah for them.',
+    actionReward:
+      'Prophet ﷺ said: "Whoever does not thank people has not thanked Allah." [Abu Dawud 4811]',
+    actionArabicText: 'جَزَاكَ اللَّهُ خَيْرًا',
+    actionTransliteration: "Jazakallahu khayran",
+    actionTranslation: 'May Allah reward you with good',
+    actionSource: 'Tirmidhi 2035',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'mindset',
+        icon: 'heart',
+        title: 'Remembrance runs both ways',
+        instruction:
+          'The exchange in this ayah has no equivalent: you remember Him, and He remembers you. A week does not have to be closed with an audit of what you failed to cover. It can be closed with dhikr and thanks.',
+        source: 'Tafsir Ibn Kathir on 2:152',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'physical',
+        icon: 'chat',
+        title: 'Thank a person by name',
+        instruction:
+          'Pick one human being who helped you learn this week and tell them today — a message is enough. The Prophet ﷺ tied thanking Allah to thanking people, so this is not a separate errand from your worship.',
+        source: 'Abu Dawud 4811',
+        sourceType: 'sunnah_action',
+        sourceGrading: 'sahih',
+      },
+      {
+        type: 'verbal',
+        icon: 'sunrise',
+        title: 'The words he taught for it',
+        instruction:
+          'The Prophet ﷺ said that whoever says this to the one who did him good has fully expressed gratitude. Use these words rather than a vague thanks — they hand the reward to Allah to settle.',
+        arabicText: 'جَزَاكَ اللَّهُ خَيْرًا',
+        transliteration: "Jazakallahu khayran",
+        translation: 'May Allah reward you with good',
+        source: 'Tirmidhi 2035',
+        sourceType: 'prophetic_dhikr',
+        sourceGrading: 'hasan',
+      },
+    ]),
+    reflection:
+      'Look back at Day 1\'s effort log. Across seven days, what did you actually build — and who helped you build it?',
+  },
 ];
 
 export { quranContent, quranContentAnglesData as quranContentAngles };

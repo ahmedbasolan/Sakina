@@ -220,18 +220,26 @@ export const hadithContent: Content[] = [
   },
   // Path B: Trusting the Results — Day 5 (results day)
   {
+    // Was a duplicate of hadith_results_3 (both Muslim 2999, "Wondrous is the
+    // affair of the believer") — the same hadith surfaced twice inside one
+    // 7-day journey. Swapped for Bukhari 5641, which names hamm (anxiety) and
+    // ghamm (distress) directly: the discomfort of waiting is itself expiation.
     id: 'hadith_results_5',
     type: 'Hadith',
-    primaryText: 'Wondrous is the affair of the believer, it is all good for him',
-    arabicText: 'عَجَبًا لِأَمْرِ الْمُؤْمِنِ إِنَّ أَمْرَهُ كُلَّهُ خَيْرٌ',
-    translation: 'Wondrous is the affair of the believer, it is all good for him',
-    englishTranslation: 'Wondrous is the affair of the believer, it is all good for him',
-    source: 'Muslim 2999',
-    transliteration: 'Ajaban li-amr al-mumin inna amrahu kullu khair',
-    whyThis: 'Sit with waiting; all outcomes contain unseen good.',
+    primaryText: 'No fatigue, illness, anxiety, sorrow, hurt or distress befalls a Muslim, but that Allah expiates some of his sins by it',
+    arabicText:
+      'مَا يُصِيبُ الْمُسْلِمَ مِنْ نَصَبٍ وَلاَ وَصَبٍ وَلاَ هَمٍّ وَلاَ حُزْنٍ وَلاَ أَذًى وَلاَ غَمٍّ حَتَّى الشَّوْكَةِ يُشَاكُهَا إِلاَّ كَفَّرَ اللَّهُ بِهَا مِنْ خَطَايَاهُ',
+    translation:
+      'No fatigue, nor illness, nor anxiety, nor sorrow, nor hurt, nor distress befalls a Muslim — even the prick of a thorn — but that Allah expiates some of his sins by it',
+    englishTranslation:
+      'No fatigue, nor illness, nor anxiety, nor sorrow, nor hurt, nor distress befalls a Muslim — even the prick of a thorn — but that Allah expiates some of his sins by it',
+    source: 'Bukhari 5641',
+    transliteration:
+      "Ma yusib al-muslima min nasabin wa la wasabin wa la hammin wa la huznin wa la adhan wa la ghammin hatta ash-shawkati yushakuha illa kaffara Allahu biha min khatayah",
+    whyThis: 'The waiting itself is not wasted time — anxiety and distress are named here as things Allah accepts as expiation.',
     propheticPractice: {
-      description: 'Wait patiently for results with trust in Allah',
-      source: 'Muslim 2999',
+      description: 'Sit with the discomfort of waiting, knowing it is counted and not wasted',
+      source: 'Bukhari 5641',
       grading: 'sahih',
     },
     moods: [],
