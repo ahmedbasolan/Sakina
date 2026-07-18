@@ -47,12 +47,11 @@ function VerseOfTheDayBase({ dailyVerse, fadeAnim, slideAnim }: VerseOfTheDayPro
   return (
     <Animated.View style={[styles.verseSection, { opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
       <BlurView intensity={16} tint="dark" style={styles.verseCard}>
-        {/* Steel-blue corner tint — same low-alpha diagonal wash as the streak
-            bar, but in the app's celestial blue rather than gold, so the card
-            body reads as part of the "Celestial Night" surface, not a warm
-            gold panel. Gold stays reserved for the badge/lines/glow accents. */}
+        {/* Gold corner tint — same diagonal-wash treatment as the streak bar
+            (1F→05 alpha), so this card reads with the same warmth/pop instead
+            of the flatter steel-blue wash it used to carry. */}
         <LinearGradient
-          colors={[`${Colors.text.steel}33`, `${Colors.text.steel}08`]}
+          colors={[`${Colors.accent.primary}1F`, `${Colors.accent.primary}05`]}
           style={[StyleSheet.absoluteFill, { borderRadius: BorderRadius.xl }]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
@@ -115,7 +114,7 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     padding: Spacing.xl,
     borderWidth: 1,
-    borderColor: Colors.text.steel + '50',
+    borderColor: Colors.accent.primary + '40',
   },
   verseBorderLine: {
     height: 1,

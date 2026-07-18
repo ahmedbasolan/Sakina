@@ -275,6 +275,14 @@ const VerseRow = React.memo(function VerseRow({
 
   return (
     <View style={styles.rowCard}>
+      <LinearGradient colors={[Colors.background.secondary, Colors.background.primary]} style={StyleSheet.absoluteFill} />
+      <LinearGradient
+        colors={[`${GOLD}1F`, `${GOLD}05`]}
+        style={StyleSheet.absoluteFill}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        pointerEvents="none"
+      />
       <Text style={styles.rowRef}>{surahName} · {surahNumber}:{verse.numberInSurah}</Text>
 
       <ArabicText text={verse.arabic} style={styles.rowArabic} />
@@ -761,6 +769,14 @@ export default function SurahReaderScreen({ route, navigation }: Props) {
               { opacity: cardOpacity, transform: [{ translateY: cardSlide }] },
             ]}
           >
+            <LinearGradient colors={[Colors.background.secondary, Colors.background.primary]} style={StyleSheet.absoluteFill} />
+            <LinearGradient
+              colors={[`${GOLD}1F`, `${GOLD}05`]}
+              style={StyleSheet.absoluteFill}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              pointerEvents="none"
+            />
             <CornerFrame color={GOLD} size={18} thickness={1.5} offset={12} />
 
             {/* Reference */}
@@ -1167,10 +1183,10 @@ const styles = StyleSheet.create({
 
   // ── Verse card ──
   card: {
-    backgroundColor: 'rgba(255,235,210,0.04)',
     borderRadius: BorderRadius.xl,
+    overflow: 'hidden',
     borderWidth: 1,
-    borderColor: 'rgba(212,175,55,0.12)',
+    borderColor: 'rgba(212,175,55,0.4)',
     paddingHorizontal: Spacing.xl,
     paddingVertical: Spacing.xxl,
     alignItems: 'center',
@@ -1266,10 +1282,10 @@ const styles = StyleSheet.create({
 
   // ── Reflection accordion ──
   reflectionWrap: {
-    backgroundColor: 'rgba(255,235,210,0.04)',
+    backgroundColor: Colors.background.secondary + '99',
     borderRadius: BorderRadius.lg,
     borderWidth: 1,
-    borderColor: 'rgba(255,235,210,0.07)',
+    borderColor: 'rgba(212,175,55,0.25)',
     overflow: 'hidden',
   },
   reflectionHeader: {
@@ -1398,10 +1414,10 @@ const styles = StyleSheet.create({
     gap: Spacing.lg,
   },
   rowCard: {
-    backgroundColor: 'rgba(255,235,210,0.04)',
     borderRadius: BorderRadius.xl,
+    overflow: 'hidden',
     borderWidth: 1,
-    borderColor: 'rgba(212,175,55,0.12)',
+    borderColor: 'rgba(212,175,55,0.4)',
     paddingHorizontal: Spacing.lg,
     paddingVertical: Spacing.xl,
     alignItems: 'center',

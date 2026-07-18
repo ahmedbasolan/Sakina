@@ -14,6 +14,7 @@ import React, { createContext, useContext, useState, useEffect, useMemo } from '
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { RotationEngine } from '../services/rotationEngine';
 import { FreemiumService } from '../services/freemiumService';
+import { prefetchAllSurahs } from '../services/quranService';
 import { Mood, GuidanceExperience } from '../types';
 import { TimeFormat } from '../services/prayerTimesService';
 
@@ -41,6 +42,13 @@ function ServicesProvider({ children }: { children: React.ReactNode }) {
       .initialize()
       .catch((error) => console.warn('[ServicesProvider] freemium init failed:', error))
       .finally(() => setIsLoading(false));
+
+    // Warm the offline Quran cache from app launch rather than waiting for
+    // the user to open the Library tab — now a ~3-request bulk fetch (see
+    // prefetchAllSurahs), so this finishes in the background well before
+    // anyone would navigate there anyway. Fire-and-forget: prefetchAllSurahs
+    // already no-ops if a fetch is in flight or everything's cached.
+    prefetchAllSurahs().catch(() => {});
   }, []);
 
   return (
