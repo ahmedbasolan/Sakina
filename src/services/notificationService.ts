@@ -212,10 +212,13 @@ class NotificationService {
     const hasPermission = await this.requestPermissions();
     if (!hasPermission) return;
 
+    // Guard before the cancel: an empty input must not wipe the category
+    // and then schedule nothing (only reachable via a caller bug).
+    const weekly = this.toWeekly(timings);
+    if (weekly.length === 0) return;
+
     // Clear existing PRAYER notifications only — don't touch other categories.
     await cancelTrackedCategory(PRAYER_NOTIF_IDS_KEY);
-
-    const weekly = this.toWeekly(timings);
 
     // Explicit salah list — avoids Object.keys picking up extra Aladhan API
     // fields (Imsak, Midnight, Firstthird, Lastthird, Sunset) that are present
@@ -259,10 +262,14 @@ class NotificationService {
     const hasPermission = await this.requestPermissions();
     if (!hasPermission) return;
 
+    // Guard before the cancel: an empty input must not wipe the category
+    // and then schedule nothing (only reachable via a caller bug).
+    const weekly = this.toWeekly(timings);
+    if (weekly.length === 0) return;
+
     // Clear existing SPIRITUAL notifications only — don't touch other categories.
     await cancelTrackedCategory(SPIRITUAL_NOTIF_IDS_KEY);
 
-    const weekly = this.toWeekly(timings);
     const toHM = (mins: number) => ({ hour: Math.floor(mins / 60), minute: mins % 60 });
 
     // Per day: 1. Tahajjud — 1 hour before Fajr (wraps midnight)

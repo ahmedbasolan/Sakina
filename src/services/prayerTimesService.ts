@@ -347,6 +347,10 @@ class PrayerTimesService {
   // fetch keeps running in the background to warm the cache for later calls.
   private static readonly HIJRI_BUDGET_MS = 2500;
 
+  // Single writer/reader key for the cross-day Hijri fallback — shared by
+  // getHijriDate (writer) and getHijriDateWithBudget (reader) so they can't drift.
+  private static readonly HIJRI_FALLBACK_KEY = '@hijri_date_fallback';
+
   private async getHijriDateWithBudget(date: Date): Promise<PrayerTimesData['date']['hijri']> {
     let timer: ReturnType<typeof setTimeout> | undefined;
     // getHijriDate never rejects (it degrades to stale/blank internally), so
@@ -361,7 +365,7 @@ class PrayerTimesService {
     if (winner) return winner;
 
     try {
-      const stale = await AsyncStorage.getItem('@hijri_date_fallback');
+      const stale = await AsyncStorage.getItem(PrayerTimesService.HIJRI_FALLBACK_KEY);
       if (stale) return JSON.parse(stale);
     } catch {
       /* fall through to blank */
@@ -380,7 +384,7 @@ class PrayerTimesService {
   private async getHijriDate(date: Date): Promise<PrayerTimesData['date']['hijri']> {
     const dmy = formatDateDMY(date);
     const cacheKey = `@hijri_date_${dmy}`;
-    const fallbackKey = '@hijri_date_fallback';
+    const fallbackKey = PrayerTimesService.HIJRI_FALLBACK_KEY;
 
     try {
       const cached = await AsyncStorage.getItem(cacheKey);
@@ -406,8 +410,15 @@ class PrayerTimesService {
         error instanceof Error ? error : new Error(String(error)),
         { dmy },
       );
-      const stale = await AsyncStorage.getItem(fallbackKey);
-      if (stale) return JSON.parse(stale);
+      // Guard the stale read too — if AsyncStorage itself throws here, this
+      // method would reject and break the "never rejects" contract that
+      // getHijriDateWithBudget's race relies on.
+      try {
+        const stale = await AsyncStorage.getItem(fallbackKey);
+        if (stale) return JSON.parse(stale);
+      } catch {
+        /* fall through to blank */
+      }
       // Nothing cached yet (offline first launch) — a blank Hijri line beats
       // throwing and losing the prayer times we already computed above.
       return { day: '', month: { en: '', ar: '' }, year: '', designation: { abbreviated: '' } };

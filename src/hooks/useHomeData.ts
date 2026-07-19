@@ -110,13 +110,14 @@ export function useHomeData({ setStreakCount }: UseHomeDataOptions) {
       setCurrentCity(city);
       setCurrentCountry(country);
 
+      // `!== undefined`, not truthiness — latitude/longitude of exactly 0
+      // (equator / prime meridian) are valid coordinates.
+      const lat = savedLocation?.latitude;
+      const lon = savedLocation?.longitude;
+
       let data: PrayerTimesData;
-      if (savedLocation?.latitude && savedLocation?.longitude) {
-        data = await prayerService.getTimingsByCoordinates(
-          savedLocation.latitude,
-          savedLocation.longitude,
-          country,
-        );
+      if (lat !== undefined && lon !== undefined) {
+        data = await prayerService.getTimingsByCoordinates(lat, lon, country);
       } else {
         data = await prayerService.getTimingsByCity(city, country);
       }
@@ -135,8 +136,8 @@ export function useHomeData({ setStreakCount }: UseHomeDataOptions) {
       // GPS users get per-day weekly timings so all 7 scheduled days fire at
       // their own day's times; city-lookup users repeat today's timings.
       const schedulingTimings: PrayerTimings | PrayerTimings[] =
-        savedLocation?.latitude && savedLocation?.longitude
-          ? prayerService.getWeeklyLocalTimings(savedLocation.latitude, savedLocation.longitude, country)
+        lat !== undefined && lon !== undefined
+          ? prayerService.getWeeklyLocalTimings(lat, lon, country)
           : data.timings;
       const notifications = NotificationService.getInstance();
       notifications.scheduleSpiritualReminders(schedulingTimings)
