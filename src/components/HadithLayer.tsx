@@ -8,6 +8,7 @@ import {
 import { Colors, Spacing, Typography } from '../theme/DesignSystem';
 import { Content } from '../types';
 import { GeometricOrnament } from './VerseLayer';
+import ArabicText from './ArabicText';
 import { HapticsService } from '../services/hapticsService';
 
 interface HadithLayerProps {
@@ -134,12 +135,11 @@ const HadithLayer: React.FC<HadithLayerProps> = ({
           </View>
         </Animated.View>
 
-        {/* ── Hadith content ── */}
+        {/* ── Hadith content — ArabicText carries the harakat-descender
+            padding guard (raw Text clips Amiri's below-baseline marks) ── */}
         {arabic !== '' && (
           <Animated.View style={{ opacity: arabicOpacity, transform: [{ translateY: arabicSlide }] }}>
-            <Text style={isLongArabic ? styles.arabicCompact : styles.arabic} allowFontScaling>
-              {arabic}
-            </Text>
+            <ArabicText text={arabic} style={isLongArabic ? styles.arabicCompact : styles.arabic} />
           </Animated.View>
         )}
 
@@ -167,8 +167,8 @@ const HadithLayer: React.FC<HadithLayerProps> = ({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    // Match VerseLayer's gutter so the two layers of the pager breathe alike.
-    paddingHorizontal: 32,
+    // Match VerseLayer's 32pt gutter so the two layers of the pager breathe alike.
+    paddingHorizontal: Spacing.xxl,
   },
   scrollView: {
     flex: 1,
@@ -239,20 +239,17 @@ const styles = StyleSheet.create({
 
   /* ── Arabic ── */
   // lineHeight ≥ ~2.1× the font size: Amiri-Quran's harakat sit far above and
-  // below the baseline, and a tighter line box clips them.
+  // below the baseline, and a tighter line box clips them. Font family and
+  // the vertical padding guard come from ArabicText's base style.
   arabic: {
     fontSize: 24,
-    fontFamily: Typography.fonts.arabic,
     lineHeight: 50,
     color: Colors.text.primary,
-    textAlign: 'center',
   },
   arabicCompact: {
     fontSize: 20,
-    fontFamily: Typography.fonts.arabic,
     lineHeight: 42,
     color: Colors.text.primary,
-    textAlign: 'center',
   },
 
   /* ── Divider ── */

@@ -264,6 +264,17 @@ export default function DailyRemindersScreen({ onBack }: DailyRemindersScreenPro
     });
   };
 
+  const showPermissionAlert = () => {
+    Alert.alert(
+      'Permission Required',
+      'Please enable notifications in your device settings to receive reminders.',
+      [
+        { text: 'Not Now', style: 'cancel' },
+        { text: 'Open Settings', onPress: () => Linking.openSettings() },
+      ],
+    );
+  };
+
   const handleSetReminder = async () => {
     setIsSaving(true);
     try {
@@ -276,14 +287,7 @@ export default function DailyRemindersScreen({ onBack }: DailyRemindersScreenPro
         setSavedTime(timeStr);
         playSuccessAnimation();
       } else {
-        Alert.alert(
-          'Permission Required',
-          'Please enable notifications in your device settings to receive daily reminders.',
-          [
-            { text: 'Not Now', style: 'cancel' },
-            { text: 'Open Settings', onPress: () => Linking.openSettings() },
-          ],
-        );
+        showPermissionAlert();
       }
     } catch (error) {
       // Was silently discarding the real error — swap for the actual cause so
@@ -312,12 +316,29 @@ export default function DailyRemindersScreen({ onBack }: DailyRemindersScreenPro
     isPrayerToggling.current = true;
     try {
       const newValue = !prayerEnabled;
+      // Enabling requires OS permission. The top-up below deliberately never
+      // prompts (it's shared with the headless background task), so prompt
+      // here — a foreground settings screen is exactly the right place. If
+      // denied, leave the toggle off and point at device settings rather
+      // than silently doing nothing.
+      if (newValue && !(await notificationService.requestPermissions())) {
+        showPermissionAlert();
+        return;
+      }
       setPrayerEnabled(newValue);
       await notificationService.setPrayerEnabled(newValue);
       // Enabling only writes the flag — without an immediate top-up nothing
       // is scheduled until the next Home visit or 12-hour background run,
       // so the toggle silently did nothing for hours.
-      if (newValue) topUpScheduledNotifications().catch(() => {});
+      if (newValue) {
+        topUpScheduledNotifications().catch((error) =>
+          logServiceError(
+            'DailyRemindersScreen',
+            'prayerToggleTopUp',
+            error instanceof Error ? error : new Error(String(error)),
+          ),
+        );
+      }
     } finally {
       isPrayerToggling.current = false;
     }
@@ -328,9 +349,21 @@ export default function DailyRemindersScreen({ onBack }: DailyRemindersScreenPro
     isSpiritualToggling.current = true;
     try {
       const newValue = !spiritualEnabled;
+      if (newValue && !(await notificationService.requestPermissions())) {
+        showPermissionAlert();
+        return;
+      }
       setSpiritualEnabled(newValue);
       await notificationService.setSpiritualEnabled(newValue);
-      if (newValue) topUpScheduledNotifications().catch(() => {});
+      if (newValue) {
+        topUpScheduledNotifications().catch((error) =>
+          logServiceError(
+            'DailyRemindersScreen',
+            'spiritualToggleTopUp',
+            error instanceof Error ? error : new Error(String(error)),
+          ),
+        );
+      }
     } finally {
       isSpiritualToggling.current = false;
     }

@@ -58,8 +58,9 @@ export async function topUpScheduledNotifications(): Promise<boolean> {
   // network at all in the background task, and each of the 7 scheduled days
   // fires at its own day's times. City path (no coordinates on file): one
   // day's timings from the (cached, retried) API repeated across the week.
+  // `!== undefined`, not truthiness — a coordinate of exactly 0 is valid.
   const timings =
-    savedLocation?.latitude && savedLocation?.longitude
+    savedLocation?.latitude !== undefined && savedLocation?.longitude !== undefined
       ? prayerService.getWeeklyLocalTimings(
           savedLocation.latitude,
           savedLocation.longitude,

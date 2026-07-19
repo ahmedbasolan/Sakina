@@ -156,4 +156,33 @@ describe('schedulePrayerNotifications — per-day accuracy', () => {
 
     expect(mockSchedule).not.toHaveBeenCalled();
   });
+
+  it('pads a short weekly array with its last day instead of dropping days', async () => {
+    const twoDays: PrayerTimings[] = [TIMINGS, { ...TIMINGS, Maghrib: '19:05' }];
+
+    await service.schedulePrayerNotifications(twoDays, 'Dubai');
+
+    const maghribDates = scheduledDatesFor('Time for Maghrib');
+    expect(maghribDates).toHaveLength(7);
+    // Day 0 at 19:00, days 1-6 padded from the last provided day (19:05).
+    expect(maghribDates[0].getMinutes()).toBe(0);
+    maghribDates.slice(1).forEach((d) => expect(d.getMinutes()).toBe(5));
+  });
+});
+
+describe('iOS pending-notification budget', () => {
+  // iOS silently drops local notifications beyond 64 pending. Current usage:
+  // 5 prayers ×7 + 3 spiritual ×7 = 56 max, plus 1 daily repeating = 57.
+  // This pins the ceiling so a future 8th day or 4th spiritual reminder
+  // can't silently blow the budget.
+  it('both categories together stay well under the 64-pending iOS cap', async () => {
+    const weekly: PrayerTimings[] = Array(7).fill(TIMINGS);
+
+    await service.schedulePrayerNotifications(weekly, 'Dubai');
+    await service.scheduleSpiritualReminders(weekly);
+
+    const scheduled = mockSchedule.mock.calls.length;
+    expect(scheduled).toBeGreaterThan(0);
+    expect(scheduled).toBeLessThanOrEqual(63); // leaves room for the daily reminder
+  });
 });
