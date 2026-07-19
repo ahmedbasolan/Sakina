@@ -54,19 +54,23 @@ export async function topUpScheduledNotifications(): Promise<boolean> {
   const city = savedLocation?.city || 'Dubai';
   const country = savedLocation?.country || 'UAE';
 
-  const data =
+  // GPS path: per-day timings for the whole week, computed on-device — no
+  // network at all in the background task, and each of the 7 scheduled days
+  // fires at its own day's times. City path (no coordinates on file): one
+  // day's timings from the (cached, retried) API repeated across the week.
+  const timings =
     savedLocation?.latitude && savedLocation?.longitude
-      ? await prayerService.getTimingsByCoordinates(
+      ? prayerService.getWeeklyLocalTimings(
           savedLocation.latitude,
           savedLocation.longitude,
           country,
         )
-      : await prayerService.getTimingsByCity(city, country);
+      : (await prayerService.getTimingsByCity(city, country)).timings;
 
   // Sequential like useHomeData — each call cancels-then-reschedules only
   // its own category, so one failing never wipes the other.
-  await notifications.scheduleSpiritualReminders(data.timings);
-  await notifications.schedulePrayerNotifications(data.timings, city);
+  await notifications.scheduleSpiritualReminders(timings);
+  await notifications.schedulePrayerNotifications(timings, city);
   return true;
 }
 

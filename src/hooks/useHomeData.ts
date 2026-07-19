@@ -132,9 +132,15 @@ export function useHomeData({ setStreakCount }: UseHomeDataOptions) {
       // category's notifications that may have just scheduled successfully
       // (the previous `.catch(() => cancelPrayerAndSpiritual())` did exactly
       // that, silencing a healthy category whenever its sibling call failed).
+      // GPS users get per-day weekly timings so all 7 scheduled days fire at
+      // their own day's times; city-lookup users repeat today's timings.
+      const schedulingTimings: PrayerTimings | PrayerTimings[] =
+        savedLocation?.latitude && savedLocation?.longitude
+          ? prayerService.getWeeklyLocalTimings(savedLocation.latitude, savedLocation.longitude, country)
+          : data.timings;
       const notifications = NotificationService.getInstance();
-      notifications.scheduleSpiritualReminders(data.timings)
-        .then(() => notifications.schedulePrayerNotifications(data.timings, city))
+      notifications.scheduleSpiritualReminders(schedulingTimings)
+        .then(() => notifications.schedulePrayerNotifications(schedulingTimings, city))
         .catch((error) => logServiceError(
           'useHomeData',
           'scheduleNotifications',

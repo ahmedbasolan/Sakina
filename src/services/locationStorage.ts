@@ -42,7 +42,17 @@ export const saveUserLocation = async (location: UserLocation): Promise<void> =>
 export const getUserLocation = async (): Promise<UserLocation | null> => {
   try {
     const data = await AsyncStorage.getItem(LOCATION_KEY);
-    return data ? formatLocation(JSON.parse(data)) : null;
+    if (!data) return null;
+    // formatLocation returns only {city, country} — re-attach coordinates the
+    // same way saveUserLocation does. Dropping them here silently downgraded
+    // every consumer (prayer context, notification scheduling, background
+    // top-up) from exact on-device adhan.js computation to the network
+    // city-lookup path.
+    const parsed: UserLocation = JSON.parse(data);
+    const formatted = formatLocation(parsed);
+    return parsed.latitude !== undefined && parsed.longitude !== undefined
+      ? { ...formatted, latitude: parsed.latitude, longitude: parsed.longitude }
+      : formatted;
   } catch (error) {
     console.error('Error loading user location:', error);
     return null;

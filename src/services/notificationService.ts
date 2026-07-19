@@ -154,22 +154,36 @@ class NotificationService {
     return { hours, minutes };
   }
 
-  // Builds up to 7 one-shot DATE triggers for a given time, all in parallel.
-  // Only future dates are scheduled; already-past slots are skipped.
+  /**
+   * Normalises schedulable input: a single day's timings (the city-lookup
+   * path, which only has today's data) is repeated across the week; a weekly
+   * array (the GPS path, computed per-day on-device) is used as-is, padded
+   * with its last day if short.
+   */
+  private toWeekly(timings: PrayerTimings | PrayerTimings[]): PrayerTimings[] {
+    if (!Array.isArray(timings)) return Array(7).fill(timings);
+    if (timings.length === 0) return [];
+    if (timings.length >= 7) return timings.slice(0, 7);
+    return [...timings, ...Array(7 - timings.length).fill(timings[timings.length - 1])];
+  }
+
+  // Builds up to 7 one-shot DATE triggers, one per day offset, all in
+  // parallel. `times[dayOffset]` carries that day's own clock time (null =
+  // skip that day). Only future dates are scheduled; past slots are skipped.
   private async scheduleWeeklyTrigger(
-    hour: number,
-    minute: number,
+    times: ReadonlyArray<{ hour: number; minute: number } | null>,
     content: Notifications.NotificationContentInput,
     channelId: string,
   ): Promise<string[]> {
     const now = new Date();
     const dates: Date[] = [];
-    for (let dayOffset = 0; dayOffset < 7; dayOffset++) {
+    times.slice(0, 7).forEach((t, dayOffset) => {
+      if (!t) return;
       const date = new Date();
       date.setDate(date.getDate() + dayOffset);
-      date.setHours(hour, minute, 0, 0);
+      date.setHours(t.hour, t.minute, 0, 0);
       if (date > now) dates.push(date);
-    }
+    });
     const ids = await Promise.all(
       dates.map((date) =>
         Notifications.scheduleNotificationAsync({
@@ -182,14 +196,14 @@ class NotificationService {
   }
 
   public async schedulePrayerNotifications(
-    timings: PrayerTimings,
+    timings: PrayerTimings | PrayerTimings[],
     cityName: string,
   ): Promise<void> {
     return this.withLock(PRAYER_NOTIF_IDS_KEY, () => this.doSchedulePrayerNotifications(timings, cityName));
   }
 
   private async doSchedulePrayerNotifications(
-    timings: PrayerTimings,
+    timings: PrayerTimings | PrayerTimings[],
     cityName: string,
   ): Promise<void> {
     const enabled = await this.getPrayerEnabled();
@@ -201,22 +215,25 @@ class NotificationService {
     // Clear existing PRAYER notifications only — don't touch other categories.
     await cancelTrackedCategory(PRAYER_NOTIF_IDS_KEY);
 
+    const weekly = this.toWeekly(timings);
+
     // Explicit salah list — avoids Object.keys picking up extra Aladhan API
     // fields (Imsak, Midnight, Firstthird, Lastthird, Sunset) that are present
     // at runtime despite not being in the PrayerTimings interface.
     const SALAH: Array<keyof PrayerTimings> = ['Fajr', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'];
 
-    const validSalah = SALAH.filter((prayer) => {
-      const { hours, minutes } = this.parseTime(timings[prayer]);
-      // Guard: a malformed API response can produce NaN; skip rather than
-      // passing invalid values to the OS notification scheduler.
-      return Number.isFinite(hours) && Number.isFinite(minutes);
-    });
-
     const batches = await Promise.all(
-      validSalah.map((prayer) => {
-        const { hours, minutes } = this.parseTime(timings[prayer]);
-        return this.scheduleWeeklyTrigger(hours, minutes, {
+      SALAH.map((prayer) => {
+        const times = weekly.map((day) => {
+          const { hours, minutes } = this.parseTime(day[prayer]);
+          // Guard: a malformed API response can produce NaN; skip that day
+          // rather than passing invalid values to the OS scheduler.
+          return Number.isFinite(hours) && Number.isFinite(minutes)
+            ? { hour: hours, minute: minutes }
+            : null;
+        });
+        if (times.every((t) => t === null)) return Promise.resolve([]);
+        return this.scheduleWeeklyTrigger(times, {
           title: `Time for ${prayer}`,
           body: `It's time for the ${prayer} prayer in ${cityName}.`,
           sound: true,
@@ -231,11 +248,11 @@ class NotificationService {
   /**
    * Schedules proactive reminders for spiritual windows.
    */
-  public async scheduleSpiritualReminders(timings: PrayerTimings): Promise<void> {
+  public async scheduleSpiritualReminders(timings: PrayerTimings | PrayerTimings[]): Promise<void> {
     return this.withLock(SPIRITUAL_NOTIF_IDS_KEY, () => this.doScheduleSpiritualReminders(timings));
   }
 
-  private async doScheduleSpiritualReminders(timings: PrayerTimings): Promise<void> {
+  private async doScheduleSpiritualReminders(timings: PrayerTimings | PrayerTimings[]): Promise<void> {
     const enabled = await this.getSpiritualEnabled();
     if (!enabled) { await cancelTrackedCategory(SPIRITUAL_NOTIF_IDS_KEY); return; }
 
@@ -245,39 +262,46 @@ class NotificationService {
     // Clear existing SPIRITUAL notifications only — don't touch other categories.
     await cancelTrackedCategory(SPIRITUAL_NOTIF_IDS_KEY);
 
-    const fajrTime = this.parseTime(timings.Fajr);
-    const maghribTime = this.parseTime(timings.Maghrib);
+    const weekly = this.toWeekly(timings);
+    const toHM = (mins: number) => ({ hour: Math.floor(mins / 60), minute: mins % 60 });
 
-    // Guard: skip scheduling entirely if base times are malformed.
-    const fajrValid = Number.isFinite(fajrTime.hours) && Number.isFinite(fajrTime.minutes);
-    const maghribValid = Number.isFinite(maghribTime.hours) && Number.isFinite(maghribTime.minutes);
-
-    const fajrMins = fajrTime.hours * 60 + fajrTime.minutes;
-    const maghribMins = maghribTime.hours * 60 + maghribTime.minutes;
-
-    // 1. Tahajjud — 1 hour before Fajr (wraps midnight)
-    // 2. Morning Adhkar — 20 mins after Fajr
-    // 3. Evening Adhkar — 45 mins before Maghrib
-    const tahajjudMins = (((fajrMins - 60) % 1440) + 1440) % 1440;
-    const morningMins = (fajrMins + 20) % 1440;
-    const eveningMins = (((maghribMins - 45) % 1440) + 1440) % 1440;
+    // Per day: 1. Tahajjud — 1 hour before Fajr (wraps midnight)
+    //          2. Morning Adhkar — 20 mins after Fajr
+    //          3. Evening Adhkar — 30 mins before Maghrib. Must equal the
+    //             maghrib_pre window start in determineContextFromTimings:
+    //             at −45 the notification announced a window the app didn't
+    //             open for another 15 minutes (device-reported).
+    const perDay = weekly.map((day) => {
+      const fajrTime = this.parseTime(day.Fajr);
+      const maghribTime = this.parseTime(day.Maghrib);
+      // Guard: skip malformed days rather than scheduling NaN times.
+      const fajrValid = Number.isFinite(fajrTime.hours) && Number.isFinite(fajrTime.minutes);
+      const maghribValid = Number.isFinite(maghribTime.hours) && Number.isFinite(maghribTime.minutes);
+      const fajrMins = fajrTime.hours * 60 + fajrTime.minutes;
+      const maghribMins = maghribTime.hours * 60 + maghribTime.minutes;
+      return {
+        tahajjud: fajrValid ? toHM((((fajrMins - 60) % 1440) + 1440) % 1440) : null,
+        morning: fajrValid ? toHM((fajrMins + 20) % 1440) : null,
+        evening: maghribValid ? toHM((((maghribMins - 30) % 1440) + 1440) % 1440) : null,
+      };
+    });
 
     const [tahajjudIds, morningIds, eveningIds] = await Promise.all([
-      fajrValid ? this.scheduleWeeklyTrigger(
-        Math.floor(tahajjudMins / 60), tahajjudMins % 60,
+      this.scheduleWeeklyTrigger(
+        perDay.map((d) => d.tahajjud),
         { title: 'The Silent Hour', body: 'It is the time of Tahajjud. A moment for deep reflection and conversation with your Lord.' },
         CH_SPIRITUAL,
-      ) : Promise.resolve([]),
-      fajrValid ? this.scheduleWeeklyTrigger(
-        Math.floor(morningMins / 60), morningMins % 60,
+      ),
+      this.scheduleWeeklyTrigger(
+        perDay.map((d) => d.morning),
         { title: 'Start with Light', body: 'The sun is rising. Remember Allah with the morning adhkars to protect your day.' },
         CH_SPIRITUAL,
-      ) : Promise.resolve([]),
-      maghribValid ? this.scheduleWeeklyTrigger(
-        Math.floor(eveningMins / 60), eveningMins % 60,
+      ),
+      this.scheduleWeeklyTrigger(
+        perDay.map((d) => d.evening),
         { title: 'Closing the Day', body: 'The day is ending. Find peace in the evening remembrance before the night sets in.' },
         CH_SPIRITUAL,
-      ) : Promise.resolve([]),
+      ),
     ]);
 
     await setTrackedIds(SPIRITUAL_NOTIF_IDS_KEY, [...tahajjudIds, ...morningIds, ...eveningIds]);
