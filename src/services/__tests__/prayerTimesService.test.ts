@@ -140,11 +140,18 @@ describe('PrayerTimesService.getCurrentPrayerContext', () => {
   // entirely on-device — no axios call, regardless of connectivity.
   it('computes context locally from GPS coordinates without any network call', async () => {
     mockedGetUserLocation.mockResolvedValue({ city: 'Dubai', country: 'AE', latitude: 25.20, longitude: 55.27 });
+    const contextSpy = jest.spyOn(service, 'determineContextFromTimings');
 
     const context = await service.getCurrentPrayerContext();
 
     expect(mockedAxios.get).not.toHaveBeenCalled();
-    expect(context).not.toBe('general');
+    // The context value itself is time-of-day dependent ('general' is a
+    // legitimate mid-morning answer), so assert the mechanism instead: it
+    // was derived from locally computed timings, not an error fallback.
+    expect(contextSpy).toHaveBeenCalledWith(
+      expect.objectContaining({ Fajr: expect.stringMatching(/^\d{2}:\d{2}$/) }),
+    );
+    expect(context).toBeTruthy();
   });
 
   it('falls back to the city-name network lookup when no coordinates are saved', async () => {
@@ -192,5 +199,74 @@ describe('PrayerTimesService.getCurrentPrayerContext', () => {
 
     expect(context).toBe('general');
     expect(mockedAxios.get).not.toHaveBeenCalled();
+  });
+});
+
+describe('PrayerTimesService.getWeeklyLocalTimings', () => {
+  let service: PrayerTimesService;
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+    Object.keys(mockStore).forEach((k) => delete mockStore[k]);
+    (PrayerTimesService as any).instance = null;
+    service = PrayerTimesService.getInstance();
+  });
+
+  it('computes 7 consecutive days, each from its own date, with no network I/O', () => {
+    const weekly = service.getWeeklyLocalTimings(25.20, 55.27, 'AE');
+
+    expect(weekly).toHaveLength(7);
+    const d6 = new Date();
+    d6.setDate(d6.getDate() + 6);
+    const expected = new AdhanPrayerTimes(new Coordinates(25.20, 55.27), d6, CalculationMethod.Dubai());
+    expect(weekly[6].Fajr).toBe(fmt(expected.fajr));
+    expect(weekly[6].Maghrib).toBe(fmt(expected.maghrib));
+    expect(mockedAxios.get).not.toHaveBeenCalled();
+  });
+
+  it('matches the single-day computation for day 0', async () => {
+    const weekly = service.getWeeklyLocalTimings(25.20, 55.27, 'AE');
+    const single = await service.getTimingsByCoordinates(25.20, 55.27, 'AE');
+    expect(weekly[0]).toEqual(single.timings);
+  });
+});
+
+describe('PrayerTimesService Hijri budget', () => {
+  let service: PrayerTimesService;
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+    Object.keys(mockStore).forEach((k) => delete mockStore[k]);
+    (PrayerTimesService as any).instance = null;
+    service = PrayerTimesService.getInstance();
+  });
+
+  afterEach(() => {
+    jest.useRealTimers();
+  });
+
+  it('does not stall prayer timings behind a hanging Hijri fetch (day-rollover, dead network)', async () => {
+    jest.useFakeTimers();
+    // A request that never resolves — the worst-case degraded connection.
+    mockedAxios.get.mockReturnValue(new Promise(() => {}) as any);
+
+    const pending = service.getTimingsByCoordinates(25.20, 55.27, 'AE');
+    await jest.advanceTimersByTimeAsync(3000);
+    const result = await pending;
+
+    expect(result.timings.Fajr).toMatch(/^\d{2}:\d{2}$/);
+    expect(result.date.hijri.day).toBe(''); // decorative date degraded, times intact
+  });
+
+  it('serves the stale Hijri fallback when the budget elapses', async () => {
+    jest.useFakeTimers();
+    await AsyncStorage.setItem('@hijri_date_fallback', JSON.stringify(MOCK_HIJRI_RESPONSE.data.hijri));
+    mockedAxios.get.mockReturnValue(new Promise(() => {}) as any);
+
+    const pending = service.getTimingsByCoordinates(25.20, 55.27, 'AE');
+    await jest.advanceTimersByTimeAsync(3000);
+    const result = await pending;
+
+    expect(result.date.hijri.month.en).toBe('Muharram');
   });
 });

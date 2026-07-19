@@ -16,6 +16,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { HapticsService } from '../services/hapticsService';
 import NotificationService from '../services/notificationService';
+import { topUpScheduledNotifications } from '../services/notificationTopUpTask';
 import { logServiceError } from '../services/errorLoggingService';
 import { Colors, Typography, Spacing, BorderRadius } from '../theme/DesignSystem';
 import { useReduceMotion } from '../hooks/useReduceMotion';
@@ -313,6 +314,10 @@ export default function DailyRemindersScreen({ onBack }: DailyRemindersScreenPro
       const newValue = !prayerEnabled;
       setPrayerEnabled(newValue);
       await notificationService.setPrayerEnabled(newValue);
+      // Enabling only writes the flag — without an immediate top-up nothing
+      // is scheduled until the next Home visit or 12-hour background run,
+      // so the toggle silently did nothing for hours.
+      if (newValue) topUpScheduledNotifications().catch(() => {});
     } finally {
       isPrayerToggling.current = false;
     }
@@ -325,6 +330,7 @@ export default function DailyRemindersScreen({ onBack }: DailyRemindersScreenPro
       const newValue = !spiritualEnabled;
       setSpiritualEnabled(newValue);
       await notificationService.setSpiritualEnabled(newValue);
+      if (newValue) topUpScheduledNotifications().catch(() => {});
     } finally {
       isSpiritualToggling.current = false;
     }

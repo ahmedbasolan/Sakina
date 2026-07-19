@@ -30,7 +30,7 @@ jest.mock('../notificationService', () => {
 jest.mock('../prayerTimesService', () => {
   const instance = {
     getTimingsByCity: jest.fn(),
-    getTimingsByCoordinates: jest.fn(),
+    getWeeklyLocalTimings: jest.fn(),
   };
   return { __esModule: true, default: { getInstance: () => instance }, __instance: instance };
 });
@@ -68,6 +68,9 @@ const TIMINGS = {
   Asr: '15:30', Maghrib: '18:00', Isha: '19:30',
 };
 
+// The GPS path computes per-day timings for the whole week on-device.
+const WEEKLY_TIMINGS = Array.from({ length: 7 }, (_, i) => ({ ...TIMINGS, Fajr: `04:0${i}` }));
+
 beforeEach(() => {
   jest.clearAllMocks();
   mockGetPermissions.mockResolvedValue({ status: 'granted' });
@@ -76,12 +79,12 @@ beforeEach(() => {
   mockNotificationInstance.scheduleSpiritualReminders.mockResolvedValue(undefined);
   mockNotificationInstance.schedulePrayerNotifications.mockResolvedValue(undefined);
   mockPrayerInstance.getTimingsByCity.mockResolvedValue({ timings: TIMINGS });
-  mockPrayerInstance.getTimingsByCoordinates.mockResolvedValue({ timings: TIMINGS });
+  mockPrayerInstance.getWeeklyLocalTimings.mockReturnValue(WEEKLY_TIMINGS);
   mockRegisterTaskAsync.mockResolvedValue(undefined);
 });
 
 describe('topUpScheduledNotifications', () => {
-  it('re-schedules both categories using coordinates when a location is saved', async () => {
+  it('re-schedules both categories from on-device weekly timings when coordinates are saved', async () => {
     mockGetUserLocation.mockResolvedValue({
       city: 'Dubai', country: 'AE', latitude: 25.2, longitude: 55.3,
     });
@@ -89,9 +92,12 @@ describe('topUpScheduledNotifications', () => {
     const ran = await topUpScheduledNotifications();
 
     expect(ran).toBe(true);
-    expect(mockPrayerInstance.getTimingsByCoordinates).toHaveBeenCalledWith(25.2, 55.3, 'AE');
-    expect(mockNotificationInstance.scheduleSpiritualReminders).toHaveBeenCalledWith(TIMINGS);
-    expect(mockNotificationInstance.schedulePrayerNotifications).toHaveBeenCalledWith(TIMINGS, 'Dubai');
+    expect(mockPrayerInstance.getWeeklyLocalTimings).toHaveBeenCalledWith(25.2, 55.3, 'AE');
+    // No network fetch at all on the GPS path — background connectivity is
+    // the least reliable place to depend on it.
+    expect(mockPrayerInstance.getTimingsByCity).not.toHaveBeenCalled();
+    expect(mockNotificationInstance.scheduleSpiritualReminders).toHaveBeenCalledWith(WEEKLY_TIMINGS);
+    expect(mockNotificationInstance.schedulePrayerNotifications).toHaveBeenCalledWith(WEEKLY_TIMINGS, 'Dubai');
   });
 
   it('falls back to city lookup (Dubai default) when no location is saved', async () => {
@@ -101,7 +107,8 @@ describe('topUpScheduledNotifications', () => {
 
     expect(ran).toBe(true);
     expect(mockPrayerInstance.getTimingsByCity).toHaveBeenCalledWith('Dubai', 'UAE');
-    expect(mockPrayerInstance.getTimingsByCoordinates).not.toHaveBeenCalled();
+    expect(mockPrayerInstance.getWeeklyLocalTimings).not.toHaveBeenCalled();
+    expect(mockNotificationInstance.scheduleSpiritualReminders).toHaveBeenCalledWith(TIMINGS);
   });
 
   it('does nothing without notification permission (never prompts headless)', async () => {

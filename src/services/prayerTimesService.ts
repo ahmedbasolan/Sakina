@@ -309,7 +309,7 @@ class PrayerTimesService {
     const now = new Date();
     const { timings, methodConfig, timeZone } = this.computeLocalTimings(now, lat, lon, country, madhab);
 
-    const hijri = await this.getHijriDate(now);
+    const hijri = await this.getHijriDateWithBudget(now);
     const readable = new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }).format(now);
 
     return {
@@ -317,6 +317,56 @@ class PrayerTimesService {
       date: { readable, hijri },
       meta: { method: { name: methodConfig.label }, timezone: timeZone },
     };
+  }
+
+  /**
+   * Prayer timings for today plus the next 6 days, each computed from its own
+   * date — entirely on-device via adhan.js, no network and no I/O. Feed this
+   * to the notification schedulers so every one of the 7 scheduled days fires
+   * at that day's own times instead of day-1's (prayer times drift 1–2
+   * minutes per day, and the background top-up that used to paper over the
+   * drift is deferred aggressively by Android battery managers).
+   */
+  public getWeeklyLocalTimings(
+    lat: number,
+    lon: number,
+    country: string,
+    madhab?: AsrMadhab,
+  ): PrayerTimings[] {
+    const weekly: PrayerTimings[] = [];
+    for (let dayOffset = 0; dayOffset < 7; dayOffset++) {
+      const date = new Date();
+      date.setDate(date.getDate() + dayOffset);
+      weekly.push(this.computeLocalTimings(date, lat, lon, country, madhab).timings);
+    }
+    return weekly;
+  }
+
+  // How long the (decorative) Hijri fetch may delay prayer timings on the
+  // coordinates path. Past this, serve the stale cache or a blank while the
+  // fetch keeps running in the background to warm the cache for later calls.
+  private static readonly HIJRI_BUDGET_MS = 2500;
+
+  private async getHijriDateWithBudget(date: Date): Promise<PrayerTimesData['date']['hijri']> {
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    // getHijriDate never rejects (it degrades to stale/blank internally), so
+    // racing it cannot leave an unhandled rejection behind.
+    const fresh = this.getHijriDate(date).finally(() => {
+      if (timer !== undefined) clearTimeout(timer);
+    });
+    const budget = new Promise<null>((resolve) => {
+      timer = setTimeout(() => resolve(null), PrayerTimesService.HIJRI_BUDGET_MS);
+    });
+    const winner = await Promise.race([fresh, budget]);
+    if (winner) return winner;
+
+    try {
+      const stale = await AsyncStorage.getItem('@hijri_date_fallback');
+      if (stale) return JSON.parse(stale);
+    } catch {
+      /* fall through to blank */
+    }
+    return { day: '', month: { en: '', ar: '' }, year: '', designation: { abbreviated: '' } };
   }
 
   /**
