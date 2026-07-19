@@ -11,7 +11,9 @@ import AudioPlayerButton from './AudioPlayerButton';
 import { useReduceMotion } from '../hooks/useReduceMotion';
 
 /* ─── Subtle Geometric Ornament ──────────────────────────────── */
-function GeometricOrnament({ size, color }: { size: number; color: string }) {
+/* Named export: HadithLayer shares this so both immersive layers in the
+   journey pager breathe with the same ornament. */
+export function GeometricOrnament({ size, color }: { size: number; color: string }) {
   const breatheAnim = useRef(new Animated.Value(0)).current;
   const rotateAnim = useRef(new Animated.Value(0)).current;
   const reduceMotion = useReduceMotion();
