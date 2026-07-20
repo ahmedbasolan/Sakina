@@ -257,10 +257,10 @@ const SavedVerseCard = React.memo(function SavedVerseCard({ verse, index }: { ve
           )}
         </View>
         <Text style={styles.savedCardDate}>{formatDate(verse.savedAt)}</Text>
-        <Text style={styles.savedCardArabic} numberOfLines={expanded ? undefined : 2}>
+        <Text style={styles.savedCardArabic} numberOfLines={expanded ? undefined : 1}>
           {verse.arabicText}
         </Text>
-        <Text style={styles.savedCardTranslation} numberOfLines={expanded ? undefined : 3}>
+        <Text style={styles.savedCardTranslation} numberOfLines={expanded ? undefined : 2}>
           {verse.translation}
         </Text>
       </TouchableOpacity>
@@ -614,7 +614,7 @@ export default function LibraryScreen({ navigation }: any) {
               { paddingBottom: insets.bottom + 100 },
             ]}
             showsVerticalScrollIndicator={false}
-            ItemSeparatorComponent={() => <View style={styles.separator} />}
+            ItemSeparatorComponent={() => <View style={styles.savedCardGap} />}
           />
         )
       ) : (
@@ -1027,6 +1027,13 @@ const styles = StyleSheet.create({
     height: 1,
     backgroundColor: 'rgba(255,255,255,0.04)',
     marginHorizontal: 4,
+  },
+  // Saved-verse cards are self-contained tinted surfaces (unlike the plain
+  // surah rows above) — a hairline between them reads as a stray line cutting
+  // through empty space. Real breathing room instead, same gap ReflectionCard
+  // uses between its own cards.
+  savedCardGap: {
+    height: Spacing.md,
   },
 
   // Empty state
