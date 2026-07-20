@@ -2077,10 +2077,10 @@ const quranContentData: Content[] = [
     arabicText: 'فَإِذَا فَرَغْتَ فَٱنصَبْ وَإِلَىٰ رَبِّكَ فَٱرْغَب ﴿7-8﴾',
     transliteration: "fa-idhā faraghta fa-inṣab wa-ilā rabbika fa-ir'ghab",
     englishTranslation:
-      'So when you have finished, then labor hard. And to your Lord turn your attention.',
+      'So when you have finished, stand up in devotion. And to your Lord direct your longing.',
     source: 'Surah Al-Inshirah 94:7-8',
     audioKey: '94:7-8',
-    whyThis: 'The secret to sustainable energy: recharging your spirit after exhausting your body.',
+    whyThis: 'True rest isn\'t found in stopping — it\'s found in redirecting what energy remains toward Allah. The verse doesn\'t say rest once your task is done; it says stand up for prayer. That redirection, not the pause itself, is where renewal actually comes from.',
     moods: ['Tired'],
   },
   {
@@ -2159,7 +2159,7 @@ const quranContentData: Content[] = [
     transliteration:
       "alam nashraḥ laka ṣadraka wawaḍaʿnā ʿanka wiz'raka alladhī anqaḍa ẓahraka warafaʿnā laka dhik'raka fa-inna maʿa l-ʿus'ri yus'ran inna maʿa l-ʿus'ri yus'ran fa-idhā faraghta fa-inṣab wa-ilā rabbika fa-ir'ghab",
     englishTranslation:
-      'Did We not relieve your heart for you [Prophet], and remove the burden that weighed so heavily on your back, and raise your reputation high? So truly where there is hardship there is also ease; truly where there is hardship there is also ease. The moment you are freed [of one task] work on, and turn to your Lord for everything.',
+      'Did We not relieve your heart for you [Prophet], and remove the burden that weighed so heavily on your back, and raise your reputation high? So truly where there is hardship there is also ease; truly where there is hardship there is also ease. So when you are freed from your work, stand up in devotion, and direct your longing to your Lord.',
     source: 'Surah Al-Inshirah 94:1-8 (Complete)',
     audioKey: '94:1-8',
     whyThis: 'This entire surah is a divine accounting of what Allah had already done for the Prophet ﷺ: opened his chest, removed his burden, raised his name — before giving the promise of ease. The lesson is that Allah\'s help often begins with what He has already given you, which you may not have noticed. Count the gifts already present before you despair of what is yet to come.',
