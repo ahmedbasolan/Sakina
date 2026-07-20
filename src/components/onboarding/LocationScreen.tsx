@@ -7,7 +7,7 @@
  * is confirmed, so Home has nothing left to fetch when the user arrives.
  */
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, KeyboardAvoidingView, Platform } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Spacing } from '../../theme/DesignSystem';
@@ -87,19 +87,32 @@ export default function LocationScreen({ onNext }: Props) {
   return (
     <View style={styles.container}>
       <InteractiveStarfield positions={STAR_POS.map((p) => ({ ...p, y: p.y * 1.5 }))} />
-      <LocationCompass
-        fillHeight
-        paddingTop={insets.top + 72}
-        paddingBottom={Math.max(insets.bottom + Spacing.xxl, Spacing.xxxl)}
-        showSkip
-        onSkip={handleSkip}
-        onResolved={(location) => { warmHomeCaches(location); }}
-        onComplete={onNext}
-      />
+      {/* Without this, the manual-search TextInput (rendered below the
+          flex:1 compass) had nothing pushing it clear of the keyboard — the
+          keyboard simply covered it. LocationPickerModal's bottom-sheet
+          version of this same compass already wraps it the same way; this
+          full-screen onboarding version never got it. behavior="height" on
+          Android shrinks this container so the flex:1 compass area yields
+          room to the input instead of the keyboard just overlapping it. */}
+      <KeyboardAvoidingView
+        style={styles.keyboardAvoider}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      >
+        <LocationCompass
+          fillHeight
+          paddingTop={insets.top + 72}
+          paddingBottom={Math.max(insets.bottom + Spacing.xxl, Spacing.xxxl)}
+          showSkip
+          onSkip={handleSkip}
+          onResolved={(location) => { warmHomeCaches(location); }}
+          onComplete={onNext}
+        />
+      </KeyboardAvoidingView>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
+  keyboardAvoider: { flex: 1 },
 });
