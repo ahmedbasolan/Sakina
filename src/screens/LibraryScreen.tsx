@@ -23,7 +23,7 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { BlurView } from 'expo-blur';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { MaterialCommunityIcons, Ionicons } from '@expo/vector-icons';
 import { dbQuery } from '../database/schema';
 import { AnimatedMandala } from '../components/AnimatedMandala';
 import { TwinklingStar } from '../components/TwinklingStar';
@@ -34,6 +34,17 @@ import {
   prefetchAllSurahs,
   type DownloadProgress,
 } from '../services/quranService';
+import { ReflectionRepository } from '../services/reflectionRepository';
+import { MoodColors } from '../theme/DesignSystem';
+import { MOOD_ICON } from '../constants/moodIcons';
+import { Mood } from '../types';
+
+// Same derivation ReflectionHistoryScreen/QuranLibraryScreen use — one
+// source of truth (MoodColors) so a mood reads identically everywhere it
+// shows up, whether that's a reflection card or a saved verse.
+const MOOD_COLORS: Record<string, string> = Object.fromEntries(
+  Object.entries(MoodColors).map(([k, v]) => [k, v.accent]),
+);
 
 const { width } = Dimensions.get('window');
 
@@ -175,51 +186,85 @@ const SURAH_LIST: SurahEntry[] = [
 ];
 
 // ─── SavedVerseCard ───────────────────────────────────────────────────────────
+// One unified shape for every verse a user has saved, wherever the save
+// happened — the bookmark icon in the Quran reader, or "save" while sitting
+// with a verse in Guidance/a Journey. See SavedVerseEntry below.
 
-const SavedVerseCard = React.memo(function SavedVerseCard({ verse }: { verse: any }) {
+interface SavedVerseEntry {
+  id: string;
+  arabicText: string;
+  translation: string;
+  source: string; // "Al-Baqarah · 255" (reader) or "Surah Al-Baqarah 2:255" (guidance)
+  mood?: Mood; // only guidance-saved verses carry a mood
+  savedAt: number;
+}
+
+const SavedVerseCard = React.memo(function SavedVerseCard({ verse, index }: { verse: SavedVerseEntry; index: number }) {
   // Expand-on-tap rather than a hard clamp — same pattern as
   // QuranLibraryScreen's VerseCard, so a bookmarked ayah longer than 2/3
   // lines is never permanently clipped with no way to read the rest.
   const [expanded, setExpanded] = useState(false);
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+  const slideAnim = useRef(new Animated.Value(16)).current;
+
+  useEffect(() => {
+    Animated.parallel([
+      Animated.timing(fadeAnim, { toValue: 1, duration: 400, delay: 60 + index * 60, useNativeDriver: true }),
+      Animated.timing(slideAnim, { toValue: 0, duration: 400, delay: 60 + index * 60, useNativeDriver: true }),
+    ]).start();
+  }, []);
+
+  const formatDate = (ts: number) => {
+    const d = new Date(ts);
+    return d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+  };
+
+  // Same rule as ReflectionCard: mood color when there is one (a verse saved
+  // from Guidance/a Journey), gold otherwise (a verse bookmarked while
+  // reading has no mood attached) — one tinting rule everywhere a saved
+  // item shows up, no separate "reader" vs "guidance" look.
+  const moodColor = verse.mood ? MOOD_COLORS[verse.mood] : null;
+  const moodIcon = verse.mood ? MOOD_ICON[verse.mood] : null;
+  const tintColor = moodColor || Colors.accent.primary;
 
   return (
-    <TouchableOpacity
-      activeOpacity={0.88}
-      onPress={() => setExpanded(!expanded)}
-      accessibilityRole="button"
-      accessibilityLabel={`${verse.surahName} ${verse.verseNumber}`}
-      accessibilityState={{ expanded }}
-    >
-      <View style={styles.savedCard}>
+    <Animated.View style={{ opacity: fadeAnim, transform: [{ translateY: slideAnim }] }}>
+      <TouchableOpacity
+        activeOpacity={0.85}
+        onPress={() => setExpanded(!expanded)}
+        style={[styles.savedCard, { borderColor: `${tintColor}40` }]}
+        accessibilityRole="button"
+        accessibilityLabel={verse.source}
+        accessibilityState={{ expanded }}
+      >
         <LinearGradient colors={[Colors.background.secondary, Colors.background.primary]} style={StyleSheet.absoluteFill} />
         <LinearGradient
-          colors={[`${Colors.accent.primary}1F`, `${Colors.accent.primary}05`]}
+          colors={[`${tintColor}1F`, `${tintColor}05`]}
           style={StyleSheet.absoluteFill}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
           pointerEvents="none"
         />
-        <View style={styles.savedCardLeft}>
-          <View style={styles.savedCardNumBadge}>
-            <Text style={styles.savedCardNumText}>{verse.verseNumber}</Text>
-          </View>
-        </View>
-        <View style={styles.savedCardBody}>
+        <View style={styles.savedCardTop}>
           <View style={styles.savedCardHeader}>
-            <MaterialCommunityIcons name="bookmark" size={12} color={Colors.accent.primary} />
-            <Text style={styles.savedCardSource}>
-              {verse.surahName} · {verse.verseNumber}
-            </Text>
+            <MaterialCommunityIcons name="bookmark" size={12} color={tintColor} />
+            <Text style={[styles.savedCardSource, { color: `${tintColor}CC` }]}>{verse.source}</Text>
           </View>
-          <Text style={styles.savedCardArabic} numberOfLines={expanded ? undefined : 2}>
-            {verse.arabicText}
-          </Text>
-          <Text style={styles.savedCardTranslation} numberOfLines={expanded ? undefined : 3}>
-            {verse.translation}
-          </Text>
+          {moodColor && moodIcon && (
+            <View style={[styles.savedCardMoodBadge, { backgroundColor: `${moodColor}26` }]}>
+              <Ionicons name={moodIcon as any} size={13} color={moodColor} />
+            </View>
+          )}
         </View>
-      </View>
-    </TouchableOpacity>
+        <Text style={styles.savedCardDate}>{formatDate(verse.savedAt)}</Text>
+        <Text style={styles.savedCardArabic} numberOfLines={expanded ? undefined : 2}>
+          {verse.arabicText}
+        </Text>
+        <Text style={styles.savedCardTranslation} numberOfLines={expanded ? undefined : 3}>
+          {verse.translation}
+        </Text>
+      </TouchableOpacity>
+    </Animated.View>
   );
 });
 
@@ -285,7 +330,7 @@ export default function LibraryScreen({ navigation }: any) {
   const insets = useSafeAreaInsets();
   const [activeTab, setActiveTab] = useState<Tab>('saved');
   const [searchQuery, setSearchQuery] = useState('');
-  const [savedVerses, setSavedVerses] = useState<any[]>([]);
+  const [savedVerses, setSavedVerses] = useState<SavedVerseEntry[]>([]);
   const [loadingSaved, setLoadingSaved] = useState(true);
   const [readingProgress, setReadingProgress] = useState<ReadingProgress | null>(null);
   const [dlProgress, setDlProgress] = useState<DownloadProgress | null>(null);
@@ -320,16 +365,46 @@ export default function LibraryScreen({ navigation }: any) {
     }).catch(() => {}); // silent — will retry next time user opens the screen
   };
 
+  // Every "save this verse" action in the app feeds this one list, regardless
+  // of where it happened: the bookmark icon in the Quran reader
+  // (bookmarked_verses), or "save" while sitting with a verse in
+  // Guidance/a Journey (saved_reflections, where an empty `reflection`
+  // marks a pure bookmark — a non-empty one is a written reflection and
+  // stays in ReflectionHistoryScreen instead).
   const loadSavedVerses = async () => {
     try {
-      const data = await dbQuery(async (db) => {
-        return db.getAllAsync<any>(`
-          SELECT id, surahNumber, verseNumber, arabicText, translation, surahName, bookmarkedAt
-          FROM bookmarked_verses
-          ORDER BY bookmarkedAt DESC
-        `);
-      });
-      setSavedVerses(data);
+      const [bookmarked, savedReflections] = await Promise.all([
+        dbQuery(async (db) =>
+          db.getAllAsync<any>(`
+            SELECT id, surahNumber, verseNumber, arabicText, translation, surahName, bookmarkedAt
+            FROM bookmarked_verses
+            ORDER BY bookmarkedAt DESC
+          `),
+        ),
+        ReflectionRepository.getInstance().getAll(),
+      ]);
+
+      const readerEntries: SavedVerseEntry[] = bookmarked.map((v) => ({
+        id: `reader_${v.id}`,
+        arabicText: v.arabicText,
+        translation: v.translation,
+        source: `${v.surahName} · ${v.verseNumber}`,
+        savedAt: v.bookmarkedAt,
+      }));
+
+      const guidanceEntries: SavedVerseEntry[] = savedReflections
+        .filter((r) => !r.reflection?.trim())
+        .map((r) => ({
+          id: `guidance_${r.id}`,
+          arabicText: r.arabicText || '',
+          translation: r.englishTranslation,
+          source: r.source,
+          mood: r.mood as Mood,
+          savedAt: r.timestamp,
+        }));
+
+      const merged = [...readerEntries, ...guidanceEntries].sort((a, b) => b.savedAt - a.savedAt);
+      setSavedVerses(merged);
     } catch {
       setSavedVerses([]);
     } finally {
@@ -394,8 +469,8 @@ export default function LibraryScreen({ navigation }: any) {
     />
   ), [openSurah, readingProgress]);
 
-  const renderSavedVerse = useCallback(({ item }: { item: any }) => (
-    <SavedVerseCard key={item.id} verse={item} />
+  const renderSavedVerse = useCallback(({ item, index }: { item: SavedVerseEntry; index: number }) => (
+    <SavedVerseCard key={item.id} verse={item} index={index} />
   ), []);
 
   return (
@@ -511,9 +586,9 @@ export default function LibraryScreen({ navigation }: any) {
               size={52}
               color="rgba(212,175,55,0.25)"
             />
-            <Text style={styles.emptyTitle}>No Bookmarked Verses</Text>
+            <Text style={styles.emptyTitle}>No Saved Verses</Text>
             <Text style={styles.emptySub}>
-              Tap the bookmark icon on any verse{'\n'}while reading to save it here
+              Bookmark a verse while reading, or save one{'\n'}from Guidance or a Journey — it lands here
             </Text>
             <TouchableOpacity
               style={styles.emptyAction}
@@ -813,51 +888,47 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
 
-  // Saved verse cards
+  // Saved verse cards — same tinted-gradient/border formula and top-down
+  // structure (header+badge / date / body) as ReflectionHistoryScreen's
+  // ReflectionCard, so the two screens read as one consistent design
+  // language rather than two different card systems.
   savedCard: {
-    flexDirection: 'row',
     borderRadius: BorderRadius.md,
     borderWidth: 1,
-    borderColor: 'rgba(212,175,55,0.25)',
     overflow: 'hidden',
-    paddingVertical: Spacing.md,
-    paddingHorizontal: Spacing.lg,
-    gap: Spacing.md,
-  },
-  savedCardLeft: {
-    alignItems: 'center',
-    justifyContent: 'flex-start',
-    paddingTop: 2,
-  },
-  savedCardNumBadge: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
-    backgroundColor: 'rgba(212,175,55,0.1)',
-    borderWidth: 1,
-    borderColor: 'rgba(212,175,55,0.2)',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  savedCardNumText: {
-    fontSize: Typography.sizes.label,
-    fontWeight: '700',
-    color: Colors.accent.primary,
-  },
-  savedCardBody: {
-    flex: 1,
+    padding: Spacing.lg,
     gap: Spacing.xs,
+  },
+  savedCardTop: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
   savedCardHeader: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: Spacing.xs,
+    flex: 1,
+    marginRight: Spacing.sm,
   },
   savedCardSource: {
     fontSize: 11,
-    color: 'rgba(212,175,55,0.65)',
     fontWeight: '700',
     letterSpacing: 0.4,
+    flexShrink: 1,
+  },
+  savedCardMoodBadge: {
+    width: 26,
+    height: 26,
+    borderRadius: 13,
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexShrink: 0,
+  },
+  savedCardDate: {
+    fontSize: Typography.sizes.detail - 1,
+    color: Colors.text.muted,
+    letterSpacing: 0.3,
   },
   savedCardArabic: {
     fontFamily: Typography.fonts.arabic,
@@ -865,6 +936,7 @@ const styles = StyleSheet.create({
     color: '#EDD9A3',
     textAlign: 'right',
     lineHeight: 30,
+    marginTop: Spacing.xs,
   },
   savedCardTranslation: {
     fontSize: 13,

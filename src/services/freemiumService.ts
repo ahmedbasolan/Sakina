@@ -181,10 +181,13 @@ export class FreemiumService {
 
   /**
    * Saved-item count for the free cap (spec §3.1). Counts ONLY saved guidance
-   * reflections + bookmarked verses. A guidance Quran-save writes to BOTH
-   * saved_reflections and bookmarked_verses (mirror row id `bv_guidance_*`), so we
-   * count all saved_reflections plus only the non-mirror bookmarks — a single
-   * saved verse counts once.
+   * reflections + bookmarked verses.
+   *
+   * `NOT LIKE 'bv_guidance_%'` guards against a legacy write-time mirror
+   * (removed — see useGuidanceLogic's handleSave) that briefly wrote a guidance
+   * save into bookmarked_verses too. Current saves never create that id
+   * pattern, but installs that saved one before the mirror was removed can
+   * still have the row, so the exclusion stays until those age out.
    *
    * Free-form journal entries (the `reflections` table) are intentionally NOT
    * counted: a person's own writing/journaling is never capped — only "saved"

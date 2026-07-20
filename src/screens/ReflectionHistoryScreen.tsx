@@ -26,6 +26,8 @@ import { TwinklingStar } from '../components/TwinklingStar';
 import { dbQuery } from '../database/schema';
 import { RotationEngine } from '../services/rotationEngine';
 import { useReduceMotion } from '../hooks/useReduceMotion';
+import { MOOD_ICON } from '../constants/moodIcons';
+import { Mood } from '../types';
 
 // Legacy-architecture Android requires this opt-in for LayoutAnimation
 // (used below for the mood capsule's icon-to-label expand); a no-op if the
@@ -52,33 +54,18 @@ const MOOD_COLORS: Record<string, string> = Object.fromEntries(
   Object.entries(MoodColors).map(([k, v]) => [k, v.accent])
 );
 
-// Same icon set the mood grid/onboarding use per mood, plus Guilty (not
-// offered in either of those pickers but reachable via Home's mood grid,
-// so a saved verse-reflection can still carry it).
-const MOOD_ICON: Record<string, string> = {
-  Grateful: 'heart',
-  Hopeful: 'sunny',
-  Calm: 'water',
-  Overwhelmed: 'layers',
-  Tired: 'moon',
-  Lonely: 'person',
-  Sad: 'rainy',
-  Angry: 'flame',
-  Guilty: 'refresh-circle',
-};
-
 // One deliberate exception to the app's single-gold-accent rule, scoped to
 // this screen's compose card only (owner decision, matches the reference
 // design). Everything else on this screen stays gold/steel/cream.
 const COMPOSE_ACCENT = '#A78BFA';
 
 // ── Merged entry shape ──────────────────────────────────────────────────
-// The journal combines two sources: freeform entries the user writes here
-// (`reflections` table — no verse attached), and reflections saved while
-// sitting with a verse in GuidanceScreen (`saved_reflections` — carries a
-// Quran citation via the joined content row). RotationEngine.saveReflection
-// already writes the latter; getSavedReflections() was defined but never
-// surfaced anywhere in the app until now.
+// This screen is reflections only — things the user actually wrote, whether
+// freeform (`reflections` table) or attached to a verse while sitting with
+// it in Guidance/a Journey (`saved_reflections` where reflection != ''). A
+// verse bookmarked with no note attached is a saved verse, not a reflection
+// — it lives in the Quran Library's Saved Verses tab instead (see
+// LibraryScreen.tsx), same as a verse bookmarked while reading.
 interface JournalEntry {
   id: string;
   title: string;
@@ -91,7 +78,7 @@ interface JournalEntry {
 // ── Entry card ───────────────────────────────────────────────────────
 function ReflectionCard({ entry, index, onPress }: { entry: JournalEntry; index: number; onPress: () => void }) {
   const moodColor = entry.mood ? (MOOD_COLORS[entry.mood] || Colors.accent.primary) : null;
-  const moodIcon = entry.mood ? MOOD_ICON[entry.mood] : null;
+  const moodIcon = entry.mood ? MOOD_ICON[entry.mood as Mood] : null;
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const slideAnim = useRef(new Animated.Value(16)).current;
 
@@ -153,7 +140,7 @@ function ReflectionCard({ entry, index, onPress }: { entry: JournalEntry; index:
 function ReflectionDetailModal({ entry, onClose }: { entry: JournalEntry | null; onClose: () => void }) {
   const insets = useSafeAreaInsets();
   const moodColor = entry?.mood ? (MOOD_COLORS[entry.mood] || Colors.accent.primary) : null;
-  const moodIcon = entry?.mood ? MOOD_ICON[entry.mood] : null;
+  const moodIcon = entry?.mood ? MOOD_ICON[entry.mood as Mood] : null;
   const tintColor = moodColor || Colors.accent.primary;
 
   const formatDate = (ts: number) => {
@@ -227,7 +214,7 @@ const SHEET_MOODS = [
   { id: 'Lonely',      label: 'LONELY' },
   { id: 'Sad',         label: 'SAD' },
   { id: 'Angry',       label: 'ANGRY' },
-].map((m) => ({ ...m, color: MOOD_COLORS[m.id], icon: MOOD_ICON[m.id] }));
+].map((m) => ({ ...m, color: MOOD_COLORS[m.id], icon: MOOD_ICON[m.id as Mood] }));
 
 function NewReflectionModal({ visible, onClose, onSave }: {
   visible: boolean;
@@ -470,20 +457,19 @@ export default function ReflectionHistoryScreen() {
 
       // No title is stored for verse-linked reflections — derive one from the
       // mood rather than inventing poetic copy the data doesn't back up.
-      // `reflection` can be blank (older saves, or a bookmark with no typed
-      // note) — falling back to the verse's own English translation (not
-      // primaryText, which is often a Latin-script transliteration and no
-      // more readable than a blank card) means the card always shows
-      // something the user can actually understand instead of a blank
-      // preview under a title that's just "Grateful Reflection".
-      const verseEntries: JournalEntry[] = saved.map((r) => ({
-        id: r.id,
-        title: r.mood ? `${r.mood} Reflection` : 'Reflection',
-        body: r.reflection?.trim() || r.englishTranslation || '',
-        mood: r.mood,
-        createdAt: r.timestamp,
-        source: r.source,
-      }));
+      // Bookmark-marker rows (reflection === '', saved with no note attached)
+      // are excluded entirely — those are saved verses, not reflections, and
+      // live in the Quran Library's Saved Verses tab instead.
+      const verseEntries: JournalEntry[] = saved
+        .filter((r) => r.reflection?.trim())
+        .map((r) => ({
+          id: r.id,
+          title: r.mood ? `${r.mood} Reflection` : 'Reflection',
+          body: r.reflection,
+          mood: r.mood,
+          createdAt: r.timestamp,
+          source: r.source,
+        }));
 
       const merged = [...freeformEntries, ...verseEntries]
         .sort((a, b) => b.createdAt - a.createdAt)

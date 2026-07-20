@@ -28,6 +28,10 @@ export interface SavedReflection {
   // (e.g. ReflectionHistoryScreen when no note was typed) should use this
   // field, not primaryText.
   englishTranslation: string;
+  // The actual Arabic — LibraryScreen's Saved Verses tab needs this to
+  // render bookmarked verses the same way regardless of whether they were
+  // saved from the Quran reader or from Guidance/a Journey.
+  arabicText: string | null;
   source: string;
   isFavorite?: number; // SQLite stores booleans as 0/1
 }
@@ -91,7 +95,7 @@ export class ReflectionRepository {
   async getAll(): Promise<SavedReflection[]> {
     return dbQuery(async (db) => {
       const result = await db.getAllAsync(`
-        SELECT sr.*, c.primaryText, c.englishTranslation, c.source
+        SELECT sr.*, c.primaryText, c.englishTranslation, c.arabicText, c.source
         FROM saved_reflections sr
         JOIN content c ON sr.contentId = c.id
         ORDER BY sr.timestamp DESC

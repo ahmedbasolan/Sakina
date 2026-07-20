@@ -142,14 +142,13 @@ export const useGuidanceLogic = (
 
     HapticsService.impactAsync('LIGHT');
 
-    // Previously this also mirrored into bookmarked_verses (LibraryScreen's
-    // "Saved Verses" tab) so a guidance save would show up there too. That
-    // conflated two separate features — a reflection save here is not the
-    // same action as bookmarking a verse from the Surah Reader — and made
-    // "Saved Verses" show entries the user never actually bookmarked from
-    // the Quran library. Saving a reflection now only ever writes to
-    // saved_reflections; bookmarked_verses is populated exclusively by
-    // SurahReaderScreen's own bookmark action.
+    // This still only ever writes to saved_reflections (never mirrors into
+    // bookmarked_verses — an earlier version of this comment described a
+    // write-time mirror that was removed because it created duplicate/
+    // orphaned rows). LibraryScreen's Saved Verses tab now merges the two
+    // tables at read time instead: this empty-reflection bookmark-marker row
+    // (below) shows up there alongside SurahReaderScreen's own bookmarks,
+    // without either table needing to know the other exists.
     try {
       if (newSaved) {
         const id = `${experience.content.id}_${experience.angle.id}_${Date.now()}`;
