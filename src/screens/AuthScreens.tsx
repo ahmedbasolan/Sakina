@@ -23,20 +23,30 @@ import {
   Image,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { StackNavigationProp } from '@react-navigation/stack';
 import { AuthService } from '../services/authService';
 import { LinearGradient } from 'expo-linear-gradient';
 import Svg, { Path, Circle } from 'react-native-svg';
 import { useAuth } from '../context/AuthContext';
+import { RootStackParamList } from '../navigation/types';
 import { LEGAL_URLS } from '../constants';
 import { isValidEmail, isValidPassword } from '../utils';
 import * as Haptics from 'expo-haptics';
 
+type AuthNavigation = StackNavigationProp<RootStackParamList, 'Login' | 'SignUp'>;
+
 interface AuthScreenProps {
-  navigation: {
-    navigate: (screen: string) => void;
-  };
-  onLogin?: () => void;
-  onSignUp?: () => void;
+  navigation: AuthNavigation;
+}
+
+// AuthContext's `user`/`isGuest` state flipping doesn't by itself move the
+// RootStack off Login/SignUp — those screens are already siblings of Main in
+// the same "guest-or-authenticated" branch (see MainNavigator), so nothing
+// else pops them once a session exists. Without an explicit reset here, a
+// successful sign-in silently left the user stranded on the auth form (the
+// screen it "bounced back" to was never left in the first place).
+function goToMain(navigation: AuthNavigation) {
+  navigation.reset({ index: 0, routes: [{ name: 'Main' }] });
 }
 
 // ==================== SHARED BACKGROUND ====================
@@ -172,19 +182,19 @@ function useAuthEntryAnimation() {
   return { logoOpacity, logoSlide, formOpacity, formSlide, footerOpacity };
 }
 
-// Shared Apple sign-in handler for both auth screens (identical besides the
-// success callback — Login navigates in, SignUp completes the account flow).
+// Shared Apple sign-in handler for both auth screens — Apple sign-in never
+// requires email verification, so success always lands straight in the app.
 function useAppleSignIn(
   authService: AuthService,
   setIsLoading: (loading: boolean) => void,
-  onSuccess?: () => void,
+  navigation: AuthNavigation,
 ) {
   return useCallback(async () => {
     setIsLoading(true);
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     try {
       await authService.signInWithApple();
-      if (onSuccess) onSuccess();
+      goToMain(navigation);
     } catch (error: any) {
       if (error?.code !== 'ERR_REQUEST_CANCELED') {
         Alert.alert('Apple Sign-In Failed', error?.message || 'Please try again.');
@@ -192,11 +202,11 @@ function useAppleSignIn(
     } finally {
       setIsLoading(false);
     }
-  }, [authService, setIsLoading, onSuccess]);
+  }, [authService, setIsLoading, navigation]);
 }
 
 // ==================== LOGIN SCREEN ====================
-export function LoginScreen({ navigation, onLogin }: AuthScreenProps) {
+export function LoginScreen({ navigation }: AuthScreenProps) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -223,7 +233,7 @@ export function LoginScreen({ navigation, onLogin }: AuthScreenProps) {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     try {
       await authService.signInWithEmail(trimmedEmail, password);
-      if (onLogin) onLogin();
+      goToMain(navigation);
     } catch (error: any) {
       Alert.alert('Sign In Failed', error.message || 'An unexpected error occurred.');
     } finally {
@@ -261,8 +271,8 @@ export function LoginScreen({ navigation, onLogin }: AuthScreenProps) {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     try {
       const session = await authService.signInWithGoogle();
-      // null = user dismissed the browser; the auth listener handles success nav.
-      if (session && onLogin) onLogin();
+      // null = user dismissed the browser — nothing to navigate to.
+      if (session) goToMain(navigation);
     } catch (error: any) {
       Alert.alert('Google Sign-In Failed', error?.message || 'Please try again.');
     } finally {
@@ -270,7 +280,7 @@ export function LoginScreen({ navigation, onLogin }: AuthScreenProps) {
     }
   };
 
-  const handleAppleAuth = useAppleSignIn(authService, setIsLoading, onLogin);
+  const handleAppleAuth = useAppleSignIn(authService, setIsLoading, navigation);
 
   return (
     <KeyboardAvoidingView
@@ -429,7 +439,7 @@ export function LoginScreen({ navigation, onLogin }: AuthScreenProps) {
 }
 
 // ==================== SIGN UP SCREEN ====================
-export function SignUpScreen({ navigation, onSignUp }: AuthScreenProps) {
+export function SignUpScreen({ navigation }: AuthScreenProps) {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -487,7 +497,8 @@ export function SignUpScreen({ navigation, onSignUp }: AuthScreenProps) {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     try {
       const session = await authService.signInWithGoogle();
-      if (session && onSignUp) onSignUp();
+      // null = user dismissed the browser — nothing to navigate to.
+      if (session) goToMain(navigation);
     } catch (error: any) {
       Alert.alert('Google Sign-In Failed', error?.message || 'Please try again.');
     } finally {
@@ -495,7 +506,7 @@ export function SignUpScreen({ navigation, onSignUp }: AuthScreenProps) {
     }
   };
 
-  const handleAppleAuth = useAppleSignIn(authService, setIsLoading, onSignUp);
+  const handleAppleAuth = useAppleSignIn(authService, setIsLoading, navigation);
 
   const canSubmit = agreeTerms && !isLoading;
 
