@@ -2,6 +2,7 @@ import * as Notifications from 'expo-notifications';
 import { Platform } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { PrayerTimings } from './prayerTimesService';
+import { logServiceError } from './errorLoggingService';
 
 const REMINDER_SETTINGS_KEY = '@daily_reminder_settings';
 const DAILY_REMINDER_IDS_KEY = '@notif_ids/daily_reminder';
@@ -189,7 +190,19 @@ class NotificationService {
         Notifications.scheduleNotificationAsync({
           content,
           trigger: { type: Notifications.SchedulableTriggerInputTypes.DATE, date, channelId },
-        }).catch(() => null),
+        }).catch((error) => {
+          // Was silently discarding the error — prayer/spiritual notifications
+          // are ~35+21 one-shot DATE alarms scheduled per top-up, and a
+          // per-call failure here (OS alarm quota, restricted background
+          // scheduling on some OEMs, etc.) previously left zero trace of why
+          // a category went silent while others kept working.
+          logServiceError(
+            'NotificationService',
+            'scheduleWeeklyTrigger',
+            error instanceof Error ? error : new Error(String(error)),
+          );
+          return null;
+        }),
       ),
     );
     return ids.filter((id): id is string => id !== null);
@@ -245,7 +258,20 @@ class NotificationService {
       }),
     );
 
-    await setTrackedIds(PRAYER_NOTIF_IDS_KEY, batches.flat());
+    const scheduled = batches.flat();
+    await setTrackedIds(PRAYER_NOTIF_IDS_KEY, scheduled);
+    // Weekly data was valid (we didn't bail out above) but nothing got
+    // scheduled — every SALAH entry either had unparseable times or every
+    // scheduleNotificationAsync call failed. Surface this distinctly from
+    // the per-call error above (which fires even when SOME succeed) so a
+    // fully-silent category is visible in logs instead of just "not there."
+    if (scheduled.length === 0) {
+      logServiceError(
+        'NotificationService',
+        'schedulePrayerNotifications',
+        new Error('Prayer notifications: 0 scheduled despite valid weekly timings'),
+      );
+    }
   }
 
   /**

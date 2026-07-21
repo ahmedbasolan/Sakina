@@ -21,6 +21,7 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useFocusEffect } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { BlurView } from 'expo-blur';
 import { MaterialCommunityIcons, Ionicons } from '@expo/vector-icons';
@@ -351,6 +352,20 @@ export default function LibraryScreen({ navigation }: any) {
     startQuranDownload().catch(() => {}); // guard — unhandled rejection crashes the dev overlay
     return () => { isMountedRef.current = false; };
   }, []);
+
+  // Library is a bottom-tab screen — it stays mounted when the user navigates
+  // to Guidance/a Journey/SurahReader to save a verse, so the mount-only
+  // effect above never re-runs on return. Without this, a freshly saved verse
+  // was invisible in the Saved Verses tab until the app was fully restarted.
+  // hasFocusedRef skips the first focus (mount already loaded both above).
+  const hasFocusedRef = useRef(false);
+  useFocusEffect(
+    useCallback(() => {
+      if (!hasFocusedRef.current) { hasFocusedRef.current = true; return; }
+      loadSavedVerses();
+      loadProgress();
+    }, []),
+  );
 
   const startQuranDownload = async () => {
     // Check current state first — skip if already complete
