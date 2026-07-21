@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useMemo, useEffect } from 'react';
 import { StyleSheet, View, Text, TouchableOpacity, Animated } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -29,10 +29,17 @@ const GuidanceHeader: React.FC<GuidanceHeaderProps> = ({
   const insets = useSafeAreaInsets();
   const moodStyle = MoodColors[mood] || MoodColors.Calm;
 
-  // Subtle fade for progress dots
-  const dotAnims = useRef(
-    Array.from({ length: totalCards }, () => new Animated.Value(0)),
-  ).current;
+  // Subtle fade for progress dots. Rebuilt via useMemo (not a one-time useRef)
+  // keyed on totalCards: this same GuidanceScreen instance persists across
+  // "next verse" taps (navigation.setParams re-renders it, never remounts),
+  // and totalCards can differ per verse (hasContext depends on that verse's
+  // own whyThis/angle text). A fixed-size ref array left dotAnims[i] undefined
+  // the moment totalCards grew mid-session, and the render loop below indexes
+  // it up to the CURRENT totalCards — `undefined.interpolate(...)` would throw.
+  const dotAnims = useMemo(
+    () => Array.from({ length: totalCards }, () => new Animated.Value(0)),
+    [totalCards],
+  );
 
   useEffect(() => {
     dotAnims.forEach((anim, i) => {
@@ -43,7 +50,7 @@ const GuidanceHeader: React.FC<GuidanceHeaderProps> = ({
         stiffness: 120,
       }).start();
     });
-  }, [activeIndex]);
+  }, [activeIndex, dotAnims]);
 
   const handleBack = () => {
     HapticsService.impactAsync('MEDIUM');
