@@ -24,7 +24,7 @@ import { AnimatedMandala } from '../components/AnimatedMandala';
 import { useReduceMotion } from '../hooks/useReduceMotion';
 import { useAppContext } from '../context/AppContext';
 import { fetchWindowGuidance } from '../services/guidanceWindowFetch';
-import { Mood } from '../types';
+import { Mood, GuidanceExperience } from '../types';
 
 const { width, height } = Dimensions.get('window');
 const CARD_WIDTH = (width - Spacing.xl * 2 - 12) / 2;
@@ -268,7 +268,17 @@ export default function MoodSelectionScreen({ navigation }: any) {
     });
 
     transitionTimeout.current = setTimeout(async () => {
-      const experience = await guidancePromise;
+      // fetchWindowGuidance is hardened to resolve null rather than reject, but
+      // guard here too so a rejection can never leave this async callback
+      // without navigating — which would strand the user on the faded-out mood
+      // cards below (they're only reset after navigate fires). GuidanceScreen's
+      // safety-net effect re-fetches when it receives a null experience.
+      let experience: GuidanceExperience | null = null;
+      try {
+        experience = await guidancePromise;
+      } catch {
+        /* degrade to null — GuidanceScreen will retry the fetch itself */
+      }
       navigation.navigate('Guidance', {
         mood: mood.key,
         experience,

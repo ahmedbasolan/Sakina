@@ -310,9 +310,16 @@ export class ContentRepository {
       source: row.source || '',
       audioKey: row.audioKey,
       whyThis: row.whyThis || '',
-      propheticPractice: row.propheticPractice
-        ? JSON.parse(row.propheticPractice)
-        : undefined,
+      // Guarded like the other two propheticPractice parses in this file: a
+      // single malformed row must degrade to "no practice" rather than throw
+      // out of buildExperience and break the whole guidance delivery.
+      propheticPractice: (() => {
+        try {
+          return row.propheticPractice ? JSON.parse(row.propheticPractice) : undefined;
+        } catch {
+          return undefined;
+        }
+      })(),
       optionalAction: row.optionalAction,
       optionalReflection: row.optionalReflection,
       moods: [],

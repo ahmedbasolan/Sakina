@@ -14,6 +14,7 @@ import React, { createContext, useContext, useState, useEffect, useMemo } from '
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { RotationEngine } from '../services/rotationEngine';
 import { FreemiumService } from '../services/freemiumService';
+import { PreferencesService } from '../services/preferencesService';
 import { prefetchAllSurahs } from '../services/quranService';
 import { Mood, GuidanceExperience } from '../types';
 import { TimeFormat } from '../services/prayerTimesService';
@@ -42,6 +43,28 @@ function ServicesProvider({ children }: { children: React.ReactNode }) {
       .initialize()
       .catch((error) => console.warn('[ServicesProvider] freemium init failed:', error))
       .finally(() => setIsLoading(false));
+
+    // PreferencesService is a singleton with hardcoded in-memory defaults;
+    // initialize() is what hydrates it from SQLite. Previously the ONLY call
+    // site for that was useGuidanceLogic's mount effect — meaning every other
+    // consumer that reads it synchronously (prayerTimesService.resolveAsrMadhab,
+    // called by every prayer-time fetch app-wide, and SettingsScreen's own
+    // focus effect) saw the hardcoded defaults instead of the user's saved
+    // preferences for the whole session until Guidance happened to be opened.
+    // Concretely: (1) Home's first prayer-time fetch always computed Asr with
+    // the Shafi'i/standard method even for a user who'd saved Hanafi, and (2)
+    // opening Settings before Guidance showed wrong toggle states, and — worse
+    // — flipping any ONE toggle there wrote the whole (still-default) prefs
+    // object back to SQLite, silently reverting every other previously-saved
+    // preference. Loading it here, alongside the other services, starts the
+    // hydration in the same render commit as useHomeData's own bootstrap
+    // effect — nothing here actually sequences one before the other (isLoading
+    // above is never consumed to gate rendering), so this narrows the race
+    // from "arbitrarily long, until the user opens Guidance" down to roughly
+    // one SQLite read's worth of milliseconds, not a hard guarantee.
+    PreferencesService.getInstance()
+      .initialize()
+      .catch((error) => console.warn('[ServicesProvider] preferences init failed:', error));
 
     // Warm the offline Quran cache from app launch rather than waiting for
     // the user to open the Library tab — now a ~3-request bulk fetch (see
