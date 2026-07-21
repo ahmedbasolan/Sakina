@@ -527,7 +527,14 @@ export class SupabaseDataService {
                 }
 
                 for (const row of localProgress) {
-                    const localDays: number[] = row.completedDays ? JSON.parse(row.completedDays) : [];
+                    // Guarded like the other two completedDays parses in this file:
+                    // this loop's own outer try/catch would otherwise abort the ENTIRE
+                    // migration (including every other well-formed row still to be
+                    // processed) on one malformed value, silently reporting
+                    // migratedCount: 0 for a real once-per-signup migration.
+                    const localDays: number[] = (() => {
+                        try { return row.completedDays ? JSON.parse(row.completedDays) : []; } catch { return []; }
+                    })();
                     const server = serverMap.get(row.pathId);
                     // Skip if server is already ahead on both metrics.
                     if (
@@ -642,7 +649,7 @@ export class SupabaseDataService {
                 pathId: r.pathId,
                 currentDay: r.currentDay,
                 startDate: r.startDate,
-                completedDays: r.completedDays ? JSON.parse(r.completedDays) : [],
+                completedDays: (() => { try { return r.completedDays ? JSON.parse(r.completedDays) : []; } catch { return []; } })(),
                 isCompleted: Boolean(r.isCompleted),
                 completedAt: r.completedAt,
             };
@@ -683,7 +690,7 @@ export class SupabaseDataService {
                 pathId: r.pathId,
                 currentDay: r.currentDay,
                 startDate: r.startDate,
-                completedDays: r.completedDays ? JSON.parse(r.completedDays) : [],
+                completedDays: (() => { try { return r.completedDays ? JSON.parse(r.completedDays) : []; } catch { return []; } })(),
                 isCompleted: Boolean(r.isCompleted),
                 completedAt: r.completedAt,
             }));

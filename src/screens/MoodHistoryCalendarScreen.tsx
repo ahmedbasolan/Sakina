@@ -283,6 +283,24 @@ export default function MoodHistoryCalendarScreen({ onBack }: MoodHistoryCalenda
     loadData();
   }, [loadData]);
 
+  // This screen lives inside the bottom tab navigator and never unmounts on a
+  // tab switch — without this, checking in a mood on Home while this tab was
+  // already mounted left the calendar, streak ring, and insights showing
+  // pre-check-in data until the app was fully restarted (the same staleness
+  // PathsScreen/PathDetailScreen already guard against for their own progress
+  // data via useFocusEffect). No setLoading(true) here — refresh silently so
+  // returning to an already-loaded tab doesn't flash the full-screen spinner
+  // over content that's still valid most of the time.
+  // hasFocusedRef skips the first focus (mount already loaded via the plain
+  // useEffect above) — same guard LibraryScreen uses for the identical reason.
+  const hasFocusedRef = useRef(false);
+  useFocusEffect(
+    useCallback(() => {
+      if (!hasFocusedRef.current) { hasFocusedRef.current = true; return; }
+      loadData();
+    }, [loadData]),
+  );
+
   useEffect(() => {
     Animated.parallel([
       Animated.timing(headerOpacity, { toValue: 1, duration: 400, useNativeDriver: true }),
