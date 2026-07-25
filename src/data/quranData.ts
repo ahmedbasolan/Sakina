@@ -12330,7 +12330,7 @@ const quranContentAnglesData: ContentAngle[] = [
         icon: 'leaf',
         title: 'The cheapest heavy deed',
         instruction:
-          'Light on the tongue, heavy on the scale. Say it slowly while lying down. There is no minimum standard of concentration you have to reach first.',
+          'A hundred times in a day, and sins are forgiven though they be like the foam of the sea. Say it slowly, lying down if that is where you are. There is no minimum standard of concentration you have to reach first.',
         arabicText: 'سُبْحَانَ اللَّهِ وَبِحَمْدِهِ',
         transliteration: 'Subhanallahi wa bihamdih',
         translation: 'Glory be to Allah, and praise be to Him',
@@ -12440,10 +12440,10 @@ const quranContentAnglesData: ContentAngle[] = [
       {
         type: 'mindset',
         icon: 'compass',
-        title: 'Build the relationship before you need it',
+        title: 'He is findable, not distant',
         instruction:
-          'The Prophet ﷺ taught that recognising Allah in your easy seasons is what makes Him known to you in the hard ones. Some of this isolation is a relationship that only gets used in emergencies — start speaking to Him on ordinary days.',
-        source: '"Know Allah in times of ease and He will know you in times of hardship." [Jami at-Tirmidhi 2516]',
+          'The Prophet ﷺ told a young Ibn Abbas: be mindful of Allah and you will find Him in front of you. Not summoned from far away — already there. Some of this isolation is a relationship that only gets used in emergencies; start speaking to Him on ordinary days.',
+        source: '"Be mindful of Allah and you will find Him before you." [Jami at-Tirmidhi 2516]',
         sourceType: 'prophetic_dhikr',
         sourceGrading: 'hasan',
       },
@@ -12690,7 +12690,7 @@ const quranContentAnglesData: ContentAngle[] = [
         title: 'He is not reading the surface',
         instruction:
           'The Prophet ﷺ said Allah does not look at your appearance or your wealth, but at your hearts and your deeds. Every relationship where you had to perform is being judged on the layer you were performing over. This one is not.',
-        source: 'Sahih Muslim 2564',
+        source: 'Sahih Muslim 2564c',
         sourceType: 'prophetic_dhikr',
         sourceGrading: 'sahih',
       },
