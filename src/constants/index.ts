@@ -169,7 +169,7 @@ const ERROR_MESSAGES = {
   network: 'Network connection error. Please check your internet connection.',
   server: 'Server error. Please try again later.',
   auth: 'Authentication error. Please sign in again.',
-  unknown: 'An unexpected error occurred. Please try again.',
+  unknown: 'Something did not work as expected. Please try again.',
 } as const;
 
 // Subscription price — the single display source (spec §7 "dynamic price").

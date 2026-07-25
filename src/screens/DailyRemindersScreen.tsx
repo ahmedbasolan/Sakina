@@ -293,7 +293,7 @@ export default function DailyRemindersScreen({ onBack }: DailyRemindersScreenPro
       // Was silently discarding the real error — swap for the actual cause so
       // device logs show what failed instead of just "please try again".
       logServiceError('DailyRemindersScreen', 'handleSetReminder', error instanceof Error ? error : new Error(String(error)));
-      Alert.alert('Error', 'Failed to set reminder. Please try again.');
+      Alert.alert('Reminder not saved', 'We could not set that reminder. Please try again.');
     } finally {
       setIsSaving(false);
     }

@@ -222,7 +222,7 @@ export function LoginScreen({ navigation }: AuthScreenProps) {
   const handleSignIn = async () => {
     const trimmedEmail = email.trim().toLowerCase();
     if (!trimmedEmail || !password) {
-      Alert.alert('Error', 'Please enter both email and password.');
+      Alert.alert('Missing details', 'Enter your email and password to continue.');
       return;
     }
     if (!isValidEmail(trimmedEmail)) {
@@ -235,7 +235,7 @@ export function LoginScreen({ navigation }: AuthScreenProps) {
       await authService.signInWithEmail(trimmedEmail, password);
       goToMain(navigation);
     } catch (error: any) {
-      Alert.alert('Sign In Failed', error.message || 'An unexpected error occurred.');
+      Alert.alert('Sign In Failed', error.message || 'We could not sign you in. Please try again in a moment.');
     } finally {
       setIsLoading(false);
     }
@@ -258,7 +258,7 @@ export function LoginScreen({ navigation }: AuthScreenProps) {
               await authService.sendPasswordResetEmail(email.trim());
               Alert.alert('Email Sent', 'Check your inbox for the password reset link.');
             } catch (err: any) {
-              Alert.alert('Error', err.message || 'Could not send reset email.');
+              Alert.alert('Reset email not sent', err.message || 'We could not send the reset email. Please try again.');
             }
           },
         },
@@ -459,7 +459,7 @@ export function SignUpScreen({ navigation }: AuthScreenProps) {
     const trimmedEmail = email.trim().toLowerCase();
 
     if (!trimmedName || !trimmedEmail || !password) {
-      Alert.alert('Error', 'Please fill in all fields.');
+      Alert.alert('Missing details', 'Fill in every field to create your account.');
       return;
     }
     if (!isValidEmail(trimmedEmail)) {
@@ -467,11 +467,11 @@ export function SignUpScreen({ navigation }: AuthScreenProps) {
       return;
     }
     if (!isValidPassword(password)) {
-      Alert.alert('Weak Password', 'Password must be at least 8 characters long.');
+      Alert.alert('Password too short', 'Use at least 8 characters.');
       return;
     }
     if (!agreeTerms) {
-      Alert.alert('Error', 'Please agree to the Terms and Privacy Policy.');
+      Alert.alert('One more step', 'Agree to the Terms and Privacy Policy to continue.');
       return;
     }
     setIsLoading(true);
@@ -484,7 +484,7 @@ export function SignUpScreen({ navigation }: AuthScreenProps) {
         [{ text: 'OK', onPress: () => navigation.navigate('Login') }],
       );
     } catch (error: any) {
-      Alert.alert('Sign Up Failed', error.message || 'An unexpected error occurred.');
+      Alert.alert('Sign Up Failed', error.message || 'We could not create your account. Please try again in a moment.');
     } finally {
       setIsLoading(false);
     }

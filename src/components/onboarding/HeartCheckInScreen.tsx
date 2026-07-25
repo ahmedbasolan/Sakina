@@ -61,7 +61,7 @@ const MOODS: MoodOption[] = [
     id: 'Grateful',
     label: 'GRATEFUL',
     sublabel: 'Shukr',
-    giving: 'Verses to deepen your gratitude and multiply His blessings',
+    giving: 'Naming what He gave, before you ask Him for anything else',
     color: '#FBBF24',
     bgColor: '#451A03',
     gradientColors: ['#5E2204', '#3A1602', '#1A0901'],
@@ -71,7 +71,9 @@ const MOODS: MoodOption[] = [
     id: 'Hopeful',
     label: 'HOPEFUL',
     sublabel: 'Amal',
-    giving: 'Reminders of Allah\'s promise — ease follows every hardship',
+    // Was "ease follows every hardship" — an Overwhelmed/Sad line. Hopeful now
+    // carries the striving content (racing to good, ihsan, effort recorded).
+    giving: 'Not an atom\'s weight of what you do for Him is lost',
     color: '#22D3EE',
     bgColor: '#083344',
     gradientColors: ['#0C4A63', '#062836', '#021620'],
@@ -81,7 +83,7 @@ const MOODS: MoodOption[] = [
     id: 'Calm',
     label: 'PEACEFUL',
     sublabel: 'Sukoon',
-    giving: 'Reflections to sustain and deepen this blessed stillness',
+    giving: 'Sakina descends — this is how you make room for it',
     color: '#34D399',
     bgColor: '#064E3B',
     gradientColors: ['#0A6B52', '#053E2F', '#021F18'],
@@ -131,11 +133,23 @@ const MOODS: MoodOption[] = [
     id: 'Angry',
     label: 'ANGRY',
     sublabel: 'Ghadab',
-    giving: 'Find peace through His remembrance — hearts find rest',
+    // Was 13:28 ("hearts find rest") — that is Calm's verse. Angry leads with
+    // de-escalation: ta'awwudh, changing posture, wudu, leaving the room.
+    giving: 'Bring the heat down first — the rest can wait',
     color: '#FB923C',
     bgColor: '#1A0F0A',
     gradientColors: ['#2A1508', '#140C08', '#060302'],
     iconName: 'flame',
+  },
+  {
+    id: 'Guilty',
+    label: 'GUILTY',
+    sublabel: 'Nadam',
+    giving: 'The door He left open, and the Name He signs it with',
+    color: '#A3A3A3',
+    bgColor: '#1A1A1A',
+    gradientColors: ['#2E2E2E', '#1C1C1C', '#0D0D0D'],
+    iconName: 'refresh-circle',
   },
 ];
 

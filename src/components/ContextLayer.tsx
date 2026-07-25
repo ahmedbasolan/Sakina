@@ -286,7 +286,13 @@ const ContextLayer: React.FC<ContextLayerProps> = ({
                   <MaterialCommunityIcons name="heart-outline" size={13} color={accentColor} />
                   <Text style={[styles.heartLabel, { color: accentColor }]}>For Your Heart</Text>
                 </View>
-                <Text style={styles.heartBody}>{isolateBidiRuns(angle)}</Text>
+                {/* cleanText, not bare isolateBidiRuns: 50 angles carry a
+                    trailing [Tafsir …] / [At-Tirmidhi …] metadata tag. The
+                    Understand/Matters sections already strip it, and
+                    angleSource re-prints the same attribution just below —
+                    rendering the raw string showed the bracket to the user
+                    and duplicated the citation. */}
+                <Text style={styles.heartBody}>{cleanText(angle)}</Text>
                 {angleSource ? (
                   <Text style={[styles.heartSource, { color: accentColor }]}>— {angleSource}</Text>
                 ) : null}
@@ -305,7 +311,7 @@ const ContextLayer: React.FC<ContextLayerProps> = ({
                   onChangeText={onReflectionChange}
                   onFocus={() => onReflectionFocusChange?.(true)}
                   onBlur={() => onReflectionFocusChange?.(false)}
-                  placeholder="Write freely — even a few words count..."
+                  placeholder="Write freely — even a few words count"
                   placeholderTextColor={`${Colors.text.primary}4D`}
                   multiline
                   textAlignVertical="top"

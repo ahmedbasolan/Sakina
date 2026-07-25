@@ -49,6 +49,11 @@ const MOOD_CARD_CONTENT: { id: Mood; label: string; sublabel: string; iconName: 
   { id: 'Lonely',      label: 'LONELY',      sublabel: 'Wahshah', iconName: 'person' },
   { id: 'Sad',         label: 'SAD',         sublabel: 'Huzn',    iconName: 'rainy' },
   { id: 'Angry',       label: 'ANGRY',       sublabel: 'Ghadab',  iconName: 'flame' },
+  // Guilty was defined in the Mood type, had MoodColors, had angles written for
+  // it — and was missing from this array, so the only route to it was one deep
+  // link out of the mood calendar. constants/index.ts calls tawbah "sacred;
+  // never gate repentance"; omitting the card gated it.
+  { id: 'Guilty',      label: 'GUILTY',      sublabel: 'Nadam',   iconName: 'refresh-circle' },
 ];
 
 const moodConfigs: MoodConfig[] = MOOD_CARD_CONTENT.map(({ id, label, sublabel, iconName }) => {

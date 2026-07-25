@@ -36,7 +36,16 @@ import type { Content, ContentAngle } from '../types';
 // v6: added q_angle_results_day2..day7; replaced hadith_results_5 (was a
 //     duplicate of hadith_results_3) with Bukhari 5641.
 // v7: added q_angle_study_day1..day7.
-const SEED_VERSION = 7;
+// v8: mood-pool rebalance. Tired was serving 15 `_energized` angles (content
+//     telling an exhausted user to spend energy) — those moved to Hopeful and
+//     Tired gained 13 purpose-written rest angles across 6 new verses (20:2,
+//     8:11, 28:24, 50:38, 87:8, 6:60). Lonely 2 -> 10, Guilty 5 -> 12 (6 new
+//     verses), Angry +5 acute-phase angles (4 new verses). Also: 'Sad' added to
+//     quran_3_135 / quran_66_8 so two orphaned Sad angles became selectable,
+//     93 reflection prompts rewritten (first-person -> second-person, and the
+//     "How does X change Y" template broken), and 128 `action` strings given
+//     terminal punctuation. Edits to existing rows only propagate on a bump.
+const SEED_VERSION = 8;
 // Separate keys per content type — Quran and Hadith data change independently,
 // and each seeder used to write the SAME key at the end of its run. Since
 // initializeDatabase() awaits seedQuranContent() before seedHadithContent(),

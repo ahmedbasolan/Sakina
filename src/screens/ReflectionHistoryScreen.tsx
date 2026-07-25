@@ -392,7 +392,7 @@ function NewReflectionModal({ visible, onClose, onSave }: {
             <TextInput
               ref={bodyRef}
               style={[styles.sheetBodyInput, keyboardVisible && { minHeight: 90 }]}
-              placeholder="Write freely… this space is private, sacred, and only yours."
+              placeholder="Write freely — even a few words count"
               placeholderTextColor={`${Colors.text.secondary}59`}
               value={bodyText}
               onChangeText={setBodyText}
@@ -560,7 +560,7 @@ export default function ReflectionHistoryScreen() {
             <MaterialCommunityIcons name="notebook-heart-outline" size={52} color={`${Colors.accent.primary}40`} />
             <Text style={styles.emptyTitle}>Your journal is empty</Text>
             <Text style={styles.emptySub}>
-              Every reflection is a step closer to Allah.{'\n'}Start writing today.
+              Nothing here yet.{'\n'}The first entry is usually the hardest.
             </Text>
           </View>
         ) : (
