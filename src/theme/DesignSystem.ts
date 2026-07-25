@@ -106,7 +106,26 @@ export const MoodColors: Record<
     bgFill: string;
     glow: string;
     image: ImageSourcePropType;
-    /** Home mood-card visuals (lighter variants of the immersive gradient). */
+    /**
+     * Home mood-card visuals.
+     *
+     * These sit on the celestialWash (#07111E → #0F1F30), so a card gradient
+     * darker than roughly 20% lightness — or with no chroma at all — simply
+     * disappears. Tired, Sad and Guilty previously used near-black neutrals
+     * (#2E2520 / #243B56 / #2E2E2E) and read as empty outlines on device.
+     *
+     * Each mood owns a distinct hue, spread far enough apart to stay separable
+     * for the grid's vertical and horizontal neighbours:
+     *   Grateful  amber   — warmth, abundance
+     *   Angry     orange  — the high-arousal warm end
+     *   Tired     clay    — dusk; warm but low-arousal and desaturated
+     *   Guilty    jade    — tawbah as washing and return (its waterfall theme)
+     *   Peaceful  emerald — restoration, the lowest-arousal hue
+     *   Hopeful   cyan    — dawn, openness
+     *   Sad       blue    — the strongest cross-cultural sadness association
+     *   Overwhelmed indigo — depth and weight, kept off Hopeful's cyan
+     *   Lonely    violet  — distance, the night sky
+     */
     card: {
       border: string;
       gradient: [string, string, string];
@@ -119,7 +138,7 @@ export const MoodColors: Record<
     bgFill: '#0F172A',
     glow: 'rgba(129, 140, 248, 0.2)',
     image: require('../assets/themes/ocean_deep_blue.jpg'), // Calm starry night sky over ocean
-    card: { border: '#1E1B4B', gradient: ['#1C3872', '#102558', '#102558'] },
+    card: { border: '#4A63CC', gradient: ['#3A52B0', '#26357A', '#26357A'] },
   },
   Angry: {
     gradient: ['#1A0F0A', '#2D1610', '#140E0C'] as const,
@@ -127,15 +146,17 @@ export const MoodColors: Record<
     bgFill: '#1A0F0A',
     glow: 'rgba(251, 146, 60, 0.2)',
     image: require('../assets/themes/landscape_desert_dunes.jpg'), // Peaceful desert sunset with warm tones
-    card: { border: '#2D1610', gradient: ['#3A1808', '#271006', '#271006'] },
+    card: { border: '#BC551A', gradient: ['#9C4614', '#6D300D', '#6D300D'] },
   },
   Sad: {
     gradient: ['#1E293B', '#334155', '#0F172A'] as const,
-    accent: '#94A3B8',
+    // Was #94A3B8 — a neutral slate-grey with almost no chroma, which made the
+    // card and its icon circle read as uncoloured. Blue is the sadness cue.
+    accent: '#7BA3D0',
     bgFill: '#1E293B',
-    glow: 'rgba(148, 163, 184, 0.2)',
+    glow: 'rgba(123, 163, 208, 0.2)',
     image: require('../assets/themes/mood_sad.jpg'), // Gentle misty rain over green mountains
-    card: { border: '#334155', gradient: ['#243B56', '#162840', '#162840'] },
+    card: { border: '#3F6C9C', gradient: ['#345880', '#233C5A', '#233C5A'] },
   },
   Calm: {
     gradient: ['#064E3B', '#022C22', '#052E16'] as const,
@@ -143,7 +164,7 @@ export const MoodColors: Record<
     bgFill: '#064E3B',
     glow: 'rgba(52, 211, 153, 0.2)',
     image: require('../assets/themes/mountain_alpine_lake.jpg'), // Still forest lake with perfect reflection
-    card: { border: '#065F46', gradient: ['#0C6B4E', '#085038', '#085038'] },
+    card: { border: '#16A578', gradient: ['#128A64', '#0C5F46', '#0C5F46'] },
   },
   Grateful: {
     gradient: ['#451A03', '#78350F', '#451A03'] as const,
@@ -151,7 +172,7 @@ export const MoodColors: Record<
     bgFill: '#451A03',
     glow: 'rgba(251, 191, 36, 0.2)',
     image: require('../assets/themes/mountain_snow_peaks.jpg'), // Golden sunrise over majestic mountain peaks
-    card: { border: '#78350F', gradient: ['#6B3008', '#4A2006', '#4A2006'] },
+    card: { border: '#B5761F', gradient: ['#96601A', '#6B4212', '#6B4212'] },
   },
   Hopeful: {
     gradient: ['#083344', '#155E75', '#083344'] as const,
@@ -159,15 +180,18 @@ export const MoodColors: Record<
     bgFill: '#083344',
     glow: 'rgba(34, 211, 238, 0.2)',
     image: require('../assets/themes/sky_golden_sunset.jpg'), // Dawn horizon light breaking through clouds
-    card: { border: '#155E75', gradient: ['#0D5A7A', '#083E58', '#083E58'] },
+    card: { border: '#1A93C2', gradient: ['#12789F', '#0C536F', '#0C536F'] },
   },
   Tired: {
     gradient: ['#1C1917', '#292524', '#1C1917'] as const,
-    accent: '#D6D3D1',
+    // Was #D6D3D1 — a near-white neutral, so the card had no hue at all. Clay
+    // keeps fatigue warm and low-arousal without borrowing Angry's heat or
+    // Lonely's violet, which are its grid neighbours.
+    accent: '#C99A93',
     bgFill: '#1C1917',
-    glow: 'rgba(214, 211, 209, 0.2)',
+    glow: 'rgba(201, 154, 147, 0.2)',
     image: require('../assets/themes/landscape_lavender_field.jpg'), // Soft sunset over peaceful lavender meadow
-    card: { border: '#292524', gradient: ['#2E2520', '#1E1815', '#1E1815'] },
+    card: { border: '#996963', gradient: ['#7D5651', '#573B38', '#573B38'] },
   },
   Lonely: {
     gradient: ['#2E1065', '#4C1D95', '#2E1065'] as const,
@@ -175,15 +199,22 @@ export const MoodColors: Record<
     bgFill: '#2E1065',
     glow: 'rgba(192, 132, 252, 0.2)',
     image: require('../assets/themes/sky_milky_way.jpg'), // Vast starry night sky with milky way over mountains
-    card: { border: '#4C1D95', gradient: ['#501A8A', '#37116A', '#37116A'] },
+    card: { border: '#8B48D6', gradient: ['#7639BC', '#522585', '#522585'] },
   },
   Guilty: {
-    gradient: ['#1A1A1A', '#262626', '#1A1A1A'] as const,
-    accent: '#A3A3A3',
-    bgFill: '#1A1A1A',
-    glow: 'rgba(163, 163, 163, 0.2)',
+    // Was pure neutral grey end to end (#1A1A1A / #A3A3A3 / #2E2E2E) — the only
+    // mood with no hue at any layer, so its card rendered as an empty outline.
+    // Rose rather than the obvious green-for-renewal: green put it 8° from
+    // Calm's emerald and the grid read as two matching cards. A deep, muted
+    // rose carries remorse and the heart while staying well clear of Angry's
+    // orange — and it is deliberately not an alarm red, since tawbah is a
+    // return rather than a reprimand.
+    gradient: ['#2A0D18', '#3F1526', '#2A0D18'] as const,
+    accent: '#C4708C',
+    bgFill: '#2A0D18',
+    glow: 'rgba(196, 112, 140, 0.2)',
     image: require('../assets/themes/nature_waterfall.jpg'), // Gentle waterfall in lush green forest — renewal/tawbah
-    card: { border: '#262626', gradient: ['#2E2E2E', '#1F1F1F', '#1F1F1F'] },
+    card: { border: '#A34E6E', gradient: ['#8A3F5C', '#5F2B3F', '#5F2B3F'] },
   },
 };
 
