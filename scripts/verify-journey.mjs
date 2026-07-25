@@ -27,7 +27,18 @@ const contentIds = new Set([...quran.matchAll(/id: '(quran_[a-z0-9_]+)'/g)].map(
 const angleIds = new Set([...quran.matchAll(/id: '(q_angle_[a-z0-9_]+)'/g)].map((m) => m[1]));
 const hadIds = new Set([...hadith.matchAll(/id: '(hadith_[a-z0-9_]+)'/g)].map((m) => m[1]));
 
-const ICONS = new Set(['hands-prayer','brain','chat','book-quran','mosque','clock','chart','flame','checkmark','lock','heart','light-bulb','leaf','star','pen','bird','target','honey','candle','shield','sunrise','door','rewind','headphones','breathing','home','compass','arrow-right','moon']);
+// Derived from the IconName union rather than hardcoded. The previous literal
+// list had drifted 11 names behind Icon.tsx (handshake, gem, globe, person,
+// trophy, water-drop, calm-face, …), so this check rejected 52 angles that
+// render perfectly well — a false negative is how a checker loses its authority.
+const iconUnion = fs.readFileSync('src/components/Icon.tsx', 'utf8').match(/export type IconName =[\s\S]*?;/);
+if (!iconUnion) {
+  console.error('Could not find the `export type IconName = …;` union in src/components/Icon.tsx.');
+  console.error('If it was renamed or reshaped, update this parser — do not fall back to a literal');
+  console.error('list, which is what drifted 11 names out of date last time.');
+  process.exit(1);
+}
+const ICONS = new Set([...iconUnion[0].matchAll(/'([a-z-]+)'/g)].map((m) => m[1]));
 const TYPES = new Set(['mindset', 'physical', 'verbal']);
 const SRCT = new Set(['quran_dua', 'prophetic_dua', 'prophetic_dhikr', 'sunnah_action']);
 
