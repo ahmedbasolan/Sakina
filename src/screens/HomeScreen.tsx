@@ -429,20 +429,36 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
           {!activePath && (
             <View style={styles.journeySection}>
               <TouchableOpacity
-                style={styles.journeyDiscoveryCard}
                 onPress={() => navigation.navigate('Journeys')}
                 activeOpacity={0.85}
               >
-                <View style={styles.journeyDiscoveryLeft}>
-                  <View style={styles.journeyDiscoveryIcon}>
-                    <Ionicons name="compass-outline" size={22} color={Colors.accent.primary} />
+                {/* Opaque fill, same two-layer recipe as StreakBar and
+                    VerseOfTheDay: a solid surface gradient with the gold tint
+                    laid over it. This card used to be a 5%-alpha gold wash, so
+                    whatever sat behind it (the tab bar, at the bottom of the
+                    scroll) showed straight through. */}
+                <LinearGradient
+                  colors={[Colors.background.secondary, Colors.background.primary]}
+                  style={styles.journeyDiscoveryCard}
+                >
+                  <LinearGradient
+                    colors={[`${Colors.accent.primary}1F`, `${Colors.accent.primary}05`]}
+                    style={StyleSheet.absoluteFill}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 1 }}
+                    pointerEvents="none"
+                  />
+                  <View style={styles.journeyDiscoveryLeft}>
+                    <View style={styles.journeyDiscoveryIcon}>
+                      <Ionicons name="compass-outline" size={22} color={Colors.accent.primary} />
+                    </View>
+                    <View style={styles.journeyDiscoveryText}>
+                      <Text style={styles.journeyDiscoveryTitle}>Start a Guided Journey</Text>
+                      <Text style={styles.journeyDiscoverySub}>Build salah, dhikr & reflection habits, step by step</Text>
+                    </View>
                   </View>
-                  <View style={styles.journeyDiscoveryText}>
-                    <Text style={styles.journeyDiscoveryTitle}>Start a Guided Journey</Text>
-                    <Text style={styles.journeyDiscoverySub}>Build salah, dhikr & reflection habits, step by step</Text>
-                  </View>
-                </View>
-                <Ionicons name="chevron-forward" size={16} color={Colors.text.steel} />
+                  <Ionicons name="chevron-forward" size={16} color={Colors.text.steel} />
+                </LinearGradient>
               </TouchableOpacity>
             </View>
           )}
@@ -616,11 +632,14 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: 'rgba(201, 168, 76, 0.05)',
     borderRadius: 16,
     padding: 16,
     borderWidth: 1,
-    borderColor: 'rgba(201, 168, 76, 0.14)',
+    borderColor: 'rgba(201, 168, 76, 0.22)',
+    // Clips the absolute-fill tint layer to the rounded corners. Safe here
+    // because this card carries no elevation (see journeyCardShadow for the
+    // Android case where overflow + borderRadius + elevation conflict).
+    overflow: 'hidden',
   },
   journeyDiscoveryLeft: {
     flexDirection: 'row',
