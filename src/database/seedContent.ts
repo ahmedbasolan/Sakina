@@ -49,7 +49,8 @@ import type { Content, ContentAngle } from '../types';
 //     a user with three refreshes a day hit a repeat inside 36 hours.
 // v10: Guilty pool 12 -> 25 (11 new verses; 6:54 and 8:33 retagged).
 // v11: Tired pool 13 -> 26 (7 new verses; 28:73, 2:286, 2:45, 94:5 retagged).
-const SEED_VERSION = 11;
+// v12: Angry pool 18 -> 25 (7 new verses). Completes the four thin moods.
+const SEED_VERSION = 12;
 // Separate keys per content type — Quran and Hadith data change independently,
 // and each seeder used to write the SAME key at the end of its run. Since
 // initializeDatabase() awaits seedQuranContent() before seedHadithContent(),
