@@ -3147,6 +3147,106 @@ const quranContentData: Content[] = [
     whyThis: 'Yaqub (AS) has just been shown the shirt and does not believe them, and still does not rage. Ibn Kathir notes he names the deception accurately and then reaches for two things: beautiful patience, and Allah as the One whose help is sought. Al-Sa\'di observes that "al-mustaʿān" is where the strength comes from — the patience is not self-generated, which is why it can be sustained when a person has nothing left of their own.',
     moods: ['Tired'],
   },
+
+  // === ANGRY (pool expansion) ===
+  // 18 -> 25. 2:109 and 3:186 were considered and dropped: both name a specific
+  // group as the source of the hostility, which reads sectarian on an anger card.
+  {
+    id: 'quran_5_8',
+    type: 'Quran',
+    primaryText: "yāayyuhā alladhīna āmanū kūnū qawwāmīna lillahi shuhadāa bil-qis'ṭi walā yajrimannakum shanaānu qawmin ʿalā allā taʿdilū iʿ'dilū huwa aqrabu lilttaqwā wa-ittaqū l-laha inna l-laha khabīrun bimā taʿmalūna",
+    arabicText:
+      'يَـٰٓأَيُّهَا ٱلَّذِينَ ءَامَنُوا۟ كُونُوا۟ قَوَّٰمِينَ لِلَّهِ شُهَدَآءَ بِٱلْقِسْطِ ۖ وَلَا يَجْرِمَنَّكُمْ شَنَـَٔانُ قَوْمٍ عَلَىٰٓ أَلَّا تَعْدِلُوا۟ ۚ ٱعْدِلُوا۟ هُوَ أَقْرَبُ لِلتَّقْوَىٰ ۖ وَٱتَّقُوا۟ ٱللَّهَ ۚ إِنَّ ٱللَّهَ خَبِيرٌۢ بِمَا تَعْمَلُونَ ﴿8﴾',
+    transliteration: "yāayyuhā alladhīna āmanū kūnū qawwāmīna lillahi shuhadāa bil-qis'ṭi walā yajrimannakum shanaānu qawmin ʿalā allā taʿdilū iʿ'dilū huwa aqrabu lilttaqwā wa-ittaqū l-laha inna l-laha khabīrun bimā taʿmalūna",
+    englishTranslation:
+      'O you who believe, be persistently standing firm for Allah, witnesses in justice. And do not let the hatred of a people prevent you from being just. Be just; that is nearer to righteousness. And fear Allah; indeed, Allah is Acquainted with what you do.',
+    source: "Surah Al-Ma'idah 5:8",
+    audioKey: '5:8',
+    whyThis: 'Ibn Kathir explains "shanaān" as intense dislike, and notes the ayah does not ask you to stop feeling it — it forbids letting it distort your judgement. Al-Sa\'di observes that justice toward someone you dislike is named as *nearer to taqwa* than justice in general, because the difficulty is what gives it weight. The command assumes the hatred is present and legislates around it.',
+    moods: ['Angry'],
+  },
+  {
+    id: 'quran_15_85',
+    type: 'Quran',
+    primaryText: "wamā khalaqnā l-samāwāti wal-arḍa wamā baynahumā illā bil-ḥaqi wa-inna l-sāʿata laātiyatun fa-iṣ'faḥi l-ṣafḥa l-jamīla",
+    arabicText:
+      'وَمَا خَلَقْنَا ٱلسَّمَـٰوَٰتِ وَٱلْأَرْضَ وَمَا بَيْنَهُمَآ إِلَّا بِٱلْحَقِّ ۗ وَإِنَّ ٱلسَّاعَةَ لَـَٔاتِيَةٌ ۖ فَٱصْفَحِ ٱلصَّفْحَ ٱلْجَمِيلَ ﴿85﴾',
+    transliteration: "wamā khalaqnā l-samāwāti wal-arḍa wamā baynahumā illā bil-ḥaqi wa-inna l-sāʿata laātiyatun fa-iṣ'faḥi l-ṣafḥa l-jamīla",
+    englishTranslation:
+      'And We did not create the heavens and the earth and what is between them except in truth. And indeed, the Hour is coming; so forgive with gracious forgiveness.',
+    source: 'Surah Al-Hijr 15:85',
+    audioKey: '15:85',
+    whyThis: 'Al-Sa\'di distinguishes ṣafḥ from ʿafw: pardon drops the claim, ṣafḥ turns the page entirely so the matter is not raised again. Ibn Kathir notes the reasoning given for it — the Hour is coming, so accounts will be settled by someone other than you. The forgiveness is grounded in confidence about justice, not in indifference to it.',
+    moods: ['Angry'],
+  },
+  {
+    id: 'quran_23_96',
+    type: 'Quran',
+    primaryText: "id'faʿ bi-allatī hiya aḥsanu l-sayi-ata naḥnu aʿlamu bimā yaṣifūna",
+    arabicText: 'ٱدْفَعْ بِٱلَّتِى هِىَ أَحْسَنُ ٱلسَّيِّئَةَ ۚ نَحْنُ أَعْلَمُ بِمَا يَصِفُونَ ﴿96﴾',
+    transliteration: "id'faʿ bi-allatī hiya aḥsanu l-sayi-ata naḥnu aʿlamu bimā yaṣifūna",
+    englishTranslation:
+      'Repel evil by that which is better. We are most knowing of what they describe.',
+    source: "Surah Al-Mu'minun 23:96",
+    audioKey: '23:96',
+    whyThis: 'Ibn Kathir reads "idfaʿ" as an active verb — repel, push back — so this is not passivity dressed as virtue but a countermeasure chosen for being more effective. Al-Sa\'di adds the closing clause as the reason it is bearable: Allah already knows exactly what was said about you, so the record does not depend on your correcting it.',
+    moods: ['Angry'],
+  },
+  {
+    id: 'quran_25_72',
+    type: 'Quran',
+    primaryText: "wa-alladhīna lā yashhadūna l-zūra wa-idhā marrū bil-laghwi marrū kirāman",
+    arabicText: 'وَٱلَّذِينَ لَا يَشْهَدُونَ ٱلزُّورَ وَإِذَا مَرُّوا۟ بِٱللَّغْوِ مَرُّوا۟ كِرَامًا ﴿72﴾',
+    transliteration: "wa-alladhīna lā yashhadūna l-zūra wa-idhā marrū bil-laghwi marrū kirāman",
+    englishTranslation:
+      'And those who do not testify to falsehood, and when they pass near ill speech, they pass by with dignity.',
+    source: 'Surah Al-Furqan 25:72',
+    audioKey: '25:72',
+    whyThis: 'Al-Sa\'di notes the verb: they pass *by*. They do not stop, engage, or answer. Ibn Kathir renders "kirāman" as honourably — the dignity is in not being drawn in rather than in winning the exchange. This sits among the descriptions of ʿibād ar-Rahman, so declining to engage is listed as a mark of the servants of the Most Merciful, not as avoidance.',
+    moods: ['Angry'],
+  },
+  {
+    id: 'quran_17_53',
+    type: 'Quran',
+    primaryText: 'waqul liʿibādī yaqūlū allatī hiya aḥsanu inna l-shayṭāna yanzaghu baynahum inna l-shayṭāna kāna lil\'insāni ʿaduwwan mubīnan',
+    arabicText:
+      'وَقُل لِّعِبَادِى يَقُولُوا۟ ٱلَّتِى هِىَ أَحْسَنُ ۚ إِنَّ ٱلشَّيْطَـٰنَ يَنزَغُ بَيْنَهُمْ ۚ إِنَّ ٱلشَّيْطَـٰنَ كَانَ لِلْإِنسَـٰنِ عَدُوًّا مُّبِينًا ﴿53﴾',
+    transliteration: 'waqul liʿibādī yaqūlū allatī hiya aḥsanu inna l-shayṭāna yanzaghu baynahum inna l-shayṭāna kāna lil\'insāni ʿaduwwan mubīnan',
+    englishTranslation:
+      'And tell My servants to say that which is best. Indeed, Satan induces dissension among them. Indeed, Satan is ever a clear enemy to man.',
+    source: 'Surah Al-Isra 17:53',
+    audioKey: '17:53',
+    whyThis: 'Ibn Kathir notes the same root used in 7:200 — "yanzagh", to goad or prod — but here it is applied to the space *between* two people rather than inside one. Al-Sa\'di draws the practical consequence: harsh words are the opening he works through, so choosing the better wording is not politeness but closing a door. The enmity named at the end is his, not the other person\'s.',
+    moods: ['Angry'],
+  },
+  {
+    id: 'quran_31_17',
+    type: 'Quran',
+    primaryText: "yābunayya aqimi l-ṣalata wamur bil-maʿrūfi wa-in'ha ʿani l-munkari wa-iṣ'bir ʿalā mā aṣābaka inna dhālika min ʿazmi l-umūri",
+    arabicText:
+      'يَـٰبُنَىَّ أَقِمِ ٱلصَّلَوٰةَ وَأْمُرْ بِٱلْمَعْرُوفِ وَٱنْهَ عَنِ ٱلْمُنكَرِ وَٱصْبِرْ عَلَىٰ مَآ أَصَابَكَ ۖ إِنَّ ذَٰلِكَ مِنْ عَزْمِ ٱلْأُمُورِ ﴿17﴾',
+    transliteration: "yābunayya aqimi l-ṣalata wamur bil-maʿrūfi wa-in'ha ʿani l-munkari wa-iṣ'bir ʿalā mā aṣābaka inna dhālika min ʿazmi l-umūri",
+    englishTranslation:
+      'O my son, establish prayer, enjoin what is right, forbid what is wrong, and be patient over what befalls you. Indeed, that is of the matters requiring determination.',
+    source: 'Surah Luqman 31:17',
+    audioKey: '31:17',
+    whyThis: 'Luqman puts patience immediately after the instruction to speak up — Al-Sa\'di notes the ordering is causal, since anyone who enjoins good will be answered badly for it. Ibn Kathir explains "ʿazm al-umūr" as matters requiring resolve, the things that do not happen without a decision. Standing for what is right and absorbing the response are given as one instruction, not two.',
+    moods: ['Angry'],
+  },
+  {
+    id: 'quran_16_127',
+    type: 'Quran',
+    primaryText: "wa-iṣ'bir wamā ṣabruka illā bil-lahi walā taḥzan ʿalayhim walā taku fī ḍayqin mimmā yamkurūna",
+    arabicText:
+      'وَٱصْبِرْ وَمَا صَبْرُكَ إِلَّا بِٱللَّهِ ۚ وَلَا تَحْزَنْ عَلَيْهِمْ وَلَا تَكُ فِى ضَيْقٍ مِّمَّا يَمْكُرُونَ ﴿127﴾',
+    transliteration: "wa-iṣ'bir wamā ṣabruka illā bil-lahi walā taḥzan ʿalayhim walā taku fī ḍayqin mimmā yamkurūna",
+    englishTranslation:
+      'And be patient, and your patience is not but through Allah. And do not grieve over them, and do not be in distress over what they plot.',
+    source: 'Surah An-Nahl 16:127',
+    audioKey: '16:127',
+    whyThis: 'Al-Sa\'di stops on the parenthesis: your patience is not but through Allah. The capacity to endure is itself supplied, which is why it can be asked for rather than only summoned. Ibn Kathir notes the final clause forbids "ḍayq" — a constriction of the chest, the physical tightness of being wronged — naming the bodily sensation rather than only the attitude.',
+    moods: ['Angry'],
+  },
 ];
 
 const quranContent: Content[] = quranContentData;
@@ -15206,6 +15306,300 @@ const quranContentAnglesData: ContentAngle[] = [
     ]),
     reflection:
       'Name two things that are easier now than they were a month ago. You have probably not counted either.',
+  },
+
+  // === ANGRY (pool expansion) ===
+  // 18 -> 25. Weighted toward the gap the earlier audit found: the pool was
+  // almost entirely pardon-framed, so these lean on governing the response
+  // rather than on producing forgiveness the reader may not be ready for.
+  {
+    id: 'q_angle_5_8_angry',
+    contentId: 'quran_5_8',
+    mood: 'Angry',
+    angle:
+      'Read what this ayah assumes about you. It does not say stop disliking them — shanaān is intense dislike and Allah names it as present. What it forbids is letting that feeling bend your judgement. And then it says being just toward someone you cannot stand is *nearer to taqwa* than ordinary fairness, precisely because it is harder. Your anger is not the thing being corrected here. Its reach is.',
+    angleSource: 'Tafsir Ibn Kathir',
+    action: 'State one true thing in their favour, out loud, without softening your position.',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'mindset',
+        icon: 'chart',
+        title: 'The dislike is assumed',
+        instruction:
+          'The ayah legislates around the hatred instead of forbidding it. You are not failing a test by feeling this. What is being governed is whether the feeling gets to decide what you do next.',
+        source: 'Tafsir Ibn Kathir on 5:8',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'physical',
+        icon: 'checkmark',
+        title: 'One true thing in their favour',
+        instruction:
+          'Say aloud one accurate thing that counts for them — not a concession, not forgiveness, just something true you have stopped saying because you are angry. Accuracy is the standard here, not warmth.',
+        source: "Surah Al-Ma'idah 5:8 — Quran",
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'mindset',
+        icon: 'muscle',
+        title: 'Harder is the point',
+        instruction:
+          'Al-Sa\'di reads "nearer to taqwa" as tied to the difficulty. Being fair to someone you like costs nothing. This ayah is describing the version that costs, and calling it the closer one.',
+        source: "Tafsir al-Sa'di on 5:8",
+        sourceType: 'quran_dua',
+      },
+    ]),
+    reflection:
+      'What true thing have you stopped saying about them because you are angry? Does leaving it unsaid make you more accurate or less?',
+  },
+  {
+    id: 'q_angle_15_85_angry',
+    contentId: 'quran_15_85',
+    mood: 'Angry',
+    angle:
+      'Ṣafḥ is a stronger word than pardon. ʿAfw drops the claim; ṣafḥ turns the page so the matter is not reopened later. And notice the reason given for it — the Hour is coming. This is not "let it go because it did not matter." It is "let it go because it will be settled, accurately, by someone with better information than you." Forgiving from confidence is a different act from forgiving from resignation.',
+    angleSource: "Tafsir al-Sa'di",
+    action: 'Decide one grievance you will not raise again, and mean the "again".',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'mindset',
+        icon: 'rewind',
+        title: 'Turning the page, not dropping the claim',
+        instruction:
+          'Al-Sa\'di distinguishes them: pardon releases the debt, ṣafḥ stops the subject being reopened. Most of the damage in a long grievance is in the reopening, not the original wrong.',
+        source: "Tafsir al-Sa'di on 15:85",
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'mindset',
+        icon: 'clock',
+        title: 'Because it will be settled',
+        instruction:
+          'The ayah grounds the forgiveness in the Hour arriving. You are not being asked to pretend the account is empty — you are being told who is going to close it, and that it will not be you.',
+        source: 'Surah Al-Hijr 15:85 — Quran',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'physical',
+        icon: 'door',
+        title: 'Name what you will stop raising',
+        instruction:
+          'Pick one thing you bring up whenever the argument restarts. Decide, specifically, that it is closed. Write it down so you notice the next time you reach for it.',
+        source: 'Surah Al-Hijr 15:85 — Quran',
+        sourceType: 'quran_dua',
+      },
+    ]),
+    reflection:
+      'Which old grievance do you reopen every time you argue? What would it cost you to genuinely close it?',
+  },
+  {
+    id: 'q_angle_23_96_angry',
+    contentId: 'quran_23_96',
+    mood: 'Angry',
+    angle:
+      'Idfaʿ is a push — repel, drive back. This is not being told to absorb it. It is being handed a different weapon, one that works better. And the sentence after is why you can afford to: We are most knowing of what they describe. The record is already accurate. You do not have to win the argument to be correctly understood, which is usually the thing the anger is really chasing.',
+    angleSource: 'Tafsir Ibn Kathir',
+    action: 'Reply once, with the better version, and then stop replying.',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'mindset',
+        icon: 'shield',
+        title: 'This is a countermeasure',
+        instruction:
+          'Ibn Kathir reads idfaʿ as active. Responding with better is presented as the more effective move, not the meeker one. You are choosing the tactic that works, not surrendering the field.',
+        source: 'Tafsir Ibn Kathir on 23:96',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'mindset',
+        icon: 'eye',
+        title: 'The record is already right',
+        instruction:
+          'He knows exactly what was said about you. Much of the exhaustion of anger is the work of trying to correct a record in other people\'s heads. That job is already done, elsewhere, accurately.',
+        source: "Surah Al-Mu'minun 23:96 — Quran",
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'physical',
+        icon: 'chat',
+        title: 'One reply, then done',
+        instruction:
+          'Write the better response — short, accurate, no barb. Send it once. Then do not send the follow-up, and do not check for a reaction for an hour.',
+        source: "Surah Al-Mu'minun 23:96 — Quran",
+        sourceType: 'quran_dua',
+      },
+    ]),
+    reflection:
+      'What are you actually trying to make them understand? Who else already understands it correctly?',
+  },
+  {
+    id: 'q_angle_25_72_angry',
+    contentId: 'quran_25_72',
+    mood: 'Angry',
+    angle:
+      'They pass *by*. They do not stop, correct, or answer — and the word for how they do it is kirāman, with dignity. Notice this sits in the list of the qualities of the servants of the Most Merciful. Walking past something you could have answered is recorded here as a mark of nobility, not of avoidance. Not every provocation is addressed to you, and not every one that is deserves a reply.',
+    angleSource: "Tafsir al-Sa'di",
+    action: 'Scroll past, walk past, or leave the thread — without composing the reply first.',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'mindset',
+        icon: 'crescent',
+        title: 'Passing is the noble version',
+        instruction:
+          'This is listed among the descriptions of ʿibād ar-Rahman. Declining to engage is not what you settle for when you cannot win — it is what is being praised.',
+        source: "Tafsir al-Sa'di on 25:72",
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'physical',
+        icon: 'arrow-right',
+        title: 'Without drafting the reply',
+        instruction:
+          'The trick is not writing it and deleting it. Move past without composing the response in your head — that rehearsal keeps the anger alive for hours after the moment has gone.',
+        source: 'Surah Al-Furqan 25:72 — Quran',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'verbal',
+        icon: 'leaf',
+        title: 'The word for how',
+        instruction:
+          'Kirāman — with dignity. Say it to yourself as you leave the room or close the app. It names the manner, which is the part that is actually up to you.',
+        arabicText: 'وَإِذَا مَرُّوا۟ بِٱللَّغْوِ مَرُّوا۟ كِرَامًا',
+        transliteration: 'wa-idhā marrū bil-laghwi marrū kirāman',
+        translation: 'And when they pass near ill speech, they pass by with dignity',
+        source: 'Surah Al-Furqan 25:72 — Quran',
+        sourceType: 'quran_dua',
+      },
+    ]),
+    reflection:
+      'How long did you spend rehearsing a reply you never sent? What would that hour have been for otherwise?',
+  },
+  {
+    id: 'q_angle_17_53_angry',
+    contentId: 'quran_17_53',
+    mood: 'Angry',
+    angle:
+      'The same word used for the spike of anger inside you — yanzagh, to goad — is used here for the space *between* two people. He works in the gap, and harsh wording is the door he comes through. Which reframes the argument you are in: the person across from you is not the enemy the ayah names at the end. Choosing the better sentence is not politeness. It is shutting a door on something that wants the two of you apart.',
+    angleSource: "Tafsir al-Sa'di",
+    action: 'Rewrite your next sentence to the better version before you say it.',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'mindset',
+        icon: 'brain',
+        title: 'Who the enemy is',
+        instruction:
+          'The ayah names a clear enemy at the end, and it is not the person you are arguing with. Anger collapses that distinction instantly. Restoring it changes what you are actually fighting.',
+        source: "Tafsir al-Sa'di on 17:53",
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'verbal',
+        icon: 'chat',
+        title: 'Say the better one',
+        instruction:
+          'Not the softest version — the *better* one. Accurate, unarmed, no line included because it will land. Say it out loud once before you say it to them.',
+        arabicText: 'وَقُل لِّعِبَادِى يَقُولُوا۟ ٱلَّتِى هِىَ أَحْسَنُ',
+        transliteration: "waqul liʿibādī yaqūlū allatī hiya aḥsanu",
+        translation: 'And tell My servants to say that which is best',
+        source: 'Surah Al-Isra 17:53 — Quran',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'physical',
+        icon: 'shield',
+        title: 'Close the door first',
+        instruction:
+          'Say the ta\'awwudh before you reply, not after it has gone badly. The ayah identifies the opening; the refuge is how you shut it.',
+        source: "Surah Al-Isra 17:53 — Quran",
+        sourceType: 'quran_dua',
+      },
+    ]),
+    reflection:
+      'What is the sharpest line you are planning to use? What is it actually for — being understood, or landing a hit?',
+  },
+  {
+    id: 'q_angle_31_17_angry',
+    contentId: 'quran_31_17',
+    mood: 'Angry',
+    angle:
+      'Luqman tells his son to speak up against wrong and then, in the same breath, to be patient with what comes back. That ordering is not accidental. If you stand for something you will be answered badly for it, and the ayah bundles the standing and the absorbing into one instruction. Your anger at being treated unfairly for doing the right thing is anticipated here — and it is called ʿazm al-umūr, one of the things that takes resolve.',
+    angleSource: "Tafsir al-Sa'di",
+    action: 'Separate the stand you took from the reaction you got, and keep the first.',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'mindset',
+        icon: 'muscle',
+        title: 'The blowback was expected',
+        instruction:
+          'Patience is placed directly after enjoining good because the one causes the other. Being treated badly for doing the right thing is not evidence you did it wrong.',
+        source: "Tafsir al-Sa'di on 31:17",
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'physical',
+        icon: 'pen',
+        title: 'Two columns',
+        instruction:
+          'Write what you stood for, and separately what came back at you. Anger fuses them into one thing and makes you want to withdraw the first to escape the second. They are separable.',
+        source: 'Surah Luqman 31:17 — Quran',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'mindset',
+        icon: 'target',
+        title: 'ʿAzm al-umūr',
+        instruction:
+          'Matters requiring resolve — the things that do not happen without a decision. This is named as difficult in the text, which means the difficulty is not a sign you have chosen wrong.',
+        source: 'Surah Luqman 31:17 — Quran',
+        sourceType: 'quran_dua',
+      },
+    ]),
+    reflection:
+      'Are you angry about what you did, or about how they responded? Would you take the same stand again?',
+  },
+  {
+    id: 'q_angle_16_127_angry',
+    contentId: 'quran_16_127',
+    mood: 'Angry',
+    angle:
+      'Your patience is not but through Allah. Read that as the practical statement it is: the capacity to hold this is supplied, not summoned. So when you are at the end of yours, the move is to ask rather than to squeeze harder. And the last clause forbids ḍayq — the tightness in your chest, named specifically. He legislates about the physical sensation, not only the attitude, which means He knows exactly what this feels like in the body.',
+    angleSource: "Tafsir al-Sa'di",
+    action: 'Ask Him for the patience instead of trying to generate it.',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'verbal',
+        icon: 'hands-prayer',
+        title: 'Supplied, not summoned',
+        instruction:
+          'Say the clause and then ask directly: "Ya Allah, give me the patience for this, because I do not have it." That is not a failure of sabr — it is the mechanism the ayah describes.',
+        arabicText: 'وَٱصْبِرْ وَمَا صَبْرُكَ إِلَّا بِٱللَّهِ',
+        transliteration: "wa-iṣ'bir wamā ṣabruka illā bil-lahi",
+        translation: 'And be patient, and your patience is not but through Allah',
+        source: 'Surah An-Nahl 16:127 — Quran',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'physical',
+        icon: 'breathing',
+        title: 'The tightness has a name',
+        instruction:
+          'Ḍayq is the constriction in the chest. Put a hand there and take six slow breaths out longer than in. The ayah addresses the physical state; treat it physically first.',
+        source: 'Surah An-Nahl 16:127 — Quran',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'mindset',
+        icon: 'lock',
+        title: 'Not your job to counter the plotting',
+        instruction:
+          'The final clause tells you not to be constricted by what they are scheming. Notice it does not tell you to outmanoeuvre it. Being kept out of it is the relief being offered.',
+        source: "Tafsir al-Sa'di on 16:127",
+        sourceType: 'quran_dua',
+      },
+    ]),
+    reflection:
+      'Have you asked Him for patience with this person, in those words? Or have you only been trying to hold it together yourself?',
   },
 ];
 
