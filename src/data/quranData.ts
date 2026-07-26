@@ -1668,7 +1668,7 @@ const quranContentData: Content[] = [
     source: "Surah Al-An'am 6:54",
     audioKey: '6:54',
     whyThis: 'Allah greets the believers with peace and has obligated mercy upon Himself.',
-    moods: ['Calm'],
+    moods: ['Calm', 'Guilty'],
   },
   {
     id: 'quran_16_32',
@@ -1911,7 +1911,7 @@ const quranContentData: Content[] = [
     source: 'Surah Al-Anfal 8:33',
     audioKey: '8:33',
     whyThis: 'Istighfar (seeking forgiveness) is a literal shield from difficulty and guilt.',
-    moods: ['Sad', 'Overwhelmed'],
+    moods: ['Sad', 'Overwhelmed', 'Guilty'],
   },
 
   {
@@ -2899,6 +2899,154 @@ const quranContentData: Content[] = [
     audioKey: '17:110',
     whyThis: 'Ibn Kathir records that this was revealed when the Prophet ﷺ was heard calling "Ya Allah, ya Rahman" and objectors claimed he was invoking two gods. Al-Sa\'di notes the answer: the Names are many and the One called is one, so there is no wrong door to knock on. The second half of the ayah settles the volume of prayer — neither performed for an audience nor swallowed inaudibly.',
     moods: ['Lonely'],
+  },
+
+  // === GUILTY (pool expansion) ===
+  // 12 -> 25. 2:222 and 24:31 were considered and dropped: both are rulings
+  // whose surrounding context does not belong on a guilt card.
+  {
+    id: 'quran_2_37',
+    type: 'Quran',
+    primaryText: 'fatalaqqā ādamu min rabbihi kalimātin fatāba ʿalayhi innahu huwa l-tawābu l-raḥīmu',
+    arabicText: 'فَتَلَقَّىٰٓ ءَادَمُ مِن رَّبِّهِۦ كَلِمَـٰتٍ فَتَابَ عَلَيْهِ ۚ إِنَّهُۥ هُوَ ٱلتَّوَّابُ ٱلرَّحِيمُ ﴿37﴾',
+    transliteration: 'fatalaqqā ādamu min rabbihi kalimātin fatāba ʿalayhi innahu huwa l-tawābu l-raḥīmu',
+    englishTranslation:
+      'Then Adam received words from his Lord, and He accepted his repentance. Indeed, it is He who is the Accepting of repentance, the Merciful.',
+    source: 'Surah Al-Baqarah 2:37',
+    audioKey: '2:37',
+    whyThis: 'Ibn Kathir notes the direction of the verb: Adam *received* the words — Allah taught him what to say in order to be forgiven. The apology was supplied by the One being apologised to. Al-Sa\'di adds that this is the first repentance in human history and it sets the pattern for every one after it: the servant does not find his own way back, he is shown it.',
+    moods: ['Guilty'],
+  },
+  {
+    id: 'quran_20_122',
+    type: 'Quran',
+    primaryText: "thumma ij'tabāhu rabbuhu fatāba ʿalayhi wahadā",
+    arabicText: 'ثُمَّ ٱجْتَبَـٰهُ رَبُّهُۥ فَتَابَ عَلَيْهِ وَهَدَىٰ ﴿122﴾',
+    transliteration: "thumma ij'tabāhu rabbuhu fatāba ʿalayhi wahadā",
+    englishTranslation: 'Then his Lord chose him and turned to him in forgiveness and guided him.',
+    source: 'Surah Taha 20:122',
+    audioKey: '20:122',
+    whyThis: 'The ayah before this records Adam\'s disobedience plainly. Al-Sa\'di draws attention to the order here: chosen, then forgiven, then guided — the choosing comes after the slip, not before it. Ibn Kathir notes "ijtabāhu" means selected and drawn near, a word of honour rather than mere pardon. Failure did not remove him from the category of the chosen.',
+    moods: ['Guilty'],
+  },
+  {
+    id: 'quran_5_39',
+    type: 'Quran',
+    primaryText: "faman tāba min baʿdi ẓul'mihi wa-aṣlaḥa fa-inna l-laha yatūbu ʿalayhi inna l-laha ghafūrun raḥīmun",
+    arabicText:
+      'فَمَن تَابَ مِنۢ بَعْدِ ظُلْمِهِۦ وَأَصْلَحَ فَإِنَّ ٱللَّهَ يَتُوبُ عَلَيْهِ ۗ إِنَّ ٱللَّهَ غَفُورٌ رَّحِيمٌ ﴿39﴾',
+    transliteration: "faman tāba min baʿdi ẓul'mihi wa-aṣlaḥa fa-inna l-laha yatūbu ʿalayhi inna l-laha ghafūrun raḥīmun",
+    englishTranslation:
+      'But whoever repents after his wrongdoing and reforms, indeed Allah will turn to him in forgiveness. Indeed, Allah is Forgiving and Merciful.',
+    source: "Surah Al-Ma'idah 5:39",
+    audioKey: '5:39',
+    whyThis: 'Al-Sa\'di isolates the second verb: "aṣlaḥa", he put right. Repentance in this ayah is paired with repair rather than left as an internal state. Ibn Kathir notes the placement — this follows a passage on theft, so it is addressed to someone whose wrong had a victim and a consequence, not merely a private regret.',
+    moods: ['Guilty'],
+  },
+  {
+    id: 'quran_9_104',
+    type: 'Quran',
+    primaryText: "alam yaʿlamū anna l-laha huwa yaqbalu l-tawbata ʿan ʿibādihi wayakhudhu l-ṣadaqāti wa-anna l-laha huwa l-tawābu l-raḥīmu",
+    arabicText:
+      'أَلَمْ يَعْلَمُوٓا۟ أَنَّ ٱللَّهَ هُوَ يَقْبَلُ ٱلتَّوْبَةَ عَنْ عِبَادِهِۦ وَيَأْخُذُ ٱلصَّدَقَـٰتِ وَأَنَّ ٱللَّهَ هُوَ ٱلتَّوَّابُ ٱلرَّحِيمُ ﴿104﴾',
+    transliteration: "alam yaʿlamū anna l-laha huwa yaqbalu l-tawbata ʿan ʿibādihi wayakhudhu l-ṣadaqāti wa-anna l-laha huwa l-tawābu l-raḥīmu",
+    englishTranslation:
+      'Do they not know that it is Allah who accepts repentance from His servants and receives charities, and that it is Allah who is the Accepting of repentance, the Merciful?',
+    source: 'Surah At-Tawbah 9:104',
+    audioKey: '9:104',
+    whyThis: 'Ibn Kathir notes the pairing of two things in one sentence: He accepts the turning, and He receives the giving. Al-Sa\'di reads the rhetorical opening — "do they not know?" — as addressed to people who have already repented but cannot believe it was accepted. The doubt, not the sin, is what the ayah is arguing with.',
+    moods: ['Guilty'],
+  },
+  {
+    id: 'quran_23_118',
+    type: 'Quran',
+    primaryText: "waqul rabbi igh'fir wa-ir'ḥam wa-anta khayru l-rāḥimīna",
+    arabicText: 'وَقُل رَّبِّ ٱغْفِرْ وَٱرْحَمْ وَأَنتَ خَيْرُ ٱلرَّٰحِمِينَ ﴿118﴾',
+    transliteration: "waqul rabbi igh'fir wa-ir'ḥam wa-anta khayru l-rāḥimīna",
+    englishTranslation: 'And say, "My Lord, forgive and have mercy, and You are the best of the merciful."',
+    source: "Surah Al-Mu'minun 23:118",
+    audioKey: '23:118',
+    whyThis: 'The closing ayah of the surah, and Al-Sa\'di notes how little it asks the servant to supply: two verbs and an acknowledgement. Ibn Kathir observes that no object is named — not "forgive this sin" but simply "forgive" — so the du\'a covers what you can articulate and what you cannot. It is the shortest complete repentance in the Quran.',
+    moods: ['Guilty'],
+  },
+  {
+    id: 'quran_40_3',
+    type: 'Quran',
+    primaryText: 'ghāfiri l-dhanbi waqābili l-tawbi shadīdi l-ʿiqābi dhī l-ṭawli lā ilāha illā huwa ilayhi l-maṣīru',
+    arabicText:
+      'غَافِرِ ٱلذَّنۢبِ وَقَابِلِ ٱلتَّوْبِ شَدِيدِ ٱلْعِقَابِ ذِى ٱلطَّوْلِ ۖ لَآ إِلَـٰهَ إِلَّا هُوَ ۖ إِلَيْهِ ٱلْمَصِيرُ ﴿3﴾',
+    transliteration: 'ghāfiri l-dhanbi waqābili l-tawbi shadīdi l-ʿiqābi dhī l-ṭawli lā ilāha illā huwa ilayhi l-maṣīru',
+    englishTranslation:
+      'The Forgiver of sin, the Acceptor of repentance, severe in punishment, Owner of abundance. There is no deity except Him; to Him is the destination.',
+    source: 'Surah Ghafir 40:3',
+    audioKey: '40:3',
+    whyThis: 'Al-Sa\'di notes the ordering as deliberate: two descriptions of mercy, then the warning, then abundance. Ibn Kathir explains that "ghāfir al-dhanb" covers the sin of one who repents and "qābil al-tawb" the acceptance of the one who turns — mentioned first and given twice the weight. Fear is present in the ayah but it is bracketed on both sides by mercy.',
+    moods: ['Guilty'],
+  },
+  {
+    id: 'quran_51_18',
+    type: 'Quran',
+    primaryText: 'wabil-asḥāri hum yastaghfirūna',
+    arabicText: 'وَبِٱلْأَسْحَارِ هُمْ يَسْتَغْفِرُونَ ﴿18﴾',
+    transliteration: 'wabil-asḥāri hum yastaghfirūna',
+    englishTranslation: 'And in the hours before dawn they would ask forgiveness.',
+    source: 'Surah Adh-Dhariyat 51:18',
+    audioKey: '51:18',
+    whyThis: 'The two ayahs before this describe people who barely slept, spending the night in prayer. Ibn Kathir notes what they do with the last stretch of it: not congratulate themselves, but seek forgiveness. Al-Sa\'di reads this as the mark of the sincere — having given the night, they close it by apologising for the shortfall. Istighfar here is the practice of the diligent, not a remedy for the negligent.',
+    moods: ['Guilty'],
+  },
+  {
+    id: 'quran_71_10',
+    type: 'Quran',
+    primaryText: "faqul'tu is'taghfirū rabbakum innahu kāna ghaffāran",
+    arabicText: 'فَقُلْتُ ٱسْتَغْفِرُوا۟ رَبَّكُمْ إِنَّهُۥ كَانَ غَفَّارًا ﴿10﴾',
+    transliteration: "faqul'tu is'taghfirū rabbakum innahu kāna ghaffāran",
+    englishTranslation: "And I said, 'Ask forgiveness of your Lord. Indeed, He is ever a Perpetual Forgiver.'",
+    source: 'Surah Nuh 71:10',
+    audioKey: '71:10',
+    whyThis: 'Nuh (AS) had preached for centuries with almost no response. Ibn Kathir notes what he offers in the two ayahs that follow: rain in abundance, wealth, children, gardens and rivers — all promised as the consequence of istighfar. Al-Sa\'di comments that seeking forgiveness is presented here as a cause of worldly provision and not only of pardon, which is why the scholars prescribe it for stalled affairs as well as for sin.',
+    moods: ['Guilty'],
+  },
+  {
+    id: 'quran_110_3',
+    type: 'Quran',
+    primaryText: "fasabbiḥ biḥamdi rabbika wa-is'taghfir'hu innahu kāna tawwāban",
+    arabicText: 'فَسَبِّحْ بِحَمْدِ رَبِّكَ وَٱسْتَغْفِرْهُ ۚ إِنَّهُۥ كَانَ تَوَّابًۢا ﴿3﴾',
+    transliteration: "fasabbiḥ biḥamdi rabbika wa-is'taghfir'hu innahu kāna tawwāban",
+    englishTranslation:
+      'Then exalt Him with praise of your Lord and ask forgiveness of Him. Indeed, He is ever Accepting of repentance.',
+    source: 'Surah An-Nasr 110:3',
+    audioKey: '110:3',
+    whyThis: 'This came after the conquest of Makkah — the greatest victory of the Prophet\'s ﷺ life — and the instruction is to seek forgiveness. Ibn Kathir records that Aisha (RA) said he repeated "subhanaka Allahumma wa bihamdika, Allahumma ighfir li" often after it was revealed. Al-Sa\'di notes the lesson: istighfar belongs at the summit as much as in the pit, because no achievement is performed as well as it was owed.',
+    moods: ['Guilty'],
+  },
+  {
+    id: 'quran_3_16',
+    type: 'Quran',
+    primaryText: "alladhīna yaqūlūna rabbanā innanā āmannā fa-igh'fir lanā dhunūbanā waqinā ʿadhāba l-nāri",
+    arabicText:
+      'ٱلَّذِينَ يَقُولُونَ رَبَّنَآ إِنَّنَآ ءَامَنَّا فَٱغْفِرْ لَنَا ذُنُوبَنَا وَقِنَا عَذَابَ ٱلنَّارِ ﴿16﴾',
+    transliteration: "alladhīna yaqūlūna rabbanā innanā āmannā fa-igh'fir lanā dhunūbanā waqinā ʿadhāba l-nāri",
+    englishTranslation:
+      'Those who say, "Our Lord, indeed we have believed, so forgive us our sins and protect us from the punishment of the Fire."',
+    source: 'Surah Ali Imran 3:16',
+    audioKey: '3:16',
+    whyThis: 'Al-Sa\'di points to the logic inside the du\'a: they offer their faith as the grounds for the request — we believed, so forgive us. Ibn Kathir notes this is listed among the descriptions of the righteous, meaning asking for forgiveness is what the good are characterised by rather than what disqualifies them from the description.',
+    moods: ['Guilty'],
+  },
+  {
+    id: 'quran_4_17',
+    type: 'Quran',
+    primaryText: 'innamā l-tawbatu ʿalā l-lahi lilladhīna yaʿmalūna l-sūa bijahālatin thumma yatūbūna min qarībin fa-ulāika yatūbu l-lahu ʿalayhim wakāna l-lahu ʿalīman ḥakīman',
+    arabicText:
+      'إِنَّمَا ٱلتَّوْبَةُ عَلَى ٱللَّهِ لِلَّذِينَ يَعْمَلُونَ ٱلسُّوٓءَ بِجَهَـٰلَةٍ ثُمَّ يَتُوبُونَ مِن قَرِيبٍ فَأُو۟لَـٰٓئِكَ يَتُوبُ ٱللَّهُ عَلَيْهِمْ ۗ وَكَانَ ٱللَّهُ عَلِيمًا حَكِيمًا ﴿17﴾',
+    transliteration: 'innamā l-tawbatu ʿalā l-lahi lilladhīna yaʿmalūna l-sūa bijahālatin thumma yatūbūna min qarībin fa-ulāika yatūbu l-lahu ʿalayhim wakāna l-lahu ʿalīman ḥakīman',
+    englishTranslation:
+      'The repentance accepted by Allah is only for those who do wrong in ignorance and then repent soon after. It is those to whom Allah will turn in forgiveness, and Allah is ever Knowing and Wise.',
+    source: 'Surah An-Nisa 4:17',
+    audioKey: '4:17',
+    whyThis: 'Ibn Kathir reports the position of the companions that "bijahālatin" covers anyone who disobeys deliberately, since every act of disobedience is a kind of ignorance in the moment — the word does not restrict the ayah to those who did not know better. Al-Sa\'di explains "min qarībin" as before death arrives, so "soon" is measured against a lifetime rather than against hours.',
+    moods: ['Guilty'],
   },
 ];
 
@@ -13934,6 +14082,564 @@ const quranContentAnglesData: ContentAngle[] = [
     ]),
     reflection:
       'Say the room you are in out loud, and the time. Did it change anything to name it to Him?',
+  },
+
+  // === GUILTY (pool expansion) ===
+  // 12 -> 25. Eleven new verses plus 6:54 and 8:33, already present under other
+  // moods. Hadith deliberately kept off the ones the existing Guilty angles
+  // already carry (Tirmidhi 2499, Bukhari 6306, Muslim 121, Muslim 2747,
+  // Abu Dawud 1521, Ibn Majah 4248, Tirmidhi 1987/3537, Bukhari 2449, Muslim 2759).
+  {
+    id: 'q_angle_2_37_guilty',
+    contentId: 'quran_2_37',
+    mood: 'Guilty',
+    angle:
+      'Read the direction of it. Adam did not compose an apology — he *received* words from his Lord, and then those words were accepted. The One who was wronged supplied the wording for the apology. If you have been stuck because you do not know what to say, or because nothing you draft sounds sufficient, that problem was solved in the thirty-seventh ayah of the Quran. He gives you the words too.',
+    angleSource: "Tafsir al-Sa'di",
+    action: 'Use words He already gave rather than waiting to find your own.',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'mindset',
+        icon: 'gift',
+        title: 'The apology was provided',
+        instruction:
+          'You are not required to be eloquent about this. The first repentance in human history used a script that Allah handed over. Yours can too.',
+        source: "Tafsir al-Sa'di on 2:37",
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'verbal',
+        icon: 'book-quran',
+        title: 'His Name at the end of the ayah',
+        instruction:
+          'The ayah closes by naming Him At-Tawwab — the One who turns back toward you. Recite the closing clause and let it answer the question of whether this will be received.',
+        arabicText: 'إِنَّهُۥ هُوَ ٱلتَّوَّابُ ٱلرَّحِيمُ',
+        transliteration: 'innahu huwa l-tawābu l-raḥīmu',
+        translation: 'Indeed, it is He who is the Accepting of repentance, the Merciful',
+        source: 'Surah Al-Baqarah 2:37 — Quran',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'physical',
+        icon: 'clock',
+        title: 'The rate he set',
+        instruction:
+          'The Prophet ﷺ said he sought Allah\'s forgiveness more than seventy times a day, and he had nothing to repent for the way you do. Say astaghfirullah a hundred times today, in gaps — walking, waiting, before sleep.',
+        source: 'Sahih al-Bukhari 6307',
+        sourceType: 'prophetic_dhikr',
+        sourceGrading: 'sahih',
+        count: 100,
+      },
+    ]),
+    reflection:
+      'What have you been waiting to be able to say properly? Say the given words instead, tonight.',
+  },
+  {
+    id: 'q_angle_20_122_guilty',
+    contentId: 'quran_20_122',
+    mood: 'Guilty',
+    angle:
+      'The ayah before this states Adam\'s disobedience without softening it. Then: his Lord chose him. Not tolerated, not readmitted on probation — chose. And the order runs chosen, then forgiven, then guided, which means the selecting happened on the far side of the failure. Whatever you have decided disqualifies you, this sequence was written down in the opposite order to the one your guilt assumes.',
+    angleSource: "Tafsir al-Sa'di",
+    action: 'Name the thing you think disqualified you, then read this ayah over it.',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'mindset',
+        icon: 'star',
+        title: 'Chosen comes after',
+        instruction:
+          '"Ijtabāhu" is a word of honour — selected, drawn near. It appears one ayah after the disobedience, not before it. Failure did not move him out of the category.',
+        source: "Tafsir al-Sa'di on 20:122",
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'physical',
+        icon: 'pen',
+        title: 'Write the disqualification',
+        instruction:
+          'Write the sentence your guilt keeps saying — "someone who did that cannot…". Then write the three verbs of this ayah underneath it: chose, forgave, guided. Leave the page where you will see it.',
+        source: 'Surah Taha 20:122 — Quran',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'verbal',
+        icon: 'compass',
+        title: 'Ask for the third one',
+        instruction:
+          'Guidance is listed last, after the pardon. Ask specifically for it: not only to be forgiven for what happened but to be shown the way that does not lead back there.',
+        source: 'Surah Taha 20:122 — Quran',
+        sourceType: 'quran_dua',
+      },
+    ]),
+    reflection:
+      'Finish this: "Someone who did that cannot…" Now read the ayah again. Which of you is right?',
+  },
+  {
+    id: 'q_angle_5_39_guilty',
+    contentId: 'quran_5_39',
+    mood: 'Guilty',
+    angle:
+      'Two verbs, and most people only do the first. Repents — and reforms. Aṣlaḥa means to put right, to repair the actual thing. This ayah sits in a passage about theft, so it is addressed to someone whose wrong left a mark on somebody else. If your guilt has been entirely internal so far, that is not the full instruction. The feeling is not the repentance; it is what precedes it.',
+    angleSource: "Tafsir al-Sa'di",
+    action: 'Do the concrete repair, not only the internal one — today.',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'physical',
+        icon: 'checkmark',
+        title: 'Name the repair',
+        instruction:
+          'What would actually putting this right look like? Returning something, correcting a record, an apology to a specific person. Write the one action, then set a time today to do it.',
+        source: "Surah Al-Ma'idah 5:39 — Quran",
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'mindset',
+        icon: 'brain',
+        title: 'Remorse is not the repair',
+        instruction:
+          'Feeling terrible can masquerade as doing something. The ayah names both verbs because the first without the second leaves the damage exactly where it was.',
+        source: "Tafsir al-Sa'di on 5:39",
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'verbal',
+        icon: 'hands-prayer',
+        title: 'Ask for the courage to do it',
+        instruction:
+          'The repair is usually harder than the remorse, which is why people stop at the remorse. Ask Him for the specific courage this one needs, by name.',
+        source: "Surah Al-Ma'idah 5:39 — Quran",
+        sourceType: 'quran_dua',
+      },
+    ]),
+    reflection:
+      'What would "putting it right" actually involve? Write it, and notice whether you have been avoiding it by feeling bad instead.',
+  },
+  {
+    id: 'q_angle_9_104_guilty',
+    contentId: 'quran_9_104',
+    mood: 'Guilty',
+    angle:
+      'The ayah opens with a question — do they not know? — and it is aimed at people who have already repented and cannot believe it landed. That is a different problem from sin, and it gets its own verse. He accepts. He receives. He is At-Tawwab. Your doubt about whether it counted is the thing being argued with here, not the thing you did.',
+    angleSource: 'Tafsir Ibn Kathir',
+    action: 'Give something in charity as a sealing act, however small.',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'mindset',
+        icon: 'door',
+        title: 'The doubt is the subject',
+        instruction:
+          'Notice who the question is for. Not the unrepentant — the ones who turned back and are still checking over their shoulder. He addressed that specifically.',
+        source: 'Tafsir Ibn Kathir on 9:104',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'physical',
+        icon: 'honey',
+        title: 'Charity in the same breath',
+        instruction:
+          'The ayah pairs accepting repentance with receiving charity in one sentence. Give something today — the amount is not the point, the pairing is. The Prophet ﷺ said charity extinguishes sin as water extinguishes fire.',
+        source: 'Jami at-Tirmidhi 614',
+        sourceType: 'sunnah_action',
+        sourceGrading: 'hasan',
+      },
+      {
+        type: 'verbal',
+        icon: 'leaf',
+        title: 'Stop re-submitting it',
+        instruction:
+          'Say the repentance once more, deliberately, as the last time. Then stop. Repeating it because you doubt the first one is answering the ayah with the very doubt it came to remove.',
+        source: 'Surah At-Tawbah 9:104 — Quran',
+        sourceType: 'quran_dua',
+      },
+    ]),
+    reflection:
+      'Do you doubt that He forgives, or that He forgave *you*? They are different problems — which is yours?',
+  },
+  {
+    id: 'q_angle_23_118_guilty',
+    contentId: 'quran_23_118',
+    mood: 'Guilty',
+    angle:
+      'Look at how little is asked of you here. Two verbs, forgive and have mercy, and no object named — not "forgive this specific thing" but simply forgive. Which means it covers what you can put into words and the part you cannot. On the nights when you do not have the energy to itemise anything, this is the whole du\'a, and Allah closed a surah with it.',
+    angleSource: "Tafsir al-Sa'di",
+    action: 'Say the shortest complete repentance in the Quran, three times.',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'verbal',
+        icon: 'hands-prayer',
+        title: 'Six words',
+        instruction:
+          'Say it three times, unhurried. Nothing needs to be listed. The absence of an object in the du\'a is deliberate — it reaches what you have not managed to name.',
+        arabicText: 'رَّبِّ ٱغْفِرْ وَٱرْحَمْ وَأَنتَ خَيْرُ ٱلرَّٰحِمِينَ',
+        transliteration: "rabbi igh'fir wa-ir'ḥam wa-anta khayru l-rāḥimīna",
+        translation: 'My Lord, forgive and have mercy, and You are the best of the merciful',
+        source: "Surah Al-Mu'minun 23:118 — Quran",
+        sourceType: 'quran_dua',
+        count: 3,
+      },
+      {
+        type: 'mindset',
+        icon: 'leaf',
+        title: 'Best of the merciful',
+        instruction:
+          'The du\'a ends by ranking Him against every other source of mercy you have known. Whatever the most forgiving person in your life would have done, this is above it.',
+        source: "Tafsir al-Sa'di on 23:118",
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'physical',
+        icon: 'moon',
+        title: 'For the nights with nothing left',
+        instruction:
+          'Learn it by heart tonight. It is short enough to survive exhaustion, which is exactly when the longer repentances go unsaid.',
+        source: "Surah Al-Mu'minun 23:118 — Quran",
+        sourceType: 'quran_dua',
+      },
+    ]),
+    reflection:
+      'What part of this you cannot put into words? The du\'a names no object on purpose — let it carry that part.',
+  },
+  {
+    id: 'q_angle_40_3_guilty',
+    contentId: 'quran_40_3',
+    mood: 'Guilty',
+    angle:
+      'Count the descriptions and their order: Forgiver of sin, Acceptor of repentance, severe in punishment, Owner of abundance. Two of mercy first, then the warning, then abundance — the severity is bracketed on both sides. That is not an accident of phrasing. If your picture of Allah leads with the third item, you are reading the ayah out of order, and the order is His.',
+    angleSource: "Tafsir al-Sa'di",
+    action: 'Say the first two Names of the ayah before you say anything else to Him tonight.',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'verbal',
+        icon: 'book-quran',
+        title: 'Recite them in order',
+        instruction:
+          'Say the opening of the ayah aloud and notice the sequence. The severity is real and it is not first, and it is not last either.',
+        arabicText: 'غَافِرِ ٱلذَّنۢبِ وَقَابِلِ ٱلتَّوْبِ',
+        transliteration: "ghāfiri l-dhanbi waqābili l-tawbi",
+        translation: 'The Forgiver of sin, the Acceptor of repentance',
+        source: 'Surah Ghafir 40:3 — Quran',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'mindset',
+        icon: 'chart',
+        title: 'Two mercies, one warning',
+        instruction:
+          'Ibn Kathir distinguishes them: ghāfir al-dhanb covers the sin, qābil al-tawb the one turning. Mercy is given two separate descriptions and punishment one. Weight your fear accordingly.',
+        source: 'Tafsir Ibn Kathir on 40:3',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'physical',
+        icon: 'pen',
+        title: 'Reorder your own sentence',
+        instruction:
+          'Write how you would describe Allah in one line, honestly, as your guilt currently pictures Him. Then write the ayah\'s order underneath. Notice which one you have been praying to.',
+        source: 'Surah Ghafir 40:3 — Quran',
+        sourceType: 'quran_dua',
+      },
+    ]),
+    reflection:
+      'Describe Allah in one sentence as your guilt pictures Him. Does that sentence match the order in this ayah?',
+  },
+  {
+    id: 'q_angle_51_18_guilty',
+    contentId: 'quran_51_18',
+    mood: 'Guilty',
+    angle:
+      'These are people who barely slept, who spent the night standing in prayer — and what they do with the last hour before dawn is ask for forgiveness. Not celebrate. Istighfar is described here as the practice of the diligent, not the remedy of the negligent. Which reframes what your own seeking of forgiveness means: it is not evidence that you are failing. It is what the closest ones do.',
+    angleSource: 'Tafsir Ibn Kathir',
+    action: 'Set an alarm for the last hour before Fajr and say istighfar then.',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'mindset',
+        icon: 'star',
+        title: 'The practice of the diligent',
+        instruction:
+          'Read the two ayahs before this one: they hardly slept for worship. Then they seek forgiveness. Istighfar is not the mark of the worst among us.',
+        source: 'Tafsir Ibn Kathir on 51:18',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'physical',
+        icon: 'sunrise',
+        title: 'The hour named in the ayah',
+        instruction:
+          'Asḥār is the last stretch of night before dawn. Set an alarm for twenty minutes before Fajr once this week and use it for nothing but istighfar. It is the hour this ayah points at specifically.',
+        source: 'Surah Adh-Dhariyat 51:18 — Quran',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'verbal',
+        icon: 'candle',
+        title: 'Seventy in that hour',
+        instruction:
+          'Recite the ayah\'s own phrase, then do what it describes: say astaghfirullah slowly, seventy times. No counting rules, no perfect concentration required — let the number carry you when the feeling will not.',
+        arabicText: 'وَبِٱلْأَسْحَارِ هُمْ يَسْتَغْفِرُونَ',
+        transliteration: 'wabil-asḥāri hum yastaghfirūna',
+        translation: 'And in the hours before dawn they would ask forgiveness',
+        source: 'Surah Adh-Dhariyat 51:18 — Quran',
+        sourceType: 'quran_dua',
+        count: 70,
+      },
+    ]),
+    reflection:
+      'You treat needing forgiveness as a failing. The people in this ayah prayed all night and still asked. What does that make it?',
+  },
+  {
+    id: 'q_angle_71_10_guilty',
+    contentId: 'quran_71_10',
+    mood: 'Guilty',
+    angle:
+      'Read what Nuh promises in the two ayahs after this one: rain in abundance, wealth, children, gardens, rivers. All of it attached to istighfar. Seeking forgiveness is presented here as something that unblocks a life, not only something that clears a record. If things have felt stuck — provision, work, a situation that will not move — the scholars prescribe this ayah for exactly that, and Al-Ghaffar is the Name it rests on.',
+    angleSource: "Tafsir al-Sa'di",
+    action: 'Say istighfar over the stuck situation, not only over the sin.',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'mindset',
+        icon: 'door',
+        title: 'It opens things',
+        instruction:
+          'Verses 11 and 12 list rain, wealth, children, gardens and rivers as the consequence. Istighfar is described as a cause of provision, which is why it is prescribed for a stalled affair and not only for a guilty conscience.',
+        source: "Tafsir al-Sa'di on 71:10-12",
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'verbal',
+        icon: 'hands-prayer',
+        title: 'The instruction itself',
+        instruction:
+          'Say the ayah\'s command as it is written, then bring to mind the thing in your life that has not moved for months and say astaghfirullah over that too.',
+        arabicText: 'ٱسْتَغْفِرُوا۟ رَبَّكُمْ إِنَّهُۥ كَانَ غَفَّارًا',
+        transliteration: "is'taghfirū rabbakum innahu kāna ghaffāran",
+        translation: 'Ask forgiveness of your Lord. Indeed, He is ever a Perpetual Forgiver',
+        source: 'Surah Nuh 71:10 — Quran',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'physical',
+        icon: 'clock',
+        title: 'Nuh preached for 950 years',
+        instruction:
+          'He said this to people who had refused him for the better part of a millennium. If you are measuring your repentance against how long you have been stuck in the same thing, his timescale should settle that.',
+        source: 'Surah Nuh 71:10 — Quran',
+        sourceType: 'quran_dua',
+      },
+    ]),
+    reflection:
+      'What in your life has not moved in months? Say istighfar over that tonight and see what it is attached to.',
+  },
+  {
+    id: 'q_angle_110_3_guilty',
+    contentId: 'quran_110_3',
+    mood: 'Guilty',
+    angle:
+      'This was revealed after the conquest of Makkah — the single greatest victory of his life — and the instruction is: praise Him and ask forgiveness. Not celebrate. Aisha said he repeated it constantly after this came down. So istighfar is not only what you do in the pit. It belongs at the summit too, because nothing you accomplish is performed as well as it was owed. That includes the good things you did this week.',
+    angleSource: 'Tafsir Ibn Kathir',
+    action: 'Ask forgiveness for the shortfall inside something you did well.',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'mindset',
+        icon: 'muscle',
+        title: 'Istighfar at the summit',
+        instruction:
+          'The greatest day of his life, and the command is to seek forgiveness. Nothing you did well was done as well as it deserved — that gap is what this covers, and noticing it is not self-flagellation.',
+        source: 'Tafsir Ibn Kathir on 110:3',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'verbal',
+        icon: 'star',
+        title: 'What he said after it',
+        instruction:
+          'Aisha (RA) reported he said this often once the surah came down. Say it now, over the best thing you did this week rather than the worst.',
+        arabicText: 'سُبْحَانَكَ اللَّهُمَّ وَبِحَمْدِكَ اللَّهُمَّ اغْفِرْ لِي',
+        transliteration: "Subhanaka Allahumma wa bihamdika, Allahumma ighfir li",
+        translation: 'Glory be to You, O Allah, and praise be to You. O Allah, forgive me',
+        source: 'Sahih al-Bukhari 4967',
+        sourceType: 'prophetic_dhikr',
+        sourceGrading: 'sahih',
+      },
+      {
+        type: 'physical',
+        icon: 'checkmark',
+        title: 'Praise first, then ask',
+        instruction:
+          'The ayah puts tasbih before istighfar. Name one thing that went right this week and thank Him for it out loud, and only then ask forgiveness for how it fell short.',
+        source: 'Surah An-Nasr 110:3 — Quran',
+        sourceType: 'quran_dua',
+      },
+    ]),
+    reflection:
+      'Name the best thing you did this week. Now name what was still owed in it — without turning that into a reason to dismiss the good.',
+  },
+  {
+    id: 'q_angle_3_16_guilty',
+    contentId: 'quran_3_16',
+    mood: 'Guilty',
+    angle:
+      'Look at the logic they use: we believed, therefore forgive us. Faith is offered as the grounds for the request, not as something they must prove first. And note where this sits — in a list of the descriptions of the righteous. Asking to be forgiven is what the good are characterised by. It is not the thing that removes you from the list; it is one of the entries on it.',
+    angleSource: "Tafsir al-Sa'di",
+    action: 'Say the du\'a using your belief as the reason, not your record.',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'verbal',
+        icon: 'hands-prayer',
+        title: 'Believing is the ground you stand on',
+        instruction:
+          'Say it and hear the structure — we believed, *so* forgive. You are not petitioning on the strength of your conduct. You are petitioning on the strength of who you are turning to.',
+        arabicText: 'رَبَّنَآ إِنَّنَآ ءَامَنَّا فَٱغْفِرْ لَنَا ذُنُوبَنَا',
+        transliteration: "rabbanā innanā āmannā fa-igh'fir lanā dhunūbanā",
+        translation: 'Our Lord, indeed we have believed, so forgive us our sins',
+        source: 'Surah Ali Imran 3:16 — Quran',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'mindset',
+        icon: 'chart',
+        title: 'It is on the list, not against it',
+        instruction:
+          'This du\'a appears among the traits of the righteous. People who ask for forgiveness are being described as good here, not as suspect.',
+        source: "Tafsir al-Sa'di on 3:16",
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'physical',
+        icon: 'sunrise',
+        title: 'The hour they said it',
+        instruction:
+          'The very next ayah describes them as those who seek forgiveness before dawn. Attach this du\'a to the end of your night rather than to the moment guilt happens to strike.',
+        source: 'Surah Ali Imran 3:17 — Quran',
+        sourceType: 'quran_dua',
+      },
+    ]),
+    reflection:
+      'Are you asking on the strength of your record or on the strength of who you are asking? One of those runs out.',
+  },
+  {
+    id: 'q_angle_4_17_guilty',
+    contentId: 'quran_4_17',
+    mood: 'Guilty',
+    angle:
+      'You may have read this ayah as a door closing — only for those who sinned "in ignorance", only if they repent "soon". The companions read it the other way. Every deliberate sin is a kind of ignorance in the moment you commit it, and "soon" means before death arrives. The window is your whole life. What the ayah is actually excluding is the person who intends never to return, and you are not him, or you would not be reading this.',
+    angleSource: 'Tafsir Ibn Kathir',
+    action: 'Stop treating a delay as a disqualification — repent now, however late.',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'mindset',
+        icon: 'brain',
+        title: 'What "in ignorance" covers',
+        instruction:
+          'Ibn Kathir records the companions holding that anyone who disobeys is ignorant in that moment, whether or not they knew better. The phrase widens the ayah rather than narrowing it.',
+        source: 'Tafsir Ibn Kathir on 4:17',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'mindset',
+        icon: 'clock',
+        title: 'What "soon" is measured against',
+        instruction:
+          'Al-Sa\'di reads "min qarīb" as before death arrives. Soon is relative to a lifetime, not to hours. The years you spent not returning are inside the window, not outside it.',
+        source: "Tafsir al-Sa'di on 4:17",
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'physical',
+        icon: 'arrow-right',
+        title: 'Close it now anyway',
+        instruction:
+          'The window is long and it does close. Do not use its length as a reason to keep the matter open — say it tonight, not in principle at some point.',
+        source: 'Surah An-Nisa 4:17 — Quran',
+        sourceType: 'quran_dua',
+      },
+    ]),
+    reflection:
+      'How long have you been meaning to repent for this? The delay is not the disqualifier — but what is it costing you?',
+  },
+  {
+    id: 'q_angle_6_54_guilty',
+    contentId: 'quran_6_54',
+    mood: 'Guilty',
+    angle:
+      'He wrote mercy upon Himself. Not "He is merciful" as a description — He made it binding on Himself, an obligation nobody could impose from outside. And the ayah instructs that peace be said to those who come, before any account is taken of what they did. That is the greeting at the door. Whatever you are bracing for as you approach Him, the text has already told you what is said first.',
+    angleSource: "Tafsir al-Sa'di",
+    action: 'Approach Him expecting the greeting the ayah names, not the one you fear.',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'mindset',
+        icon: 'door',
+        title: 'Peace, before the accounting',
+        instruction:
+          'The order in the ayah is salam first. You have probably been rehearsing a confrontation. That is not the scene described.',
+        source: "Tafsir al-Sa'di on 6:54",
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'mindset',
+        icon: 'lock',
+        title: 'Binding on Himself',
+        instruction:
+          '"Kataba ʿalā nafsihi ar-rahmah" — He prescribed mercy upon Himself. The Prophet ﷺ said that when Allah decreed the creation He wrote in a book kept with Him: My mercy prevails over My wrath.',
+        source: 'Sahih al-Bukhari 7404',
+        sourceType: 'prophetic_dhikr',
+        sourceGrading: 'sahih',
+      },
+      {
+        type: 'physical',
+        icon: 'hands-prayer',
+        title: 'Come as the ayah describes',
+        instruction:
+          'Pray two rak\'ahs and begin them expecting to be received rather than assessed. If that feels presumptuous, that feeling is the thing this ayah was revealed against.',
+        source: "Surah Al-An'am 6:54 — Quran",
+        sourceType: 'quran_dua',
+      },
+    ]),
+    reflection:
+      'What do you expect Him to say when you turn to Him? Compare that to what the ayah actually says is said first.',
+  },
+  {
+    id: 'q_angle_8_33_guilty',
+    contentId: 'quran_8_33',
+    mood: 'Guilty',
+    angle:
+      'Allah names two things that hold back punishment: the presence of the Prophet ﷺ among them, and their seeking of forgiveness. One of those is no longer available and the other still is. Istighfar is described here as an active shield over a community, not a private transaction. The words you say tonight do something in the world, not only in your record.',
+    angleSource: 'Tafsir Ibn Kathir',
+    action: 'Seek forgiveness for others by name, not only for yourself.',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'mindset',
+        icon: 'shield',
+        title: 'The one that remains',
+        instruction:
+          'Two protections named; one departed with him ﷺ. The scholars note that istighfar was left behind deliberately as the safeguard still in your hands.',
+        source: 'Tafsir Ibn Kathir on 8:33',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'verbal',
+        icon: 'heart',
+        title: 'Ask for someone else',
+        instruction:
+          'The Prophet ﷺ said whoever seeks forgiveness for the believing men and women, Allah writes for him a good deed for each one. Say astaghfirullah li wa lil-mu\'minin — for me and for the believers.',
+        arabicText: 'اللَّهُمَّ اغْفِرْ لِي وَلِلْمُؤْمِنِينَ وَالْمُؤْمِنَاتِ',
+        transliteration: "Allahumma ighfir li wa lil-mu'minina wal-mu'minat",
+        translation: 'O Allah, forgive me and the believing men and the believing women',
+        source: "Al-Mu'jam al-Awsat 6026",
+        sourceType: 'prophetic_dua',
+        sourceGrading: 'hasan',
+      },
+      {
+        type: 'mindset',
+        icon: 'home',
+        title: 'It is not only about you',
+        instruction:
+          'Guilt turns everything inward. This ayah points the other way: your istighfar is described as covering a community. Turning outward is part of the cure, not a distraction from it.',
+        source: 'Surah Al-Anfal 8:33 — Quran',
+        sourceType: 'quran_dua',
+      },
+    ]),
+    reflection:
+      'Guilt has made this all about you. Who else could you ask forgiveness for tonight, by name?',
   },
 ];
 

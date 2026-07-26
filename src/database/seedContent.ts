@@ -47,7 +47,8 @@ import type { Content, ContentAngle } from '../types';
 //     terminal punctuation. Edits to existing rows only propagate on a bump.
 // v9: Lonely pool 10 -> 22 (9 new verses; 9:40, 2:257 and 11:6 retagged). At 10
 //     a user with three refreshes a day hit a repeat inside 36 hours.
-const SEED_VERSION = 9;
+// v10: Guilty pool 12 -> 25 (11 new verses; 6:54 and 8:33 retagged).
+const SEED_VERSION = 10;
 // Separate keys per content type — Quran and Hadith data change independently,
 // and each seeder used to write the SAME key at the end of its run. Since
 // initializeDatabase() awaits seedQuranContent() before seedHadithContent(),
