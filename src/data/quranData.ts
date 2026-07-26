@@ -37,7 +37,7 @@ const quranContentData: Content[] = [
     source: 'Surah Ash-Sharh 94:5-6',
     audioKey: '94:5-6',
     whyThis: 'The scholars of Arabic grammar note that "the hardship" (al-usr) uses the definite article both times — it is the same hardship — while "ease" (yusr) is indefinite each time, meaning multiple different eases accompany every single hardship. Ibn Masud (RA) reportedly said: "One hardship cannot overcome two eases." [Tafsir Ibn Kathir, Surah Al-Inshirah]',
-    moods: ['Overwhelmed'],
+    moods: ['Overwhelmed', 'Tired'],
   },
   {
     id: 'quran_2_255',
@@ -69,7 +69,7 @@ const quranContentData: Content[] = [
     source: 'Surah Al-Baqarah 2:286',
     audioKey: '2:286',
     whyThis: 'This verse closes Surah Al-Baqarah and is one of the most comforting passages in the Quran. The Prophet ﷺ said: "Whoever recites the last two verses of Surah Al-Baqarah at night, they will suffice him." [Bukhari 5009] The opening line is a divine guarantee: you will never be asked to carry more than you can bear.',
-    moods: ['Overwhelmed'],
+    moods: ['Overwhelmed', 'Tired'],
   },
   {
     id: 'quran_65_3',
@@ -1487,7 +1487,7 @@ const quranContentData: Content[] = [
     source: 'Surah Al-Baqarah 2:45',
     audioKey: '2:45',
     whyThis: 'Prayer is a source of help and strength, though its ease is found in humility.',
-    moods: ['Overwhelmed', 'Calm'],
+    moods: ['Overwhelmed', 'Calm', 'Tired'],
   },
   {
     id: 'quran_6_17',
@@ -1784,7 +1784,7 @@ const quranContentData: Content[] = [
     source: 'Surah Al-Qasas 28:73',
     audioKey: '28:73',
     whyThis: 'The alternation of night and day is described here as an act of mercy — rest and work, stillness and activity, both designed for you. Even the rhythms of nature are framed as a reason for gratitude. This verse invites you to see the most ordinary parts of your day as deliberate gifts from a merciful Lord.',
-    moods: ['Grateful'],
+    moods: ['Grateful', 'Tired'],
   },
   {
     id: 'quran_2_152',
@@ -3047,6 +3047,105 @@ const quranContentData: Content[] = [
     audioKey: '4:17',
     whyThis: 'Ibn Kathir reports the position of the companions that "bijahālatin" covers anyone who disobeys deliberately, since every act of disobedience is a kind of ignorance in the moment — the word does not restrict the ayah to those who did not know better. Al-Sa\'di explains "min qarībin" as before death arrives, so "soon" is measured against a lifetime rather than against hours.',
     moods: ['Guilty'],
+  },
+
+  // === TIRED (pool expansion) ===
+  // 13 -> 24. 46:35 and 76:24 were considered and dropped — the first ends on
+  // the destruction of the disobedient, the second repeats 52:48's opening.
+  {
+    id: 'quran_52_48',
+    type: 'Quran',
+    primaryText: "wa-iṣ'bir liḥuk'mi rabbika fa-innaka bi-aʿyuninā wasabbiḥ biḥamdi rabbika ḥīna taqūmu",
+    arabicText: 'وَٱصْبِرْ لِحُكْمِ رَبِّكَ فَإِنَّكَ بِأَعْيُنِنَا ۖ وَسَبِّحْ بِحَمْدِ رَبِّكَ حِينَ تَقُومُ ﴿48﴾',
+    transliteration: "wa-iṣ'bir liḥuk'mi rabbika fa-innaka bi-aʿyuninā wasabbiḥ biḥamdi rabbika ḥīna taqūmu",
+    englishTranslation:
+      'And be patient for the decision of your Lord, for indeed, you are in Our eyes. And exalt Him with praise of your Lord when you arise.',
+    source: 'Surah At-Tur 52:48',
+    audioKey: '52:48',
+    whyThis: 'Ibn Kathir renders "bi-aʿyuninā" as under Our observation and Our protection — the phrase carries being watched over rather than merely watched. Al-Sa\'di notes it is given as the *reason* for the patience being asked: endure, because you are not enduring unobserved. The command that follows attaches praise to the moment of getting up, which is the hardest moment for anyone worn down.',
+    moods: ['Tired'],
+  },
+  {
+    id: 'quran_70_5',
+    type: 'Quran',
+    primaryText: "fa-iṣ'bir ṣabran jamīlan",
+    arabicText: 'فَٱصْبِرْ صَبْرًا جَمِيلًا ﴿5﴾',
+    transliteration: "fa-iṣ'bir ṣabran jamīlan",
+    englishTranslation: 'So be patient with gracious patience.',
+    source: "Surah Al-Ma'arij 70:5",
+    audioKey: '70:5',
+    whyThis: 'Al-Sa\'di defines ṣabr jamīl as patience without complaint to creation — not patience without pain. Ibn Kathir notes the word jamīl means beautiful, and that what makes it beautiful is the absence of resentment rather than the absence of difficulty. The distinction matters: you are not being asked to feel less, only to take it somewhere other than to people who cannot carry it.',
+    moods: ['Tired'],
+  },
+  {
+    id: 'quran_40_55',
+    type: 'Quran',
+    primaryText: "fa-iṣ'bir inna waʿda l-lahi ḥaqqun wa-is'taghfir lidhanbika wasabbiḥ biḥamdi rabbika bil-ʿashiyi wal-ib'kāri",
+    arabicText:
+      'فَٱصْبِرْ إِنَّ وَعْدَ ٱللَّهِ حَقٌّ وَٱسْتَغْفِرْ لِذَنۢبِكَ وَسَبِّحْ بِحَمْدِ رَبِّكَ بِٱلْعَشِىِّ وَٱلْإِبْكَـٰرِ ﴿55﴾',
+    transliteration: "fa-iṣ'bir inna waʿda l-lahi ḥaqqun wa-is'taghfir lidhanbika wasabbiḥ biḥamdi rabbika bil-ʿashiyi wal-ib'kāri",
+    englishTranslation:
+      'So be patient. Indeed, the promise of Allah is truth. And ask forgiveness for your sin, and exalt Him with praise of your Lord in the evening and the morning.',
+    source: 'Surah Ghafir 40:55',
+    audioKey: '40:55',
+    whyThis: 'Al-Sa\'di reads the three instructions as a single regimen rather than a list: patience is sustained by certainty in the promise, and the two fixed points of remembrance — evening and morning — are what hold the certainty in place. Ibn Kathir notes the placement of istighfar between them, since what most often erodes endurance is not the difficulty itself but the guilt a person carries into it.',
+    moods: ['Tired'],
+  },
+  {
+    id: 'quran_7_42',
+    type: 'Quran',
+    primaryText: "wa-alladhīna āmanū waʿamilū l-ṣāliḥāti lā nukallifu nafsan illā wus'ʿahā ulāika aṣḥābu l-janati hum fīhā khālidūna",
+    arabicText:
+      'وَٱلَّذِينَ ءَامَنُوا۟ وَعَمِلُوا۟ ٱلصَّـٰلِحَـٰتِ لَا نُكَلِّفُ نَفْسًا إِلَّا وُسْعَهَآ أُو۟لَـٰٓئِكَ أَصْحَـٰبُ ٱلْجَنَّةِ ۖ هُمْ فِيهَا خَـٰلِدُونَ ﴿42﴾',
+    transliteration: "wa-alladhīna āmanū waʿamilū l-ṣāliḥāti lā nukallifu nafsan illā wus'ʿahā ulāika aṣḥābu l-janati hum fīhā khālidūna",
+    englishTranslation:
+      'But those who believed and did righteous deeds — We charge no soul except within its capacity — those are the companions of Paradise; they will abide therein eternally.',
+    source: "Surah Al-A'raf 7:42",
+    audioKey: '7:42',
+    whyThis: 'Al-Sa\'di draws attention to where the clause sits: the limit on what a soul is charged with is inserted mid-sentence, between the description of the righteous and the promise of Paradise. Ibn Kathir reads it as a mercy placed deliberately so that nobody hearing the standard despairs of meeting it. "Wusʿ" is capacity, what a person can comfortably bear — not the maximum they could survive.',
+    moods: ['Tired'],
+  },
+  {
+    id: 'quran_20_132',
+    type: 'Quran',
+    primaryText: "wamur ahlaka bil-ṣalati wa-iṣ'ṭabir ʿalayhā lā nasaluka riz'qan naḥnu narzuquka wal-ʿāqibatu lilttaqwā",
+    arabicText:
+      'وَأْمُرْ أَهْلَكَ بِٱلصَّلَوٰةِ وَٱصْطَبِرْ عَلَيْهَا ۖ لَا نَسْـَٔلُكَ رِزْقًا ۖ نَّحْنُ نَرْزُقُكَ ۗ وَٱلْعَـٰقِبَةُ لِلتَّقْوَىٰ ﴿132﴾',
+    transliteration: "wamur ahlaka bil-ṣalati wa-iṣ'ṭabir ʿalayhā lā nasaluka riz'qan naḥnu narzuquka wal-ʿāqibatu lilttaqwā",
+    englishTranslation:
+      'And enjoin prayer upon your family and be steadfast therein. We ask you not for provision; We provide for you. And the best outcome is for the righteous.',
+    source: 'Surah Taha 20:132',
+    audioKey: '20:132',
+    whyThis: 'Ibn Kathir highlights the reversal in the middle of the ayah: the one thing Allah does *not* ask of you is provision, because that is His side of the arrangement. Al-Sa\'di notes the verb "iṣṭabir" is an intensified form of patience, used for something requiring sustained effort over time. What is asked is steadfastness in prayer; what is lifted is the weight of supplying.',
+    moods: ['Tired'],
+  },
+  {
+    id: 'quran_17_19',
+    type: 'Quran',
+    primaryText: "waman arāda l-ākhirata wasaʿā lahā saʿyahā wahuwa mu'minun fa-ulāika kāna saʿyuhum mashkūran",
+    arabicText:
+      'وَمَنْ أَرَادَ ٱلْـَٔاخِرَةَ وَسَعَىٰ لَهَا سَعْيَهَا وَهُوَ مُؤْمِنٌ فَأُو۟لَـٰٓئِكَ كَانَ سَعْيُهُم مَّشْكُورًا ﴿19﴾',
+    transliteration: "waman arāda l-ākhirata wasaʿā lahā saʿyahā wahuwa mu'minun fa-ulāika kāna saʿyuhum mashkūran",
+    englishTranslation:
+      'But whoever desires the Hereafter and exerts the effort due to it while he is a believer — it is those whose effort is ever appreciated.',
+    source: 'Surah Al-Isra 17:19',
+    audioKey: '17:19',
+    whyThis: 'Al-Sa\'di stops on "mashkūran" — appreciated, thanked. Allah describes Himself as receiving the effort with gratitude, which is a startling word to use of the Creator toward a servant. Ibn Kathir notes the three conditions named are intention, effort and faith; the result is not framed as payment owed but as thanks given.',
+    moods: ['Tired'],
+  },
+  {
+    id: 'quran_12_18',
+    type: 'Quran',
+    primaryText: 'wajāū ʿalā qamīṣihi bidamin kadhibin qāla bal sawwalat lakum anfusukum amran faṣabrun jamīlun wal-lahu l-mus\'taʿānu ʿalā mā taṣifūna',
+    arabicText:
+      'وَجَآءُو عَلَىٰ قَمِيصِهِۦ بِدَمٍ كَذِبٍ ۚ قَالَ بَلْ سَوَّلَتْ لَكُمْ أَنفُسُكُمْ أَمْرًا ۖ فَصَبْرٌ جَمِيلٌ ۖ وَٱللَّهُ ٱلْمُسْتَعَانُ عَلَىٰ مَا تَصِفُونَ ﴿18﴾',
+    transliteration: 'wajāū ʿalā qamīṣihi bidamin kadhibin qāla bal sawwalat lakum anfusukum amran faṣabrun jamīlun wal-lahu l-mus\'taʿānu ʿalā mā taṣifūna',
+    englishTranslation:
+      'And they brought upon his shirt false blood. He said, "Rather, your souls have enticed you to something, so patience is most fitting. And Allah is the one sought for help against that which you describe."',
+    source: 'Surah Yusuf 12:18',
+    audioKey: '12:18',
+    whyThis: 'Yaqub (AS) has just been shown the shirt and does not believe them, and still does not rage. Ibn Kathir notes he names the deception accurately and then reaches for two things: beautiful patience, and Allah as the One whose help is sought. Al-Sa\'di observes that "al-mustaʿān" is where the strength comes from — the patience is not self-generated, which is why it can be sustained when a person has nothing left of their own.',
+    moods: ['Tired'],
   },
 ];
 
@@ -14640,6 +14739,473 @@ const quranContentAnglesData: ContentAngle[] = [
     ]),
     reflection:
       'Guilt has made this all about you. Who else could you ask forgiveness for tonight, by name?',
+  },
+
+  // === TIRED (pool expansion) ===
+  // 13 -> 24. Seven new verses plus 28:73, 2:286, 2:45 and 94:5, already in the
+  // file under other moods. The sunnah layer already serves Tired with qaylulah,
+  // Ya Hayyu Ya Qayyum, Alhamdulillah 100x and istighfar 100x — not reused here.
+  {
+    id: 'q_angle_52_48_tired',
+    contentId: 'quran_52_48',
+    mood: 'Tired',
+    angle:
+      'Bi-aʿyuninā — you are in Our eyes. Not watched the way a supervisor watches, but kept the way you keep something valuable in sight. And notice it is given as the *reason* for the patience being asked, not as a reward afterwards. The exhausting part of a long stretch is usually the suspicion that none of it is being seen. This ayah answers that before it asks anything of you.',
+    angleSource: 'Tafsir Ibn Kathir',
+    action: 'Say alhamdulillah at the moment you get up, before anything else.',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'mindset',
+        icon: 'eye',
+        title: 'Watched over, not just watched',
+        instruction:
+          'Ibn Kathir renders the phrase as under Our observation and Our protection. The endurance is not happening in an empty room. That is the whole argument the ayah makes.',
+        source: 'Tafsir Ibn Kathir on 52:48',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'verbal',
+        icon: 'sunrise',
+        title: 'Attached to getting up',
+        instruction:
+          'The ayah ties praise to "when you arise" — the hardest moment for anyone worn down. Say subhanallahi wa bihamdih the second your feet touch the floor, before the day starts making demands.',
+        arabicText: 'وَسَبِّحْ بِحَمْدِ رَبِّكَ حِينَ تَقُومُ',
+        transliteration: 'wasabbiḥ biḥamdi rabbika ḥīna taqūmu',
+        translation: 'And exalt Him with praise of your Lord when you arise',
+        source: 'Surah At-Tur 52:48 — Quran',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'physical',
+        icon: 'pen',
+        title: 'Name the unseen stretch',
+        instruction:
+          'Write the thing you have been doing that nobody has acknowledged — the caring, the covering, the showing up. One line. Then read the ayah over it.',
+        source: 'Surah At-Tur 52:48 — Quran',
+        sourceType: 'quran_dua',
+      },
+    ]),
+    reflection:
+      'What have you been carrying that nobody has noticed? Does it change the weight to know it was in view?',
+  },
+  {
+    id: 'q_angle_70_5_tired',
+    contentId: 'quran_70_5',
+    mood: 'Tired',
+    angle:
+      'Six words, and the important one is jamīl — beautiful. Scholars define ṣabr jamīl as patience without complaint to creation, not patience without pain. So you are not being told to feel less. You are being told where to take it. Half of what exhausts you in a hard season is the effort of explaining it to people who cannot carry it, and this ayah quietly removes that job.',
+    angleSource: "Tafsir al-Sa'di",
+    action: 'Take today\'s complaint to Allah instead of to the next person who asks.',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'mindset',
+        icon: 'brain',
+        title: 'Beautiful, not painless',
+        instruction:
+          'Ṣabr jamīl is patience with no resentment in it and no complaint to people — not patience with no ache. You are allowed to find this hard while doing it well.',
+        source: "Tafsir al-Sa'di on 70:5",
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'verbal',
+        icon: 'leaf',
+        title: 'Six words for a long day',
+        instruction:
+          'Short enough to say on the stairs, in a queue, between tasks. Say it when you feel the urge to explain yourself to someone who did not ask well.',
+        arabicText: 'فَٱصْبِرْ صَبْرًا جَمِيلًا',
+        transliteration: "fa-iṣ'bir ṣabran jamīlan",
+        translation: 'So be patient with gracious patience',
+        source: "Surah Al-Ma'arij 70:5 — Quran",
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'physical',
+        icon: 'moon',
+        title: 'Stop narrating it',
+        instruction:
+          'For one day, do not retell your difficulty to anyone. Notice how much energy the retelling was taking. Take the whole thing to Him at night instead, in full.',
+        source: "Surah Al-Ma'arij 70:5 — Quran",
+        sourceType: 'quran_dua',
+      },
+    ]),
+    reflection:
+      'How many times did you explain your situation to someone this week? What did each retelling cost you?',
+  },
+  {
+    id: 'q_angle_40_55_tired',
+    contentId: 'quran_40_55',
+    mood: 'Tired',
+    angle:
+      'Three instructions in one breath, and they hold each other up: be patient, because the promise is true — then seek forgiveness, then praise Him morning and evening. Notice istighfar sits in the middle. What usually drains endurance is not the difficulty but the guilt a person hauls into it, the sense of being behind before the day starts. Put that down first and the patience becomes possible.',
+    angleSource: "Tafsir al-Sa'di",
+    action: 'Two fixed points today — say subhanallahi wa bihamdih at morning and at evening.',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'mindset',
+        icon: 'lock',
+        title: 'The promise is the anchor',
+        instruction:
+          'Patience is not asked for on its own — it is asked for on the grounds that the promise is true. If the endurance feels impossible, the thing to shore up is the certainty underneath it, not the gritted teeth.',
+        source: "Tafsir al-Sa'di on 40:55",
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'verbal',
+        icon: 'clock',
+        title: 'Morning and evening, fixed',
+        instruction:
+          'The ayah names two times, not a continuous effort. Two anchored moments in the day are more sustainable than a vague intention to remember Him throughout it.',
+        arabicText: 'وَسَبِّحْ بِحَمْدِ رَبِّكَ بِٱلْعَشِىِّ وَٱلْإِبْكَـٰرِ',
+        transliteration: "wasabbiḥ biḥamdi rabbika bil-ʿashiyi wal-ib'kāri",
+        translation: 'And exalt Him with praise of your Lord in the evening and the morning',
+        source: 'Surah Ghafir 40:55 — Quran',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'physical',
+        icon: 'rewind',
+        title: 'Put the backlog down',
+        instruction:
+          'Say astaghfirullah for everything you are behind on — the missed, the half-done, the owed — once, as a single act. Carrying it into tomorrow is what makes tomorrow heavy before it starts.',
+        source: 'Surah Ghafir 40:55 — Quran',
+        sourceType: 'quran_dua',
+      },
+    ]),
+    reflection:
+      'How much of your tiredness is the work itself, and how much is the guilt you carry about it?',
+  },
+  {
+    id: 'q_angle_7_42_tired',
+    contentId: 'quran_7_42',
+    mood: 'Tired',
+    angle:
+      'Read where the clause is placed. He describes the righteous, then interrupts Himself mid-sentence — We charge no soul except within its capacity — and only then names Paradise. The limit was inserted so that nobody hearing the standard would give up on reaching it. And wusʿ means capacity, what you can bear comfortably. Not the maximum you could survive. You have been using the wrong measure.',
+    angleSource: "Tafsir al-Sa'di",
+    action: 'Set today\'s target at what you can bear comfortably, not what you could survive.',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'mindset',
+        icon: 'chart',
+        title: 'Wusʿ is not your maximum',
+        instruction:
+          'Capacity here means the comfortable range, not the outer limit. Living permanently at the edge of what you can survive is not the standard being described, and treating it as such is your addition.',
+        source: "Tafsir al-Sa'di on 7:42",
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'physical',
+        icon: 'target',
+        title: 'Reset today\'s number',
+        instruction:
+          'Whatever you planned for today, cut it to what you could do without depleting yourself. Then do that. Finishing a smaller list is worth more than abandoning a bigger one.',
+        source: "Surah Al-A'raf 7:42 — Quran",
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'mindset',
+        icon: 'door',
+        title: 'The mercy is mid-sentence',
+        instruction:
+          'He could have stated the standard and left it. Instead the limit is written into the same ayah as the promise. That placement is the reassurance — it was never a bar you had to clear alone.',
+        source: "Surah Al-A'raf 7:42 — Quran",
+        sourceType: 'quran_dua',
+      },
+    ]),
+    reflection:
+      'Are you living at your capacity or at your maximum? Name the difference in one concrete thing you did this week.',
+  },
+  {
+    id: 'q_angle_20_132_tired',
+    contentId: 'quran_20_132',
+    mood: 'Tired',
+    angle:
+      'The middle of this ayah lifts something off you specifically: We ask you not for provision; We provide for you. If you are the one everybody depends on — the earner, the carer, the one who keeps it running — that sentence reassigns the job. What is asked of you is steadfastness in prayer. What is not asked of you is supplying the outcome. You have been doing both and calling it responsibility.',
+    angleSource: 'Tafsir Ibn Kathir',
+    action: 'Name one thing you have been supplying that was never assigned to you.',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'mindset',
+        icon: 'shield',
+        title: 'That part is His',
+        instruction:
+          'Ibn Kathir notes the reversal: the one thing Allah does not ask of you is provision. You are exhausted partly from carrying a responsibility that the ayah explicitly places elsewhere.',
+        source: 'Tafsir Ibn Kathir on 20:132',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'verbal',
+        icon: 'hands-prayer',
+        title: 'Say the reassignment',
+        instruction:
+          'Read the clause aloud with the person or bill or outcome in mind that you have been shouldering. Say it as a statement of fact, not a wish.',
+        arabicText: 'لَا نَسْـَٔلُكَ رِزْقًا ۖ نَّحْنُ نَرْزُقُكَ',
+        transliteration: "lā nasaluka riz'qan naḥnu narzuquka",
+        translation: 'We ask you not for provision; We provide for you',
+        source: 'Surah Taha 20:132 — Quran',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'physical',
+        icon: 'mosque',
+        title: 'The part that is yours',
+        instruction:
+          'Iṣṭabir is an intensified patience — sustained effort over time. Applied to one thing only: the prayer. Protect the next salah as the one non-negotiable and let something else slip today instead.',
+        source: 'Surah Taha 20:132 — Quran',
+        sourceType: 'quran_dua',
+      },
+    ]),
+    reflection:
+      'What are you supplying that was never asked of you? Who told you it was your job?',
+  },
+  {
+    id: 'q_angle_17_19_tired',
+    contentId: 'quran_17_19',
+    mood: 'Tired',
+    angle:
+      'Mashkūr — appreciated, thanked. Allah describes Himself as receiving your effort with gratitude, which is a strange and enormous word to use of the Creator toward a servant. Not "recorded", not "rewarded". Thanked. Whatever you dragged yourself through this week, the response on the other side is not an audit. Ash-Shakur is a Name He chose, and it means small efforts get met with more than they were worth.',
+    angleSource: "Tafsir al-Sa'di",
+    action: 'List three things you did this week and read the word "thanked" over them.',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'mindset',
+        icon: 'gem',
+        title: 'He calls it thanks',
+        instruction:
+          'Al-Sa\'di stops on this word. The effort is not merely accepted — it is received with gratitude by the One who needed nothing from it. That is the register your week is being read in.',
+        source: "Tafsir al-Sa'di on 17:19",
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'physical',
+        icon: 'pen',
+        title: 'Three, however small',
+        instruction:
+          'Write three things you did this week for His sake — a prayer you nearly skipped, patience you nearly lost, a kindness nobody saw. Exhaustion only shows you the shortfall; this corrects the record deliberately.',
+        source: 'Surah Al-Isra 17:19 — Quran',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'verbal',
+        icon: 'star',
+        title: 'Intention is one of the three',
+        instruction:
+          'The ayah names desire, effort and faith. If the effort was small this week, the intention still counts as one of the named conditions. Renew it out loud for tomorrow before you sleep.',
+        source: 'Surah Al-Isra 17:19 — Quran',
+        sourceType: 'quran_dua',
+      },
+    ]),
+    reflection:
+      'Write the three smallest good things you did this week. Now read them as something He thanked you for.',
+  },
+  {
+    id: 'q_angle_12_18_tired',
+    contentId: 'quran_12_18',
+    mood: 'Tired',
+    angle:
+      'Yaqub is handed a bloodied shirt and knows immediately it is a lie. He says so — plainly, without softening it — and then does not rage. What he reaches for is two things: beautiful patience, and Allah as the One whose help is sought. That second half matters when you are depleted. The patience is not self-generated. Al-Mustaʿan is where it comes from, which is why it can hold when you have nothing of your own left.',
+    angleSource: 'Tafsir Ibn Kathir',
+    action: 'Say "wallahu al-mustaʿan" over the thing you have no strength left for.',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'verbal',
+        icon: 'shield',
+        title: 'Borrowed, not manufactured',
+        instruction:
+          'Say it about the specific situation. The point of the phrase is that the endurance is drawn from Him rather than squeezed out of a reserve you have already emptied.',
+        arabicText: 'وَٱللَّهُ ٱلْمُسْتَعَانُ',
+        transliteration: "wal-lahu l-mus'taʿānu",
+        translation: 'And Allah is the one whose help is sought',
+        source: 'Surah Yusuf 12:18 — Quran',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'mindset',
+        icon: 'brain',
+        title: 'He named it accurately first',
+        instruction:
+          'Yaqub did not pretend the shirt was convincing. Patience did not require him to misdescribe what had happened. You can be clear-eyed about how bad it is and still not be destroyed by it.',
+        source: 'Tafsir Ibn Kathir on 12:18',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'physical',
+        icon: 'candle',
+        title: 'One thing, handed over',
+        instruction:
+          'Pick the single item you have no strength for and say the phrase over it by name. Then leave it until tomorrow without guilt — you have handed it to the One who is asked for help.',
+        source: 'Surah Yusuf 12:18 — Quran',
+        sourceType: 'quran_dua',
+      },
+    ]),
+    reflection:
+      'What are you out of strength for? Say it by name — then say who you are asking for help with it.',
+  },
+  {
+    id: 'q_angle_28_73_tired',
+    contentId: 'quran_28_73',
+    mood: 'Tired',
+    angle:
+      'Out of His mercy He made the night and the day — the night so you can rest in it, the day so you can seek His bounty. Both halves are named as mercy. If you have been treating rest as the part you steal and work as the part that counts, you have kept half of a gift and called the other half indulgence. He built the pause into the design and then called the whole arrangement rahmah.',
+    angleSource: "Tafsir al-Sa'di",
+    action: 'Take the night as the half of the design you have been skipping.',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'mindset',
+        icon: 'moon',
+        title: 'Both halves are the mercy',
+        instruction:
+          'The ayah does not present rest as recovery time for the productive part. It names night and day together as one act of mercy. Resting is not borrowing against the gift; it is receiving it.',
+        source: "Tafsir al-Sa'di on 28:73",
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'physical',
+        icon: 'home',
+        title: 'Give the night back its job',
+        instruction:
+          'Pick the hour you usually steal from sleep and give it back tonight. One night. Notice what tomorrow is like when the design is followed rather than overridden.',
+        source: 'Surah Al-Qasas 28:73 — Quran',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'verbal',
+        icon: 'star',
+        title: 'Thank Him for the pause',
+        instruction:
+          'The ayah ends "that perhaps you will be grateful." Say alhamdulillah specifically for rest — not for what you accomplish, for the permission to stop.',
+        source: 'Surah Al-Qasas 28:73 — Quran',
+        sourceType: 'quran_dua',
+      },
+    ]),
+    reflection:
+      'Do you thank Him for what you got done, or for being allowed to stop? Which one did you last say out loud?',
+  },
+  {
+    id: 'q_angle_2_286_tired',
+    contentId: 'quran_2_286',
+    mood: 'Tired',
+    angle:
+      'The first line is a guarantee, not encouragement: Allah does not burden a soul beyond its capacity. Which means the load you are under is, by definition, one you can carry — and if it feels heavier than that, some of what you are carrying was not assigned. You added it. The rest of the ayah is the du\'a for exactly this, and Allah answered every line of it with "I have done so."',
+    angleSource: 'Tafsir Ibn Kathir',
+    action: 'Identify one weight in your load that Allah did not put there.',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'physical',
+        icon: 'pen',
+        title: 'Sort the load',
+        instruction:
+          'Two columns: what is genuinely required of you, and what you took on — to be seen a certain way, to avoid a conversation, to meet a standard nobody set. The second column is the overage.',
+        source: 'Surah Al-Baqarah 2:286 — Quran',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'verbal',
+        icon: 'hands-prayer',
+        title: 'The line for an overloaded soul',
+        instruction:
+          'Say it as it is written. This is the du\'a Allah put in your mouth for this exact state, and the Prophet ﷺ reported that Allah answered each request in it with "I have done so."',
+        arabicText: 'رَبَّنَا وَلَا تُحَمِّلْنَا مَا لَا طَاقَةَ لَنَا بِهِۦ',
+        transliteration: "rabbanā walā tuḥammil'nā mā lā ṭāqata lanā bihi",
+        translation: 'Our Lord, do not burden us with what we have no strength to bear',
+        source: 'Surah Al-Baqarah 2:286 — Quran',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'physical',
+        icon: 'moon',
+        title: 'The two that suffice',
+        instruction:
+          'The Prophet ﷺ said whoever recites the last two ayahs of Surah Al-Baqarah at night, they will suffice him. Read them before sleep tonight and let sufficing be someone else\'s job for a few hours.',
+        source: 'Sahih al-Bukhari 5009',
+        sourceType: 'sunnah_action',
+        sourceGrading: 'sahih',
+      },
+    ]),
+    reflection:
+      'Split your load into what was required and what you added. How long is the second list?',
+  },
+  {
+    id: 'q_angle_2_45_tired',
+    contentId: 'quran_2_45',
+    mood: 'Tired',
+    angle:
+      'Seek help through patience and prayer. Help — not extra duty. When you are depleted the prayer feels like one more item on a list you are already failing, and this ayah puts it on the other side of the ledger: it is the resource, not the demand. The ayah admits it is heavy too, "except for the humble." So the difficulty is acknowledged in the same breath. You are not imagining that part.',
+    angleSource: "Tafsir al-Sa'di",
+    action: 'Go to the next prayer to be helped, not to discharge an obligation.',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'mindset',
+        icon: 'compass',
+        title: 'Resource, not requirement',
+        instruction:
+          'The verb is istaʿīnū — seek help. Prayer is being handed to you as the means of getting through, not added to the pile you are getting through. Walk into the next one with that framing.',
+        source: "Tafsir al-Sa'di on 2:45",
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'mindset',
+        icon: 'heart',
+        title: 'It says it is heavy',
+        instruction:
+          'The ayah itself calls prayer burdensome except upon the humble. Your struggle with it is described in the text. That is not a sign something is wrong with you.',
+        source: 'Surah Al-Baqarah 2:45 — Quran',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'physical',
+        icon: 'mosque',
+        title: 'Ask inside the sujud',
+        instruction:
+          'In the next prostration, ask for the specific thing you are depleted for — energy for a task, patience with a person. The ayah frames prayer as where help is sought, so seek something specific in it.',
+        source: 'Surah Al-Baqarah 2:45 — Quran',
+        sourceType: 'quran_dua',
+      },
+    ]),
+    reflection:
+      'Do you approach salah as something you owe or something you are given? Which was it at the last one?',
+  },
+  {
+    id: 'q_angle_94_5_tired',
+    contentId: 'quran_94_5',
+    mood: 'Tired',
+    angle:
+      'The scholars of Arabic note the construction: the hardship carries the definite article both times — the same hardship — while ease is indefinite each time, meaning two different eases. So it is not one difficulty followed by one relief. It is one difficulty accompanied by more relief than it. And the word is maʿa, *with*, not after. The ease is not waiting on the far side of this; some of it is already in the room.',
+    angleSource: 'Tafsir Ibn Kathir',
+    action: 'Find one ease that is already present inside the hard thing.',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'mindset',
+        icon: 'light-bulb',
+        title: 'With, not after',
+        instruction:
+          'Maʿa means alongside. The ayah does not promise the difficulty will end before relief begins — it says they are travelling together. Look for what is already easier than it was, rather than only for the exit.',
+        source: 'Tafsir Ibn Kathir on 94:5-6',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'physical',
+        icon: 'pen',
+        title: 'Name the two eases',
+        instruction:
+          'One hardship, two eases — that is the grammar. Write your hardship, then find two things that are genuinely easier or better than they were a month ago. They are usually small and unregistered.',
+        source: 'Surah Ash-Sharh 94:5-6 — Quran',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'verbal',
+        icon: 'headphones',
+        title: 'Said twice for a reason',
+        instruction:
+          'Recite both ayahs aloud, one after the other, and hear the repetition. Ibn Masud (RA) reportedly said one hardship cannot overcome two eases.',
+        arabicText: 'فَإِنَّ مَعَ ٱلْعُسْرِ يُسْرًا إِنَّ مَعَ ٱلْعُسْرِ يُسْرًۭا',
+        transliteration: "fa-inna maʿa l-ʿus'ri yus'ran inna maʿa l-ʿus'ri yus'ran",
+        translation: 'So indeed, with the hardship is ease. Indeed, with the hardship is ease',
+        source: 'Surah Ash-Sharh 94:5-6 — Quran',
+        sourceType: 'quran_dua',
+      },
+    ]),
+    reflection:
+      'Name two things that are easier now than they were a month ago. You have probably not counted either.',
   },
 ];
 
