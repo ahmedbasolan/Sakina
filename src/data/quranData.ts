@@ -143,7 +143,7 @@ const quranContentData: Content[] = [
     source: 'Surah Al-Baqarah 2:257',
     audioKey: '2:257',
     whyThis: 'The word "wali" here means more than a friend — it is a guardian and protector with authority. When you feel overwhelmed and directionless, this verse reminds you that Allah Himself is actively guiding you out of every darkness. The journey from darkness to light is not something you do alone; Allah initiates it.',
-    moods: ['Overwhelmed'],
+    moods: ['Overwhelmed', 'Lonely'],
   },
   {
     id: 'quran_8_40',
@@ -1281,7 +1281,7 @@ const quranContentData: Content[] = [
     source: 'Surah At-Tawbah 9:40',
     audioKey: '9:40',
     whyThis: 'In the cave of Thawr, the Prophet ﷺ told Abu Bakr (RA) not to grieve — because Allah was with them. Allah responded by sending His sakinah and unseen support. This moment, among the most dangerous the Prophet ﷺ faced, became the model for every believer: when you say "Allah is with us," trust it completely.',
-    moods: ['Calm'],
+    moods: ['Calm', 'Lonely'],
   },
   {
     id: 'quran_41_35',
@@ -2324,7 +2324,7 @@ const quranContentData: Content[] = [
     source: 'Surah Hud 11:6',
     audioKey: '11:6',
     whyThis: 'Every creature — not just humans — has its provision as a divine responsibility upon Allah. He knows where each creature lives, where its provision is stored, and how it will reach it. If He provides for the worm deep in the earth and the fish at the bottom of the sea, He will provide for you.',
-    moods: ['Overwhelmed', 'Grateful'],
+    moods: ['Overwhelmed', 'Grateful', 'Lonely'],
   },
   // Day 3: Halal vs. Haram
   {
@@ -2763,6 +2763,142 @@ const quranContentData: Content[] = [
     audioKey: '2:263',
     whyThis: 'The ayah closes on two Names, and Al-Sa\'di links them deliberately: Allah is Al-Ghaniyy, in no need of anything from you, and Al-Halim, the Forbearing who does not hasten to punish despite having every right and every power to. Ibn Kathir notes that hilm is not the absence of anger but the deliberate withholding of a deserved response. That distinction matters — forbearance is defined here as something exercised by one who could act, not by one who cannot.',
     moods: ['Angry'],
+  },
+
+  // === LONELY (pool expansion) ===
+  // Lonely shipped at 10 reachable angles. A user with three refreshes a day
+  // exhausted it inside 36 hours and began seeing repeats, which is the worst
+  // possible outcome for the mood most likely to sit and refresh. 4:45 and
+  // 3:103 were considered and dropped — the first opens on "your enemies" and
+  // the second runs 77 words, neither of which sits well on a card.
+  {
+    id: 'quran_26_62',
+    type: 'Quran',
+    primaryText: 'qāla kallā inna maʿiya rabbī sayahdīni',
+    arabicText: 'قَالَ كَلَّآ ۖ إِنَّ مَعِىَ رَبِّى سَيَهْدِينِ ﴿62﴾',
+    transliteration: 'qāla kallā inna maʿiya rabbī sayahdīni',
+    englishTranslation: 'He said, "No! Indeed, with me is my Lord; He will guide me."',
+    source: "Surah Ash-Shu'ara 26:62",
+    audioKey: '26:62',
+    whyThis: 'Musa (AS) said this with the sea in front of him and Pharaoh\'s army closing behind. Ibn Kathir notes his people had just said "we are surely to be overtaken" — the objection was reasonable, and he answered it with one word: kallā, no. Al-Sa\'di draws attention to the tense: sayahdīni, He *will* guide me, spoken before any way out existed. The certainty was not about the exit; it was about the company.',
+    moods: ['Lonely'],
+  },
+  {
+    id: 'quran_12_86',
+    type: 'Quran',
+    primaryText: "qāla innamā ashkū bathī waḥuz'nī ilā l-lahi wa-aʿlamu mina l-lahi mā lā taʿlamūna",
+    arabicText: 'قَالَ إِنَّمَآ أَشْكُوا۟ بَثِّى وَحُزْنِىٓ إِلَى ٱللَّهِ وَأَعْلَمُ مِنَ ٱللَّهِ مَا لَا تَعْلَمُونَ ﴿86﴾',
+    transliteration: "qāla innamā ashkū bathī waḥuz'nī ilā l-lahi wa-aʿlamu mina l-lahi mā lā taʿlamūna",
+    englishTranslation:
+      'He said, "I only complain of my suffering and my grief to Allah, and I know from Allah that which you do not know."',
+    source: 'Surah Yusuf 12:86',
+    audioKey: '12:86',
+    whyThis: 'Yaqub (AS) had lost two sons and been told by everyone around him to stop grieving. Ibn Kathir explains "bathth" as the grief so heavy a person cannot contain it — and note where he takes it: not to the people telling him to move on, but to Allah alone. Al-Sa\'di observes that complaining *to* Allah is not complaining *about* Him, which is why this is recorded as the speech of a prophet rather than a lapse.',
+    moods: ['Lonely'],
+  },
+  {
+    id: 'quran_19_48',
+    type: 'Quran',
+    primaryText: "wa-aʿtazilukum wamā tadʿūna min dūni l-lahi wa-adʿū rabbī ʿasā allā akūna biduʿāi rabbī shaqiyyan",
+    arabicText:
+      'وَأَعْتَزِلُكُمْ وَمَا تَدْعُونَ مِن دُونِ ٱللَّهِ وَأَدْعُوا۟ رَبِّى عَسَىٰٓ أَلَّآ أَكُونَ بِدُعَآءِ رَبِّى شَقِيًّا ﴿48﴾',
+    transliteration: "wa-aʿtazilukum wamā tadʿūna min dūni l-lahi wa-adʿū rabbī ʿasā allā akūna biduʿāi rabbī shaqiyyan",
+    englishTranslation:
+      'And I will leave you and those you invoke besides Allah, and I will invoke my Lord. I expect that I will not be unhappy in invoking my Lord.',
+    source: 'Surah Maryam 19:48',
+    audioKey: '19:48',
+    whyThis: 'Ibrahim (AS) says this as he walks away from his father and his entire people. Ibn Kathir notes that he loses every human tie he has in one sentence, and what he names as the replacement is du\'a. Al-Sa\'di reads "ʿasā" here as hope rather than doubt — he does not know how it will go, only that calling on his Lord is not the kind of thing that leaves a person wretched. Allah answers by giving him Ishaq and Yaqub in the ayah that follows.',
+    moods: ['Lonely'],
+  },
+  {
+    id: 'quran_33_3',
+    type: 'Quran',
+    primaryText: 'watawakkal ʿalā l-lahi wakafā bil-lahi wakīlan',
+    arabicText: 'وَتَوَكَّلْ عَلَى ٱللَّهِ ۚ وَكَفَىٰ بِٱللَّهِ وَكِيلًا ﴿3﴾',
+    transliteration: 'watawakkal ʿalā l-lahi wakafā bil-lahi wakīlan',
+    englishTranslation: 'And rely upon Allah; and sufficient is Allah as Disposer of affairs.',
+    source: 'Surah Al-Ahzab 33:3',
+    audioKey: '33:3',
+    whyThis: 'Al-Sa\'di explains "kafā" as a closed sufficiency — not "Allah helps as well as others" but "Allah is enough, full stop." Ibn Kathir notes Al-Wakil is the One to whom a matter is entirely handed over, the way you would hand your affairs to someone you trusted completely and then stop supervising them. The ayah is addressed to the Prophet ﷺ at a point when much of Madinah was against him.',
+    moods: ['Lonely'],
+  },
+  {
+    id: 'quran_6_59',
+    type: 'Quran',
+    primaryText:
+      'waʿindahu mafātiḥu l-ghaybi lā yaʿlamuhā illā huwa wayaʿlamu mā fī l-bari wal-baḥri wamā tasquṭu min waraqatin illā yaʿlamuhā walā ḥabbatin fī ẓulumāti l-arḍi walā raṭbin walā yābisin illā fī kitābin mubīnin',
+    arabicText:
+      '۞ وَعِندَهُۥ مَفَاتِحُ ٱلْغَيْبِ لَا يَعْلَمُهَآ إِلَّا هُوَ ۚ وَيَعْلَمُ مَا فِى ٱلْبَرِّ وَٱلْبَحْرِ ۚ وَمَا تَسْقُطُ مِن وَرَقَةٍ إِلَّا يَعْلَمُهَا وَلَا حَبَّةٍ فِى ظُلُمَـٰتِ ٱلْأَرْضِ وَلَا رَطْبٍ وَلَا يَابِسٍ إِلَّا فِى كِتَـٰبٍ مُّبِينٍ ﴿59﴾',
+    transliteration:
+      'waʿindahu mafātiḥu l-ghaybi lā yaʿlamuhā illā huwa wayaʿlamu mā fī l-bari wal-baḥri wamā tasquṭu min waraqatin illā yaʿlamuhā walā ḥabbatin fī ẓulumāti l-arḍi walā raṭbin walā yābisin illā fī kitābin mubīnin',
+    englishTranslation:
+      'And with Him are the keys of the unseen; none knows them except Him. And He knows what is on the land and in the sea. Not a leaf falls but that He knows it. And no grain is there within the darknesses of the earth, and no moist or dry thing, but that it is in a clear record.',
+    source: "Surah Al-An'am 6:59",
+    audioKey: '6:59',
+    whyThis: 'Ibn Kathir points to the deliberate scale of the examples: a single leaf, one seed buried in the dark. Al-Sa\'di adds that the ayah moves from the largest unseen — the keys of the ghayb — down to the smallest unwitnessed event, and states the same knowledge covers both. Nothing is too small to be beneath His attention, which is the point for anyone whose life feels unobserved.',
+    moods: ['Lonely'],
+  },
+  {
+    id: 'quran_49_10',
+    type: 'Quran',
+    primaryText: "innamā l-mu'minūna ikh'watun fa-aṣliḥū bayna akhawaykum wa-ittaqū l-laha laʿallakum tur'ḥamūna",
+    arabicText:
+      'إِنَّمَا ٱلْمُؤْمِنُونَ إِخْوَةٌ فَأَصْلِحُوا۟ بَيْنَ أَخَوَيْكُمْ ۚ وَٱتَّقُوا۟ ٱللَّهَ لَعَلَّكُمْ تُرْحَمُونَ ﴿10﴾',
+    transliteration: "innamā l-mu'minūna ikh'watun fa-aṣliḥū bayna akhawaykum wa-ittaqū l-laha laʿallakum tur'ḥamūna",
+    englishTranslation:
+      'The believers are but brothers, so make settlement between your brothers. And fear Allah that you may receive mercy.',
+    source: 'Surah Al-Hujurat 49:10',
+    audioKey: '49:10',
+    whyThis: 'Al-Sa\'di notes the sentence is a statement of fact before it is an instruction — "the believers *are* brothers" describes a tie that already exists rather than one you must earn. Ibn Kathir reads the command that follows as the consequence: because the bond is real, a rift in it is something to be repaired rather than accepted. For someone who feels outside every circle, the ayah asserts membership first and asks for effort second.',
+    moods: ['Lonely'],
+  },
+  {
+    id: 'quran_8_63',
+    type: 'Quran',
+    primaryText:
+      'wa-allafa bayna qulūbihim law anfaqta mā fī l-arḍi jamīʿan mā allafta bayna qulūbihim walākinna l-laha allafa baynahum innahu ʿazīzun ḥakīmun',
+    arabicText:
+      'وَأَلَّفَ بَيْنَ قُلُوبِهِمْ ۚ لَوْ أَنفَقْتَ مَا فِى ٱلْأَرْضِ جَمِيعًا مَّآ أَلَّفْتَ بَيْنَ قُلُوبِهِمْ وَلَـٰكِنَّ ٱللَّهَ أَلَّفَ بَيْنَهُمْ ۚ إِنَّهُۥ عَزِيزٌ حَكِيمٌ ﴿63﴾',
+    transliteration:
+      'wa-allafa bayna qulūbihim law anfaqta mā fī l-arḍi jamīʿan mā allafta bayna qulūbihim walākinna l-laha allafa baynahum innahu ʿazīzun ḥakīmun',
+    englishTranslation:
+      'And He brought their hearts together. If you had spent all that is on the earth, you could not have brought their hearts together, but Allah brought them together. Indeed, He is Exalted in Might and Wise.',
+    source: 'Surah Al-Anfal 8:63',
+    audioKey: '8:63',
+    whyThis: 'The Aws and Khazraj had been at war for generations before Islam. Ibn Kathir notes the ayah addresses the Prophet ﷺ directly — even he, with everything on earth to spend, could not have manufactured that reconciliation. Al-Sa\'di calls the joining of hearts one of Allah\'s greatest favours precisely because no amount of effort or money purchases it. Connection is described here as something granted, not achieved.',
+    moods: ['Lonely'],
+  },
+  {
+    id: 'quran_2_214',
+    type: 'Quran',
+    primaryText:
+      'am ḥasib\'tum an tadkhulū l-janata walammā yatikum mathalu alladhīna khalaw min qablikum massathumu l-basāu wal-ḍarāu wazul\'zilū ḥattā yaqūla l-rasūlu wa-alladhīna āmanū maʿahu matā naṣru l-lahi alā inna naṣra l-lahi qarībun',
+    arabicText:
+      'أَمْ حَسِبْتُمْ أَن تَدْخُلُوا۟ ٱلْجَنَّةَ وَلَمَّا يَأْتِكُم مَّثَلُ ٱلَّذِينَ خَلَوْا۟ مِن قَبْلِكُم ۖ مَّسَّتْهُمُ ٱلْبَأْسَآءُ وَٱلضَّرَّآءُ وَزُلْزِلُوا۟ حَتَّىٰ يَقُولَ ٱلرَّسُولُ وَٱلَّذِينَ ءَامَنُوا۟ مَعَهُۥ مَتَىٰ نَصْرُ ٱللَّهِ ۗ أَلَآ إِنَّ نَصْرَ ٱللَّهِ قَرِيبٌ ﴿214﴾',
+    transliteration:
+      'am ḥasib\'tum an tadkhulū l-janata walammā yatikum mathalu alladhīna khalaw min qablikum massathumu l-basāu wal-ḍarāu wazul\'zilū ḥattā yaqūla l-rasūlu wa-alladhīna āmanū maʿahu matā naṣru l-lahi alā inna naṣra l-lahi qarībun',
+    englishTranslation:
+      'Or do you think that you will enter Paradise while such trial has not yet come to you as came to those who passed on before you? They were touched by poverty and hardship and were shaken until even the Messenger and those who believed with him said, "When is the help of Allah?" Unquestionably, the help of Allah is near.',
+    source: 'Surah Al-Baqarah 2:214',
+    audioKey: '2:214',
+    whyThis: 'Ibn Kathir highlights what the ayah is willing to record: a messenger of Allah and the believers with him asking out loud when the help is coming. Al-Sa\'di notes the answer does not rebuke the question — it answers it. The shaking is described as the normal condition of the road rather than evidence of having strayed from it, and the reassurance is placed immediately after the complaint rather than instead of it.',
+    moods: ['Lonely'],
+  },
+  {
+    id: 'quran_17_110',
+    type: 'Quran',
+    primaryText:
+      "quli id'ʿū l-laha awi id'ʿū l-raḥmāna ayyan mā tadʿū falahu l-asmāu l-ḥus'nā walā tajhar biṣalātika walā tukhāfit bihā wa-ib'taghi bayna dhālika sabīlan",
+    arabicText:
+      'قُلِ ٱدْعُوا۟ ٱللَّهَ أَوِ ٱدْعُوا۟ ٱلرَّحْمَـٰنَ ۖ أَيًّا مَّا تَدْعُوا۟ فَلَهُ ٱلْأَسْمَآءُ ٱلْحُسْنَىٰ ۚ وَلَا تَجْهَرْ بِصَلَاتِكَ وَلَا تُخَافِتْ بِهَا وَٱبْتَغِ بَيْنَ ذَٰلِكَ سَبِيلًا ﴿110﴾',
+    transliteration:
+      "quli id'ʿū l-laha awi id'ʿū l-raḥmāna ayyan mā tadʿū falahu l-asmāu l-ḥus'nā walā tajhar biṣalātika walā tukhāfit bihā wa-ib'taghi bayna dhālika sabīlan",
+    englishTranslation:
+      'Say, "Call upon Allah or call upon the Most Merciful. Whichever name you call — to Him belong the best names." And do not recite too loudly in your prayer, nor too quietly, but seek a way between that.',
+    source: 'Surah Al-Isra 17:110',
+    audioKey: '17:110',
+    whyThis: 'Ibn Kathir records that this was revealed when the Prophet ﷺ was heard calling "Ya Allah, ya Rahman" and objectors claimed he was invoking two gods. Al-Sa\'di notes the answer: the Names are many and the One called is one, so there is no wrong door to knock on. The second half of the ayah settles the volume of prayer — neither performed for an audience nor swallowed inaudibly.',
+    moods: ['Lonely'],
   },
 ];
 
@@ -13277,6 +13413,527 @@ const quranContentAnglesData: ContentAngle[] = [
     ]),
     reflection:
       'What is your usual first sentence when someone provokes you? Decide your replacement now, while you are calm.',
+  },
+
+  // === LONELY (pool expansion) ===
+  // Takes Lonely from 10 to 22. At 10 a user with three refreshes a day hit a
+  // repeat inside 36 hours; the simulation in scripts/verify-mood-pools territory
+  // put first-repeat at day 1.4. Nine new verses plus 9:40 / 2:257 / 11:6, which
+  // were already in the file under other moods and only needed the tag.
+  {
+    id: 'q_angle_26_62_lonely',
+    contentId: 'quran_26_62',
+    mood: 'Lonely',
+    angle:
+      'Musa said this with an army behind him and the sea in front, and the people beside him had just said out loud that they were finished. He did not argue with the facts. He said kallā — no — and then named the only thing that had changed nothing about his situation and everything about his position: my Lord is with me. Notice he says "with me," singular, standing in a crowd. Being surrounded by people had not made him less alone; being with Allah did.',
+    angleSource: "Tafsir al-Sa'di",
+    action: 'Say "inna maʿiya rabbi" out loud once, before you look for a way out.',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'verbal',
+        icon: 'shield',
+        title: 'His four words',
+        instruction:
+          'Say it in the present tense, as he did — not "He will be with me once this resolves" but "He is with me now." The sea had not parted yet when this was spoken.',
+        arabicText: 'إِنَّ مَعِىَ رَبِّى سَيَهْدِينِ',
+        transliteration: 'inna maʿiya rabbī sayahdīni',
+        translation: 'Indeed, with me is my Lord; He will guide me',
+        source: "Surah Ash-Shu'ara 26:62 — Quran",
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'mindset',
+        icon: 'compass',
+        title: 'Certainty about the company, not the exit',
+        instruction:
+          'He did not claim to know how it would end. He claimed to know who was there. When you cannot see a way through, that is still the part you can be sure of.',
+        source: "Tafsir al-Sa'di on 26:62",
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'physical',
+        icon: 'pen',
+        title: 'Write the honest and the true',
+        instruction:
+          'Two lines. First what your situation actually is, no softening. Then "and my Lord is with me." Both are true at once — the second does not require you to shrink the first.',
+        source: "Surah Ash-Shu'ara 26:62 — Quran",
+        sourceType: 'quran_dua',
+      },
+    ]),
+    reflection:
+      'Who was standing next to Musa when he said this? Being in a room with people is not the same as not being alone — which one do you actually need right now?',
+  },
+  {
+    id: 'q_angle_12_86_lonely',
+    contentId: 'quran_12_86',
+    mood: 'Lonely',
+    angle:
+      'Yaqub had lost two sons and everyone around him was telling him to stop. His answer was not to stop — it was to change who he was saying it to. "I complain of my grief to Allah." That is permission you may not know you had: you do not have to perform being fine, and you do not have to keep finding a person willing to hear it again. Al-Latif does not get tired of the same grief, and He does not need you to make it shorter.',
+    angleSource: 'Tafsir Ibn Kathir',
+    action: 'Tell Allah the thing you have stopped telling people, in full, out loud.',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'verbal',
+        icon: 'chat',
+        title: 'Complaining to Him is not complaining about Him',
+        instruction:
+          'Say the whole thing — the repetitive part, the part you are embarrassed still hurts. A prophet did this and it was recorded as his merit, not his weakness.',
+        arabicText: 'إِنَّمَآ أَشْكُوا۟ بَثِّى وَحُزْنِىٓ إِلَى ٱللَّهِ',
+        transliteration: "innamā ashkū bathī waḥuz'nī ilā l-lahi",
+        translation: 'I only complain of my suffering and my grief to Allah',
+        source: 'Surah Yusuf 12:86 — Quran',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'mindset',
+        icon: 'brain',
+        title: 'Bathth — the grief too big to hold',
+        instruction:
+          'The word he uses means sorrow a person cannot contain, the kind that spills out. He did not have a smaller version of it either. You are not required to have processed this before you bring it.',
+        source: 'Tafsir Ibn Kathir on 12:86',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'physical',
+        icon: 'moon',
+        title: 'The hour with no audience',
+        instruction:
+          'The Prophet ﷺ said our Lord descends to the lowest heaven in the last third of the night, asking who is calling on Him. Set an alarm for it once this week and say it then, when there is no one to manage but Him.',
+        source: 'Sahih al-Bukhari 1145',
+        sourceType: 'sunnah_action',
+        sourceGrading: 'sahih',
+      },
+    ]),
+    reflection:
+      'What have you stopped saying out loud because you think people are tired of hearing it? He is not.',
+  },
+  {
+    id: 'q_angle_19_48_lonely',
+    contentId: 'quran_19_48',
+    mood: 'Lonely',
+    angle:
+      'Ibrahim walked away from his father and his entire people in one sentence, and named what he was walking toward: I will call on my Lord. He did not say he expected it to be easy. He said he did not expect to be wretched in it. If your isolation came from holding a line — a habit you left, a room you stopped going to — this is the ayah for it. Read what Allah gives him two ayahs later: a family. He lost people and was not left without them.',
+    angleSource: "Tafsir al-Sa'di",
+    action: 'Make du\'a for the specific relationship your isolation cost you.',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'mindset',
+        icon: 'door',
+        title: 'Chosen distance is still distance',
+        instruction:
+          'Walking away from something harmful does not make the loneliness that follows fake. Ibrahim\'s was real enough to be recorded. You can be right about the decision and still be lonely because of it.',
+        source: "Tafsir al-Sa'di on 19:48",
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'verbal',
+        icon: 'hands-prayer',
+        title: 'What he reached for instead',
+        instruction:
+          'He replaced the company with du\'a — not as a consolation prize but as the thing he expected to be answered. Say his line and then ask for one specific person to be sent into your life.',
+        arabicText: 'وَأَدْعُوا۟ رَبِّى عَسَىٰٓ أَلَّآ أَكُونَ بِدُعَآءِ رَبِّى شَقِيًّا',
+        transliteration: "wa-adʿū rabbī ʿasā allā akūna biduʿāi rabbī shaqiyyan",
+        translation: 'And I will invoke my Lord. I expect that I will not be unhappy in invoking my Lord',
+        source: 'Surah Maryam 19:48 — Quran',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'mindset',
+        icon: 'arrow-right',
+        title: 'Read the next ayah',
+        instruction:
+          'Verse 49: Allah gave him Ishaq and Yaqub, and made each of them a prophet. The replacement was not a smaller version of what he gave up. It rarely arrives on the timeline you would have picked.',
+        source: 'Surah Maryam 19:49 — Quran',
+        sourceType: 'quran_dua',
+      },
+    ]),
+    reflection:
+      'What did your loneliness cost you, and what were you protecting by accepting that cost?',
+  },
+  {
+    id: 'q_angle_33_3_lonely',
+    contentId: 'quran_33_3',
+    mood: 'Lonely',
+    angle:
+      'Kafā is a closed word — it does not mean Allah helps alongside everyone else, it means He is enough and the sentence ends. Al-Wakil is the One you hand a matter to completely and then stop supervising. Loneliness usually runs on a quiet audit of who has shown up and who has not. This ayah does not tell you that audit is wrong. It tells you the total was already sufficient before you started counting.',
+    angleSource: "Tafsir al-Sa'di",
+    action: 'Hand Him one thing you have been waiting for a person to handle.',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'verbal',
+        icon: 'lock',
+        title: 'Enough, full stop',
+        instruction:
+          'Say it slowly and hear where the sentence closes. There is no "and also" after kafā.',
+        arabicText: 'وَكَفَىٰ بِٱللَّهِ وَكِيلًا',
+        transliteration: 'wakafā bil-lahi wakīlan',
+        translation: 'And sufficient is Allah as Disposer of affairs',
+        source: 'Surah Al-Ahzab 33:3 — Quran',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'physical',
+        icon: 'pen',
+        title: 'Stop the audit',
+        instruction:
+          'Write the name of the person you have been waiting on. Then write what you actually needed from them. Then ask Allah for that thing directly, by name, instead of waiting for them to offer it.',
+        source: 'Surah Al-Ahzab 33:3 — Quran',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'mindset',
+        icon: 'shield',
+        title: 'Tawakkul is not passivity',
+        instruction:
+          'The ayah says rely, in the same breath as it says He is sufficient. Tie your camel and then hand over the outcome — reaching out to someone is the camel, not a failure of trust.',
+        source: 'Jami at-Tirmidhi 2517',
+        sourceType: 'sunnah_action',
+        sourceGrading: 'hasan',
+      },
+    ]),
+    reflection:
+      'Whose name have you been waiting to see on your screen? What did you actually need — and have you asked Him for it directly?',
+  },
+  {
+    id: 'q_angle_6_59_lonely',
+    contentId: 'quran_6_59',
+    mood: 'Lonely',
+    angle:
+      'Not a leaf falls but that He knows it. Read the size of that example — not a nation, not a war, a single leaf coming off a branch somewhere with nobody watching. Then a seed in the dark under the ground. Al-Alim chose the smallest unwitnessed things in creation to make the point, which means the unwitnessed parts of your day are not below the threshold. There is no threshold.',
+    angleSource: 'Tafsir Ibn Kathir',
+    action: 'Name one small thing you did today that no one saw, and know it was recorded.',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'mindset',
+        icon: 'leaf',
+        title: 'He picked the smallest example on purpose',
+        instruction:
+          'A falling leaf. A seed in the dark. The ayah could have named kingdoms and chose these instead. Whatever you did today that felt too small to matter is precisely the category being described.',
+        source: 'Tafsir Ibn Kathir on 6:59',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'physical',
+        icon: 'pen',
+        title: 'Log the unwitnessed',
+        instruction:
+          'Write three things you did today that nobody thanked you for or noticed. Not achievements — small ones. Then read the list back knowing it was already written somewhere more permanent.',
+        source: "Surah Al-An'am 6:59 — Quran",
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'verbal',
+        icon: 'eye',
+        title: 'Call on the One who sees',
+        instruction:
+          'Recite the clause itself, then call on Him with the Name it points to: "Ya Alim, ya Basir." Being known is a different need from being helped, and this is the Name that answers it.',
+        arabicText: 'وَمَا تَسْقُطُ مِن وَرَقَةٍ إِلَّا يَعْلَمُهَا',
+        transliteration: 'wamā tasquṭu min waraqatin illā yaʿlamuhā',
+        translation: 'Not a leaf falls but that He knows it',
+        source: "Surah Al-An'am 6:59 — Quran",
+        sourceType: 'quran_dua',
+      },
+    ]),
+    reflection:
+      'What did you do today that nobody knows about? Write it down — someone did.',
+  },
+  {
+    id: 'q_angle_49_10_lonely',
+    contentId: 'quran_49_10',
+    mood: 'Lonely',
+    angle:
+      'Read the grammar before the instruction. It does not say become brothers, or earn your place among them. It says the believers *are* brothers — a fact stated about you before you have done anything to deserve it. Whatever room you feel outside of, membership was not the thing in question. What the ayah asks for after that is repair, which is a job for someone already inside.',
+    angleSource: "Tafsir al-Sa'di",
+    action: 'Repair one specific rift this week — send the first message.',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'mindset',
+        icon: 'handshake',
+        title: 'Stated, not earned',
+        instruction:
+          'The bond is described as existing already. Loneliness will tell you that you are provisional, on the outside pending approval. The ayah simply does not agree with that reading.',
+        source: "Tafsir al-Sa'di on 49:10",
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'physical',
+        icon: 'home',
+        title: 'One rift, this week',
+        instruction:
+          'Pick the relationship that went quiet and send a plain message with no agenda. Not the perfectly worded one — the plain one. The ayah puts the repairing on you because you are already family, not to test whether you are.',
+        source: 'Surah Al-Hujurat 49:10 — Quran',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'mindset',
+        icon: 'shield',
+        title: 'A building, not a crowd',
+        instruction:
+          'The Prophet ﷺ said a believer to another believer is like a building, each part strengthening the rest — and he interlaced his fingers as he said it. A brick is not decoration. Withdrawing does not leave the wall unchanged.',
+        source: 'Sahih al-Bukhari 481',
+        sourceType: 'prophetic_dhikr',
+        sourceGrading: 'sahih',
+      },
+    ]),
+    reflection:
+      'Which relationship went quiet because you were both waiting for the other one to go first?',
+  },
+  {
+    id: 'q_angle_8_63_lonely',
+    contentId: 'quran_8_63',
+    mood: 'Lonely',
+    angle:
+      'The Aws and the Khazraj had been killing each other for generations. Allah tells the Prophet ﷺ that even he, spending everything on earth, could not have joined those hearts — but Allah did. So connection is not a skill you are failing at. It is not a reward for being interesting enough or trying hard enough. It is given. Which means it can be asked for, and the asking is not a lesser move than the trying.',
+    angleSource: 'Tafsir Ibn Kathir',
+    action: 'Ask Allah, by name, for one person whose heart He joins to yours.',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'mindset',
+        icon: 'gem',
+        title: 'Not a skill you lack',
+        instruction:
+          'All the money on earth could not buy it. That is stated about the best of creation. If you have been reading your loneliness as evidence you are bad at people, the ayah removes that explanation.',
+        source: 'Tafsir Ibn Kathir on 8:63',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'verbal',
+        icon: 'heart',
+        title: 'Ask for it as a gift',
+        instruction:
+          'Say: "Ya Allah, You joined hearts that had every reason to stay apart. Join mine to someone who will bring me closer to You." Then name one person, or ask for someone you have not met.',
+        source: 'Surah Al-Anfal 8:63 — Quran',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'mindset',
+        icon: 'star',
+        title: 'Souls that recognise each other',
+        instruction:
+          'The Prophet ﷺ said souls are like conscripted soldiers: those that recognise one another draw together, and those that do not stay apart. The people who have not fit were not a verdict on you.',
+        source: 'Sahih al-Bukhari 3336 / Sahih Muslim 2638',
+        sourceType: 'prophetic_dhikr',
+        sourceGrading: 'sahih',
+      },
+    ]),
+    reflection:
+      'You have been treating connection as something to earn. What changes if it is something to ask for?',
+  },
+  {
+    id: 'q_angle_2_214_lonely',
+    contentId: 'quran_2_214',
+    mood: 'Lonely',
+    angle:
+      'A messenger of Allah said out loud, "When is the help of Allah?" That question is in the Quran, preserved, not edited out. Allah did not answer it with a rebuke — He answered it with "unquestionably, the help of Allah is near." If you have been treating your own version of that question as a failure of faith, notice who asked it first and what came back.',
+    angleSource: 'Tafsir Ibn Kathir',
+    action: 'Ask the question out loud, then read the second half of the ayah as the reply.',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'mindset',
+        icon: 'chat',
+        title: 'The question is in the text',
+        instruction:
+          'It was not softened before being recorded. Being shaken is described here as what happened to the people who came before you, not as what separates you from them.',
+        source: 'Tafsir Ibn Kathir on 2:214',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'verbal',
+        icon: 'sunrise',
+        title: 'Read both halves',
+        instruction:
+          'Say the question, then say the answer. Do not skip to the answer — the ayah does not, and the reassurance only lands after the complaint has been allowed to exist.',
+        arabicText: 'أَلَآ إِنَّ نَصْرَ ٱللَّهِ قَرِيبٌ',
+        transliteration: 'alā inna naṣra l-lahi qarībun',
+        translation: 'Unquestionably, the help of Allah is near',
+        source: 'Surah Al-Baqarah 2:214 — Quran',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'physical',
+        icon: 'clock',
+        title: 'Near, on His clock',
+        instruction:
+          'Qarib means near, and nothing in the ayah promises today. Write down what you are waiting for and put the paper somewhere you will find it in a few months rather than checking it hourly.',
+        source: 'Surah Al-Baqarah 2:214 — Quran',
+        sourceType: 'quran_dua',
+      },
+    ]),
+    reflection:
+      'Say your version of "when is the help of Allah?" out loud. Did saying it feel like a failure, or like a relief?',
+  },
+  {
+    id: 'q_angle_17_110_lonely',
+    contentId: 'quran_17_110',
+    mood: 'Lonely',
+    angle:
+      'Someone objected that the Prophet ﷺ was calling on two different gods because they heard him say Ya Allah and Ya Rahman. The answer: whichever Name you call, they are all His. There is no correct door, no formula you have to get right before He listens. If part of what keeps you from speaking to Him is not knowing how it is supposed to sound, this ayah closes that gap — call Him whatever you can reach for.',
+    angleSource: "Tafsir al-Sa'di",
+    action: 'Pick the Divine Name that matches what you need tonight, and use only that one.',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'verbal',
+        icon: 'compass',
+        title: 'Pick the Name that fits',
+        instruction:
+          'Not the whole list. One. If you need company, Ya Qarib. To be heard, Ya Sami\'. To be loved, Ya Wadud. Say it thirty times slowly and let it be the whole du\'a.',
+        arabicText: 'قُلِ ٱدْعُوا۟ ٱللَّهَ أَوِ ٱدْعُوا۟ ٱلرَّحْمَـٰنَ',
+        transliteration: "quli id'ʿū l-laha awi id'ʿū l-raḥmāna",
+        translation: 'Say, call upon Allah or call upon the Most Merciful',
+        source: 'Surah Al-Isra 17:110 — Quran',
+        sourceType: 'quran_dua',
+        count: 30,
+      },
+      {
+        type: 'mindset',
+        icon: 'door',
+        title: 'No wrong door',
+        instruction:
+          'The objection in the story was about getting the form wrong. Allah answered it by widening the door rather than correcting the caller. Whatever clumsy version you have been holding back is accepted.',
+        source: "Tafsir al-Sa'di on 17:110",
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'mindset',
+        icon: 'star',
+        title: 'Ninety-nine ways in',
+        instruction:
+          'The Prophet ﷺ said Allah has ninety-nine names, and whoever takes them in will enter Paradise. Ninety-nine doors into one conversation. You only ever need the one that matches tonight.',
+        source: 'Sahih al-Bukhari 2736',
+        sourceType: 'prophetic_dhikr',
+        sourceGrading: 'sahih',
+      },
+    ]),
+    reflection:
+      'Which of His Names describes what you are missing right now? Use that one tonight and nothing else.',
+  },
+  {
+    id: 'q_angle_9_40_lonely',
+    contentId: 'quran_9_40',
+    mood: 'Lonely',
+    angle:
+      'Two men in a cave, the search party close enough to be heard, and the whole future of the religion sitting in that gap. What the Prophet ﷺ said was not a plan. It was "do not grieve, Allah is with us." Abu Bakr was not alone because a friend was there; both of them were not alone because of the third. Count your own room again with that arithmetic.',
+    angleSource: 'Tafsir Ibn Kathir',
+    action: 'Say "Allah is with us" about the situation you are facing by yourself.',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'mindset',
+        icon: 'crescent',
+        title: 'What do you think of two whose third is Allah?',
+        instruction:
+          'Abu Bakr said if any of them looked down at his feet he would see them. The Prophet ﷺ answered with that question. The odds did not change; the count did.',
+        source: 'Sahih al-Bukhari 3653',
+        sourceType: 'prophetic_dhikr',
+        sourceGrading: 'sahih',
+      },
+      {
+        type: 'verbal',
+        icon: 'shield',
+        title: 'The words from the cave',
+        instruction:
+          'Say them about your own situation, using "us" even if you are by yourself. The ayah is spoken to one frightened person by someone who could see what he could not.',
+        arabicText: 'لَا تَحْزَنْ إِنَّ ٱللَّهَ مَعَنَا',
+        transliteration: 'lā taḥzan inna l-laha maʿanā',
+        translation: 'Do not grieve; indeed Allah is with us',
+        source: 'Surah At-Tawbah 9:40 — Quran',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'physical',
+        icon: 'home',
+        title: 'Be the second man',
+        instruction:
+          'Abu Bakr\'s role in that cave was simply being there. Do that for one person this week — no advice, no fixing. Sitting with someone is a complete act.',
+        source: 'Surah At-Tawbah 9:40 — Quran',
+        sourceType: 'quran_dua',
+      },
+    ]),
+    reflection:
+      'Who is in your cave with you? And who could you be the second man for this week?',
+  },
+  {
+    id: 'q_angle_2_257_lonely',
+    contentId: 'quran_2_257',
+    mood: 'Lonely',
+    angle:
+      'Allah calls Himself your Wali — not a distant patron but the one responsible for you, the way a family takes responsibility for its own. And what the ayah says He does with that role is specific: He brings you out of darkness into light. Not sends instructions from outside it. Brings you out, which means He is in there with you first. Loneliness is one of the darknesses named in the plural here.',
+    angleSource: "Tafsir al-Sa'di",
+    action: 'Say "Ya Wali" and name the darkness you want to be brought out of.',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'mindset',
+        icon: 'candle',
+        title: 'Darknesses, plural. Light, singular.',
+        instruction:
+          'Al-Sa\'di notes the asymmetry: many kinds of dark, one light. There are countless ways to be lost and one direction out, which is why the way you got here matters less than which way you now face.',
+        source: "Tafsir al-Sa'di on 2:257",
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'verbal',
+        icon: 'hands-prayer',
+        title: 'Call Him by the role',
+        instruction:
+          'Say "Ya Wali" and then say plainly which darkness you mean. A wali is not a spectator — the word carries obligation toward the one it belongs to.',
+        arabicText: 'ٱللَّهُ وَلِىُّ ٱلَّذِينَ ءَامَنُوا۟',
+        transliteration: 'al-lahu waliyyu alladhīna āmanū',
+        translation: 'Allah is the Protecting Guardian of those who believe',
+        source: 'Surah Al-Baqarah 2:257 — Quran',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'physical',
+        icon: 'arrow-right',
+        title: 'One step toward the light',
+        instruction:
+          'Being brought out is a process with steps in it. Do one small thing today that moves toward people rather than away — a greeting, a reply you have been avoiding, showing up somewhere for ten minutes.',
+        source: 'Surah Al-Baqarah 2:257 — Quran',
+        sourceType: 'quran_dua',
+      },
+    ]),
+    reflection:
+      'Name the darkness you want out of. Now name one step — a small one — that faces the other way.',
+  },
+  {
+    id: 'q_angle_11_6_lonely',
+    contentId: 'quran_11_6',
+    mood: 'Lonely',
+    angle:
+      'Every creature on earth has its provision guaranteed, and the ayah adds something easy to skim past: He knows its dwelling place and its place of storage. Where it sleeps. Where it keeps what matters to it. That is not a statement about food — it is a statement about being located. Somewhere in creation, your address is known, and not by an administrator working from a list.',
+    angleSource: "Tafsir al-Sa'di",
+    action: 'Say where you are out loud to Allah — the actual room you are sitting in.',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'mindset',
+        icon: 'home',
+        title: 'He knows where you sleep',
+        instruction:
+          'Mustaqarr is the settling place, mustawda\' the place something is entrusted for keeping. The ayah names both for every creature. Nobody is unlocated in His knowledge, however unplaced you feel.',
+        source: "Tafsir al-Sa'di on 11:6",
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'verbal',
+        icon: 'chat',
+        title: 'Say where you are',
+        instruction:
+          'Out loud: name the room, the hour, what you can hear. It sounds strange for about four seconds. It is a way of noticing that the place you feel invisible in is a place He is already in.',
+        source: 'Surah Hud 11:6 — Quran',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'mindset',
+        icon: 'bird',
+        title: 'Provision finds the one who goes out',
+        instruction:
+          'The Prophet ﷺ said if you relied on Allah as He deserves, you would be provided like the birds — they leave hungry in the morning and return full. Note that they still leave. Being provided for is not the same as staying in.',
+        source: 'Jami at-Tirmidhi 2344',
+        sourceType: 'prophetic_dhikr',
+        sourceGrading: 'hasan',
+      },
+    ]),
+    reflection:
+      'Say the room you are in out loud, and the time. Did it change anything to name it to Him?',
   },
 ];
 
