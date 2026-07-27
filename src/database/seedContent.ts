@@ -50,7 +50,10 @@ import type { Content, ContentAngle } from '../types';
 // v10: Guilty pool 12 -> 25 (11 new verses; 6:54 and 8:33 retagged).
 // v11: Tired pool 13 -> 26 (7 new verses; 28:73, 2:286, 2:45, 94:5 retagged).
 // v12: Angry pool 18 -> 25 (7 new verses). Completes the four thin moods.
-const SEED_VERSION = 12;
+// v13: corrected 36 practice-step `source` labels that presented a dhikr,
+//      a Divine Name or an app-composed supplication as the text of a cited
+//      ayah. Arabic and instructions unchanged — only the attribution.
+const SEED_VERSION = 13;
 // Separate keys per content type — Quran and Hadith data change independently,
 // and each seeder used to write the SAME key at the end of its run. Since
 // initializeDatabase() awaits seedQuranContent() before seedHadithContent(),
