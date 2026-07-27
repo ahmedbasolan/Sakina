@@ -51,6 +51,9 @@ const SOURCE_TYPE_CONFIG: Record<PracticeSourceType, { label: string; color: str
   prophetic_dua: { label: "Prophetic Du'a", color: '#60A5FA' },
   prophetic_dhikr: { label: 'Prophetic Dhikr', color: '#A78BFA' },
   sunnah_action: { label: 'Sunnah Action', color: '#FBBF24' },
+  // Deliberately muted and plainly worded. The other four badges signal a
+  // chain — a verse or a hadith — and this one must not be mistaken for them.
+  composed_dua: { label: 'Suggested Wording', color: '#8FA3B8' },
 };
 
 // ─── Dhikr Counter (circular progress) ─────────────────────────

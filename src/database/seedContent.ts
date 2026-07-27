@@ -53,7 +53,10 @@ import type { Content, ContentAngle } from '../types';
 // v13: corrected 36 practice-step `source` labels that presented a dhikr,
 //      a Divine Name or an app-composed supplication as the text of a cited
 //      ayah. Arabic and instructions unchanged — only the attribution.
-const SEED_VERSION = 13;
+// v14: 22 steps re-typed from 'quran_dua' to the new 'composed_dua' — app-written
+//      supplications and Divine-Name vocatives, neither of which appears
+//      verbatim in the cited ayah. They now render a 'Suggested Wording' badge.
+const SEED_VERSION = 14;
 // Separate keys per content type — Quran and Hadith data change independently,
 // and each seeder used to write the SAME key at the end of its run. Since
 // initializeDatabase() awaits seedQuranContent() before seedHadithContent(),

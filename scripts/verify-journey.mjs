@@ -40,7 +40,15 @@ if (!iconUnion) {
 }
 const ICONS = new Set([...iconUnion[0].matchAll(/'([a-z-]+)'/g)].map((m) => m[1]));
 const TYPES = new Set(['mindset', 'physical', 'verbal']);
-const SRCT = new Set(['quran_dua', 'prophetic_dua', 'prophetic_dhikr', 'sunnah_action']);
+// Derived from the PracticeSourceType union, for the same reason ICONS is:
+// a hardcoded copy drifts. 'composed_dua' was added in 2026-07 and a literal
+// list here would have rejected every step using it.
+const srctUnion = fs.readFileSync('src/types/index.ts', 'utf8').match(/export type PracticeSourceType =[\s\S]*?;/);
+if (!srctUnion) {
+  console.error('Could not find the `export type PracticeSourceType = …;` union in src/types/index.ts.');
+  process.exit(1);
+}
+const SRCT = new Set([...srctUnion[0].matchAll(/'([a-z_]+)'/g)].map((m) => m[1]));
 
 // Mirrors ContextLayer.splitIntoSections / extractSourceLabel / cleanText.
 const SPLIT = [/\.\s+The Prophet\s+ﷺ\s+said:/,/\.\s+The Prophet\s+ﷺ\s+would/,/\.\s+The Prophet\s+ﷺ\s+used to/,/\.\s+The Prophet\s+ﷺ\s+never/,/\.\s+The Prophet\s+ﷺ\s+himself/,/\.\s+The Prophet\s+ﷺ\s+was/,/\.\s+Your\s/,/\.\s+When you/,/\.\s+Despair/,/\.\s+Being an ally/,/\.\s+No sadness/,/\.\s+Even when/];

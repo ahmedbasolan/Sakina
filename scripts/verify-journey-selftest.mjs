@@ -19,9 +19,12 @@ function reset() {
   fs.mkdirSync(path.join(SB, 'scripts'), { recursive: true });
   for (const f of ['staticPaths.ts', 'quranData.ts', 'hadithData.ts'])
     fs.copyFileSync(path.join(REPO, 'src/data', f), path.join(SB, 'src/data', f));
-  // verify-journey.mjs derives its valid-icon set from the IconName union, so
-  // the sandbox needs Icon.tsx too or every run dies with ENOENT.
+  // verify-journey.mjs derives its valid-icon set from the IconName union and
+  // its valid-sourceType set from PracticeSourceType, so the sandbox needs both
+  // of those files or every run dies with ENOENT.
   fs.copyFileSync(path.join(REPO, 'src/components/Icon.tsx'), path.join(SB, 'src/components/Icon.tsx'));
+  fs.mkdirSync(path.join(SB, 'src', 'types'), { recursive: true });
+  fs.copyFileSync(path.join(REPO, 'src/types/index.ts'), path.join(SB, 'src/types/index.ts'));
   fs.copyFileSync(path.join(REPO, 'scripts/verify-journey.mjs'), path.join(SB, 'scripts/verify-journey.mjs'));
 }
 

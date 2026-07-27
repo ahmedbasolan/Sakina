@@ -43,11 +43,20 @@ export interface MoodConfig {
 
 // ─── Content Authenticity Types ────────────────────────────────
 // Hard gate: only these categories are allowed on the Guidance screen.
+//
+// The first four all carry a chain — a verse or a hadith. `composed_dua` does
+// not, and exists precisely so that app-written supplications cannot masquerade
+// as one that does. Before it existed, ~21 steps whose Arabic was written for
+// this app shipped as 'quran_dua' under a "Surah X:Y — Quran" label, which told
+// the reader they were reciting scripture. Anything without a transmitted chain
+// must use `composed_dua` and must render as such (see SOURCE_TYPE_CONFIG in
+// PracticeLayer) — never silently upgraded to one of the sourced categories.
 export type PracticeSourceType =
   | 'quran_dua' // Du'a that appears verbatim in the Qur'an (cite verse)
   | 'prophetic_dua' // Ma'thūr du'a with hadith chain
   | 'prophetic_dhikr' // Dhikr with hadith chain
-  | 'sunnah_action'; // Action with explicit hadith or primary fiqh citation
+  | 'sunnah_action' // Action with explicit hadith or primary fiqh citation
+  | 'composed_dua'; // Wording written for this app — no chain. Label it plainly.
 
 export type HadithGrading = 'sahih' | 'hasan' | 'sahih_li_ghayrihi' | 'hasan_li_ghayrihi';
 
