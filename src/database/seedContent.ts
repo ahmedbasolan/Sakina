@@ -125,7 +125,15 @@ import type { Content, ContentAngle } from '../types';
 //      typed quran_dua under a non-Quran source line — "Tafsir Ibn Kathir on
 //      4:147" and the singular hasbiya form of 3:173 — carried the "Qur'anic"
 //      badge over Arabic that is not in the ayah; both are composed_dua now.
-const SEED_VERSION = 25;
+// v26: Salah Transformation rebuilt. All 7 days had no practiceSteps, so every
+//      day rendered through PathStepScreen's bare `action` fallback; they now
+//      carry 3 sourced steps each. Day 7 stopped reusing day 3's verse — new
+//      Content quran_4_103, which commands dhikr the moment the prayer ends.
+//      Day 5's Ahmad 22136 (unhostable) -> Sahih al-Bukhari 793, and day 7's
+//      Bukhari 844 was the la-ilaha-illallah formula, not the istighfar +
+//      tasbih it claimed -> Sahih Muslim 591 and Sahih al-Bukhari 843. Path
+//      theme Hopeful -> Calm to match all seven angles.
+const SEED_VERSION = 26;
 // Separate keys per content type — Quran and Hadith data change independently,
 // and each seeder used to write the SAME key at the end of its run. Since
 // initializeDatabase() awaits seedQuranContent() before seedHadithContent(),
