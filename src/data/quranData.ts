@@ -10498,12 +10498,11 @@ const quranContentAnglesData: ContentAngle[] = [
       "Examples: 'I can walk, I have clean water, I know people who love me, I have my senses, I have access to knowledge.'",
     actionReward:
       "Prophet ﷺ said: 'If you were to rely upon Allah with the reliance He is due, you would be given provision like the birds: they go out hungry in the morning and return full in the evening.' [Tirmidhi 2344]",
-    actionArabicText:
-      'اللَّهُمَّ اغْفِرْ لِي ذَنْبِي، وَوَسِّعْ لِي فِي دَارِي، وَبَارِكْ لِي فِي رِزْقِي',
-    actionTransliteration: "Allahumma ighfir li dhanbi, wa wassi' li fi dari, wa barik li fi rizqi",
+    actionArabicText: 'اللَّهُمَّ إِنِّي أَسْأَلُكَ الْعَفْوَ وَالْعَافِيَةَ فِي الدُّنْيَا وَالْآخِرَةِ',
+    actionTransliteration: "Allahumma inni as'aluka al-'afwa wal-'afiyata fid-dunya wal-akhirah",
     actionTranslation:
-      'O Allah, forgive me my sin, expand for me in my dwelling, and bless me in my provision',
-    actionSource: 'Authenticated in collections of morning/evening adhkar',
+      'O Allah, I ask You for pardon and well-being in this world and the next',
+    actionSource: 'Sunan Ibn Majah 3871',
     practiceSteps: JSON.stringify([
       {
         type: 'mindset',
@@ -10526,13 +10525,13 @@ const quranContentAnglesData: ContentAngle[] = [
       {
         type: 'verbal',
         icon: 'hands-prayer',
-        title: 'The Rizq Dua',
-        instruction: 'Say this dua for blessed provision.',
-        arabicText:
-          'اللَّهُمَّ اغْفِرْ لِي ذَنْبِي، وَوَسِّعْ لِي فِي دَارِي، وَبَارِكْ لِي فِي رِزْقِي',
-        transliteration: "Allahumma ighfir li dhanbi, wa wassi' li fi dari, wa barik li fi rizqi",
-        translation: 'O Allah, forgive my sin, expand my dwelling, and bless my provision',
-        source: "Sunan an-Nasa'i al-Kubra 9514",
+        title: 'Ask for what money cannot buy',
+        instruction:
+          "You have just listed five things money cannot buy. Ask for the one word that covers all of them: al-'afiyah — well-being in your body, your religion, your family and your means. The Prophet ﷺ never abandoned this supplication, morning and evening.",
+        arabicText: 'اللَّهُمَّ إِنِّي أَسْأَلُكَ الْعَفْوَ وَالْعَافِيَةَ فِي الدُّنْيَا وَالْآخِرَةِ',
+        transliteration: "Allahumma inni as'aluka al-'afwa wal-'afiyata fid-dunya wal-akhirah",
+        translation: 'O Allah, I ask You for pardon and well-being in this world and the next',
+        source: 'Sunan Ibn Majah 3871',
         sourceType: 'prophetic_dua',
       },
     ]),
