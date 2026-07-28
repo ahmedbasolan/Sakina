@@ -54,7 +54,9 @@ const CASES = [
   ['broken practiceSteps JSON', () => patch('quranData.ts', `practiceSteps: JSON.stringify([\r\n      {\r\n        type: 'mindset',\r\n        icon: 'target',\r\n        title: 'The striving is the record'`, `practiceSteps: '[{oops',\r\n    _dead: JSON.stringify([\r\n      {\r\n        type: 'mindset',\r\n        icon: 'target',\r\n        title: 'The striving is the record'`), /practiceSteps JSON invalid/],
   ['missing tafsir tag', () => patch('quranData.ts', `"[Tafsir Ibn Kathir on 2:152] Allah offers`, `"Allah offers`), /no \[Tafsir \.\.\.\] tag/],
   ['tag not at start', () => patch('quranData.ts', `"[Tafsir Ibn Kathir on 53:39] The ayah sets`, `"The ayah sets [Tafsir Ibn Kathir on 53:39]`), /tag not at string start/],
-  ['no split pattern', () => patch('quranData.ts', `. When you study, the striving is the part`, `. Studying means the striving is the part`), /Matters section will be empty/],
+  // Matches either wording: the verifier reports an arbitrary 60% cut when the
+  // angle has >= 4 sentences and an empty Matters section below that.
+  ['no split pattern', () => patch('quranData.ts', `. When you study, the striving is the part`, `. Studying means the striving is the part`), /no split pattern/],
   ['missing angle', () => patch('staticPaths.ts', `angleId: 'q_angle_study_day5'`, `angleId: 'q_angle_study_day99'`), /missing angle q_angle_study_day99/],
   ['duplicate du\'a', () => patch('quranData.ts', `actionArabicText: 'رَبِّ زِدْنِي عِلْمًا'`, `actionArabicText: 'جَزَاكَ اللَّهُ خَيْرًا'`), /du'a repeats day/],
 ];
