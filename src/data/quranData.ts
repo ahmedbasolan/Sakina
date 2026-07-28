@@ -2283,6 +2283,23 @@ const quranContentData: Content[] = [
     moods: ['Grateful', 'Calm'],
   },
   {
+    id: 'quran_4_103',
+    type: 'Quran',
+    primaryText:
+      "fa-idhā qaḍaytumu l-ṣalata fa-udh'kurū l-laha qiyāman waquʿūdan waʿalā junūbikum fa-idhā iṭ'manantum fa-aqīmū l-ṣalata inna l-ṣalata kānat ʿalā l-mu'minīna kitāban mawqūtan",
+    arabicText:
+      'فَإِذَا قَضَيْتُمُ ٱلصَّلَوٰةَ فَٱذْكُرُوا۟ ٱللَّهَ قِيَـٰمًا وَقُعُودًا وَعَلَىٰ جُنُوبِكُمْ ۚ فَإِذَا ٱطْمَأْنَنتُمْ فَأَقِيمُوا۟ ٱلصَّلَوٰةَ ۚ إِنَّ ٱلصَّلَوٰةَ كَانَتْ عَلَى ٱلْمُؤْمِنِينَ كِتَـٰبًا مَّوْقُوتًا ﴿103﴾',
+    transliteration:
+      "fa-idhā qaḍaytumu l-ṣalata fa-udh'kurū l-laha qiyāman waquʿūdan waʿalā junūbikum fa-idhā iṭ'manantum fa-aqīmū l-ṣalata inna l-ṣalata kānat ʿalā l-mu'minīna kitāban mawqūtan",
+    englishTranslation:
+      'And when you have completed the prayer, remember Allah standing, sitting, or lying on your sides. But when you become secure, re-establish regular prayer. Indeed, prayer has been decreed upon the believers a decree of specified times.',
+    source: 'Surah An-Nisa 4:103',
+    audioKey: '4:103',
+    whyThis:
+      'The command to remember Allah comes the moment the prayer ends, which is why the post-salah dhikr is treated as part of the prayer rather than an optional extra after it.',
+    moods: ['Calm'],
+  },
+  {
     id: 'quran_14_40',
     type: 'Quran',
     primaryText: "rabbi ij'ʿalnī muqīma l-ṣalati wamin dhurriyyatī rabbanā wataqabbal duʿāi",
@@ -11474,71 +11491,295 @@ const quranContentAnglesData: ContentAngle[] = [
     id: 'q_angle_salah_1',
     contentId: 'quran_23_1',
     mood: 'Calm',
-    angle: 'Ibn Rajab: "Khushu is when the heart feels awe before Allah\'s greatness and the limbs submit in stillness" [Jami\' al-Ulum wal-Hikam]',
-    action: 'Pause 30 seconds before your next prayer and ask yourself: "Who am I about to stand before?"',
-    actionHowTo: 'Perform wudu with full attention to each step, acknowledging the spiritual purification.',
-    actionReward: 'Success is guaranteed for those who find Khushu. [Quran 23:1-2]',
-    reflection: 'What distracted you most in today\'s prayers? Identify the top 3 distractions.',
+    angle:
+      "[Tafsir Ibn Rajab on 23:1-2] Ibn Rajab defines khushu as the heart feeling awe before Allah's greatness while the limbs settle into stillness — not a feeling you summon on command, but what remains once the competing noise is gone. When you stand for the next prayer the work is subtraction rather than effort: name what is pulling at your attention before the takbir, instead of wrestling it mid-rak'ah.",
+    action:
+      'Pause 30 seconds before your next prayer and ask yourself: "Who am I about to stand before?"',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'mindset',
+        icon: 'brain',
+        title: 'Name the three thieves',
+        instruction:
+          'Before wudu, write down the three things most likely to pull you out of this prayer. Naming them in advance is what stops them arriving as a surprise halfway through.',
+        source: 'Tafsir Ibn Rajab on 23:1-2',
+      },
+      {
+        type: 'physical',
+        icon: 'sunrise',
+        title: 'Wudu you actually notice',
+        instruction:
+          'Perform wudu slowly enough to feel each limb. Treat it as the beginning of the prayer rather than a chore that precedes it.',
+        source: 'Tafsir Ibn Rajab on 23:1-2',
+      },
+      {
+        type: 'mindset',
+        icon: 'clock',
+        title: 'Thirty seconds before takbir',
+        instruction:
+          'Stand on the mat and do nothing for half a minute. Ask who you are about to address before you say a single word to Him.',
+        source: "Surah Al-Mu'minun 23:1-2",
+      },
+    ]),
+    reflection:
+      "What distracted you most in today's prayers? Name the top three.",
   },
   {
     id: 'q_angle_salah_2',
     contentId: 'quran_7_31',
     mood: 'Calm',
-    angle: 'Prophet ﷺ said: "When any one of you stands to pray, he is conversing with his Lord" [Bukhari 531]',
-    action: 'Choose a clean, quiet spot for next prayer and arrive 2 minutes early.',
-    actionHowTo: 'Use siwak/brush teeth before wudu and wear clean clothes as a sign of respect.',
-    actionReward: 'Taking adornment for prayer is a sign of honoring the meeting with Allah.',
-    reflection: 'You arrived early and clean today. Describe what the first ten seconds of that prayer felt like compared to a rushed one.',
+    angle:
+      '[Tafsir Ibn Kathir on 7:31] The command to take your adornment at every masjid is read by the scholars as covering everything that dignifies standing before Allah, not clothing alone. The Prophet ﷺ said: "Whenever anyone of you offers his prayer he is speaking in private to his Lord" [Sahih al-Bukhari 531] — preparation is simply how you treat a private audience as one.',
+    action:
+      'Choose a clean, quiet spot for your next prayer and arrive two minutes early.',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'physical',
+        icon: 'home',
+        title: 'Clear the ground',
+        instruction:
+          'Pick the spot before the adhan, not after. Move whatever is in view that will ask something of you mid-prayer — the phone especially.',
+        source: 'Tafsir Ibn Kathir on 7:31',
+      },
+      {
+        type: 'physical',
+        icon: 'clock',
+        title: 'Arrive before the iqamah',
+        instruction:
+          'Be standing two minutes early. The prayer starts in the settling, not at the takbir.',
+        source: '"Whenever anyone of you offers his prayer he is speaking in private to his Lord." [Sahih al-Bukhari 531]',
+        sourceType: 'sunnah_action',
+        sourceGrading: 'sahih',
+      },
+      {
+        type: 'mindset',
+        icon: 'person',
+        title: 'Dress for the meeting',
+        instruction:
+          'Use the siwak or brush your teeth, and change if what you are wearing is what you would not meet a guest in.',
+        source: "Surah Al-A'raf 7:31",
+      },
+    ]),
+    reflection:
+      'You arrived early and clean today. Describe what the first ten seconds of that prayer felt like compared to a rushed one.',
   },
   {
     id: 'q_angle_salah_3',
     contentId: 'quran_29_45',
     mood: 'Calm',
-    angle: 'Ibn al-Qayyim: "When you say \'Allahu Akbar,\' you declare that Allah is greater than everything occupying your mind"',
-    action: 'Raise hands for takbir slowly and pause 3 seconds before opening dua.',
-    actionHowTo: 'Mentally "drop" all worldly concerns at the moment of the opening Takbir.',
-    actionReward: 'The remembrance of Allah is the greatest shield. [Quran 29:45]',
-    reflection: 'Did you truly believe Allah was greater than your worries when you said the takbir?',
+    angle:
+      '[Tafsir Ibn al-Qayyim on 29:45] Ibn al-Qayyim reads the opening takbir as a declaration with a cost attached: to say Allahu akbar is to concede that Allah is greater than whatever is currently occupying the mind. When you raise your hands you are not beginning a recitation so much as putting everything else down, and the hands going up is the visible half of that.',
+    action:
+      "Raise your hands for the takbir slowly, and pause three seconds before the opening du'a.",
+    practiceSteps: JSON.stringify([
+      {
+        type: 'physical',
+        icon: 'hands-prayer',
+        title: 'Raise slowly, then wait',
+        instruction:
+          "Lift the hands at a speed you would use to set something down carefully. Hold three seconds of silence before the opening du'a.",
+        source: 'Tafsir Ibn al-Qayyim on 29:45',
+      },
+      {
+        type: 'verbal',
+        icon: 'hands-prayer',
+        title: 'The word itself',
+        instruction:
+          'Say it once, deliberately, and mean the comparison it makes.',
+        arabicText: 'اللَّهُ أَكْبَرُ',
+        transliteration: 'Allahu akbar',
+        translation: 'Allah is greater',
+        source: 'Sunan Abi Dawud 874',
+        sourceType: 'prophetic_dhikr',
+      },
+      {
+        type: 'mindset',
+        icon: 'brain',
+        title: 'Name what you set down',
+        instruction:
+          'In the pause after the takbir, name silently the one worry you are leaving outside the prayer. You can pick it up again afterwards.',
+        source: 'Surah Al-Ankabut 29:45',
+      },
+    ]),
+    reflection:
+      'When you said the takbir, did you believe Allah was greater than the thing you were worrying about?',
   },
   {
     id: 'q_angle_salah_4',
     contentId: 'quran_2_45',
     mood: 'Calm',
-    angle: 'Hadith Qudsi: Allah says "I have divided the prayer between Myself and My servant into two halves... When the servant says \'Alhamdulillahi rabbil aalameen,\' Allah says \'My servant has praised Me\'" [Muslim 395]',
-    action: 'Learn the meaning of each line of Fatihah and pause briefly after each phrase.',
-    actionHowTo: 'Imagine Allah responding to each line you recite in the conversation of Fatihah.',
-    actionReward: 'Prayer is the ultimate source of help for the humbly submissive. [Quran 2:45]',
-    reflection: 'Which phrase of Fatihah resonated most today? Why?',
+    angle:
+      '[Tafsir Ibn Kathir on 2:45] Seeking help through prayer is described as heavy except upon the humble, and the Fatihah is where that weight turns into an exchange rather than a recitation. The Prophet ﷺ said: "I have divided the prayer between Myself and My servant into two halves — when the servant says Alhamdulillahi rabbil aalameen, Allah says: My servant has praised Me" [Sahih Muslim 395a].',
+    action:
+      'Learn the meaning of each line of the Fatihah and pause briefly after each one.',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'mindset',
+        icon: 'book-quran',
+        title: 'Learn one line properly',
+        instruction:
+          'Take a single ayah of the Fatihah and learn what it actually says. One line understood outranks seven recited past.',
+        source: 'Tafsir Ibn Kathir on 2:45',
+      },
+      {
+        type: 'verbal',
+        icon: 'chat',
+        title: 'The line He answers',
+        instruction:
+          'Say it, then wait long enough to remember that the hadith says an answer comes back.',
+        arabicText: 'ٱلْحَمْدُ لِلَّهِ رَبِّ ٱلْعَٰلَمِينَ',
+        transliteration: 'al-ḥamdu lillāhi rabbi l-ʿālamīna',
+        translation: 'All praise is due to Allah, Lord of the worlds',
+        source: 'Surah Al-Fatihah 1:2 — Quran',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'physical',
+        icon: 'clock',
+        title: 'Pause after each ayah',
+        instruction:
+          'Stop briefly at the end of every line of the Fatihah. The pauses are what make it a conversation rather than a paragraph.',
+        source: '"I have divided the prayer between Myself and My servant into two halves." [Sahih Muslim 395a]',
+        sourceType: 'sunnah_action',
+        sourceGrading: 'sahih',
+      },
+    ]),
+    reflection:
+      'Which phrase of the Fatihah landed differently today, now that you know it is answered?',
   },
   {
     id: 'q_angle_salah_5',
     contentId: 'quran_22_77',
     mood: 'Calm',
-    angle: 'Prophet ﷺ said: "The worst thief is one who steals from his prayer by not completing its bowing and prostration" [Ahmad 22136]',
-    action: 'Hold stillness in ruku for at least 3 slow tasbeeh.',
-    actionHowTo: 'Ensure your back is straight in ruku and forehead/nose are firmly on the ground in sujood.',
-    actionReward: 'Bowing and prostrating are acts that draw the believer closest to their Lord.',
-    reflection: 'Did you rush through any positions today? Which one and why?',
+    angle:
+      "[Tafsir al-Sa'di on 22:77] The ayah pairs bowing and prostrating with doing good, as though posture and character are one discipline rather than two. The Prophet ﷺ said: \"Go back and pray, for you have not prayed\" to a man whose bowing and prostration were hurried [Sahih al-Bukhari 793] — the positions are not the gaps between the prayer, they are the prayer.",
+    action:
+      'Hold stillness in ruku for at least three slow tasbeeh.',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'physical',
+        icon: 'person',
+        title: 'Stillness you can count',
+        instruction:
+          'Come to a full stop in ruku and in sujood before saying anything. Three unhurried tasbeeh, back level, forehead and nose settled.',
+        source: '"Go back and pray, for you have not prayed." [Sahih al-Bukhari 793]',
+        sourceType: 'sunnah_action',
+        sourceGrading: 'sahih',
+      },
+      {
+        type: 'verbal',
+        icon: 'hands-prayer',
+        title: 'What the tongue says while the back is level',
+        instruction:
+          'Say it three times without rushing the last one. The word is short; the stillness around it is the point.',
+        arabicText: 'سُبْحَانَ رَبِّيَ الْأَعْلَى',
+        transliteration: "Subhana rabbiya al-a'la",
+        translation: 'Glory to my Lord, the Most High',
+        source: 'Sunan Abi Dawud 874',
+        sourceType: 'prophetic_dhikr',
+      },
+      {
+        type: 'mindset',
+        icon: 'brain',
+        title: 'Which position did you rush',
+        instruction:
+          'After the salam, name the position you moved out of first. That is the one to slow down tomorrow.',
+        source: "Tafsir al-Sa'di on 22:77",
+      },
+    ]),
+    reflection:
+      'Did you rush a position today? Name which one, and what you were hurrying towards.',
   },
   {
     id: 'q_angle_salah_6',
     contentId: 'quran_14_40',
     mood: 'Calm',
-    angle: 'The Prophet ﷺ would make specific dua between positions: "Rabbana wa lakal hamd" and "Rabbighfir li" between sujood [Abu Dawud 874]',
-    action: 'Consciously recite the transition prayers and the dua between the two sujood.',
-    actionHowTo: 'Say "Rabbighfir li" (My Lord, forgive me) twice minimum while sitting between prostrations.',
-    actionReward: 'Steadfastness in prayer is a gift from Allah as seen in the dua of Ibrahim (AS).',
-    reflection: 'Between the two prostrations you ask to be forgiven, healed, guided and provided for. Which did you mean most today?',
+    angle:
+      '[Tafsir Ibn Kathir on 14:40] Ibrahim does not ask for prayer, he asks to be made an establisher of it, and for that to outlive him in his children. The Prophet ﷺ would sit between the two prostrations for about as long as he had prostrated, saying: "Rabbighfir li, Rabbighfir li" [Sunan Abi Dawud 874] — the gaps in the prayer are where the asking actually happens.',
+    action:
+      "Recite the transition words deliberately, and the du'a between the two prostrations.",
+    practiceSteps: JSON.stringify([
+      {
+        type: 'verbal',
+        icon: 'hands-prayer',
+        title: 'The seat between two sujood',
+        instruction:
+          'Sit properly and say it twice, slowly, before going back down. Do not treat the sitting as travel between prostrations.',
+        arabicText: 'رَبِّ اغْفِرْ لِي',
+        transliteration: 'Rabbighfir li',
+        translation: 'My Lord, forgive me',
+        source: 'Sunan Abi Dawud 874',
+        sourceType: 'prophetic_dua',
+      },
+      {
+        type: 'verbal',
+        icon: 'chat',
+        title: "Ibrahim's own words",
+        instruction:
+          "Say this after the prayer, in your own name and your family's. It asks for establishment, not for a single good prayer.",
+        arabicText: 'رَبِّ ٱجْعَلْنِى مُقِيمَ ٱلصَّلَوٰةِ وَمِن ذُرِّيَّتِى ۚ رَبَّنَا وَتَقَبَّلْ دُعَآءِ',
+        transliteration: "rabbi ij'ʿalnī muqīma l-ṣalati wamin dhurriyyatī rabbanā wataqabbal duʿāi",
+        translation: 'My Lord, make me an establisher of prayer, and from my offspring. Our Lord, and accept my prayer',
+        source: 'Surah Ibrahim 14:40 — Quran',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'physical',
+        icon: 'clock',
+        title: 'Do not outrun the imam',
+        instruction:
+          "Move only after he does. Rushing the transitions is how the between-positions du'a gets skipped entirely.",
+        source: 'Sunan Abi Dawud 874',
+        sourceType: 'sunnah_action',
+      },
+    ]),
+    reflection:
+      'Between the two prostrations you ask to be forgiven. Which of the things you have been carrying did you actually put into that gap?',
   },
   {
     id: 'q_angle_salah_7',
-    contentId: 'quran_29_45',
+    contentId: 'quran_4_103',
     mood: 'Calm',
-    angle: 'Prophet ﷺ never left prayer without post-salah dhikr: Istighfar (3x), Ayat al-Kursi, and Tasbih 33-33-34 [Bukhari 844]',
-    action: 'Perform the full post-prayer dhikr routine after your final salam.',
-    actionHowTo: 'Stay seated for 2 minutes in reflection after completing the dhikr.',
-    actionReward: 'Prayer prevents immorality and wrongdoing when sealed with remembrance.',
-    reflection: 'How has your prayer changed over 7 days? What will you maintain?',
+    angle:
+      '[Tafsir Ibn Kathir on 4:103] The command to remember Allah standing, sitting and lying down arrives immediately after completing the prayer, which the scholars read as the prayer not ending at the salam so much as changing shape. The Prophet ﷺ would seek forgiveness three times when he finished, then say: "Allahumma anta as-salam wa minka as-salam" [Sahih Muslim 591].',
+    action:
+      'Stay seated after the salam and complete the post-prayer dhikr before you stand.',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'verbal',
+        icon: 'hands-prayer',
+        title: 'Three istighfar, then peace',
+        instruction:
+          'Say Astaghfirullah three times the moment you finish, then this. It is the first thing he ﷺ said after the salam.',
+        arabicText: 'اللَّهُمَّ أَنْتَ السَّلَامُ وَمِنْكَ السَّلَامُ تَبَارَكْتَ يَا ذَا الْجَلَالِ وَالْإِكْرَامِ',
+        transliteration: 'Allahumma anta as-salam wa minka as-salam, tabarakta ya dhal-jalali wal-ikram',
+        translation: 'O Allah, You are Peace and from You is peace. Blessed are You, Possessor of Majesty and Honour',
+        source: 'Sahih Muslim 591',
+        sourceType: 'prophetic_dua',
+      },
+      {
+        type: 'verbal',
+        icon: 'chat',
+        title: 'Thirty-three, thirty-three, thirty-four',
+        instruction:
+          'Subhanallah and Alhamdulillah thirty-three times each, Allahu akbar thirty-four. Count them rather than estimating.',
+        arabicText: 'سُبْحَانَ اللَّهِ وَالْحَمْدُ لِلَّهِ وَاللَّهُ أَكْبَرُ',
+        transliteration: 'Subhanallah, walhamdu lillah, wallahu akbar',
+        translation: 'Glory be to Allah, all praise is for Allah, and Allah is the greatest',
+        source: 'Sahih al-Bukhari 843',
+        sourceType: 'prophetic_dhikr',
+      },
+      {
+        type: 'mindset',
+        icon: 'star',
+        title: 'What survives day seven',
+        instruction:
+          'Pick the one habit from this week you will still be doing in a month. One kept beats six abandoned.',
+        source: 'Surah An-Nisa 4:103',
+      },
+    ]),
+    reflection:
+      'Seven days in — what has changed in your prayer, and which single habit are you keeping?',
   },
 
   // === TRUSTING THE RESULTS ANGLES ===

@@ -269,7 +269,7 @@ export const STATIC_SPIRITUAL_PATHS: SpiritualPath[] = [
     title: 'Salah Transformation',
     description: 'From robotic to heartfelt prayer—finding Khushu.',
     duration: 7,
-    theme: 'Hopeful',
+    theme: 'Calm',
     target: 'Khushu',
     isPremium: false,
     dailySteps: [
@@ -339,7 +339,7 @@ export const STATIC_SPIRITUAL_PATHS: SpiritualPath[] = [
         day: 7,
         title: 'Complete the Circle',
         focus: 'Post-prayer dhikr integration',
-        contentId: 'quran_29_45',
+        contentId: 'quran_4_103',
         angleId: 'q_angle_salah_7',
         isCompleted: false,
       },
