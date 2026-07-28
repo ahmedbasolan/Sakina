@@ -61,7 +61,13 @@ import type { Content, ContentAngle } from '../types';
 //      the full basmala kept as quran_dua but now citing 1:1, which it is.
 // v16: replaced an unverifiable Tabarani citation in q_angle_8_33_guilty with
 //      Surah Muhammad 47:19, which carries the same instruction verbatim.
-const SEED_VERSION = 16;
+// v17: audit stragglers. q_angle_3_170_grateful's tahmid step was typed
+//      'quran_dua' over a Sunan Ibn Majah 3803 citation (the citation is
+//      right — Ibn Majah 3803 does carry "alhamdulillahi 'ala kulli hal" —
+//      only the type claimed scripture); now prophetic_dhikr. Plus the last
+//      two reflection prompts still on the "How does X change Y" template,
+//      in q_angle_25_70_guilty and q_angle_salah_2.
+const SEED_VERSION = 17;
 // Separate keys per content type — Quran and Hadith data change independently,
 // and each seeder used to write the SAME key at the end of its run. Since
 // initializeDatabase() awaits seedQuranContent() before seedHadithContent(),

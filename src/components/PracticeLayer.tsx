@@ -25,8 +25,12 @@ export interface PracticeStepData {
   arabicText?: string;
   transliteration?: string;
   translation?: string;
-  source: string;
-  sourceType: PracticeSourceType;
+  // Both optional on purpose. A step assembled at runtime from an angle that
+  // carries no attribution of its own must be able to say nothing, rather than
+  // be forced to pick a category. Claiming `sunnah_action` for app-written
+  // wording is the exact failure `composed_dua` exists to prevent.
+  source?: string;
+  sourceType?: PracticeSourceType;
   sourceGrading?: HadithGrading;
   count?: number;
   countSource?: string;
@@ -274,8 +278,11 @@ const PracticeStepCard = ({
                 <DhikrCounter target={item.count} accentColor={accentColor} />
               )}
 
-              {/* Source */}
-              <Text style={styles.stepSource} numberOfLines={1}>{item.source}</Text>
+              {/* Source — omitted entirely when the step has no attribution,
+                  rather than rendering an empty styled line. */}
+              {!!item.source && (
+                <Text style={styles.stepSource} numberOfLines={1}>{item.source}</Text>
+              )}
             </View>
           )}
         </TouchableOpacity>

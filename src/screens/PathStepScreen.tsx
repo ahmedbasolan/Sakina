@@ -225,6 +225,16 @@ export const PathStepScreen: React.FC = () => {
     }
 
     // Fallback: build from existing individual angle fields if practiceSteps not available
+    //
+    // Deliberately makes NO authenticity claim. `angle.action` is app-written
+    // guidance ("Pause 30 seconds before your next prayer and ask yourself…"),
+    // and the seven Salah Transformation angles are the live case — none of
+    // them carries practiceSteps, so every day of that journey came through
+    // here. Hardcoding `sourceType: 'sunnah_action'` badged that instruction as
+    // an act with a hadith or fiqh citation behind it, and falling back to
+    // `content.source` printed a Quran reference underneath it. Both were
+    // untrue. Attribution now appears only when the angle actually supplies
+    // one, and PracticeLayer omits the badge and the source line without it.
     const steps: PracticeStepData[] = [];
     if (angle.action) {
       steps.push({
@@ -235,8 +245,10 @@ export const PathStepScreen: React.FC = () => {
         arabicText: angle.actionArabicText,
         transliteration: angle.actionTransliteration,
         translation: angle.actionTranslation,
-        source: angle.actionSource || guidanceExperience.content.source || 'Sunnah',
-        sourceType: 'sunnah_action',
+        // Source only, never a sourceType: `actionSource` is a free-text label
+        // that may be a hadith, a tafsir, or nothing at all, so it cannot be
+        // used to infer a category. Show the attribution, claim no chain.
+        ...(angle.actionSource ? { source: angle.actionSource } : {}),
       });
     }
 
