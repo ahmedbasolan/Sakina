@@ -172,6 +172,46 @@ Example of the shift:
 
 ---
 
+## Which Angle Fields Actually Render — check before authoring
+
+A `ContentAngle` carries more fields than any screen shows, and the two flows
+show **different** ones. Confirm the field you are about to write is rendered
+by the flow you are writing for.
+
+**Mood flow (`GuidanceScreen`)** — `LAYER_TYPES` is `['verse', 'context']`.
+It renders `content` (VerseLayer) plus, through ContextLayer,
+`content.whyThis`, `angle.angle` and `angle.reflection`. It reads **nothing
+else**. `angle.action`, `actionArabicText`, `actionSource`, `actionHowTo`,
+`actionReward` and `angle.practiceSteps` are never read here —
+`SunnahEnricher.enrich()` populates several of them inside `rotationEngine`
+and the result is thrown away.
+
+**Journey flow (`PathStepScreen`)** — the only screen that mounts
+`PracticeLayer`. Renders `angle.angle`, `angle.reflection` and
+`angle.practiceSteps`, falling back to `angle.action` + `actionHowTo` when an
+angle has no `practiceSteps`.
+
+Measured on the current corpus: **84 of 810 practice steps are reachable.** The
+other 726 sit on mood angles and render nowhere. That does not make them
+optional — they are seeded, synced to Supabase, and are the obvious source for
+a practice layer in the mood flow later, so author them correctly. It does mean
+a "this is what the user sees" claim about a `practiceSteps` edit is usually
+wrong: check first whether the angle is a `dailySteps` entry of a path in
+`AVAILABLE_PATH_IDS`. A session's worth of citation-label corrections was
+written up as fixing what users saw, when 108 of the 113 edited angles rendered
+nowhere at all.
+
+The fallback path is where this bites hardest. It must never assert an
+authenticity category, because `angle.action` is app-written guidance — a
+hardcoded `sourceType` there badges app copy as sourced. It shipped that way:
+all seven `q_angle_salah_*` angles lack `practiceSteps`, so every day of Salah
+Transformation showed a **"Sunnah Action"** badge over an app-written
+instruction, attributed to the verse's own citation. `PracticeStepData.source`
+and `.sourceType` are optional precisely so a runtime-assembled step can claim
+nothing. Keep them that way.
+
+---
+
 ## Journey Sessions — Authoring & Wiring
 
 A Journey (`SpiritualPath`) is a multi-day arc. Each `dailySteps[]` entry is a
