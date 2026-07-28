@@ -250,18 +250,7 @@ export const STATIC_SPIRITUAL_PATHS: SpiritualPath[] = [
     theme: 'Sad',
     target: 'Spiritual Validation',
     isPremium: false,
-    dailySteps: [
-      {
-        id: 'step_depression_iman_1',
-        pathId: 'path_depression_iman',
-        day: 1,
-        title: 'It is Not a Sin to Grieve',
-        focus: 'Validating that Prophets also experienced deep sorrow.',
-        contentId: 'quran_93_4',
-        angleId: 'q_angle_93_4_anxious',
-        isCompleted: false,
-      },
-    ],
+    dailySteps: [],
     tone: 'refuge',
   },
   {
@@ -368,18 +357,7 @@ export const STATIC_SPIRITUAL_PATHS: SpiritualPath[] = [
     theme: 'Sad',
     target: 'Clarity & Peace',
     isPremium: true,
-    dailySteps: [
-      {
-        id: 'step_wrong_marriage_1',
-        pathId: 'path_wrong_marriage',
-        day: 1,
-        title: 'Reality Without Shame',
-        focus: 'Acknowledging your situation before Allah without self-judgment.',
-        contentId: 'quran_2_155',
-        angleId: 'q_angle_2_155_sad',
-        isCompleted: false,
-      },
-    ],
+    dailySteps: [],
     tone: 'refuge',
   },
   {
@@ -390,18 +368,7 @@ export const STATIC_SPIRITUAL_PATHS: SpiritualPath[] = [
     theme: 'Overwhelmed',
     target: 'Strength & Autonomy',
     isPremium: true,
-    dailySteps: [
-      {
-        id: 'step_forced_marriage_1',
-        pathId: 'path_forced_marriage',
-        day: 1,
-        title: 'Forced Marriages are Invalid',
-        focus: 'Establishing your clear Islamic right based on Prophetic guidance.',
-        contentId: 'quran_2_286',
-        angleId: 'q_angle_2_286_anxious',
-        isCompleted: false,
-      },
-    ],
+    dailySteps: [],
     tone: 'momentum',
   },
   {
@@ -564,18 +531,7 @@ export const STATIC_SPIRITUAL_PATHS: SpiritualPath[] = [
     target: 'Ramadan Spiritual Excellence',
     isSpecialEdition: true,
     bundleId: 'bundle_ramadan',
-    dailySteps: [
-      {
-        id: 'step_ramadan_1',
-        pathId: 'path_ramadan_reset',
-        day: 1,
-        title: 'Day 1: Intention',
-        focus: 'Setting sincere intentions for Ramadan',
-        contentId: 'quran_2_286',
-        angleId: 'q_angle_2_286_anxious',
-        isCompleted: false,
-      },
-    ],
+    dailySteps: [],
     tone: 'momentum',
     phases: [
       { label: 'The First Ten — Mercy', startDay: 1, endDay: 10 },

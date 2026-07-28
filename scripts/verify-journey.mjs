@@ -210,6 +210,34 @@ for (const [pathId, anglePrefix, theme, strict] of JOURNEYS) {
   }
 }
 
+// ── Universal borrowed-angle pass — EVERY path, listed or not ─────────────
+//
+// The per-journey checks above only run for paths in JOURNEYS. Four paths that
+// are not in it — depression_iman, wrong_marriage, forced_marriage,
+// ramadan_reset — each had a single stub day pointing at a MOOD angle, which
+// is CLAUDE.md journey rule 1 and the exact bug that shipped on Trusting the
+// Results day 1. They were locked behind AVAILABLE_PATH_IDS, so nothing
+// rendered them, but unlocking one would have shipped it.
+//
+// Any dailyStep anywhere must point at an angle written for a journey.
+const journeyPrefixes = (() => {
+  const repo = fs.readFileSync('src/services/contentRepository.ts', 'utf8');
+  const m = repo.match(/export const JOURNEY_ANGLE_PREFIXES = \[([^\]]*)\]/);
+  if (!m) { console.log('!! could not read JOURNEY_ANGLE_PREFIXES'); fail++; return []; }
+  return [...m[1].matchAll(/'([^']+)'/g)].map((x) => x[1]);
+})();
+
+for (const pm of paths.matchAll(/id:\s*'(path_[a-zA-Z0-9_]+)'/g)) {
+  const path = objectAt(paths, pm[1]);
+  if (!path || !Array.isArray(path.dailySteps)) continue;
+  path.dailySteps.forEach((step, i) => {
+    if (!step.angleId) return;
+    if (journeyPrefixes.some((p) => step.angleId.startsWith(`q_angle_${p}_`))) return;
+    console.log(`  !! ${pm[1]} day ${i + 1}: borrows mood angle ${step.angleId} — journey days need their own angle`);
+    fail++;
+  });
+}
+
 // ── Universal du'a-repeat pass — EVERY journey, not just the JOURNEYS list ──
 //
 // The per-journey check above only looks at `actionArabicText`, and only for
