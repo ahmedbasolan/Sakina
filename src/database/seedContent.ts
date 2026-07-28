@@ -36,7 +36,96 @@ import type { Content, ContentAngle } from '../types';
 // v6: added q_angle_results_day2..day7; replaced hadith_results_5 (was a
 //     duplicate of hadith_results_3) with Bukhari 5641.
 // v7: added q_angle_study_day1..day7.
-const SEED_VERSION = 7;
+// v8: mood-pool rebalance. Tired was serving 15 `_energized` angles (content
+//     telling an exhausted user to spend energy) — those moved to Hopeful and
+//     Tired gained 13 purpose-written rest angles across 6 new verses (20:2,
+//     8:11, 28:24, 50:38, 87:8, 6:60). Lonely 2 -> 10, Guilty 5 -> 12 (6 new
+//     verses), Angry +5 acute-phase angles (4 new verses). Also: 'Sad' added to
+//     quran_3_135 / quran_66_8 so two orphaned Sad angles became selectable,
+//     93 reflection prompts rewritten (first-person -> second-person, and the
+//     "How does X change Y" template broken), and 128 `action` strings given
+//     terminal punctuation. Edits to existing rows only propagate on a bump.
+// v9: Lonely pool 10 -> 22 (9 new verses; 9:40, 2:257 and 11:6 retagged). At 10
+//     a user with three refreshes a day hit a repeat inside 36 hours.
+// v10: Guilty pool 12 -> 25 (11 new verses; 6:54 and 8:33 retagged).
+// v11: Tired pool 13 -> 26 (7 new verses; 28:73, 2:286, 2:45, 94:5 retagged).
+// v12: Angry pool 18 -> 25 (7 new verses). Completes the four thin moods.
+// v13: corrected 36 practice-step `source` labels that presented a dhikr,
+//      a Divine Name or an app-composed supplication as the text of a cited
+//      ayah. Arabic and instructions unchanged — only the attribution.
+// v14: 22 steps re-typed from 'quran_dua' to the new 'composed_dua' — app-written
+//      supplications and Divine-Name vocatives, neither of which appears
+//      verbatim in the cited ayah. They now render a 'Suggested Wording' badge.
+// v15: 8 universal adhkar re-typed off 'quran_dua' — 6 to prophetic_dhikr,
+//      1 to sunnah_action (the salam greeting is an act toward a person), and
+//      the full basmala kept as quran_dua but now citing 1:1, which it is.
+// v16: replaced an unverifiable Tabarani citation in q_angle_8_33_guilty with
+//      Surah Muhammad 47:19, which carries the same instruction verbatim.
+// v17: audit stragglers. q_angle_3_170_grateful's tahmid step was typed
+//      'quran_dua' over a Sunan Ibn Majah 3803 citation (the citation is
+//      right — Ibn Majah 3803 does carry "alhamdulillahi 'ala kulli hal" —
+//      only the type claimed scripture); now prophetic_dhikr. Plus the last
+//      two reflection prompts still on the "How does X change Y" template,
+//      in q_angle_25_70_guilty and q_angle_salah_2.
+// v18: 29 practice steps whose `source` named no reference anyone could look
+//      up — three Tabarani reports, two al-Hakim, two Bayhaqi, five bare
+//      collection names with no number, and labels like "The tahmid —
+//      established dhikr". Each now cites a hadith verified this session
+//      against sunnah.com or the mirror, or (rizq days 2-14) drops its
+//      sourceType, because "Ibn al-Qayyim on Tawakkul" is a scholar's
+//      teaching, not a chain, and should not render a badge that claims one.
+//      Four instructions reworded where they quoted the replaced report;
+//      q_angle_8_2_anxious's du'a swapped for the one Tirmidhi 2140 teaches.
+// v19: the Ibn Hibban and Musnad Ahmad citations. Correcting v18's own note:
+//      sunnah.com DOES host Sahih Ibn Hibban and Musnad Ahmad. Ibn Hibban 974
+//      resolves there with our exact Arabic (now also citing Hisn al-Muslim
+//      139, which carries the same word order); the two Ahmad numbers did not
+//      resolve, so 2803 x3 moved to 40 Hadith an-Nawawi 19, which carries both
+//      clauses verbatim, and 18449 x2 dropped to the angle's own ayah 93:11 —
+//      no hosted hadith matches it, and the verse commands exactly this.
+// v20: reference audit. Ten citations read "Jami at-Tirmidhi" without the
+//      apostrophe in Jami`. The two rizq du'a steps claimed sourceGrading
+//      'hasan' and sourceType 'sunnah_action' — it is a du'a, not an action,
+//      and the grading is unsupported: Tirmidhi 3500, the only hosted route to
+//      this supplication, is graded Da'if, and the Nasa'i al-Kubra route that
+//      carries our exact wording is ungraded. Claim dropped rather than kept.
+// v21: Rizq Revolution shipped the same du'a on day 1 and day 10 — a seventh
+//      of a 14-day arc. Day 10 IS "The Dua for Rizq", so it keeps it; day 1
+//      ("What Is Rizq?", action: list five things money cannot buy) now asks
+//      for al-'afiyah instead — Sunan Ibn Majah 3871 — which is the point that
+//      day is teaching. Its actionSource also dropped a chain-less label
+//      ("Authenticated in collections of morning/evening adhkar").
+// v22: rizq days 4 and 12 both said hasbunallah wa ni'mal wakeel — day 4 in an
+//      altered singular form (hasbiya) labelled "Quran 3:173", which the ayah
+//      does not read. Day 12 keeps the canonical 3:173 + 8:40 join; day 4
+//      ("Tawakkul != Laziness") now asks for beneficial knowledge, clean
+//      provision and an accepted deed — Sunan Ibn Majah 925 — which names
+//      effort before outcome, the point of that day. Also dropped the last
+//      Tabarani quote, in q_angle_25_63_calm's actionReward.
+// v23: six rizq actionSource fields held a title, not a source ("The Increase
+//      Dua"). Mirroring them onto their practiceStep sources exposed three
+//      practiceStep citations that do not match the Arabic above them:
+//      day 2 cited Bukhari 3208 (the hadith of creation in the womb), day 5
+//      cited Tirmidhi 2465 (whose quoted line is real but whose text does not
+//      contain la hawla), day 7 cited Tirmidhi 1212 ("bless my Ummah in what
+//      they do early"). Day 5 -> Sahih al-Bukhari 6384, the treasures-of-
+//      Paradise hadith. Days 2 and 7 are app-composed wordings with no chain
+//      we could find, so they are composed_dua now.
+// v24: four steps cited a real, resolvable hadith that has nothing to do with
+//      the du'a printed above it. q_angle_53_39_anxious put the Istikharah
+//      du'a under Bukhari 1162 (Aisha on the two rak'ahs before Fajr) — the
+//      Istikharah hadith is 1166. q_angle_39_7_grateful cited Abu Dawud 1319,
+//      which does not contain that du'a; it now carries the sujud du'a of
+//      Sahih Muslim 486. q_angle_40_60_stressed's Arabic is Quran 40:60, the
+//      angle's own verse, not Abu Dawud 1488. q_angle_31_12_content cited
+//      Tirmidhi 2305, a different hadith entirely, and is composed_dua now.
+// v25: read all 18 machine-unverifiable citations on sunnah.com. Two wrong.
+//      q_angle_67_13_sad cited Sahih Muslim 2654 (the Adam/Musa debate on
+//      destiny) for the "musarrif al-qulub" du'a, which is 2655. And two steps
+//      typed quran_dua under a non-Quran source line — "Tafsir Ibn Kathir on
+//      4:147" and the singular hasbiya form of 3:173 — carried the "Qur'anic"
+//      badge over Arabic that is not in the ayah; both are composed_dua now.
+const SEED_VERSION = 25;
 // Separate keys per content type — Quran and Hadith data change independently,
 // and each seeder used to write the SAME key at the end of its run. Since
 // initializeDatabase() awaits seedQuranContent() before seedHadithContent(),

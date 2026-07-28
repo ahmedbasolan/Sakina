@@ -601,7 +601,7 @@ export default function LibraryScreen({ navigation }: any) {
               size={52}
               color="rgba(212,175,55,0.25)"
             />
-            <Text style={styles.emptyTitle}>No Saved Verses</Text>
+            <Text style={styles.emptyTitle}>No saved verses yet</Text>
             <Text style={styles.emptySub}>
               Bookmark a verse while reading, or save one{'\n'}from Guidance or a Journey — it lands here
             </Text>
@@ -651,7 +651,7 @@ export default function LibraryScreen({ navigation }: any) {
                   size={52}
                   color="rgba(212,175,55,0.25)"
                 />
-                <Text style={styles.emptyTitle}>No Surahs Found</Text>
+                <Text style={styles.emptyTitle}>No surahs found</Text>
                 <Text style={styles.emptySub}>
                   Nothing matches “{searchQuery.trim()}”.{'\n'}Try a different name or number.
                 </Text>

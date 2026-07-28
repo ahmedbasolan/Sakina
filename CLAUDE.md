@@ -139,6 +139,107 @@ they were the full ayah). Treat these as hard rules, not style preferences:
 
 ---
 
+## Citing Hadith — the same standard as the Quran
+
+The Quran rules above shipped first because verse text is obviously sacred.
+Hadith citations were treated as decoration for far longer, and a single audit
+found ~40 broken ones: fabricated numbers, collections nobody hosts, bare
+titles standing in for a source, and — worst — real hadith numbers whose text
+has nothing to do with the du'a printed above them.
+
+1. **Never write a hadith number from memory.** One was invented outright
+   ("Al-Mu'jam al-Awsat 6026") and shipped. If you cannot fetch it, do not
+   cite it.
+2. **A citation must be locatable: collection + number.** "The Increase Dua",
+   "Authenticated in morning/evening adhkar", "Ibn al-Qayyim on Tawakkul" and
+   a bare "[Tabarani]" are not sources. A named scholar's teaching is not a
+   chain — drop `sourceType` entirely rather than badge it as sourced.
+3. **A bare citation asserts provenance; a quoted one is framing.**
+   `source: 'Sahih Bukhari 1162'` says *this Arabic is that hadith* — and it
+   was not; 1162 is Aisha on the two rak'ahs before Fajr, while Istikharah is
+   1166. But `source: '"Do not be angry." [Bukhari 6116]'` quotes the hadith
+   and pairs it with a separate dhikr, which is fine. Write whichever you mean.
+4. **`sourceType` is a claim, and the badge is what the user reads.**
+   `quran_dua` renders "Qur'anic" — do not put it over a tafsir label, a
+   Divine Name, or an app formulation. `composed_dua` exists precisely so
+   app-written wording can be labelled "Suggested Wording" instead of
+   masquerading as scripture. Never upgrade to a sourced category to make a
+   step look better.
+5. **`actionSource` and `actionReward` drift separately from
+   `practiceSteps`.** Fixing a step's citation does not fix the angle's
+   action fields; two angles kept quoting a replaced hadith there for several
+   commits. Grep both when you change a source.
+6. **Where to verify.**
+   - `https://cdn.jsdelivr.net/gh/fawazahmed0/hadith-api@1/editions/{eng|ara}-{coll}/{n}.json`
+     — reliable for bukhari / tirmidhi / abudawud / ibnmajah / nasai, and it
+     agrees with sunnah.com's numbering for those. It **renumbers Sahih
+     Muslim** — every Muslim lookup there returns an unrelated hadith, which
+     once nearly "corrected" nine accurate citations into broken ones.
+   - sunnah.com for everything else. It refuses a default curl User-Agent with
+     a Cloudflare 403, and refuses Node's `fetch` even *with* a browser
+     User-Agent — the block fingerprints the TLS stack. `curl -sL -A '<browser
+     UA>'` works; `robots.txt` allows all but `/selectiondata/*`.
+   - It hosts more than you would guess: Sahih Ibn Hibban, Musnad Ahmad,
+     al-Adab al-Mufrad, Hisn al-Muslim, Nawawi's Forty, Mishkat, Riyad
+     as-Salihin. Check before declaring something unhostable — that claim was
+     made about Ibn Hibban and was wrong.
+
+`node scripts/verify-citations.mjs` enforces all of this in six passes: the
+Arabic of an asserted-Quran step is in the ayah; every chain-claiming step
+cites something locatable; `actionSource` names a source rather than a title;
+a bare hadith citation's text actually contains the Arabic (mirror); a
+`quran_dua` step under a non-Quran source line still matches its verse; and
+the same text check against sunnah.com for the collections the mirror cannot
+answer. It needs network and `curl`, and treats an unreachable page as
+unreadable rather than as a bad citation.
+
+One citation stays unverifiable by script: `q_angle_rizq_day10`'s Sunan
+an-Nasa'i al-Kubra 9514. sunnah.com indexes al-Kubra by book with no item URN.
+
+---
+
+## Editing `quranData.ts` by script
+
+The file is ~15.6k lines of CRLF TypeScript holding prose in three languages.
+Every one of the following cost a broken build or a silent corruption at least
+once.
+
+- **Write the script to a file and run it.** Do not use `node -e`. Shell
+  quoting mangles Arabic character classes and `\s+` in ways that fail
+  silently — a normaliser was "fixed" three times before anyone noticed the
+  shell was eating it.
+- **Locate edits structurally**, by `(angleId, stepTitle)`, not by matching
+  the source string. Several sources are byte-identical across angles and some
+  are line-wrapped (`source:\n          '…'`), so text matching hits the
+  wrong step or none.
+- **Assert exactly one match per edit, and write nothing if any edit fails.**
+  A partial apply across 40 edits is far worse than an abort.
+- **Preserve CRLF.** Check for `\r\n` before writing and bail if it is gone.
+- **Mind the quoting.** Inserting an apostrophe into a single-quoted literal
+  (`'Jami at-Tirmidhi 2891'` → `'Jami' at-…'`) terminates the string and
+  breaks the build. Re-quote to double instead. Titles come in both quote
+  styles, so a matcher that only tries `'` will miss `"He won't return you
+  empty"`.
+- **Never run `prettier --write` on `quranData.ts`.** It is not currently
+  prettier-clean, so a format run buries your change in thousands of unrelated
+  lines. If a scripted edit emits the wrong quote style, re-quote only the
+  lines the diff added.
+- **Do not "normalise" Arabic.** NFC on this corpus is not the lossless
+  reorder it looks like — a run over 29 strings changed the codepoint count of
+  four, and most of the file's Arabic is the byte-exact Quran.com API output.
+  Leave it alone.
+
+**Verify the checker, not just the code.** Any new check must be shown to fail
+on the pre-fix data before you trust it passing on the fixed data — run it,
+watch it report the known fault, then fix. Two checks written this way turned
+out to be no-ops: one used an Arabic strip class whose first range covers the
+entire alphabet (so every comparison trivially passed, the exact trap warned
+about at the top of `verify-citations.mjs` — and hit again one pass below the
+warning), and one anchored its regex at end-of-string so citations with a
+trailing grading were skipped rather than checked.
+
+---
+
 ## "For Your Heart" — Content Voice
 
 The Context layer's "For Your Heart" card (`ContextLayer.tsx`'s `heartCard`,
@@ -169,6 +270,46 @@ Example of the shift:
 - After (direct-address voice): *"You are not managing this alone. The One
   who holds the heavens is holding your worry too — He calls Himself your
   Protector, not your bystander."*
+
+---
+
+## Which Angle Fields Actually Render — check before authoring
+
+A `ContentAngle` carries more fields than any screen shows, and the two flows
+show **different** ones. Confirm the field you are about to write is rendered
+by the flow you are writing for.
+
+**Mood flow (`GuidanceScreen`)** — `LAYER_TYPES` is `['verse', 'context']`.
+It renders `content` (VerseLayer) plus, through ContextLayer,
+`content.whyThis`, `angle.angle` and `angle.reflection`. It reads **nothing
+else**. `angle.action`, `actionArabicText`, `actionSource`, `actionHowTo`,
+`actionReward` and `angle.practiceSteps` are never read here —
+`SunnahEnricher.enrich()` populates several of them inside `rotationEngine`
+and the result is thrown away.
+
+**Journey flow (`PathStepScreen`)** — the only screen that mounts
+`PracticeLayer`. Renders `angle.angle`, `angle.reflection` and
+`angle.practiceSteps`, falling back to `angle.action` + `actionHowTo` when an
+angle has no `practiceSteps`.
+
+Measured on the current corpus: **84 of 810 practice steps are reachable.** The
+other 726 sit on mood angles and render nowhere. That does not make them
+optional — they are seeded, synced to Supabase, and are the obvious source for
+a practice layer in the mood flow later, so author them correctly. It does mean
+a "this is what the user sees" claim about a `practiceSteps` edit is usually
+wrong: check first whether the angle is a `dailySteps` entry of a path in
+`AVAILABLE_PATH_IDS`. A session's worth of citation-label corrections was
+written up as fixing what users saw, when 108 of the 113 edited angles rendered
+nowhere at all.
+
+The fallback path is where this bites hardest. It must never assert an
+authenticity category, because `angle.action` is app-written guidance — a
+hardcoded `sourceType` there badges app copy as sourced. It shipped that way:
+all seven `q_angle_salah_*` angles lack `practiceSteps`, so every day of Salah
+Transformation showed a **"Sunnah Action"** badge over an app-written
+instruction, attributed to the verse's own citation. `PracticeStepData.source`
+and `.sourceType` are optional precisely so a runtime-assembled step can claim
+nothing. Keep them that way.
 
 ---
 
@@ -262,10 +403,16 @@ otherwise it falls back to a 60% sentence split.
 
 ### 5. Before calling a journey day done
 
-Three scripts, none of which need a device:
+Four scripts, none of which need a device:
 
 - `node scripts/verify-journey.mjs` — static checks (1, 2, 4, 5, 6 below plus
-  the tag/split rules). Add new journeys to its `JOURNEYS` list.
+  the tag/split rules). Add new journeys to its `JOURNEYS` list. Its final
+  du'a-repeat pass is the exception: that one walks **every** path in
+  `staticPaths.ts`, because the per-journey checks only cover the `JOURNEYS`
+  list and Rizq Revolution — which is not in it — shipped the same
+  supplication on day 1 and day 10.
+- `node scripts/verify-citations.mjs` — the six citation passes described under
+  "Citing Hadith" above. Needs network and `curl`.
 - `node scripts/verify-journey-roundtrip.mjs` — seeds every angle into a real
   in-memory SQLite using the actual DDL and seeder column list, reads back via
   `fetchAngleById`'s query, and replays PathStepScreen + ContextLayer on the
