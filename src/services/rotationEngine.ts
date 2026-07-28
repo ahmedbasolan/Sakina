@@ -20,6 +20,7 @@ import { SunnahEnricher } from './sunnahEnricher';
 import { ReflectionRepository, SavedReflection } from './reflectionRepository';
 import PrayerTimesService from './prayerTimesService';
 import { logDatabaseError, logServiceError } from './errorLoggingService';
+import { scoreAngle } from './rotationScoring';
 
 export class RotationEngine {
   private static instance: RotationEngine;
@@ -175,25 +176,10 @@ export class RotationEngine {
     history: Map<string, number>,
     prayerContext: PrayerContext,
   ): ContentAngle {
-    const scored = angles.map((angle) => {
-      let score = (angle as any).relevanceScore ?? 10;
-
-      // Recency penalty — soft rotation
-      const lastShown = history.get(`${angle.contentId}-${angle.id}`);
-      if (lastShown) {
-        const days = (Date.now() - lastShown) / 86_400_000;
-        if (days < 1) score -= 15;
-        else if (days < 3) score -= 10;
-        else if (days < 7) score -= 5;
-      }
-
-      // Prayer-context boost
-      if (angle.content?.prayerContext?.includes(prayerContext)) {
-        score += 50;
-      }
-
-      return { angle, score: Math.max(1, score) };
-    });
+    const scored = angles.map((angle) => ({
+      angle,
+      score: scoreAngle(angle, history, prayerContext),
+    }));
 
     // Session filter — prefer unseen angles; fall back to full set when exhausted.
     const eligible = scored.filter((s) => !this.sessionShownAngles.has(s.angle.id));
