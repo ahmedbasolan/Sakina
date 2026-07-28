@@ -2802,7 +2802,7 @@ const quranContentData: Content[] = [
     primaryText: "wa-aʿtazilukum wamā tadʿūna min dūni l-lahi wa-adʿū rabbī ʿasā allā akūna biduʿāi rabbī shaqiyyan",
     arabicText:
       'وَأَعْتَزِلُكُمْ وَمَا تَدْعُونَ مِن دُونِ ٱللَّهِ وَأَدْعُوا۟ رَبِّى عَسَىٰٓ أَلَّآ أَكُونَ بِدُعَآءِ رَبِّى شَقِيًّا ﴿48﴾',
-    transliteration: "wa-aʿtazilukum wamā tadʿūna min dūni l-lahi wa-adʿū rabbī ʿasā allā akūna biduʿāi rabbī shaqiyyan",
+    transliteration: 'wa-aʿtazilukum wamā tadʿūna min dūni l-lahi wa-adʿū rabbī ʿasā allā akūna biduʿāi rabbī shaqiyyan',
     englishTranslation:
       'And I will leave you and those you invoke besides Allah, and I will invoke my Lord. I expect that I will not be unhappy in invoking my Lord.',
     source: 'Surah Maryam 19:48',
@@ -2949,7 +2949,7 @@ const quranContentData: Content[] = [
     primaryText: "alam yaʿlamū anna l-laha huwa yaqbalu l-tawbata ʿan ʿibādihi wayakhudhu l-ṣadaqāti wa-anna l-laha huwa l-tawābu l-raḥīmu",
     arabicText:
       'أَلَمْ يَعْلَمُوٓا۟ أَنَّ ٱللَّهَ هُوَ يَقْبَلُ ٱلتَّوْبَةَ عَنْ عِبَادِهِۦ وَيَأْخُذُ ٱلصَّدَقَـٰتِ وَأَنَّ ٱللَّهَ هُوَ ٱلتَّوَّابُ ٱلرَّحِيمُ ﴿104﴾',
-    transliteration: "alam yaʿlamū anna l-laha huwa yaqbalu l-tawbata ʿan ʿibādihi wayakhudhu l-ṣadaqāti wa-anna l-laha huwa l-tawābu l-raḥīmu",
+    transliteration: 'alam yaʿlamū anna l-laha huwa yaqbalu l-tawbata ʿan ʿibādihi wayakhudhu l-ṣadaqāti wa-anna l-laha huwa l-tawābu l-raḥīmu',
     englishTranslation:
       'Do they not know that it is Allah who accepts repentance from His servants and receives charities, and that it is Allah who is the Accepting of repentance, the Merciful?',
     source: 'Surah At-Tawbah 9:104',
@@ -3197,7 +3197,7 @@ const quranContentData: Content[] = [
     type: 'Quran',
     primaryText: "wa-alladhīna lā yashhadūna l-zūra wa-idhā marrū bil-laghwi marrū kirāman",
     arabicText: 'وَٱلَّذِينَ لَا يَشْهَدُونَ ٱلزُّورَ وَإِذَا مَرُّوا۟ بِٱللَّغْوِ مَرُّوا۟ كِرَامًا ﴿72﴾',
-    transliteration: "wa-alladhīna lā yashhadūna l-zūra wa-idhā marrū bil-laghwi marrū kirāman",
+    transliteration: 'wa-alladhīna lā yashhadūna l-zūra wa-idhā marrū bil-laghwi marrū kirāman',
     englishTranslation:
       'And those who do not testify to falsehood, and when they pass near ill speech, they pass by with dignity.',
     source: 'Surah Al-Furqan 25:72',
@@ -3758,11 +3758,11 @@ const quranContentAnglesData: ContentAngle[] = [
         icon: 'hands-prayer',
         title: 'Ask Allah to renew your faith',
         instruction: 'Make this dua to renew the faith that has worn out in your heart.',
-        arabicText: 'اللَّهُمَّ جَدِّدِ الْإِيمَانَ فِي قَلْبِي',
-        transliteration: 'Allahumma jaddid al-imana fi qalbi',
-        translation: 'O Allah, renew the faith in my heart',
+        arabicText: 'يَا مُقَلِّبَ الْقُلُوبِ ثَبِّتْ قَلْبِي عَلَى دِينِكَ',
+        transliteration: "Ya Muqallib al-qulub, thabbit qalbi 'ala dinik",
+        translation: 'O Turner of the hearts, make my heart firm upon Your religion',
         source:
-          '"Faith wears out in the heart as a garment wears out, so ask Allah to renew faith in your hearts." [Al-Hakim, Sahih]',
+          "\"The Messenger of Allah would often say: Ya Muqallibal-qulub, thabbit qalbi 'ala dinik.\" [Jami' at-Tirmidhi 2140]",
         sourceType: 'prophetic_dua',
         sourceGrading: 'sahih',
       },
@@ -4288,7 +4288,7 @@ const quranContentAnglesData: ContentAngle[] = [
         title: 'Write your proof',
         instruction:
           "Write down 3 times in your past when something hard ended and ease followed. This is your personal evidence of Allah's promise. Every hardship in your history has expired — this one will too.",
-        source: '"Victory comes with patience, relief comes with affliction." [Musnad Ahmad]',
+        source: '"Victory comes with patience, relief comes with affliction." [Musnad Ahmad 2803]',
         sourceType: 'prophetic_dhikr',
         sourceGrading: 'hasan',
       },
@@ -4424,9 +4424,8 @@ const quranContentAnglesData: ContentAngle[] = [
           "Allahumma inni as'aluka min fadlika wa rahmatika fa innahu la yamlikuha illa ant",
         translation:
           'O Allah, I ask You of Your bounty and mercy, for none possesses them except You',
-        source: 'Tabarani — Hasan',
-        sourceType: 'prophetic_dua',
-        sourceGrading: 'hasan',
+        source: "Making du'a in sujud — Sahih Muslim 482",
+        sourceType: 'composed_dua',
       },
     ]),
     reflection: 'He guarantees a response to whoever calls. What did you stop asking for, and when did you stop?',
@@ -4545,7 +4544,7 @@ const quranContentAnglesData: ContentAngle[] = [
         arabicText: 'أَسْتَغْفِرُ اللَّهَ الْعَظِيمَ وَأَتُوبُ إِلَيْهِ',
         transliteration: "Astaghfirullaha al-'Azeem wa atubu ilayh",
         translation: 'I seek forgiveness from Allah the Almighty and turn to Him in repentance',
-        source: 'Musnad Ahmad — Sahih',
+        source: "\"Were your sins to reach the clouds of the sky, then you sought forgiveness from Me, I would forgive you.\" [Jami' at-Tirmidhi 3540]",
         sourceType: 'prophetic_dua',
         sourceGrading: 'hasan',
         countSource: 'Muslim 2702 / Bukhari 6307',
@@ -4720,7 +4719,7 @@ const quranContentAnglesData: ContentAngle[] = [
         title: 'Name and release',
         instruction:
           'Think of one person who has hurt you. In your heart, say: "Ya Allah, I forgive them for Your sake. Forgive me as I have forgiven them." Then take a deep breath and release the weight. This is for YOUR inner peace.',
-        source: '"Forgive others and Allah will forgive you." [Musnad Ahmad 7001]',
+        source: "\"Be merciful on the earth, and you will be shown mercy from Who is above the heavens.\" [Jami' at-Tirmidhi 1924]",
         sourceType: 'prophetic_dhikr',
         sourceGrading: 'hasan',
       },
@@ -4732,7 +4731,7 @@ const quranContentAnglesData: ContentAngle[] = [
         arabicText: 'اللَّهُمَّ إِنِّي أَسْأَلُكَ رَحْمَتَكَ',
         transliteration: "Allahumma inni as'aluka rahmatak",
         translation: 'O Allah, I ask You for Your mercy',
-        source: '"Be merciful to others and you will receive mercy." [Ahmad 7001]',
+        source: "\"The merciful are shown mercy by Ar-Rahman.\" [Jami' at-Tirmidhi 1924]",
         sourceType: 'prophetic_dhikr',
         sourceGrading: 'hasan',
       },
@@ -4999,9 +4998,9 @@ const quranContentAnglesData: ContentAngle[] = [
         arabicText: 'اللَّهُمَّ اهْدِهِ',
         transliteration: 'Allahumma-hdih',
         translation: 'O Allah, guide them',
-        source: "Based on the Prophet's ﷺ practice of praying for those who harmed him",
+        source: '"O Allah! Forgive my nation, for they have no knowledge." [Sahih al-Bukhari 3477]',
         sourceType: 'sunnah_action',
-        sourceGrading: 'hasan',
+        sourceGrading: 'sahih',
       },
     ]),
     reflection: 'What would change if you saw your "enemy" as a potential friend?',
@@ -6394,7 +6393,7 @@ const quranContentAnglesData: ContentAngle[] = [
         arabicText: 'الْحَمْدُ لِلَّهِ',
         transliteration: 'Alhamdulillah',
         translation: 'All praise is for Allah',
-        source: 'The tahmid — established dhikr',
+        source: "\"The best supplication is Al-hamdu lillah.\" [Jami' at-Tirmidhi 3383]",
         sourceType: 'prophetic_dhikr',
         countSource: 'Muslim 597',
         count: 33,
@@ -6438,8 +6437,8 @@ const quranContentAnglesData: ContentAngle[] = [
         arabicText: 'الْحَمْدُ لِلَّهِ عَلَى كُلِّ حَالٍ',
         transliteration: "Alhamdulillah 'ala kulli hal",
         translation: 'All praise is for Allah in every situation',
-        source: 'Musnad Ahmad — Sahih',
-        sourceType: 'prophetic_dua',
+        source: '"He who does not thank the people is not thankful to Allah." [Sunan Abi Dawud 4811]',
+        sourceType: 'prophetic_dhikr',
         sourceGrading: 'hasan',
       },
     ]),
@@ -6909,7 +6908,7 @@ const quranContentAnglesData: ContentAngle[] = [
         arabicText: 'السَّلَامُ عَلَيْكُمْ وَرَحْمَةُ اللَّهِ',
         transliteration: "As-Salamu 'alaykum wa rahmatullah",
         translation: 'Peace be upon you and the mercy of Allah',
-        source: 'The greeting of salam — sunnah',
+        source: '"Spread the salam among yourselves." [Sahih Muslim 54a]',
         sourceType: 'sunnah_action',
       },
       {
@@ -7072,7 +7071,7 @@ const quranContentAnglesData: ContentAngle[] = [
         title: 'Reach out with peace',
         instruction:
           'Send a message to a righteous friend right now — someone whose presence reminds you of Allah. Share a word of peace or a kind thought. The best companion is the one who is best to their companions.',
-        source: '"The best of companions is the one who is best to his companion." [Tirmidhi]',
+        source: "\"The companion who is the best to Allah is the one who is best to his companion.\" [Jami' at-Tirmidhi 1944]",
         sourceType: 'prophetic_dhikr',
         sourceGrading: 'hasan',
       },
@@ -7175,7 +7174,7 @@ const quranContentAnglesData: ContentAngle[] = [
         title: 'One consistent habit',
         instruction:
           'Pick one small habit and commit to it today: say "SubhanAllah" 10 times after each prayer, or read one verse of Quran daily. The most beloved deeds to Allah are consistent ones, even if small.',
-        source: '"The most beloved deeds are consistent, even if small." [Bukhari]',
+        source: '"The most beloved deed to Allah is the most regular and constant even if it were little." [Sahih al-Bukhari 6464]',
         sourceType: 'prophetic_dhikr',
         sourceGrading: 'sahih',
       },
@@ -7721,10 +7720,10 @@ const quranContentAnglesData: ContentAngle[] = [
         icon: 'calm-face',
         title: 'Rest as worship',
         instruction:
-          'Take a 15-minute break right now. Napping was a sunnah of the Prophet ﷺ (qaylulah). Rest is not laziness — it is preparation for worship and productivity.',
-        source: '"Take a nap, for the shayateen do not nap." [Tabarani, Hasan]',
-        sourceType: 'prophetic_dua',
-        sourceGrading: 'hasan',
+          'Take a 15-minute break right now. The companions took a midday nap after Jumua, and the Prophet ﷺ did not forbid it. Rest is not laziness — it is preparation for worship and productivity.',
+        source: '"We used to have a midday nap and take our meals after the Jumua prayer." [Sahih al-Bukhari 6279]',
+        sourceType: 'sunnah_action',
+        sourceGrading: 'sahih',
       },
     ]),
     reflection: "How does the promise of eternal peace help you manage today's load?",
@@ -7881,7 +7880,7 @@ const quranContentAnglesData: ContentAngle[] = [
           "Allahumma la sahla illa ma ja'altahu sahla, wa anta taj'alul-hazna idha shi'ta sahla",
         translation:
           'O Allah, nothing is easy except what You make easy, and You can make difficulty easy if You wish',
-        source: 'Ibn Hibban — Sahih',
+        source: 'Sahih Ibn Hibban 974',
         sourceType: 'prophetic_dua',
         sourceGrading: 'sahih',
       },
@@ -8556,7 +8555,7 @@ const quranContentAnglesData: ContentAngle[] = [
         arabicText: 'سُبْحَانَ اللَّهِ وَالْحَمْدُ لِلَّهِ وَاللَّهُ أَكْبَرُ',
         transliteration: 'SubhanAllah, Alhamdulillah, Allahu Akbar',
         translation: 'Glory be to Allah, Praise be to Allah, Allah is the Greatest',
-        source: '"When Allah loves a servant, He tests him." [Ahmad]',
+        source: "\"Greater reward comes with greater trial. When Allah loves a people He subjects them to trials.\" [Jami' at-Tirmidhi 2396]",
         sourceType: 'prophetic_dua',
         sourceGrading: 'hasan',
         countSource: 'Muslim 597',
@@ -8894,10 +8893,10 @@ const quranContentAnglesData: ContentAngle[] = [
         icon: 'star',
         title: 'Do it with Itqan',
         instruction:
-          'Pick your current task and do it with extra excellence (itqan). The Prophet ﷺ said Allah LOVES when you do something with excellence. Transform this mundane moment into worship.',
-        source: '"Allah loves when you do something with excellence." [Bayhaqi]',
+          'Pick your current task and do it with extra excellence (itqan). The Prophet ﷺ said Allah has prescribed excellence in all things. Transform this mundane moment into worship.',
+        source: '"Allah has prescribed excellence (ihsan) in all things." [Sahih Muslim 1955a]',
         sourceType: 'sunnah_action',
-        sourceGrading: 'hasan',
+        sourceGrading: 'sahih',
       },
       {
         type: 'verbal',
@@ -8938,9 +8937,9 @@ const quranContentAnglesData: ContentAngle[] = [
         title: '15 minutes of eternal value',
         instruction:
           'Dedicate the next 15 minutes to something with eternal value: read Quran, learn a hadith, give sadaqah, or call someone to advise them to patience. This is how you escape the "loss."',
-        source: '"Take advantage of five before five." [Al-Hakim]',
+        source: '"Two blessings that many people are deceived into losing: health and free time." [Sahih al-Bukhari 6412]',
         sourceType: 'sunnah_action',
-        sourceGrading: 'hasan',
+        sourceGrading: 'sahih',
       },
       {
         type: 'verbal',
@@ -9026,9 +9025,9 @@ const quranContentAnglesData: ContentAngle[] = [
         title: 'Complete with joy',
         instruction:
           'Complete a task you have been putting off — but do it with a spirit of joy, not obligation. Quality over quantity: one deed done with sincerity outweighs many done carelessly.',
-        source: '"Allah loves when you do something with excellence." [Bayhaqi]',
+        source: '"Allah has prescribed excellence (ihsan) in all things." [Sahih Muslim 1955a]',
         sourceType: 'sunnah_action',
-        sourceGrading: 'hasan',
+        sourceGrading: 'sahih',
       },
       {
         type: 'verbal',
@@ -9206,11 +9205,11 @@ const quranContentAnglesData: ContentAngle[] = [
         title: 'Intention of Ihsan',
         instruction:
           'Say "Bismillah" and set the intention of Ihsan. Every moment is an opportunity to demonstrate your best.',
-        arabicText: 'بِسْمِ اللَّهِ',
-        transliteration: 'Bismillah',
-        translation: 'In the name of Allah',
-        source: 'Saying bismillah before an action — sunnah',
-        sourceType: 'prophetic_dhikr',
+        arabicText: 'بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ',
+        transliteration: 'Bismillahi ar-Rahmani ar-Raheem',
+        translation: 'In the name of Allah, the Entirely Merciful, the Especially Merciful',
+        source: 'Surah Al-Fatihah 1:1 — Quran',
+        sourceType: 'quran_dua',
       },
     ]),
     reflection: 'If life is a test of "who is best in deed," how are you performing today?',
@@ -9628,10 +9627,10 @@ const quranContentAnglesData: ContentAngle[] = [
         icon: 'flame',
         title: 'Do it NOW',
         instruction:
-          'Identify one good deed and do it immediately, without delay: give charity, help someone, read Quran, or pray nafl. The Prophet ﷺ said: "Take advantage of five before five."',
-        source: '"Take advantage of five before five." [Al-Hakim]',
+          'Identify one good deed and do it immediately, without delay: give charity, help someone, read Quran, or pray nafl. The Prophet ﷺ warned that health and free time are two blessings many people are deceived into losing.',
+        source: '"Two blessings that many people are deceived into losing: health and free time." [Sahih al-Bukhari 6412]',
         sourceType: 'sunnah_action',
-        sourceGrading: 'hasan',
+        sourceGrading: 'sahih',
       },
       {
         type: 'verbal',
@@ -9671,10 +9670,10 @@ const quranContentAnglesData: ContentAngle[] = [
         icon: 'handshake',
         title: 'Be the most beneficial',
         instruction:
-          'The Prophet ﷺ said the best of people are those most beneficial to people. Find one way to contribute to a positive cause today: volunteer, donate, mentor, or simply help someone.',
-        source: '"The best of people are the most beneficial to people." [Tabarani]',
+          'The Prophet ﷺ said whoever relieves a believer of a hardship, Allah relieves one of his hardships on the Day of Resurrection. Find one way to contribute to a positive cause today: volunteer, donate, mentor, or simply help someone.',
+        source: '"Whoever relieves a believer of a hardship of this world, Allah will relieve one of his hardships on the Day of Resurrection." [Sahih Muslim 2699]',
         sourceType: 'sunnah_action',
-        sourceGrading: 'hasan',
+        sourceGrading: 'sahih',
       },
       {
         type: 'verbal',
@@ -9898,7 +9897,7 @@ const quranContentAnglesData: ContentAngle[] = [
         title: 'Feel the ease arriving',
         instruction:
           'Close your eyes for 30 seconds. With each breath, feel the ease that is already present alongside your hardship. It is not coming later — it is here now, hiding within the difficulty.',
-        source: '"Victory comes with patience, relief with affliction." [Ahmad]',
+        source: '"Victory comes with patience, relief with affliction." [Musnad Ahmad 2803]',
         sourceType: 'prophetic_dhikr',
         sourceGrading: 'hasan',
       },
@@ -10208,9 +10207,9 @@ const quranContentAnglesData: ContentAngle[] = [
         arabicText: 'سَلَامًا',
         transliteration: 'Salama',
         translation: 'Peace',
-        source: '"The most beloved to Allah are those with the best character." [Tabarani]',
+        source: '"The best amongst you are those who have the best manners and character." [Sahih al-Bukhari 3559]',
         sourceType: 'sunnah_action',
-        sourceGrading: 'hasan',
+        sourceGrading: 'sahih',
       },
     ]),
     reflection: 'Walk somewhere today deliberately slowly. What did you notice that you normally walk straight past?',
@@ -10534,7 +10533,7 @@ const quranContentAnglesData: ContentAngle[] = [
           'اللَّهُمَّ اغْفِرْ لِي ذَنْبِي، وَوَسِّعْ لِي فِي دَارِي، وَبَارِكْ لِي فِي رِزْقِي',
         transliteration: "Allahumma ighfir li dhanbi, wa wassi' li fi dari, wa barik li fi rizqi",
         translation: 'O Allah, forgive my sin, expand my dwelling, and bless my provision',
-        source: 'Authenticated in morning/evening adhkar',
+        source: "Sunan an-Nasa'i al-Kubra 9514",
         sourceType: 'sunnah_action',
         sourceGrading: 'hasan',
       },
@@ -10577,7 +10576,6 @@ const quranContentAnglesData: ContentAngle[] = [
         instruction:
           'He provides for the bird in the sky, the fish in the ocean, and the baby in the womb — none of them earned it. When you know your Provider is Ar-Razzaq, you stop depending on creation.',
         source: 'Imam Al-Ghazali on Ar-Razzaq',
-        sourceType: 'sunnah_action',
         sourceGrading: 'hasan',
       },
       {
@@ -10623,7 +10621,6 @@ const quranContentAnglesData: ContentAngle[] = [
         instruction:
           'A single dirham earned halal is better than a mountain of gold earned through doubt. Haram wealth blocks duas, clouds judgment, and removes barakah. A little with barakah beats abundance with anxiety.',
         source: 'Imam Ahmad ibn Hanbal',
-        sourceType: 'prophetic_dhikr',
         sourceGrading: 'hasan',
       },
       {
@@ -10702,7 +10699,6 @@ const quranContentAnglesData: ContentAngle[] = [
         instruction:
           "True tawakkul is the heart's reliance on Allah while the limbs are active. It is not laziness — it is working with excellence while trusting Allah with the outcome.",
         source: 'Ibn al-Qayyim on Tawakkul',
-        sourceType: 'sunnah_action',
         sourceGrading: 'hasan',
       },
     ]),
@@ -10734,7 +10730,6 @@ const quranContentAnglesData: ContentAngle[] = [
         instruction:
           'Complete this sentence: "I\'m anxious about money because I fear..." Write it down. Naming the fear weakens it. Then ask: has Allah ever left you starving?',
         source: 'Ibn al-Qayyim on Scarcity',
-        sourceType: 'sunnah_action',
         sourceGrading: 'hasan',
       },
       {
@@ -10744,7 +10739,6 @@ const quranContentAnglesData: ContentAngle[] = [
         instruction:
           "Those who see rizq as limited hoard and envy. Those who see it as guaranteed by Al-Waasi' give freely and live in peace. Which type are you? The obsessed rarely find contentment.",
         source: 'Shaykh Ibn Uthaymeen',
-        sourceType: 'sunnah_action',
         sourceGrading: 'hasan',
       },
       {
@@ -10797,7 +10791,6 @@ const quranContentAnglesData: ContentAngle[] = [
         instruction:
           'Qana\'ah is freedom from the tyranny of "more." Richness is not many possessions — it is richness of the soul. You don\'t need more. You need to want less.',
         source: "Imam Al-Ghazali on Qana'ah",
-        sourceType: 'sunnah_action',
         sourceGrading: 'hasan',
       },
       {
@@ -10851,7 +10844,6 @@ const quranContentAnglesData: ContentAngle[] = [
         instruction:
           'Barakah means Allah places good, growth, and increase in something even if it appears small. $1,000 with barakah goes further than $10,000 without it. Seek barakah, not just money.',
         source: 'Ibn Taymiyyah on Barakah',
-        sourceType: 'sunnah_action',
         sourceGrading: 'hasan',
       },
       {
@@ -10973,7 +10965,7 @@ const quranContentAnglesData: ContentAngle[] = [
           "Allahumma la sahla illa ma ja'altahu sahla, wa anta taj'alul-hazna in shi'ta sahla",
         translation:
           'O Allah, nothing is easy except what You make easy, and You make the difficult easy if You wish',
-        source: 'Ibn Hibban 974',
+        source: 'Sahih Ibn Hibban 974',
         sourceType: 'sunnah_action',
         sourceGrading: 'hasan',
       },
@@ -11011,7 +11003,7 @@ const quranContentAnglesData: ContentAngle[] = [
           'اللَّهُمَّ اغْفِرْ لِي ذَنْبِي، وَوَسِّعْ لِي فِي دَارِي، وَبَارِكْ لِي فِي رِزْقِي',
         transliteration: "Allahumma ighfir li dhanbi, wa wassi' li fi dari, wa barik li fi rizqi",
         translation: 'O Allah, forgive my sin, expand my dwelling, and bless my provision',
-        source: 'The Master Rizq Dua',
+        source: "Sunan an-Nasa'i al-Kubra 9514",
         sourceType: 'sunnah_action',
         sourceGrading: 'hasan',
       },
@@ -11067,7 +11059,6 @@ const quranContentAnglesData: ContentAngle[] = [
         instruction:
           'Every night before bed, write 3 SPECIFIC things you are grateful for — not generic. "The taxi driver smiled at me," "I had hot tea this morning." Do this for 7 nights and watch your mindset shift.',
         source: 'Ibn al-Qayyim on Shukr',
-        sourceType: 'sunnah_action',
         sourceGrading: 'hasan',
       },
       {
@@ -11077,7 +11068,6 @@ const quranContentAnglesData: ContentAngle[] = [
         instruction:
           'This is not a suggestion — it is a guaranteed contract: show gratitude, get increase. Three levels of Shukr: Heart (recognize the blessing), Tongue (say Alhamdulillah), Limbs (use the blessing to obey Allah). Complete shukr activates the increase.',
         source: 'Shaykh Ibn Uthaymeen',
-        sourceType: 'sunnah_action',
         sourceGrading: 'hasan',
       },
       {
@@ -11131,7 +11121,6 @@ const quranContentAnglesData: ContentAngle[] = [
         instruction:
           'Allah didn\'t say "might bring ease" — He said WILL bring ease. It is guaranteed. Sometimes He delays provision to test trust, purify attachment, increase reward, or prepare you for what is coming. Hardship is temporary. His promise is eternal.',
         source: 'Ibn al-Qayyim on Delayed Provision',
-        sourceType: 'sunnah_action',
         sourceGrading: 'hasan',
       },
       {
@@ -11229,7 +11218,6 @@ const quranContentAnglesData: ContentAngle[] = [
         instruction:
           'Look back at your journey Days 1-13. Create your Rizq Routine: pick 3 daily habits. Morning: "Ya Razzaq" after Fajr. Afternoon: Give $1 sadaqah. Night: Write 3 gratitudes. Commit for 30 days.',
         source: 'Ibn al-Qayyim on Rizq Mindset',
-        sourceType: 'sunnah_action',
         sourceGrading: 'hasan',
       },
       {
@@ -11607,9 +11595,9 @@ const quranContentAnglesData: ContentAngle[] = [
         instruction:
           'When the action is done, say the du\'a of Musa (peace be upon him) before a hard task. You are asking for an expanded chest and an eased affair — not for the outcome to be changed, but for you to be carried through it.',
         arabicText: 'رَبِّ اشْرَحْ لِي صَدْرِي وَيَسِّرْ لِي أَمْرِي',
-        transliteration: "Rabbi ishrah li sadri wa yassir li amri",
+        transliteration: 'Rabbi ishrah li sadri wa yassir li amri',
         translation: 'My Lord, expand for me my breast and ease for me my task',
-        source: "Quran 20:25-26",
+        source: 'Quran 20:25-26',
         sourceType: 'quran_dua',
       },
     ]),
@@ -11715,7 +11703,7 @@ const quranContentAnglesData: ContentAngle[] = [
         instruction:
           'When distress became severe, the Prophet ﷺ would call on Allah by al-Hayy and al-Qayyum — the Ever-Living who never tires, the Sustainer who holds everything upright. You are asking the One who is already holding the outcome.',
         arabicText: 'يَا حَيُّ يَا قَيُّومُ بِرَحْمَتِكَ أَسْتَغِيثُ',
-        transliteration: "Ya Hayyu ya Qayyum, bi rahmatika astaghith",
+        transliteration: 'Ya Hayyu ya Qayyum, bi rahmatika astaghith',
         translation: 'O Ever-Living, O Sustainer, by Your mercy I seek relief',
         source: 'Tirmidhi 3524',
         sourceType: 'prophetic_dua',
@@ -11817,7 +11805,7 @@ const quranContentAnglesData: ContentAngle[] = [
         instruction:
           'The Prophet ﷺ called this phrase a treasure from the treasures of Paradise. Say it each time you reach for the thing you just dropped — it names exactly what waiting teaches: the power was never yours to begin with.',
         arabicText: 'لَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللَّهِ',
-        transliteration: "La hawla wa la quwwata illa billah",
+        transliteration: 'La hawla wa la quwwata illa billah',
         translation: 'There is no might and no power except by Allah',
         source: 'Bukhari 6384',
         sourceType: 'prophetic_dhikr',
@@ -12252,7 +12240,7 @@ const quranContentAnglesData: ContentAngle[] = [
         instruction:
           'This request sits inside the ayah itself, and Ibn Kathir records that it was answered. You are permitted to ask for less. Say it over the left-hand column.',
         arabicText: 'رَبَّنَا وَلَا تُحَمِّلْنَا مَا لَا طَاقَةَ لَنَا بِهِ',
-        transliteration: "Rabbana wa la tuhammilna ma la taqata lana bih",
+        transliteration: 'Rabbana wa la tuhammilna ma la taqata lana bih',
         translation: 'Our Lord, do not burden us with what we have no strength to bear',
         source: 'Quran 2:286',
         sourceType: 'quran_dua',
@@ -12303,7 +12291,7 @@ const quranContentAnglesData: ContentAngle[] = [
         instruction:
           'The Prophet ﷺ said that whoever says this to the one who did him good has fully expressed gratitude. Use these words rather than a vague thanks — they hand the reward to Allah to settle.',
         arabicText: 'جَزَاكَ اللَّهُ خَيْرًا',
-        transliteration: "Jazakallahu khayran",
+        transliteration: 'Jazakallahu khayran',
         translation: 'May Allah reward you with good',
         source: 'Tirmidhi 2035',
         sourceType: 'prophetic_dhikr',
@@ -13879,7 +13867,7 @@ const quranContentAnglesData: ContentAngle[] = [
         instruction:
           'He replaced the company with du\'a — not as a consolation prize but as the thing he expected to be answered. Say his line and then ask for one specific person to be sent into your life.',
         arabicText: 'وَأَدْعُوا۟ رَبِّى عَسَىٰٓ أَلَّآ أَكُونَ بِدُعَآءِ رَبِّى شَقِيًّا',
-        transliteration: "wa-adʿū rabbī ʿasā allā akūna biduʿāi rabbī shaqiyyan",
+        transliteration: 'wa-adʿū rabbī ʿasā allā akūna biduʿāi rabbī shaqiyyan',
         translation: 'And I will invoke my Lord. I expect that I will not be unhappy in invoking my Lord',
         source: 'Surah Maryam 19:48 — Quran',
         sourceType: 'quran_dua',
@@ -14514,7 +14502,7 @@ const quranContentAnglesData: ContentAngle[] = [
         instruction:
           'Say the opening of the ayah aloud and notice the sequence. The severity is real and it is not first, and it is not last either.',
         arabicText: 'غَافِرِ ٱلذَّنۢبِ وَقَابِلِ ٱلتَّوْبِ',
-        transliteration: "ghāfiri l-dhanbi waqābili l-tawbi",
+        transliteration: 'ghāfiri l-dhanbi waqābili l-tawbi',
         translation: 'The Forgiver of sin, the Acceptor of repentance',
         source: 'Surah Ghafir 40:3 — Quran',
         sourceType: 'quran_dua',
@@ -14653,7 +14641,7 @@ const quranContentAnglesData: ContentAngle[] = [
         instruction:
           'Aisha (RA) reported he said this often once the surah came down. Say it now, over the best thing you did this week rather than the worst.',
         arabicText: 'سُبْحَانَكَ اللَّهُمَّ وَبِحَمْدِكَ اللَّهُمَّ اغْفِرْ لِي',
-        transliteration: "Subhanaka Allahumma wa bihamdika, Allahumma ighfir li",
+        transliteration: 'Subhanaka Allahumma wa bihamdika, Allahumma ighfir li',
         translation: 'Glory be to You, O Allah, and praise be to You. O Allah, forgive me',
         source: 'Sahih al-Bukhari 4967',
         sourceType: 'prophetic_dhikr',
@@ -15499,7 +15487,7 @@ const quranContentAnglesData: ContentAngle[] = [
         instruction:
           'Not the softest version — the *better* one. Accurate, unarmed, no line included because it will land. Say it out loud once before you say it to them.',
         arabicText: 'وَقُل لِّعِبَادِى يَقُولُوا۟ ٱلَّتِى هِىَ أَحْسَنُ',
-        transliteration: "waqul liʿibādī yaqūlū allatī hiya aḥsanu",
+        transliteration: 'waqul liʿibādī yaqūlū allatī hiya aḥsanu',
         translation: 'And tell My servants to say that which is best',
         source: 'Surah Al-Isra 17:53 — Quran',
         sourceType: 'quran_dua',
@@ -15510,7 +15498,7 @@ const quranContentAnglesData: ContentAngle[] = [
         title: 'Close the door first',
         instruction:
           'Say the ta\'awwudh before you reply, not after it has gone badly. The ayah identifies the opening; the refuge is how you shut it.',
-        source: "Surah Al-Isra 17:53 — Quran",
+        source: 'Surah Al-Isra 17:53 — Quran',
         sourceType: 'quran_dua',
       },
     ]),

@@ -55,6 +55,7 @@ const KNOWN_ORTHOGRAPHIC = new Set([
   // ٱلرَّحْمَـٰنِ vs الرَّحْمَنِ — the basmala, verbatim 1:1, in standard
   // orthography like the rest of the practiceSteps corpus.
   'q_angle_9_105_energized|Intention of worship',
+  'q_angle_67_2_energized|Intention of Ihsan',
 ]);
 
 const src = fs.readFileSync('src/data/quranData.ts', 'utf8');
@@ -112,5 +113,38 @@ for (const o of objects('q_angle_')) {
 
 console.log(`checked ${checked} asserted-Quran steps; ${bad.length} whose Arabic is NOT in the cited ayah`);
 for (const r of bad) console.log(`  ${r.id}  ·  ${r.title}  ·  ${r.src}`);
-if (bad.length) process.exit(1);
-console.log('All asserted Quran citations check out.');
+
+// ── Pass 2: a step typed as carrying a chain must cite one that can be found ──
+//
+// `prophetic_dua`, `prophetic_dhikr` and `sunnah_action` all tell the reader
+// there is a hadith or a fiqh citation behind the step. A source of
+// "The tahmid — established dhikr", "Imam Al-Ghazali on Ar-Razzaq" or a bare
+// "[Tabarani]" names no such thing, and 36 steps shipped that way. Anything
+// without a chain belongs on `composed_dua`, or should carry no sourceType at
+// all — both render without a badge that claims sourcing.
+//
+// Collection + number is the bar, not "is it on sunnah.com": Musnad Ahmad,
+// Ibn Hibban and al-Adab al-Mufrad are legitimate references whether or not a
+// given site hosts them. What is banned is a citation nobody can look up.
+const CHAINED = new Set(['prophetic_dua', 'prophetic_dhikr', 'sunnah_action']);
+const LOOKUPABLE =
+  /(Bukhari|Muslim|Tirmidhi|Abu\s?Dawud|Abi\s?Dawud|Ibn\s?Majah|Nasa'?i|Ibn\s?Hibban|Adab\s?Al-?Mufrad|Muwatta|Ahmad|Darimi|Bayhaqi|Hakim|Tabarani)[^\d]{0,24}\d+/i;
+
+const unsourced = [];
+for (const o of objects('q_angle_')) {
+  const raw = o.body.match(/practiceSteps:\s*JSON\.stringify\(([\s\S]*?)\n\s*\]\),/);
+  if (!raw) continue;
+  let steps;
+  try { steps = eval(raw[1] + '\n]'); } catch { continue; }
+  for (const st of steps) {
+    if (!CHAINED.has(st.sourceType)) continue;
+    if (LOOKUPABLE.test(st.source || '')) continue;
+    unsourced.push({ id: o.id, title: st.title, type: st.sourceType, src: st.source || '(none)' });
+  }
+}
+
+console.log(`\nchain-claiming steps whose source names no locatable reference: ${unsourced.length}`);
+for (const r of unsourced) console.log(`  ${r.id}  ·  ${r.title}  ·  ${r.type}  ·  "${r.src}"`);
+
+if (bad.length || unsourced.length) process.exit(1);
+console.log('\nAll asserted Quran citations check out, and every chain-claiming step cites a locatable reference.');

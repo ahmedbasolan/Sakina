@@ -67,7 +67,16 @@ import type { Content, ContentAngle } from '../types';
 //      only the type claimed scripture); now prophetic_dhikr. Plus the last
 //      two reflection prompts still on the "How does X change Y" template,
 //      in q_angle_25_70_guilty and q_angle_salah_2.
-const SEED_VERSION = 17;
+// v18: 29 practice steps whose `source` named no reference anyone could look
+//      up — three Tabarani reports, two al-Hakim, two Bayhaqi, five bare
+//      collection names with no number, and labels like "The tahmid —
+//      established dhikr". Each now cites a hadith verified this session
+//      against sunnah.com or the mirror, or (rizq days 2-14) drops its
+//      sourceType, because "Ibn al-Qayyim on Tawakkul" is a scholar's
+//      teaching, not a chain, and should not render a badge that claims one.
+//      Four instructions reworded where they quoted the replaced report;
+//      q_angle_8_2_anxious's du'a swapped for the one Tirmidhi 2140 teaches.
+const SEED_VERSION = 18;
 // Separate keys per content type — Quran and Hadith data change independently,
 // and each seeder used to write the SAME key at the end of its run. Since
 // initializeDatabase() awaits seedQuranContent() before seedHadithContent(),
