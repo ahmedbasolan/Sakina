@@ -77,9 +77,28 @@ const angles = objects('q_angle_').map((o) => ({
   mood: field(o.body, 'mood'),
 }));
 
-// Journey angles are fetched by id (fetchAngleById), never through the mood
-// join, so their mood is validated by verify-journey.mjs instead.
-const isJourney = (id) => /^q_angle_(results|study|rizq|salah)_/.test(id);
+// Journey angles are excluded from the mood pools because fetchForMoodLocal
+// excludes them — read the prefix list out of the repository rather than
+// keeping a copy here.
+//
+// This used to be a hardcoded regex under a comment asserting that journey
+// angles "are fetched by id, never through the mood join". That was never
+// true: the query filters on cm.mood and ca.mood and nothing else, so 28
+// journey angles were live in the mood picker while this script reported pools
+// that excluded them. Parsing the constant means the exclusion can only ever
+// be wrong in the same direction as the code.
+const repo = fs.readFileSync('src/services/contentRepository.ts', 'utf8');
+const prefixDecl = repo.match(/export const JOURNEY_ANGLE_PREFIXES = \[([^\]]*)\]/);
+if (!prefixDecl) {
+  console.error('could not read JOURNEY_ANGLE_PREFIXES from contentRepository.ts');
+  process.exit(1);
+}
+const JOURNEY_PREFIXES = [...prefixDecl[1].matchAll(/'([^']+)'/g)].map((m) => m[1]);
+if (!JOURNEY_PREFIXES.length) {
+  console.error('JOURNEY_ANGLE_PREFIXES parsed empty — refusing to run');
+  process.exit(1);
+}
+const isJourney = (id) => JOURNEY_PREFIXES.some((p) => id.startsWith(`q_angle_${p}_`));
 
 const errors = [];
 const warnings = [];
