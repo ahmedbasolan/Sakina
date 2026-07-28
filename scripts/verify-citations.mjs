@@ -173,5 +173,116 @@ for (const o of objects('q_angle_')) {
 console.log(`\nactionSource fields naming no source: ${actionBad.length}`);
 for (const r of actionBad) console.log(`  ${r.id}  ·  "${r.src}"`);
 
-if (bad.length || unsourced.length || actionBad.length) process.exit(1);
+// ── Pass 4: does the cited hadith actually contain the step's Arabic? ─────
+//
+// Passes 2 and 3 only ask whether a reference is locatable. They do not ask
+// whether that hadith says this, and four steps cited a real, resolvable
+// hadith that had nothing to do with the du'a printed above it — the worst
+// being Istikharah under Bukhari 1162, which is Aisha on the two rak'ahs
+// before Fajr (the Istikharah hadith is 1166).
+//
+// Only BARE citations are checked. When the source quotes the hadith in
+// English — `"Do not be angry." [Bukhari 6116]` — it is framing a practice,
+// and the Arabic below is a separate dhikr the step asks you to say; that
+// pairing is normal and not a claim about where the Arabic came from. A bare
+// `Sahih Bukhari 1162` makes no such distinction, so it has to match.
+//
+// Scored on word overlap, not substring: transmitted wording varies between
+// narrations (idha shi'ta / in shi'ta, word order) and our text is a fragment
+// of a long isnad+matn. Measured on this corpus, genuine matches score
+// 0.50-1.00 and the four real errors scored 0.00-0.25, so 0.4 separates them
+// with no false positives. Re-check that separation if it starts firing.
+//
+// Muslim is skipped: the mirror renumbers it (Muslim 2564 there is not
+// sunnah.com's 2564). Collections the mirror does not carry are skipped too.
+// Both are counted and printed so the blind spot stays visible.
+const MIRRORED = { bukhari: 1, tirmidhi: 1, abudawud: 1, ibnmajah: 1, nasai: 1 };
+function collSlug(s) {
+  const n = s.toLowerCase();
+  if (n.includes('kubra') || n.includes('muslim') && !n.includes('hisn')) return null;
+  if (n.includes('bukhari')) return 'bukhari';
+  if (n.includes('tirmidhi')) return 'tirmidhi';
+  if (n.includes('dawud')) return 'abudawud';
+  if (n.includes('majah')) return 'ibnmajah';
+  if (n.includes('nasa')) return 'nasai';
+  return null;
+}
+// Reuses STRIP — the class self-tested at the top of this file. Do not write a
+// fresh one here: the first attempt used [ؐ-ًؚ-ٰٟۖ-ۭـ], whose leading range
+// U+0610-U+064B covers every Arabic letter, so every word vanished and all 31
+// citations "failed". Same trap the header warns about, one file later.
+const arNorm = (s) => (s || '').normalize('NFC')
+  .replace(/ىٰ/g, 'ا').replace(/ٰ/g, 'ا')
+  .replace(STRIP, '')
+  .replace(/[آأإٱ]/g, 'ا').replace(/ى/g, 'ي').replace(/ة/g, 'ه').replace(/ؤ/g, 'و').replace(/ئ/g, 'ي')
+  .replace(/[^ء-ي\s]/g, ' ').replace(/\s+/g, ' ').trim();
+const arWords = (s) => arNorm(s).split(' ').filter((w) => w.length > 1);
+
+// Guard: a du'a must survive normalisation as recognisable words, and must
+// score 1.00 against a text that contains it verbatim.
+{
+  const dua = 'اللَّهُمَّ إِنِّي أَسْتَخِيرُكَ بِعِلْمِكَ';
+  const w = arWords(dua);
+  if (w.length < 3) {
+    console.error('pass-4 normaliser self-test failed: the strip class is eating letters');
+    process.exit(1);
+  }
+  const hay = new Set(arWords(`قال النبي ${dua} وأستقدرك بقدرتك`));
+  if (w.filter((x) => hay.has(x)).length !== w.length) {
+    console.error('pass-4 normaliser self-test failed: verbatim text did not score 1.00');
+    process.exit(1);
+  }
+}
+
+const hCache = new Map();
+async function hadithText(coll, n) {
+  const k = `${coll}/${n}`;
+  if (!hCache.has(k)) {
+    let t = null;
+    try {
+      const r = await fetch(`https://cdn.jsdelivr.net/gh/fawazahmed0/hadith-api@1/editions/ara-${coll}/${n}.json`);
+      if (r.ok) t = (await r.json()).hadiths?.[0]?.text ?? null;
+    } catch { /* network — reported as unreadable below */ }
+    hCache.set(k, t);
+  }
+  return hCache.get(k);
+}
+
+const mismatch = [];
+let hChecked = 0, hSkipped = 0;
+for (const o of objects('q_angle_')) {
+  const raw = o.body.match(/practiceSteps:\s*JSON\.stringify\(([\s\S]*?)\n\s*\]\),/);
+  if (!raw) continue;
+  let steps;
+  try { steps = eval(raw[1] + '\n]'); } catch { continue; }
+  for (const st of steps) {
+    if (!st.arabicText || !st.source) continue;
+    if (/Quran|Surah|Suggested|Divine Name/i.test(st.source)) continue;
+    if (st.source.includes('"')) continue; // quotes the hadith → framing, not sourcing
+    // Not anchored at end: a trailing grading is common ("Tirmidhi 2305 —
+    // Hasan"), and an end-anchored match silently SKIPS those rather than
+    // failing them — which is how two of the four known-bad citations went
+    // unreported the first time this pass ran.
+    const all = [...st.source.matchAll(/([A-Za-z'`\-. ]+?)\s+(\d+)/g)];
+    const m = all[all.length - 1];
+    if (!m) { hSkipped++; continue; }
+    const coll = collSlug(m[1]);
+    if (!coll || !MIRRORED[coll]) { hSkipped++; continue; }
+    const txt = await hadithText(coll, m[2]);
+    if (!txt) { hSkipped++; continue; }
+    hChecked++;
+    const hw = new Set(arWords(txt));
+    const dw = arWords(st.arabicText);
+    const score = dw.length ? dw.filter((w) => hw.has(w)).length / dw.length : 0;
+    if (score < 0.4) mismatch.push({ id: o.id, title: st.title, src: st.source, score });
+  }
+}
+
+console.log(`\nchecked ${hChecked} bare hadith citations against their text ` +
+            `(${hSkipped} skipped — Sahih Muslim is renumbered on the mirror, ` +
+            `and Ibn Hibban / Nawawi / Hisn al-Muslim / Nasa'i al-Kubra / Ahmad are not carried)`);
+console.log(`steps whose Arabic is NOT in the hadith they cite: ${mismatch.length}`);
+for (const r of mismatch) console.log(`  ${r.id}  ·  ${r.title}  ·  "${r.src}"  ·  overlap ${r.score.toFixed(2)}`);
+
+if (bad.length || unsourced.length || actionBad.length || mismatch.length) process.exit(1);
 console.log('\nAll asserted Quran citations check out, and every chain-claiming step cites a locatable reference.');

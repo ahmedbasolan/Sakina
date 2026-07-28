@@ -111,7 +111,15 @@ import type { Content, ContentAngle } from '../types';
 //      they do early"). Day 5 -> Sahih al-Bukhari 6384, the treasures-of-
 //      Paradise hadith. Days 2 and 7 are app-composed wordings with no chain
 //      we could find, so they are composed_dua now.
-const SEED_VERSION = 23;
+// v24: four steps cited a real, resolvable hadith that has nothing to do with
+//      the du'a printed above it. q_angle_53_39_anxious put the Istikharah
+//      du'a under Bukhari 1162 (Aisha on the two rak'ahs before Fajr) — the
+//      Istikharah hadith is 1166. q_angle_39_7_grateful cited Abu Dawud 1319,
+//      which does not contain that du'a; it now carries the sujud du'a of
+//      Sahih Muslim 486. q_angle_40_60_stressed's Arabic is Quran 40:60, the
+//      angle's own verse, not Abu Dawud 1488. q_angle_31_12_content cited
+//      Tirmidhi 2305, a different hadith entirely, and is composed_dua now.
+const SEED_VERSION = 24;
 // Separate keys per content type — Quran and Hadith data change independently,
 // and each seeder used to write the SAME key at the end of its run. Since
 // initializeDatabase() awaits seedQuranContent() before seedHadithContent(),
