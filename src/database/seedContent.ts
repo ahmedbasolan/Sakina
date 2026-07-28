@@ -59,7 +59,9 @@ import type { Content, ContentAngle } from '../types';
 // v15: 8 universal adhkar re-typed off 'quran_dua' — 6 to prophetic_dhikr,
 //      1 to sunnah_action (the salam greeting is an act toward a person), and
 //      the full basmala kept as quran_dua but now citing 1:1, which it is.
-const SEED_VERSION = 15;
+// v16: replaced an unverifiable Tabarani citation in q_angle_8_33_guilty with
+//      Surah Muhammad 47:19, which carries the same instruction verbatim.
+const SEED_VERSION = 16;
 // Separate keys per content type — Quran and Hadith data change independently,
 // and each seeder used to write the SAME key at the end of its run. Since
 // initializeDatabase() awaits seedQuranContent() before seedHadithContent(),
