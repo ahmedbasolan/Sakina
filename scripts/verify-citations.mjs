@@ -150,5 +150,28 @@ for (const o of objects('q_angle_')) {
 console.log(`\nchain-claiming steps whose source names no locatable reference: ${unsourced.length}`);
 for (const r of unsourced) console.log(`  ${r.id}  ·  ${r.title}  ·  ${r.type}  ·  "${r.src}"`);
 
-if (bad.length || unsourced.length) process.exit(1);
+// ── Pass 3: the angle's own `actionSource` ────────────────────────────────
+//
+// Passes 1 and 2 read practiceSteps only. `actionSource` is a separate field
+// rendered by PathStepScreen's fallback (see the comment there), and it drifts
+// independently: six rizq days carried a TITLE in that slot — "The Increase
+// Dua", "Dua of the Provider" — and two angles kept quoting a hadith in
+// actionReward that their practiceStep had already moved off.
+//
+// Accepted: a locatable collection + number, an ayah reference, a Divine Name,
+// or an explicit "Suggested wording" admission. Rejected: anything that just
+// names the du'a.
+const ACCEPTED = /^(Suggested wording|Divine Name)|Quran|Surah/i;
+const actionBad = [];
+for (const o of objects('q_angle_')) {
+  const m = o.body.match(/\n\s*actionSource:\s*\n?\s*('(?:[^'\\]|\\.)*'|"(?:[^"\\]|\\.)*")/);
+  if (!m) continue;
+  const v = m[1].slice(1, -1);
+  if (LOOKUPABLE.test(v) || ACCEPTED.test(v)) continue;
+  actionBad.push({ id: o.id, src: v });
+}
+console.log(`\nactionSource fields naming no source: ${actionBad.length}`);
+for (const r of actionBad) console.log(`  ${r.id}  ·  "${r.src}"`);
+
+if (bad.length || unsourced.length || actionBad.length) process.exit(1);
 console.log('\nAll asserted Quran citations check out, and every chain-claiming step cites a locatable reference.');

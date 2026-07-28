@@ -102,7 +102,16 @@ import type { Content, ContentAngle } from '../types';
 //      provision and an accepted deed — Sunan Ibn Majah 925 — which names
 //      effort before outcome, the point of that day. Also dropped the last
 //      Tabarani quote, in q_angle_25_63_calm's actionReward.
-const SEED_VERSION = 22;
+// v23: six rizq actionSource fields held a title, not a source ("The Increase
+//      Dua"). Mirroring them onto their practiceStep sources exposed three
+//      practiceStep citations that do not match the Arabic above them:
+//      day 2 cited Bukhari 3208 (the hadith of creation in the womb), day 5
+//      cited Tirmidhi 2465 (whose quoted line is real but whose text does not
+//      contain la hawla), day 7 cited Tirmidhi 1212 ("bless my Ummah in what
+//      they do early"). Day 5 -> Sahih al-Bukhari 6384, the treasures-of-
+//      Paradise hadith. Days 2 and 7 are app-composed wordings with no chain
+//      we could find, so they are composed_dua now.
+const SEED_VERSION = 23;
 // Separate keys per content type — Quran and Hadith data change independently,
 // and each seeder used to write the SAME key at the end of its run. Since
 // initializeDatabase() awaits seedQuranContent() before seedHadithContent(),
