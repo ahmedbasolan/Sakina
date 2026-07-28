@@ -89,7 +89,13 @@ import type { Content, ContentAngle } from '../types';
 //      and the grading is unsupported: Tirmidhi 3500, the only hosted route to
 //      this supplication, is graded Da'if, and the Nasa'i al-Kubra route that
 //      carries our exact wording is ungraded. Claim dropped rather than kept.
-const SEED_VERSION = 20;
+// v21: Rizq Revolution shipped the same du'a on day 1 and day 10 — a seventh
+//      of a 14-day arc. Day 10 IS "The Dua for Rizq", so it keeps it; day 1
+//      ("What Is Rizq?", action: list five things money cannot buy) now asks
+//      for al-'afiyah instead — Sunan Ibn Majah 3871 — which is the point that
+//      day is teaching. Its actionSource also dropped a chain-less label
+//      ("Authenticated in collections of morning/evening adhkar").
+const SEED_VERSION = 21;
 // Separate keys per content type — Quran and Hadith data change independently,
 // and each seeder used to write the SAME key at the end of its run. Since
 // initializeDatabase() awaits seedQuranContent() before seedHadithContent(),

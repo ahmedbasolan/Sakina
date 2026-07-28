@@ -159,5 +159,41 @@ for (const [pathId, anglePrefix, theme] of JOURNEYS) {
   }
 }
 
+// ── Universal du'a-repeat pass — EVERY journey, not just the JOURNEYS list ──
+//
+// The per-journey check above only looks at `actionArabicText`, and only for
+// the journeys listed at the top. Rizq Revolution is in neither category and
+// shipped the same supplication on day 1 and day 10 — a seventh of a 14-day
+// arc, invisible to every check we had. This pass reads staticPaths directly,
+// covers all paths, and looks at practiceSteps Arabic as well as the action
+// field, so the repeat is caught wherever it is written.
+const normAr = (s) =>
+  (s || '').replace(/[ً-ْٰ]/g, '').replace(/[آأإٱ]/g, 'ا')
+    .replace(/[^؀-ۿ]/g, '');
+
+for (const pm of paths.matchAll(/id:\s*'(path_[a-zA-Z0-9_]+)'/g)) {
+  const path = objectAt(paths, pm[1]);
+  if (!path || !Array.isArray(path.dailySteps) || path.dailySteps.length < 2) continue;
+  const seen = new Map();
+  path.dailySteps.forEach((step, i) => {
+    const a = step.angleId && objectAt(quran, step.angleId);
+    if (!a) return;
+    const arabics = new Set();
+    if (a.actionArabicText) arabics.add(normAr(a.actionArabicText));
+    if (a.practiceSteps) {
+      let ps = [];
+      try { ps = JSON.parse(a.practiceSteps); } catch { /* the JSON check above owns this */ }
+      for (const s of ps) if (s.arabicText) arabics.add(normAr(s.arabicText));
+    }
+    for (const ar of arabics) {
+      if (ar.length < 8) continue;
+      if (seen.has(ar)) {
+        console.log(`  !! ${pm[1]} day ${i + 1}: du'a repeats day ${seen.get(ar)} — ${ar.slice(0, 40)}`);
+        fail++;
+      } else seen.set(ar, i + 1);
+    }
+  });
+}
+
 console.log(fail ? `\n*** ${fail} FAILURES` : '\nAll checks passed.');
 process.exit(fail ? 1 : 0);
