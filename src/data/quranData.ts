@@ -10552,7 +10552,7 @@ const quranContentAnglesData: ContentAngle[] = [
     actionArabicText: 'اللَّهُمَّ أَنْتَ الرَّزَّاقُ، ارْزُقْنِي مِنْ فَضْلِكَ',
     actionTransliteration: 'Allahumma anta ar-Razzaq, urzuqni min fadlika',
     actionTranslation: 'O Allah, You are the Provider, provide for me from Your bounty',
-    actionSource: 'Dua of the Provider',
+    actionSource: 'Suggested wording — the theme of Surah Hud 11:6',
     practiceSteps: JSON.stringify([
       {
         type: 'verbal',
@@ -10583,9 +10583,8 @@ const quranContentAnglesData: ContentAngle[] = [
         arabicText: 'اللَّهُمَّ أَنْتَ الرَّزَّاقُ، ارْزُقْنِي مِنْ فَضْلِكَ',
         transliteration: 'Allahumma anta ar-Razzaq, urzuqni min fadlika',
         translation: 'O Allah, You are the Provider, provide for me from Your bounty',
-        source: 'Bukhari 3208',
-        sourceType: 'prophetic_dua',
-        sourceGrading: 'sahih',
+        source: 'Suggested wording — the theme of Surah Hud 11:6',
+        sourceType: 'composed_dua',
       },
     ]),
     reflection:
@@ -10609,7 +10608,7 @@ const quranContentAnglesData: ContentAngle[] = [
       'Allahumma ighfir li ma akhadtu bi ghayri haqq, wa barik li fima razaqtani min halal',
     actionTranslation:
       'O Allah, forgive me for what I have taken unjustly, and bless what You have provided me from halal sustenance',
-    actionSource: 'The Halal Wealth Dua',
+    actionSource: 'Suggested wording — the theme of Surah Al-Baqarah 2:168',
     practiceSteps: JSON.stringify([
       {
         type: 'mindset',
@@ -10718,7 +10717,7 @@ const quranContentAnglesData: ContentAngle[] = [
     actionArabicText: 'لَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللَّهِ',
     actionTransliteration: 'La hawla wa la quwwata illa billah',
     actionTranslation: 'There is no might nor power except with Allah',
-    actionSource: 'The Anxiety-Buster Dua - repeat until the tightness in your chest loosens',
+    actionSource: '"It is one of the treasures of Paradise." [Sahih al-Bukhari 6384]',
     practiceSteps: JSON.stringify([
       {
         type: 'physical',
@@ -10746,8 +10745,8 @@ const quranContentAnglesData: ContentAngle[] = [
         arabicText: 'لَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللَّهِ',
         transliteration: 'La hawla wa la quwwata illa billah',
         translation: 'There is no might nor power except with Allah',
-        source: '"Enrich his heart and bring his affairs together." [Tirmidhi 2465]',
-        sourceType: 'prophetic_dua',
+        source: '"It is one of the treasures of Paradise." [Sahih al-Bukhari 6384]',
+        sourceType: 'prophetic_dhikr',
         sourceGrading: 'hasan',
       },
     ]),
@@ -10822,7 +10821,7 @@ const quranContentAnglesData: ContentAngle[] = [
     actionArabicText: 'اللَّهُمَّ بَارِكْ لَنَا فِيمَا رَزَقْتَنَا',
     actionTransliteration: 'Allahumma barik lana fima razaqtana',
     actionTranslation: 'O Allah, bless us in what You have provided us',
-    actionSource: 'The Barakah Dua - say before eating, working, starting any task',
+    actionSource: "Suggested wording — the theme of Surah Al-A'raf 7:96",
     practiceSteps: JSON.stringify([
       {
         type: 'physical',
@@ -10851,9 +10850,8 @@ const quranContentAnglesData: ContentAngle[] = [
         arabicText: 'اللَّهُمَّ بَارِكْ لَنَا فِيمَا رَزَقْتَنَا',
         transliteration: 'Allahumma barik lana fima razaqtana',
         translation: 'O Allah, bless us in what You have provided us',
-        source: 'Tirmidhi 1212',
-        sourceType: 'prophetic_dua',
-        sourceGrading: 'hasan',
+        source: "Suggested wording — the theme of Surah Al-A'raf 7:96",
+        sourceType: 'composed_dua',
       },
     ]),
     reflection:
@@ -10988,7 +10986,7 @@ const quranContentAnglesData: ContentAngle[] = [
     actionTransliteration: "Allahumma ighfir li dhanbi, wa wassi' li fi dari, wa barik li fi rizqi",
     actionTranslation:
       'O Allah, forgive me my sin, expand for me in my dwelling, and bless me in my provision',
-    actionSource: 'The Master Rizq Dua - morning and evening',
+    actionSource: "Sunan an-Nasa'i al-Kubra 9514",
     practiceSteps: JSON.stringify([
       {
         type: 'verbal',
@@ -11046,7 +11044,7 @@ const quranContentAnglesData: ContentAngle[] = [
     actionArabicText: 'اللَّهُمَّ زِدْنَا وَلَا تَنْقُصْنَا، وَأَعْطِنَا وَلَا تَحْرِمْنَا',
     actionTransliteration: "Allahumma zidna wa la tanqusna, wa a'tina wa la tahrimna",
     actionTranslation: 'O Allah, increase us and do not decrease us, give us and do not deprive us',
-    actionSource: 'The Increase Dua',
+    actionSource: 'Suggested wording — the theme of Surah Ibrahim 14:7',
     practiceSteps: JSON.stringify([
       {
         type: 'physical',
