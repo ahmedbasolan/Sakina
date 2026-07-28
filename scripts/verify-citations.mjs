@@ -21,6 +21,7 @@
  * Run: node scripts/verify-citations.mjs
  */
 import fs from 'fs';
+import { execFileSync } from 'child_process';
 
 const STRIP = /[ً-ٟؐ-ؚۖ-ۭـ]/g;
 const bare = (s) => (s || '')
@@ -257,6 +258,10 @@ for (const o of objects('q_angle_')) {
   try { steps = eval(raw[1] + '\n]'); } catch { continue; }
   for (const st of steps) {
     if (!st.arabicText || !st.source) continue;
+    // composed_dua says outright that the wording has no chain; its source line
+    // is context ("Making du'a in sujud — Sahih Muslim 482"), not a claim that
+    // the Arabic came from there. Only chain-claiming types are checked.
+    if (!CHAINED.has(st.sourceType)) continue;
     if (/Quran|Surah|Suggested|Divine Name/i.test(st.source)) continue;
     if (st.source.includes('"')) continue; // quotes the hadith → framing, not sourcing
     // Not anchored at end: a trailing grading is common ("Tirmidhi 2305 —
@@ -322,5 +327,83 @@ for (const o of objects('q_angle_')) {
 console.log(`\nquran_dua steps whose source does not assert Quran: ${quranish.length} problem(s)`);
 for (const r of quranish) console.log(`  ${r.id}  ·  ${r.title}  ·  "${r.src}"  ·  ${r.why}`);
 
-if (bad.length || unsourced.length || actionBad.length || mismatch.length || quranish.length) process.exit(1);
+// ── Pass 6: the collections the mirror cannot answer, read from sunnah.com ──
+//
+// Pass 4's blind spot was Sahih Muslim — the mirror renumbers it — plus Ibn
+// Hibban, Nawawi's Forty, Hisn al-Muslim and Musnad Ahmad, which it does not
+// carry. That blind spot was not theoretical: q_angle_67_13_sad cited Muslim
+// 2654 (the Adam/Musa debate on destiny) for the "musarrif al-qulub" du'a,
+// which is 2655, and no pass could see it.
+//
+// sunnah.com blocks a default curl User-Agent with a Cloudflare 403, and Node's
+// own fetch is refused even WITH a browser User-Agent (the block fingerprints
+// the TLS stack, not the header). Shelling out to curl with a browser UA works.
+// robots.txt allows everything except /selectiondata/*.
+//
+// Network trouble must not fail the build: an unreadable page is counted and
+// printed, never treated as a bad citation. Only a real low score fails.
+const SUNNAH_UA =
+  'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36';
+function sunnahUrn(name) {
+  const n = name.toLowerCase();
+  if (n.includes('hisn')) return 'hisn';
+  if (n.includes('nawawi')) return 'nawawi40';
+  if (n.includes('hibban')) return 'ibnhibban';
+  if (n.includes('adab')) return 'adab';
+  if (n.includes('kubra')) return null; // al-Kubra is indexed by book, no item URN
+  if (n.includes('ahmad')) return 'ahmad';
+  if (n.includes('muslim')) return 'muslim';
+  return null;
+}
+const sCache = new Map();
+function sunnahArabic(urn, n) {
+  const key = `${urn}:${n}`;
+  if (!sCache.has(key)) {
+    let out = null;
+    try {
+      const html = execFileSync(
+        'curl', ['-sL', '--max-time', '25', '-A', SUNNAH_UA, `https://sunnah.com/${key}`],
+        { maxBuffer: 1 << 26 },
+      ).toString();
+      const parts = [...html.matchAll(/<div class="arabic_hadith_full arabic"[^>]*>([\s\S]*?)<\/div>/g)]
+        .map((m) => m[1].replace(/<[^>]+>/g, ' '));
+      out = parts.join(' ') || null;
+    } catch { /* curl absent or network down */ }
+    sCache.set(key, out);
+  }
+  return sCache.get(key);
+}
+
+const sMismatch = [];
+let sChecked = 0, sUnread = 0, sNoUrn = 0;
+for (const o of objects('q_angle_')) {
+  const raw = o.body.match(/practiceSteps:\s*JSON\.stringify\(([\s\S]*?)\n\s*\]\),/);
+  if (!raw) continue;
+  let steps;
+  try { steps = eval(raw[1] + '\n]'); } catch { continue; }
+  for (const st of steps) {
+    if (!st.arabicText || !st.source) continue;
+    if (!CHAINED.has(st.sourceType)) continue;
+    if (/Quran|Surah|Suggested|Divine Name/i.test(st.source)) continue;
+    if (st.source.includes('"')) continue;
+    const all = [...st.source.matchAll(/([A-Za-z'`\-. ]+?)\s+(\d+)/g)];
+    if (all.some((x) => MIRRORED[collSlug(x[1])])) continue; // pass 4 owns it
+    const hit = all.map((x) => [sunnahUrn(x[1]), x[2]]).find((x) => x[0]);
+    if (!hit) { sNoUrn++; continue; }
+    const txt = sunnahArabic(hit[0], hit[1]);
+    if (!txt) { sUnread++; console.log(`  (unreadable: ${o.id} · ${hit[0]}:${hit[1]})`); continue; }
+    sChecked++;
+    const hw = new Set(arWords(txt));
+    const dw = arWords(st.arabicText);
+    const score = dw.length ? dw.filter((w) => hw.has(w)).length / dw.length : 0;
+    if (score < 0.4) sMismatch.push({ id: o.id, title: st.title, ref: `${hit[0]}:${hit[1]}`, score });
+  }
+}
+console.log(`\nchecked ${sChecked} citations against sunnah.com directly ` +
+            `(${sUnread} unreadable, ${sNoUrn} with no item URN — Nasa'i al-Kubra is book-indexed)`);
+console.log(`steps whose Arabic is NOT in the hadith they cite: ${sMismatch.length}`);
+for (const r of sMismatch) console.log(`  ${r.id}  ·  ${r.title}  ·  ${r.ref}  ·  overlap ${r.score.toFixed(2)}`);
+
+if (bad.length || unsourced.length || actionBad.length || mismatch.length ||
+    quranish.length || sMismatch.length) process.exit(1);
 console.log('\nAll asserted Quran citations check out, and every chain-claiming step cites a locatable reference.');
