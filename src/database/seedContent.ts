@@ -95,7 +95,14 @@ import type { Content, ContentAngle } from '../types';
 //      for al-'afiyah instead — Sunan Ibn Majah 3871 — which is the point that
 //      day is teaching. Its actionSource also dropped a chain-less label
 //      ("Authenticated in collections of morning/evening adhkar").
-const SEED_VERSION = 21;
+// v22: rizq days 4 and 12 both said hasbunallah wa ni'mal wakeel — day 4 in an
+//      altered singular form (hasbiya) labelled "Quran 3:173", which the ayah
+//      does not read. Day 12 keeps the canonical 3:173 + 8:40 join; day 4
+//      ("Tawakkul != Laziness") now asks for beneficial knowledge, clean
+//      provision and an accepted deed — Sunan Ibn Majah 925 — which names
+//      effort before outcome, the point of that day. Also dropped the last
+//      Tabarani quote, in q_angle_25_63_calm's actionReward.
+const SEED_VERSION = 22;
 // Separate keys per content type — Quran and Hadith data change independently,
 // and each seeder used to write the SAME key at the end of its run. Since
 // initializeDatabase() awaits seedQuranContent() before seedHadithContent(),

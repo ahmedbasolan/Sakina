@@ -10177,7 +10177,7 @@ const quranContentAnglesData: ContentAngle[] = [
     action: 'When provoked today, pause and respond with "Salama" (peace) or silence.',
     actionHowTo: 'Take a deep breath and say "Salam" internally before reacting.',
     actionReward:
-      'The Prophet ﷺ said: "The most beloved of people to Allah are those with the best character." [At-Tabarani]',
+      'The Prophet ﷺ said: "The best amongst you are those who have the best manners and character." [Sahih al-Bukhari 3559]',
     practiceSteps: JSON.stringify([
       {
         type: 'physical',
@@ -10657,13 +10657,14 @@ const quranContentAnglesData: ContentAngle[] = [
     action:
       "Tie Your Camel: Identify one action you've been avoiding—update resume, learn a new skill, network, apply for that opportunity, start that halal project. Do it today.",
     actionHowTo:
-      'After taking action, repeat "Hasbiyallahu wa ni\'mal wakeel" (Allah is sufficient for me) 7 times. Trust Allah with results.',
+      'Once the action is done, ask for it to be accepted rather than for it to work: knowledge that is useful, provision that is clean, a deed that is received.',
     actionReward:
-      'Prophet ﷺ said: "Allah loves that when any of you does something, he does it with excellence (itqan)." [Bayhaqi]',
-    actionArabicText: 'حَسْبِيَ اللَّهُ وَنِعْمَ الْوَكِيلُ',
-    actionTransliteration: "Hasbiyallahu wa ni'mal wakeel",
-    actionTranslation: 'Allah is sufficient for me and He is the best Disposer of affairs',
-    actionSource: 'Quran 3:173 - Dua of the Prophets',
+      'Prophet ﷺ said: "Allah has prescribed excellence (ihsan) in all things." [Sahih Muslim 1955a]',
+    actionArabicText: 'اللَّهُمَّ إِنِّي أَسْأَلُكَ عِلْمًا نَافِعًا، وَرِزْقًا طَيِّبًا، وَعَمَلًا مُتَقَبَّلًا',
+    actionTransliteration:
+      "Allahumma inni as'aluka 'ilman nafi'an, wa rizqan tayyiban, wa 'amalan mutaqabbalan",
+    actionTranslation: 'O Allah, I ask You for beneficial knowledge, goodly provision, and accepted deeds',
+    actionSource: 'Sunan Ibn Majah 925',
     practiceSteps: JSON.stringify([
       {
         type: 'physical',
@@ -10678,16 +10679,15 @@ const quranContentAnglesData: ContentAngle[] = [
       {
         type: 'verbal',
         icon: 'hands-prayer',
-        title: 'Trust with results',
+        title: 'Ask for the work, not only the result',
         instruction:
-          'After taking action, say "Hasbiyallahu wa ni\'mal wakeel" 7 times. Your job is effort. His job is results.',
-        arabicText: 'حَسْبِيَ اللَّهُ وَنِعْمَ الْوَكِيلُ',
-        transliteration: "Hasbiyallahu wa ni'mal wakeel",
-        translation: 'Allah is sufficient for me and He is the best Disposer of affairs',
-        source: 'Dhikr, in the singular form; the ayah reads hasbunā — Surah Ali Imran 3:173',
-        sourceType: 'quran_dua',
-        countSource: 'Abu Dawud 5081',
-        count: 7,
+          'Umm Salamah reports the Prophet ﷺ said this after the salam of Fajr. It asks for three things in order: knowledge that is useful, provision that is clean, and a deed that is accepted — effort named before outcome, which is the whole point of today.',
+        arabicText: 'اللَّهُمَّ إِنِّي أَسْأَلُكَ عِلْمًا نَافِعًا، وَرِزْقًا طَيِّبًا، وَعَمَلًا مُتَقَبَّلًا',
+        transliteration: "Allahumma inni as'aluka 'ilman nafi'an, wa rizqan tayyiban, wa 'amalan mutaqabbalan",
+        translation:
+          'O Allah, I ask You for beneficial knowledge, goodly provision, and accepted deeds',
+        source: 'Sunan Ibn Majah 925',
+        sourceType: 'prophetic_dua',
       },
       {
         type: 'mindset',
