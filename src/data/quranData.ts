@@ -3727,7 +3727,8 @@ const quranContentAnglesData: ContentAngle[] = [
         title: 'Know Allah in ease',
         instruction:
           'Perform one act of worship right now — even a short prayer or charity — so that you "know Allah in prosperity and He will know you in adversity."',
-        source: '"Know Allah in prosperity and He will know you in adversity." [Musnad Ahmad 2803]',
+        source:
+          '"Recognize and acknowledge Allah in times of ease and prosperity, and He will remember you in times of adversity." [40 Hadith an-Nawawi 19]',
         sourceType: 'sunnah_action',
         sourceGrading: 'hasan',
       },
@@ -4288,7 +4289,8 @@ const quranContentAnglesData: ContentAngle[] = [
         title: 'Write your proof',
         instruction:
           "Write down 3 times in your past when something hard ended and ease followed. This is your personal evidence of Allah's promise. Every hardship in your history has expired — this one will too.",
-        source: '"Victory comes with patience, relief comes with affliction." [Musnad Ahmad 2803]',
+        source:
+          '"Victory comes with patience, relief with affliction, and hardship with ease." [40 Hadith an-Nawawi 19]',
         sourceType: 'prophetic_dhikr',
         sourceGrading: 'hasan',
       },
@@ -6458,10 +6460,8 @@ const quranContentAnglesData: ContentAngle[] = [
         icon: 'chat',
         title: 'Share a blessing',
         instruction:
-          'Send a message to someone right now sharing one good thing Allah has given you. Speaking of blessings is gratitude; silence about them is ingratitude. Sharing joy amplifies it.',
-        source: '"To speak of the blessings of Allah is gratitude." [Ahmad 18449]',
-        sourceType: 'prophetic_dhikr',
-        sourceGrading: 'hasan',
+          'Send a message to someone right now sharing one good thing Allah has given you. The ayah does not ask you to feel grateful quietly — it tells you to proclaim the favor out loud. Sharing joy amplifies it.',
+        source: 'Surah Ad-Duha 93:11 — Quran',
       },
       {
         type: 'mindset',
@@ -7209,10 +7209,8 @@ const quranContentAnglesData: ContentAngle[] = [
         icon: 'chat',
         title: 'Share your story',
         instruction:
-          'Share a story of how Allah helped you with a friend or family member today. Speaking of blessings IS gratitude. Silence about them is ingratitude.',
-        source: '"To speak of blessings is gratitude, to leave it is ingratitude." [Ahmad 18449]',
-        sourceType: 'prophetic_dhikr',
-        sourceGrading: 'hasan',
+          'Share a story of how Allah helped you with a friend or family member today. "But as for the favor of your Lord, proclaim it" is an instruction, not a suggestion.',
+        source: 'Surah Ad-Duha 93:11 — Quran',
       },
       {
         type: 'mindset',
@@ -7880,7 +7878,7 @@ const quranContentAnglesData: ContentAngle[] = [
           "Allahumma la sahla illa ma ja'altahu sahla, wa anta taj'alul-hazna idha shi'ta sahla",
         translation:
           'O Allah, nothing is easy except what You make easy, and You can make difficulty easy if You wish',
-        source: 'Sahih Ibn Hibban 974',
+        source: 'Sahih Ibn Hibban 974 (Hisn al-Muslim 139)',
         sourceType: 'prophetic_dua',
         sourceGrading: 'sahih',
       },
@@ -9897,7 +9895,8 @@ const quranContentAnglesData: ContentAngle[] = [
         title: 'Feel the ease arriving',
         instruction:
           'Close your eyes for 30 seconds. With each breath, feel the ease that is already present alongside your hardship. It is not coming later — it is here now, hiding within the difficulty.',
-        source: '"Victory comes with patience, relief with affliction." [Musnad Ahmad 2803]',
+        source:
+          '"Victory comes with patience, relief with affliction, and hardship with ease." [40 Hadith an-Nawawi 19]',
         sourceType: 'prophetic_dhikr',
         sourceGrading: 'hasan',
       },
@@ -10929,7 +10928,7 @@ const quranContentAnglesData: ContentAngle[] = [
     actionReward:
       "Allah divided the work: He provides, you seek. Don't do His job, and don't skip yours.",
     actionArabicText:
-      'اللَّهُمَّ لَا سَهْلَ إِلَّا مَا جَعَلْتَهُ سَهْلًا، وَأَنْتَ تَجْعَلُ الْحَزْنَ إِنْ شِئْتَ سَهْلًا',
+      'اللَّهُمَّ لَا سَهْلَ إِلَّا مَا جَعَلْتَهُ سَهْلًا، وَأَنْتَ تَجْعَلُ الْحَزْنَ إِذَا شِئْتَ سَهْلًا',
     actionTransliteration:
       "Allahumma la sahla illa ma ja'altahu sahla, wa anta taj'alul-hazna in shi'ta sahla",
     actionTranslation:
@@ -10960,12 +10959,12 @@ const quranContentAnglesData: ContentAngle[] = [
         title: 'The Action Dua',
         instruction: 'Ask Allah to make the difficult easy.',
         arabicText:
-          'اللَّهُمَّ لَا سَهْلَ إِلَّا مَا جَعَلْتَهُ سَهْلًا، وَأَنْتَ تَجْعَلُ الْحَزْنَ إِنْ شِئْتَ سَهْلًا',
+          'اللَّهُمَّ لَا سَهْلَ إِلَّا مَا جَعَلْتَهُ سَهْلًا، وَأَنْتَ تَجْعَلُ الْحَزْنَ إِذَا شِئْتَ سَهْلًا',
         transliteration:
           "Allahumma la sahla illa ma ja'altahu sahla, wa anta taj'alul-hazna in shi'ta sahla",
         translation:
           'O Allah, nothing is easy except what You make easy, and You make the difficult easy if You wish',
-        source: 'Sahih Ibn Hibban 974',
+        source: 'Sahih Ibn Hibban 974 (Hisn al-Muslim 139)',
         sourceType: 'sunnah_action',
         sourceGrading: 'hasan',
       },
@@ -12122,7 +12121,7 @@ const quranContentAnglesData: ContentAngle[] = [
           "Allahumma la sahla illa ma ja'altahu sahla, wa anta taj'alu l-hazna idha shi'ta sahla",
         translation:
           'O Allah, nothing is easy except what You make easy, and You make the difficult easy if You wish',
-        source: 'Sahih Ibn Hibban 974',
+        source: 'Sahih Ibn Hibban 974 (Hisn al-Muslim 139)',
         sourceType: 'prophetic_dua',
         sourceGrading: 'sahih',
       },
@@ -12502,7 +12501,7 @@ const quranContentAnglesData: ContentAngle[] = [
         arabicText: 'اللَّهُمَّ لَا سَهْلَ إِلَّا مَا جَعَلْتَهُ سَهْلًا',
         transliteration: 'Allahumma la sahla illa ma ja\'altahu sahlan',
         translation: 'O Allah, there is no ease except what You make easy',
-        source: 'Sahih Ibn Hibban 974',
+        source: 'Sahih Ibn Hibban 974 (Hisn al-Muslim 139)',
         sourceType: 'prophetic_dua',
         sourceGrading: 'hasan',
       },

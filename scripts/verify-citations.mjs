@@ -126,9 +126,13 @@ for (const r of bad) console.log(`  ${r.id}  ·  ${r.title}  ·  ${r.src}`);
 // Collection + number is the bar, not "is it on sunnah.com": Musnad Ahmad,
 // Ibn Hibban and al-Adab al-Mufrad are legitimate references whether or not a
 // given site hosts them. What is banned is a citation nobody can look up.
+//
+// (For the record, since it was mis-stated once: sunnah.com does host Sahih
+// Ibn Hibban and Musnad Ahmad. Ibn Hibban 974 resolves there; the two Ahmad
+// numbers we had did not, which is why they moved to Nawawi 19.)
 const CHAINED = new Set(['prophetic_dua', 'prophetic_dhikr', 'sunnah_action']);
 const LOOKUPABLE =
-  /(Bukhari|Muslim|Tirmidhi|Abu\s?Dawud|Abi\s?Dawud|Ibn\s?Majah|Nasa'?i|Ibn\s?Hibban|Adab\s?Al-?Mufrad|Muwatta|Ahmad|Darimi|Bayhaqi|Hakim|Tabarani)[^\d]{0,24}\d+/i;
+  /(Bukhari|Muslim|Tirmidhi|Abu\s?Dawud|Abi\s?Dawud|Ibn\s?Majah|Nasa'?i|Ibn\s?Hibban|Adab\s?Al-?Mufrad|Muwatta|Ahmad|Darimi|Bayhaqi|Hakim|Tabarani|an-?Nawawi|Hisn\s?al-?Muslim)[^\d]{0,24}\d+/i;
 
 const unsourced = [];
 for (const o of objects('q_angle_')) {

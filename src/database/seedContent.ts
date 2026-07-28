@@ -76,7 +76,14 @@ import type { Content, ContentAngle } from '../types';
 //      teaching, not a chain, and should not render a badge that claims one.
 //      Four instructions reworded where they quoted the replaced report;
 //      q_angle_8_2_anxious's du'a swapped for the one Tirmidhi 2140 teaches.
-const SEED_VERSION = 18;
+// v19: the Ibn Hibban and Musnad Ahmad citations. Correcting v18's own note:
+//      sunnah.com DOES host Sahih Ibn Hibban and Musnad Ahmad. Ibn Hibban 974
+//      resolves there with our exact Arabic (now also citing Hisn al-Muslim
+//      139, which carries the same word order); the two Ahmad numbers did not
+//      resolve, so 2803 x3 moved to 40 Hadith an-Nawawi 19, which carries both
+//      clauses verbatim, and 18449 x2 dropped to the angle's own ayah 93:11 —
+//      no hosted hadith matches it, and the verse commands exactly this.
+const SEED_VERSION = 19;
 // Separate keys per content type — Quran and Hadith data change independently,
 // and each seeder used to write the SAME key at the end of its run. Since
 // initializeDatabase() awaits seedQuranContent() before seedHadithContent(),
