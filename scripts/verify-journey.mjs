@@ -18,9 +18,20 @@ const quran = fs.readFileSync('src/data/quranData.ts', 'utf8');
 const hadith = fs.readFileSync('src/data/hadithData.ts', 'utf8');
 
 // [path id, required angle-id prefix, required angle mood (= the path theme)]
+// [pathId, anglePrefix, theme, strict]
+//
+// `strict: false` runs every check and prints every finding, but reports them
+// as notes rather than failures. Rizq and Salah predate these rules and have 44
+// findings between them; listing them strictly would leave the run permanently
+// red, and — worse — permanently disable verify-journey-selftest, which refuses
+// to run when the baseline already fails ("negative tests are meaningless").
+// Keeping the baseline green is what makes the 12 injected-fault tests mean
+// anything. Flip a journey to strict once its findings are cleared.
 const JOURNEYS = [
-  ['path_trusting_the_results', 'q_angle_results_', 'Overwhelmed'],
-  ['path_study_journaling', 'q_angle_study_', 'Hopeful'],
+  ['path_trusting_the_results', 'q_angle_results_', 'Overwhelmed', true],
+  ['path_study_journaling', 'q_angle_study_', 'Hopeful', true],
+  ['path_rizq_revolution', 'q_angle_rizq_', 'Overwhelmed', false],
+  ['path_salah_transformation', 'q_angle_salah_', 'Hopeful', false],
 ];
 
 const contentIds = new Set([...quran.matchAll(/id: '(quran_[a-z0-9_]+)'/g)].map((m) => m[1]));
@@ -85,13 +96,19 @@ function objectAt(src, id) {
   return null;
 }
 
-let fail = 0;
+let fail = 0, reported = 0;
 
-for (const [pathId, anglePrefix, theme] of JOURNEYS) {
+for (const [pathId, anglePrefix, theme, strict] of JOURNEYS) {
   const path = objectAt(paths, pathId);
   if (!path) { console.log(`!! path not found: ${pathId}`); fail++; continue; }
 
-  const err = (d, m) => { console.log(`  !! day ${d}: ${m}`); fail++; };
+  // In a non-strict journey the same checks run and print, but count toward
+  // `reported` instead of `fail` — visible without gating the build.
+  const err = strict
+    ? (d, m) => { console.log(`  !! day ${d}: ${m}`); fail++; }
+    : (d, m) => { console.log(`  ?? day ${d}: ${m}`); reported++; };
+  // Observations that are legal but worth seeing. They do not fail the run.
+  const note = (d, m) => { console.log(`  ·  day ${d}: ${m}`); };
   const seenVerse = new Map(), seenDua = new Map(), seenHadith = new Map();
 
   console.log(`=== ${path.title} — ${path.dailySteps.length}/${path.duration} days · theme ${path.theme} ===\n`);
@@ -104,7 +121,15 @@ for (const [pathId, anglePrefix, theme] of JOURNEYS) {
   for (const step of path.dailySteps) {
     const day = step.day;
     if (!contentIds.has(step.contentId)) err(day, `missing content ${step.contentId}`);
-    if (!hadIds.has(step.hadithContentId)) err(day, `missing hadith ${step.hadithContentId}`);
+    // hadithContentId is optional (CLAUDE.md: "optional `hadithContentId`").
+    // Only a hadith that is named but does not exist is a fault; a day with no
+    // hadith simply renders one layer fewer. Reporting absence as "missing
+    // hadith undefined" produced 13 false failures on Rizq and Salah.
+    if (step.hadithContentId && !hadIds.has(step.hadithContentId)) {
+      err(day, `missing hadith ${step.hadithContentId}`);
+    } else if (!step.hadithContentId) {
+      note(day, 'no hadith on this day (renders one layer fewer)');
+    }
     if (!angleIds.has(step.angleId)) err(day, `missing angle ${step.angleId}`);
     if (!step.angleId.startsWith(anglePrefix)) {
       err(day, `borrowed mood angle: ${step.angleId} (expected ${anglePrefix}*)`);
@@ -126,11 +151,22 @@ for (const [pathId, anglePrefix, theme] of JOURNEYS) {
     if (a.mood !== theme) err(day, `angle mood ${a.mood} != path theme ${theme}`);
 
     let ps;
+    if (!a.practiceSteps) {
+      // Distinct from malformed JSON. PathStepScreen falls back to the angle's
+      // loose `action` field: one step, no du'a block, no source. All seven
+      // Salah days are in this state.
+      err(day, 'no practiceSteps — falls back to the bare `action` field');
+      continue;
+    }
     try { ps = JSON.parse(a.practiceSteps); } catch { err(day, 'practiceSteps JSON invalid'); continue; }
     for (const s of ps) {
       if (!TYPES.has(s.type)) err(day, `bad type ${s.type}`);
       if (!ICONS.has(s.icon)) err(day, `bad icon ${s.icon}`);
-      if (!SRCT.has(s.sourceType)) err(day, `bad sourceType ${s.sourceType}`);
+      // sourceType is optional by design — a step that claims no chain omits it
+      // (see PracticeStepData). Only a value outside the union is a fault.
+      if (s.sourceType !== undefined && !SRCT.has(s.sourceType)) {
+        err(day, `bad sourceType ${s.sourceType}`);
+      }
       if (!s.source) err(day, `practice step "${s.title}" missing source`);
     }
 
@@ -148,7 +184,20 @@ for (const [pathId, anglePrefix, theme] of JOURNEYS) {
       const x = a.angle.match(p);
       if (x) { u = a.angle.slice(0, x.index + 1); mt = a.angle.slice(x.index + 1); break; }
     }
-    if (!mt) err(day, 'no split pattern — Matters section will be empty');
+    // No pattern is not automatically fatal: splitIntoSections falls back to a
+    // 60% sentence split when the text has >= 4 sentences, and only returns an
+    // empty `matters` below that. Saying "will be empty" for every miss
+    // overstated 13 findings.
+    // Both branches are failures — CLAUDE.md requires the angle to contain a
+    // pattern so the split lands where you intend. They are worded differently
+    // because the consequence differs: >= 4 sentences degrades to an arbitrary
+    // 60% cut, below that `matters` renders empty. The message used to claim
+    // "will be empty" in both cases, which overstated 7 of them.
+    if (!mt) {
+      const sentences = a.angle.split(/(?<=\.)\s+/).length;
+      if (sentences >= 4) err(day, `no split pattern — falls back to an arbitrary 60% cut (${sentences} sentences)`);
+      else err(day, `no split pattern and only ${sentences} sentence(s) — Matters section renders empty`);
+    }
     if (/\s\./.test(clean(u))) err(day, 'stray space before a period after tag strip');
 
     console.log(`day ${day} — ${step.title}`);
@@ -195,5 +244,10 @@ for (const pm of paths.matchAll(/id:\s*'(path_[a-zA-Z0-9_]+)'/g)) {
   });
 }
 
+if (reported) {
+  const soft = JOURNEYS.filter((j) => !j[3]).map((j) => j[0]).join(', ');
+  console.log(`\n?? ${reported} finding(s) in non-strict journeys (${soft}) — reported, not gating.`);
+  console.log('   Clear them, then flip the journey to strict in JOURNEYS.');
+}
 console.log(fail ? `\n*** ${fail} FAILURES` : '\nAll checks passed.');
 process.exit(fail ? 1 : 0);
