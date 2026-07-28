@@ -119,7 +119,13 @@ import type { Content, ContentAngle } from '../types';
 //      Sahih Muslim 486. q_angle_40_60_stressed's Arabic is Quran 40:60, the
 //      angle's own verse, not Abu Dawud 1488. q_angle_31_12_content cited
 //      Tirmidhi 2305, a different hadith entirely, and is composed_dua now.
-const SEED_VERSION = 24;
+// v25: read all 18 machine-unverifiable citations on sunnah.com. Two wrong.
+//      q_angle_67_13_sad cited Sahih Muslim 2654 (the Adam/Musa debate on
+//      destiny) for the "musarrif al-qulub" du'a, which is 2655. And two steps
+//      typed quran_dua under a non-Quran source line — "Tafsir Ibn Kathir on
+//      4:147" and the singular hasbiya form of 3:173 — carried the "Qur'anic"
+//      badge over Arabic that is not in the ayah; both are composed_dua now.
+const SEED_VERSION = 25;
 // Separate keys per content type — Quran and Hadith data change independently,
 // and each seeder used to write the SAME key at the end of its run. Since
 // initializeDatabase() awaits seedQuranContent() before seedHadithContent(),
