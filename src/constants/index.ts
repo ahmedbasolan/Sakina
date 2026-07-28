@@ -101,20 +101,12 @@ export const UPGRADE_ASK_COOLDOWN_MS = 3 * 24 * 60 * 60 * 1000; // 3 days
 // exactly once per install, tracked via streakMilestoneStore.
 export const STREAK_MILESTONES = [7, 30, 100] as const;
 
-// Keyed by the capitalized `Mood` union (NOT lowercase) so lookups like
-// MOOD_COLORS[mood] resolve — and aligned to the canonical MoodColors accents
-// in DesignSystem so mood dots/tags match the Home grid across every screen.
-const MOOD_COLORS = {
-  Overwhelmed: '#818CF8',
-  Sad: '#94A3B8',
-  Angry: '#FB923C',
-  Tired: '#D6D3D1',
-  Lonely: '#C084FC',
-  Grateful: '#FBBF24',
-  Hopeful: '#22D3EE',
-  Guilty: '#A3A3A3',
-  Calm: '#34D399',
-} as const;
+// NOTE: a hardcoded MOOD_COLORS map used to live here, unexported and unused,
+// behind a comment claiming it was kept aligned with DesignSystem. It was not —
+// it still held the pre-2026-07-26 greys for Sad, Tired and Guilty. Removed
+// rather than corrected: LibraryScreen and QuranLibraryScreen already derive
+// their palettes from MoodColors directly, which is the pattern to copy. Do not
+// reintroduce a literal colour map here.
 
 const MOOD_ISLAMIC_TERMS = {
   Overwhelmed: 'TAWAKKUL',
@@ -169,7 +161,7 @@ const ERROR_MESSAGES = {
   network: 'Network connection error. Please check your internet connection.',
   server: 'Server error. Please try again later.',
   auth: 'Authentication error. Please sign in again.',
-  unknown: 'An unexpected error occurred. Please try again.',
+  unknown: 'Something did not work as expected. Please try again.',
 } as const;
 
 // Subscription price — the single display source (spec §7 "dynamic price").

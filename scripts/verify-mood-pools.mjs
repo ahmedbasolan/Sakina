@@ -1,0 +1,143 @@
+/**
+ * Mood-pool verifier — the mood-picker counterpart to verify-journey.mjs.
+ *
+ * ContentRepository.fetchForMoodLocal joins on BOTH `cm.mood` and `ca.mood`,
+ * so an angle is only ever reachable when its parent verse carries the same
+ * mood tag. Two whole classes of bug hide behind that and neither shows up in
+ * a typecheck:
+ *
+ *   1. Dead angles   — angle.mood not present in its verse's `moods` array.
+ *                      The angle exists, reads fine, and can never be served.
+ *   2. Starved moods — a mood whose reachable pool is so small the user sees
+ *                      the same session again within a few taps.
+ *
+ * It also flags authoring-suffix drift: `q_angle_<verse>_energized` sitting
+ * under mood 'Tired' is how 15 "spend your energy" angles ended up as the
+ * entire Tired pool while the card promised rest.
+ *
+ * Run: node scripts/verify-mood-pools.mjs
+ */
+import fs from 'fs';
+
+const MIN_POOL = 10;
+const MOODS = [
+  'Overwhelmed', 'Sad', 'Angry', 'Tired', 'Lonely',
+  'Grateful', 'Hopeful', 'Guilty', 'Calm',
+];
+
+// Authoring suffix -> the mood it is allowed to serve. Suffixes are historical
+// (the public mood list was collapsed at some point) so the mapping is explicit
+// rather than inferred.
+const SUFFIX_MOOD = {
+  anxious: 'Overwhelmed', stressed: 'Overwhelmed', tired: 'Tired',
+  energized: 'Hopeful', hopeful: 'Hopeful', grateful: 'Grateful',
+  content: 'Grateful', calm: 'Calm', sad: 'Sad', angry: 'Angry',
+  lonely: 'Lonely', guilty: 'Guilty',
+};
+
+const src = fs.readFileSync('src/data/quranData.ts', 'utf8');
+
+function objects(prefix) {
+  const out = [];
+  for (const m of src.matchAll(new RegExp(`id: '(${prefix}[a-zA-Z0-9_]+)'`, 'g'))) {
+    let open = m.index;
+    while (src[open] !== '{') open--;
+    let depth = 0, quote = null, end = -1;
+    for (let k = open; k < src.length; k++) {
+      const c = src[k];
+      if (quote) { if (c === '\\') k++; else if (c === quote) quote = null; continue; }
+      if (c === "'" || c === '"' || c === '`') { quote = c; continue; }
+      if (c === '{') depth++;
+      else if (c === '}') { depth--; if (!depth) { end = k; break; } }
+    }
+    out.push({ id: m[1], body: src.slice(open, end + 1) });
+  }
+  return out;
+}
+
+const field = (b, name) => {
+  const m = b.match(new RegExp(`\\b${name}:\\s*'`));
+  if (!m) return null;
+  let i = m.index + m[0].length, s = '';
+  for (; i < b.length; i++) {
+    if (b[i] === '\\') { s += b[i + 1]; i++; continue; }
+    if (b[i] === "'") break;
+    s += b[i];
+  }
+  return s;
+};
+const moodsOf = (b) =>
+  (b.match(/moods:\s*\[([^\]]*)\]/) || [, ''])[1]
+    .replace(/'/g, '').split(',').map((x) => x.trim()).filter(Boolean);
+
+const verses = Object.fromEntries(objects('quran_').map((o) => [o.id, moodsOf(o.body)]));
+const angles = objects('q_angle_').map((o) => ({
+  id: o.id,
+  contentId: field(o.body, 'contentId'),
+  mood: field(o.body, 'mood'),
+}));
+
+// Journey angles are fetched by id (fetchAngleById), never through the mood
+// join, so their mood is validated by verify-journey.mjs instead.
+const isJourney = (id) => /^q_angle_(results|study|rizq|salah)_/.test(id);
+
+const errors = [];
+const warnings = [];
+const pool = Object.fromEntries(MOODS.map((m) => [m, 0]));
+
+for (const a of angles) {
+  const vm = verses[a.contentId];
+  if (!vm) { errors.push(`${a.id}: contentId '${a.contentId}' does not exist`); continue; }
+  if (!a.mood) { errors.push(`${a.id}: no mood field`); continue; }
+  if (!MOODS.includes(a.mood)) { errors.push(`${a.id}: unknown mood '${a.mood}'`); continue; }
+
+  if (isJourney(a.id)) continue;
+
+  if (!vm.includes(a.mood)) {
+    errors.push(
+      `${a.id}: mood '${a.mood}' but verse ${a.contentId} is tagged [${vm.join(', ')}] ` +
+      `— the fetchForMood join fails, so this angle can never be served`,
+    );
+    continue;
+  }
+
+  const suffix = Object.keys(SUFFIX_MOOD).find((s) => a.id.endsWith(`_${s}`) || a.id.endsWith(`_${s}_angle`));
+  if (suffix && SUFFIX_MOOD[suffix] !== a.mood) {
+    warnings.push(
+      `${a.id}: authored as '${suffix}' (${SUFFIX_MOOD[suffix]}) but serving '${a.mood}'`,
+    );
+  }
+  pool[a.mood]++;
+}
+
+// A verse tagged with a mood that has no angle for it is a silently dead tag.
+for (const [vid, ms] of Object.entries(verses)) {
+  for (const m of ms) {
+    if (!angles.some((a) => a.contentId === vid && a.mood === m && !isJourney(a.id))) {
+      warnings.push(`${vid}: tagged '${m}' but has no ${m} angle — tag is inert`);
+    }
+  }
+}
+
+console.log('Reachable mood-picker pool (angle.mood joined against verse.moods)\n');
+const width = Math.max(...MOODS.map((m) => m.length));
+for (const m of MOODS) {
+  const n = pool[m];
+  const flag = n < MIN_POOL ? `  << below floor of ${MIN_POOL}` : '';
+  console.log(`  ${m.padEnd(width)}  ${String(n).padStart(3)}${flag}`);
+  if (n < MIN_POOL) errors.push(`${m} pool is ${n}, below the floor of ${MIN_POOL}`);
+}
+const counts = MOODS.map((m) => pool[m]);
+console.log(`\n  spread: ${Math.min(...counts)}–${Math.max(...counts)} ` +
+  `(${(Math.max(...counts) / Math.max(1, Math.min(...counts))).toFixed(1)}x)`);
+
+if (warnings.length) {
+  console.log(`\n${warnings.length} warning(s):`);
+  warnings.forEach((w) => console.log(`  ! ${w}`));
+}
+if (errors.length) {
+  console.log(`\n${errors.length} error(s):`);
+  errors.forEach((e) => console.log(`  x ${e}`));
+  process.exit(1);
+}
+console.log('\nAll checks passed.');

@@ -27,9 +27,28 @@ const contentIds = new Set([...quran.matchAll(/id: '(quran_[a-z0-9_]+)'/g)].map(
 const angleIds = new Set([...quran.matchAll(/id: '(q_angle_[a-z0-9_]+)'/g)].map((m) => m[1]));
 const hadIds = new Set([...hadith.matchAll(/id: '(hadith_[a-z0-9_]+)'/g)].map((m) => m[1]));
 
-const ICONS = new Set(['hands-prayer','brain','chat','book-quran','mosque','clock','chart','flame','checkmark','lock','heart','light-bulb','leaf','star','pen','bird','target','honey','candle','shield','sunrise','door','rewind','headphones','breathing','home','compass','arrow-right','moon']);
+// Derived from the IconName union rather than hardcoded. The previous literal
+// list had drifted 11 names behind Icon.tsx (handshake, gem, globe, person,
+// trophy, water-drop, calm-face, …), so this check rejected 52 angles that
+// render perfectly well — a false negative is how a checker loses its authority.
+const iconUnion = fs.readFileSync('src/components/Icon.tsx', 'utf8').match(/export type IconName =[\s\S]*?;/);
+if (!iconUnion) {
+  console.error('Could not find the `export type IconName = …;` union in src/components/Icon.tsx.');
+  console.error('If it was renamed or reshaped, update this parser — do not fall back to a literal');
+  console.error('list, which is what drifted 11 names out of date last time.');
+  process.exit(1);
+}
+const ICONS = new Set([...iconUnion[0].matchAll(/'([a-z-]+)'/g)].map((m) => m[1]));
 const TYPES = new Set(['mindset', 'physical', 'verbal']);
-const SRCT = new Set(['quran_dua', 'prophetic_dua', 'prophetic_dhikr', 'sunnah_action']);
+// Derived from the PracticeSourceType union, for the same reason ICONS is:
+// a hardcoded copy drifts. 'composed_dua' was added in 2026-07 and a literal
+// list here would have rejected every step using it.
+const srctUnion = fs.readFileSync('src/types/index.ts', 'utf8').match(/export type PracticeSourceType =[\s\S]*?;/);
+if (!srctUnion) {
+  console.error('Could not find the `export type PracticeSourceType = …;` union in src/types/index.ts.');
+  process.exit(1);
+}
+const SRCT = new Set([...srctUnion[0].matchAll(/'([a-z_]+)'/g)].map((m) => m[1]));
 
 // Mirrors ContextLayer.splitIntoSections / extractSourceLabel / cleanText.
 const SPLIT = [/\.\s+The Prophet\s+ﷺ\s+said:/,/\.\s+The Prophet\s+ﷺ\s+would/,/\.\s+The Prophet\s+ﷺ\s+used to/,/\.\s+The Prophet\s+ﷺ\s+never/,/\.\s+The Prophet\s+ﷺ\s+himself/,/\.\s+The Prophet\s+ﷺ\s+was/,/\.\s+Your\s/,/\.\s+When you/,/\.\s+Despair/,/\.\s+Being an ally/,/\.\s+No sadness/,/\.\s+Even when/];
@@ -138,6 +157,42 @@ for (const [pathId, anglePrefix, theme] of JOURNEYS) {
     console.log(`   U: ${clean(u).slice(0, 92)}...`);
     console.log(`   M: ${clean(mt).slice(0, 92)}...\n`);
   }
+}
+
+// ── Universal du'a-repeat pass — EVERY journey, not just the JOURNEYS list ──
+//
+// The per-journey check above only looks at `actionArabicText`, and only for
+// the journeys listed at the top. Rizq Revolution is in neither category and
+// shipped the same supplication on day 1 and day 10 — a seventh of a 14-day
+// arc, invisible to every check we had. This pass reads staticPaths directly,
+// covers all paths, and looks at practiceSteps Arabic as well as the action
+// field, so the repeat is caught wherever it is written.
+const normAr = (s) =>
+  (s || '').replace(/[ً-ْٰ]/g, '').replace(/[آأإٱ]/g, 'ا')
+    .replace(/[^؀-ۿ]/g, '');
+
+for (const pm of paths.matchAll(/id:\s*'(path_[a-zA-Z0-9_]+)'/g)) {
+  const path = objectAt(paths, pm[1]);
+  if (!path || !Array.isArray(path.dailySteps) || path.dailySteps.length < 2) continue;
+  const seen = new Map();
+  path.dailySteps.forEach((step, i) => {
+    const a = step.angleId && objectAt(quran, step.angleId);
+    if (!a) return;
+    const arabics = new Set();
+    if (a.actionArabicText) arabics.add(normAr(a.actionArabicText));
+    if (a.practiceSteps) {
+      let ps = [];
+      try { ps = JSON.parse(a.practiceSteps); } catch { /* the JSON check above owns this */ }
+      for (const s of ps) if (s.arabicText) arabics.add(normAr(s.arabicText));
+    }
+    for (const ar of arabics) {
+      if (ar.length < 8) continue;
+      if (seen.has(ar)) {
+        console.log(`  !! ${pm[1]} day ${i + 1}: du'a repeats day ${seen.get(ar)} — ${ar.slice(0, 40)}`);
+        fail++;
+      } else seen.set(ar, i + 1);
+    }
+  });
 }
 
 console.log(fail ? `\n*** ${fail} FAILURES` : '\nAll checks passed.');

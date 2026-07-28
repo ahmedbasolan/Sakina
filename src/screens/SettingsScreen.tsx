@@ -208,7 +208,10 @@ export default function SettingsScreen() {
       );
     } catch (error) {
       logServiceError('SettingsScreen', 'restorePurchases', error instanceof Error ? error : new Error(String(error)));
-      Alert.alert('Error', 'Could not restore purchases. Please check your connection and try again.');
+      Alert.alert(
+        'Restore did not complete',
+        'We could not reach the store. Check your connection and try again.',
+      );
     } finally {
       setRestoring(false);
     }
@@ -244,7 +247,12 @@ export default function SettingsScreen() {
               Alert.alert('Done', 'Your mood history has been cleared.');
             } catch (error) {
               logServiceError('SettingsScreen', 'clearHistory', error instanceof Error ? error : new Error(String(error)));
-              Alert.alert('Error', 'Could not clear history. Please try again.');
+              // Deliberately does not claim nothing was deleted — clearHistory
+              // spans local and cloud, so a throw can leave a partial result.
+              Alert.alert(
+                'History not cleared',
+                'We could not confirm your history was cleared. Please try again.',
+              );
             }
           },
         },

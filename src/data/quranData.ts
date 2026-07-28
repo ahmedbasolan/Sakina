@@ -37,7 +37,7 @@ const quranContentData: Content[] = [
     source: 'Surah Ash-Sharh 94:5-6',
     audioKey: '94:5-6',
     whyThis: 'The scholars of Arabic grammar note that "the hardship" (al-usr) uses the definite article both times — it is the same hardship — while "ease" (yusr) is indefinite each time, meaning multiple different eases accompany every single hardship. Ibn Masud (RA) reportedly said: "One hardship cannot overcome two eases." [Tafsir Ibn Kathir, Surah Al-Inshirah]',
-    moods: ['Overwhelmed'],
+    moods: ['Overwhelmed', 'Tired'],
   },
   {
     id: 'quran_2_255',
@@ -69,7 +69,7 @@ const quranContentData: Content[] = [
     source: 'Surah Al-Baqarah 2:286',
     audioKey: '2:286',
     whyThis: 'This verse closes Surah Al-Baqarah and is one of the most comforting passages in the Quran. The Prophet ﷺ said: "Whoever recites the last two verses of Surah Al-Baqarah at night, they will suffice him." [Bukhari 5009] The opening line is a divine guarantee: you will never be asked to carry more than you can bear.',
-    moods: ['Overwhelmed'],
+    moods: ['Overwhelmed', 'Tired'],
   },
   {
     id: 'quran_65_3',
@@ -143,7 +143,7 @@ const quranContentData: Content[] = [
     source: 'Surah Al-Baqarah 2:257',
     audioKey: '2:257',
     whyThis: 'The word "wali" here means more than a friend — it is a guardian and protector with authority. When you feel overwhelmed and directionless, this verse reminds you that Allah Himself is actively guiding you out of every darkness. The journey from darkness to light is not something you do alone; Allah initiates it.',
-    moods: ['Overwhelmed'],
+    moods: ['Overwhelmed', 'Lonely'],
   },
   {
     id: 'quran_8_40',
@@ -304,7 +304,7 @@ const quranContentData: Content[] = [
     source: 'Surah Ad-Duha 93:3',
     audioKey: '93:3',
     whyThis: 'The word "wadda\'aka" (forsaken you) uses the past tense, indicating a completed, settled fact — not a conditional. Allah is not saying "I will not forsake you if..."; He is stating it as a permanent truth. Ibn Kathir notes this verse came when the Prophet ﷺ feared Allah had abandoned him, and it reestablished certainty where doubt had crept in. [Tafsir Ibn Kathir, Surah Ad-Duha]',
-    moods: ['Sad'],
+    moods: ['Sad', 'Tired'],
   },
   {
     id: 'quran_12_87',
@@ -394,7 +394,7 @@ const quranContentData: Content[] = [
     source: 'Surah Ali Imran 3:139',
     audioKey: '3:139',
     whyThis: 'This verse was revealed after the Muslims suffered losses at the Battle of Uhud — a moment of genuine grief and doubt. Allah did not tell them to pretend the pain away; He acknowledged their state and then forbade them from letting it become paralysis. Belief itself is the source of their ultimate elevation.',
-    moods: ['Sad'],
+    moods: ['Sad', 'Tired'],
   },
   {
     id: 'quran_65_7',
@@ -505,7 +505,7 @@ const quranContentData: Content[] = [
     source: 'Surah Az-Zumar 39:53-54',
     audioKey: '39:53-54',
     whyThis: 'Ibn Abbas (RA) said this is the most hope-giving verse in the entire Quran. Allah addresses those who have "transgressed against themselves" — not minor sinners, but those who believe their sins are too great. The response is an unconditional declaration: "Indeed, Allah forgives all sins." No exception is listed. [Tafsir Ibn Kathir, Surah Az-Zumar]',
-    moods: ['Sad'],
+    moods: ['Sad', 'Guilty'],
   },
 
   // === ANGRY / IHSAN ===
@@ -750,7 +750,10 @@ const quranContentData: Content[] = [
     source: 'Surah Ali Imran 3:135',
     audioKey: '3:135',
     whyThis: 'This verse describes the people of taqwa — and it describes them not as people who never sin, but as people who, when they sin, immediately remember Allah and seek forgiveness. The key criterion is not sinlessness; it is not persisting. Repentance itself is part of what makes a righteous believer.',
-    moods: ['Guilty'],
+    // 'Sad' is required here: q_angle_3_135_sad_angle is written for the
+    // sorrow-from-remorse state, and fetchForMood joins on BOTH cm.mood and
+    // ca.mood — without the tag that angle can never be selected.
+    moods: ['Guilty', 'Sad'],
   },
   {
     id: 'quran_66_8',
@@ -766,7 +769,9 @@ const quranContentData: Content[] = [
     source: 'Surah At-Tahrim 66:8',
     audioKey: '66:8',
     whyThis: 'Allah calls believers to sincere repentance as a path to success.',
-    moods: ['Guilty'],
+    // See quran_3_135 — 'Sad' unlocks q_angle_66_8_sad_angle, which is written
+    // for grief over a mistake rather than the guilt itself.
+    moods: ['Guilty', 'Sad'],
   },
 
   // === GRATEFUL / SHUKR ===
@@ -991,7 +996,7 @@ const quranContentData: Content[] = [
     source: 'Surah Yunus 10:58',
     audioKey: '10:58',
     whyThis: "True joy comes from Allah's bounty and mercy, not worldly possessions.",
-    moods: ['Tired', 'Grateful'],
+    moods: ['Hopeful', 'Grateful'],
   },
   {
     id: 'quran_3_200',
@@ -1007,7 +1012,7 @@ const quranContentData: Content[] = [
     source: 'Surah Ali Imran 3:200',
     audioKey: '3:200',
     whyThis: 'The verse uses three words in sequence: "isbiru" (be patient in your own hardship), "sabiru" (be resilient against others), and "rabitu" (remain firm and constant). These are three levels of endurance — this verse calls you to all three at once. Success (falah) is the promised destination for those who hold all three together.',
-    moods: ['Tired'],
+    moods: ['Hopeful'],
   },
   {
     id: 'quran_9_105',
@@ -1025,7 +1030,7 @@ const quranContentData: Content[] = [
     source: 'Surah At-Tawbah 9:105',
     audioKey: '9:105',
     whyThis: 'This verse was revealed to motivate believers to act rather than wait passively. Allah, His Messenger ﷺ, and the believers are all witnesses to your deeds — then you return to Allah who knows the unseen and the visible. Your efforts are not going unnoticed; they are being witnessed at multiple levels.',
-    moods: ['Tired'],
+    moods: ['Hopeful'],
   },
   {
     id: 'quran_103_1_3',
@@ -1041,7 +1046,7 @@ const quranContentData: Content[] = [
     source: 'Surah Al-Asr 103:1-3',
     audioKey: '103:1-3',
     whyThis: 'Time is running - focus your efforts on faith, good deeds, truth, and patience.',
-    moods: ['Tired'],
+    moods: ['Hopeful'],
   },
   {
     id: 'quran_22_77',
@@ -1057,7 +1062,7 @@ const quranContentData: Content[] = [
     source: 'Surah Al-Hajj 22:77',
     audioKey: '22:77',
     whyThis: 'direct your efforts toward worship and doing good - this is the path to success.',
-    moods: ['Tired', 'Grateful', 'Calm'],
+    moods: ['Hopeful', 'Grateful', 'Calm'],
   },
   {
     id: 'quran_18_30',
@@ -1072,7 +1077,7 @@ const quranContentData: Content[] = [
     source: 'Surah Al-Kahf 18:30',
     audioKey: '18:30',
     whyThis: 'No good deed is wasted - your efforts and devotion are always rewarded.',
-    moods: ['Tired'],
+    moods: ['Hopeful'],
   },
   {
     id: 'quran_28_77',
@@ -1088,7 +1093,7 @@ const quranContentData: Content[] = [
     source: 'Surah Al-Qasas 28:77',
     audioKey: '28:77',
     whyThis: 'Use your energy to seek the Hereafter, but also enjoy the world and do good.',
-    moods: ['Tired'],
+    moods: ['Hopeful'],
   },
   {
     id: 'quran_2_148',
@@ -1104,7 +1109,7 @@ const quranContentData: Content[] = [
     source: 'Surah Al-Baqarah 2:148',
     audioKey: '2:148',
     whyThis: 'Race towards good deeds - let your energy propel you forward in righteousness.',
-    moods: ['Tired'],
+    moods: ['Hopeful'],
   },
   {
     id: 'quran_5_48',
@@ -1122,7 +1127,7 @@ const quranContentData: Content[] = [
     source: 'Surah Al-Maidah 5:48',
     audioKey: '5:48',
     whyThis: 'Competition in goodness - use your energy to outdo others in positive deeds.',
-    moods: ['Tired'],
+    moods: ['Hopeful'],
   },
   {
     id: 'quran_18_110',
@@ -1138,7 +1143,7 @@ const quranContentData: Content[] = [
     source: 'Surah Al-Kahf 18:110',
     audioKey: '18:110',
     whyThis: 'The ultimate motivation: working for the meeting with your Lord.',
-    moods: ['Tired'],
+    moods: ['Hopeful'],
   },
   {
     id: 'quran_67_2',
@@ -1154,7 +1159,7 @@ const quranContentData: Content[] = [
     source: 'Surah Al-Mulk 67:2',
     audioKey: '67:2',
     whyThis: 'Life is a test of excellence in action - strive to be the best in your deeds.',
-    moods: ['Tired'],
+    moods: ['Hopeful'],
   },
   {
     id: 'quran_99_7_8',
@@ -1170,7 +1175,7 @@ const quranContentData: Content[] = [
     source: 'Surah Az-Zalzalah 99:7-8',
     audioKey: '99:7-8',
     whyThis: 'Every tiny effort counts - never underestimate the value of a small good deed.',
-    moods: ['Tired'],
+    moods: ['Hopeful'],
   },
   {
     id: 'quran_30_4',
@@ -1222,7 +1227,7 @@ const quranContentData: Content[] = [
     source: 'Surah Al-Furqan 25:63',
     audioKey: '25:63',
     whyThis: 'Respond to harshness with peace - a hallmark of the true servants of Allah.',
-    moods: ['Calm', 'Grateful'],
+    moods: ['Calm', 'Grateful', 'Angry'],
   },
   {
     id: 'quran_8_10',
@@ -1276,7 +1281,7 @@ const quranContentData: Content[] = [
     source: 'Surah At-Tawbah 9:40',
     audioKey: '9:40',
     whyThis: 'In the cave of Thawr, the Prophet ﷺ told Abu Bakr (RA) not to grieve — because Allah was with them. Allah responded by sending His sakinah and unseen support. This moment, among the most dangerous the Prophet ﷺ faced, became the model for every believer: when you say "Allah is with us," trust it completely.',
-    moods: ['Calm'],
+    moods: ['Calm', 'Lonely'],
   },
   {
     id: 'quran_41_35',
@@ -1308,7 +1313,7 @@ const quranContentData: Content[] = [
     source: 'Surah Al-Baqarah 2:265',
     audioKey: '2:265',
     whyThis: 'The garden on a height receives either heavy rain or light drizzle — either way, it produces. This parable describes the person whose giving is sincere: regardless of how much they are able to give, their effort is fruitful. Even small acts of generosity done with a pure heart yield their full reward.',
-    moods: ['Tired', 'Grateful'],
+    moods: ['Hopeful', 'Grateful'],
   },
 
   // === HOPEFUL / RAJA ===
@@ -1454,7 +1459,7 @@ const quranContentData: Content[] = [
     source: "Surah Ar-Ra'd 13:28",
     audioKey: '13:28',
     whyThis: 'The word "tatma\'innu" means to settle, to become still and completely at rest — not just momentary comfort but lasting peace. The Quran identifies dhikr (remembrance of Allah) as the one substance that produces this effect in the heart. Ibn al-Qayyim wrote that the heart cannot find its true rest in anything else, no matter what else it tries. [Madarij al-Salikin]',
-    moods: ['Calm', 'Lonely'],
+    moods: ['Calm', 'Lonely', 'Tired'],
   },
   {
     id: 'quran_89_27',
@@ -1482,7 +1487,7 @@ const quranContentData: Content[] = [
     source: 'Surah Al-Baqarah 2:45',
     audioKey: '2:45',
     whyThis: 'Prayer is a source of help and strength, though its ease is found in humility.',
-    moods: ['Overwhelmed', 'Calm'],
+    moods: ['Overwhelmed', 'Calm', 'Tired'],
   },
   {
     id: 'quran_6_17',
@@ -1663,7 +1668,7 @@ const quranContentData: Content[] = [
     source: "Surah Al-An'am 6:54",
     audioKey: '6:54',
     whyThis: 'Allah greets the believers with peace and has obligated mercy upon Himself.',
-    moods: ['Calm'],
+    moods: ['Calm', 'Guilty'],
   },
   {
     id: 'quran_16_32',
@@ -1779,7 +1784,7 @@ const quranContentData: Content[] = [
     source: 'Surah Al-Qasas 28:73',
     audioKey: '28:73',
     whyThis: 'The alternation of night and day is described here as an act of mercy — rest and work, stillness and activity, both designed for you. Even the rhythms of nature are framed as a reason for gratitude. This verse invites you to see the most ordinary parts of your day as deliberate gifts from a merciful Lord.',
-    moods: ['Grateful'],
+    moods: ['Grateful', 'Tired'],
   },
   {
     id: 'quran_2_152',
@@ -1906,7 +1911,7 @@ const quranContentData: Content[] = [
     source: 'Surah Al-Anfal 8:33',
     audioKey: '8:33',
     whyThis: 'Istighfar (seeking forgiveness) is a literal shield from difficulty and guilt.',
-    moods: ['Sad', 'Overwhelmed'],
+    moods: ['Sad', 'Overwhelmed', 'Guilty'],
   },
 
   {
@@ -1941,7 +1946,7 @@ const quranContentData: Content[] = [
     source: 'Surah Fatir 35:35',
     audioKey: '35:35',
     whyThis: 'The people of Paradise describe their state by what is absent: no fatigue, no weariness. This is the final destination — a place where the exhaustion of this world has a complete and permanent end. When you feel drained by this life, this verse reminds you that all of that effort is building toward a rest that never ends.',
-    moods: ['Overwhelmed'],
+    moods: ['Overwhelmed', 'Tired'],
   },
   {
     id: 'quran_25_47',
@@ -1957,7 +1962,7 @@ const quranContentData: Content[] = [
     source: 'Surah Al-Furqan 25:47',
     audioKey: '25:47',
     whyThis: 'Allah designed sleep as a mercy - rest is a divine gift, not weakness.',
-    moods: ['Calm'],
+    moods: ['Calm', 'Tired'],
   },
   {
     id: 'quran_78_9',
@@ -1969,7 +1974,7 @@ const quranContentData: Content[] = [
     source: 'Surah An-Naba 78:9',
     audioKey: '78:9',
     whyThis: 'Sleep is not a waste of time but a deliberate creation for your renewal.',
-    moods: ['Calm'],
+    moods: ['Calm', 'Tired'],
   },
   {
     id: 'quran_30_23',
@@ -1985,7 +1990,7 @@ const quranContentData: Content[] = [
     source: 'Surah Ar-Rum 30:23',
     audioKey: '30:23',
     whyThis: 'Sleep is one of the signs of Allah - a miracle we experience daily.',
-    moods: ['Calm'],
+    moods: ['Calm', 'Tired'],
   },
   {
     id: 'quran_6_13',
@@ -2081,7 +2086,7 @@ const quranContentData: Content[] = [
     source: 'Surah Al-Inshirah 94:7-8',
     audioKey: '94:7-8',
     whyThis: 'True rest isn\'t found in stopping — it\'s found in redirecting what energy remains toward Allah. The verse doesn\'t say rest once your task is done; it says stand up for prayer. That redirection, not the pause itself, is where renewal actually comes from.',
-    moods: ['Tired'],
+    moods: ['Hopeful'],
   },
   {
     id: 'quran_29_69',
@@ -2097,7 +2102,7 @@ const quranContentData: Content[] = [
     source: 'Surah Al-Ankabut 29:69',
     audioKey: '29:69',
     whyThis: 'The promise of guidance is tied to striving — "alladhina jahadu fina" (those who strive for Our sake). Guidance is not given all at once; it is given in proportion to effort. The verse uses "lanahdiyannahum" with the lam of certainty and the nun of emphasis — a doubly emphatic guarantee that those who make the effort will be shown the way.',
-    moods: ['Tired', 'Hopeful'],
+    moods: ['Hopeful'],
   },
   {
     id: 'quran_50_16',
@@ -2319,7 +2324,7 @@ const quranContentData: Content[] = [
     source: 'Surah Hud 11:6',
     audioKey: '11:6',
     whyThis: 'Every creature — not just humans — has its provision as a divine responsibility upon Allah. He knows where each creature lives, where its provision is stored, and how it will reach it. If He provides for the worm deep in the earth and the fish at the bottom of the sea, He will provide for you.',
-    moods: ['Overwhelmed', 'Grateful'],
+    moods: ['Overwhelmed', 'Grateful', 'Lonely'],
   },
   // Day 3: Halal vs. Haram
   {
@@ -2521,6 +2526,727 @@ const quranContentData: Content[] = [
     whyThis: 'Allah is Al-Wadud - the Most Loving. His love is the ultimate cure for a lonely heart.',
     moods: ['Lonely', 'Guilty'],
   },
+
+  // === TIRED / REST ===
+  // Arabic + transliteration from the Quran.com API (word-by-word transliteration
+  // joined, the same source as the rest of this file); translations checked
+  // against Sahih International. Every ayah here is complete — 9:120 and 73:20
+  // were considered and dropped because citing them whole did not fit the slot.
+  {
+    id: 'quran_20_2',
+    type: 'Quran',
+    primaryText: "mā anzalnā ʿalayka l-qur'āna litashqā",
+    arabicText: 'مَآ أَنزَلْنَا عَلَيْكَ ٱلْقُرْءَانَ لِتَشْقَىٰٓ ﴿2﴾',
+    transliteration: "mā anzalnā ʿalayka l-qur'āna litashqā",
+    englishTranslation: 'We have not sent down to you the Quran that you be distressed.',
+    source: 'Surah Taha 20:2',
+    audioKey: '20:2',
+    whyThis: 'One of the earliest things Allah says in Surah Taha is a correction of how the Prophet ﷺ was carrying the revelation. Ibn Kathir reports that he would stand in prayer until his feet swelled, and this ayah was revealed to relieve him — the Quran came as a mercy, not as a weight designed to break you. Al-Sa\'di notes that "litashqā" carries the sense of exhausting hardship, and Allah negates it outright: religion is not meant to grind you down. Where practice has become punishment, the imbalance is yours to correct, not something the faith demands.',
+    moods: ['Tired'],
+  },
+  {
+    id: 'quran_8_11',
+    type: 'Quran',
+    primaryText:
+      "idh yughashīkumu l-nuʿāsa amanatan min'hu wayunazzilu ʿalaykum mina l-samāi māan liyuṭahhirakum bihi wayudh'hiba ʿankum rij'za l-shayṭāni waliyarbiṭa ʿalā qulūbikum wayuthabbita bihi l-aqdāma",
+    arabicText:
+      'إِذْ يُغَشِّيكُمُ ٱلنُّعَاسَ أَمَنَةً مِّنْهُ وَيُنَزِّلُ عَلَيْكُم مِّنَ ٱلسَّمَآءِ مَآءً لِّيُطَهِّرَكُم بِهِۦ وَيُذْهِبَ عَنكُمْ رِجْزَ ٱلشَّيْطَـٰنِ وَلِيَرْبِطَ عَلَىٰ قُلُوبِكُمْ وَيُثَبِّتَ بِهِ ٱلْأَقْدَامَ ﴿11﴾',
+    transliteration:
+      "idh yughashīkumu l-nuʿāsa amanatan min'hu wayunazzilu ʿalaykum mina l-samāi māan liyuṭahhirakum bihi wayudh'hiba ʿankum rij'za l-shayṭāni waliyarbiṭa ʿalā qulūbikum wayuthabbita bihi l-aqdāma",
+    englishTranslation:
+      'When He covered you with drowsiness as security from Him, and sent down upon you rain from the sky to purify you, and to remove from you the evil suggestions of Satan, and to make your hearts firm and plant your feet firmly thereby.',
+    source: 'Surah Al-Anfal 8:11',
+    audioKey: '8:11',
+    whyThis: 'On the night before Badr, outnumbered and expecting to die at dawn, the companions were overtaken by sleep. Ibn Kathir records that Allah calls this drowsiness "amanatan" — a security, a gift sent down deliberately. Sleep was not a lapse in their vigilance; it was divine provision, listed alongside the rain in the same sentence. Al-Sa\'di notes the ordering: rest came first, and only then were their hearts made firm and their feet planted. Rest was the mechanism, not the interruption.',
+    moods: ['Tired'],
+  },
+  {
+    id: 'quran_28_24',
+    type: 'Quran',
+    primaryText: 'fasaqā lahumā thumma tawallā ilā l-ẓili faqāla rabbi innī limā anzalta ilayya min khayrin faqīrun',
+    arabicText:
+      'فَسَقَىٰ لَهُمَا ثُمَّ تَوَلَّىٰٓ إِلَى ٱلظِّلِّ فَقَالَ رَبِّ إِنِّى لِمَآ أَنزَلْتَ إِلَىَّ مِنْ خَيْرٍ فَقِيرٌ ﴿24﴾',
+    transliteration: 'fasaqā lahumā thumma tawallā ilā l-ẓili faqāla rabbi innī limā anzalta ilayya min khayrin faqīrun',
+    englishTranslation:
+      'So he watered their flocks for them, then turned back to the shade and said, "My Lord, indeed I am, for whatever good You would send down to me, in need."',
+    source: 'Surah Al-Qasas 28:24',
+    audioKey: '28:24',
+    whyThis: 'Musa (AS) had fled Egypt on foot, arrived in Madyan with nothing, helped two strangers water their flocks, and then sat down in the shade with no food, no shelter and no plan. Ibn Kathir notes that he did not ask for a specific thing — he simply named his condition to Allah. Al-Sa\'di observes that "faqīr" here is not a request but an admission of total need, and that the answer arrived within moments: marriage, work and safety. Naming your emptiness honestly is itself a complete du\'a.',
+    moods: ['Tired'],
+  },
+  {
+    id: 'quran_50_38',
+    type: 'Quran',
+    primaryText: 'walaqad khalaqnā l-samāwāti wal-arḍa wamā baynahumā fī sittati ayyāmin wamā massanā min lughūbin',
+    arabicText:
+      'وَلَقَدْ خَلَقْنَا ٱلسَّمَـٰوَٰتِ وَٱلْأَرْضَ وَمَا بَيْنَهُمَا فِى سِتَّةِ أَيَّامٍ وَمَا مَسَّنَا مِن لُّغُوبٍ ﴿38﴾',
+    transliteration: 'walaqad khalaqnā l-samāwāti wal-arḍa wamā baynahumā fī sittati ayyāmin wamā massanā min lughūbin',
+    englishTranslation:
+      'And We certainly created the heavens and the earth and what is between them in six days, and no weariness touched Us.',
+    source: 'Surah Qaf 50:38',
+    audioKey: '50:38',
+    whyThis: 'Ibn Kathir explains that this ayah was revealed to refute those who claimed Allah rested after creation. The point for a believer is the contrast it draws: tirelessness is a divine attribute, not a human one. Al-Sa\'di notes that "lughūb" means the specific exhaustion that follows exertion — Allah is free of it, and you are not. Expecting your own body to run without depletion is not devotion; it is claiming an attribute that belongs only to Him.',
+    moods: ['Tired'],
+  },
+  {
+    id: 'quran_87_8',
+    type: 'Quran',
+    primaryText: "wanuyassiruka lil'yus'rā",
+    arabicText: 'وَنُيَسِّرُكَ لِلْيُسْرَىٰ ﴿8﴾',
+    transliteration: "wanuyassiruka lil'yus'rā",
+    englishTranslation: 'And We will ease you toward ease.',
+    source: "Surah Al-A'la 87:8",
+    audioKey: '87:8',
+    whyThis: 'Al-Sa\'di explains that "al-yusrā" here means the easy path in every matter — Allah promises not merely to remove one hardship but to make ease itself the direction you are being moved in. Ibn Kathir notes the causative form: He does not only give you ease, He makes you suited to it, adjusting the one who walks the road as well as the road. The promise is about trajectory, which is why it holds even on a day when nothing feels easy yet.',
+    moods: ['Tired'],
+  },
+  {
+    id: 'quran_6_60',
+    type: 'Quran',
+    primaryText:
+      "wahuwa alladhī yatawaffākum bi-al-layli wayaʿlamu mā jaraḥtum bil-nahāri thumma yabʿathukum fīhi liyuq'ḍā ajalun musamman thumma ilayhi marjiʿukum thumma yunabbi-ukum bimā kuntum taʿmalūna",
+    arabicText:
+      'وَهُوَ ٱلَّذِى يَتَوَفَّىٰكُم بِٱلَّيْلِ وَيَعْلَمُ مَا جَرَحْتُم بِٱلنَّهَارِ ثُمَّ يَبْعَثُكُمْ فِيهِ لِيُقْضَىٰٓ أَجَلٌ مُّسَمًّى ۖ ثُمَّ إِلَيْهِ مَرْجِعُكُمْ ثُمَّ يُنَبِّئُكُم بِمَا كُنتُمْ تَعْمَلُونَ ﴿60﴾',
+    transliteration:
+      "wahuwa alladhī yatawaffākum bi-al-layli wayaʿlamu mā jaraḥtum bil-nahāri thumma yabʿathukum fīhi liyuq'ḍā ajalun musamman thumma ilayhi marjiʿukum thumma yunabbi-ukum bimā kuntum taʿmalūna",
+    englishTranslation:
+      'And it is He who takes your souls by night and knows what you have committed by day. Then He raises you up therein, that a specified term may be fulfilled. Then to Him is your return, then He will inform you of what you used to do.',
+    source: "Surah Al-An'am 6:60",
+    audioKey: '6:60',
+    whyThis: 'Ibn Kathir explains that "yatawaffākum" is the same verb used for death — sleep is described in the Quran as a lesser death, a nightly handing over of the soul. Al-Sa\'di draws out the consequence: every morning you wake is a return that Allah chose to grant, not a default. Sleeping is therefore an act of trust, releasing a day you cannot finish to the One who is already keeping account of it.',
+    moods: ['Tired'],
+  },
+
+  // === GUILTY / TAWBAH ===
+  // Guilty shipped with four angles and no card on the home grid. 2:222 was
+  // considered and rejected — it is a fiqh ruling whose context does not belong
+  // on a guilt card (CLAUDE.md, "Quoting Quran Text" rule 3).
+  {
+    id: 'quran_20_82',
+    type: 'Quran',
+    primaryText: "wa-innī laghaffārun liman tāba waāmana waʿamila ṣāliḥan thumma ih'tadā",
+    arabicText: 'وَإِنِّى لَغَفَّارٌ لِّمَن تَابَ وَءَامَنَ وَعَمِلَ صَـٰلِحًا ثُمَّ ٱهْتَدَىٰ ﴿82﴾',
+    transliteration: "wa-innī laghaffārun liman tāba waāmana waʿamila ṣāliḥan thumma ih'tadā",
+    englishTranslation:
+      'But indeed, I am the Perpetual Forgiver of whoever repents and believes and does righteousness and then continues in guidance.',
+    source: 'Surah Taha 20:82',
+    audioKey: '20:82',
+    whyThis: 'Al-Sa\'di notes the intensive form "Ghaffār" — not merely one who forgives but one who forgives repeatedly, as a permanent quality. Ibn Kathir draws attention to the final clause, "then continues in guidance": Allah does not require that the repentance be the last one, only that it be followed by staying on the road. The verse was revealed in the context of the Israelites and the calf, which is to say it was addressed to people who had committed the gravest possible sin and were still being offered this.',
+    moods: ['Guilty'],
+  },
+  {
+    id: 'quran_7_23',
+    type: 'Quran',
+    primaryText: 'qālā rabbanā ẓalamnā anfusanā wa-in lam taghfir lanā watarḥamnā lanakūnanna mina l-khāsirīna',
+    arabicText:
+      'قَالَا رَبَّنَا ظَلَمْنَآ أَنفُسَنَا وَإِن لَّمْ تَغْفِرْ لَنَا وَتَرْحَمْنَا لَنَكُونَنَّ مِنَ ٱلْخَـٰسِرِينَ ﴿23﴾',
+    transliteration: 'qālā rabbanā ẓalamnā anfusanā wa-in lam taghfir lanā watarḥamnā lanakūnanna mina l-khāsirīna',
+    englishTranslation:
+      'They said, "Our Lord, we have wronged ourselves, and if You do not forgive us and have mercy upon us, we will surely be among the losers."',
+    source: "Surah Al-A'raf 7:23",
+    audioKey: '7:23',
+    whyThis: 'Ibn Kathir sets this beside the response of Iblis to the same situation. Both disobeyed; Adam (AS) said "we have wronged ourselves," while Iblis argued his case and blamed his creation. Al-Sa\'di observes that the difference between them was not the sin but what followed it — one owned it without qualification, the other justified it. This du\'a is the template the scholars point to for what owning a mistake actually sounds like: no explanation, no comparison, no mitigating clause.',
+    moods: ['Guilty'],
+  },
+  {
+    id: 'quran_12_92',
+    type: 'Quran',
+    primaryText: 'qāla lā tathrība ʿalaykumu l-yawma yaghfiru l-lahu lakum wahuwa arḥamu l-rāḥimīna',
+    arabicText: 'قَالَ لَا تَثْرِيبَ عَلَيْكُمُ ٱلْيَوْمَ ۖ يَغْفِرُ ٱللَّهُ لَكُمْ ۖ وَهُوَ أَرْحَمُ ٱلرَّٰحِمِينَ ﴿92﴾',
+    transliteration: 'qāla lā tathrība ʿalaykumu l-yawma yaghfiru l-lahu lakum wahuwa arḥamu l-rāḥimīna',
+    englishTranslation:
+      'He said, "No blame will there be upon you today. Allah will forgive you; and He is the most merciful of the merciful."',
+    source: 'Surah Yusuf 12:92',
+    audioKey: '12:92',
+    whyThis: 'Yusuf (AS) says this to the brothers who threw him into a well and sold him. Ibn Kathir notes that "tathrīb" means reproach or the reopening of a fault — he does not merely forgive, he closes the subject permanently. Al-Sa\'di adds that he then asks Allah to forgive them too, going beyond dropping his own claim. For guilt that involves another person, this is the ayah that shows what the far side of it looks like.',
+    moods: ['Guilty'],
+  },
+  {
+    id: 'quran_42_25',
+    type: 'Quran',
+    primaryText: 'wahuwa alladhī yaqbalu l-tawbata ʿan ʿibādihi wayaʿfū ʿani l-sayiāti wayaʿlamu mā tafʿalūna',
+    arabicText:
+      'وَهُوَ ٱلَّذِى يَقْبَلُ ٱلتَّوْبَةَ عَنْ عِبَادِهِۦ وَيَعْفُوا۟ عَنِ ٱلسَّيِّـَٔاتِ وَيَعْلَمُ مَا تَفْعَلُونَ ﴿25﴾',
+    transliteration: 'wahuwa alladhī yaqbalu l-tawbata ʿan ʿibādihi wayaʿfū ʿani l-sayiāti wayaʿlamu mā tafʿalūna',
+    englishTranslation:
+      'And it is He who accepts repentance from His servants and pardons misdeeds, and He knows what you do.',
+    source: 'Surah Ash-Shura 42:25',
+    audioKey: '42:25',
+    whyThis: 'Al-Sa\'di distinguishes the two verbs deliberately paired here: "yaqbalu" (He accepts) concerns the turning itself, and "ya\'fū" (He pardons) concerns the record of the deed. Ibn Kathir notes the closing clause — "He knows what you do" — appears after the promise rather than before it, so the acceptance is not offered by an uninformed party. He knows precisely what He is pardoning.',
+    moods: ['Guilty'],
+  },
+  {
+    id: 'quran_28_16',
+    type: 'Quran',
+    primaryText: "qāla rabbi innī ẓalamtu nafsī fa-igh'fir lī faghafara lahu innahu huwa l-ghafūru l-raḥīmu",
+    arabicText:
+      'قَالَ رَبِّ إِنِّى ظَلَمْتُ نَفْسِى فَٱغْفِرْ لِى فَغَفَرَ لَهُۥٓ ۚ إِنَّهُۥ هُوَ ٱلْغَفُورُ ٱلرَّحِيمُ ﴿16﴾',
+    transliteration: "qāla rabbi innī ẓalamtu nafsī fa-igh'fir lī faghafara lahu innahu huwa l-ghafūru l-raḥīmu",
+    englishTranslation:
+      'He said, "My Lord, indeed I have wronged myself, so forgive me," and He forgave him. Indeed, He is the Forgiving, the Merciful.',
+    source: 'Surah Al-Qasas 28:16',
+    audioKey: '28:16',
+    whyThis: 'Musa (AS) had just killed a man. Ibn Kathir highlights the sentence structure: the request and the answer sit in the same ayah, with nothing between them — "forgive me," and He forgave him. Al-Sa\'di notes there is no waiting period, no penance and no negotiation recorded. For a believer carrying something they consider unforgivable, the speed of the response in the text is itself the point.',
+    moods: ['Guilty'],
+  },
+  {
+    id: 'quran_3_133',
+    type: 'Quran',
+    primaryText: "wasāriʿū ilā maghfiratin min rabbikum wajannatin ʿarḍuhā l-samāwātu wal-arḍu uʿiddat lil'muttaqīna",
+    arabicText:
+      '۞ وَسَارِعُوٓا۟ إِلَىٰ مَغْفِرَةٍ مِّن رَّبِّكُمْ وَجَنَّةٍ عَرْضُهَا ٱلسَّمَـٰوَٰتُ وَٱلْأَرْضُ أُعِدَّتْ لِلْمُتَّقِينَ ﴿133﴾',
+    transliteration: "wasāriʿū ilā maghfiratin min rabbikum wajannatin ʿarḍuhā l-samāwātu wal-arḍu uʿiddat lil'muttaqīna",
+    englishTranslation:
+      'And hasten to forgiveness from your Lord, and a garden as wide as the heavens and the earth, prepared for the righteous.',
+    source: 'Surah Ali Imran 3:133',
+    audioKey: '3:133',
+    whyThis: 'Ibn Kathir notes the command is "sāri\'ū" — race, not merely walk. Al-Sa\'di observes that what you are told to race toward is forgiveness first and the garden second, in that order. This directly follows the passage about Uhud, so it is addressed to people who had just failed badly: the instruction after failure is not to withdraw and reflect on it, but to move quickly toward Him.',
+    moods: ['Guilty'],
+  },
+
+  // === ANGRY / ACUTE ===
+  // The existing 13 Angry angles are all framed around pardon and overlooking —
+  // phase-two work that a physiologically flooded person cannot do yet. The
+  // de-escalation hadith were present but buried as practice steps inside
+  // pardon-framed lessons. These four are framed acute-first.
+  {
+    id: 'quran_7_200',
+    type: 'Quran',
+    primaryText: "wa-immā yanzaghannaka mina l-shayṭāni nazghun fa-is'taʿidh bil-lahi innahu samīʿun ʿalīmun",
+    arabicText: 'وَإِمَّا يَنزَغَنَّكَ مِنَ ٱلشَّيْطَـٰنِ نَزْغٌ فَٱسْتَعِذْ بِٱللَّهِ ۚ إِنَّهُۥ سَمِيعٌ عَلِيمٌ ﴿200﴾',
+    transliteration: "wa-immā yanzaghannaka mina l-shayṭāni nazghun fa-is'taʿidh bil-lahi innahu samīʿun ʿalīmun",
+    englishTranslation:
+      'And if an evil suggestion comes to you from Satan, then seek refuge in Allah. Indeed, He is Hearing and Knowing.',
+    source: "Surah Al-A'raf 7:200",
+    audioKey: '7:200',
+    whyThis: 'Ibn Kathir explains "nazgh" as a sudden goading or prod — the spike, not a settled state. Al-Sa\'di notes the prescribed response is a single immediate act, seeking refuge, and nothing more elaborate; the verse gives no analysis step and no requirement to resolve the underlying matter first. The Prophet ﷺ applied this directly to anger: when two men were trading insults he said he knew a word that would settle the man\'s rage if he said it, and named the ta\'awwudh. [Sahih al-Bukhari 3282]',
+    moods: ['Angry'],
+  },
+  {
+    id: 'quran_23_97_98',
+    type: 'Quran',
+    primaryText: 'waqul rabbi aʿūdhu bika min hamazāti l-shayāṭīni wa-aʿūdhu bika rabbi an yaḥḍurūni',
+    arabicText:
+      'وَقُل رَّبِّ أَعُوذُ بِكَ مِنْ هَمَزَٰتِ ٱلشَّيَـٰطِينِ وَأَعُوذُ بِكَ رَبِّ أَن يَحْضُرُونِ ﴿97-98﴾',
+    transliteration: 'waqul rabbi aʿūdhu bika min hamazāti l-shayāṭīni wa-aʿūdhu bika rabbi an yaḥḍurūni',
+    englishTranslation:
+      'And say, "My Lord, I seek refuge in You from the incitements of the devils. And I seek refuge in You, my Lord, lest they be present with me."',
+    source: "Surah Al-Mu'minun 23:97-98",
+    audioKey: '23:97-98',
+    whyThis: 'Al-Sa\'di draws out the two separate requests: the first seeks protection from the incitement, the second from their presence in the first place. Ibn Kathir notes this is protection sought before the provocation lands, not only after. The word "hamazāt" carries the sense of a prod or a push — the same physical metaphor used of anger elsewhere, describing something that moves you before you have decided to move.',
+    moods: ['Angry'],
+  },
+  {
+    id: 'quran_42_40',
+    type: 'Quran',
+    primaryText: "wajazāu sayyi-atin sayyi-atun mith'luhā faman ʿafā wa-aṣlaḥa fa-ajruhu ʿalā l-lahi innahu lā yuḥibbu l-ẓālimīna",
+    arabicText:
+      'وَجَزَٰٓؤُا۟ سَيِّئَةٍ سَيِّئَةٌ مِّثْلُهَا ۖ فَمَنْ عَفَا وَأَصْلَحَ فَأَجْرُهُۥ عَلَى ٱللَّهِ ۚ إِنَّهُۥ لَا يُحِبُّ ٱلظَّـٰلِمِينَ ﴿40﴾',
+    transliteration: "wajazāu sayyi-atin sayyi-atun mith'luhā faman ʿafā wa-aṣlaḥa fa-ajruhu ʿalā l-lahi innahu lā yuḥibbu l-ẓālimīna",
+    englishTranslation:
+      'And the retribution for an evil act is an evil one like it, but whoever pardons and makes reconciliation — his reward is due from Allah. Indeed, He does not like wrongdoers.',
+    source: 'Surah Ash-Shura 42:40',
+    audioKey: '42:40',
+    whyThis: 'Ibn Kathir notes the ayah first establishes the right to a proportionate response before commending pardon — the permission is stated, not skipped. Al-Sa\'di adds two constraints on that right: the response may not exceed the wrong ("like it"), and the closing clause warns that exceeding it puts you among the wrongdoers. Pardon is then presented as the superior option with its reward left unspecified and guaranteed by Allah Himself, which the scholars read as a sign of its magnitude. It is offered as a choice, not imposed as a duty.',
+    moods: ['Angry'],
+  },
+  {
+    id: 'quran_2_263',
+    type: 'Quran',
+    primaryText: 'qawlun maʿrūfun wamaghfiratun khayrun min ṣadaqatin yatbaʿuhā adhan wal-lahu ghaniyyun ḥalīmun',
+    arabicText:
+      '۞ قَوْلٌ مَّعْرُوفٌ وَمَغْفِرَةٌ خَيْرٌ مِّن صَدَقَةٍ يَتْبَعُهَآ أَذًى ۗ وَٱللَّهُ غَنِىٌّ حَلِيمٌ ﴿263﴾',
+    transliteration: 'qawlun maʿrūfun wamaghfiratun khayrun min ṣadaqatin yatbaʿuhā adhan wal-lahu ghaniyyun ḥalīmun',
+    englishTranslation:
+      'Kind speech and forgiveness are better than charity followed by injury. And Allah is Free of need, Forbearing.',
+    source: 'Surah Al-Baqarah 2:263',
+    audioKey: '2:263',
+    whyThis: 'The ayah closes on two Names, and Al-Sa\'di links them deliberately: Allah is Al-Ghaniyy, in no need of anything from you, and Al-Halim, the Forbearing who does not hasten to punish despite having every right and every power to. Ibn Kathir notes that hilm is not the absence of anger but the deliberate withholding of a deserved response. That distinction matters — forbearance is defined here as something exercised by one who could act, not by one who cannot.',
+    moods: ['Angry'],
+  },
+
+  // === LONELY (pool expansion) ===
+  // Lonely shipped at 10 reachable angles. A user with three refreshes a day
+  // exhausted it inside 36 hours and began seeing repeats, which is the worst
+  // possible outcome for the mood most likely to sit and refresh. 4:45 and
+  // 3:103 were considered and dropped — the first opens on "your enemies" and
+  // the second runs 77 words, neither of which sits well on a card.
+  {
+    id: 'quran_26_62',
+    type: 'Quran',
+    primaryText: 'qāla kallā inna maʿiya rabbī sayahdīni',
+    arabicText: 'قَالَ كَلَّآ ۖ إِنَّ مَعِىَ رَبِّى سَيَهْدِينِ ﴿62﴾',
+    transliteration: 'qāla kallā inna maʿiya rabbī sayahdīni',
+    englishTranslation: 'He said, "No! Indeed, with me is my Lord; He will guide me."',
+    source: "Surah Ash-Shu'ara 26:62",
+    audioKey: '26:62',
+    whyThis: 'Musa (AS) said this with the sea in front of him and Pharaoh\'s army closing behind. Ibn Kathir notes his people had just said "we are surely to be overtaken" — the objection was reasonable, and he answered it with one word: kallā, no. Al-Sa\'di draws attention to the tense: sayahdīni, He *will* guide me, spoken before any way out existed. The certainty was not about the exit; it was about the company.',
+    moods: ['Lonely'],
+  },
+  {
+    id: 'quran_12_86',
+    type: 'Quran',
+    primaryText: "qāla innamā ashkū bathī waḥuz'nī ilā l-lahi wa-aʿlamu mina l-lahi mā lā taʿlamūna",
+    arabicText: 'قَالَ إِنَّمَآ أَشْكُوا۟ بَثِّى وَحُزْنِىٓ إِلَى ٱللَّهِ وَأَعْلَمُ مِنَ ٱللَّهِ مَا لَا تَعْلَمُونَ ﴿86﴾',
+    transliteration: "qāla innamā ashkū bathī waḥuz'nī ilā l-lahi wa-aʿlamu mina l-lahi mā lā taʿlamūna",
+    englishTranslation:
+      'He said, "I only complain of my suffering and my grief to Allah, and I know from Allah that which you do not know."',
+    source: 'Surah Yusuf 12:86',
+    audioKey: '12:86',
+    whyThis: 'Yaqub (AS) had lost two sons and been told by everyone around him to stop grieving. Ibn Kathir explains "bathth" as the grief so heavy a person cannot contain it — and note where he takes it: not to the people telling him to move on, but to Allah alone. Al-Sa\'di observes that complaining *to* Allah is not complaining *about* Him, which is why this is recorded as the speech of a prophet rather than a lapse.',
+    moods: ['Lonely'],
+  },
+  {
+    id: 'quran_19_48',
+    type: 'Quran',
+    primaryText: "wa-aʿtazilukum wamā tadʿūna min dūni l-lahi wa-adʿū rabbī ʿasā allā akūna biduʿāi rabbī shaqiyyan",
+    arabicText:
+      'وَأَعْتَزِلُكُمْ وَمَا تَدْعُونَ مِن دُونِ ٱللَّهِ وَأَدْعُوا۟ رَبِّى عَسَىٰٓ أَلَّآ أَكُونَ بِدُعَآءِ رَبِّى شَقِيًّا ﴿48﴾',
+    transliteration: 'wa-aʿtazilukum wamā tadʿūna min dūni l-lahi wa-adʿū rabbī ʿasā allā akūna biduʿāi rabbī shaqiyyan',
+    englishTranslation:
+      'And I will leave you and those you invoke besides Allah, and I will invoke my Lord. I expect that I will not be unhappy in invoking my Lord.',
+    source: 'Surah Maryam 19:48',
+    audioKey: '19:48',
+    whyThis: 'Ibrahim (AS) says this as he walks away from his father and his entire people. Ibn Kathir notes that he loses every human tie he has in one sentence, and what he names as the replacement is du\'a. Al-Sa\'di reads "ʿasā" here as hope rather than doubt — he does not know how it will go, only that calling on his Lord is not the kind of thing that leaves a person wretched. Allah answers by giving him Ishaq and Yaqub in the ayah that follows.',
+    moods: ['Lonely'],
+  },
+  {
+    id: 'quran_33_3',
+    type: 'Quran',
+    primaryText: 'watawakkal ʿalā l-lahi wakafā bil-lahi wakīlan',
+    arabicText: 'وَتَوَكَّلْ عَلَى ٱللَّهِ ۚ وَكَفَىٰ بِٱللَّهِ وَكِيلًا ﴿3﴾',
+    transliteration: 'watawakkal ʿalā l-lahi wakafā bil-lahi wakīlan',
+    englishTranslation: 'And rely upon Allah; and sufficient is Allah as Disposer of affairs.',
+    source: 'Surah Al-Ahzab 33:3',
+    audioKey: '33:3',
+    whyThis: 'Al-Sa\'di explains "kafā" as a closed sufficiency — not "Allah helps as well as others" but "Allah is enough, full stop." Ibn Kathir notes Al-Wakil is the One to whom a matter is entirely handed over, the way you would hand your affairs to someone you trusted completely and then stop supervising them. The ayah is addressed to the Prophet ﷺ at a point when much of Madinah was against him.',
+    moods: ['Lonely'],
+  },
+  {
+    id: 'quran_6_59',
+    type: 'Quran',
+    primaryText:
+      'waʿindahu mafātiḥu l-ghaybi lā yaʿlamuhā illā huwa wayaʿlamu mā fī l-bari wal-baḥri wamā tasquṭu min waraqatin illā yaʿlamuhā walā ḥabbatin fī ẓulumāti l-arḍi walā raṭbin walā yābisin illā fī kitābin mubīnin',
+    arabicText:
+      '۞ وَعِندَهُۥ مَفَاتِحُ ٱلْغَيْبِ لَا يَعْلَمُهَآ إِلَّا هُوَ ۚ وَيَعْلَمُ مَا فِى ٱلْبَرِّ وَٱلْبَحْرِ ۚ وَمَا تَسْقُطُ مِن وَرَقَةٍ إِلَّا يَعْلَمُهَا وَلَا حَبَّةٍ فِى ظُلُمَـٰتِ ٱلْأَرْضِ وَلَا رَطْبٍ وَلَا يَابِسٍ إِلَّا فِى كِتَـٰبٍ مُّبِينٍ ﴿59﴾',
+    transliteration:
+      'waʿindahu mafātiḥu l-ghaybi lā yaʿlamuhā illā huwa wayaʿlamu mā fī l-bari wal-baḥri wamā tasquṭu min waraqatin illā yaʿlamuhā walā ḥabbatin fī ẓulumāti l-arḍi walā raṭbin walā yābisin illā fī kitābin mubīnin',
+    englishTranslation:
+      'And with Him are the keys of the unseen; none knows them except Him. And He knows what is on the land and in the sea. Not a leaf falls but that He knows it. And no grain is there within the darknesses of the earth, and no moist or dry thing, but that it is in a clear record.',
+    source: "Surah Al-An'am 6:59",
+    audioKey: '6:59',
+    whyThis: 'Ibn Kathir points to the deliberate scale of the examples: a single leaf, one seed buried in the dark. Al-Sa\'di adds that the ayah moves from the largest unseen — the keys of the ghayb — down to the smallest unwitnessed event, and states the same knowledge covers both. Nothing is too small to be beneath His attention, which is the point for anyone whose life feels unobserved.',
+    moods: ['Lonely'],
+  },
+  {
+    id: 'quran_49_10',
+    type: 'Quran',
+    primaryText: "innamā l-mu'minūna ikh'watun fa-aṣliḥū bayna akhawaykum wa-ittaqū l-laha laʿallakum tur'ḥamūna",
+    arabicText:
+      'إِنَّمَا ٱلْمُؤْمِنُونَ إِخْوَةٌ فَأَصْلِحُوا۟ بَيْنَ أَخَوَيْكُمْ ۚ وَٱتَّقُوا۟ ٱللَّهَ لَعَلَّكُمْ تُرْحَمُونَ ﴿10﴾',
+    transliteration: "innamā l-mu'minūna ikh'watun fa-aṣliḥū bayna akhawaykum wa-ittaqū l-laha laʿallakum tur'ḥamūna",
+    englishTranslation:
+      'The believers are but brothers, so make settlement between your brothers. And fear Allah that you may receive mercy.',
+    source: 'Surah Al-Hujurat 49:10',
+    audioKey: '49:10',
+    whyThis: 'Al-Sa\'di notes the sentence is a statement of fact before it is an instruction — "the believers *are* brothers" describes a tie that already exists rather than one you must earn. Ibn Kathir reads the command that follows as the consequence: because the bond is real, a rift in it is something to be repaired rather than accepted. For someone who feels outside every circle, the ayah asserts membership first and asks for effort second.',
+    moods: ['Lonely'],
+  },
+  {
+    id: 'quran_8_63',
+    type: 'Quran',
+    primaryText:
+      'wa-allafa bayna qulūbihim law anfaqta mā fī l-arḍi jamīʿan mā allafta bayna qulūbihim walākinna l-laha allafa baynahum innahu ʿazīzun ḥakīmun',
+    arabicText:
+      'وَأَلَّفَ بَيْنَ قُلُوبِهِمْ ۚ لَوْ أَنفَقْتَ مَا فِى ٱلْأَرْضِ جَمِيعًا مَّآ أَلَّفْتَ بَيْنَ قُلُوبِهِمْ وَلَـٰكِنَّ ٱللَّهَ أَلَّفَ بَيْنَهُمْ ۚ إِنَّهُۥ عَزِيزٌ حَكِيمٌ ﴿63﴾',
+    transliteration:
+      'wa-allafa bayna qulūbihim law anfaqta mā fī l-arḍi jamīʿan mā allafta bayna qulūbihim walākinna l-laha allafa baynahum innahu ʿazīzun ḥakīmun',
+    englishTranslation:
+      'And He brought their hearts together. If you had spent all that is on the earth, you could not have brought their hearts together, but Allah brought them together. Indeed, He is Exalted in Might and Wise.',
+    source: 'Surah Al-Anfal 8:63',
+    audioKey: '8:63',
+    whyThis: 'The Aws and Khazraj had been at war for generations before Islam. Ibn Kathir notes the ayah addresses the Prophet ﷺ directly — even he, with everything on earth to spend, could not have manufactured that reconciliation. Al-Sa\'di calls the joining of hearts one of Allah\'s greatest favours precisely because no amount of effort or money purchases it. Connection is described here as something granted, not achieved.',
+    moods: ['Lonely'],
+  },
+  {
+    id: 'quran_2_214',
+    type: 'Quran',
+    primaryText:
+      'am ḥasib\'tum an tadkhulū l-janata walammā yatikum mathalu alladhīna khalaw min qablikum massathumu l-basāu wal-ḍarāu wazul\'zilū ḥattā yaqūla l-rasūlu wa-alladhīna āmanū maʿahu matā naṣru l-lahi alā inna naṣra l-lahi qarībun',
+    arabicText:
+      'أَمْ حَسِبْتُمْ أَن تَدْخُلُوا۟ ٱلْجَنَّةَ وَلَمَّا يَأْتِكُم مَّثَلُ ٱلَّذِينَ خَلَوْا۟ مِن قَبْلِكُم ۖ مَّسَّتْهُمُ ٱلْبَأْسَآءُ وَٱلضَّرَّآءُ وَزُلْزِلُوا۟ حَتَّىٰ يَقُولَ ٱلرَّسُولُ وَٱلَّذِينَ ءَامَنُوا۟ مَعَهُۥ مَتَىٰ نَصْرُ ٱللَّهِ ۗ أَلَآ إِنَّ نَصْرَ ٱللَّهِ قَرِيبٌ ﴿214﴾',
+    transliteration:
+      'am ḥasib\'tum an tadkhulū l-janata walammā yatikum mathalu alladhīna khalaw min qablikum massathumu l-basāu wal-ḍarāu wazul\'zilū ḥattā yaqūla l-rasūlu wa-alladhīna āmanū maʿahu matā naṣru l-lahi alā inna naṣra l-lahi qarībun',
+    englishTranslation:
+      'Or do you think that you will enter Paradise while such trial has not yet come to you as came to those who passed on before you? They were touched by poverty and hardship and were shaken until even the Messenger and those who believed with him said, "When is the help of Allah?" Unquestionably, the help of Allah is near.',
+    source: 'Surah Al-Baqarah 2:214',
+    audioKey: '2:214',
+    whyThis: 'Ibn Kathir highlights what the ayah is willing to record: a messenger of Allah and the believers with him asking out loud when the help is coming. Al-Sa\'di notes the answer does not rebuke the question — it answers it. The shaking is described as the normal condition of the road rather than evidence of having strayed from it, and the reassurance is placed immediately after the complaint rather than instead of it.',
+    moods: ['Lonely'],
+  },
+  {
+    id: 'quran_17_110',
+    type: 'Quran',
+    primaryText:
+      "quli id'ʿū l-laha awi id'ʿū l-raḥmāna ayyan mā tadʿū falahu l-asmāu l-ḥus'nā walā tajhar biṣalātika walā tukhāfit bihā wa-ib'taghi bayna dhālika sabīlan",
+    arabicText:
+      'قُلِ ٱدْعُوا۟ ٱللَّهَ أَوِ ٱدْعُوا۟ ٱلرَّحْمَـٰنَ ۖ أَيًّا مَّا تَدْعُوا۟ فَلَهُ ٱلْأَسْمَآءُ ٱلْحُسْنَىٰ ۚ وَلَا تَجْهَرْ بِصَلَاتِكَ وَلَا تُخَافِتْ بِهَا وَٱبْتَغِ بَيْنَ ذَٰلِكَ سَبِيلًا ﴿110﴾',
+    transliteration:
+      "quli id'ʿū l-laha awi id'ʿū l-raḥmāna ayyan mā tadʿū falahu l-asmāu l-ḥus'nā walā tajhar biṣalātika walā tukhāfit bihā wa-ib'taghi bayna dhālika sabīlan",
+    englishTranslation:
+      'Say, "Call upon Allah or call upon the Most Merciful. Whichever name you call — to Him belong the best names." And do not recite too loudly in your prayer, nor too quietly, but seek a way between that.',
+    source: 'Surah Al-Isra 17:110',
+    audioKey: '17:110',
+    whyThis: 'Ibn Kathir records that this was revealed when the Prophet ﷺ was heard calling "Ya Allah, ya Rahman" and objectors claimed he was invoking two gods. Al-Sa\'di notes the answer: the Names are many and the One called is one, so there is no wrong door to knock on. The second half of the ayah settles the volume of prayer — neither performed for an audience nor swallowed inaudibly.',
+    moods: ['Lonely'],
+  },
+
+  // === GUILTY (pool expansion) ===
+  // 12 -> 25. 2:222 and 24:31 were considered and dropped: both are rulings
+  // whose surrounding context does not belong on a guilt card.
+  {
+    id: 'quran_2_37',
+    type: 'Quran',
+    primaryText: 'fatalaqqā ādamu min rabbihi kalimātin fatāba ʿalayhi innahu huwa l-tawābu l-raḥīmu',
+    arabicText: 'فَتَلَقَّىٰٓ ءَادَمُ مِن رَّبِّهِۦ كَلِمَـٰتٍ فَتَابَ عَلَيْهِ ۚ إِنَّهُۥ هُوَ ٱلتَّوَّابُ ٱلرَّحِيمُ ﴿37﴾',
+    transliteration: 'fatalaqqā ādamu min rabbihi kalimātin fatāba ʿalayhi innahu huwa l-tawābu l-raḥīmu',
+    englishTranslation:
+      'Then Adam received words from his Lord, and He accepted his repentance. Indeed, it is He who is the Accepting of repentance, the Merciful.',
+    source: 'Surah Al-Baqarah 2:37',
+    audioKey: '2:37',
+    whyThis: 'Ibn Kathir notes the direction of the verb: Adam *received* the words — Allah taught him what to say in order to be forgiven. The apology was supplied by the One being apologised to. Al-Sa\'di adds that this is the first repentance in human history and it sets the pattern for every one after it: the servant does not find his own way back, he is shown it.',
+    moods: ['Guilty'],
+  },
+  {
+    id: 'quran_20_122',
+    type: 'Quran',
+    primaryText: "thumma ij'tabāhu rabbuhu fatāba ʿalayhi wahadā",
+    arabicText: 'ثُمَّ ٱجْتَبَـٰهُ رَبُّهُۥ فَتَابَ عَلَيْهِ وَهَدَىٰ ﴿122﴾',
+    transliteration: "thumma ij'tabāhu rabbuhu fatāba ʿalayhi wahadā",
+    englishTranslation: 'Then his Lord chose him and turned to him in forgiveness and guided him.',
+    source: 'Surah Taha 20:122',
+    audioKey: '20:122',
+    whyThis: 'The ayah before this records Adam\'s disobedience plainly. Al-Sa\'di draws attention to the order here: chosen, then forgiven, then guided — the choosing comes after the slip, not before it. Ibn Kathir notes "ijtabāhu" means selected and drawn near, a word of honour rather than mere pardon. Failure did not remove him from the category of the chosen.',
+    moods: ['Guilty'],
+  },
+  {
+    id: 'quran_5_39',
+    type: 'Quran',
+    primaryText: "faman tāba min baʿdi ẓul'mihi wa-aṣlaḥa fa-inna l-laha yatūbu ʿalayhi inna l-laha ghafūrun raḥīmun",
+    arabicText:
+      'فَمَن تَابَ مِنۢ بَعْدِ ظُلْمِهِۦ وَأَصْلَحَ فَإِنَّ ٱللَّهَ يَتُوبُ عَلَيْهِ ۗ إِنَّ ٱللَّهَ غَفُورٌ رَّحِيمٌ ﴿39﴾',
+    transliteration: "faman tāba min baʿdi ẓul'mihi wa-aṣlaḥa fa-inna l-laha yatūbu ʿalayhi inna l-laha ghafūrun raḥīmun",
+    englishTranslation:
+      'But whoever repents after his wrongdoing and reforms, indeed Allah will turn to him in forgiveness. Indeed, Allah is Forgiving and Merciful.',
+    source: "Surah Al-Ma'idah 5:39",
+    audioKey: '5:39',
+    whyThis: 'Al-Sa\'di isolates the second verb: "aṣlaḥa", he put right. Repentance in this ayah is paired with repair rather than left as an internal state. Ibn Kathir notes the placement — this follows a passage on theft, so it is addressed to someone whose wrong had a victim and a consequence, not merely a private regret.',
+    moods: ['Guilty'],
+  },
+  {
+    id: 'quran_9_104',
+    type: 'Quran',
+    primaryText: "alam yaʿlamū anna l-laha huwa yaqbalu l-tawbata ʿan ʿibādihi wayakhudhu l-ṣadaqāti wa-anna l-laha huwa l-tawābu l-raḥīmu",
+    arabicText:
+      'أَلَمْ يَعْلَمُوٓا۟ أَنَّ ٱللَّهَ هُوَ يَقْبَلُ ٱلتَّوْبَةَ عَنْ عِبَادِهِۦ وَيَأْخُذُ ٱلصَّدَقَـٰتِ وَأَنَّ ٱللَّهَ هُوَ ٱلتَّوَّابُ ٱلرَّحِيمُ ﴿104﴾',
+    transliteration: 'alam yaʿlamū anna l-laha huwa yaqbalu l-tawbata ʿan ʿibādihi wayakhudhu l-ṣadaqāti wa-anna l-laha huwa l-tawābu l-raḥīmu',
+    englishTranslation:
+      'Do they not know that it is Allah who accepts repentance from His servants and receives charities, and that it is Allah who is the Accepting of repentance, the Merciful?',
+    source: 'Surah At-Tawbah 9:104',
+    audioKey: '9:104',
+    whyThis: 'Ibn Kathir notes the pairing of two things in one sentence: He accepts the turning, and He receives the giving. Al-Sa\'di reads the rhetorical opening — "do they not know?" — as addressed to people who have already repented but cannot believe it was accepted. The doubt, not the sin, is what the ayah is arguing with.',
+    moods: ['Guilty'],
+  },
+  {
+    id: 'quran_23_118',
+    type: 'Quran',
+    primaryText: "waqul rabbi igh'fir wa-ir'ḥam wa-anta khayru l-rāḥimīna",
+    arabicText: 'وَقُل رَّبِّ ٱغْفِرْ وَٱرْحَمْ وَأَنتَ خَيْرُ ٱلرَّٰحِمِينَ ﴿118﴾',
+    transliteration: "waqul rabbi igh'fir wa-ir'ḥam wa-anta khayru l-rāḥimīna",
+    englishTranslation: 'And say, "My Lord, forgive and have mercy, and You are the best of the merciful."',
+    source: "Surah Al-Mu'minun 23:118",
+    audioKey: '23:118',
+    whyThis: 'The closing ayah of the surah, and Al-Sa\'di notes how little it asks the servant to supply: two verbs and an acknowledgement. Ibn Kathir observes that no object is named — not "forgive this sin" but simply "forgive" — so the du\'a covers what you can articulate and what you cannot. It is the shortest complete repentance in the Quran.',
+    moods: ['Guilty'],
+  },
+  {
+    id: 'quran_40_3',
+    type: 'Quran',
+    primaryText: 'ghāfiri l-dhanbi waqābili l-tawbi shadīdi l-ʿiqābi dhī l-ṭawli lā ilāha illā huwa ilayhi l-maṣīru',
+    arabicText:
+      'غَافِرِ ٱلذَّنۢبِ وَقَابِلِ ٱلتَّوْبِ شَدِيدِ ٱلْعِقَابِ ذِى ٱلطَّوْلِ ۖ لَآ إِلَـٰهَ إِلَّا هُوَ ۖ إِلَيْهِ ٱلْمَصِيرُ ﴿3﴾',
+    transliteration: 'ghāfiri l-dhanbi waqābili l-tawbi shadīdi l-ʿiqābi dhī l-ṭawli lā ilāha illā huwa ilayhi l-maṣīru',
+    englishTranslation:
+      'The Forgiver of sin, the Acceptor of repentance, severe in punishment, Owner of abundance. There is no deity except Him; to Him is the destination.',
+    source: 'Surah Ghafir 40:3',
+    audioKey: '40:3',
+    whyThis: 'Al-Sa\'di notes the ordering as deliberate: two descriptions of mercy, then the warning, then abundance. Ibn Kathir explains that "ghāfir al-dhanb" covers the sin of one who repents and "qābil al-tawb" the acceptance of the one who turns — mentioned first and given twice the weight. Fear is present in the ayah but it is bracketed on both sides by mercy.',
+    moods: ['Guilty'],
+  },
+  {
+    id: 'quran_51_18',
+    type: 'Quran',
+    primaryText: 'wabil-asḥāri hum yastaghfirūna',
+    arabicText: 'وَبِٱلْأَسْحَارِ هُمْ يَسْتَغْفِرُونَ ﴿18﴾',
+    transliteration: 'wabil-asḥāri hum yastaghfirūna',
+    englishTranslation: 'And in the hours before dawn they would ask forgiveness.',
+    source: 'Surah Adh-Dhariyat 51:18',
+    audioKey: '51:18',
+    whyThis: 'The two ayahs before this describe people who barely slept, spending the night in prayer. Ibn Kathir notes what they do with the last stretch of it: not congratulate themselves, but seek forgiveness. Al-Sa\'di reads this as the mark of the sincere — having given the night, they close it by apologising for the shortfall. Istighfar here is the practice of the diligent, not a remedy for the negligent.',
+    moods: ['Guilty'],
+  },
+  {
+    id: 'quran_71_10',
+    type: 'Quran',
+    primaryText: "faqul'tu is'taghfirū rabbakum innahu kāna ghaffāran",
+    arabicText: 'فَقُلْتُ ٱسْتَغْفِرُوا۟ رَبَّكُمْ إِنَّهُۥ كَانَ غَفَّارًا ﴿10﴾',
+    transliteration: "faqul'tu is'taghfirū rabbakum innahu kāna ghaffāran",
+    englishTranslation: "And I said, 'Ask forgiveness of your Lord. Indeed, He is ever a Perpetual Forgiver.'",
+    source: 'Surah Nuh 71:10',
+    audioKey: '71:10',
+    whyThis: 'Nuh (AS) had preached for centuries with almost no response. Ibn Kathir notes what he offers in the two ayahs that follow: rain in abundance, wealth, children, gardens and rivers — all promised as the consequence of istighfar. Al-Sa\'di comments that seeking forgiveness is presented here as a cause of worldly provision and not only of pardon, which is why the scholars prescribe it for stalled affairs as well as for sin.',
+    moods: ['Guilty'],
+  },
+  {
+    id: 'quran_110_3',
+    type: 'Quran',
+    primaryText: "fasabbiḥ biḥamdi rabbika wa-is'taghfir'hu innahu kāna tawwāban",
+    arabicText: 'فَسَبِّحْ بِحَمْدِ رَبِّكَ وَٱسْتَغْفِرْهُ ۚ إِنَّهُۥ كَانَ تَوَّابًۢا ﴿3﴾',
+    transliteration: "fasabbiḥ biḥamdi rabbika wa-is'taghfir'hu innahu kāna tawwāban",
+    englishTranslation:
+      'Then exalt Him with praise of your Lord and ask forgiveness of Him. Indeed, He is ever Accepting of repentance.',
+    source: 'Surah An-Nasr 110:3',
+    audioKey: '110:3',
+    whyThis: 'This came after the conquest of Makkah — the greatest victory of the Prophet\'s ﷺ life — and the instruction is to seek forgiveness. Ibn Kathir records that Aisha (RA) said he repeated "subhanaka Allahumma wa bihamdika, Allahumma ighfir li" often after it was revealed. Al-Sa\'di notes the lesson: istighfar belongs at the summit as much as in the pit, because no achievement is performed as well as it was owed.',
+    moods: ['Guilty'],
+  },
+  {
+    id: 'quran_3_16',
+    type: 'Quran',
+    primaryText: "alladhīna yaqūlūna rabbanā innanā āmannā fa-igh'fir lanā dhunūbanā waqinā ʿadhāba l-nāri",
+    arabicText:
+      'ٱلَّذِينَ يَقُولُونَ رَبَّنَآ إِنَّنَآ ءَامَنَّا فَٱغْفِرْ لَنَا ذُنُوبَنَا وَقِنَا عَذَابَ ٱلنَّارِ ﴿16﴾',
+    transliteration: "alladhīna yaqūlūna rabbanā innanā āmannā fa-igh'fir lanā dhunūbanā waqinā ʿadhāba l-nāri",
+    englishTranslation:
+      'Those who say, "Our Lord, indeed we have believed, so forgive us our sins and protect us from the punishment of the Fire."',
+    source: 'Surah Ali Imran 3:16',
+    audioKey: '3:16',
+    whyThis: 'Al-Sa\'di points to the logic inside the du\'a: they offer their faith as the grounds for the request — we believed, so forgive us. Ibn Kathir notes this is listed among the descriptions of the righteous, meaning asking for forgiveness is what the good are characterised by rather than what disqualifies them from the description.',
+    moods: ['Guilty'],
+  },
+  {
+    id: 'quran_4_17',
+    type: 'Quran',
+    primaryText: 'innamā l-tawbatu ʿalā l-lahi lilladhīna yaʿmalūna l-sūa bijahālatin thumma yatūbūna min qarībin fa-ulāika yatūbu l-lahu ʿalayhim wakāna l-lahu ʿalīman ḥakīman',
+    arabicText:
+      'إِنَّمَا ٱلتَّوْبَةُ عَلَى ٱللَّهِ لِلَّذِينَ يَعْمَلُونَ ٱلسُّوٓءَ بِجَهَـٰلَةٍ ثُمَّ يَتُوبُونَ مِن قَرِيبٍ فَأُو۟لَـٰٓئِكَ يَتُوبُ ٱللَّهُ عَلَيْهِمْ ۗ وَكَانَ ٱللَّهُ عَلِيمًا حَكِيمًا ﴿17﴾',
+    transliteration: 'innamā l-tawbatu ʿalā l-lahi lilladhīna yaʿmalūna l-sūa bijahālatin thumma yatūbūna min qarībin fa-ulāika yatūbu l-lahu ʿalayhim wakāna l-lahu ʿalīman ḥakīman',
+    englishTranslation:
+      'The repentance accepted by Allah is only for those who do wrong in ignorance and then repent soon after. It is those to whom Allah will turn in forgiveness, and Allah is ever Knowing and Wise.',
+    source: 'Surah An-Nisa 4:17',
+    audioKey: '4:17',
+    whyThis: 'Ibn Kathir reports the position of the companions that "bijahālatin" covers anyone who disobeys deliberately, since every act of disobedience is a kind of ignorance in the moment — the word does not restrict the ayah to those who did not know better. Al-Sa\'di explains "min qarībin" as before death arrives, so "soon" is measured against a lifetime rather than against hours.',
+    moods: ['Guilty'],
+  },
+
+  // === TIRED (pool expansion) ===
+  // 13 -> 24. 46:35 and 76:24 were considered and dropped — the first ends on
+  // the destruction of the disobedient, the second repeats 52:48's opening.
+  {
+    id: 'quran_52_48',
+    type: 'Quran',
+    primaryText: "wa-iṣ'bir liḥuk'mi rabbika fa-innaka bi-aʿyuninā wasabbiḥ biḥamdi rabbika ḥīna taqūmu",
+    arabicText: 'وَٱصْبِرْ لِحُكْمِ رَبِّكَ فَإِنَّكَ بِأَعْيُنِنَا ۖ وَسَبِّحْ بِحَمْدِ رَبِّكَ حِينَ تَقُومُ ﴿48﴾',
+    transliteration: "wa-iṣ'bir liḥuk'mi rabbika fa-innaka bi-aʿyuninā wasabbiḥ biḥamdi rabbika ḥīna taqūmu",
+    englishTranslation:
+      'And be patient for the decision of your Lord, for indeed, you are in Our eyes. And exalt Him with praise of your Lord when you arise.',
+    source: 'Surah At-Tur 52:48',
+    audioKey: '52:48',
+    whyThis: 'Ibn Kathir renders "bi-aʿyuninā" as under Our observation and Our protection — the phrase carries being watched over rather than merely watched. Al-Sa\'di notes it is given as the *reason* for the patience being asked: endure, because you are not enduring unobserved. The command that follows attaches praise to the moment of getting up, which is the hardest moment for anyone worn down.',
+    moods: ['Tired'],
+  },
+  {
+    id: 'quran_70_5',
+    type: 'Quran',
+    primaryText: "fa-iṣ'bir ṣabran jamīlan",
+    arabicText: 'فَٱصْبِرْ صَبْرًا جَمِيلًا ﴿5﴾',
+    transliteration: "fa-iṣ'bir ṣabran jamīlan",
+    englishTranslation: 'So be patient with gracious patience.',
+    source: "Surah Al-Ma'arij 70:5",
+    audioKey: '70:5',
+    whyThis: 'Al-Sa\'di defines ṣabr jamīl as patience without complaint to creation — not patience without pain. Ibn Kathir notes the word jamīl means beautiful, and that what makes it beautiful is the absence of resentment rather than the absence of difficulty. The distinction matters: you are not being asked to feel less, only to take it somewhere other than to people who cannot carry it.',
+    moods: ['Tired'],
+  },
+  {
+    id: 'quran_40_55',
+    type: 'Quran',
+    primaryText: "fa-iṣ'bir inna waʿda l-lahi ḥaqqun wa-is'taghfir lidhanbika wasabbiḥ biḥamdi rabbika bil-ʿashiyi wal-ib'kāri",
+    arabicText:
+      'فَٱصْبِرْ إِنَّ وَعْدَ ٱللَّهِ حَقٌّ وَٱسْتَغْفِرْ لِذَنۢبِكَ وَسَبِّحْ بِحَمْدِ رَبِّكَ بِٱلْعَشِىِّ وَٱلْإِبْكَـٰرِ ﴿55﴾',
+    transliteration: "fa-iṣ'bir inna waʿda l-lahi ḥaqqun wa-is'taghfir lidhanbika wasabbiḥ biḥamdi rabbika bil-ʿashiyi wal-ib'kāri",
+    englishTranslation:
+      'So be patient. Indeed, the promise of Allah is truth. And ask forgiveness for your sin, and exalt Him with praise of your Lord in the evening and the morning.',
+    source: 'Surah Ghafir 40:55',
+    audioKey: '40:55',
+    whyThis: 'Al-Sa\'di reads the three instructions as a single regimen rather than a list: patience is sustained by certainty in the promise, and the two fixed points of remembrance — evening and morning — are what hold the certainty in place. Ibn Kathir notes the placement of istighfar between them, since what most often erodes endurance is not the difficulty itself but the guilt a person carries into it.',
+    moods: ['Tired'],
+  },
+  {
+    id: 'quran_7_42',
+    type: 'Quran',
+    primaryText: "wa-alladhīna āmanū waʿamilū l-ṣāliḥāti lā nukallifu nafsan illā wus'ʿahā ulāika aṣḥābu l-janati hum fīhā khālidūna",
+    arabicText:
+      'وَٱلَّذِينَ ءَامَنُوا۟ وَعَمِلُوا۟ ٱلصَّـٰلِحَـٰتِ لَا نُكَلِّفُ نَفْسًا إِلَّا وُسْعَهَآ أُو۟لَـٰٓئِكَ أَصْحَـٰبُ ٱلْجَنَّةِ ۖ هُمْ فِيهَا خَـٰلِدُونَ ﴿42﴾',
+    transliteration: "wa-alladhīna āmanū waʿamilū l-ṣāliḥāti lā nukallifu nafsan illā wus'ʿahā ulāika aṣḥābu l-janati hum fīhā khālidūna",
+    englishTranslation:
+      'But those who believed and did righteous deeds — We charge no soul except within its capacity — those are the companions of Paradise; they will abide therein eternally.',
+    source: "Surah Al-A'raf 7:42",
+    audioKey: '7:42',
+    whyThis: 'Al-Sa\'di draws attention to where the clause sits: the limit on what a soul is charged with is inserted mid-sentence, between the description of the righteous and the promise of Paradise. Ibn Kathir reads it as a mercy placed deliberately so that nobody hearing the standard despairs of meeting it. "Wusʿ" is capacity, what a person can comfortably bear — not the maximum they could survive.',
+    moods: ['Tired'],
+  },
+  {
+    id: 'quran_20_132',
+    type: 'Quran',
+    primaryText: "wamur ahlaka bil-ṣalati wa-iṣ'ṭabir ʿalayhā lā nasaluka riz'qan naḥnu narzuquka wal-ʿāqibatu lilttaqwā",
+    arabicText:
+      'وَأْمُرْ أَهْلَكَ بِٱلصَّلَوٰةِ وَٱصْطَبِرْ عَلَيْهَا ۖ لَا نَسْـَٔلُكَ رِزْقًا ۖ نَّحْنُ نَرْزُقُكَ ۗ وَٱلْعَـٰقِبَةُ لِلتَّقْوَىٰ ﴿132﴾',
+    transliteration: "wamur ahlaka bil-ṣalati wa-iṣ'ṭabir ʿalayhā lā nasaluka riz'qan naḥnu narzuquka wal-ʿāqibatu lilttaqwā",
+    englishTranslation:
+      'And enjoin prayer upon your family and be steadfast therein. We ask you not for provision; We provide for you. And the best outcome is for the righteous.',
+    source: 'Surah Taha 20:132',
+    audioKey: '20:132',
+    whyThis: 'Ibn Kathir highlights the reversal in the middle of the ayah: the one thing Allah does *not* ask of you is provision, because that is His side of the arrangement. Al-Sa\'di notes the verb "iṣṭabir" is an intensified form of patience, used for something requiring sustained effort over time. What is asked is steadfastness in prayer; what is lifted is the weight of supplying.',
+    moods: ['Tired'],
+  },
+  {
+    id: 'quran_17_19',
+    type: 'Quran',
+    primaryText: "waman arāda l-ākhirata wasaʿā lahā saʿyahā wahuwa mu'minun fa-ulāika kāna saʿyuhum mashkūran",
+    arabicText:
+      'وَمَنْ أَرَادَ ٱلْـَٔاخِرَةَ وَسَعَىٰ لَهَا سَعْيَهَا وَهُوَ مُؤْمِنٌ فَأُو۟لَـٰٓئِكَ كَانَ سَعْيُهُم مَّشْكُورًا ﴿19﴾',
+    transliteration: "waman arāda l-ākhirata wasaʿā lahā saʿyahā wahuwa mu'minun fa-ulāika kāna saʿyuhum mashkūran",
+    englishTranslation:
+      'But whoever desires the Hereafter and exerts the effort due to it while he is a believer — it is those whose effort is ever appreciated.',
+    source: 'Surah Al-Isra 17:19',
+    audioKey: '17:19',
+    whyThis: 'Al-Sa\'di stops on "mashkūran" — appreciated, thanked. Allah describes Himself as receiving the effort with gratitude, which is a startling word to use of the Creator toward a servant. Ibn Kathir notes the three conditions named are intention, effort and faith; the result is not framed as payment owed but as thanks given.',
+    moods: ['Tired'],
+  },
+  {
+    id: 'quran_12_18',
+    type: 'Quran',
+    primaryText: 'wajāū ʿalā qamīṣihi bidamin kadhibin qāla bal sawwalat lakum anfusukum amran faṣabrun jamīlun wal-lahu l-mus\'taʿānu ʿalā mā taṣifūna',
+    arabicText:
+      'وَجَآءُو عَلَىٰ قَمِيصِهِۦ بِدَمٍ كَذِبٍ ۚ قَالَ بَلْ سَوَّلَتْ لَكُمْ أَنفُسُكُمْ أَمْرًا ۖ فَصَبْرٌ جَمِيلٌ ۖ وَٱللَّهُ ٱلْمُسْتَعَانُ عَلَىٰ مَا تَصِفُونَ ﴿18﴾',
+    transliteration: 'wajāū ʿalā qamīṣihi bidamin kadhibin qāla bal sawwalat lakum anfusukum amran faṣabrun jamīlun wal-lahu l-mus\'taʿānu ʿalā mā taṣifūna',
+    englishTranslation:
+      'And they brought upon his shirt false blood. He said, "Rather, your souls have enticed you to something, so patience is most fitting. And Allah is the one sought for help against that which you describe."',
+    source: 'Surah Yusuf 12:18',
+    audioKey: '12:18',
+    whyThis: 'Yaqub (AS) has just been shown the shirt and does not believe them, and still does not rage. Ibn Kathir notes he names the deception accurately and then reaches for two things: beautiful patience, and Allah as the One whose help is sought. Al-Sa\'di observes that "al-mustaʿān" is where the strength comes from — the patience is not self-generated, which is why it can be sustained when a person has nothing left of their own.',
+    moods: ['Tired'],
+  },
+
+  // === ANGRY (pool expansion) ===
+  // 18 -> 25. 2:109 and 3:186 were considered and dropped: both name a specific
+  // group as the source of the hostility, which reads sectarian on an anger card.
+  {
+    id: 'quran_5_8',
+    type: 'Quran',
+    primaryText: "yāayyuhā alladhīna āmanū kūnū qawwāmīna lillahi shuhadāa bil-qis'ṭi walā yajrimannakum shanaānu qawmin ʿalā allā taʿdilū iʿ'dilū huwa aqrabu lilttaqwā wa-ittaqū l-laha inna l-laha khabīrun bimā taʿmalūna",
+    arabicText:
+      'يَـٰٓأَيُّهَا ٱلَّذِينَ ءَامَنُوا۟ كُونُوا۟ قَوَّٰمِينَ لِلَّهِ شُهَدَآءَ بِٱلْقِسْطِ ۖ وَلَا يَجْرِمَنَّكُمْ شَنَـَٔانُ قَوْمٍ عَلَىٰٓ أَلَّا تَعْدِلُوا۟ ۚ ٱعْدِلُوا۟ هُوَ أَقْرَبُ لِلتَّقْوَىٰ ۖ وَٱتَّقُوا۟ ٱللَّهَ ۚ إِنَّ ٱللَّهَ خَبِيرٌۢ بِمَا تَعْمَلُونَ ﴿8﴾',
+    transliteration: "yāayyuhā alladhīna āmanū kūnū qawwāmīna lillahi shuhadāa bil-qis'ṭi walā yajrimannakum shanaānu qawmin ʿalā allā taʿdilū iʿ'dilū huwa aqrabu lilttaqwā wa-ittaqū l-laha inna l-laha khabīrun bimā taʿmalūna",
+    englishTranslation:
+      'O you who believe, be persistently standing firm for Allah, witnesses in justice. And do not let the hatred of a people prevent you from being just. Be just; that is nearer to righteousness. And fear Allah; indeed, Allah is Acquainted with what you do.',
+    source: "Surah Al-Ma'idah 5:8",
+    audioKey: '5:8',
+    whyThis: 'Ibn Kathir explains "shanaān" as intense dislike, and notes the ayah does not ask you to stop feeling it — it forbids letting it distort your judgement. Al-Sa\'di observes that justice toward someone you dislike is named as *nearer to taqwa* than justice in general, because the difficulty is what gives it weight. The command assumes the hatred is present and legislates around it.',
+    moods: ['Angry'],
+  },
+  {
+    id: 'quran_15_85',
+    type: 'Quran',
+    primaryText: "wamā khalaqnā l-samāwāti wal-arḍa wamā baynahumā illā bil-ḥaqi wa-inna l-sāʿata laātiyatun fa-iṣ'faḥi l-ṣafḥa l-jamīla",
+    arabicText:
+      'وَمَا خَلَقْنَا ٱلسَّمَـٰوَٰتِ وَٱلْأَرْضَ وَمَا بَيْنَهُمَآ إِلَّا بِٱلْحَقِّ ۗ وَإِنَّ ٱلسَّاعَةَ لَـَٔاتِيَةٌ ۖ فَٱصْفَحِ ٱلصَّفْحَ ٱلْجَمِيلَ ﴿85﴾',
+    transliteration: "wamā khalaqnā l-samāwāti wal-arḍa wamā baynahumā illā bil-ḥaqi wa-inna l-sāʿata laātiyatun fa-iṣ'faḥi l-ṣafḥa l-jamīla",
+    englishTranslation:
+      'And We did not create the heavens and the earth and what is between them except in truth. And indeed, the Hour is coming; so forgive with gracious forgiveness.',
+    source: 'Surah Al-Hijr 15:85',
+    audioKey: '15:85',
+    whyThis: 'Al-Sa\'di distinguishes ṣafḥ from ʿafw: pardon drops the claim, ṣafḥ turns the page entirely so the matter is not raised again. Ibn Kathir notes the reasoning given for it — the Hour is coming, so accounts will be settled by someone other than you. The forgiveness is grounded in confidence about justice, not in indifference to it.',
+    moods: ['Angry'],
+  },
+  {
+    id: 'quran_23_96',
+    type: 'Quran',
+    primaryText: "id'faʿ bi-allatī hiya aḥsanu l-sayi-ata naḥnu aʿlamu bimā yaṣifūna",
+    arabicText: 'ٱدْفَعْ بِٱلَّتِى هِىَ أَحْسَنُ ٱلسَّيِّئَةَ ۚ نَحْنُ أَعْلَمُ بِمَا يَصِفُونَ ﴿96﴾',
+    transliteration: "id'faʿ bi-allatī hiya aḥsanu l-sayi-ata naḥnu aʿlamu bimā yaṣifūna",
+    englishTranslation:
+      'Repel evil by that which is better. We are most knowing of what they describe.',
+    source: "Surah Al-Mu'minun 23:96",
+    audioKey: '23:96',
+    whyThis: 'Ibn Kathir reads "idfaʿ" as an active verb — repel, push back — so this is not passivity dressed as virtue but a countermeasure chosen for being more effective. Al-Sa\'di adds the closing clause as the reason it is bearable: Allah already knows exactly what was said about you, so the record does not depend on your correcting it.',
+    moods: ['Angry'],
+  },
+  {
+    id: 'quran_25_72',
+    type: 'Quran',
+    primaryText: "wa-alladhīna lā yashhadūna l-zūra wa-idhā marrū bil-laghwi marrū kirāman",
+    arabicText: 'وَٱلَّذِينَ لَا يَشْهَدُونَ ٱلزُّورَ وَإِذَا مَرُّوا۟ بِٱللَّغْوِ مَرُّوا۟ كِرَامًا ﴿72﴾',
+    transliteration: 'wa-alladhīna lā yashhadūna l-zūra wa-idhā marrū bil-laghwi marrū kirāman',
+    englishTranslation:
+      'And those who do not testify to falsehood, and when they pass near ill speech, they pass by with dignity.',
+    source: 'Surah Al-Furqan 25:72',
+    audioKey: '25:72',
+    whyThis: 'Al-Sa\'di notes the verb: they pass *by*. They do not stop, engage, or answer. Ibn Kathir renders "kirāman" as honourably — the dignity is in not being drawn in rather than in winning the exchange. This sits among the descriptions of ʿibād ar-Rahman, so declining to engage is listed as a mark of the servants of the Most Merciful, not as avoidance.',
+    moods: ['Angry'],
+  },
+  {
+    id: 'quran_17_53',
+    type: 'Quran',
+    primaryText: 'waqul liʿibādī yaqūlū allatī hiya aḥsanu inna l-shayṭāna yanzaghu baynahum inna l-shayṭāna kāna lil\'insāni ʿaduwwan mubīnan',
+    arabicText:
+      'وَقُل لِّعِبَادِى يَقُولُوا۟ ٱلَّتِى هِىَ أَحْسَنُ ۚ إِنَّ ٱلشَّيْطَـٰنَ يَنزَغُ بَيْنَهُمْ ۚ إِنَّ ٱلشَّيْطَـٰنَ كَانَ لِلْإِنسَـٰنِ عَدُوًّا مُّبِينًا ﴿53﴾',
+    transliteration: 'waqul liʿibādī yaqūlū allatī hiya aḥsanu inna l-shayṭāna yanzaghu baynahum inna l-shayṭāna kāna lil\'insāni ʿaduwwan mubīnan',
+    englishTranslation:
+      'And tell My servants to say that which is best. Indeed, Satan induces dissension among them. Indeed, Satan is ever a clear enemy to man.',
+    source: 'Surah Al-Isra 17:53',
+    audioKey: '17:53',
+    whyThis: 'Ibn Kathir notes the same root used in 7:200 — "yanzagh", to goad or prod — but here it is applied to the space *between* two people rather than inside one. Al-Sa\'di draws the practical consequence: harsh words are the opening he works through, so choosing the better wording is not politeness but closing a door. The enmity named at the end is his, not the other person\'s.',
+    moods: ['Angry'],
+  },
+  {
+    id: 'quran_31_17',
+    type: 'Quran',
+    primaryText: "yābunayya aqimi l-ṣalata wamur bil-maʿrūfi wa-in'ha ʿani l-munkari wa-iṣ'bir ʿalā mā aṣābaka inna dhālika min ʿazmi l-umūri",
+    arabicText:
+      'يَـٰبُنَىَّ أَقِمِ ٱلصَّلَوٰةَ وَأْمُرْ بِٱلْمَعْرُوفِ وَٱنْهَ عَنِ ٱلْمُنكَرِ وَٱصْبِرْ عَلَىٰ مَآ أَصَابَكَ ۖ إِنَّ ذَٰلِكَ مِنْ عَزْمِ ٱلْأُمُورِ ﴿17﴾',
+    transliteration: "yābunayya aqimi l-ṣalata wamur bil-maʿrūfi wa-in'ha ʿani l-munkari wa-iṣ'bir ʿalā mā aṣābaka inna dhālika min ʿazmi l-umūri",
+    englishTranslation:
+      'O my son, establish prayer, enjoin what is right, forbid what is wrong, and be patient over what befalls you. Indeed, that is of the matters requiring determination.',
+    source: 'Surah Luqman 31:17',
+    audioKey: '31:17',
+    whyThis: 'Luqman puts patience immediately after the instruction to speak up — Al-Sa\'di notes the ordering is causal, since anyone who enjoins good will be answered badly for it. Ibn Kathir explains "ʿazm al-umūr" as matters requiring resolve, the things that do not happen without a decision. Standing for what is right and absorbing the response are given as one instruction, not two.',
+    moods: ['Angry'],
+  },
+  {
+    id: 'quran_16_127',
+    type: 'Quran',
+    primaryText: "wa-iṣ'bir wamā ṣabruka illā bil-lahi walā taḥzan ʿalayhim walā taku fī ḍayqin mimmā yamkurūna",
+    arabicText:
+      'وَٱصْبِرْ وَمَا صَبْرُكَ إِلَّا بِٱللَّهِ ۚ وَلَا تَحْزَنْ عَلَيْهِمْ وَلَا تَكُ فِى ضَيْقٍ مِّمَّا يَمْكُرُونَ ﴿127﴾',
+    transliteration: "wa-iṣ'bir wamā ṣabruka illā bil-lahi walā taḥzan ʿalayhim walā taku fī ḍayqin mimmā yamkurūna",
+    englishTranslation:
+      'And be patient, and your patience is not but through Allah. And do not grieve over them, and do not be in distress over what they plot.',
+    source: 'Surah An-Nahl 16:127',
+    audioKey: '16:127',
+    whyThis: 'Al-Sa\'di stops on the parenthesis: your patience is not but through Allah. The capacity to endure is itself supplied, which is why it can be asked for rather than only summoned. Ibn Kathir notes the final clause forbids "ḍayq" — a constriction of the chest, the physical tightness of being wronged — naming the bodily sensation rather than only the attitude.',
+    moods: ['Angry'],
+  },
 ];
 
 const quranContent: Content[] = quranContentData;
@@ -2708,13 +3434,13 @@ const quranContentAnglesData: ContentAngle[] = [
         arabicText: 'اللَّهُمَّ إِنِّي أَسْتَخِيرُكَ بِعِلْمِكَ وَأَسْتَقْدِرُكَ بِقُدْرَتِكَ',
         transliteration: "Allahumma inni astakhiruka bi-'ilmik, wa astaqdiruka bi-qudratik",
         translation: 'O Allah, I seek Your guidance by Your knowledge and ability by Your power',
-        source: 'Sahih Bukhari 1162',
+        source: 'Sahih al-Bukhari 1166',
         sourceType: 'prophetic_dua',
         sourceGrading: 'sahih',
       },
     ]),
     reflection:
-      'How does focusing on your sincere effort rather than the end result ease your anxiety?',
+      'Separate what you actually did today from what resulted. Which of the two have you been grading yourself on?',
   },
   {
     id: 'q_angle_26_80_anxious',
@@ -2925,7 +3651,7 @@ const quranContentAnglesData: ContentAngle[] = [
     angle:
       'Ibn Kathir narrates that two righteous men, Yusha ibn Nun and Kalib ibn Yufanna, urged the Israelites to trust Allah and take action. They said: "Enter upon them through the gate"—meaning take the first step—"and upon Allah put your trust if you are believers." This verse teaches that tawakkul (reliance on Allah) is not passivity; it is taking courageous action while trusting Allah with the outcome. True faith demands both effort and trust. [Tafsir Ibn Kathir]',
     angleSource: 'Tafsir Ibn Kathir',
-    action: 'Take one action towards your goal, then leave the rest to Allah',
+    action: 'Take one action towards your goal, then leave the rest to Allah.',
     practiceSteps: JSON.stringify([
       {
         type: 'physical',
@@ -2959,7 +3685,7 @@ const quranContentAnglesData: ContentAngle[] = [
         sourceType: 'quran_dua',
       },
     ]),
-    reflection: 'How does letting go of the outcome affect your current anxiety levels?',
+    reflection: 'What outcome are you gripping hardest? Say plainly what would happen if it went the other way.',
   },
   {
     id: 'q_angle_14_12_anxious',
@@ -2968,7 +3694,7 @@ const quranContentAnglesData: ContentAngle[] = [
     angle:
       'The Prophets and Messengers declared: "Why should we not rely upon Allah when He has already guided us to our ways?" Imam al-Qurtubi explains that their argument was logical: the One who guided you through past confusion will not abandon you now. Past guidance is proof of future care. The Prophet ﷺ said: "Know Allah in prosperity and He will know you in adversity." Your history with Allah is evidence that He will see you through again. [Tafsir al-Qurtubi]',
     angleSource: 'Tafsir al-Qurtubi',
-    action: 'Reflect on a time you were lost and how Allah directed you',
+    action: 'Reflect on a time you were lost and how Allah directed you.',
     practiceSteps: JSON.stringify([
       {
         type: 'mindset',
@@ -3001,7 +3727,8 @@ const quranContentAnglesData: ContentAngle[] = [
         title: 'Know Allah in ease',
         instruction:
           'Perform one act of worship right now — even a short prayer or charity — so that you "know Allah in prosperity and He will know you in adversity."',
-        source: '"Know Allah in prosperity and He will know you in adversity." [Musnad Ahmad 2803]',
+        source:
+          '"Recognize and acknowledge Allah in times of ease and prosperity, and He will remember you in times of adversity." [40 Hadith an-Nawawi 19]',
         sourceType: 'sunnah_action',
         sourceGrading: 'hasan',
       },
@@ -3015,7 +3742,7 @@ const quranContentAnglesData: ContentAngle[] = [
     angle:
       'Ibn Kathir explains that true believers are described by three qualities: their hearts tremble when Allah is mentioned, their faith increases when His verses are recited, and they rely fully upon their Lord. Imam al-Sa\'di adds that faith is not static—it grows with every act of remembrance and recitation. The Prophet ﷺ said: "Faith wears out in the heart as a garment wears out, so ask Allah to renew faith in your hearts." [Tafsir Ibn Kathir, al-Sa\'di]',
     angleSource: 'Tafsir Ibn Kathir',
-    action: 'Listen to a recitation of your favorite surah for 5 minutes',
+    action: 'Listen to a recitation of your favorite surah for 5 minutes.',
     practiceSteps: JSON.stringify([
       {
         type: 'physical',
@@ -3032,11 +3759,11 @@ const quranContentAnglesData: ContentAngle[] = [
         icon: 'hands-prayer',
         title: 'Ask Allah to renew your faith',
         instruction: 'Make this dua to renew the faith that has worn out in your heart.',
-        arabicText: 'اللَّهُمَّ جَدِّدِ الْإِيمَانَ فِي قَلْبِي',
-        transliteration: 'Allahumma jaddid al-imana fi qalbi',
-        translation: 'O Allah, renew the faith in my heart',
+        arabicText: 'يَا مُقَلِّبَ الْقُلُوبِ ثَبِّتْ قَلْبِي عَلَى دِينِكَ',
+        transliteration: "Ya Muqallib al-qulub, thabbit qalbi 'ala dinik",
+        translation: 'O Turner of the hearts, make my heart firm upon Your religion',
         source:
-          '"Faith wears out in the heart as a garment wears out, so ask Allah to renew faith in your hearts." [Al-Hakim, Sahih]',
+          "\"The Messenger of Allah would often say: Ya Muqallibal-qulub, thabbit qalbi 'ala dinik.\" [Jami' at-Tirmidhi 2140]",
         sourceType: 'prophetic_dua',
         sourceGrading: 'sahih',
       },
@@ -3050,7 +3777,7 @@ const quranContentAnglesData: ContentAngle[] = [
         sourceType: 'quran_dua',
       },
     ]),
-    reflection: 'How does the Word of Allah bring stability to your trembling heart?',
+    reflection: 'When did the Quran last steady you? Go back to that passage tonight instead of hunting for a new one.',
   },
   {
     id: 'q_angle_67_29_anxious',
@@ -3059,7 +3786,7 @@ const quranContentAnglesData: ContentAngle[] = [
     angle:
       'This verse commands the Prophet ﷺ to declare: "He is the Most Merciful (Ar-Rahman); we have believed in Him, and upon Him we have relied." Ibn Kathir explains the pairing of Ar-Rahman with tawakkul: you are placing your trust not in a distant power, but in the One whose very name means infinite mercy and compassion. Al-Sa\'di notes that combining belief and reliance in the Most Merciful produces a tranquility that no worldly worry can shake. [Tafsir Ibn Kathir, Tafsir al-Sa\'di]',
     angleSource: 'Tafsir Ibn Kathir',
-    action: 'Breathe in "Ar-Rahman" (The Merciful) and breathe out your worry',
+    action: 'Breathe in "Ar-Rahman" (The Merciful) and breathe out your worry.',
     practiceSteps: JSON.stringify([
       {
         type: 'physical',
@@ -3105,7 +3832,7 @@ const quranContentAnglesData: ContentAngle[] = [
     angle:
       'Allah commands: "Put your trust in the Ever-Living (Al-Hayy) who does not die." Ibn Kathir explains that every other support will eventually perish, but Allah is Al-Hayy Al-Qayyum—the Ever-Living, the Self-Sustaining. Imam al-Sa\'di adds: people, wealth, and health are temporary supports that fail, but the One who never dies never fails those who rely upon Him. This is why the Prophet ﷺ would say: "O Ever-Living, O Sustainer, by Your mercy I seek help." [Tafsir Ibn Kathir]',
     angleSource: 'Tafsir Ibn Kathir',
-    action: 'Acknowledge the temporary nature of people and trust in the Eternal',
+    action: 'Acknowledge the temporary nature of people and trust in the Eternal.',
     practiceSteps: JSON.stringify([
       {
         type: 'verbal',
@@ -3149,7 +3876,7 @@ const quranContentAnglesData: ContentAngle[] = [
     angle:
       'When Prophet Yusuf (AS) was finally reunited with his brothers after years of separation, he declared: "Whoever fears Allah and is patient—indeed, Allah does not allow the reward of those who do good to be lost." Ibn Kathir explains that Yusuf\'s story is living proof: decades of unjust imprisonment, betrayal, and exile were all redeemed. Al-Qurtubi adds that "taqwa" (God-consciousness) paired with "sabr" (patience) is the winning formula—no good deed done with these two qualities is ever wasted. [Tafsir Ibn Kathir]',
     angleSource: 'Tafsir Ibn Kathir',
-    action: 'Choose patience in this moment as a deliberate act of worship',
+    action: 'Choose patience in this moment as a deliberate act of worship.',
     practiceSteps: JSON.stringify([
       {
         type: 'mindset',
@@ -3195,7 +3922,7 @@ const quranContentAnglesData: ContentAngle[] = [
     angle:
       'Allah says: "Obey Allah and His Messenger, and do not dispute... and be patient. Indeed, Allah is with the patient." Ibn Kathir explains that this "with-ness" (ma\'iyyah) is a special divine companionship—Allah\'s support, aid, and guidance. Al-Sa\'di distinguishes between Allah\'s general knowledge of all creation and His special presence with the patient: He strengthens them, guides them, and grants them victory. The Prophet ﷺ said to Ibn Abbas: "Know that if the whole nation were to benefit you, they could not benefit you except with what Allah has written for you." [Tafsir al-Sa\'di]',
     angleSource: "Tafsir al-Sa'di",
-    action: 'Wait for 30 seconds in silence, acknowledging Allah is with you right now',
+    action: 'Wait for 30 seconds in silence, acknowledging Allah is with you right now.',
     practiceSteps: JSON.stringify([
       {
         type: 'physical',
@@ -3229,7 +3956,7 @@ const quranContentAnglesData: ContentAngle[] = [
         sourceGrading: 'hasan',
       },
     ]),
-    reflection: 'How does knowing "Allah is with the patient" strengthen your Sabr in this moment?',
+    reflection: 'Allah is with the patient. Name the one place tomorrow where you need that to be literally true.',
   },
   {
     id: 'q_angle_10_62_anxious',
@@ -3345,7 +4072,7 @@ const quranContentAnglesData: ContentAngle[] = [
     angle:
       'Allah says: "Say, O My servants who have transgressed against themselves, do not despair of the mercy of Allah. Indeed, Allah forgives all sins." Ibn Kathir explains this is the most hope-giving verse in the Quran—a direct divine invitation to those drowning in guilt or sadness. Al-Qurtubi notes that "all sins" means without exception when met with sincere repentance. The Prophet ﷺ said: "Allah is more delighted with the repentance of His servant than a man who finds his lost camel in the desert." [Sahih Muslim 2747] No sadness is beyond His healing. [Tafsir Ibn Kathir]',
     angleSource: 'Tafsir Ibn Kathir',
-    action: 'Ask Allah for His mercy with full conviction He will respond',
+    action: 'Ask Allah for His mercy with full conviction He will respond.',
     practiceSteps: JSON.stringify([
       {
         type: 'verbal',
@@ -3381,7 +4108,7 @@ const quranContentAnglesData: ContentAngle[] = [
         sourceGrading: 'sahih',
       },
     ]),
-    reflection: 'How does knowing Allah forgives ALL sins affect your sadness?',
+    reflection: 'You believe He forgives every sin. Does the sadness you are carrying know that yet?',
   },
   {
     id: 'q_angle_57_4_sad',
@@ -3436,7 +4163,7 @@ const quranContentAnglesData: ContentAngle[] = [
     angle:
       'Allah says: "Give glad tidings to the patient—those who, when disaster strikes them, say: Indeed we belong to Allah, and indeed to Him we will return." Ibn Kathir explains that this statement (Inna lillahi wa inna ilayhi raji\'un) is the most powerful response to calamity in Islam. Al-Qurtubi notes that "glad tidings" for the patient means blessings, mercy, and guidance descend specifically upon those who respond to loss with this phrase. The Prophet ﷺ said: "No Muslim is afflicted with a calamity and says this, except that Allah will reward him and replace what was lost with something better." [Sahih Muslim 918] [Tafsir al-Qurtubi]',
     angleSource: 'Tafsir al-Qurtubi',
-    action: 'Say "Inna lillahi wa inna ilayhi raji\'un" and feel its weight',
+    action: 'Say "Inna lillahi wa inna ilayhi raji\'un" and feel its weight.',
     practiceSteps: JSON.stringify([
       {
         type: 'verbal',
@@ -3474,7 +4201,7 @@ const quranContentAnglesData: ContentAngle[] = [
         sourceGrading: 'sahih',
       },
     ]),
-    reflection: 'How does returning everything to Allah lighten the load of your loss?',
+    reflection: 'You say "to Him we return." What have you lost that you have not actually handed back?',
   },
   {
     id: 'q_angle_3_139_sad',
@@ -3483,7 +4210,7 @@ const quranContentAnglesData: ContentAngle[] = [
     angle:
       'Allah says: "Do not weaken and do not grieve, for you are superior if you are true believers." Ibn Kathir explains this was revealed after the Battle of Uhud when the Muslims suffered losses and were demoralized. Allah reminded them that their faith places them above any temporary defeat. Al-Sa\'di adds that a believer\'s worth is not measured by worldly outcomes but by their standing with Allah. Grief is natural, but it should not lead to despair—because the one who has Allah has everything. The Prophet ﷺ said: "Wonderful is the affair of the believer, for his affairs are all good." [Sahih Muslim 2999] [Tafsir Ibn Kathir]',
     angleSource: 'Tafsir Ibn Kathir',
-    action: 'Straighten your posture and remind yourself of your dignity as a believer',
+    action: 'Straighten your posture and remind yourself of your dignity as a believer.',
     practiceSteps: JSON.stringify([
       {
         type: 'physical',
@@ -3562,7 +4289,8 @@ const quranContentAnglesData: ContentAngle[] = [
         title: 'Write your proof',
         instruction:
           "Write down 3 times in your past when something hard ended and ease followed. This is your personal evidence of Allah's promise. Every hardship in your history has expired — this one will too.",
-        source: '"Victory comes with patience, relief comes with affliction." [Musnad Ahmad]',
+        source:
+          '"Victory comes with patience, relief with affliction, and hardship with ease." [40 Hadith an-Nawawi 19]',
         sourceType: 'prophetic_dhikr',
         sourceGrading: 'hasan',
       },
@@ -3576,7 +4304,7 @@ const quranContentAnglesData: ContentAngle[] = [
     angle:
       'Prophet Yunus (AS) called out from the belly of the whale in total darkness: "There is no deity except You; exalted are You. Indeed, I have been of the wrongdoers." Ibn Kathir explains that this dua combines three powerful elements: affirming Allah\'s oneness (Tawhid), glorifying Him (Tasbih), and admitting one\'s own shortcomings (Istighfar). Al-Qurtubi notes that Allah responded immediately: "So We responded to him and saved him from the distress. And thus do We save the believers." The Prophet ﷺ said: "No Muslim supplicates with this dua regarding any matter except that Allah responds to him." [At-Tirmidhi 3505] [Tafsir Ibn Kathir]',
     angleSource: 'Tafsir Ibn Kathir',
-    action: 'Recite "La ilaha illa anta subhanaka..." with deep humility',
+    action: 'Recite "La ilaha illa anta subhanaka..." with deep humility.',
     practiceSteps: JSON.stringify([
       {
         type: 'verbal',
@@ -3611,7 +4339,7 @@ const quranContentAnglesData: ContentAngle[] = [
         sourceType: 'quran_dua',
       },
     ]),
-    reflection: 'How does admitting your need for Allah bring comfort in your distress?',
+    reflection: 'Yunus admitted it from inside the darkness, not after. What would you say if you stopped waiting to be out first?',
   },
   {
     id: 'q_angle_3_8_sad',
@@ -3620,7 +4348,7 @@ const quranContentAnglesData: ContentAngle[] = [
     angle:
       'This verse contains the dua: "Our Lord, do not let our hearts deviate after You have guided us, and grant us mercy from Yourself." Ibn Kathir explains that the believers ask this because they know their hearts are between Allah\'s fingers—He turns them as He wills. Al-Qurtubi adds that the request for "mercy from Yourself" (ladunka) refers to a special, direct mercy that only comes from divine grace, not from human effort. The Prophet ﷺ would frequently make this dua, showing that even the most guided hearts need Allah\'s constant protection from deviation. [Tafsir Ibn Kathir]',
     angleSource: 'Tafsir Ibn Kathir',
-    action: 'Make the dua: "Rabbana la tuzigh qulubana..." slowly',
+    action: 'Make the dua: "Rabbana la tuzigh qulubana..." slowly.',
     practiceSteps: JSON.stringify([
       {
         type: 'verbal',
@@ -3665,7 +4393,7 @@ const quranContentAnglesData: ContentAngle[] = [
     angle:
       'Allah says: "Call upon Me; I will respond to you." Ibn Kathir explains that this is one of the most direct promises in the Quran—Allah Himself guarantees a response to every sincere caller. Al-Sa\'di notes that the word "ud\'uni" (call upon Me) is an invitation, meaning Allah wants you to bring your pain, your sadness, and your needs to Him. The Prophet ﷺ said: "Your Lord is Generous and Shy; if His servant raises his hands to Him, He is shy to return them empty." [Abu Dawud 1488] Your grief is not a burden to Allah—it is the very reason He invites you to speak. [Tafsir al-Sa\'di]',
     angleSource: "Tafsir al-Sa'di",
-    action: 'Talk to Allah in your own language about what hurts',
+    action: 'Talk to Allah in your own language about what hurts.',
     practiceSteps: JSON.stringify([
       {
         type: 'physical',
@@ -3698,12 +4426,11 @@ const quranContentAnglesData: ContentAngle[] = [
           "Allahumma inni as'aluka min fadlika wa rahmatika fa innahu la yamlikuha illa ant",
         translation:
           'O Allah, I ask You of Your bounty and mercy, for none possesses them except You',
-        source: 'Tabarani — Hasan',
-        sourceType: 'prophetic_dua',
-        sourceGrading: 'hasan',
+        source: "Making du'a in sujud — Sahih Muslim 482",
+        sourceType: 'composed_dua',
       },
     ]),
-    reflection: 'How does knowing Allah guarantees a response change your silence?',
+    reflection: 'He guarantees a response to whoever calls. What did you stop asking for, and when did you stop?',
   },
   {
     id: 'q_angle_39_10_sad',
@@ -3712,7 +4439,7 @@ const quranContentAnglesData: ContentAngle[] = [
     angle:
       'Allah says: "Indeed, the patient will be given their reward without account." Ibn Kathir explains that "without account" (bi ghayri hisab) means the reward for patience is so immense that it cannot be measured or calculated—it is limitless. Al-Qurtubi adds that this is the only deed for which Allah promises a reward without limit, elevating patience above all other acts of worship in times of trial. The Prophet ﷺ said: "No one is given a gift better and more comprehensive than patience." [Sahih Bukhari 1469] Your silent endurance is being recorded at a rate beyond human comprehension. [Tafsir al-Qurtubi]',
     angleSource: 'Tafsir al-Qurtubi',
-    action: 'Acknowledge your current patience as an investment for the Hereafter',
+    action: 'Acknowledge your current patience as an investment for the Hereafter.',
     practiceSteps: JSON.stringify([
       {
         type: 'mindset',
@@ -3757,7 +4484,7 @@ const quranContentAnglesData: ContentAngle[] = [
     angle:
       'Allah says: "And be patient, for indeed, Allah does not allow to be lost the reward of those who do good." Ibn Kathir explains that this is a divine guarantee: every act of goodness—no matter how small, no matter how unnoticed by people—is recorded and preserved by Allah. Al-Sa\'di adds that patience during sadness is itself a "good deed" (ihsan) that earns this promise. The Prophet ﷺ said: "No fatigue, disease, sorrow, sadness, hurt, or distress befalls a Muslim, even the prick of a thorn, except that Allah expiates some of his sins for that." [Sahih Bukhari 5641] Your struggle is never wasted. [Tafsir al-Sa\'di]',
     angleSource: "Tafsir al-Sa'di",
-    action: 'Do one small good deed today, however simple, in spite of your sadness',
+    action: 'Do one small good deed today, however simple, in spite of your sadness.',
     practiceSteps: JSON.stringify([
       {
         type: 'physical',
@@ -3790,7 +4517,7 @@ const quranContentAnglesData: ContentAngle[] = [
         sourceType: 'quran_dua',
       },
     ]),
-    reflection: 'How does it feel to know that Allah never loses sight of your effort?',
+    reflection: 'Name the effort nobody thanked you for this week. It was recorded regardless — does that change next week?',
   },
   {
     id: 'q_angle_39_53_sad_angle',
@@ -3819,7 +4546,7 @@ const quranContentAnglesData: ContentAngle[] = [
         arabicText: 'أَسْتَغْفِرُ اللَّهَ الْعَظِيمَ وَأَتُوبُ إِلَيْهِ',
         transliteration: "Astaghfirullaha al-'Azeem wa atubu ilayh",
         translation: 'I seek forgiveness from Allah the Almighty and turn to Him in repentance',
-        source: 'Musnad Ahmad — Sahih',
+        source: "\"Were your sins to reach the clouds of the sky, then you sought forgiveness from Me, I would forgive you.\" [Jami' at-Tirmidhi 3540]",
         sourceType: 'prophetic_dua',
         sourceGrading: 'hasan',
         countSource: 'Muslim 2702 / Bukhari 6307',
@@ -3844,7 +4571,7 @@ const quranContentAnglesData: ContentAngle[] = [
     angle:
       'Allah says: "And when My servants ask you concerning Me—indeed I am near. I respond to the invocation of the supplicant when he calls upon Me." Ibn Kathir notes that Allah did not say "tell them I am near" but said directly "I am near"—removing any intermediary. Al-Qurtubi explains that this nearness is not physical but spiritual: Allah hears every whisper, every silent tear, every unspoken plea. The Prophet ﷺ said: "The closest a servant is to his Lord is during prostration, so increase your supplications therein." [Sahih Muslim 482] When the world feels distant, Allah is closer than ever. [Tafsir al-Qurtubi]',
     angleSource: 'Tafsir al-Qurtubi',
-    action: 'Place your hand on your heart and whisper "Ya Qareeb" (O Near One)',
+    action: 'Place your hand on your heart and whisper "Ya Qareeb" (O Near One).',
     practiceSteps: JSON.stringify([
       {
         type: 'physical',
@@ -3925,7 +4652,7 @@ const quranContentAnglesData: ContentAngle[] = [
         sourceType: 'quran_dua',
       },
     ]),
-    reflection: 'How does the promise of "no fear and no grief" comfort you today?',
+    reflection: 'The angels say do not fear and do not grieve. Which of those two are you doing more of today?',
   },
   {
     id: 'q_angle_20_46_sad',
@@ -3934,7 +4661,7 @@ const quranContentAnglesData: ContentAngle[] = [
     angle:
       'Allah told Musa and Harun (AS): "Do not fear; indeed, I am with you both. I hear and I see." Ibn Kathir explains that Allah assured His prophets with two of His names: As-Sami\' (The All-Hearing) and Al-Basir (The All-Seeing). Al-Sa\'di adds that this assurance extends to every believer in distress—Allah hears the grief you cannot articulate and sees the tears you shed in private. The Prophet ﷺ said: "Indeed Allah does not look at your appearance or wealth, but He looks at your hearts and your deeds." [Sahih Muslim 2564] Your inner world is fully known and deeply cared for. [Tafsir al-Sa\'di]',
     angleSource: "Tafsir al-Sa'di",
-    action: 'Rest in the knowledge that you are fully seen and understood by Allah',
+    action: 'Rest in the knowledge that you are fully seen and understood by Allah.',
     practiceSteps: JSON.stringify([
       {
         type: 'mindset',
@@ -3954,8 +4681,8 @@ const quranContentAnglesData: ContentAngle[] = [
         arabicText: 'يَا سَمِيعُ يَا بَصِيرُ',
         transliteration: "Ya Sami', Ya Basir",
         translation: 'O All-Hearing, O All-Seeing',
-        source: 'Surah Ta-Ha 20:46 — Quran',
-        sourceType: 'quran_dua',
+        source: 'Divine Names As-Sami and Al-Basir — Surah Ash-Shura 42:11',
+        sourceType: 'composed_dua',
       },
       {
         type: 'physical',
@@ -3968,7 +4695,7 @@ const quranContentAnglesData: ContentAngle[] = [
         sourceGrading: 'sahih',
       },
     ]),
-    reflection: 'How does being "seen and heard" by the Creator change your sadness?',
+    reflection: 'Being heard and being seen are named separately in that ayah. Which have you been missing more?',
   },
   {
     id: 'q_angle_24_22_sad',
@@ -3977,7 +4704,7 @@ const quranContentAnglesData: ContentAngle[] = [
     angle:
       'Allah says: "Let them pardon and overlook. Would you not like that Allah should forgive you?" Ibn Kathir explains this was revealed about Abu Bakr (RA) when he wanted to cut off support to a relative who had slandered his daughter Aisha (RA). Despite the deep hurt, Allah asked: would you not prefer My forgiveness over your revenge? Al-Qurtubi notes that pardoning others is presented as a direct path to receiving Allah\'s own pardon. The Prophet ﷺ said: "Be merciful to others and you will receive mercy. Forgive others and Allah will forgive you." [Musnad Ahmad 7001] Pardoning heals the pardoner first. [Tafsir Ibn Kathir]',
     angleSource: 'Tafsir Ibn Kathir',
-    action: 'Think of one person to forgive, purely for the sake of your own inner peace',
+    action: 'Think of one person to forgive, purely for the sake of your own inner peace.',
     practiceSteps: JSON.stringify([
       {
         type: 'mindset',
@@ -3994,7 +4721,7 @@ const quranContentAnglesData: ContentAngle[] = [
         title: 'Name and release',
         instruction:
           'Think of one person who has hurt you. In your heart, say: "Ya Allah, I forgive them for Your sake. Forgive me as I have forgiven them." Then take a deep breath and release the weight. This is for YOUR inner peace.',
-        source: '"Forgive others and Allah will forgive you." [Musnad Ahmad 7001]',
+        source: "\"Be merciful on the earth, and you will be shown mercy from Who is above the heavens.\" [Jami' at-Tirmidhi 1924]",
         sourceType: 'prophetic_dhikr',
         sourceGrading: 'hasan',
       },
@@ -4006,7 +4733,7 @@ const quranContentAnglesData: ContentAngle[] = [
         arabicText: 'اللَّهُمَّ إِنِّي أَسْأَلُكَ رَحْمَتَكَ',
         transliteration: "Allahumma inni as'aluka rahmatak",
         translation: 'O Allah, I ask You for Your mercy',
-        source: '"Be merciful to others and you will receive mercy." [Ahmad 7001]',
+        source: "\"The merciful are shown mercy by Ar-Rahman.\" [Jami' at-Tirmidhi 1924]",
         sourceType: 'prophetic_dhikr',
         sourceGrading: 'hasan',
       },
@@ -4020,7 +4747,7 @@ const quranContentAnglesData: ContentAngle[] = [
     angle:
       'Allah says: "But Allah would not punish them while you are among them, and Allah would not punish them while they seek forgiveness." Ibn Kathir explains that istighfar (seeking forgiveness) serves as a shield from calamity—it is one of two protections mentioned in this verse. Al-Sa\'di adds that regularly seeking forgiveness creates a spiritual barrier against hardship and opens doors of ease. The Prophet ﷺ said: "Whoever makes istighfar a constant practice, Allah will provide him a way out of every difficulty, relief from every anxiety, and will provide for him from sources he could never ponder." [Abu Dawud 1518] Forgiveness is both healing and protection. [Tafsir Ibn Kathir]',
     angleSource: 'Tafsir Ibn Kathir',
-    action: 'Repeat "Astaghfirullah" 11 times, focusing on its protective power',
+    action: 'Repeat "Astaghfirullah" 11 times, focusing on its protective power.',
     practiceSteps: JSON.stringify([
       {
         type: 'verbal',
@@ -4055,7 +4782,7 @@ const quranContentAnglesData: ContentAngle[] = [
         sourceType: 'quran_dua',
       },
     ]),
-    reflection: 'How does seeking forgiveness help settle the turbulence of your mind?',
+    reflection: 'Say astaghfirullah three times, slowly. What settled, and what is still moving?',
   },
   {
     id: 'q_angle_50_16_sad',
@@ -4064,7 +4791,7 @@ const quranContentAnglesData: ContentAngle[] = [
     angle:
       'Allah says: "And We have already created man and know what his soul whispers to him, and We are closer to him than his jugular vein." Ibn Kathir explains that this closeness refers to Allah\'s complete knowledge—He knows your innermost thoughts before you even form them into words. Al-Qurtubi notes that the jugular vein was chosen because it is the closest vital vessel to the heart and brain; Allah\'s awareness of you is even more intimate than that. The Prophet ﷺ said: "Allah was before everything, and nothing was before Him." [Sahih Bukhari] Your sadness, your hope, your silent cries—He knows them all before you speak. [Tafsir al-Qurtubi]',
     angleSource: 'Tafsir al-Qurtubi',
-    action: 'Breathe deeply and acknowledge that Allah is with you in every breath',
+    action: 'Breathe deeply and acknowledge that Allah is with you in every breath.',
     practiceSteps: JSON.stringify([
       {
         type: 'physical',
@@ -4093,8 +4820,8 @@ const quranContentAnglesData: ContentAngle[] = [
         arabicText: 'يَا قَرِيبُ يَا مُجِيبُ أَنْتَ أَقْرَبُ إِلَيَّ مِنْ حَبْلِ الْوَرِيدِ',
         transliteration: 'Ya Qareeb, Ya Mujeeb, anta aqrabu ilayya min hablil-wareed',
         translation: 'O Near One, O Responsive One, You are closer to me than my jugular vein',
-        source: 'Derived from Quran 50:16',
-        sourceType: 'quran_dua',
+        source: 'Divine Names, with a phrase drawn from Surah Qaf 50:16',
+        sourceType: 'composed_dua',
       },
     ]),
     reflection: 'If Allah is closer than your jugular vein, where can sadness hide?',
@@ -4106,7 +4833,7 @@ const quranContentAnglesData: ContentAngle[] = [
     angle:
       'Allah says: "Whether you conceal what is in your breasts or reveal it, Allah knows it." Ibn Kathir explains that "what is in the breasts" (dhaat al-sudur) refers to the deepest intentions, emotions, and unspoken pain within the heart. Al-Sa\'di adds that this knowledge is not for punishment but for care—Allah knows the grief you carry silently so that He can respond to it precisely. The Prophet ﷺ said: "Indeed in the body there is a piece of flesh; if it is sound, the whole body is sound, and if it is corrupt, the whole body is corrupt. Indeed, it is the heart." [Sahih Bukhari 52] Your heart is fully understood by its Creator. [Tafsir al-Sa\'di]',
     angleSource: "Tafsir al-Sa'di",
-    action: 'Acknowledge that your heart is fully known and accepted by Allah',
+    action: 'Acknowledge that your heart is fully known and accepted by Allah.',
     practiceSteps: JSON.stringify([
       {
         type: 'mindset',
@@ -4135,7 +4862,7 @@ const quranContentAnglesData: ContentAngle[] = [
         arabicText: 'اللَّهُمَّ مُصَرِّفَ الْقُلُوبِ صَرِّفْ قُلُوبَنَا عَلَى طَاعَتِكَ',
         transliteration: "Allahumma musarrifal-qulub, sarrif qulubana 'ala ta'atik",
         translation: 'O Allah, Turner of hearts, turn our hearts to Your obedience',
-        source: 'Sahih Muslim 2654',
+        source: 'Sahih Muslim 2655',
         sourceType: 'prophetic_dhikr',
         sourceGrading: 'sahih',
       },
@@ -4186,7 +4913,7 @@ const quranContentAnglesData: ContentAngle[] = [
         sourceType: 'quran_dua',
       },
     ]),
-    reflection: 'How does the rhythm of nature reflect what Allah says in Surah Ad-Duha: "Your Lord has not forsaken you, nor is He displeased"?',
+    reflection: 'Every night you have ever been through has ended. What makes you sure this one is the exception?',
   },
 
   // === ANGRY ANGLES ===
@@ -4197,7 +4924,7 @@ const quranContentAnglesData: ContentAngle[] = [
     angle:
       'Allah describes the people of Taqwa as "those who restrain anger and who pardon the people—and Allah loves the doers of good." Ibn Kathir explains that "kazm al-ghayz" (restraining anger) means swallowing it when you have the power to act on it. Al-Qurtubi adds that this verse places anger management alongside spending in charity and prayer as qualities of the God-conscious. The Prophet ﷺ said: "The strong man is not the one who can wrestle, but the strong man is the one who controls himself at the time of anger." [Sahih Bukhari 6114] Restraint is not weakness—it is the highest form of strength. [Tafsir Ibn Kathir]',
     angleSource: 'Tafsir Ibn Kathir',
-    action: 'Before responding, count to 10 and make wudu if possible',
+    action: 'Before responding, count to 10 and make wudu if possible.',
     practiceSteps: JSON.stringify([
       {
         type: 'physical',
@@ -4234,7 +4961,7 @@ const quranContentAnglesData: ContentAngle[] = [
         sourceGrading: 'sahih',
       },
     ]),
-    reflection: 'How does it feel to "restrain" anger rather than just letting it out?',
+    reflection: 'You held it in this time. Was that suppression or was it strength? Be honest about which one.',
   },
   {
     id: 'q_angle_41_34_angry',
@@ -4243,7 +4970,7 @@ const quranContentAnglesData: ContentAngle[] = [
     angle:
       'Allah says: "Repel evil by that which is better; and thereupon the one between you and him was enmity will become as though he was a devoted friend." Ibn Kathir explains that responding to harm with good has a transformative power—it can turn an enemy into an ally. Al-Sa\'di adds that this is only granted to "those who are patient" and "those who have a great portion of good," meaning it requires immense inner strength. The Prophet ﷺ never took revenge for personal matters and always responded to harm with kindness. [Sahih Bukhari 6126] This verse promises a social miracle for those who choose goodness over retaliation. [Tafsir al-Sa\'di]',
     angleSource: "Tafsir al-Sa'di",
-    action: 'Perform a small act of kindness for someone you are frustrated with',
+    action: 'Perform a small act of kindness for someone you are frustrated with.',
     practiceSteps: JSON.stringify([
       {
         type: 'mindset',
@@ -4273,9 +5000,9 @@ const quranContentAnglesData: ContentAngle[] = [
         arabicText: 'اللَّهُمَّ اهْدِهِ',
         transliteration: 'Allahumma-hdih',
         translation: 'O Allah, guide them',
-        source: "Based on the Prophet's ﷺ practice of praying for those who harmed him",
+        source: '"O Allah! Forgive my nation, for they have no knowledge." [Sahih al-Bukhari 3477]',
         sourceType: 'sunnah_action',
-        sourceGrading: 'hasan',
+        sourceGrading: 'sahih',
       },
     ]),
     reflection: 'What would change if you saw your "enemy" as a potential friend?',
@@ -4289,7 +5016,7 @@ const quranContentAnglesData: ContentAngle[] = [
     angle:
       'Allah says: "Whoever does a wrong or wrongs himself but then seeks forgiveness of Allah will find Allah Forgiving and Merciful." Ibn Kathir explains that this verse covers both sins against others and sins against oneself, establishing that no category of wrongdoing is excluded from divine forgiveness. Al-Qurtubi adds that "will find Allah" (yajid-Allah) implies that forgiveness is not hidden or difficult to access—it is waiting for the seeker. The Prophet ﷺ said: "All the sons of Adam are sinners, and the best of sinners are those who repent." [At-Tirmidhi 2499] The door is never closed. [Tafsir al-Qurtubi]',
     angleSource: 'Tafsir al-Qurtubi',
-    action: 'Make a sincere intention to leave the sin and ask Allah for help',
+    action: 'Make a sincere intention to leave the sin and ask Allah for help.',
     practiceSteps: JSON.stringify([
       {
         type: 'verbal',
@@ -4337,7 +5064,7 @@ const quranContentAnglesData: ContentAngle[] = [
     angle:
       'Allah says: "Except for those who repent, believe, and do righteous work. For them Allah will replace their evil deeds with good deeds." Ibn Kathir explains that this "replacement" (tabdil) is one of the most extraordinary promises in the Quran—Allah does not merely erase sins but transforms them into good deeds on the Day of Judgment. Al-Sa\'di adds that this shows Allah\'s generosity surpasses human comprehension: the very mistakes that cause you shame can become the fuel for your salvation. The Prophet ﷺ said: "Islam destroys what came before it." [Sahih Muslim 121] Your past can become your greatest asset. [Tafsir Ibn Kathir]',
     angleSource: 'Tafsir Ibn Kathir',
-    action: 'Do a good deed specifically to "replace" a recent mistake',
+    action: 'Do a good deed specifically to "replace" a recent mistake.',
     practiceSteps: JSON.stringify([
       {
         type: 'mindset',
@@ -4374,7 +5101,7 @@ const quranContentAnglesData: ContentAngle[] = [
         count: 70,
       },
     ]),
-    reflection: "How does Allah's ability to change bad to good give you hope?",
+    reflection: 'Name one thing in your past you have written off as purely bad. What would it mean if it were not the final word on you?',
   },
 
   {
@@ -4384,7 +5111,7 @@ const quranContentAnglesData: ContentAngle[] = [
     angle:
       'Allah says: "And whoever is patient and forgives—indeed, that is of the matters requiring determination." Ibn Kathir explains that "azm al-umur" (matters of determination) means these are among the highest and noblest qualities a person can possess. Al-Qurtubi adds that combining patience with forgiveness is presented not as a passive act but as a heroic one—requiring more courage than retaliation. The Prophet ﷺ said: "Allah does not increase a servant who forgives except in honor." [Sahih Muslim 2588] Choosing patience and forgiveness is the path of the spiritually elite. [Tafsir al-Qurtubi]',
     angleSource: 'Tafsir al-Qurtubi',
-    action: 'Choose to be the bigger person in your current conflict',
+    action: 'Choose to be the bigger person in your current conflict.',
     practiceSteps: JSON.stringify([
       {
         type: 'mindset',
@@ -4421,7 +5148,7 @@ const quranContentAnglesData: ContentAngle[] = [
         sourceGrading: 'hasan',
       },
     ]),
-    reflection: 'How does letting go of the need for "getting even" feel in your heart?',
+    reflection: 'What would getting even actually get you? Say it out loud and weigh it against what it costs.',
   },
   {
     id: 'q_angle_3_159_angry',
@@ -4430,7 +5157,7 @@ const quranContentAnglesData: ContentAngle[] = [
     angle:
       'Allah says to the Prophet ﷺ: "By the mercy of Allah, you were lenient with them. And if you had been rude and harsh-hearted, they would have disbanded from around you. So pardon them and ask forgiveness for them and consult them." Ibn Kathir explains that even after being wounded at Uhud due to some companions\' mistakes, the Prophet ﷺ was commanded to be gentle, forgive, and continue consulting them. Al-Sa\'di notes that this verse establishes the Prophetic model for leadership and conflict resolution: mercy first, then forgiveness, then inclusion. Harshness drives people away; gentleness draws them close. [Tafsir Ibn Kathir]',
     angleSource: 'Tafsir Ibn Kathir',
-    action: 'Perform a silent prayer for the person you are angry with',
+    action: 'Perform a silent prayer for the person you are angry with.',
     practiceSteps: JSON.stringify([
       {
         type: 'mindset',
@@ -4450,8 +5177,8 @@ const quranContentAnglesData: ContentAngle[] = [
         arabicText: 'اللَّهُمَّ اغْفِرْ لَهُ واهْدِهِ',
         transliteration: 'Allahumma-ghfir lahu wa-hdih',
         translation: 'O Allah, forgive them and guide them',
-        source: 'Surah Al-Imran 3:159 — Quran',
-        sourceType: 'quran_dua',
+        source: 'Suggested wording — the instruction in Surah Ali Imran 3:159',
+        sourceType: 'composed_dua',
       },
       {
         type: 'physical',
@@ -4473,7 +5200,7 @@ const quranContentAnglesData: ContentAngle[] = [
     angle:
       'Allah says: "Let them pardon and overlook. Would you not like that Allah should forgive you? And Allah is Forgiving and Merciful." Ibn Kathir explains this was revealed about Abu Bakr (RA) when he swore to stop supporting Mistah, who had participated in slandering Aisha (RA). Despite the immense personal hurt, Allah linked pardoning others to receiving His own pardon. Al-Qurtubi notes that the rhetorical question "Would you not like that Allah should forgive you?" is one of the most powerful motivations for forgiveness in the Quran—connecting your mercy to others with Allah\'s mercy to you. [Tafsir Ibn Kathir]',
     angleSource: 'Tafsir Ibn Kathir',
-    action: 'Recall a time you needed forgiveness and apply that feeling now',
+    action: 'Recall a time you needed forgiveness and apply that feeling now.',
     practiceSteps: JSON.stringify([
       {
         type: 'mindset',
@@ -4493,8 +5220,8 @@ const quranContentAnglesData: ContentAngle[] = [
         arabicText: 'اللَّهُمَّ اغْفِرْ لِي وَلَهُ',
         transliteration: 'Allahumma-ghfir li wa lahu',
         translation: 'O Allah, forgive me and forgive them',
-        source: 'Surah An-Nur 24:22 — Quran',
-        sourceType: 'quran_dua',
+        source: 'Suggested wording — the theme of Surah An-Nur 24:22',
+        sourceType: 'composed_dua',
       },
       {
         type: 'physical',
@@ -4562,7 +5289,7 @@ const quranContentAnglesData: ContentAngle[] = [
     angle:
       'Allah says: "So pardon them and overlook. Indeed, Allah loves the doers of good (Muhsineen)." Ibn Kathir explains that pardoning and overlooking faults is classified as "ihsan" (excellence)—the highest level of worship. Al-Sa\'di adds that the Muhsineen are those who go beyond what is required: justice demands equal retaliation, but ihsan chooses to forgive when you have the right to punish. The Prophet ﷺ said: "Ihsan is to worship Allah as though you see Him, and if you cannot see Him, then He sees you." [Sahih Bukhari 50] Pardoning with this awareness elevates a simple act into the highest form of devotion. [Tafsir al-Sa\'di]',
     angleSource: "Tafsir al-Sa'di",
-    action: 'Deliberately overlook a minor annoyance today',
+    action: 'Deliberately overlook a minor annoyance today.',
     practiceSteps: JSON.stringify([
       {
         type: 'mindset',
@@ -4597,7 +5324,7 @@ const quranContentAnglesData: ContentAngle[] = [
         sourceGrading: 'hasan',
       },
     ]),
-    reflection: 'How does "pardoning and overlooking" bring you closer to Allah\'s love?',
+    reflection: 'Name the one fault you will overlook today. A specific one, not a general resolution.',
   },
   {
     id: 'q_angle_64_14_angry',
@@ -4606,7 +5333,7 @@ const quranContentAnglesData: ContentAngle[] = [
     angle:
       'Allah says: "O you who have believed, indeed, among your spouses and your children are enemies to you, so beware of them. But if you pardon and overlook and forgive—then indeed, Allah is Forgiving and Merciful." Ibn Kathir explains that Allah uses three progressive words: pardon (\'afw—letting go of the offense), overlook (safh—turning away from it entirely), and forgive (ghafr—covering it as if it never happened). Al-Qurtubi notes that this triple response mirrors Allah\'s own treatment of His servants\' sins. The Prophet ﷺ said: "Whoever suppresses his anger while he is able to act upon it, Allah will call him before all of creation on the Day of Resurrection and let him choose from the Hur al-Ayn." [At-Tirmidhi 2021] [Tafsir al-Qurtubi]',
     angleSource: 'Tafsir al-Qurtubi',
-    action: 'Mentally release the person who wronged you from your debt',
+    action: 'Mentally release the person who wronged you from your debt.',
     practiceSteps: JSON.stringify([
       {
         type: 'mindset',
@@ -4636,8 +5363,8 @@ const quranContentAnglesData: ContentAngle[] = [
         arabicText: 'اللَّهُمَّ إِنِّي عَفَوْتُ عَنْهُ فَاعْفُ عَنِّي',
         transliteration: "Allahumma inni 'afawtu 'anhu fa'fu 'anni",
         translation: 'O Allah, I have pardoned them, so pardon me',
-        source: 'Based on Quran 64:14 principle',
-        sourceType: 'quran_dua',
+        source: 'Suggested wording — the theme of Surah At-Taghabun 64:14',
+        sourceType: 'composed_dua',
       },
     ]),
     reflection: "How does matching Allah's qualities bring peace to your own life?",
@@ -4649,7 +5376,7 @@ const quranContentAnglesData: ContentAngle[] = [
     angle:
       'Allah says: "If you disclose a good deed or conceal it or pardon an offense—indeed, Allah is ever Pardoning and Competent." Ibn Kathir explains that Allah pairs concealing the faults of others with His own attribute of pardoning (Al-\'Afuw). Al-Sa\'di adds that the verse establishes a principle: the one who has power to expose but chooses to conceal is imitating a divine quality. The Prophet ﷺ said: "Whoever conceals the faults of a Muslim, Allah will conceal his faults in this world and the Hereafter." [Sahih Muslim 2699] Choosing mercy when wronged is a reflection of divine character. [Tafsir al-Sa\'di]',
     angleSource: "Tafsir al-Sa'di",
-    action: 'Conceal the mistake of another rather than exposing it',
+    action: 'Conceal the mistake of another rather than exposing it.',
     practiceSteps: JSON.stringify([
       {
         type: 'mindset',
@@ -4694,7 +5421,7 @@ const quranContentAnglesData: ContentAngle[] = [
     angle:
       'Allah says: "Tell those who believe to forgive those who do not expect the Days of Allah, so that He may recompense a people for what they used to earn." Ibn Kathir explains that this verse commands believers to rise above provocation by focusing on the Hereafter—Allah will settle all accounts with perfect justice. Al-Qurtubi adds that "those who do not expect the Days of Allah" refers to people who act without fear of divine reckoning; the believer\'s response is to leave their case to the ultimate Judge. The Prophet ﷺ said: "Do not be angry, do not be angry, do not be angry." [Sahih Bukhari 6116] Rising above is not ignoring injustice—it is trusting the Judge. [Tafsir al-Qurtubi]',
     angleSource: 'Tafsir al-Qurtubi',
-    action: 'Remind yourself that your account is with Allah, not with the people',
+    action: 'Remind yourself that your account is with Allah, not with the people.',
     practiceSteps: JSON.stringify([
       {
         type: 'mindset',
@@ -4729,7 +5456,7 @@ const quranContentAnglesData: ContentAngle[] = [
         sourceGrading: 'hasan',
       },
     ]),
-    reflection: 'How does focusing on the Hereafter diminish the heat of temporary anger?',
+    reflection: 'Will this matter in a year? Will it matter on the day your account is opened in front of you?',
   },
 
   // === GRATEFUL ANGLES ===
@@ -4740,7 +5467,7 @@ const quranContentAnglesData: ContentAngle[] = [
     angle:
       'Allah declares: "If you are grateful, I will surely increase you; but if you deny, indeed, My punishment is severe." Ibn Kathir explains that this is a divine law: gratitude triggers increase (ziyadah) in every blessing—health, wealth, faith, and peace. Al-Sa\'di adds that the "increase" is not limited to the specific blessing you are grateful for; it overflows into all areas of life. The Prophet ﷺ said: "Look at those below you and do not look at those above you, for that is more likely to prevent you from belittling Allah\'s favor upon you." [Sahih Muslim 2963] Gratitude is not just appreciation—it is the engine of divine abundance. [Tafsir al-Sa\'di]',
     angleSource: "Tafsir al-Sa'di",
-    action: 'Say "Alhamdulillah" for a blessing you often take for granted',
+    action: 'Say "Alhamdulillah" for a blessing you often take for granted.',
     practiceSteps: JSON.stringify([
       {
         type: 'verbal',
@@ -4796,7 +5523,7 @@ const quranContentAnglesData: ContentAngle[] = [
     angle:
       'Allah says: "And if you should count the favors of Allah, you could not enumerate them." Ibn Kathir explains that this verse is both a statement of fact and a call to humility—the blessings of Allah are so numerous that no human mind can catalog them all. Al-Qurtubi notes that even a single breath, a heartbeat, or the ability to blink is a blessing most people never consider. The Prophet ﷺ said: "Whoever wakes up in the morning healthy in body, safe in his dwelling, and has his day\'s provision—it is as if the entire world has been gathered for him." [At-Tirmidhi 2346] If you cannot count them, how vast must His care for you be? [Tafsir al-Qurtubi]',
     angleSource: 'Tafsir al-Qurtubi',
-    action: 'Spend 2 minutes listing specific small favors you usually miss',
+    action: 'Spend 2 minutes listing specific small favors you usually miss.',
     practiceSteps: JSON.stringify([
       {
         type: 'physical',
@@ -4840,7 +5567,7 @@ const quranContentAnglesData: ContentAngle[] = [
     angle:
       'Allah says: "And We had certainly given Luqman wisdom, saying: Be grateful to Allah. And whoever is grateful is grateful for the benefit of himself." Ibn Kathir explains that the very first piece of wisdom Allah gave Luqman was gratitude—establishing it as the foundation of all wisdom. Al-Sa\'di adds that "grateful for himself" means gratitude does not benefit Allah (who is free of need) but transforms the one who practices it. The Prophet ﷺ said: "He who does not thank people does not thank Allah." [Abu Dawud 4811] Gratitude to creation is inseparable from gratitude to the Creator. [Tafsir Ibn Kathir]',
     angleSource: 'Tafsir Ibn Kathir',
-    action: 'Thank someone for a small thing they did for you today',
+    action: 'Thank someone for a small thing they did for you today.',
     practiceSteps: JSON.stringify([
       {
         type: 'physical',
@@ -4876,7 +5603,7 @@ const quranContentAnglesData: ContentAngle[] = [
         sourceGrading: 'hasan',
       },
     ]),
-    reflection: 'How does expressing gratitude transform your own heart from within?',
+    reflection: 'Say one thank-you out loud today that you would normally only think. Notice what it does to you.',
   },
   {
     id: 'q_angle_27_40_grateful',
@@ -4885,7 +5612,7 @@ const quranContentAnglesData: ContentAngle[] = [
     angle:
       'When Sulayman (AS) saw the throne of the Queen of Sheba brought to him miraculously, he said: "This is from the favor of my Lord to test me whether I will be grateful or ungrateful." Ibn Kathir explains that Sulayman, despite having a kingdom unmatched in history, recognized every blessing as a test—not a reward. Al-Qurtubi adds that this awareness is the key to spiritual safety: the one who sees blessings as tests remains humble, while the one who sees them as entitlements becomes arrogant. The Prophet ﷺ said: "The first thing people will be asked about on the Day of Judgment regarding worldly pleasures is: Did We not give you a healthy body and cool water?" [At-Tirmidhi 3358] [Tafsir al-Qurtubi]',
     angleSource: 'Tafsir al-Qurtubi',
-    action: 'Identify a gift in your life and commit to using it for good',
+    action: 'Identify a gift in your life and commit to using it for good.',
     practiceSteps: JSON.stringify([
       {
         type: 'mindset',
@@ -4920,7 +5647,7 @@ const quranContentAnglesData: ContentAngle[] = [
         sourceType: 'quran_dua',
       },
     ]),
-    reflection: 'Am I showing gratitude through the way I use what I have been given?',
+    reflection: 'Look at what you have been given. Would the way you use it read as gratitude to anyone watching?',
   },
   {
     id: 'q_angle_34_13_grateful',
@@ -4929,7 +5656,7 @@ const quranContentAnglesData: ContentAngle[] = [
     angle:
       'Allah says: "Work, O family of David, in gratitude." Ibn Kathir explains that Allah commanded the family of Dawud to express their gratitude not merely with words but through righteous action. Al-Sa\'di adds that true shukr (gratitude) has three components: gratitude of the heart (recognition), gratitude of the tongue (praise), and gratitude of the limbs (action). The Prophet ﷺ would pray at night until his feet were swollen. When asked why, he said: "Should I not be a grateful servant?" [Sahih Bukhari 4837] Gratitude is incomplete until it moves from feeling to doing. [Tafsir al-Sa\'di]',
     angleSource: "Tafsir al-Sa'di",
-    action: 'Turn your feeling of thanks into a physical act of service',
+    action: 'Turn your feeling of thanks into a physical act of service.',
     practiceSteps: JSON.stringify([
       {
         type: 'physical',
@@ -4965,7 +5692,7 @@ const quranContentAnglesData: ContentAngle[] = [
         count: 33,
       },
     ]),
-    reflection: 'What "work" can I do today that proves my heart is truly grateful?',
+    reflection: 'Gratitude is commanded here as work, not as a feeling. What will you actually do today that counts as it?',
   },
   {
     id: 'q_angle_76_3_grateful',
@@ -4974,7 +5701,7 @@ const quranContentAnglesData: ContentAngle[] = [
     angle:
       'Allah says: "Indeed, We guided him to the way, be he grateful or be he ungrateful." Ibn Kathir explains that Allah presents gratitude and ingratitude as a choice—every person is shown the path and must decide which response to take. Al-Qurtubi adds that the verse implies that being grateful is an active decision, not a passive feeling. The Prophet ﷺ said: "Indeed, Allah is pleased with a servant who eats food and praises Him for it, and drinks a drink and praises Him for it." [Sahih Muslim 2734] Choosing gratitude in ordinary moments is what distinguishes the mindful believer. [Tafsir al-Qurtubi]',
     angleSource: 'Tafsir al-Qurtubi',
-    action: 'Consciously choose to acknowledge a specific favor from Allah in a neutral situation',
+    action: 'Consciously choose to acknowledge a specific favor from Allah in a neutral situation.',
     practiceSteps: JSON.stringify([
       {
         type: 'mindset',
@@ -5009,7 +5736,7 @@ const quranContentAnglesData: ContentAngle[] = [
         sourceType: 'quran_dua',
       },
     ]),
-    reflection: 'How does my life change when I commit to being "one of the grateful"?',
+    reflection: 'Name the last thing you complained about. What would "one of the grateful" have said instead?',
   },
   {
     id: 'q_angle_54_35_grateful',
@@ -5018,7 +5745,7 @@ const quranContentAnglesData: ContentAngle[] = [
     angle:
       'Allah says: "As a favor from Us. Thus do We reward he who is grateful." Ibn Kathir explains that Allah explicitly links His favors to gratitude—those who recognize and appreciate His blessings are rewarded with more. Al-Sa\'di adds that the word "ni\'matan" (as a favor) shows that rescue from hardship is itself a gift, not something earned. The Prophet ﷺ said: "Whoever says when morning comes: O Allah, whatever blessing I have received or any of Your creation has received is from You alone, with no partner to You—then he has fulfilled the gratitude of that day." [Abu Dawud 5073] Recognition is the seed; divine increase is the harvest. [Tafsir al-Sa\'di]',
     angleSource: "Tafsir al-Sa'di",
-    action: 'Recognize a recent positive outcome as a direct favor from Allah',
+    action: 'Recognize a recent positive outcome as a direct favor from Allah.',
     practiceSteps: JSON.stringify([
       {
         type: 'mindset',
@@ -5055,7 +5782,7 @@ const quranContentAnglesData: ContentAngle[] = [
         sourceGrading: 'hasan',
       },
     ]),
-    reflection: 'How can I maintain a heart that constantly attracts divine reward?',
+    reflection: 'What is the smallest thanks you could say every single day without fail? Start there, not at the grand version.',
   },
   {
     id: 'q_angle_7_58_grateful',
@@ -5064,7 +5791,7 @@ const quranContentAnglesData: ContentAngle[] = [
     angle:
       'Allah says: "The good land—its vegetation emerges by permission of its Lord; but that which is bad—nothing emerges except sparsely. Thus do We diversify the signs for a people who are grateful." Ibn Kathir explains that the "good land" is a metaphor for the grateful heart: just as fertile soil produces abundant fruit, a grateful heart produces abundant faith and blessings. Al-Sa\'di adds that the signs of Allah in nature are only fully appreciated by the grateful—those whose hearts are softened by appreciation can see divine messages in every leaf and raindrop. The Prophet ﷺ would look at rain and say: "O Allah, make it a beneficial rain." [Sahih Bukhari 1032] [Tafsir Ibn Kathir]',
     angleSource: 'Tafsir Ibn Kathir',
-    action: 'Look at nature and see it as a message of love from your Creator',
+    action: 'Look at nature and see it as a message of love from your Creator.',
     practiceSteps: JSON.stringify([
       {
         type: 'physical',
@@ -5098,7 +5825,7 @@ const quranContentAnglesData: ContentAngle[] = [
         sourceGrading: 'sahih',
       },
     ]),
-    reflection: 'How does being grateful change the way I interpret the world around me?',
+    reflection: 'Two people could have had your day — one calls it a burden, one calls it a favour. Which reading did you pick?',
   },
   {
     id: 'q_angle_4_147_grateful',
@@ -5107,7 +5834,7 @@ const quranContentAnglesData: ContentAngle[] = [
     angle:
       'Allah says: "What would Allah do with your punishment if you are grateful and believe? And ever is Allah Appreciative and Knowing." Ibn Kathir explains that this verse reveals that gratitude combined with faith removes the very purpose of divine punishment—if you are thankful and believing, there is no need for correction. Al-Qurtubi adds that Allah describes Himself as "Appreciative" (Shakir), meaning He acknowledges and rewards even the smallest act of gratitude from His servants. The Prophet ﷺ said: "Allah is more pleased with the repentance of His servant than one of you who finds his lost animal." [Sahih Bukhari 6309] Gratitude and belief together form the ultimate spiritual shield. [Tafsir al-Qurtubi]',
     angleSource: 'Tafsir al-Qurtubi',
-    action: 'Say "Alhamdulillah" for your faith and your safety',
+    action: 'Say "Alhamdulillah" for your faith and your safety.',
     practiceSteps: JSON.stringify([
       {
         type: 'mindset',
@@ -5127,8 +5854,8 @@ const quranContentAnglesData: ContentAngle[] = [
         arabicText: 'الْحَمْدُ لِلَّهِ عَلَى الإِيمَانِ وَالإِسْلَامِ',
         transliteration: 'Alhamdulillah alal-iman wal-Islam',
         translation: 'All praise is for Allah for faith and Islam',
-        source: 'Tafsir Ibn Kathir on 4:147',
-        sourceType: 'quran_dua',
+        source: 'Suggested wording — the theme of Surah An-Nisa 4:147',
+        sourceType: 'composed_dua',
       },
       {
         type: 'physical',
@@ -5140,7 +5867,7 @@ const quranContentAnglesData: ContentAngle[] = [
         sourceType: 'quran_dua',
       },
     ]),
-    reflection: 'If gratitude and belief are enough, why would I ever focus on anything else?',
+    reflection: 'If gratitude and belief are all He asks of you, what is the rest of your worry being spent on?',
   },
   {
     id: 'q_angle_2_172_grateful',
@@ -5149,7 +5876,7 @@ const quranContentAnglesData: ContentAngle[] = [
     angle:
       'Allah says: "O you who have believed, eat from the good things which We have provided for you and be grateful to Allah if it is Him that you worship." Ibn Kathir explains that Allah pairs the enjoyment of provision with gratitude—Islam does not ask you to deny yourself good things but to acknowledge their Source. Al-Sa\'di adds that the condition "if it is Him that you worship" means that true worship includes recognizing Allah in every meal, every drink, and every comfort. The Prophet ﷺ said: "When one of you eats, let him mention the name of Allah. If he forgets at the beginning, let him say: Bismillahi awwalahu wa akhirahu." [Abu Dawud 3767] Every bite is an opportunity for worship. [Tafsir al-Sa\'di]',
     angleSource: "Tafsir al-Sa'di",
-    action: 'Savor your next meal and focus on the One who provided it',
+    action: 'Savor your next meal and focus on the One who provided it.',
     practiceSteps: JSON.stringify([
       {
         type: 'physical',
@@ -5186,7 +5913,7 @@ const quranContentAnglesData: ContentAngle[] = [
         sourceGrading: 'hasan',
       },
     ]),
-    reflection: 'How can I turn every basic necessity into a moment of worship?',
+    reflection: 'You will eat at least twice today. Pick one of those times to make it worship, and decide now how.',
   },
   {
     id: 'q_angle_35_12_grateful',
@@ -5195,7 +5922,7 @@ const quranContentAnglesData: ContentAngle[] = [
     angle:
       'Allah says: "He merges the night into the day and merges the day into the night, and He subjected the sun and the moon—that you may seek the bounty of Allah, and perhaps you will be grateful." Ibn Kathir explains that the entire divine order—day, night, sun, moon—is arranged so that humans can work, earn, and then express gratitude. Al-Sa\'di adds that "la\'allakum tashkurun" (perhaps you will be grateful) shows that gratitude is the ultimate goal of all provision. The Prophet ﷺ said: "Whoever among you wakes up secure in his property, healthy in his body, and has food for the day, it is as though he were given the entire world." [At-Tirmidhi 2346] Seeking provision with gratitude transforms work into worship. [Tafsir Ibn Kathir]',
     angleSource: 'Tafsir Ibn Kathir',
-    action: 'Set a goal for your work that includes sharing the benefits with others',
+    action: 'Set a goal for your work that includes sharing the benefits with others.',
     practiceSteps: JSON.stringify([
       {
         type: 'mindset',
@@ -5231,7 +5958,7 @@ const quranContentAnglesData: ContentAngle[] = [
         sourceGrading: 'hasan',
       },
     ]),
-    reflection: 'How does my ambition change when its goal is to produce more gratitude?',
+    reflection: 'What are you chasing at the moment? Say out loud what you would actually do with it once you had it.',
   },
   {
     id: 'q_angle_39_7_grateful',
@@ -5240,7 +5967,7 @@ const quranContentAnglesData: ContentAngle[] = [
     angle:
       'Allah says: "If you disbelieve—indeed, Allah is Free from need of you. And He does not approve for His servants disbelief. And if you are grateful, He approves it for you." Ibn Kathir explains that while Allah needs nothing from His creation, He is pleased (yardahu) by gratitude—making it one of the few human actions that earns divine approval explicitly. Al-Sa\'di adds that Allah\'s approval (rida) is the highest reward a servant can receive, surpassing even Paradise itself in spiritual significance. The Prophet ﷺ said: "Allah is pleased with a servant who praises Him when eating and praises Him when drinking." [Sahih Muslim 2734] Earning the rida of Allah is the ultimate achievement. [Tafsir al-Sa\'di]',
     angleSource: "Tafsir al-Sa'di",
-    action: 'Do one small thing today that you know pleases your Lord',
+    action: 'Do one small thing today that you know pleases your Lord.',
     practiceSteps: JSON.stringify([
       {
         type: 'mindset',
@@ -5268,10 +5995,10 @@ const quranContentAnglesData: ContentAngle[] = [
         title: 'Seek His pleasure',
         instruction:
           'Say: "Allahumma inni as\'aluka ridak wal-jannah" (O Allah, I ask You for Your pleasure and Paradise).',
-        arabicText: 'اللَّهُمَّ إِنِّي أَسْأَلُكَ رِضَاكَ وَالْجَنَّةَ',
-        transliteration: "Allahumma inni as'aluka ridaka wal-jannah",
-        translation: 'O Allah, I ask You for Your pleasure and Paradise',
-        source: 'Abu Dawud 1319 — Sahih',
+        arabicText: 'اللَّهُمَّ أَعُوذُ بِرِضَاكَ مِنْ سَخَطِكَ وَبِمُعَافَاتِكَ مِنْ عُقُوبَتِكَ',
+        transliteration: "Allahumma a'udhu bi-ridaka min sakhatika wa bi-mu'afatika min 'uqubatika",
+        translation: 'O Allah, I seek refuge in Your pleasure from Your anger, and in Your pardon from Your punishment',
+        source: 'Sahih Muslim 486',
         sourceType: 'prophetic_dua',
         sourceGrading: 'hasan',
       },
@@ -5319,7 +6046,7 @@ const quranContentAnglesData: ContentAngle[] = [
         sourceType: 'quran_dua',
       },
     ]),
-    reflection: 'How does tracing blessings back to Allah change your relationship with them?',
+    reflection: 'Trace one good thing in your life back as far as you can. Where does the chain actually start?',
   },
 
   {
@@ -5329,7 +6056,7 @@ const quranContentAnglesData: ContentAngle[] = [
     angle:
       'Musa (AS) made this dua before his most daunting task—confronting Pharaoh. Ibn Kathir explains that "sharh al-sadr" (expansion of the chest) means removing anxiety, fear, and constriction from the heart, replacing them with confidence, clarity, and divine light. Al-Sa\'di adds that the Prophet ﷺ was also granted this expansion: "Have We not expanded for you your breast?" [94:1]—showing that Allah answers this dua for those who carry heavy burdens. The Prophet ﷺ said: "Whoever Allah wishes good for, He gives him understanding of the religion." [Sahih Bukhari 71] Understanding brings expansion. [Tafsir Ibn Kathir]',
     angleSource: 'Tafsir Ibn Kathir',
-    action: 'Ask Allah for "Inshirah" (expansion) of your chest right now',
+    action: 'Ask Allah for "Inshirah" (expansion) of your chest right now.',
     practiceSteps: JSON.stringify([
       {
         type: 'verbal',
@@ -5414,7 +6141,7 @@ const quranContentAnglesData: ContentAngle[] = [
     angle:
       'Allah says: "Seek help through patience and prayer. And indeed, it is difficult except for the humbly submissive." Ibn Kathir explains that Allah prescribes two specific tools for difficulty: sabr (patience) and salah (prayer)—and places them together because each strengthens the other. Al-Qurtubi adds that the companions would rush to prayer whenever they felt anxious or troubled, following the Prophetic example. The Prophet ﷺ said: "Whenever a matter distressed the Prophet, he would rush to prayer." [Abu Dawud 1319] Prayer is not just worship—it is a stabilizer for the overwhelmed soul. [Tafsir al-Qurtubi]',
     angleSource: 'Tafsir al-Qurtubi',
-    action: 'Slow down your next prayer by 2 minutes to anchor your mind',
+    action: 'Slow down your next prayer by 2 minutes to anchor your mind.',
     practiceSteps: JSON.stringify([
       {
         type: 'physical',
@@ -5452,7 +6179,7 @@ const quranContentAnglesData: ContentAngle[] = [
       },
     ]),
     reflection:
-      'How does seeking help through prayer specifically counteract the feeling of being rushed?',
+      'You are rushing. Pray the next salah deliberately slower than usual — and notice what that cost you.',
   },
   {
     id: 'q_angle_67_13_stressed',
@@ -5496,7 +6223,7 @@ const quranContentAnglesData: ContentAngle[] = [
       },
     ]),
     reflection:
-      'How does knowing Allah knows what is "within the breasts" ease your social stress?',
+      'He knows what is in your chest without you performing any of it. Who are you still performing for?',
   },
   {
     id: 'q_angle_94_1_8_stressed',
@@ -5505,7 +6232,7 @@ const quranContentAnglesData: ContentAngle[] = [
     angle:
       'Allah says: "Indeed, with hardship comes ease. So when you have finished, then stand up for worship. And to your Lord direct your longing." Ibn Kathir explains that the repetition of "with hardship comes ease" is a divine guarantee—one hardship can never overcome two eases. Al-Sa\'di adds that the command to "stand up" (fansab) after completing tasks means redirecting your focus toward Allah rather than toward more worldly concerns. The Prophet ﷺ said: "The coolness of my eyes has been placed in prayer." [An-Nasa\'i 3940] When stress peaks, devotion is the prescribed relief. [Tafsir al-Sa\'di]',
     angleSource: "Tafsir al-Sa'di",
-    action: 'Break your stress by standing up for a moment of quiet devotion',
+    action: 'Break your stress by standing up for a moment of quiet devotion.',
     practiceSteps: JSON.stringify([
       {
         type: 'mindset',
@@ -5539,7 +6266,7 @@ const quranContentAnglesData: ContentAngle[] = [
         sourceGrading: 'sahih',
       },
     ]),
-    reflection: 'How does "directing your longing to your Lord" provide an exit from stress?',
+    reflection: 'When the task is done, turn to Him. What are you actually turning to when you finish something?',
   },
   {
     id: 'q_angle_20_25_28_stressed',
@@ -5548,7 +6275,7 @@ const quranContentAnglesData: ContentAngle[] = [
     angle:
       'Musa (AS) made a comprehensive dua: "My Lord, expand for me my breast, ease for me my task, and untie the knot from my tongue that they may understand my speech." Ibn Kathir explains that this dua addresses three dimensions of difficulty: internal constriction (chest), external burden (task), and communication barriers (tongue). Al-Qurtubi adds that Musa asked for these before his mission to Pharaoh—showing that even prophets sought divine help before facing overwhelming situations. The Prophet ﷺ used to recite specific duas before important matters. This dua is a complete toolkit for anyone facing a daunting task. [Tafsir Ibn Kathir]',
     angleSource: 'Tafsir Ibn Kathir',
-    action: 'Recite the full prayer of Musa (AS) including the request for clarity',
+    action: 'Recite the full prayer of Musa (AS) including the request for clarity.',
     practiceSteps: JSON.stringify([
       {
         type: 'verbal',
@@ -5584,7 +6311,7 @@ const quranContentAnglesData: ContentAngle[] = [
         sourceType: 'quran_dua',
       },
     ]),
-    reflection: 'What specifically am I asking Allah to "ease" or "untie" for me today?',
+    reflection: 'Name the exact knot you want untied today. Not the whole situation — the one knot.',
   },
 
   // === CONTENT ANGLES ===
@@ -5595,7 +6322,7 @@ const quranContentAnglesData: ContentAngle[] = [
     angle:
       'Allah says: "Say, In the bounty of Allah and in His mercy—in that let them rejoice; it is better than what they accumulate." Ibn Kathir explains that "the bounty of Allah" refers to the Quran and "His mercy" refers to Islam—meaning the greatest reasons to rejoice are spiritual, not material. Al-Sa\'di adds that the verse directly contrasts divine gifts with worldly accumulation, establishing that faith and guidance are more valuable than all the wealth on earth. The Prophet ﷺ said: "Whoever is given his portion of gentleness has been given his portion of good." [Sahih Muslim 2593] True contentment begins with appreciating the gift of belief itself. [Tafsir al-Sa\'di]',
     angleSource: "Tafsir al-Sa'di",
-    action: 'List one thing you love about being a believer',
+    action: 'List one thing you love about being a believer.',
     practiceSteps: JSON.stringify([
       {
         type: 'mindset',
@@ -5638,7 +6365,7 @@ const quranContentAnglesData: ContentAngle[] = [
     angle:
       'Allah declares: "If you are grateful, I will surely increase you." Ibn Kathir explains that this divine law applies to all blessings—when you express gratitude for what you have, Allah multiplies it. Al-Sa\'di adds that the "increase" is not limited to material wealth; it includes peace of heart, clarity of mind, and satisfaction with one\'s portion. The Prophet ﷺ said: "Richness is not having many possessions. Rather, richness is the richness of the soul." [Sahih Bukhari 6446] Contentment is not about having more—it is about recognizing what you already have as a gift from the Most Generous. [Tafsir al-Sa\'di]',
     angleSource: "Tafsir al-Sa'di",
-    action: 'Look around and say "Alhamdulillah" for the roof over your head',
+    action: 'Look around and say "Alhamdulillah" for the roof over your head.',
     practiceSteps: JSON.stringify([
       {
         type: 'mindset',
@@ -5668,8 +6395,8 @@ const quranContentAnglesData: ContentAngle[] = [
         arabicText: 'الْحَمْدُ لِلَّهِ',
         transliteration: 'Alhamdulillah',
         translation: 'All praise is for Allah',
-        source: 'Surah Ibrahim 14:7 — Quran',
-        sourceType: 'quran_dua',
+        source: "\"The best supplication is Al-hamdu lillah.\" [Jami' at-Tirmidhi 3383]",
+        sourceType: 'prophetic_dhikr',
         countSource: 'Muslim 597',
         count: 33,
       },
@@ -5683,7 +6410,7 @@ const quranContentAnglesData: ContentAngle[] = [
     angle:
       'Allah says: "And if you should count the favors of Allah, you could not enumerate them. Indeed, Allah is Forgiving and Merciful." Ibn Kathir explains that Allah ends this verse with "Forgiving and Merciful" because even our failure to properly thank Him for all His blessings is itself forgiven. Al-Qurtubi adds that attempting to count blessings—even though it is impossible—is itself an act of worship that increases contentment and awareness. The Prophet ﷺ said: "He who does not thank Allah for small things will not thank Him for great things." [Musnad Ahmad] The exercise of counting cultivates a heart that overflows with satisfaction. [Tafsir al-Qurtubi]',
     angleSource: 'Tafsir al-Qurtubi',
-    action: 'Try to count the favors of Allah in just the last hour',
+    action: 'Try to count the favors of Allah in just the last hour.',
     practiceSteps: JSON.stringify([
       {
         type: 'physical',
@@ -5712,12 +6439,12 @@ const quranContentAnglesData: ContentAngle[] = [
         arabicText: 'الْحَمْدُ لِلَّهِ عَلَى كُلِّ حَالٍ',
         transliteration: "Alhamdulillah 'ala kulli hal",
         translation: 'All praise is for Allah in every situation',
-        source: 'Musnad Ahmad — Sahih',
-        sourceType: 'prophetic_dua',
+        source: '"He who does not thank the people is not thankful to Allah." [Sunan Abi Dawud 4811]',
+        sourceType: 'prophetic_dhikr',
         sourceGrading: 'hasan',
       },
     ]),
-    reflection: 'If I cannot count them, how can I ever feel like I have "not enough"?',
+    reflection: 'Start counting His favours and stop when you lose track. Where did "not enough" go while you were counting?',
   },
   {
     id: 'q_angle_93_11_content',
@@ -5726,17 +6453,15 @@ const quranContentAnglesData: ContentAngle[] = [
     angle:
       'Allah says: "And as for the favor of your Lord, report it." Ibn Kathir explains that "haddith" (report/proclaim) means to speak openly about Allah\'s blessings—not as boasting but as a form of gratitude and testimony. Al-Sa\'di adds that sharing blessings with others multiplies the joy and encourages them to recognize Allah\'s generosity in their own lives. The Prophet ﷺ said: "To speak of the blessings of Allah is gratitude, and to leave it is ingratitude." [Musnad Ahmad 18449] When contentment fills your heart, sharing it does not diminish it—it amplifies it. [Tafsir al-Sa\'di]',
     angleSource: "Tafsir al-Sa'di",
-    action: 'Share one good thing that happened to you with a friend or family member',
+    action: 'Share one good thing that happened to you with a friend or family member.',
     practiceSteps: JSON.stringify([
       {
         type: 'physical',
         icon: 'chat',
         title: 'Share a blessing',
         instruction:
-          'Send a message to someone right now sharing one good thing Allah has given you. Speaking of blessings is gratitude; silence about them is ingratitude. Sharing joy amplifies it.',
-        source: '"To speak of the blessings of Allah is gratitude." [Ahmad 18449]',
-        sourceType: 'prophetic_dhikr',
-        sourceGrading: 'hasan',
+          'Send a message to someone right now sharing one good thing Allah has given you. The ayah does not ask you to feel grateful quietly — it tells you to proclaim the favor out loud. Sharing joy amplifies it.',
+        source: 'Surah Ad-Duha 93:11 — Quran',
       },
       {
         type: 'mindset',
@@ -5769,7 +6494,7 @@ const quranContentAnglesData: ContentAngle[] = [
     angle:
       'Allah asks repeatedly in Surah Ar-Rahman: "So which of the favors of your Lord would you deny?" Ibn Kathir explains that this question is repeated 31 times to make the listener pause and reflect on each category of blessings—from creation to sustenance to the beauty of nature. Al-Qurtubi notes that when the Prophet ﷺ recited this surah to the Jinn, they replied: "None of Your favors, our Lord, do we deny; all praise is Yours." This response moved the Prophet ﷺ, who said: "The Jinn responded better than you." [At-Tirmidhi 3291] Each repetition is a divine invitation to deep mindfulness and satisfaction. [Tafsir al-Qurtubi]',
     angleSource: 'Tafsir al-Qurtubi',
-    action: 'Slowly recite "Fabi-ayyi ala-i Rabbikuma tukadhdhiban" three times',
+    action: 'Slowly recite "Fabi-ayyi ala-i Rabbikuma tukadhdhiban" three times.',
     practiceSteps: JSON.stringify([
       {
         type: 'verbal',
@@ -5803,7 +6528,7 @@ const quranContentAnglesData: ContentAngle[] = [
         sourceGrading: 'hasan',
       },
     ]),
-    reflection: 'Which favor of my Lord am I particularly aware of in this moment?',
+    reflection: 'Which favour of your Lord are you most aware of right now? Say it before the moment passes.',
   },
   {
     id: 'q_angle_31_12_content',
@@ -5812,7 +6537,7 @@ const quranContentAnglesData: ContentAngle[] = [
     angle:
       'Allah says: "And whoever is grateful is grateful for the benefit of himself. And whoever denies—then indeed, Allah is Free of need and Praiseworthy." Ibn Kathir explains that gratitude and contentment are investments in your own spiritual health—Allah gains nothing from your thanks, but you gain everything. Al-Sa\'di adds that recognizing this transforms gratitude from a duty into a privilege: you are not doing Allah a favor by being content; you are doing yourself one. The Prophet ﷺ said: "Be content with what Allah has apportioned for you and you will be the richest of people." [At-Tirmidhi 2305] Contentment is the ultimate gift you give yourself. [Tafsir al-Sa\'di]',
     angleSource: "Tafsir al-Sa'di",
-    action: 'Recognize that your current feeling of peace is a gift you are giving yourself',
+    action: 'Recognize that your current feeling of peace is a gift you are giving yourself.',
     practiceSteps: JSON.stringify([
       {
         type: 'mindset',
@@ -5842,9 +6567,8 @@ const quranContentAnglesData: ContentAngle[] = [
         arabicText: 'اللَّهُمَّ قَنِّعْنِي بِمَا رَزَقْتَنِي',
         transliteration: "Allahumma qanni'ni bima razaqtani",
         translation: 'O Allah, make me content with what You have provided me',
-        source: 'Tirmidhi 2305 — Hasan',
-        sourceType: 'prophetic_dua',
-        sourceGrading: 'hasan',
+        source: 'Suggested wording — the theme of Surah Luqman 31:12',
+        sourceType: 'composed_dua',
       },
     ]),
     reflection: "How does being content with Allah's decree bring peace to my heart (Qalb)?",
@@ -5856,7 +6580,7 @@ const quranContentAnglesData: ContentAngle[] = [
     angle:
       'Allah says: "This day I have perfected for you your religion and completed My favor upon you and have approved for you Islam as religion." Ibn Kathir explains this was revealed on the day of Arafah during the farewell pilgrimage—and it made Umar (RA) weep because he understood that perfection implies completion. Al-Qurtubi adds that "completed My favor" means Islam provides a comprehensive guide for every aspect of life—spiritual, social, personal, and moral. The Prophet ﷺ received this verse as a capstone of 23 years of revelation, and no legislation was revealed after it. Having a "perfected" faith is itself the greatest contentment. [Tafsir Ibn Kathir]',
     angleSource: 'Tafsir Ibn Kathir',
-    action: 'Reflect on the completeness of your faith as a guide for life',
+    action: 'Reflect on the completeness of your faith as a guide for life.',
     practiceSteps: JSON.stringify([
       {
         type: 'mindset',
@@ -5899,7 +6623,7 @@ const quranContentAnglesData: ContentAngle[] = [
     angle:
       'Allah says: "And out of His mercy He made for you the night and the day that you may rest therein and seek from His bounty and that perhaps you will be grateful." Ibn Kathir explains that the alternation of night and day is a deliberate act of mercy—night for rest and recovery, day for work and provision. Al-Sa\'di adds that this natural rhythm provides a natural container for human contentment: there is a time for effort and a time for stillness, both divinely ordained. The Prophet ﷺ would say when evening came: "The night has come and the day has departed, and Allah is praised." [Abu Dawud] Finding peace in natural rhythms is itself a form of worship. [Tafsir Ibn Kathir]',
     angleSource: 'Tafsir Ibn Kathir',
-    action: 'Observe the light (or dark) outside and see it as a deliberate mercy',
+    action: 'Observe the light (or dark) outside and see it as a deliberate mercy.',
     practiceSteps: JSON.stringify([
       {
         type: 'physical',
@@ -5942,7 +6666,7 @@ const quranContentAnglesData: ContentAngle[] = [
     angle:
       'Allah says: "So remember Me; I will remember you. And be grateful to Me and do not deny Me." Ibn Kathir explains that this is the most intimate transaction in existence: when you remember Allah, He—the Creator of the heavens and earth—remembers you by name. Al-Sa\'di adds that the Hadith Qudsi expands this: "If he remembers Me in himself, I remember him in Myself. If he remembers Me in a gathering, I remember him in a gathering better than theirs." [Sahih Bukhari 7405] The Prophet ﷺ said: "The example of one who remembers his Lord and one who does not is like the living and the dead." [Sahih Bukhari 6407] No relationship offers greater contentment. [Tafsir al-Sa\'di]',
     angleSource: "Tafsir al-Sa'di",
-    action: 'Remember Allah now so that He remembers you in this very moment',
+    action: 'Remember Allah now so that He remembers you in this very moment.',
     practiceSteps: JSON.stringify([
       {
         type: 'verbal',
@@ -6016,11 +6740,11 @@ const quranContentAnglesData: ContentAngle[] = [
         arabicText: 'حَسْبِيَ اللَّهُ وَنِعْمَ الْوَكِيلُ',
         transliteration: "HasbiyAllahu wa ni'mal-wakeel",
         translation: 'Allah is sufficient for me and He is the best Disposer of affairs',
-        source: 'Surah Al-Imran 3:173 — Quran',
-        sourceType: 'quran_dua',
+        source: 'Suggested wording — the singular form of the dhikr in Surah Ali Imran 3:173',
+        sourceType: 'composed_dua',
       },
     ]),
-    reflection: 'How does attributing success to Allah remove the pressure for me to be perfect?',
+    reflection: 'What are you afraid of failing at? Notice how it changes weight once the outcome was never yours to guarantee.',
   },
   {
     id: 'q_angle_89_27_30_content',
@@ -6029,7 +6753,7 @@ const quranContentAnglesData: ContentAngle[] = [
     angle:
       'Allah says: "O reassured soul, return to your Lord, well-pleased and pleasing to Him. Enter among My righteous servants, and enter My Paradise." Ibn Kathir explains that the "nafs al-mutma\'innah" (reassured soul) is the one that found deep contentment through faith and certainty in Allah. Al-Baghawi adds that "return to your Lord" is the most beautiful invitation—a homecoming for the soul that was always meant to be with its Creator. The Prophet ﷺ said: "When Allah loves a servant, He calls Jibril and says: I love so-and-so, so love him." [Sahih Bukhari 3209] The ultimate contentment is knowing you are heading home. [Tafsir al-Baghawi]',
     angleSource: 'Tafsir al-Baghawi',
-    action: 'Reflect on the peace of a soul that has found its home in Allah',
+    action: 'Reflect on the peace of a soul that has found its home in Allah.',
     practiceSteps: JSON.stringify([
       {
         type: 'mindset',
@@ -6062,7 +6786,7 @@ const quranContentAnglesData: ContentAngle[] = [
         sourceType: 'quran_dua',
       },
     ]),
-    reflection: 'What can I do today to cultivate a "reassured soul" (Nafs al-Mutma\'innah)?',
+    reflection: 'A reassured soul is built rather than handed over. What is one thing you will do today to build yours?',
   },
 
   // === CALM ANGLES ===
@@ -6073,7 +6797,7 @@ const quranContentAnglesData: ContentAngle[] = [
     angle:
       'Allah says: "Verily, in the remembrance of Allah do hearts find rest." Ibn Kathir explains that this verse establishes a universal principle: the human heart was created with a void that only the remembrance of Allah can fill—no wealth, status, or relationship can substitute. Al-Sa\'di adds that "tatma\'innu" (find rest) means a deep, settled peace that comes only when the heart is connected to its Creator. The Prophet ﷺ said: "Shall I not tell you the best of your deeds, the purest of them with your Lord, which raises your ranks the most? It is the remembrance of Allah." [At-Tirmidhi 3377] Dhikr is not ritual—it is the heart\'s medicine. [Tafsir al-Sa\'di]',
     angleSource: "Tafsir al-Sa'di",
-    action: 'Close your eyes and recite "SubhanAllah" with awareness of its meaning',
+    action: 'Close your eyes and recite "SubhanAllah" with awareness of its meaning.',
     practiceSteps: JSON.stringify([
       {
         type: 'verbal',
@@ -6118,7 +6842,7 @@ const quranContentAnglesData: ContentAngle[] = [
     angle:
       'Allah says: "And of His signs is that He created for you from yourselves mates that you may find tranquility in them, and He placed between you affection and mercy." Ibn Kathir explains that "sakina" (tranquility) in relationships is a direct sign (ayah) of Allah—meaning that the peace you feel with a loved one is divinely placed. Al-Qurtubi adds that the "mawaddah" (affection) and "rahmah" (mercy) are two distinct gifts: affection is the warmth of love, while mercy is the gentle patience that sustains relationships through difficulty. The Prophet ﷺ said: "The best of you is the best to his family, and I am the best of you to my family." [At-Tirmidhi 3895] [Tafsir al-Qurtubi]',
     angleSource: 'Tafsir al-Qurtubi',
-    action: 'Express appreciation to a loved one who brings you peace',
+    action: 'Express appreciation to a loved one who brings you peace.',
     practiceSteps: JSON.stringify([
       {
         type: 'physical',
@@ -6162,7 +6886,7 @@ const quranContentAnglesData: ContentAngle[] = [
     angle:
       'Allah says: "Your Lord has decreed upon Himself mercy." Ibn Kathir explains that "kataba ala nafsihi" (decreed upon Himself) means Allah made mercy an obligation upon Himself—not because anyone forced Him, but out of His infinite generosity. Al-Sa\'di adds that when you greet a believer with "Salam," Allah responds with a greeting of peace back to you. The Prophet ﷺ said: "When Allah created creation, He wrote in His Book which is with Him above the Throne: My mercy prevails over My wrath." [Sahih Bukhari 3194] You are living under a decree of mercy that cannot be revoked. [Tafsir Ibn Kathir]',
     angleSource: 'Tafsir Ibn Kathir',
-    action: 'Close your eyes and accept that Allah has obligated mercy upon Himself for you',
+    action: 'Close your eyes and accept that Allah has obligated mercy upon Himself for you.',
     practiceSteps: JSON.stringify([
       {
         type: 'mindset',
@@ -6183,8 +6907,8 @@ const quranContentAnglesData: ContentAngle[] = [
         arabicText: 'السَّلَامُ عَلَيْكُمْ وَرَحْمَةُ اللَّهِ',
         transliteration: "As-Salamu 'alaykum wa rahmatullah",
         translation: 'Peace be upon you and the mercy of Allah',
-        source: "Surah Al-An'am 6:54 — Quran",
-        sourceType: 'quran_dua',
+        source: '"Spread the salam among yourselves." [Sahih Muslim 54a]',
+        sourceType: 'sunnah_action',
       },
       {
         type: 'physical',
@@ -6196,7 +6920,7 @@ const quranContentAnglesData: ContentAngle[] = [
         sourceType: 'quran_dua',
       },
     ]),
-    reflection: 'How does it feel to be greeted with "Salam" by your Lord?',
+    reflection: 'Your Lord greeted you with peace. When did you last let a greeting land instead of answering on reflex?',
   },
   {
     id: 'q_angle_16_32_calm',
@@ -6205,7 +6929,7 @@ const quranContentAnglesData: ContentAngle[] = [
     angle:
       'Allah says: "The ones whom the angels take in death, being good and pure. The angels will say: Peace be upon you. Enter Paradise for what you used to do." Ibn Kathir explains that "tayyibeen" (good and pure) refers to souls whose hearts were cleansed through faith and righteous deeds. Al-Sa\'di adds that the angels\' greeting of "Salam" at the moment of death is reserved for those who cultivated inner purity during life. The Prophet ﷺ said: "Truly, Allah does not look at your appearance or wealth, but He looks at your hearts and your deeds." [Sahih Muslim 2564] Inner purity is the passport to angelic peace. [Tafsir al-Sa\'di]',
     angleSource: "Tafsir al-Sa'di",
-    action: 'Focus on purifying your intention for your next task',
+    action: 'Focus on purifying your intention for your next task.',
     practiceSteps: JSON.stringify([
       {
         type: 'mindset',
@@ -6248,7 +6972,7 @@ const quranContentAnglesData: ContentAngle[] = [
     angle:
       'Allah says: "Peace!"—a word from a Merciful Lord." Ibn Kathir explains that this is the ultimate greeting: Allah Himself says "Salam" to the people of Paradise—a direct, personal word of peace from the Creator to His servants. Al-Qurtubi adds that this single word encompasses freedom from all harm, grief, fear, and pain forever. The Prophet ﷺ said: "As-Salam (Peace) is one of the names of Allah which He has placed upon the earth, so spread it among yourselves." [Sahih Bukhari, Al-Adab Al-Mufrad 989] When you say "Salam," you are invoking a divine name and spreading a heavenly reality on earth. [Tafsir al-Qurtubi]',
     angleSource: 'Tafsir al-Qurtubi',
-    action: 'Slowly repeat the word "Salam" and let it anchor your soul',
+    action: 'Slowly repeat the word "Salam" and let it anchor your soul.',
     practiceSteps: JSON.stringify([
       {
         type: 'verbal',
@@ -6282,7 +7006,7 @@ const quranContentAnglesData: ContentAngle[] = [
         sourceGrading: 'hasan',
       },
     ]),
-    reflection: 'How does a greeting of peace from the Creator silence the noise of the world?',
+    reflection: 'Salam — a word, from a Lord Most Merciful. Say it slowly once and notice what goes quiet.',
   },
   {
     id: 'q_angle_97_5_calm',
@@ -6291,7 +7015,7 @@ const quranContentAnglesData: ContentAngle[] = [
     angle:
       'Allah says: "Peace it is until the emergence of dawn." Ibn Kathir explains that Laylatul Qadr (the Night of Decree) is enveloped in complete salam (peace)—from the moment the sun sets until dawn. Al-Sa\'di adds that this peace is not just an absence of harm but an active, descending tranquility that touches every believer who seeks it. The Prophet ﷺ said: "Whoever stands in prayer on Laylatul Qadr out of faith and seeking reward, his previous sins will be forgiven." [Sahih Bukhari 1901] While Laylatul Qadr is one special night, the principle of seeking peace in the stillness of the night applies to every night of devotion. [Tafsir Ibn Kathir]',
     angleSource: 'Tafsir Ibn Kathir',
-    action: 'Set an intention to find stillness in the early hours of tomorrow',
+    action: 'Set an intention to find stillness in the early hours of tomorrow.',
     practiceSteps: JSON.stringify([
       {
         type: 'mindset',
@@ -6327,7 +7051,7 @@ const quranContentAnglesData: ContentAngle[] = [
         sourceGrading: 'hasan',
       },
     ]),
-    reflection: 'How can I carry the "salam" of Laylatul Qadr into my daily life?',
+    reflection: 'That night is described as peace until dawn. Which hour of your ordinary day could you make feel like that?',
   },
   {
     id: 'q_angle_56_91_calm',
@@ -6346,7 +7070,7 @@ const quranContentAnglesData: ContentAngle[] = [
         title: 'Reach out with peace',
         instruction:
           'Send a message to a righteous friend right now — someone whose presence reminds you of Allah. Share a word of peace or a kind thought. The best companion is the one who is best to their companions.',
-        source: '"The best of companions is the one who is best to his companion." [Tirmidhi]',
+        source: "\"The companion who is the best to Allah is the one who is best to his companion.\" [Jami' at-Tirmidhi 1944]",
         sourceType: 'prophetic_dhikr',
         sourceGrading: 'hasan',
       },
@@ -6373,7 +7097,7 @@ const quranContentAnglesData: ContentAngle[] = [
         sourceGrading: 'hasan',
       },
     ]),
-    reflection: 'How does a community of tranquility support my individual peace?',
+    reflection: 'Who around you makes your heart quieter? When did you last put yourself near them on purpose?',
   },
   {
     id: 'q_angle_89_27_30_calm',
@@ -6449,7 +7173,7 @@ const quranContentAnglesData: ContentAngle[] = [
         title: 'One consistent habit',
         instruction:
           'Pick one small habit and commit to it today: say "SubhanAllah" 10 times after each prayer, or read one verse of Quran daily. The most beloved deeds to Allah are consistent ones, even if small.',
-        source: '"The most beloved deeds are consistent, even if small." [Bukhari]',
+        source: '"The most beloved deed to Allah is the most regular and constant even if it were little." [Sahih al-Bukhari 6464]',
         sourceType: 'prophetic_dhikr',
         sourceGrading: 'sahih',
       },
@@ -6462,8 +7186,8 @@ const quranContentAnglesData: ContentAngle[] = [
         arabicText: 'اللَّهُمَّ أَسْلِمْ قَلْبِي لَكَ',
         transliteration: 'Allahumma aslim qalbi lak',
         translation: 'O Allah, make my heart submit to You',
-        source: 'Surah Al-Baqarah 2:208 — Quran',
-        sourceType: 'quran_dua',
+        source: 'Suggested wording — the theme of Surah Al-Baqarah 2:208',
+        sourceType: 'composed_dua',
       },
     ]),
     reflection: "How does total submission to Allah's plan bring your heart into deep security?",
@@ -6484,10 +7208,8 @@ const quranContentAnglesData: ContentAngle[] = [
         icon: 'chat',
         title: 'Share your story',
         instruction:
-          'Share a story of how Allah helped you with a friend or family member today. Speaking of blessings IS gratitude. Silence about them is ingratitude.',
-        source: '"To speak of blessings is gratitude, to leave it is ingratitude." [Ahmad 18449]',
-        sourceType: 'prophetic_dhikr',
-        sourceGrading: 'hasan',
+          'Share a story of how Allah helped you with a friend or family member today. "But as for the favor of your Lord, proclaim it" is an instruction, not a suggestion.',
+        source: 'Surah Ad-Duha 93:11 — Quran',
       },
       {
         type: 'mindset',
@@ -6512,7 +7234,7 @@ const quranContentAnglesData: ContentAngle[] = [
       },
     ]),
     reflection:
-      'How does sharing your joy and Reporting His favors increase your own sense of being blessed?',
+      'Report one favour out loud to someone today. Not a humblebrag — a plain account of something He gave you.',
   },
   {
     id: 'q_angle_55_13_grateful',
@@ -6557,7 +7279,7 @@ const quranContentAnglesData: ContentAngle[] = [
         sourceType: 'quran_dua',
       },
     ]),
-    reflection: 'Which specific favor of my Lord am I most aware of right now?',
+    reflection: 'That question is asked thirty-one times in one surah. Answer it once, specifically, for today.',
   },
   {
     id: 'q_angle_5_3_grateful',
@@ -6566,7 +7288,7 @@ const quranContentAnglesData: ContentAngle[] = [
     angle:
       'Allah says: "This day I have perfected for you your religion and completed My favor upon you." Ibn Kathir narrates that when this verse was revealed, Umar (RA) wept. When asked why, he said: "After perfection, there is nothing but decrease." Al-Sa\'di explains that gratitude for the completion of Islam means recognizing that you have been given a fully perfected system of guidance—something no previous nation received in such completeness. The Prophet ﷺ said: "Islam began as something strange and will return to being strange, so blessed are the strangers." [Sahih Muslim 145] Being grateful for the gift of Islam is the foundation of all other gratitude. [Tafsir al-Sa\'di]',
     angleSource: "Tafsir al-Sa'di",
-    action: 'Say "Alhamdulillah" for the gift of being a Muslim',
+    action: 'Say "Alhamdulillah" for the gift of being a Muslim.',
     practiceSteps: JSON.stringify([
       {
         type: 'mindset',
@@ -6600,7 +7322,7 @@ const quranContentAnglesData: ContentAngle[] = [
         sourceType: 'quran_dua',
       },
     ]),
-    reflection: 'How is the perfection of my religion a completed favor for my life?',
+    reflection: 'Your religion was called complete. What are you still waiting to receive before you will feel provided for?',
   },
   {
     id: 'q_angle_2_152_grateful',
@@ -6609,7 +7331,7 @@ const quranContentAnglesData: ContentAngle[] = [
     angle:
       'Allah says: "So remember Me; I will remember you. And be grateful to Me and do not deny Me." Ibn Kathir explains that gratitude and remembrance are linked—when you thank Allah, you are also remembering Him, and He remembers you in return. Al-Sa\'di adds that the ability to be grateful is itself a blessing that deserves gratitude, creating a beautiful cycle: gratitude leads to remembrance, which leads to divine attention, which leads to more blessings. The Prophet ﷺ said: "If he remembers Me in himself, I remember him in Myself." [Sahih Bukhari 7405] Your gratitude is not just acknowledged—it is reciprocated by the King of Kings. [Tafsir al-Sa\'di]',
     angleSource: "Tafsir al-Sa'di",
-    action: 'Thank Allah for the strength to even remember Him',
+    action: 'Thank Allah for the strength to even remember Him.',
     practiceSteps: JSON.stringify([
       {
         type: 'verbal',
@@ -6643,7 +7365,7 @@ const quranContentAnglesData: ContentAngle[] = [
         sourceGrading: 'sahih',
       },
     ]),
-    reflection: 'What changes when I realize my gratitude is a sign He is remembering me?',
+    reflection: 'Your gratitude is evidence He is already remembering you. Sit with that before you ask Him for anything else.',
   },
   {
     id: 'q_angle_2_186_anxious',
@@ -6652,7 +7374,7 @@ const quranContentAnglesData: ContentAngle[] = [
     angle:
       'Allah says: "And when My servants ask you concerning Me—indeed I am near." Ibn Kathir explains that this verse is unique in the Quran: unlike other questions where Allah tells the Prophet to "say" the answer, here Allah answers directly—"I am near"—emphasizing the intimacy and immediacy of His presence. Al-Sa\'di adds that this nearness is especially felt in moments of desperation, when the heart races and the mind spirals. The Prophet ﷺ said: "You are not calling upon one who is deaf or absent. You are calling upon One who is All-Hearing, Ever-Near." [Sahih Bukhari 2992] When anxiety strikes, the Hearer of all prayers is already listening. [Tafsir al-Sa\'di]',
     angleSource: "Tafsir al-Sa'di",
-    action: 'Slow your breathing and acknowledge that Allah is closer than your fear',
+    action: 'Slow your breathing and acknowledge that Allah is closer than your fear.',
     practiceSteps: JSON.stringify([
       {
         type: 'physical',
@@ -6686,7 +7408,7 @@ const quranContentAnglesData: ContentAngle[] = [
         sourceType: 'quran_dua',
       },
     ]),
-    reflection: 'How does the nearness of the All-Hearing settle your anxiety?',
+    reflection: 'He said "I am near" with no messenger in the sentence. What have you been treating as the distance?',
   },
   {
     id: 'q_angle_20_25_anxious',
@@ -6695,7 +7417,7 @@ const quranContentAnglesData: ContentAngle[] = [
     angle:
       'Musa (AS) prayed: "My Lord, expand for me my breast." Ibn Kathir explains that "sharh al-sadr" is the removal of tightness, anxiety, and spiritual constriction—replacing them with light, confidence, and inner spaciousness. Al-Qurtubi adds that this dua was made before Musa\'s most challenging moment (facing Pharaoh), showing it is specifically designed for overwhelming situations. The Prophet ﷺ was also granted this gift: "Have We not expanded for you your breast?" [94:1] The Prophet ﷺ said: "Make things easy for the people, and do not make it difficult for them." [Sahih Bukhari 6125] Seeking expansion is the antidote to the constriction of anxiety. [Tafsir al-Qurtubi]',
     angleSource: 'Tafsir al-Qurtubi',
-    action: 'Recite "Rabbish-rah li sadri" three times slowly',
+    action: 'Recite "Rabbish-rah li sadri" three times slowly.',
     practiceSteps: JSON.stringify([
       {
         type: 'verbal',
@@ -6730,7 +7452,7 @@ const quranContentAnglesData: ContentAngle[] = [
         sourceType: 'quran_dua',
       },
     ]),
-    reflection: 'What does "expansion of the breast" look like for my current situation?',
+    reflection: 'Musa asked for his chest to be opened before he asked for anything else. What would that feel like for you?',
   },
   {
     id: 'q_angle_40_44_anxious',
@@ -6739,7 +7461,7 @@ const quranContentAnglesData: ContentAngle[] = [
     angle:
       'The secret believer among Pharaoh\'s people said: "I entrust my affair to Allah. Indeed, Allah is Seeing of His servants." Ibn Kathir explains that this man trusted Allah when surrounded by the most powerful tyrant in history—and Allah saved him. Al-Sa\'di adds that "tafwid" (entrusting) is the highest form of tawakkul: it means releasing your grip on the outcome entirely and placing it in the hands of the One who sees all hidden realities. "So Allah protected him from the evils they plotted." [40:45] The Prophet ﷺ said: "If you relied on Allah as He should be relied upon, He would provide for you as He provides for the birds." [At-Tirmidhi 2344] [Tafsir al-Sa\'di]',
     angleSource: "Tafsir al-Sa'di",
-    action: 'Acknowledge that Allah sees your struggle and can handle the outcome',
+    action: 'Acknowledge that Allah sees your struggle and can handle the outcome.',
     practiceSteps: JSON.stringify([
       {
         type: 'verbal',
@@ -6772,7 +7494,7 @@ const quranContentAnglesData: ContentAngle[] = [
         sourceType: 'quran_dua',
       },
     ]),
-    reflection: 'How does letting go of the "How" bring peace to your heart?',
+    reflection: 'You do not need to know the mechanism. What are you still trying to reverse-engineer before you will rest?',
   },
   {
     id: 'q_angle_2_153_anxious_angle',
@@ -6781,7 +7503,7 @@ const quranContentAnglesData: ContentAngle[] = [
     angle:
       'Allah says: "O you who have believed, seek help through patience and prayer. Indeed, Allah is with the patient." Ibn Kathir explains that sabr (patience) and salah (prayer) are the two divinely prescribed stabilizers for the overwhelmed heart. Al-Qurtubi adds that the Prophet ﷺ himself would turn to prayer whenever a matter distressed him [Abu Dawud 1319], establishing that even the strongest souls need this anchor. The verse ends with "Allah is with the patient"—a promise of special divine companionship for those who endure. The Prophet ﷺ said: "The prayer is light." [Sahih Muslim 223] It illuminates the path when anxiety clouds your vision. [Tafsir al-Qurtubi]',
     angleSource: 'Tafsir al-Qurtubi',
-    action: 'Stand for a 2-minute voluntary prayer to ground your soul',
+    action: 'Stand for a 2-minute voluntary prayer to ground your soul.',
     practiceSteps: JSON.stringify([
       {
         type: 'physical',
@@ -6819,7 +7541,7 @@ const quranContentAnglesData: ContentAngle[] = [
       },
     ]),
     reflection:
-      'How does the physical act of prayer (Salah) dissolve the weight of spiritual anxiety?',
+      'Pray the next salah with your phone in a different room. Afterwards, name what was different.',
   },
   {
     id: 'q_angle_41_30_anxious_angle',
@@ -6828,7 +7550,7 @@ const quranContentAnglesData: ContentAngle[] = [
     angle:
       'Allah says: "Indeed, those who have said, \'Our Lord is Allah,\' and then remained on a right course—the angels will descend upon them." Ibn Kathir explains that istiqamah (steadfastness) is maintaining faith despite fear and pressure—and the reward is angelic support that says: "Do not fear and do not grieve." Al-Sa\'di adds that the angels descend throughout life, not only at death, providing unseen comfort during moments of anxiety and fear. The Prophet ﷺ said: "Say: I believe in Allah, then be steadfast." [Sahih Muslim 38] When you hold firm despite your fears, heaven sends reinforcements. [Tafsir al-Sa\'di]',
     angleSource: "Tafsir al-Sa'di",
-    action: 'Commit to staying on the "right course" today despite your fears',
+    action: 'Commit to staying on the "right course" today despite your fears.',
     practiceSteps: JSON.stringify([
       {
         type: 'verbal',
@@ -6873,7 +7595,7 @@ const quranContentAnglesData: ContentAngle[] = [
     angle:
       'Allah said to Musa and Harun: "Do not fear; indeed, I am with you both. I hear and I see." Ibn Kathir explains that this reassurance was given at the most terrifying moment—being sent to confront the most powerful ruler on earth. Al-Sa\'di adds that Allah\'s names As-Sami\' (The All-Hearing) and Al-Basir (The All-Seeing) are invoked here to show that He perceives every detail of your struggle: the trembling in your voice, the racing of your heart, the fear you cannot articulate. The Prophet ﷺ said: "Be mindful of Allah and you will find Him before you." [At-Tirmidhi 2516] You are never facing your fears alone. [Tafsir al-Sa\'di]',
     angleSource: "Tafsir al-Sa'di",
-    action: 'Acknowledge that you are never alone in your struggle',
+    action: 'Acknowledge that you are never alone in your struggle.',
     practiceSteps: JSON.stringify([
       {
         type: 'mindset',
@@ -6910,7 +7632,7 @@ const quranContentAnglesData: ContentAngle[] = [
         sourceGrading: 'hasan',
       },
     ]),
-    reflection: 'How does knowing Allah is "hearing and seeing" change your fear?',
+    reflection: 'Musa and Harun named their fear and were told "I hear and I see." Say yours in equally plain words.',
   },
   {
     id: 'q_angle_8_33_stressed',
@@ -6919,7 +7641,7 @@ const quranContentAnglesData: ContentAngle[] = [
     angle:
       'Allah says: "But Allah would not punish them while they seek forgiveness." Ibn Kathir explains that istighfar (seeking forgiveness) is explicitly named as a divine shield against punishment and calamity. Al-Sa\'di adds that stress and difficulty can sometimes be spiritual signals—and istighfar is the prescribed response that clears spiritual blockages and opens doors of ease. The Prophet ﷺ said: "Whoever makes istighfar his constant practice, Allah will provide a way out of every distress, relief from every anxiety, and provide for him from sources he never imagined." [Abu Dawud 1518] A clean spiritual slate reduces the weight of external pressure. [Tafsir al-Sa\'di]',
     angleSource: "Tafsir al-Sa'di",
-    action: 'Take a deep breath and say "Astaghfirullah" for any mistakes made in haste',
+    action: 'Take a deep breath and say "Astaghfirullah" for any mistakes made in haste.',
     practiceSteps: JSON.stringify([
       {
         type: 'verbal',
@@ -6957,7 +7679,7 @@ const quranContentAnglesData: ContentAngle[] = [
         sourceGrading: 'sahih',
       },
     ]),
-    reflection: 'How does cleaning your slate with Allah reduce your external pressure?',
+    reflection: 'Some of this pressure is external and some is unfinished business with Allah. Sort today\'s into two piles.',
   },
   {
     id: 'q_angle_35_35_stressed',
@@ -6966,7 +7688,7 @@ const quranContentAnglesData: ContentAngle[] = [
     angle:
       'Allah says about the people of Paradise: "No fatigue will touch them therein, nor from it will they ever be removed." Ibn Kathir explains that the Hereafter is described as a place of zero fatigue—no stress, no exhaustion, no deadlines, no anxiety. Al-Sa\'di adds that reflecting on this eternal relief puts temporary worldly stress into perspective: your current struggle is measured in days, but the rest that awaits is measured in eternity. The Prophet ﷺ said: "The most tested people are the prophets, then the next best, then the next best." [At-Tirmidhi 2398] Your weariness now is the price of eternal ease. [Tafsir al-Sa\'di]',
     angleSource: "Tafsir al-Sa'di",
-    action: 'ponder the absolute relief of the Hereafter where no stress exists',
+    action: 'ponder the absolute relief of the Hereafter where no stress exists.',
     practiceSteps: JSON.stringify([
       {
         type: 'mindset',
@@ -6995,10 +7717,10 @@ const quranContentAnglesData: ContentAngle[] = [
         icon: 'calm-face',
         title: 'Rest as worship',
         instruction:
-          'Take a 15-minute break right now. Napping was a sunnah of the Prophet ﷺ (qaylulah). Rest is not laziness — it is preparation for worship and productivity.',
-        source: '"Take a nap, for the shayateen do not nap." [Tabarani, Hasan]',
-        sourceType: 'prophetic_dua',
-        sourceGrading: 'hasan',
+          'Take a 15-minute break right now. The companions took a midday nap after Jumua, and the Prophet ﷺ did not forbid it. Rest is not laziness — it is preparation for worship and productivity.',
+        source: '"We used to have a midday nap and take our meals after the Jumua prayer." [Sahih al-Bukhari 6279]',
+        sourceType: 'sunnah_action',
+        sourceGrading: 'sahih',
       },
     ]),
     reflection: "How does the promise of eternal peace help you manage today's load?",
@@ -7010,7 +7732,7 @@ const quranContentAnglesData: ContentAngle[] = [
     angle:
       'Allah describes the righteous as "the patient, the true, the obedient, those who spend, and those who seek forgiveness before dawn." Ibn Kathir explains that patience (sabr) during exhaustion is listed among the highest qualities of the righteous. Al-Sa\'di adds that patience when tired is especially meritorious because it requires fighting against the natural desire to give up. The Prophet ﷺ said: "The most beloved of deeds to Allah are those that are consistent, even if they are small." [Sahih Bukhari 6464] Small, steady acts during fatigue are worth more than grand gestures in comfort. [Tafsir al-Sa\'di]',
     angleSource: "Tafsir al-Sa'di",
-    action: 'Be gentle with yourself today, acknowledging your effort is worship',
+    action: 'Be gentle with yourself today, acknowledging your effort is worship.',
     practiceSteps: JSON.stringify([
       {
         type: 'mindset',
@@ -7031,8 +7753,8 @@ const quranContentAnglesData: ContentAngle[] = [
         arabicText: 'أَسْتَغْفِرُ اللَّهَ',
         transliteration: 'Astaghfirullah',
         translation: 'I seek forgiveness from Allah',
-        source: 'Surah Al-Imran 3:17 — Quran',
-        sourceType: 'quran_dua',
+        source: 'Istighfar — Sahih al-Bukhari 6307; the practice described in Surah Ali Imran 3:17',
+        sourceType: 'prophetic_dhikr',
       },
       {
         type: 'physical',
@@ -7055,7 +7777,7 @@ const quranContentAnglesData: ContentAngle[] = [
     angle:
       'Allah says: "We are closer to him than his jugular vein." Ibn Kathir explains that this closeness is through divine knowledge—Allah knows the whispers of your soul, the fears you haven\'t named, and the anxieties you can\'t articulate. Al-Qurtubi adds that the jugular vein was specifically chosen because it is the most internal and vital vessel, yet Allah\'s awareness surpasses even that intimacy. The Prophet ﷺ said: "No fatigue, disease, sorrow, sadness, or distress befalls a Muslim, even the prick of a thorn, except that Allah expiates sins for it." [Sahih Bukhari 5641] Your closest struggles are His closest concern. [Tafsir al-Qurtubi]',
     angleSource: 'Tafsir al-Qurtubi',
-    action: 'Acknowledge that Allah knows your fear better than you do',
+    action: 'Acknowledge that Allah knows your fear better than you do.',
     practiceSteps: JSON.stringify([
       {
         type: 'mindset',
@@ -7098,7 +7820,7 @@ const quranContentAnglesData: ContentAngle[] = [
     angle:
       'The believers declared: "Sufficient for us is Allah, and He is the best Disposer of affairs." Ibn Kathir narrates that Ibrahim (AS) said these words when thrown into fire, and the Prophet ﷺ said them when told the armies had gathered against him. Al-Sa\'di explains that "ni\'ma al-wakil" (the best Disposer) means Allah handles your affairs better than you ever could—and the proof is that both Ibrahim and Muhammad ﷺ were saved after saying these words. The Prophet ﷺ said: "If you relied on Allah as He should be relied upon, He would provide for you as He provides for the birds." [At-Tirmidhi 2344] Hand your heaviest load to the strongest Carrier. [Tafsir al-Sa\'di]',
     angleSource: "Tafsir al-Sa'di",
-    action: 'Declare "Hasbunallahu wa ni\'mal-wakil" over your biggest stressor',
+    action: 'Declare "Hasbunallahu wa ni\'mal-wakil" over your biggest stressor.',
     practiceSteps: JSON.stringify([
       {
         type: 'verbal',
@@ -7133,7 +7855,7 @@ const quranContentAnglesData: ContentAngle[] = [
         sourceType: 'quran_dua',
       },
     ]),
-    reflection: 'If the Best Disposer is in charge, why do I still carry the stress?',
+    reflection: 'If the Best Disposer is handling it, what exactly are you still carrying — and who handed it to you?',
   },
   {
     id: 'q_angle_6_17_stressed',
@@ -7142,7 +7864,7 @@ const quranContentAnglesData: ContentAngle[] = [
     angle:
       'Allah says: "And if Allah should touch you with adversity, there is no remover of it except Him." Ibn Kathir explains that this verse establishes a foundational truth: only Allah has the power to remove hardship. Al-Sa\'di adds that this is not a limitation but a liberation—it means you only need to ask One source for help, and that source is the most powerful being in existence. The Prophet ﷺ used to make dua: "O Allah, there is no ease except what You make easy, and You can make difficulty easy if You wish." [Ibn Hibban] When stress feels immovable, remember: the Remover of hardship is just one sincere dua away. [Tafsir al-Sa\'di]',
     angleSource: "Tafsir al-Sa'di",
-    action: 'Ask the "Lifter of Hardship" (Al-Kashif) to remove your stress',
+    action: 'Ask the "Lifter of Hardship" (Al-Kashif) to remove your stress.',
     practiceSteps: JSON.stringify([
       {
         type: 'verbal',
@@ -7155,7 +7877,7 @@ const quranContentAnglesData: ContentAngle[] = [
           "Allahumma la sahla illa ma ja'altahu sahla, wa anta taj'alul-hazna idha shi'ta sahla",
         translation:
           'O Allah, nothing is easy except what You make easy, and You can make difficulty easy if You wish',
-        source: 'Ibn Hibban — Sahih',
+        source: 'Sahih Ibn Hibban 974 (Hisn al-Muslim 139)',
         sourceType: 'prophetic_dua',
         sourceGrading: 'sahih',
       },
@@ -7180,7 +7902,7 @@ const quranContentAnglesData: ContentAngle[] = [
         sourceGrading: 'hasan',
       },
     ]),
-    reflection: 'How does it feel to know that no one can prevent the good He intends for you?',
+    reflection: 'No one can withhold the good He intends for you. Who have you been treating as the gatekeeper?',
   },
   {
     id: 'q_angle_7_188_stressed',
@@ -7189,7 +7911,7 @@ const quranContentAnglesData: ContentAngle[] = [
     angle:
       'The Prophet ﷺ was commanded to say: "I do not possess for myself any harm or benefit except what Allah wills." Ibn Kathir explains that even the Prophet ﷺ—the most honored creation—declared he had no power over his own affairs without Allah\'s permission. Al-Qurtubi adds that this acknowledgment is the essence of true humility: recognizing that control belongs entirely to Allah frees you from the impossible burden of trying to manage everything. The Prophet ﷺ said: "Be mindful of Allah and you will find Him before you. If you ask, ask from Allah. If you seek help, seek help from Allah." [At-Tirmidhi 2516] Admitting your dependence is the beginning of real strength. [Tafsir al-Qurtubi]',
     angleSource: 'Tafsir al-Qurtubi',
-    action: 'Release your grip on the outcome and admit your need for His help',
+    action: 'Release your grip on the outcome and admit your need for His help.',
     practiceSteps: JSON.stringify([
       {
         type: 'mindset',
@@ -7235,7 +7957,7 @@ const quranContentAnglesData: ContentAngle[] = [
     angle:
       'Allah says: "And whatever strikes you of disaster—it is for what your hands have earned; but He pardons much." Ibn Kathir explains that even when difficulty comes as a consequence of our actions, Allah still pardons much of what we deserve—meaning His mercy softens even the trials we bring upon ourselves. Al-Sa\'di adds that "ya\'fu \'an kathir" (He pardons much) means the majority of our mistakes are forgiven without us even realizing it. The Prophet ﷺ said: "If Allah were to punish the inhabitants of His heavens and earth, He would do so without being unjust to them. But if He were to have mercy on them, His mercy would be better for them than their deeds." [Abu Dawud 4699] [Tafsir al-Sa\'di]',
     angleSource: "Tafsir al-Sa'di",
-    action: 'Acknowledge that Allah pardons much, even during stressful times',
+    action: 'Acknowledge that Allah pardons much, even during stressful times.',
     practiceSteps: JSON.stringify([
       {
         type: 'mindset',
@@ -7272,7 +7994,7 @@ const quranContentAnglesData: ContentAngle[] = [
         sourceGrading: 'sahih',
       },
     ]),
-    reflection: 'How can I maintain a state of Shukr (gratitude) while under pressure?',
+    reflection: 'Under pressure, gratitude is a decision rather than a mood. What will you name today, out loud, regardless?',
   },
   {
     id: 'q_angle_27_62_stressed',
@@ -7281,7 +8003,7 @@ const quranContentAnglesData: ContentAngle[] = [
     angle:
       'Allah asks: "Is He not the One who responds to the desperate one when he calls upon Him and removes evil?" Ibn Kathir explains that "al-mudtarr" (the desperate one) is given a special status—Allah specifically promises to answer those who have reached the end of their rope. Al-Qurtubi adds that this verse is phrased as a rhetorical question, meaning the answer is so obvious it needs no debate: of course Allah responds to the desperate. The Prophet ﷺ said: "The dua of the distressed person is: O Allah, I hope for Your mercy; do not leave me to myself even for the blink of an eye." [Abu Dawud 5090] Desperation is not weakness—it is the key to divine response. [Tafsir al-Qurtubi]',
     angleSource: 'Tafsir al-Qurtubi',
-    action: 'Call out to Allah with the desperation of someone who has no other helper',
+    action: 'Call out to Allah with the desperation of someone who has no other helper.',
     practiceSteps: JSON.stringify([
       {
         type: 'verbal',
@@ -7317,7 +8039,7 @@ const quranContentAnglesData: ContentAngle[] = [
         sourceGrading: 'sahih',
       },
     ]),
-    reflection: 'When have I felt His direct response in a time of severe stress?',
+    reflection: 'When has He answered you before? Say that time out loud — you are about to need the evidence.',
   },
   {
     id: 'q_angle_21_83_stressed',
@@ -7361,7 +8083,7 @@ const quranContentAnglesData: ContentAngle[] = [
         sourceGrading: 'hasan',
       },
     ]),
-    reflection: 'How does trust in the "Most Merciful" soften the experience of stress?',
+    reflection: 'Ayyub said two things: harm has touched me, and You are the Most Merciful. Try saying only that much.',
   },
   {
     id: 'q_angle_9_51_stressed_angle',
@@ -7404,7 +8126,7 @@ const quranContentAnglesData: ContentAngle[] = [
         sourceType: 'quran_dua',
       },
     ]),
-    reflection: 'What happens to my stress when I accept that the outcome is already written?',
+    reflection: 'The outcome is already written. Which part of today were you planning to spend arguing with that?',
   },
   {
     id: 'q_angle_48_4_calm_angle',
@@ -7413,7 +8135,7 @@ const quranContentAnglesData: ContentAngle[] = [
     angle:
       'Allah says: "It is He who sent down tranquility (sakina) into the hearts of the believers that they would increase in faith along with their present faith." Ibn Kathir explains that sakina is a special divine gift—a descending peace that settles the heart during turbulence. Al-Sa\'di adds that sakina came to the believers at Hudaybiyyah when they were frustrated and confused, turning their agitation into calm certainty. The Prophet ﷺ said: "Tranquility descends upon the people of dhikr, mercy covers them, and the angels surround them." [Sahih Muslim 2700] Sakina is not earned by effort alone—it is a gift from the Lord of the heavens and earth. [Tafsir al-Sa\'di]',
     angleSource: "Tafsir al-Sa'di",
-    action: 'Ask Allah specifically for "Sakina" (tranquility) to descend on your heart',
+    action: 'Ask Allah specifically for "Sakina" (tranquility) to descend on your heart.',
     practiceSteps: JSON.stringify([
       {
         type: 'verbal',
@@ -7424,8 +8146,8 @@ const quranContentAnglesData: ContentAngle[] = [
         arabicText: 'اللَّهُمَّ أَنْزِلْ السَّكِينَةَ عَلَى قَلْبِي',
         transliteration: "Allahumma anzil as-sakinata 'ala qalbi",
         translation: 'O Allah, send down tranquility upon my heart',
-        source: 'Surah Al-Fath 48:4 — Quran',
-        sourceType: 'quran_dua',
+        source: 'Suggested wording — the theme of Surah Al-Fath 48:4',
+        sourceType: 'composed_dua',
       },
       {
         type: 'mindset',
@@ -7447,7 +8169,7 @@ const quranContentAnglesData: ContentAngle[] = [
         sourceGrading: 'sahih',
       },
     ]),
-    reflection: 'How does it feel to have "armies of the heavens and earth" supporting your peace?',
+    reflection: 'The armies of the heavens and the earth are His. What are you facing that you have been counting alone?',
   },
   {
     id: 'q_angle_30_21_content_angle',
@@ -7456,7 +8178,7 @@ const quranContentAnglesData: ContentAngle[] = [
     angle:
       'Allah says: "And of His signs is that He created for you from yourselves mates that you may find tranquility in them, and He placed between you affection and mercy." Ibn Kathir explains that the love and mercy in human relationships are "signs" (ayat) of Allah—evidence of His care woven into the fabric of daily life. Al-Sa\'di adds that recognizing these signs transforms ordinary relationships into sources of spiritual contentment. The Prophet ﷺ said: "The best of you is the best to his family." [At-Tirmidhi 3895] Every moment of warmth, every act of kindness from a loved one, is Allah\'s mercy made visible. [Tafsir al-Sa\'di]',
     angleSource: "Tafsir al-Sa'di",
-    action: 'Acknowledge the love in your life as a direct sign of His mercy',
+    action: 'Acknowledge the love in your life as a direct sign of His mercy.',
     practiceSteps: JSON.stringify([
       {
         type: 'mindset',
@@ -7489,7 +8211,7 @@ const quranContentAnglesData: ContentAngle[] = [
         sourceType: 'quran_dua',
       },
     ]),
-    reflection: 'How does recognizing these "signs" increase my daily satisfaction?',
+    reflection: 'Name one sign you walked straight past today without registering it as one.',
   },
   {
     id: 'q_angle_48_18_calm_angle',
@@ -7498,7 +8220,7 @@ const quranContentAnglesData: ContentAngle[] = [
     angle:
       'Allah says: "Certainly was Allah pleased with the believers when they pledged allegiance to you under the tree, and He knew what was in their hearts, so He sent down tranquility upon them." Ibn Kathir explains that divine pleasure (rida) and tranquility (sakina) are linked—when Allah is pleased with a servant, He grants them inner peace as a sign. Al-Sa\'di adds that "He knew what was in their hearts" means their sincerity was recognized and rewarded with a peace that no external circumstance could shake. The Prophet ﷺ said: "Whoever is pleased with Allah as Lord has tasted the sweetness of faith." [Sahih Muslim 34] Divine pleasure is the deepest source of inner calm. [Tafsir al-Sa\'di]',
     angleSource: "Tafsir al-Sa'di",
-    action: 'Reflect on the idea that Allah is pleased with you in this moment of calm',
+    action: 'Reflect on the idea that Allah is pleased with you in this moment of calm.',
     practiceSteps: JSON.stringify([
       {
         type: 'mindset',
@@ -7542,7 +8264,7 @@ const quranContentAnglesData: ContentAngle[] = [
     angle:
       'Allah says: "Then Allah sent down His tranquility (sakina) upon His Messenger and upon the believers, and sent down soldiers you did not see." Ibn Kathir explains that at the Battle of Hunayn, when the Muslims were initially overwhelmed, Allah sent sakina—a supernatural calm that turned panic into steadfastness. Al-Qurtubi adds that the "soldiers you did not see" refers to angels sent alongside the sakina, showing that divine peace comes with divine support. The Prophet ﷺ remained calm at Hunayn and called out: "I am the Prophet, no lie; I am the son of Abdul-Muttalib." [Sahih Bukhari 2864] Sakina descends precisely when crisis peaks. [Tafsir al-Qurtubi]',
     angleSource: 'Tafsir al-Qurtubi',
-    action: 'Recall a time you felt unexpectedly calm during a storm',
+    action: 'Recall a time you felt unexpectedly calm during a storm.',
     practiceSteps: JSON.stringify([
       {
         type: 'mindset',
@@ -7578,7 +8300,7 @@ const quranContentAnglesData: ContentAngle[] = [
         sourceGrading: 'hasan',
       },
     ]),
-    reflection: 'How can I prepare my heart to receive His sakina at any moment?',
+    reflection: 'Sakina descends; it is not manufactured. What are you doing that makes your heart a harder place for it to land?',
   },
   {
     id: 'q_angle_8_10_calm',
@@ -7587,7 +8309,7 @@ const quranContentAnglesData: ContentAngle[] = [
     angle:
       'Allah says: "And Allah made it not except as good tidings for you and to reassure your hearts thereby. And victory is not except from Allah." Ibn Kathir explains that Allah sent support at the Battle of Badr not because the believers were weak, but to give them good news (bushra) and heart-assurance (tuma\'ninah). Al-Sa\'di adds that "victory is only from Allah" means you can release the burden of needing to produce results—your job is effort, and His job is victory. The Prophet ﷺ said: "O Allah, if this small band of believers is destroyed, You will not be worshipped on earth." [Sahih Muslim 1763] He asked, and Allah answered with peace and victory. [Tafsir al-Sa\'di]',
     angleSource: "Tafsir al-Sa'di",
-    action: 'Repeat "Ya Salam" (O Source of Peace) and reflect on His help coming to you',
+    action: 'Repeat "Ya Salam" (O Source of Peace) and reflect on His help coming to you.',
     practiceSteps: JSON.stringify([
       {
         type: 'verbal',
@@ -7598,8 +8320,8 @@ const quranContentAnglesData: ContentAngle[] = [
         arabicText: 'يَا سَلَامُ يَا مُؤْمِنُ',
         transliteration: "Ya Salam, Ya Mu'min",
         translation: 'O Source of Peace, O Granter of Security',
-        source: 'Surah Al-Hashr 59:23 — Quran',
-        sourceType: 'quran_dua',
+        source: 'Divine Names As-Salam and Al-Mumin — Surah Al-Hashr 59:23',
+        sourceType: 'composed_dua',
       },
       {
         type: 'mindset',
@@ -7620,7 +8342,7 @@ const quranContentAnglesData: ContentAngle[] = [
         sourceType: 'quran_dua',
       },
     ]),
-    reflection: 'How does knowing victory is from Allah alone settle your inner heart?',
+    reflection: 'Victory is from Allah alone. What have you taken credit or blame for that was never yours to hold?',
   },
   {
     id: 'q_angle_9_40_calm',
@@ -7629,7 +8351,7 @@ const quranContentAnglesData: ContentAngle[] = [
     angle:
       'Allah says: "Do not grieve; indeed Allah is with us. So Allah sent down His tranquility (sakina) upon him." Ibn Kathir narrates that the Prophet ﷺ said these words to Abu Bakr (RA) in the cave of Thawr while the enemy stood at the entrance. Al-Sa\'di explains that the sakina descended not because the danger passed, but while the danger was at its peak—proving that divine peace does not depend on external safety. The Prophet ﷺ was so calm that Abu Bakr\'s fear melted. Imam al-Qurtubi adds: this is the ultimate proof that Allah\'s companionship (ma\'iyyah) transforms any "cave" of difficulty into a sanctuary. [Tafsir Ibn Kathir]',
     angleSource: 'Tafsir Ibn Kathir',
-    action: 'Pause and acknowledge: "Allah is with me" in my current "cave" of difficulty',
+    action: 'Pause and acknowledge: "Allah is with me" in my current "cave" of difficulty.',
     practiceSteps: JSON.stringify([
       {
         type: 'mindset',
@@ -7662,7 +8384,7 @@ const quranContentAnglesData: ContentAngle[] = [
         sourceType: 'quran_dua',
       },
     ]),
-    reflection: 'How does His presence provide an unshakeable calm despite external threats?',
+    reflection: 'Two men in a cave, an army outside, and "do not grieve, Allah is with us." What is your cave right now?',
   },
   {
     id: 'q_angle_17_11_hopeful',
@@ -7706,7 +8428,7 @@ const quranContentAnglesData: ContentAngle[] = [
         sourceGrading: 'sahih',
       },
     ]),
-    reflection: 'Why do I sometimes "pray for evil" (in haste) when Allah has better for me?',
+    reflection: 'What have you begged for in haste that you are now relieved you never got?',
   },
   {
     id: 'q_angle_21_90_hopeful',
@@ -7715,7 +8437,7 @@ const quranContentAnglesData: ContentAngle[] = [
     angle:
       'Allah says about the prophets: "Indeed, they used to hasten to good deeds and supplicate Us in hope and fear, and they were to Us humbly submissive." Ibn Kathir explains that the prophets\' dua combined raghab (eager hope) with rahab (reverential awe)—they never prayed with entitlement but always with humility. Al-Sa\'di adds that this balance is essential: hope without fear breeds complacency, while fear without hope breeds despair. The Prophet ﷺ said: "Ask Allah with certainty that He will respond to you." [At-Tirmidhi 3479] The most powerful dua is one made with full hope in Allah\'s generosity and full awareness of His majesty. [Tafsir al-Sa\'di]',
     angleSource: "Tafsir al-Sa'di",
-    action: 'Make a dua with both desire (for it) and awe (for Him)',
+    action: 'Make a dua with both desire (for it) and awe (for Him).',
     practiceSteps: JSON.stringify([
       {
         type: 'mindset',
@@ -7749,7 +8471,7 @@ const quranContentAnglesData: ContentAngle[] = [
         sourceType: 'quran_dua',
       },
     ]),
-    reflection: 'How does a balance of hope and awe keep my heart healthy?',
+    reflection: 'Which do you lean on more — hope or awe? What does the missing one usually protect you from?',
   },
   {
     id: 'q_angle_32_16_hopeful',
@@ -7758,7 +8480,7 @@ const quranContentAnglesData: ContentAngle[] = [
     angle:
       'Allah says: "Their sides part from their beds; they supplicate their Lord in fear and aspiration. And no soul knows what has been hidden for them of comfort of the eye." Ibn Kathir explains that the night-worshippers are rewarded with joys so great that no human mind has conceived them. Al-Sa\'di adds that the reward is described as "hidden" because it surpasses all expectation—matching the hidden nature of their worship. The Prophet ﷺ said: "Allah said: I have prepared for My righteous servants what no eye has seen, no ear has heard, and what has not occurred to the human heart." [Sahih Bukhari 3244] The greatest rewards await the most private devotions. [Tafsir al-Sa\'di]',
     angleSource: "Tafsir al-Sa'di",
-    action: 'Perform a secret good deed today that only Allah knows about',
+    action: 'Perform a secret good deed today that only Allah knows about.',
     practiceSteps: JSON.stringify([
       {
         type: 'mindset',
@@ -7788,11 +8510,11 @@ const quranContentAnglesData: ContentAngle[] = [
         arabicText: 'اللَّهُمَّ إِنَّي أَسْأَلُكَ رِضَاكَ وَالْجَنَّةَ',
         transliteration: "Allahumma inni as'aluka ridaka wal-Jannah",
         translation: 'O Allah, I ask You for Your pleasure and Paradise',
-        source: 'Surah As-Sajdah 32:16-17 — Quran',
-        sourceType: 'quran_dua',
+        source: 'Suggested wording — the theme of Surah As-Sajdah 32:16',
+        sourceType: 'composed_dua',
       },
     ]),
-    reflection: 'What "hidden joy" am I most looking forward to in the Hereafter?',
+    reflection: 'No soul knows what joy is being kept for it. Name what you hope is waiting, then assume it is more.',
   },
   {
     id: 'q_angle_89_27_calm_angle',
@@ -7801,7 +8523,7 @@ const quranContentAnglesData: ContentAngle[] = [
     angle:
       'Allah says: "O reassured soul, return to your Lord, well-pleased and pleasing to Him." Ibn Kathir explains that the nafs al-mutma\'innah is the soul that has reached a state of settled peace through unwavering faith. Al-Baghawi adds that "return to your Lord" is spoken with tenderness—it is an invitation home, not a command. The Prophet ﷺ said: "When Allah loves a servant, He tests him. If the servant is patient, He chooses him. And if the servant is content (radi), He selects him." [Musnad Ahmad] The reassured soul is the one that found contentment not in circumstances but in the Lord of all circumstances. [Tafsir al-Baghawi]',
     angleSource: 'Tafsir al-Baghawi',
-    action: 'Breathe in the tranquility of the reassured soul',
+    action: 'Breathe in the tranquility of the reassured soul.',
     practiceSteps: JSON.stringify([
       {
         type: 'mindset',
@@ -7830,14 +8552,14 @@ const quranContentAnglesData: ContentAngle[] = [
         arabicText: 'سُبْحَانَ اللَّهِ وَالْحَمْدُ لِلَّهِ وَاللَّهُ أَكْبَرُ',
         transliteration: 'SubhanAllah, Alhamdulillah, Allahu Akbar',
         translation: 'Glory be to Allah, Praise be to Allah, Allah is the Greatest',
-        source: '"When Allah loves a servant, He tests him." [Ahmad]',
+        source: "\"Greater reward comes with greater trial. When Allah loves a people He subjects them to trials.\" [Jami' at-Tirmidhi 2396]",
         sourceType: 'prophetic_dua',
         sourceGrading: 'hasan',
         countSource: 'Muslim 597',
         count: 33,
       },
     ]),
-    reflection: 'How can I maintain a state of "well-pleasing and pleasing" throughout my day?',
+    reflection: 'The soul is called back both pleased and pleasing. Which of those two halves is harder for you today?',
   },
 
   // === STRESSED ANGLES ===
@@ -7848,7 +8570,7 @@ const quranContentAnglesData: ContentAngle[] = [
     angle:
       'Allah says: "Indeed, with hardship comes ease." Ibn Kathir explains that the Arabic "ma\'a" (with) is critical—it means ease is not merely after hardship but simultaneous with it. Al-Sa\'di adds that the definite article on "al-\'usr" (the hardship) and the indefinite "yusra" (an ease) means one specific hardship is paired with multiple, open-ended eases. The Prophet ﷺ said: "One hardship will never overcome two eases." Umar ibn al-Khattab (RA) understood this linguistic miracle: the hardship is singular and finite, but the ease is plural and limitless. [Tafsir al-Sa\'di]',
     angleSource: "Tafsir al-Sa'di",
-    action: 'Identify one small thing that is going right in the middle of your stress',
+    action: 'Identify one small thing that is going right in the middle of your stress.',
     practiceSteps: JSON.stringify([
       {
         type: 'mindset',
@@ -7890,7 +8612,7 @@ const quranContentAnglesData: ContentAngle[] = [
     angle:
       'Allah says: "And seek help through patience and prayer, and indeed, it is difficult except for the humbly submissive." Ibn Kathir explains that the "humbly submissive" (khashi\'in) find prayer easy because their hearts are already inclined toward Allah. Al-Qurtubi adds that sabr (patience) is mentioned before salah (prayer) because patience is needed to even begin the act of worship when stressed. The Prophet ﷺ said: "Whenever a matter distressed the Prophet, he would rush to prayer." [Abu Dawud 1319] The twin pillars of patience and prayer create a foundation that no stress can shake. [Tafsir al-Qurtubi]',
     angleSource: 'Tafsir al-Qurtubi',
-    action: 'Take five deep breaths, echoing "Ya Sabur" (O Patient One) with each exhale',
+    action: 'Take five deep breaths, echoing "Ya Sabur" (O Patient One) with each exhale.',
     practiceSteps: JSON.stringify([
       {
         type: 'physical',
@@ -7920,8 +8642,8 @@ const quranContentAnglesData: ContentAngle[] = [
         arabicText: 'اللَّهُمَّ إِنَّي أَسْأَلُكَ الصَّبْرَ',
         transliteration: "Allahumma inni as'aluka as-sabr",
         translation: 'O Allah, I ask You for patience',
-        source: 'Surah Al-Baqarah 2:45 — Quran',
-        sourceType: 'quran_dua',
+        source: 'Suggested wording — the theme of Surah Al-Baqarah 2:45',
+        sourceType: 'composed_dua',
       },
     ]),
     reflection: 'How can slowing down your pace actually bring you closer to a solution?',
@@ -8021,7 +8743,7 @@ const quranContentAnglesData: ContentAngle[] = [
       'Allah says: "We are closer to him than his jugular vein." Ibn Kathir explains that this closeness means Allah\'s knowledge penetrates deeper than your own self-awareness—He knows the loneliness you feel, the isolation that weighs on you, and the words you cannot form. Al-Qurtubi adds that the jugular vein was chosen because it is the most intimate vessel in the body; Allah\'s nearness surpasses even that. The Prophet ﷺ said: "Allah says: I am as My servant thinks of Me, and I am with him when he remembers Me." [Sahih Bukhari 7405] You may feel alone, but the One who is closer than your own heartbeat has never left. [Tafsir al-Qurtubi]',
     angleSource: 'Tafsir al-Qurtubi',
     action:
-      'Sit in silence for 2 minutes, focusing on the feeling of being witnessed by your Creator',
+      'Sit in silence for 2 minutes, focusing on the feeling of being witnessed by your Creator.',
     practiceSteps: JSON.stringify([
       {
         type: 'physical',
@@ -8064,7 +8786,7 @@ const quranContentAnglesData: ContentAngle[] = [
     angle:
       'Allah says: "Call upon Me; I will respond to you." Ibn Kathir explains that this is the most direct and personal invitation in the Quran—Allah does not say "perhaps" or "maybe" but guarantees a response. Al-Sa\'di adds that dua is described as the essence of worship because it is the moment of deepest connection between the servant and the Creator. The Prophet ﷺ said: "Your Lord is Generous and Shy; if His servant raises his hands to Him, He is shy to return them empty." [Abu Dawud 1488] In your loneliest moments, this invitation stands: speak to Him, and He will answer. [Tafsir al-Sa\'di]',
     angleSource: "Tafsir al-Sa'di",
-    action: 'Call out to Allah with your worries, as if speaking to a most trusted friend',
+    action: 'Call out to Allah with your worries, as if speaking to a most trusted friend.',
     practiceSteps: JSON.stringify([
       {
         type: 'verbal',
@@ -8105,11 +8827,11 @@ const quranContentAnglesData: ContentAngle[] = [
   {
     id: 'q_angle_3_200_energized',
     contentId: 'quran_3_200',
-    mood: 'Tired',
+    mood: 'Hopeful',
     angle:
       'Allah says: "O you who have believed, persevere and endure and remain stationed and fear Allah that you may be successful." Ibn Kathir explains that this verse prescribes a comprehensive formula for success: personal perseverance (sabr), mutual endurance (musabarah), and steadfastness (ribat). Al-Sa\'di adds that "musabarah" means outdoing others in patience—competing in endurance rather than in worldly gain. The Prophet ﷺ said: "The strong believer is better and more beloved to Allah than the weak believer, though there is good in both." [Sahih Muslim 2664] Your energy today is a trust from Allah—use it to strengthen yourself and others. [Tafsir al-Sa\'di]',
     angleSource: "Tafsir al-Sa'di",
-    action: 'Help someone else with a task using your current energy',
+    action: 'Help someone else with a task using your current energy.',
     practiceSteps: JSON.stringify([
       {
         type: 'physical',
@@ -8143,16 +8865,16 @@ const quranContentAnglesData: ContentAngle[] = [
         sourceGrading: 'hasan',
       },
     ]),
-    reflection: 'How can I double my success by sharing my strength today?',
+    reflection: 'You have energy today that someone near you does not. Who gets some of it?',
   },
   {
     id: 'q_angle_9_105_energized',
     contentId: 'quran_9_105',
-    mood: 'Tired',
+    mood: 'Hopeful',
     angle:
       'Allah says: "And say, Do your work, for Allah will see your deeds, and so will His Messenger and the believers." Ibn Kathir explains that this verse establishes that no work goes unwitnessed—Allah sees every effort, every struggle, and every good intention behind your actions. Al-Sa\'di adds that knowing your work is observed by the Highest Audience transforms mundane tasks into acts of worship. The Prophet ﷺ said: "Allah loves that when any of you does something, he does it with excellence (itqan)." [Al-Bayhaqi] When you know the King is watching, every task becomes an opportunity to impress. [Tafsir al-Sa\'di]',
     angleSource: "Tafsir al-Sa'di",
-    action: 'Perform your current task with extra excellence (Ihsan)',
+    action: 'Perform your current task with extra excellence (Ihsan).',
     practiceSteps: JSON.stringify([
       {
         type: 'mindset',
@@ -8168,10 +8890,10 @@ const quranContentAnglesData: ContentAngle[] = [
         icon: 'star',
         title: 'Do it with Itqan',
         instruction:
-          'Pick your current task and do it with extra excellence (itqan). The Prophet ﷺ said Allah LOVES when you do something with excellence. Transform this mundane moment into worship.',
-        source: '"Allah loves when you do something with excellence." [Bayhaqi]',
+          'Pick your current task and do it with extra excellence (itqan). The Prophet ﷺ said Allah has prescribed excellence in all things. Transform this mundane moment into worship.',
+        source: '"Allah has prescribed excellence (ihsan) in all things." [Sahih Muslim 1955a]',
         sourceType: 'sunnah_action',
-        sourceGrading: 'hasan',
+        sourceGrading: 'sahih',
       },
       {
         type: 'verbal',
@@ -8182,20 +8904,20 @@ const quranContentAnglesData: ContentAngle[] = [
         arabicText: 'بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ',
         transliteration: 'Bismillahir-Rahmanir-Rahim',
         translation: 'In the name of Allah, the Most Gracious, the Most Merciful',
-        source: 'Surah At-Tawbah 9:105 — Quran',
+        source: 'Surah Al-Fatiha 1:1 — Quran',
         sourceType: 'quran_dua',
       },
     ]),
-    reflection: 'How does it change your motivation to know your Lord is watching your work?',
+    reflection: 'Your work is seen whether or not anyone reviews it. Which task would you redo if that felt fully real?',
   },
   {
     id: 'q_angle_103_1_3_energized',
     contentId: 'quran_103_1_3',
-    mood: 'Tired',
+    mood: 'Hopeful',
     angle:
       'Allah swears: "By time, indeed mankind is in loss—except for those who believe and do righteous deeds and advise each other to truth and advise each other to patience." Ibn Kathir explains that Allah swears by time itself because it is the most precious and irreplaceable resource. Al-Sa\'di adds that the four conditions for avoiding loss—faith, righteous deeds, mutual truth, and mutual patience—require active investment of time, not passive existence. The Prophet ﷺ said: "Take advantage of five before five: your youth before your old age, your health before your sickness, your wealth before your poverty, your free time before your busyness, and your life before your death." [Al-Hakim] [Tafsir al-Sa\'di]',
     angleSource: "Tafsir al-Sa'di",
-    action: 'Dedicate the next 15 minutes to something with eternal value',
+    action: 'Dedicate the next 15 minutes to something with eternal value.',
     practiceSteps: JSON.stringify([
       {
         type: 'mindset',
@@ -8212,9 +8934,9 @@ const quranContentAnglesData: ContentAngle[] = [
         title: '15 minutes of eternal value',
         instruction:
           'Dedicate the next 15 minutes to something with eternal value: read Quran, learn a hadith, give sadaqah, or call someone to advise them to patience. This is how you escape the "loss."',
-        source: '"Take advantage of five before five." [Al-Hakim]',
+        source: '"Two blessings that many people are deceived into losing: health and free time." [Sahih al-Bukhari 6412]',
         sourceType: 'sunnah_action',
-        sourceGrading: 'hasan',
+        sourceGrading: 'sahih',
       },
       {
         type: 'verbal',
@@ -8229,16 +8951,16 @@ const quranContentAnglesData: ContentAngle[] = [
         sourceType: 'quran_dua',
       },
     ]),
-    reflection: 'Am I using this burst of energy to build what will truly last?',
+    reflection: 'Everything is loss except four things. Does what you did with today\'s energy make that list?',
   },
   {
     id: 'q_angle_22_77_energized',
     contentId: 'quran_22_77',
-    mood: 'Tired',
+    mood: 'Hopeful',
     angle:
       'Allah says: "O you who have believed, bow and prostrate and worship your Lord and do good—that you may succeed." Ibn Kathir explains that this verse links physical worship (ruku and sujud) with general good deeds (khayr) as the twin engines of success. Al-Qurtubi adds that "do good" (if\'alu al-khayr) is deliberately left open-ended—any positive act counts. The Prophet ﷺ said: "The closest a servant is to his Lord is during prostration, so increase your supplications therein." [Sahih Muslim 482] directing your physical efforts toward worship amplifies both your spiritual and worldly capacity. [Tafsir al-Qurtubi]',
     angleSource: 'Tafsir al-Qurtubi',
-    action: 'Perform a physical act of worship (like prayer) with focus and energy',
+    action: 'Perform a physical act of worship (like prayer) with focus and energy.',
     practiceSteps: JSON.stringify([
       {
         type: 'physical',
@@ -8274,12 +8996,12 @@ const quranContentAnglesData: ContentAngle[] = [
         sourceType: 'quran_dua',
       },
     ]),
-    reflection: 'How can I coordinate my body and soul to achieve true success?',
+    reflection: 'Your body and your intention were both commanded in one ayah. Which of the two is lagging today?',
   },
   {
     id: 'q_angle_18_30_energized',
     contentId: 'quran_18_30',
-    mood: 'Tired',
+    mood: 'Hopeful',
     angle:
       'Allah says: "Indeed, those who have believed and done righteous deeds—indeed, We will not allow to be lost the reward of any who did well in deeds." Ibn Kathir explains that "lan nudi\'a" (We will not allow to be lost) is a divine guarantee with no exceptions—every good deed, no matter how small or unnoticed, is preserved. Al-Sa\'di adds that "ahsana \'amala" (did well) emphasizes quality over quantity: one deed done with sincerity and excellence outweighs many done carelessly. The Prophet ﷺ said: "Allah loves that when any of you does something, he does it with excellence." [Al-Bayhaqi] Your effort is eternally preserved. [Tafsir al-Sa\'di]',
     angleSource: "Tafsir al-Sa'di",
@@ -8300,9 +9022,9 @@ const quranContentAnglesData: ContentAngle[] = [
         title: 'Complete with joy',
         instruction:
           'Complete a task you have been putting off — but do it with a spirit of joy, not obligation. Quality over quantity: one deed done with sincerity outweighs many done carelessly.',
-        source: '"Allah loves when you do something with excellence." [Bayhaqi]',
+        source: '"Allah has prescribed excellence (ihsan) in all things." [Sahih Muslim 1955a]',
         sourceType: 'sunnah_action',
-        sourceGrading: 'hasan',
+        sourceGrading: 'sahih',
       },
       {
         type: 'verbal',
@@ -8313,20 +9035,20 @@ const quranContentAnglesData: ContentAngle[] = [
         arabicText: 'بِسْمِ اللَّهِ تَوَكَّلْتُ عَلَى اللَّهِ',
         transliteration: "Bismillah, tawakkaltu 'alallah",
         translation: 'In the name of Allah, I place my trust in Allah',
-        source: 'Surah Al-Kahf 18:30 — Quran',
-        sourceType: 'quran_dua',
+        source: 'Suggested wording, echoing the tawakkul du\'a in Sunan Abi Dawud 5095',
+        sourceType: 'composed_dua',
       },
     ]),
-    reflection: 'How does knowing the reward is safe make you feel about your effort?',
+    reflection: 'The reward is not lost. Name the effort you are most afraid was wasted, and say it out loud.',
   },
   {
     id: 'q_angle_28_77_energized',
     contentId: 'quran_28_77',
-    mood: 'Tired',
+    mood: 'Hopeful',
     angle:
       'Allah says: "Seek through what Allah has given you the home of the Hereafter; but do not forget your share of the world. And do good as Allah has done good to you." Ibn Kathir explains that Islam does not demand abandoning worldly pursuits but redirecting them—using your resources, skills, and energy to earn both worldly benefit and eternal reward. Al-Sa\'di adds that "do good as Allah has done good to you" means your generosity and excellence should mirror the generosity Allah has shown you. The Prophet ﷺ said: "The upper hand is better than the lower hand." [Sahih Bukhari 1427] Balanced ambition is the Quranic model for a productive life. [Tafsir al-Sa\'di]',
     angleSource: "Tafsir al-Sa'di",
-    action: 'Make an intention for your worldly work to benefit your spiritual path',
+    action: 'Make an intention for your worldly work to benefit your spiritual path.',
     practiceSteps: JSON.stringify([
       {
         type: 'mindset',
@@ -8355,20 +9077,20 @@ const quranContentAnglesData: ContentAngle[] = [
         arabicText: 'رَبَّنَا آتِنَا فِي الدُّنْيَا حَسَنَةً وَفِي الْآخِرَةِ حَسَنَةً',
         transliteration: 'Rabbana atina fid-dunya hasanatan wa fil-akhirati hasanah',
         translation: 'Our Lord, give us good in this world and good in the Hereafter',
-        source: 'Surah Al-Qasas 28:77 — Quran',
+        source: 'Surah Al-Baqarah 2:201 — Quran',
         sourceType: 'quran_dua',
       },
     ]),
-    reflection: 'How can I use my current resources to "be good as Allah was good to me"?',
+    reflection: 'List what you actually have to give right now. Now pick one item and one person.',
   },
   {
     id: 'q_angle_29_69_energized',
     contentId: 'quran_29_69',
-    mood: 'Tired',
+    mood: 'Hopeful',
     angle:
       'Allah says: "And those who strive for Us—We will surely guide them to Our ways." Ibn Kathir explains that divine guidance is proportional to effort—the more you strive (jihad in the broader sense of exerting effort), the more paths of guidance Allah opens for you. Al-Sa\'di adds that "subulana" (Our ways) is plural, meaning Allah opens multiple paths of guidance, not just one. The Prophet ﷺ said: "Whoever treads a path seeking knowledge, Allah will make easy for him the path to Paradise." [Sahih Muslim 2699] Your effort today is the seed; divine guidance is the harvest that grows from it. [Tafsir al-Sa\'di]',
     angleSource: "Tafsir al-Sa'di",
-    action: 'Set a deliberate spiritual goal for your current burst of energy',
+    action: 'Set a deliberate spiritual goal for your current burst of energy.',
     practiceSteps: JSON.stringify([
       {
         type: 'mindset',
@@ -8397,8 +9119,8 @@ const quranContentAnglesData: ContentAngle[] = [
         arabicText: 'اللَّهُمَّ اهْدِنَا الصِّرَاطَ الْمُسْتَقِيمَ',
         transliteration: 'Allahumma-hdinas-siratal-mustaqim',
         translation: 'O Allah, guide us to the straight path',
-        source: 'Surah Al-Ankabut 29:69 — Quran',
-        sourceType: 'quran_dua',
+        source: 'Suggested wording — Surah Al-Fatiha 1:6 with an opening address',
+        sourceType: 'composed_dua',
       },
     ]),
     reflection: 'How can you dedicate your current strength into "striving in His way"?',
@@ -8406,11 +9128,11 @@ const quranContentAnglesData: ContentAngle[] = [
   {
     id: 'q_angle_18_110_energized',
     contentId: 'quran_18_110',
-    mood: 'Tired',
+    mood: 'Hopeful',
     angle:
       'Allah says: "So whoever would hope for the meeting with his Lord—let him do righteous work and not associate in the worship of his Lord anyone." Ibn Kathir explains that this verse defines the two conditions for accepted deeds: sincerity (ikhlas—for Allah alone) and correctness (following the Sunnah). Al-Sa\'di adds that "hoping for the meeting" transforms the concept of death from something feared into something anticipated—a reunion with the Most Merciful. The Prophet ﷺ said: "Whoever loves to meet Allah, Allah loves to meet him." [Sahih Bukhari 6507] Working with the intention of meeting your Lord gives every action eternal significance. [Tafsir al-Sa\'di]',
     angleSource: "Tafsir al-Sa'di",
-    action: 'Do one righteous act right now with the sole intention of pleasing Allah',
+    action: 'Do one righteous act right now with the sole intention of pleasing Allah.',
     practiceSteps: JSON.stringify([
       {
         type: 'mindset',
@@ -8440,20 +9162,20 @@ const quranContentAnglesData: ContentAngle[] = [
         arabicText: 'اللَّهُمَّ إِنَّي أَعْمَلُ هَذَا لِوَجْهِكَ',
         transliteration: "Allahumma inni a'malu hadha li-wajhik",
         translation: 'O Allah, I do this for Your Face alone',
-        source: 'Surah Al-Kahf 18:110 — Quran',
-        sourceType: 'quran_dua',
+        source: 'Suggested wording — the theme of Surah Al-Kahf 18:110',
+        sourceType: 'composed_dua',
       },
     ]),
-    reflection: 'How does the hope of meeting your Lord fuel your current drive?',
+    reflection: 'You will meet Him. What would you begin today if that meeting were a date in your calendar?',
   },
   {
     id: 'q_angle_67_2_energized',
     contentId: 'quran_67_2',
-    mood: 'Tired',
+    mood: 'Hopeful',
     angle:
       'Allah says: "He who created death and life to test you as to which of you is best in deed." Ibn Kathir explains that "ahsanu \'amala" (best in deed) refers not to the quantity of deeds but their quality—sincerity, excellence, and conformity to divine guidance. Al-Sa\'di adds that life itself is framed as a test of performance: every moment is an opportunity to demonstrate your best. The Prophet ﷺ said: "Ihsan is to worship Allah as though you see Him, and if you cannot see Him, then He sees you." [Sahih Bukhari 50] The test is not about doing more—it is about doing better. [Tafsir al-Sa\'di]',
     angleSource: "Tafsir al-Sa'di",
-    action: 'Pick a task and perform it with the highest level of mastery (Ihsan)',
+    action: 'Pick a task and perform it with the highest level of mastery (Ihsan).',
     practiceSteps: JSON.stringify([
       {
         type: 'mindset',
@@ -8480,10 +9202,10 @@ const quranContentAnglesData: ContentAngle[] = [
         title: 'Intention of Ihsan',
         instruction:
           'Say "Bismillah" and set the intention of Ihsan. Every moment is an opportunity to demonstrate your best.',
-        arabicText: 'بِسْمِ اللَّهِ',
-        transliteration: 'Bismillah',
-        translation: 'In the name of Allah',
-        source: 'Surah Al-Mulk 67:2 — Quran',
+        arabicText: 'بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ',
+        transliteration: 'Bismillahi ar-Rahmani ar-Raheem',
+        translation: 'In the name of Allah, the Entirely Merciful, the Especially Merciful',
+        source: 'Surah Al-Fatihah 1:1 — Quran',
         sourceType: 'quran_dua',
       },
     ]),
@@ -8492,11 +9214,11 @@ const quranContentAnglesData: ContentAngle[] = [
   {
     id: 'q_angle_99_7_8_energized',
     contentId: 'quran_99_7_8',
-    mood: 'Tired',
+    mood: 'Hopeful',
     angle:
       'Allah says: "So whoever does an atom\'s weight of good will see it." Ibn Kathir explains that nothing is too small to be recorded—even the weight of an atom (dharrah) of good is seen and rewarded by Allah. Al-Qurtubi adds that this verse came as a shock to the companions who thought only major deeds mattered; it revealed that Allah\'s accounting system catches everything. The Prophet ﷺ said: "Do not belittle any good deed, even meeting your brother with a cheerful face." [Sahih Muslim 2626] The smallest good deed, done sincerely, can tip the scales on the Day of Judgment. [Tafsir al-Qurtubi]',
     angleSource: 'Tafsir al-Qurtubi',
-    action: 'Find a "small" good deed (checking on a neighbor, picking up litter) and do it',
+    action: 'Find a "small" good deed (checking on a neighbor, picking up litter) and do it.',
     practiceSteps: JSON.stringify([
       {
         type: 'mindset',
@@ -8532,16 +9254,16 @@ const quranContentAnglesData: ContentAngle[] = [
       },
     ]),
     reflection:
-      'How does knowing even an atom\'s weight counts change your definition of "big" effort?',
+      'An atom\'s weight is counted. Name the smallest good thing you did today and stop calling it nothing.',
   },
   {
     id: 'q_angle_94_7_energized',
     contentId: 'quran_94_7',
-    mood: 'Tired',
+    mood: 'Hopeful',
     angle:
       'Allah says: "So when you have finished, then labor hard. And to your Lord direct your longing." Ibn Kathir explains that this verse commands the believer to redirect energy after completing worldly tasks toward worship and devotion. Al-Sa\'di adds that "irghab" (direct your longing) means making Allah the ultimate goal of all your efforts—so that even when you finish one task, your heart longs for His pleasure in the next. The Prophet ﷺ said: "The coolness of my eyes has been placed in prayer." [An-Nasa\'i 3940] When energy is directed toward what lasts, it becomes an investment rather than an expenditure. [Tafsir al-Sa\'di]',
     angleSource: "Tafsir al-Sa'di",
-    action: 'Use some of your current energy to perform a task for someone else',
+    action: 'Use some of your current energy to perform a task for someone else.',
     practiceSteps: JSON.stringify([
       {
         type: 'mindset',
@@ -8576,7 +9298,7 @@ const quranContentAnglesData: ContentAngle[] = [
         sourceGrading: 'sahih',
       },
     ]),
-    reflection: 'How does directing your longing to Allah sustain your energy?',
+    reflection: 'When you finish, turn to Him. What do you actually turn to in the moment a task ends?',
   },
   {
     id: 'q_angle_29_69_hopeful_angle',
@@ -8585,7 +9307,7 @@ const quranContentAnglesData: ContentAngle[] = [
     angle:
       'Allah says: "And those who strive for Us—We will surely guide them to Our ways. And indeed, Allah is with the doers of good." Ibn Kathir explains that the plural "subulana" (Our ways) means that sincere striving opens not just one path but many—guidance in worship, relationships, career, and self-understanding. Al-Sa\'di adds that the closing phrase "Allah is with the doers of good" provides a special divine companionship for those who combine effort with excellence. The Prophet ﷺ said: "Indeed, this religion is easy, and no one will overburden himself in religion except that it will overcome him." [Sahih Bukhari 39] Every sincere effort unlocks new dimensions of guidance. [Tafsir al-Sa\'di]',
     angleSource: "Tafsir al-Sa'di",
-    action: 'Trust that your effort today is opening a new door of guidance',
+    action: 'Trust that your effort today is opening a new door of guidance.',
     practiceSteps: JSON.stringify([
       {
         type: 'mindset',
@@ -8614,11 +9336,11 @@ const quranContentAnglesData: ContentAngle[] = [
         arabicText: 'اللَّهُمَّ أَرِنَا الْحَقَّ حَقًّا وَارْزُقْنَا اتِّبَاعَهُ',
         transliteration: "Allahumma arina al-haqqa haqqan warzuqna ittiba'ah",
         translation: 'O Allah, show us the truth as truth and grant us its following',
-        source: '"Allah is with the doers of good." [Quran 29:69]',
-        sourceType: 'quran_dua',
+        source: 'Suggested wording — the theme of Surah Al-Ankabut 29:69',
+        sourceType: 'composed_dua',
       },
     ]),
-    reflection: 'Which of "Our ways" (subulana) am I most hoping to be guided to?',
+    reflection: 'The ways are plural, and they open to whoever strives. Which one are you hoping opens for you?',
   },
   {
     id: 'q_angle_93_1_5_anxious',
@@ -8627,7 +9349,7 @@ const quranContentAnglesData: ContentAngle[] = [
     angle:
       'Allah swears by the morning brightness and the still night, then declares: "Your Lord has not taken leave of you, nor has He detested you." Ibn Kathir explains that this surah was revealed during a painful gap in revelation when the Prophet ﷺ feared he had been abandoned. Al-Sa\'di adds that the two oaths—by morning light and by night—are themselves the proof: just as dawn always follows darkness, Allah\'s care always follows perceived silence. The Prophet ﷺ was told: what you interpret as absence is actually preparation for something greater. [Tafsir Ibn Kathir]',
     angleSource: 'Tafsir Ibn Kathir',
-    action: 'Recall a time you felt abandoned and realize Allah was there',
+    action: 'Recall a time you felt abandoned and realize Allah was there.',
     practiceSteps: JSON.stringify([
       {
         type: 'mindset',
@@ -8660,7 +9382,7 @@ const quranContentAnglesData: ContentAngle[] = [
         sourceType: 'quran_dua',
       },
     ]),
-    reflection: 'How does the morning brightness disprove the fears of the dark night?',
+    reflection: 'He swore by the morning, and the morning always comes. What time is it in your night right now?',
   },
   {
     id: 'q_angle_94_1_8_anxious',
@@ -8669,7 +9391,7 @@ const quranContentAnglesData: ContentAngle[] = [
     angle:
       'Allah says: "Did We not expand for you your breast? And We removed from you your burden, which had weighed upon your back. And raised high for you your repute." Ibn Kathir explains that Allah is reminding the Prophet ﷺ of His past care as proof of future care: He expanded his chest, removed his burden, and elevated his name. Al-Sa\'di adds that this is a rhetorical pattern—Allah recounts His past favors to build confidence for the future. The Prophet ﷺ said: "Whoever Allah wishes good for, He puts him through tribulation." [Sahih Bukhari 5645] If Allah has already carried you through past burdens, He will carry you through this one too. [Tafsir al-Sa\'di]',
     angleSource: "Tafsir al-Sa'di",
-    action: 'Physically roll your shoulders and ponder your burden being lifted by Allah',
+    action: 'Physically roll your shoulders and ponder your burden being lifted by Allah.',
     practiceSteps: JSON.stringify([
       {
         type: 'physical',
@@ -8711,7 +9433,7 @@ const quranContentAnglesData: ContentAngle[] = [
     angle:
       'Musa (AS) prayed: "And untie the knot from my tongue that they may understand my speech." Ibn Kathir explains that this dua addresses the fear of miscommunication and the anxiety of not being understood—Musa had a speech impediment yet was tasked with the most important conversation in history. Al-Qurtubi adds that "knots" (uqdah) symbolize any obstacle that blocks your path—whether in speech, thought, or action. The Prophet ﷺ would make specific duas before important matters, showing that seeking divine help for practical challenges is part of the Sunnah. This dua is especially powerful for anyone facing a difficult conversation or decision. [Tafsir al-Qurtubi]',
     angleSource: 'Tafsir al-Qurtubi',
-    action: 'Recite "Wahlul uqdatam-mil-lisani" for any difficult conversation today',
+    action: 'Recite "Wahlul uqdatam-mil-lisani" for any difficult conversation today.',
     practiceSteps: JSON.stringify([
       {
         type: 'verbal',
@@ -8744,7 +9466,7 @@ const quranContentAnglesData: ContentAngle[] = [
         sourceType: 'quran_dua',
       },
     ]),
-    reflection: 'Which "knot" in my life am I most anxious about right now?',
+    reflection: 'Musa asked for a single knot to be loosened. Which one knot would change your whole week?',
   },
   {
     id: 'q_angle_89_27_30_grateful',
@@ -8753,7 +9475,7 @@ const quranContentAnglesData: ContentAngle[] = [
     angle:
       'Allah says: "O reassured soul, return to your Lord, well-pleased and pleasing to Him." Ibn Kathir explains that the "nafs al-mutma\'innah" (reassured soul) represents the highest state of inner peace—a soul that has found complete contentment in Allah\'s decree. Al-Sa\'di adds that "well-pleased" (radiyah) means the soul is pleased with Allah, and "pleasing" (mardiyyah) means Allah is pleased with the soul—a mutual satisfaction that is the pinnacle of spiritual achievement. The Prophet ﷺ said: "Taste the sweetness of faith: to love Allah and His Messenger more than anything else." [Sahih Bukhari 16] Gratitude for inner peace is gratitude for the greatest gift. [Tafsir al-Sa\'di]',
     angleSource: "Tafsir al-Sa'di",
-    action: 'Thank Allah for the moments of peace He has granted you',
+    action: 'Thank Allah for the moments of peace He has granted you.',
     practiceSteps: JSON.stringify([
       {
         type: 'mindset',
@@ -8787,7 +9509,7 @@ const quranContentAnglesData: ContentAngle[] = [
         sourceType: 'quran_dua',
       },
     ]),
-    reflection: 'How can I live my life as a "returning" that is pleasing to Him?',
+    reflection: 'You are described as returning to Him, not travelling away from Him. Did today look like a journey home?',
   },
   {
     id: 'q_angle_3_135_sad_angle',
@@ -8796,7 +9518,7 @@ const quranContentAnglesData: ContentAngle[] = [
     angle:
       'Allah says: "And those who, when they commit an immorality or wrong themselves, remember Allah and seek forgiveness for their sins—and who can forgive sins except Allah?" Ibn Kathir explains that this verse contains a powerful rhetorical question: no one but Allah can forgive sins, making Him the only source of spiritual relief. Al-Sa\'di adds that "remembering Allah" after a sin is the first step back—it means the heart has not died. The Prophet ﷺ said: "Every son of Adam sins, and the best of sinners are those who repent." [At-Tirmidhi 2499] The very fact that you feel remorse is a sign that your heart is alive and your Lord is calling you back. [Tafsir al-Sa\'di]',
     angleSource: "Tafsir al-Sa'di",
-    action: 'Recall a mistake and find comfort in the fact that only Allah can forgive it',
+    action: 'Recall a mistake and find comfort in the fact that only Allah can forgive it.',
     practiceSteps: JSON.stringify([
       {
         type: 'mindset',
@@ -8833,7 +9555,7 @@ const quranContentAnglesData: ContentAngle[] = [
         sourceType: 'quran_dua',
       },
     ]),
-    reflection: 'How does it feel to know that your Lord is waiting for you to remember Him?',
+    reflection: 'He is waiting for you to remember Him. What have you been assuming He is doing instead?',
   },
   {
     id: 'q_angle_66_8_sad_angle',
@@ -8863,8 +9585,8 @@ const quranContentAnglesData: ContentAngle[] = [
         arabicText: 'اللَّهُمَّ إِنَّي أَتُوبُ إِلَيْكَ فَاقْبَلْ تَوْبَتِي',
         transliteration: 'Allahumma inni atubu ilayka faqbal tawbati',
         translation: 'O Allah, I repent to You, so accept my repentance',
-        source: 'Surah At-Tahrim 66:8 — Quran',
-        sourceType: 'quran_dua',
+        source: 'Suggested wording — the instruction in Surah At-Tahrim 66:8',
+        sourceType: 'composed_dua',
       },
       {
         type: 'physical',
@@ -8877,16 +9599,16 @@ const quranContentAnglesData: ContentAngle[] = [
         sourceGrading: 'sahih',
       },
     ]),
-    reflection: 'What does "sincere" (nasuha) repentance mean for my peace of mind?',
+    reflection: '"Nasuh" means to mend, the way a tear in cloth is mended. What in you are you asking Him to mend?',
   },
   {
     id: 'q_angle_2_148_energized',
     contentId: 'quran_2_148',
-    mood: 'Tired',
+    mood: 'Hopeful',
     angle:
       'Allah says: "For each nation is a direction toward which it faces. So race to all that is good." Ibn Kathir explains that "fastabiqul khayrat" (race to good deeds) is a divine command to compete in righteousness rather than in worldly gains. Al-Sa\'di adds that the urgency of "racing" implies that good deeds have a limited window—health, energy, and opportunity do not last forever. The Prophet ﷺ said: "Take advantage of five before five: your youth before your old age, your health before your sickness." [Al-Hakim] When you have energy, do not delay—race toward what earns eternal reward. [Tafsir al-Sa\'di]',
     angleSource: "Tafsir al-Sa'di",
-    action: 'Identify a good deed and do it immediately, without delay',
+    action: 'Identify a good deed and do it immediately, without delay.',
     practiceSteps: JSON.stringify([
       {
         type: 'mindset',
@@ -8902,10 +9624,10 @@ const quranContentAnglesData: ContentAngle[] = [
         icon: 'flame',
         title: 'Do it NOW',
         instruction:
-          'Identify one good deed and do it immediately, without delay: give charity, help someone, read Quran, or pray nafl. The Prophet ﷺ said: "Take advantage of five before five."',
-        source: '"Take advantage of five before five." [Al-Hakim]',
+          'Identify one good deed and do it immediately, without delay: give charity, help someone, read Quran, or pray nafl. The Prophet ﷺ warned that health and free time are two blessings many people are deceived into losing.',
+        source: '"Two blessings that many people are deceived into losing: health and free time." [Sahih al-Bukhari 6412]',
         sourceType: 'sunnah_action',
-        sourceGrading: 'hasan',
+        sourceGrading: 'sahih',
       },
       {
         type: 'verbal',
@@ -8920,16 +9642,16 @@ const quranContentAnglesData: ContentAngle[] = [
         sourceType: 'quran_dua',
       },
     ]),
-    reflection: 'How does it feel to "race" toward goodness using your current strength?',
+    reflection: 'Everyone has a direction they turn toward. Name the one good thing you will race at this week.',
   },
   {
     id: 'q_angle_5_48_energized',
     contentId: 'quran_5_48',
-    mood: 'Tired',
+    mood: 'Hopeful',
     angle:
       'Allah says: "For each We have appointed a divine law and a traced-out way. Had Allah willed, He could have made you one community, but that He may test you in what He has given you; so compete with one another in good deeds." Ibn Kathir explains that diversity among people is intentional—and the response to it should be competition in goodness, not conflict. Al-Sa\'di adds that "competition in good" (istibaq fil-khayrat) means using your unique gifts and circumstances to maximize positive impact. The Prophet ﷺ said: "The best of people are those most beneficial to people." [Al-Mu\'jam al-Awsat] Your unique position is your unique opportunity to do good. [Tafsir al-Sa\'di]',
     angleSource: "Tafsir al-Sa'di",
-    action: 'Find a way to contribute to a positive cause today',
+    action: 'Find a way to contribute to a positive cause today.',
     practiceSteps: JSON.stringify([
       {
         type: 'mindset',
@@ -8945,10 +9667,10 @@ const quranContentAnglesData: ContentAngle[] = [
         icon: 'handshake',
         title: 'Be the most beneficial',
         instruction:
-          'The Prophet ﷺ said the best of people are those most beneficial to people. Find one way to contribute to a positive cause today: volunteer, donate, mentor, or simply help someone.',
-        source: '"The best of people are the most beneficial to people." [Tabarani]',
+          'The Prophet ﷺ said whoever relieves a believer of a hardship, Allah relieves one of his hardships on the Day of Resurrection. Find one way to contribute to a positive cause today: volunteer, donate, mentor, or simply help someone.',
+        source: '"Whoever relieves a believer of a hardship of this world, Allah will relieve one of his hardships on the Day of Resurrection." [Sahih Muslim 2699]',
         sourceType: 'sunnah_action',
-        sourceGrading: 'hasan',
+        sourceGrading: 'sahih',
       },
       {
         type: 'verbal',
@@ -8959,11 +9681,11 @@ const quranContentAnglesData: ContentAngle[] = [
         arabicText: 'اللَّهُمَّ اجْعَلْنِي نَافِعًا لِلنَّاسِ',
         transliteration: "Allahumma-j'alni nafi'an lin-nas",
         translation: 'O Allah, make me beneficial to people',
-        source: "Surah Al-Ma'idah 5:48 — Quran",
-        sourceType: 'quran_dua',
+        source: 'Suggested wording — the theme of Surah Al-Ma\'idah 5:48',
+        sourceType: 'composed_dua',
       },
     ]),
-    reflection: 'How can I maintain a spirit of "vying for good" in my daily life?',
+    reflection: 'You were told to race, and told the differences between people are deliberate. What is your lane?',
   },
   {
     id: 'q_angle_30_4_hopeful',
@@ -8972,7 +9694,7 @@ const quranContentAnglesData: ContentAngle[] = [
     angle:
       'Allah says: "Within a few years. To Allah belongs the command before and after. And that day the believers will rejoice in the victory of Allah." Ibn Kathir explains that this verse promised the believers that the Romans would defeat the Persians—and it happened exactly as predicted, proving that Allah\'s promises always come true, even if the timing is beyond our understanding. Al-Sa\'di adds that "the believers will rejoice" shows that Allah plans moments of joy specifically for His servants. The Prophet ﷺ said: "Amazing is the affair of the believer, for his affairs are all good." [Sahih Muslim 2999] If Allah promised victory to believers of old, the same promise extends to you. [Tafsir al-Sa\'di]',
     angleSource: "Tafsir al-Sa'di",
-    action: 'Trust that relief is nearing, just as promised to the believers of old',
+    action: 'Trust that relief is nearing, just as promised to the believers of old.',
     practiceSteps: JSON.stringify([
       {
         type: 'mindset',
@@ -8992,8 +9714,8 @@ const quranContentAnglesData: ContentAngle[] = [
         arabicText: 'اللَّهُمَّ انْصُرْنِي كَمَا وَعَدْتَ الْمُؤْمِنِينَ',
         transliteration: "Allahumma-nsurni kama wa'adtal-mu'minin",
         translation: 'O Allah, grant me victory as You promised the believers',
-        source: 'Surah Ar-Rum 30:4-5 — Quran',
-        sourceType: 'quran_dua',
+        source: 'Suggested wording — the theme of Surah Ar-Rum 30:4-5',
+        sourceType: 'composed_dua',
       },
       {
         type: 'physical',
@@ -9006,7 +9728,7 @@ const quranContentAnglesData: ContentAngle[] = [
         sourceGrading: 'sahih',
       },
     ]),
-    reflection: 'How does knowing "victory belongs to Allah" keep my hope alive?',
+    reflection: 'Victory belonged to Allah before and after. Which outcome have you been treating as the final word?',
   },
   {
     id: 'q_angle_3_170_grateful',
@@ -9015,7 +9737,7 @@ const quranContentAnglesData: ContentAngle[] = [
     angle:
       'Allah says: "Rejoicing in what Allah has bestowed upon them of His bounty, and they receive good tidings about those after them who have not yet joined them—that there will be no fear concerning them, nor will they grieve." Ibn Kathir explains that the martyrs in Paradise are so immersed in joy that they wish to send good news back to the living. Al-Sa\'di adds that this verse shows gratitude is not just a response to blessings—it is itself a source of continued joy and expanding bounty. The Prophet ﷺ said: "When Allah loves a servant, He calls Jibril and says: I love so-and-so, so love him." [Sahih Bukhari 3209] Rejoicing in divine bounty attracts more of it. [Tafsir al-Sa\'di]',
     angleSource: "Tafsir al-Sa'di",
-    action: 'Smile and thank Allah for the specific bounty He gave you today',
+    action: 'Smile and thank Allah for the specific bounty He gave you today.',
     practiceSteps: JSON.stringify([
       {
         type: 'physical',
@@ -9045,8 +9767,8 @@ const quranContentAnglesData: ContentAngle[] = [
         arabicText: 'الْحَمْدُ لِلَّهِ عَلَى كُلِّ حَالٍ',
         transliteration: "Alhamdulillahi 'ala kulli hal",
         translation: 'All praise is for Allah in every condition',
-        source: 'Surah Al-Imran 3:170 — Quran',
-        sourceType: 'quran_dua',
+        source: 'The tahmid in all circumstances — Sunan Ibn Majah 3803',
+        sourceType: 'prophetic_dhikr',
       },
     ]),
     reflection: 'What would it feel like to receive joyful news from the Hereafter?',
@@ -9058,7 +9780,7 @@ const quranContentAnglesData: ContentAngle[] = [
     angle:
       'Allah says: "And whoever fears Allah—He will make for him a way out. And will provide for him from where he does not expect." Ibn Kathir explains that taqwa (God-consciousness) is the key that unlocks unexpected doors—both in provision and in escape from difficulty. Al-Sa\'di adds that "from where he does not expect" means the relief will come from a direction you never anticipated, reinforcing that you cannot plan your way out—only Allah can. The Prophet ﷺ said: "If you relied on Allah as He should be relied upon, He would provide for you as He provides for the birds: they go out hungry in the morning and return full in the evening." [At-Tirmidhi 2344] Hope is trusting the Unseen Provider. [Tafsir al-Sa\'di]',
     angleSource: "Tafsir al-Sa'di",
-    action: 'Say "Hasbunallahu wa ni\'mal-wakil" and expect a way out',
+    action: 'Say "Hasbunallahu wa ni\'mal-wakil" and expect a way out.',
     practiceSteps: JSON.stringify([
       {
         type: 'mindset',
@@ -9091,7 +9813,7 @@ const quranContentAnglesData: ContentAngle[] = [
         sourceGrading: 'hasan',
       },
     ]),
-    reflection: 'Where is the "way out" that I am currently hoping for?',
+    reflection: 'Name the way out you are hoping for. Then name the taqwa the verse attaches it to.',
   },
   {
     id: 'q_angle_2_216_sad',
@@ -9100,7 +9822,7 @@ const quranContentAnglesData: ContentAngle[] = [
     angle:
       'Allah says: "Perhaps you hate a thing and it is good for you; and perhaps you love a thing and it is bad for you. And Allah knows, while you do not know." Ibn Kathir explains that this verse establishes a profound principle: human perception of good and bad is limited, but Allah\'s knowledge encompasses all outcomes. Al-Qurtubi adds that many of the companions experienced losses that later turned into blessings they could never have predicted. The Prophet ﷺ said: "Amazing is the affair of the believer, for his affairs are all good. If something good happens, he is thankful, and that is good for him. If something bad happens, he is patient, and that is good for him." [Sahih Muslim 2999] What feels like a wound may be the door to healing. [Tafsir al-Qurtubi]',
     angleSource: 'Tafsir al-Qurtubi',
-    action: 'Acknowledge your limited knowledge compared to His infinite wisdom',
+    action: 'Acknowledge your limited knowledge compared to His infinite wisdom.',
     practiceSteps: JSON.stringify([
       {
         type: 'mindset',
@@ -9134,7 +9856,7 @@ const quranContentAnglesData: ContentAngle[] = [
         sourceType: 'quran_dua',
       },
     ]),
-    reflection: 'How does letting go of "understanding" bring peace to my sadness?',
+    reflection: 'You may hate a thing that is good for you. What are you grieving now whose end you cannot see yet?',
   },
   {
     id: 'q_angle_94_6_hopeful',
@@ -9143,7 +9865,7 @@ const quranContentAnglesData: ContentAngle[] = [
     angle:
       'Allah says: "Indeed, with hardship comes ease. Indeed, with hardship comes ease." Ibn Kathir explains that the repetition is deliberate and meaningful—it is a double divine guarantee that ease will accompany every hardship. Al-Sa\'di adds the famous linguistic insight: the Arabic uses the definite article for "the hardship" (al-\'usr) both times, meaning it is the same single hardship, but uses the indefinite for "ease" (yusra), meaning a new ease each time. One hardship cannot defeat two eases. The Prophet ﷺ said: "Know that victory comes with patience, relief comes with affliction, and with hardship comes ease." [Musnad Ahmad] The promise is doubled for your heart\'s assurance. [Tafsir al-Sa\'di]',
     angleSource: "Tafsir al-Sa'di",
-    action: 'Repeat "Inna ma\'al-usri yusra" until your heart feels it',
+    action: 'Repeat "Inna ma\'al-usri yusra" until your heart feels it.',
     practiceSteps: JSON.stringify([
       {
         type: 'mindset',
@@ -9172,7 +9894,8 @@ const quranContentAnglesData: ContentAngle[] = [
         title: 'Feel the ease arriving',
         instruction:
           'Close your eyes for 30 seconds. With each breath, feel the ease that is already present alongside your hardship. It is not coming later — it is here now, hiding within the difficulty.',
-        source: '"Victory comes with patience, relief with affliction." [Ahmad]',
+        source:
+          '"Victory comes with patience, relief with affliction, and hardship with ease." [40 Hadith an-Nawawi 19]',
         sourceType: 'prophetic_dhikr',
         sourceGrading: 'hasan',
       },
@@ -9186,7 +9909,7 @@ const quranContentAnglesData: ContentAngle[] = [
     angle:
       'Allah says: "Say, O Allah, Owner of Sovereignty, You give sovereignty to whom You will and take sovereignty from whom You will. You honor whom You will and humble whom You will. In Your hand is all good." Ibn Kathir explains that this verse establishes Allah as the ultimate decision-maker in all matters of honor, provision, and power. Al-Sa\'di adds that "in Your hand is all good" (bi-yadika al-khayr) means that even when circumstances appear negative, the good is still in His hand—He is arranging it in ways beyond our perception. The Prophet ﷺ said: "O Turner of hearts, make my heart firm upon Your religion." [At-Tirmidhi 2140] All good, past and future, is held by the most capable Hands. [Tafsir al-Sa\'di]',
     angleSource: "Tafsir al-Sa'di",
-    action: 'Ask the Owner of Sovereignty to grant you what is best',
+    action: 'Ask the Owner of Sovereignty to grant you what is best.',
     practiceSteps: JSON.stringify([
       {
         type: 'verbal',
@@ -9220,7 +9943,7 @@ const quranContentAnglesData: ContentAngle[] = [
         sourceGrading: 'hasan',
       },
     ]),
-    reflection: 'What does it mean for "all good" to be in His hand for me?',
+    reflection: 'All good is in His hand. What have you been asking a person for that only He actually holds?',
   },
   {
     id: 'q_angle_18_46_hopeful',
@@ -9267,7 +9990,7 @@ const quranContentAnglesData: ContentAngle[] = [
         sourceType: 'quran_dua',
       },
     ]),
-    reflection: 'What legacy of good am I building that is better than worldly wealth?',
+    reflection: 'Wealth and children are the adornment; the lasting good deeds outlast them. What did you do this week that lasts?',
   },
   {
     id: 'q_angle_3_17_tired_final_angle',
@@ -9276,7 +9999,7 @@ const quranContentAnglesData: ContentAngle[] = [
     angle:
       'Allah describes the righteous as "the patient, the truthful, the devoutly obedient, those who spend in the way of Allah, and those who seek forgiveness before dawn." Ibn Kathir explains that seeking forgiveness in the pre-dawn hours (sahar) is highlighted because it combines the difficulty of waking up with the sincerity of worship when no one is watching. Al-Qurtubi adds that patience is listed first because it is the foundation upon which all other virtues are built—especially when energy is low. The Prophet ﷺ said: "Our Lord descends every night to the lowest heaven and says: Is there anyone who calls upon Me, so that I may answer him?" [Sahih Bukhari 1145] Even small acts of constancy in fatigue earn immense reward. [Tafsir al-Qurtubi]',
     angleSource: 'Tafsir al-Qurtubi',
-    action: 'Choose small, steady acts of worship even when your energy is low',
+    action: 'Choose small, steady acts of worship even when your energy is low.',
     practiceSteps: JSON.stringify([
       {
         type: 'mindset',
@@ -9311,7 +10034,7 @@ const quranContentAnglesData: ContentAngle[] = [
         sourceGrading: 'sahih',
       },
     ]),
-    reflection: 'How is my current tiredness an opportunity to demonstrate true constancy?',
+    reflection: 'You are worn out and you showed up anyway. Who is that, if not the constant person this verse describes?',
   },
   {
     id: 'q_angle_7_199_angry',
@@ -9320,7 +10043,7 @@ const quranContentAnglesData: ContentAngle[] = [
     angle:
       'Allah says: "Take what is given freely, enjoin what is good, and turn away from the ignorant." Ibn Kathir explains that this verse contains three comprehensive commands: accept people\'s natural imperfections (\'afw), promote good (amr bil-ma\'ruf), and disengage from provocation (i\'rad). Al-Sa\'di adds that "take what is given freely" means accepting people as they are rather than demanding perfection—a key to reducing anger. The Prophet ﷺ said: "Make things easy and do not make them difficult. Give good news and do not drive people away." [Sahih Bukhari 6125] Pardoning is not about the other person—it is about preserving your own inner peace. [Tafsir al-Sa\'di]',
     angleSource: "Tafsir al-Sa'di",
-    action: 'Choose to overlook a fault today just for the sake of your own peace',
+    action: 'Choose to overlook a fault today just for the sake of your own peace.',
     practiceSteps: JSON.stringify([
       {
         type: 'mindset',
@@ -9350,11 +10073,11 @@ const quranContentAnglesData: ContentAngle[] = [
         arabicText: 'أَعُوذُ بِاللَّهِ مِنَ الشَّيْطَانِ الرَّجِيمِ',
         transliteration: "A'udhu billahi minash-shaytanir-rajim",
         translation: 'I seek refuge in Allah from the accursed Satan',
-        source: "Surah Al-A'raf 7:199-200 — Quran",
-        sourceType: 'quran_dua',
+        source: 'The ta\'awwudh — Sahih al-Bukhari 3282; commanded in Surah Al-A\'raf 7:200',
+        sourceType: 'prophetic_dhikr',
       },
     ]),
-    reflection: 'How does "taking to pardon" protect your own heart from anger?',
+    reflection: 'Pardon protects you before it protects them. What is holding this grudge costing you, specifically?',
   },
   {
     id: 'q_angle_42_37_angry',
@@ -9363,7 +10086,7 @@ const quranContentAnglesData: ContentAngle[] = [
     angle:
       'Allah says: "And those who avoid the major sins and immoralities, and when they are angry, they forgive." Ibn Kathir explains that this verse lists forgiveness during anger as a defining quality of the believers of Paradise—right alongside avoiding major sins. Al-Qurtubi adds that forgiving "when angry" (idha hum yaghfurun) is specifically mentioned because forgiving when calm is easy; the true test is forgiving in the heat of the moment. The Prophet ﷺ said: "Whoever suppresses his anger while he is able to act on it, Allah will call him before all creation on the Day of Resurrection and let him choose from the Hur al-Ayn." [At-Tirmidhi 2021] Forgiving while angry is the supreme act of strength. [Tafsir al-Qurtubi]',
     angleSource: 'Tafsir al-Qurtubi',
-    action: 'Deliberately choose to forgive someone today when you feel provoked',
+    action: 'Deliberately choose to forgive someone today when you feel provoked.',
     practiceSteps: JSON.stringify([
       {
         type: 'mindset',
@@ -9403,11 +10126,11 @@ const quranContentAnglesData: ContentAngle[] = [
   {
     id: 'q_angle_10_58_energized_angle',
     contentId: 'quran_10_58',
-    mood: 'Tired',
+    mood: 'Hopeful',
     angle:
       'Allah says: "Say, In the bounty of Allah and in His mercy—in that let them rejoice; it is better than what they accumulate." Ibn Kathir explains that the "bounty" refers to the Quran and the "mercy" refers to Islam—meaning the greatest source of energy and motivation is spiritual, not material. Al-Sa\'di adds that rejoicing (farah) in divine gifts creates a positive cycle: gratitude generates energy, energy produces good deeds, and good deeds attract more divine favor. The Prophet ﷺ said: "Whoever is given his portion of gentleness has been given his portion of good." [Sahih Muslim 2593] Let the energy of faith fuel your day\'s work. [Tafsir al-Sa\'di]',
     angleSource: "Tafsir al-Sa'di",
-    action: 'direct your efforts toward a task that benefits the community',
+    action: 'direct your efforts toward a task that benefits the community.',
     practiceSteps: JSON.stringify([
       {
         type: 'mindset',
@@ -9453,7 +10176,7 @@ const quranContentAnglesData: ContentAngle[] = [
     action: 'When provoked today, pause and respond with "Salama" (peace) or silence.',
     actionHowTo: 'Take a deep breath and say "Salam" internally before reacting.',
     actionReward:
-      'The Prophet ﷺ said: "The most beloved of people to Allah are those with the best character." [At-Tabarani]',
+      'The Prophet ﷺ said: "The best amongst you are those who have the best manners and character." [Sahih al-Bukhari 3559]',
     practiceSteps: JSON.stringify([
       {
         type: 'physical',
@@ -9482,12 +10205,12 @@ const quranContentAnglesData: ContentAngle[] = [
         arabicText: 'سَلَامًا',
         transliteration: 'Salama',
         translation: 'Peace',
-        source: '"The most beloved to Allah are those with the best character." [Tabarani]',
+        source: '"The best amongst you are those who have the best manners and character." [Sahih al-Bukhari 3559]',
         sourceType: 'sunnah_action',
-        sourceGrading: 'hasan',
+        sourceGrading: 'sahih',
       },
     ]),
-    reflection: 'How does walking easily upon the earth change your posture and presence?',
+    reflection: 'Walk somewhere today deliberately slowly. What did you notice that you normally walk straight past?',
   },
   {
     id: 'q_angle_25_63_content',
@@ -9528,7 +10251,7 @@ const quranContentAnglesData: ContentAngle[] = [
         arabicText: 'الْحَمْدُ لِلَّهِ الَّذِي هَدَانَا لِهَذَا',
         transliteration: 'Alhamdulillahilladhi hadana lihadha',
         translation: 'Praise be to Allah who guided us to this',
-        source: 'Surah Al-Furqan 25:63 — Quran',
+        source: 'Surah Al-A\'raf 7:43 — Quran',
         sourceType: 'quran_dua',
       },
     ]),
@@ -9554,8 +10277,8 @@ const quranContentAnglesData: ContentAngle[] = [
         arabicText: 'أَعُوذُ بِاللَّهِ مِنَ الشَّيْطَانِ الرَّجِيمِ',
         transliteration: "A'udhu billahi minash-shaytanir-rajim",
         translation: 'I seek refuge in Allah from the accursed Satan',
-        source: 'Surah Fussilat 41:36 — Quran',
-        sourceType: 'quran_dua',
+        source: 'The ta\'awwudh — Sahih al-Bukhari 3282; commanded in Surah Fussilat 41:36',
+        sourceType: 'prophetic_dhikr',
       },
       {
         type: 'physical',
@@ -9583,7 +10306,7 @@ const quranContentAnglesData: ContentAngle[] = [
   {
     id: 'q_angle_2_265_energized',
     contentId: 'quran_2_265',
-    mood: 'Tired',
+    mood: 'Hopeful',
     angle:
       'Scholars explain that "seeking the pleasure of Allah" means pure sincerity (Ikhlas). When energy is paired with sincerity, every effort yields multiple rewards, like a garden on a height. [Tafsir al-Jalalayn]',
     action: 'direct your efforts toward an act of charity or service with pure intention.',
@@ -9619,11 +10342,11 @@ const quranContentAnglesData: ContentAngle[] = [
         arabicText: 'بِسْمِ اللَّهِ وَلِوَجْهِ اللَّهِ',
         transliteration: 'Bismillah, wa li-wajhillah',
         translation: 'In the name of Allah, and for the Face of Allah',
-        source: 'Surah Al-Baqarah 2:265 — Quran',
-        sourceType: 'quran_dua',
+        source: 'Suggested wording — the theme of Surah Al-Baqarah 2:265',
+        sourceType: 'composed_dua',
       },
     ]),
-    reflection: 'How does sincerity make your energy and actions more productive?',
+    reflection: 'The same action carries different weight depending on the intention. Check the one behind your proudest act this week.',
   },
   {
     id: 'q_angle_2_265_grateful',
@@ -9736,8 +10459,8 @@ const quranContentAnglesData: ContentAngle[] = [
         arabicText: 'ادْعُونِي أَسْتَجِبْ لَكُمْ',
         transliteration: "Ud'uni astajib lakum",
         translation: 'Call upon Me; I will respond to you',
-        source: 'Sunan Abi Dawud 1488',
-        sourceType: 'prophetic_dhikr',
+        source: 'Surah Ghafir 40:60 — Quran',
+        sourceType: 'quran_dua',
         sourceGrading: 'hasan',
       },
       {
@@ -9760,7 +10483,7 @@ const quranContentAnglesData: ContentAngle[] = [
         sourceType: 'quran_dua',
       },
     ]),
-    reflection: 'How does the promise of a divine response ease the weight of your stress?',
+    reflection: 'Call upon Me and I will respond. What have you been solving alone without ever actually asking?',
   },
   // === RIZQ REVOLUTION ANGLES ===
   {
@@ -9774,12 +10497,11 @@ const quranContentAnglesData: ContentAngle[] = [
       "Examples: 'I can walk, I have clean water, I know people who love me, I have my senses, I have access to knowledge.'",
     actionReward:
       "Prophet ﷺ said: 'If you were to rely upon Allah with the reliance He is due, you would be given provision like the birds: they go out hungry in the morning and return full in the evening.' [Tirmidhi 2344]",
-    actionArabicText:
-      'اللَّهُمَّ اغْفِرْ لِي ذَنْبِي، وَوَسِّعْ لِي فِي دَارِي، وَبَارِكْ لِي فِي رِزْقِي',
-    actionTransliteration: "Allahumma ighfir li dhanbi, wa wassi' li fi dari, wa barik li fi rizqi",
+    actionArabicText: 'اللَّهُمَّ إِنِّي أَسْأَلُكَ الْعَفْوَ وَالْعَافِيَةَ فِي الدُّنْيَا وَالْآخِرَةِ',
+    actionTransliteration: "Allahumma inni as'aluka al-'afwa wal-'afiyata fid-dunya wal-akhirah",
     actionTranslation:
-      'O Allah, forgive me my sin, expand for me in my dwelling, and bless me in my provision',
-    actionSource: 'Authenticated in collections of morning/evening adhkar',
+      'O Allah, I ask You for pardon and well-being in this world and the next',
+    actionSource: 'Sunan Ibn Majah 3871',
     practiceSteps: JSON.stringify([
       {
         type: 'mindset',
@@ -9802,15 +10524,14 @@ const quranContentAnglesData: ContentAngle[] = [
       {
         type: 'verbal',
         icon: 'hands-prayer',
-        title: 'The Rizq Dua',
-        instruction: 'Say this dua for blessed provision.',
-        arabicText:
-          'اللَّهُمَّ اغْفِرْ لِي ذَنْبِي، وَوَسِّعْ لِي فِي دَارِي، وَبَارِكْ لِي فِي رِزْقِي',
-        transliteration: "Allahumma ighfir li dhanbi, wa wassi' li fi dari, wa barik li fi rizqi",
-        translation: 'O Allah, forgive my sin, expand my dwelling, and bless my provision',
-        source: 'Authenticated in morning/evening adhkar',
-        sourceType: 'sunnah_action',
-        sourceGrading: 'hasan',
+        title: 'Ask for what money cannot buy',
+        instruction:
+          "You have just listed five things money cannot buy. Ask for the one word that covers all of them: al-'afiyah — well-being in your body, your religion, your family and your means. The Prophet ﷺ never abandoned this supplication, morning and evening.",
+        arabicText: 'اللَّهُمَّ إِنِّي أَسْأَلُكَ الْعَفْوَ وَالْعَافِيَةَ فِي الدُّنْيَا وَالْآخِرَةِ',
+        transliteration: "Allahumma inni as'aluka al-'afwa wal-'afiyata fid-dunya wal-akhirah",
+        translation: 'O Allah, I ask You for pardon and well-being in this world and the next',
+        source: 'Sunan Ibn Majah 3871',
+        sourceType: 'prophetic_dua',
       },
     ]),
     reflection:
@@ -9830,7 +10551,7 @@ const quranContentAnglesData: ContentAngle[] = [
     actionArabicText: 'اللَّهُمَّ أَنْتَ الرَّزَّاقُ، ارْزُقْنِي مِنْ فَضْلِكَ',
     actionTransliteration: 'Allahumma anta ar-Razzaq, urzuqni min fadlika',
     actionTranslation: 'O Allah, You are the Provider, provide for me from Your bounty',
-    actionSource: 'Dua of the Provider',
+    actionSource: 'Suggested wording — the theme of Surah Hud 11:6',
     practiceSteps: JSON.stringify([
       {
         type: 'verbal',
@@ -9841,8 +10562,8 @@ const quranContentAnglesData: ContentAngle[] = [
         arabicText: 'يَا رَزَّاقُ',
         transliteration: 'Ya Razzaq',
         translation: 'O Provider',
-        source: 'Surah Hud 11:6 — Quran',
-        sourceType: 'quran_dua',
+        source: 'Divine Name Ar-Razzaq — Surah Adh-Dhariyat 51:58',
+        sourceType: 'composed_dua',
       },
       {
         type: 'mindset',
@@ -9851,7 +10572,6 @@ const quranContentAnglesData: ContentAngle[] = [
         instruction:
           'He provides for the bird in the sky, the fish in the ocean, and the baby in the womb — none of them earned it. When you know your Provider is Ar-Razzaq, you stop depending on creation.',
         source: 'Imam Al-Ghazali on Ar-Razzaq',
-        sourceType: 'sunnah_action',
         sourceGrading: 'hasan',
       },
       {
@@ -9862,9 +10582,8 @@ const quranContentAnglesData: ContentAngle[] = [
         arabicText: 'اللَّهُمَّ أَنْتَ الرَّزَّاقُ، ارْزُقْنِي مِنْ فَضْلِكَ',
         transliteration: 'Allahumma anta ar-Razzaq, urzuqni min fadlika',
         translation: 'O Allah, You are the Provider, provide for me from Your bounty',
-        source: 'Bukhari 3208',
-        sourceType: 'prophetic_dua',
-        sourceGrading: 'sahih',
+        source: 'Suggested wording — the theme of Surah Hud 11:6',
+        sourceType: 'composed_dua',
       },
     ]),
     reflection:
@@ -9888,7 +10607,7 @@ const quranContentAnglesData: ContentAngle[] = [
       'Allahumma ighfir li ma akhadtu bi ghayri haqq, wa barik li fima razaqtani min halal',
     actionTranslation:
       'O Allah, forgive me for what I have taken unjustly, and bless what You have provided me from halal sustenance',
-    actionSource: 'The Halal Wealth Dua',
+    actionSource: 'Suggested wording — the theme of Surah Al-Baqarah 2:168',
     practiceSteps: JSON.stringify([
       {
         type: 'mindset',
@@ -9897,7 +10616,6 @@ const quranContentAnglesData: ContentAngle[] = [
         instruction:
           'A single dirham earned halal is better than a mountain of gold earned through doubt. Haram wealth blocks duas, clouds judgment, and removes barakah. A little with barakah beats abundance with anxiety.',
         source: 'Imam Ahmad ibn Hanbal',
-        sourceType: 'prophetic_dhikr',
         sourceGrading: 'hasan',
       },
       {
@@ -9920,8 +10638,8 @@ const quranContentAnglesData: ContentAngle[] = [
         transliteration:
           'Allahumma ighfir li ma akhadtu bi ghayri haqq, wa barik li fima razaqtani min halal',
         translation: 'O Allah, forgive me for what I took unjustly, and bless my halal provision',
-        source: 'Surah Al-Baqarah 2:168 — Quran',
-        sourceType: 'quran_dua',
+        source: 'Suggested wording — the theme of Surah Al-Baqarah 2:168',
+        sourceType: 'composed_dua',
       },
     ]),
     reflection:
@@ -9937,13 +10655,14 @@ const quranContentAnglesData: ContentAngle[] = [
     action:
       "Tie Your Camel: Identify one action you've been avoiding—update resume, learn a new skill, network, apply for that opportunity, start that halal project. Do it today.",
     actionHowTo:
-      'After taking action, repeat "Hasbiyallahu wa ni\'mal wakeel" (Allah is sufficient for me) 7 times. Trust Allah with results.',
+      'Once the action is done, ask for it to be accepted rather than for it to work: knowledge that is useful, provision that is clean, a deed that is received.',
     actionReward:
-      'Prophet ﷺ said: "Allah loves that when any of you does something, he does it with excellence (itqan)." [Bayhaqi]',
-    actionArabicText: 'حَسْبِيَ اللَّهُ وَنِعْمَ الْوَكِيلُ',
-    actionTransliteration: "Hasbiyallahu wa ni'mal wakeel",
-    actionTranslation: 'Allah is sufficient for me and He is the best Disposer of affairs',
-    actionSource: 'Quran 3:173 - Dua of the Prophets',
+      'Prophet ﷺ said: "Allah has prescribed excellence (ihsan) in all things." [Sahih Muslim 1955a]',
+    actionArabicText: 'اللَّهُمَّ إِنِّي أَسْأَلُكَ عِلْمًا نَافِعًا، وَرِزْقًا طَيِّبًا، وَعَمَلًا مُتَقَبَّلًا',
+    actionTransliteration:
+      "Allahumma inni as'aluka 'ilman nafi'an, wa rizqan tayyiban, wa 'amalan mutaqabbalan",
+    actionTranslation: 'O Allah, I ask You for beneficial knowledge, goodly provision, and accepted deeds',
+    actionSource: 'Sunan Ibn Majah 925',
     practiceSteps: JSON.stringify([
       {
         type: 'physical',
@@ -9958,16 +10677,15 @@ const quranContentAnglesData: ContentAngle[] = [
       {
         type: 'verbal',
         icon: 'hands-prayer',
-        title: 'Trust with results',
+        title: 'Ask for the work, not only the result',
         instruction:
-          'After taking action, say "Hasbiyallahu wa ni\'mal wakeel" 7 times. Your job is effort. His job is results.',
-        arabicText: 'حَسْبِيَ اللَّهُ وَنِعْمَ الْوَكِيلُ',
-        transliteration: "Hasbiyallahu wa ni'mal wakeel",
-        translation: 'Allah is sufficient for me and He is the best Disposer of affairs',
-        source: 'Quran 3:173',
-        sourceType: 'quran_dua',
-        countSource: 'Abu Dawud 5081',
-        count: 7,
+          'Umm Salamah reports the Prophet ﷺ said this after the salam of Fajr. It asks for three things in order: knowledge that is useful, provision that is clean, and a deed that is accepted — effort named before outcome, which is the whole point of today.',
+        arabicText: 'اللَّهُمَّ إِنِّي أَسْأَلُكَ عِلْمًا نَافِعًا، وَرِزْقًا طَيِّبًا، وَعَمَلًا مُتَقَبَّلًا',
+        transliteration: "Allahumma inni as'aluka 'ilman nafi'an, wa rizqan tayyiban, wa 'amalan mutaqabbalan",
+        translation:
+          'O Allah, I ask You for beneficial knowledge, goodly provision, and accepted deeds',
+        source: 'Sunan Ibn Majah 925',
+        sourceType: 'prophetic_dua',
       },
       {
         type: 'mindset',
@@ -9976,7 +10694,6 @@ const quranContentAnglesData: ContentAngle[] = [
         instruction:
           "True tawakkul is the heart's reliance on Allah while the limbs are active. It is not laziness — it is working with excellence while trusting Allah with the outcome.",
         source: 'Ibn al-Qayyim on Tawakkul',
-        sourceType: 'sunnah_action',
         sourceGrading: 'hasan',
       },
     ]),
@@ -9999,7 +10716,7 @@ const quranContentAnglesData: ContentAngle[] = [
     actionArabicText: 'لَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللَّهِ',
     actionTransliteration: 'La hawla wa la quwwata illa billah',
     actionTranslation: 'There is no might nor power except with Allah',
-    actionSource: 'The Anxiety-Buster Dua - repeat until the tightness in your chest loosens',
+    actionSource: '"It is one of the treasures of Paradise." [Sahih al-Bukhari 6384]',
     practiceSteps: JSON.stringify([
       {
         type: 'physical',
@@ -10008,7 +10725,6 @@ const quranContentAnglesData: ContentAngle[] = [
         instruction:
           'Complete this sentence: "I\'m anxious about money because I fear..." Write it down. Naming the fear weakens it. Then ask: has Allah ever left you starving?',
         source: 'Ibn al-Qayyim on Scarcity',
-        sourceType: 'sunnah_action',
         sourceGrading: 'hasan',
       },
       {
@@ -10018,7 +10734,6 @@ const quranContentAnglesData: ContentAngle[] = [
         instruction:
           "Those who see rizq as limited hoard and envy. Those who see it as guaranteed by Al-Waasi' give freely and live in peace. Which type are you? The obsessed rarely find contentment.",
         source: 'Shaykh Ibn Uthaymeen',
-        sourceType: 'sunnah_action',
         sourceGrading: 'hasan',
       },
       {
@@ -10029,8 +10744,8 @@ const quranContentAnglesData: ContentAngle[] = [
         arabicText: 'لَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللَّهِ',
         transliteration: 'La hawla wa la quwwata illa billah',
         translation: 'There is no might nor power except with Allah',
-        source: '"Enrich his heart and bring his affairs together." [Tirmidhi 2465]',
-        sourceType: 'prophetic_dua',
+        source: '"It is one of the treasures of Paradise." [Sahih al-Bukhari 6384]',
+        sourceType: 'prophetic_dhikr',
         sourceGrading: 'hasan',
       },
     ]),
@@ -10071,7 +10786,6 @@ const quranContentAnglesData: ContentAngle[] = [
         instruction:
           'Qana\'ah is freedom from the tyranny of "more." Richness is not many possessions — it is richness of the soul. You don\'t need more. You need to want less.',
         source: "Imam Al-Ghazali on Qana'ah",
-        sourceType: 'sunnah_action',
         sourceGrading: 'hasan',
       },
       {
@@ -10098,7 +10812,7 @@ const quranContentAnglesData: ContentAngle[] = [
     angle:
       "Ibn Taymiyyah: 'Barakah is when Allah places good, growth, and increase in something—even if it appears small.' $1,000 with barakah = pays all bills, saves some, gives charity, still has left over. $10,000 without barakah = mysteriously disappears, unexpected expenses, constant stress. Barakah Killers: Haram income, ingratitude, cutting family ties, lying in business, delaying prayer, stinginess. Barakah Multipliers: Honesty, waking up for Fajr, eating together as family, saying Bismillah.",
     action:
-      'Seek Barakah in Time: Wake up for Fajr. Prophet ﷺ said: "O Allah, bless my Ummah in their early morning." [Tirmidhi 1212]',
+      'Seek Barakah in Time: Wake up for Fajr. Prophet ﷺ said: "O Allah, bless my Ummah in their early morning." [Tirmidhi 1212].',
     actionHowTo:
       'Give sadaqah today—even $1, even 50 cents. Prophet ﷺ said: "Charity does not decrease wealth." [Muslim 2588] Test this.',
     actionReward:
@@ -10106,7 +10820,7 @@ const quranContentAnglesData: ContentAngle[] = [
     actionArabicText: 'اللَّهُمَّ بَارِكْ لَنَا فِيمَا رَزَقْتَنَا',
     actionTransliteration: 'Allahumma barik lana fima razaqtana',
     actionTranslation: 'O Allah, bless us in what You have provided us',
-    actionSource: 'The Barakah Dua - say before eating, working, starting any task',
+    actionSource: "Suggested wording — the theme of Surah Al-A'raf 7:96",
     practiceSteps: JSON.stringify([
       {
         type: 'physical',
@@ -10125,7 +10839,6 @@ const quranContentAnglesData: ContentAngle[] = [
         instruction:
           'Barakah means Allah places good, growth, and increase in something even if it appears small. $1,000 with barakah goes further than $10,000 without it. Seek barakah, not just money.',
         source: 'Ibn Taymiyyah on Barakah',
-        sourceType: 'sunnah_action',
         sourceGrading: 'hasan',
       },
       {
@@ -10136,9 +10849,8 @@ const quranContentAnglesData: ContentAngle[] = [
         arabicText: 'اللَّهُمَّ بَارِكْ لَنَا فِيمَا رَزَقْتَنَا',
         transliteration: 'Allahumma barik lana fima razaqtana',
         translation: 'O Allah, bless us in what You have provided us',
-        source: 'Tirmidhi 1212',
-        sourceType: 'prophetic_dua',
-        sourceGrading: 'hasan',
+        source: "Suggested wording — the theme of Surah Al-A'raf 7:96",
+        sourceType: 'composed_dua',
       },
     ]),
     reflection:
@@ -10211,7 +10923,7 @@ const quranContentAnglesData: ContentAngle[] = [
     actionReward:
       "Allah divided the work: He provides, you seek. Don't do His job, and don't skip yours.",
     actionArabicText:
-      'اللَّهُمَّ لَا سَهْلَ إِلَّا مَا جَعَلْتَهُ سَهْلًا، وَأَنْتَ تَجْعَلُ الْحَزْنَ إِنْ شِئْتَ سَهْلًا',
+      'اللَّهُمَّ لَا سَهْلَ إِلَّا مَا جَعَلْتَهُ سَهْلًا، وَأَنْتَ تَجْعَلُ الْحَزْنَ إِذَا شِئْتَ سَهْلًا',
     actionTransliteration:
       "Allahumma la sahla illa ma ja'altahu sahla, wa anta taj'alul-hazna in shi'ta sahla",
     actionTranslation:
@@ -10242,12 +10954,12 @@ const quranContentAnglesData: ContentAngle[] = [
         title: 'The Action Dua',
         instruction: 'Ask Allah to make the difficult easy.',
         arabicText:
-          'اللَّهُمَّ لَا سَهْلَ إِلَّا مَا جَعَلْتَهُ سَهْلًا، وَأَنْتَ تَجْعَلُ الْحَزْنَ إِنْ شِئْتَ سَهْلًا',
+          'اللَّهُمَّ لَا سَهْلَ إِلَّا مَا جَعَلْتَهُ سَهْلًا، وَأَنْتَ تَجْعَلُ الْحَزْنَ إِذَا شِئْتَ سَهْلًا',
         transliteration:
           "Allahumma la sahla illa ma ja'altahu sahla, wa anta taj'alul-hazna in shi'ta sahla",
         translation:
           'O Allah, nothing is easy except what You make easy, and You make the difficult easy if You wish',
-        source: 'Ibn Hibban 974',
+        source: 'Sahih Ibn Hibban 974 (Hisn al-Muslim 139)',
         sourceType: 'sunnah_action',
         sourceGrading: 'hasan',
       },
@@ -10273,7 +10985,7 @@ const quranContentAnglesData: ContentAngle[] = [
     actionTransliteration: "Allahumma ighfir li dhanbi, wa wassi' li fi dari, wa barik li fi rizqi",
     actionTranslation:
       'O Allah, forgive me my sin, expand for me in my dwelling, and bless me in my provision',
-    actionSource: 'The Master Rizq Dua - morning and evening',
+    actionSource: "Sunan an-Nasa'i al-Kubra 9514",
     practiceSteps: JSON.stringify([
       {
         type: 'verbal',
@@ -10285,9 +10997,8 @@ const quranContentAnglesData: ContentAngle[] = [
           'اللَّهُمَّ اغْفِرْ لِي ذَنْبِي، وَوَسِّعْ لِي فِي دَارِي، وَبَارِكْ لِي فِي رِزْقِي',
         transliteration: "Allahumma ighfir li dhanbi, wa wassi' li fi dari, wa barik li fi rizqi",
         translation: 'O Allah, forgive my sin, expand my dwelling, and bless my provision',
-        source: 'The Master Rizq Dua',
-        sourceType: 'sunnah_action',
-        sourceGrading: 'hasan',
+        source: "Sunan an-Nasa'i al-Kubra 9514",
+        sourceType: 'prophetic_dua',
       },
       {
         type: 'mindset',
@@ -10332,7 +11043,7 @@ const quranContentAnglesData: ContentAngle[] = [
     actionArabicText: 'اللَّهُمَّ زِدْنَا وَلَا تَنْقُصْنَا، وَأَعْطِنَا وَلَا تَحْرِمْنَا',
     actionTransliteration: "Allahumma zidna wa la tanqusna, wa a'tina wa la tahrimna",
     actionTranslation: 'O Allah, increase us and do not decrease us, give us and do not deprive us',
-    actionSource: 'The Increase Dua',
+    actionSource: 'Suggested wording — the theme of Surah Ibrahim 14:7',
     practiceSteps: JSON.stringify([
       {
         type: 'physical',
@@ -10341,7 +11052,6 @@ const quranContentAnglesData: ContentAngle[] = [
         instruction:
           'Every night before bed, write 3 SPECIFIC things you are grateful for — not generic. "The taxi driver smiled at me," "I had hot tea this morning." Do this for 7 nights and watch your mindset shift.',
         source: 'Ibn al-Qayyim on Shukr',
-        sourceType: 'sunnah_action',
         sourceGrading: 'hasan',
       },
       {
@@ -10351,7 +11061,6 @@ const quranContentAnglesData: ContentAngle[] = [
         instruction:
           'This is not a suggestion — it is a guaranteed contract: show gratitude, get increase. Three levels of Shukr: Heart (recognize the blessing), Tongue (say Alhamdulillah), Limbs (use the blessing to obey Allah). Complete shukr activates the increase.',
         source: 'Shaykh Ibn Uthaymeen',
-        sourceType: 'sunnah_action',
         sourceGrading: 'hasan',
       },
       {
@@ -10362,8 +11071,8 @@ const quranContentAnglesData: ContentAngle[] = [
         arabicText: 'اللَّهُمَّ زِدْنَا وَلَا تَنْقُصْنَا، وَأَعْطِنَا وَلَا تَحْرِمْنَا',
         transliteration: "Allahumma zidna wa la tanqusna, wa a'tina wa la tahrimna",
         translation: 'O Allah, increase us and do not decrease us, give us and do not deprive us',
-        source: 'Surah Ibrahim 14:7 — Quran',
-        sourceType: 'quran_dua',
+        source: 'Suggested wording — the theme of Surah Ibrahim 14:7',
+        sourceType: 'composed_dua',
       },
     ]),
     reflection:
@@ -10405,7 +11114,6 @@ const quranContentAnglesData: ContentAngle[] = [
         instruction:
           'Allah didn\'t say "might bring ease" — He said WILL bring ease. It is guaranteed. Sometimes He delays provision to test trust, purify attachment, increase reward, or prepare you for what is coming. Hardship is temporary. His promise is eternal.',
         source: 'Ibn al-Qayyim on Delayed Provision',
-        sourceType: 'sunnah_action',
         sourceGrading: 'hasan',
       },
       {
@@ -10417,7 +11125,7 @@ const quranContentAnglesData: ContentAngle[] = [
         transliteration: "Hasbunallahu wa ni'mal wakeel, ni'mal-mawla wa ni'man-naseer",
         translation:
           'Sufficient for us is Allah and He is the best Disposer, the best Protector and the best Helper',
-        source: 'Quran 3:173',
+        source: 'Surah Ali Imran 3:173 joined with Surah Al-Anfal 8:40',
         sourceType: 'quran_dua',
       },
     ]),
@@ -10503,7 +11211,6 @@ const quranContentAnglesData: ContentAngle[] = [
         instruction:
           'Look back at your journey Days 1-13. Create your Rizq Routine: pick 3 daily habits. Morning: "Ya Razzaq" after Fajr. Afternoon: Give $1 sadaqah. Night: Write 3 gratitudes. Commit for 30 days.',
         source: 'Ibn al-Qayyim on Rizq Mindset',
-        sourceType: 'sunnah_action',
         sourceGrading: 'hasan',
       },
       {
@@ -10539,7 +11246,7 @@ const quranContentAnglesData: ContentAngle[] = [
     angle:
       "Allah describes His presence as the \"fourth of three\" and the \"sixth of five.\" Scholars distinguish between Allah's general knowledge of all things (Ma'iyyah 'Ammah) and His special support for His believers (Ma'iyyah Khassah). Ibn Kathir explains that \"He is with them\" implies that He is witnessing their secrets and whispers without ever being absent. Al-Sa'di adds that this specific verse was revealed concerning people whispering in secret, but it serves as the ultimate comfort for the lonely: His knowledge isn't just surveillance; it is the promise that you are never truly alone. [Tafsir al-Sa'di]",
     angleSource: "Tafsir al-Sa'di",
-    action: 'Speak to Allah silently as if He is right in front of you',
+    action: 'Speak to Allah silently as if He is right in front of you.',
     practiceSteps: JSON.stringify([
       {
         type: 'physical',
@@ -10584,7 +11291,7 @@ const quranContentAnglesData: ContentAngle[] = [
     angle:
       'Prophet Shu\'ayb (AS) reminded his people: "Indeed, my Lord is Merciful and Loving (Wadud)." Al-Sa\'di explains that Al-Wadud is on the linguistic scale of "fa\'ool," meaning He is both the Lover (loving His friends) and the Beloved (the One who is uniquely loved by them). Ibn Kathir notes that while "Rahmah" is general mercy, "Wud" is the special, affectionate love that Allah places in the hearts of those who return to Him. The cure for loneliness is shifting from seeking human validation to experiencing this reciprocal divine affection. [Tafsir al-Sa\'di]',
     angleSource: "Tafsir al-Sa'di",
-    action: 'Breathe in the name "Al-Wadud" (The Most Loving)',
+    action: 'Breathe in the name "Al-Wadud" (The Most Loving).',
     practiceSteps: JSON.stringify([
       {
         type: 'mindset',
@@ -10604,8 +11311,8 @@ const quranContentAnglesData: ContentAngle[] = [
         arabicText: 'يَا وَدُودُ',
         transliteration: 'Ya Wadud',
         translation: 'O Most Loving One',
-        source: 'Surah Hud 11:90 — Quran',
-        sourceType: 'quran_dua',
+        source: 'Divine Name Al-Wadud — Surah Hud 11:90',
+        sourceType: 'composed_dua',
       },
       {
         type: 'physical',
@@ -10623,13 +11330,59 @@ const quranContentAnglesData: ContentAngle[] = [
       'What changes in your heart when you realize Allah is not just Merciful, but "Wadud" (Most Loving)?',
   },
   {
+    id: 'q_angle_11_90_guilty',
+    contentId: 'quran_11_90_lonely',
+    mood: 'Guilty',
+    angle:
+      'Notice the order Allah gives you here: ask forgiveness first, then turn back to Him. You do not have to arrive clean before you are allowed to come. Istighfar settles what is behind you; tawbah points you forward — and He named the sequence Himself, so you are not improvising your way back. Then He signs it with a Name most people never associate with sin: Al-Wadud, the Most Loving. Not merely the One who tolerates your return, but the One who is affectionate toward you for making it. The shame telling you to stay away is not coming from Him. [Tafsir al-Sa\'di]',
+    angleSource: "Tafsir al-Sa'di",
+    action: 'Say astaghfirullah once for what is behind you, then name one thing you are turning toward.',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'mindset',
+        icon: 'door',
+        title: 'He is glad you came back',
+        instruction:
+          'The Prophet ﷺ described a man who loses his camel in the desert with all his food and water on it, gives up, lies down to die — then opens his eyes and it is standing there. He is so overjoyed he mixes up his words: "O Allah, You are my slave and I am Your Lord." The Prophet ﷺ said Allah is happier at your repentance than that man. Your return is not tolerated. It is welcomed.',
+        source: '"Allah is more delighted with the repentance of His slave than that." [Sahih Muslim 2747]',
+        sourceType: 'prophetic_dhikr',
+        sourceGrading: 'sahih',
+      },
+      {
+        type: 'verbal',
+        icon: 'hands-prayer',
+        title: 'Ask, then turn',
+        instruction:
+          'Say the verse\'s own two halves out loud, in order. Then do them: "Astaghfirullah" three times for what has already happened, and after that name one concrete thing you are turning toward. The first closes a door. The second opens one.',
+        arabicText: 'وَٱسْتَغْفِرُوا۟ رَبَّكُمْ ثُمَّ تُوبُوٓا۟ إِلَيْهِ',
+        transliteration: "wa-is'taghfirū rabbakum thumma tūbū ilayhi",
+        translation: 'And ask forgiveness of your Lord, then turn to Him in repentance',
+        source: 'Surah Hud 11:90 — Quran',
+        sourceType: 'quran_dua',
+        count: 3,
+      },
+      {
+        type: 'physical',
+        icon: 'leaf',
+        title: 'Two rak\'ahs, then leave it there',
+        instruction:
+          'Pray two rak\'ahs of tawbah. In sujud, say what you did plainly, without rehearsing it a fourth time. Then stand up and do not revisit it today — replaying a sin you have already brought to Al-Wadud is not remorse, it is doubt about whether He meant it.',
+        source: '"Whoever does a wrong, then performs wudu, prays two rak\'ahs and seeks forgiveness — Allah forgives him." [Abu Dawud 1521]',
+        sourceType: 'sunnah_action',
+        sourceGrading: 'hasan',
+      },
+    ]),
+    reflection:
+      'Name the thing you keep re-confessing. What would it take to accept that Allah closed it the first time?',
+  },
+  {
     id: 'q_angle_3_135_guilty',
     contentId: 'quran_3_135',
     mood: 'Guilty',
     angle:
       'Allah describes the God-conscious (muttaqun) as those who, when they stumble, "remember Allah and seek forgiveness." Scholar Al-Baghawi notes that the phrase "and they do not persist" (walam yuṣirrū) is the defining nuance. Perfection is not required for Taqwa, but persistence in sin is what creates the barrier. Al-Qurtubi explains that "remembrance" here is the immediate mental pivot that interrupts the sin. The guilt you feel is actually a mercy—it is your heart "remembering its Owner." [Tafsir al-Qurtubi]',
     angleSource: 'Tafsir Ibn Kathir',
-    action: 'Immediately follow a mistake with a good deed',
+    action: 'Immediately follow a mistake with a good deed.',
     practiceSteps: JSON.stringify([
       {
         type: 'verbal',
@@ -10640,8 +11393,8 @@ const quranContentAnglesData: ContentAngle[] = [
         arabicText: 'أَسْتَغْفِرُ اللَّهَ',
         transliteration: 'Astaghfirullah',
         translation: 'I seek forgiveness from Allah',
-        source: 'Surah Ali Imran 3:135 — Quran',
-        sourceType: 'quran_dua',
+        source: 'Istighfar — Sahih al-Bukhari 6307; the practice described in Surah Ali Imran 3:135',
+        sourceType: 'prophetic_dhikr',
       },
       {
         type: 'mindset',
@@ -10664,7 +11417,7 @@ const quranContentAnglesData: ContentAngle[] = [
       },
     ]),
     reflection:
-      'How does focusing on Allah as your "only refuge" change the way you face your mistakes?',
+      'No one forgives sins except Allah. Who else have you been trying to get absolution from?',
   },
   {
     id: 'q_angle_66_8_guilty',
@@ -10673,7 +11426,7 @@ const quranContentAnglesData: ContentAngle[] = [
     angle:
       'Allah calls the believers to return in "sincere repentance" (tawbah nasuh). Ibn al-Qayyim explains in Madarij al-Salikin that "Nasuh" comes from the root meaning to mend a garment or purify honey. Sincere repentance "mends" the tear in your spiritual path and purifies your heart from the heavy residue of mistake. Ibn Kathir adds that it must be firm, and honest. The result is "Light" that guides you through the darkness of this life and the Next. [Tafsir Ibn Kathir]',
     angleSource: "Tafsir al-Sa'di",
-    action: 'Renew your lifelong intention to keep returning to Allah',
+    action: 'Renew your lifelong intention to keep returning to Allah.',
     practiceSteps: JSON.stringify([
       {
         type: 'verbal',
@@ -10735,7 +11488,7 @@ const quranContentAnglesData: ContentAngle[] = [
     action: 'Choose a clean, quiet spot for next prayer and arrive 2 minutes early.',
     actionHowTo: 'Use siwak/brush teeth before wudu and wear clean clothes as a sign of respect.',
     actionReward: 'Taking adornment for prayer is a sign of honoring the meeting with Allah.',
-    reflection: 'How did preparing intentionally change your prayer experience?',
+    reflection: 'You arrived early and clean today. Describe what the first ten seconds of that prayer felt like compared to a rushed one.',
   },
   {
     id: 'q_angle_salah_3',
@@ -10775,7 +11528,7 @@ const quranContentAnglesData: ContentAngle[] = [
     action: 'Consciously recite the transition prayers and the dua between the two sujood.',
     actionHowTo: 'Say "Rabbighfir li" (My Lord, forgive me) twice minimum while sitting between prostrations.',
     actionReward: 'Steadfastness in prayer is a gift from Allah as seen in the dua of Ibrahim (AS).',
-    reflection: 'How does asking for forgiveness between prostrations change your focus?',
+    reflection: 'Between the two prostrations you ask to be forgiven, healed, guided and provided for. Which did you mean most today?',
   },
   {
     id: 'q_angle_salah_7',
@@ -10835,9 +11588,9 @@ const quranContentAnglesData: ContentAngle[] = [
         instruction:
           'When the action is done, say the du\'a of Musa (peace be upon him) before a hard task. You are asking for an expanded chest and an eased affair — not for the outcome to be changed, but for you to be carried through it.',
         arabicText: 'رَبِّ اشْرَحْ لِي صَدْرِي وَيَسِّرْ لِي أَمْرِي',
-        transliteration: "Rabbi ishrah li sadri wa yassir li amri",
+        transliteration: 'Rabbi ishrah li sadri wa yassir li amri',
         translation: 'My Lord, expand for me my breast and ease for me my task',
-        source: "Quran 20:25-26",
+        source: 'Quran 20:25-26',
         sourceType: 'quran_dua',
       },
     ]),
@@ -10943,7 +11696,7 @@ const quranContentAnglesData: ContentAngle[] = [
         instruction:
           'When distress became severe, the Prophet ﷺ would call on Allah by al-Hayy and al-Qayyum — the Ever-Living who never tires, the Sustainer who holds everything upright. You are asking the One who is already holding the outcome.',
         arabicText: 'يَا حَيُّ يَا قَيُّومُ بِرَحْمَتِكَ أَسْتَغِيثُ',
-        transliteration: "Ya Hayyu ya Qayyum, bi rahmatika astaghith",
+        transliteration: 'Ya Hayyu ya Qayyum, bi rahmatika astaghith',
         translation: 'O Ever-Living, O Sustainer, by Your mercy I seek relief',
         source: 'Tirmidhi 3524',
         sourceType: 'prophetic_dua',
@@ -11045,7 +11798,7 @@ const quranContentAnglesData: ContentAngle[] = [
         instruction:
           'The Prophet ﷺ called this phrase a treasure from the treasures of Paradise. Say it each time you reach for the thing you just dropped — it names exactly what waiting teaches: the power was never yours to begin with.',
         arabicText: 'لَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللَّهِ',
-        transliteration: "La hawla wa la quwwata illa billah",
+        transliteration: 'La hawla wa la quwwata illa billah',
         translation: 'There is no might and no power except by Allah',
         source: 'Bukhari 6384',
         sourceType: 'prophetic_dhikr',
@@ -11362,7 +12115,7 @@ const quranContentAnglesData: ContentAngle[] = [
           "Allahumma la sahla illa ma ja'altahu sahla, wa anta taj'alu l-hazna idha shi'ta sahla",
         translation:
           'O Allah, nothing is easy except what You make easy, and You make the difficult easy if You wish',
-        source: 'Sahih Ibn Hibban 974',
+        source: 'Sahih Ibn Hibban 974 (Hisn al-Muslim 139)',
         sourceType: 'prophetic_dua',
         sourceGrading: 'sahih',
       },
@@ -11480,7 +12233,7 @@ const quranContentAnglesData: ContentAngle[] = [
         instruction:
           'This request sits inside the ayah itself, and Ibn Kathir records that it was answered. You are permitted to ask for less. Say it over the left-hand column.',
         arabicText: 'رَبَّنَا وَلَا تُحَمِّلْنَا مَا لَا طَاقَةَ لَنَا بِهِ',
-        transliteration: "Rabbana wa la tuhammilna ma la taqata lana bih",
+        transliteration: 'Rabbana wa la tuhammilna ma la taqata lana bih',
         translation: 'Our Lord, do not burden us with what we have no strength to bear',
         source: 'Quran 2:286',
         sourceType: 'quran_dua',
@@ -11531,7 +12284,7 @@ const quranContentAnglesData: ContentAngle[] = [
         instruction:
           'The Prophet ﷺ said that whoever says this to the one who did him good has fully expressed gratitude. Use these words rather than a vague thanks — they hand the reward to Allah to settle.',
         arabicText: 'جَزَاكَ اللَّهُ خَيْرًا',
-        transliteration: "Jazakallahu khayran",
+        transliteration: 'Jazakallahu khayran',
         translation: 'May Allah reward you with good',
         source: 'Tirmidhi 2035',
         sourceType: 'prophetic_dhikr',
@@ -11540,6 +12293,3293 @@ const quranContentAnglesData: ContentAngle[] = [
     ]),
     reflection:
       'Look back at Day 1\'s effort log. Across seven days, what did you actually build — and who helped you build it?',
+  },
+
+  // === TIRED ===
+  // Written for genuine depletion. The previous Tired pool was 15 `_energized`
+  // angles telling an exhausted user to spend energy they do not have; those
+  // now sit under Hopeful, where they belong. Voice here is the direct-address
+  // "For Your Heart" register (see CLAUDE.md), not tafsir narration.
+  //
+  // The sunnah layer already serves Tired with qaylulah, Ya Hayyu Ya Qayyum,
+  // Alhamdulillah 100x and istighfar 100x — deliberately not reused below.
+  {
+    id: 'q_angle_20_2_tired',
+    contentId: 'quran_20_2',
+    mood: 'Tired',
+    angle:
+      'Read what He is telling you: the Quran did not come to wear you out. If your practice has turned into a ledger you are always behind on, that pressure is not from Him — He said the opposite in the second ayah of the surah, before asking you for anything. Ar-Rahman does not hand you a religion designed to break you and then watch you fail it. The exhaustion you feel is real, but do not attach His name to it.',
+    angleSource: "Tafsir al-Sa'di",
+    action: 'Name one religious expectation you invented for yourself, and drop it today.',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'mindset',
+        icon: 'leaf',
+        title: 'He lightened it Himself',
+        instruction:
+          'The night prayer was once obligatory in full. Allah Himself reduced it — "He knows you cannot sustain it, so He has turned to you in mercy; recite what is easy" (73:20). If Allah revises the load downward, you are allowed to as well.',
+        source: 'Surah Al-Muzzammil 73:20 — Quran',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'mindset',
+        icon: 'clock',
+        title: 'Small and steady beats big and broken',
+        instruction:
+          'Pick the single smallest version of the practice you have been failing — two minutes, not thirty — and commit only to that. Consistency at a size you can actually hold is what is being asked of you.',
+        source:
+          '"The most beloved deeds to Allah are the most consistent, even if few." [Sahih al-Bukhari 6464]',
+        sourceType: 'sunnah_action',
+        sourceGrading: 'sahih',
+      },
+      {
+        type: 'physical',
+        icon: 'moon',
+        title: 'Stop for today',
+        instruction:
+          'Do your fard, then stop. No make-up list, no catching up tonight. Tomorrow starts at your reduced, sustainable size — not at the size that exhausted you.',
+        source: 'Surah Taha 20:2 — Quran',
+        sourceType: 'quran_dua',
+      },
+    ]),
+    reflection:
+      'Which part of your routine is actually required of you, and which part did you add and then start failing?',
+  },
+  {
+    id: 'q_angle_8_11_tired',
+    contentId: 'quran_8_11',
+    mood: 'Tired',
+    angle:
+      'Allah calls the sleep He sent at Badr "amanatan" — a security from Him. Not a lapse. Not lost time. He lists it in the same breath as the rain He sent to steady their feet, because rest was how He strengthened them, not what delayed the strengthening. When your body is pulling you toward sleep, that pull is not the enemy of your discipline. As-Salam sent drowsiness to men who thought they were about to die, and it was the mercy that let them stand the next morning.',
+    angleSource: 'Tafsir Ibn Kathir',
+    action: 'Sleep at the hour your body is asking for tonight, and count it as obedience.',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'mindset',
+        icon: 'shield',
+        title: 'Rest is the provision, not the pause',
+        instruction:
+          'The companions at Badr were outnumbered roughly three to one and slept anyway. Their firmness the next day came after the sleep, not instead of it. Whatever you are facing tomorrow, being rested is part of how you will meet it.',
+        source: 'Surah Al-Anfal 8:11 — Quran',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'verbal',
+        icon: 'moon',
+        title: 'Hand the night over',
+        instruction:
+          'Say this as you lie down. It frames sleep as what it is — a soul placed in His keeping and returned to you in the morning.',
+        arabicText: 'بِاسْمِكَ اللَّهُمَّ أَمُوتُ وَأَحْيَا',
+        transliteration: 'Bismika Allahumma amutu wa ahya',
+        translation: 'In Your name, O Allah, I die and I live',
+        source: 'Sahih al-Bukhari 6324',
+        sourceType: 'prophetic_dhikr',
+        sourceGrading: 'sahih',
+      },
+      {
+        type: 'physical',
+        icon: 'breathing',
+        title: 'Wudu, then right side',
+        instruction:
+          'Make wudu before bed as the Prophet ﷺ instructed, then lie on your right side with your hand under your cheek. The sunnah of sleep is a practice in its own right, not an absence of practice.',
+        source: 'Sahih al-Bukhari 247 / Sahih al-Bukhari 6314',
+        sourceType: 'sunnah_action',
+        sourceGrading: 'sahih',
+      },
+    ]),
+    reflection:
+      'What have you been calling laziness this week that was your body asking for something Allah already permitted?',
+  },
+  {
+    id: 'q_angle_28_24_tired',
+    contentId: 'quran_28_24',
+    mood: 'Tired',
+    angle:
+      'Musa (AS) had walked out of Egypt with nothing, done hard labour for strangers, and sat down in the shade with no food and nowhere to go. He did not compose a speech. He told Allah plainly that he was in need and left it there. You are allowed to pray like that. Al-Karim does not require you to arrive articulate, or grateful-sounding, or with a specific request — naming your emptiness honestly is the whole du\'a, and his was answered before he stood up.',
+    angleSource: "Tafsir al-Sa'di",
+    action: 'Say Musa\'s words once, out loud, without adding anything to them.',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'verbal',
+        icon: 'hands-prayer',
+        title: 'The du\'a of the depleted',
+        instruction:
+          'Say it exactly as he said it. Notice that it asks for nothing specific — it only states a condition. When you are too tired to know what to ask for, this is the du\'a that fits.',
+        arabicText: 'رَبِّ إِنِّى لِمَآ أَنزَلْتَ إِلَىَّ مِنْ خَيْرٍ فَقِيرٌ',
+        transliteration: 'Rabbi inni lima anzalta ilayya min khayrin faqir',
+        translation: 'My Lord, indeed I am, for whatever good You would send down to me, in need',
+        source: 'Surah Al-Qasas 28:24 — Quran',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'physical',
+        icon: 'leaf',
+        title: 'Go to your shade',
+        instruction:
+          'He finished the task, then withdrew before he prayed. Find your equivalent — leave the room, sit down, put the phone face down. Ten minutes of actual stillness, not scrolling in a chair.',
+        source: 'Surah Al-Qasas 28:24 — Quran',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'mindset',
+        icon: 'door',
+        title: 'What came next',
+        instruction:
+          'Within the same passage he had work, a home and safety. He did not engineer any of it; he had reached the end of his own capacity and said so. Your low point is not evidence that nothing is being arranged.',
+        source: "Tafsir al-Sa'di on 28:24",
+        sourceType: 'quran_dua',
+      },
+    ]),
+    reflection:
+      'Say the honest version of where you are right now in one sentence, the way he did. What did you leave out to make it sound better?',
+  },
+  {
+    id: 'q_angle_50_38_tired',
+    contentId: 'quran_50_38',
+    mood: 'Tired',
+    angle:
+      'He made the heavens and the earth and no weariness touched Him — and He says so specifically, because tirelessness is His and not yours. Al-Qawiyy is the Strong One; you are not, and were never asked to be. Somewhere you started treating your own limits as a character flaw. They are not. They are the built-in difference between a servant and his Lord, and running your body as though it should never deplete is not devotion — it is trying to borrow an attribute that belongs to Him alone.',
+    angleSource: 'Tafsir Ibn Kathir',
+    action: 'Hand one task to someone else today, or move it to next week.',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'mindset',
+        icon: 'brain',
+        title: 'Your limit is not a defect',
+        instruction:
+          '"Lughūb" is the exhaustion that comes after effort. Allah negates it of Himself, which means it is expected of you. Being depleted after a hard week is your design working correctly, not your faith failing.',
+        source: "Tafsir al-Sa'di on 50:38",
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'verbal',
+        icon: 'shield',
+        title: 'Borrow His strength instead',
+        instruction:
+          'Say it when you reach for energy you do not have. It is an admission, not a boost: the power to do this is not yours to generate, so ask the One who never tires.',
+        arabicText: 'لَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللَّهِ',
+        transliteration: 'La hawla wa la quwwata illa billah',
+        translation: 'There is no power and no strength except by Allah',
+        source: 'Sahih al-Bukhari 6384 / Sahih Muslim 2704',
+        sourceType: 'prophetic_dhikr',
+        sourceGrading: 'sahih',
+      },
+      {
+        type: 'physical',
+        icon: 'checkmark',
+        title: 'Cut the list',
+        instruction:
+          'Open today\'s list and remove one item outright — not reschedule, remove. Choose the one you kept only to prove you could carry it.',
+        source: 'Surah Qaf 50:38 — Quran',
+        sourceType: 'quran_dua',
+      },
+    ]),
+    reflection:
+      'Whose standard are you measuring your stamina against, and would you hold anyone else to it?',
+  },
+  {
+    id: 'q_angle_87_8_tired',
+    contentId: 'quran_87_8',
+    mood: 'Tired',
+    angle:
+      'Seven words, and they are about direction rather than a single rescue. He does not only promise to make one hard thing easy — He promises to move you toward ease and to shape you for it as you go. Al-Latif works gradually and often invisibly, which is why a day can feel exactly as heavy as yesterday and the promise still be running. You are not being left where you are. You are being eased toward ease, and that is true on the days you cannot feel it.',
+    angleSource: "Tafsir al-Sa'di",
+    action: 'Say the du\'a for difficulty over the one thing you are dreading most.',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'verbal',
+        icon: 'compass',
+        title: 'Ask Him to make it easy',
+        instruction:
+          'Bring to mind the single heaviest item ahead of you, then say this over it. Ease is something He grants to a matter, not something you manufacture by pushing harder.',
+        arabicText: 'اللَّهُمَّ لَا سَهْلَ إِلَّا مَا جَعَلْتَهُ سَهْلًا',
+        transliteration: 'Allahumma la sahla illa ma ja\'altahu sahlan',
+        translation: 'O Allah, there is no ease except what You make easy',
+        source: 'Sahih Ibn Hibban 974 (Hisn al-Muslim 139)',
+        sourceType: 'prophetic_dua',
+        sourceGrading: 'hasan',
+      },
+      {
+        type: 'mindset',
+        icon: 'arrow-right',
+        title: 'Direction, not a single moment',
+        instruction:
+          'The verb is causative — He makes you suited to ease, not just your circumstances. Look back twelve months instead of at today: what are you now carrying without noticing that used to take everything you had?',
+        source: "Tafsir al-Sa'di on 87:8",
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'physical',
+        icon: 'target',
+        title: 'One easy thing, finished',
+        instruction:
+          'Choose the smallest unfinished task you have and complete it now. Not to be productive — to give a depleted mind one closed loop instead of thirty open ones.',
+        source: "Surah Al-A'la 87:8 — Quran",
+        sourceType: 'quran_dua',
+      },
+    ]),
+    reflection:
+      'What are you handling routinely today that would have flattened you a year ago?',
+  },
+  {
+    id: 'q_angle_6_60_tired',
+    contentId: 'quran_6_60',
+    mood: 'Tired',
+    angle:
+      'The word He uses for what happens when you sleep is the same one used for death. Every night your soul is taken, and every morning it is given back — which means today was never something you had to finish, and tomorrow is not something you are owed. Al-Muhaymin is already keeping the account you are lying awake trying to balance. Going to sleep on an unfinished day is not negligence; it is admitting who is actually holding it.',
+    angleSource: 'Tafsir Ibn Kathir',
+    action: 'Stop work at a fixed time tonight and leave the list unfinished on purpose.',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'mindset',
+        icon: 'lock',
+        title: 'The day closes without you',
+        instruction:
+          'Whatever did not get done today will still be there, and He already knows about it. Lying awake reviewing it does not move it forward — it only spends tomorrow\'s energy tonight.',
+        source: "Tafsir al-Sa'di on 6:60",
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'verbal',
+        icon: 'book-quran',
+        title: 'The protection He named for the night',
+        instruction:
+          'Recite Ayat al-Kursi as you settle. The Prophet ﷺ said that whoever recites it on going to bed has a guardian from Allah, and no devil comes near him until morning.',
+        source: 'Sahih al-Bukhari 5010',
+        sourceType: 'prophetic_dhikr',
+        sourceGrading: 'sahih',
+      },
+      {
+        type: 'physical',
+        icon: 'pen',
+        title: 'Park it on paper',
+        instruction:
+          'Write the unfinished items down in one place, then close the notebook. The point is not planning — it is telling a tired mind the list is stored somewhere other than inside it.',
+        source: "Surah Al-An'am 6:60 — Quran",
+        sourceType: 'quran_dua',
+      },
+    ]),
+    reflection:
+      'What are you replaying at night that will be exactly the same in the morning?',
+  },
+  {
+    id: 'q_angle_78_9_tired',
+    contentId: 'quran_78_9',
+    mood: 'Tired',
+    angle:
+      'Allah lists your sleep among His favours, in a passage about the mountains and the night and the sun — "subāta", a cutting-off, a full stop He built into you on purpose. You did not develop a need for rest; you were made with one, and He counts it as something He gave rather than something He tolerates. When you push past it to prove your worth, you are refusing a gift and calling that discipline.',
+    angleSource: "Tafsir al-Sa'di",
+    action: 'Set the hour you will stop tonight, and stop at it.',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'mindset',
+        icon: 'star',
+        title: 'It is listed as a favour',
+        instruction:
+          '"Subāta" means to sever or cut off. Sleep is a designed interruption, not a flaw in your stamina. Allah put it in a list of blessings alongside the night and the mountains — receive it as one.',
+        source: 'Surah An-Naba 78:9 — Quran',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'physical',
+        icon: 'moon',
+        title: 'A real cut-off',
+        instruction:
+          'Pick a time and treat it as a boundary rather than a suggestion. Screens down, work closed, lights low. A cut-off you negotiate with every night is not a cut-off.',
+        source: 'Surah An-Naba 78:9 — Quran',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'verbal',
+        icon: 'headphones',
+        title: 'The surah for the end of the day',
+        instruction:
+          'Recite or listen to Surah Al-Mulk before you sleep. It gives a tired mind something to hold that is not your own thinking.',
+        source: "Jami' at-Tirmidhi 2891",
+        sourceType: 'sunnah_action',
+        sourceGrading: 'hasan',
+      },
+    ]),
+    reflection:
+      'What time did you actually stop last night, and what were you trying to prove by not stopping earlier?',
+  },
+  {
+    id: 'q_angle_25_47_tired',
+    contentId: 'quran_25_47',
+    mood: 'Tired',
+    angle:
+      'He calls the night a garment. Clothing is not something you push through — it covers you, it is close to you, it is for you. And then He calls the morning "nushūr", the same word used for being raised from the dead. So the shape of every single day He gave you is: covering, then rising. If you are living as though the covering is optional and only the rising counts, you are keeping half of what Al-Wahhab designed and wondering why it does not work.',
+    angleSource: 'Tafsir Ibn Kathir',
+    action: 'Dim the lights an hour before bed and let the night do what it was made for.',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'mindset',
+        icon: 'home',
+        title: 'Night is a covering, not lost hours',
+        instruction:
+          '"Libās" is the word for clothing. The night was made to wrap around you. Treating it as extra working time is using a garment as a tool and then being surprised that you are cold.',
+        source: 'Surah Al-Furqan 25:47 — Quran',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'verbal',
+        icon: 'sunrise',
+        title: 'Mark the evening',
+        instruction:
+          'Say the evening remembrance as light fades. It gives the day an ending rather than letting it bleed into the night unmarked.',
+        arabicText: 'أَمْسَيْنَا وَأَمْسَى الْمُلْكُ لِلَّهِ',
+        transliteration: 'Amsayna wa amsal-mulku lillah',
+        translation: 'We have reached the evening, and the dominion belongs to Allah',
+        source: 'Sahih Muslim 2723',
+        sourceType: 'prophetic_dhikr',
+        sourceGrading: 'sahih',
+      },
+      {
+        type: 'physical',
+        icon: 'candle',
+        title: 'Let the light drop',
+        instruction:
+          'Lower the lights an hour before you sleep and keep the screen out of your hands. You are cooperating with a covering He already sent, not inventing a routine.',
+        source: 'Surah Al-Furqan 25:47 — Quran',
+        sourceType: 'quran_dua',
+      },
+    ]),
+    reflection:
+      'When did your day last have a clear ending, rather than just running until you gave out?',
+  },
+  {
+    id: 'q_angle_30_23_tired',
+    contentId: 'quran_30_23',
+    mood: 'Tired',
+    angle:
+      'Your sleep is named as a sign of Allah, in the same list as the creation of the heavens and the difference between languages. Something you may have spent this week resenting yourself for needing, He points to as evidence of Himself. Notice too that He mentions sleep before He mentions seeking His bounty — that is the order He gave. Al-Hakim did not arrange it so that rest is what you earn once the work is finished.',
+    angleSource: "Tafsir al-Sa'di",
+    action: 'Take fifteen minutes of rest before the next thing, not after it.',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'mindset',
+        icon: 'light-bulb',
+        title: 'A sign, not a weakness',
+        instruction:
+          'He lists your sleep alongside the heavens and the earth as proof of His design. The thing you have been apologising for needing is being held up as evidence of Him.',
+        source: 'Surah Ar-Rum 30:23 — Quran',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'physical',
+        icon: 'clock',
+        title: 'Rest first, then seek',
+        instruction:
+          'The ayah puts sleep before the seeking of bounty. Take a genuine fifteen minutes now — lying down, eyes closed, no input — and then go to the task, rather than promising yourself rest at the end.',
+        source: 'Surah Ar-Rum 30:23 — Quran',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'verbal',
+        icon: 'hands-prayer',
+        title: 'Ask for what you actually lack',
+        instruction:
+          'The Prophet ﷺ regularly sought refuge from incapacity and laziness in the same breath as from grief. Being worn down is a recognised condition with a taught du\'a — not something to push through silently.',
+        arabicText: 'اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنَ الْعَجْزِ وَالْكَسَلِ',
+        transliteration: 'Allahumma inni a\'udhu bika minal-\'ajzi wal-kasal',
+        translation: 'O Allah, I seek refuge in You from incapacity and laziness',
+        source: 'Sahih al-Bukhari 6369',
+        sourceType: 'prophetic_dua',
+        sourceGrading: 'sahih',
+      },
+    ]),
+    reflection:
+      'You keep promising yourself rest after the next thing. How many "next things" ago did that promise start?',
+  },
+  {
+    id: 'q_angle_35_35_tired',
+    contentId: 'quran_35_35',
+    mood: 'Tired',
+    angle:
+      'The people of Paradise describe it by what is absent: no fatigue touches them there, no weariness. Of everything they could have named, that is what they chose — which tells you the tiredness you are carrying is a feature of this life and not a verdict on how you are living it. Al-Ghaniyy has not promised you a life without exhaustion. He has promised that it ends, and named the place where it does.',
+    angleSource: 'Tafsir Ibn Kathir',
+    action: 'Say the words the people of Paradise say when they arrive.',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'verbal',
+        icon: 'star',
+        title: 'Their first words',
+        instruction:
+          'The ayah before this one records what they say on entering. Say it now, in advance, over the specific grief that is wearing you down.',
+        arabicText: 'ٱلْحَمْدُ لِلَّهِ ٱلَّذِىٓ أَذْهَبَ عَنَّا ٱلْحَزَنَ',
+        transliteration: 'Alhamdulillahi alladhi adhhaba \'annal-hazan',
+        translation: 'Praise be to Allah, who has removed from us all sorrow',
+        source: 'Surah Fatir 35:34 — Quran',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'mindset',
+        icon: 'clock',
+        title: 'This is the tiring part',
+        instruction:
+          'Exhaustion here is not a sign you are doing it wrong. It is the nature of the place. Measuring this life against a standard of effortlessness is measuring it against somewhere you have not arrived yet.',
+        source: 'Surah Fatir 35:35 — Quran',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'verbal',
+        icon: 'hands-prayer',
+        title: 'What he gave Fatima instead of help',
+        instruction:
+          'Fatima (RA) came to the Prophet ﷺ with her hands blistered from grinding grain, asking for a servant. He gave her thirty-three tasbih, thirty-three tahmid and thirty-four takbir at bedtime, and said it was better for her than what she asked for. Say them tonight.',
+        source: 'Sahih al-Bukhari 3113 / Sahih Muslim 2727',
+        sourceType: 'prophetic_dhikr',
+        sourceGrading: 'sahih',
+        count: 100,
+      },
+    ]),
+    reflection:
+      'Name the tiredness you have been treating as a personal failure. What if it is just the cost of the place you are in?',
+  },
+  {
+    id: 'q_angle_93_3_tired',
+    contentId: 'quran_93_3',
+    mood: 'Tired',
+    angle:
+      'This came after revelation stopped and people said his Lord had abandoned him. Allah answered the accusation directly: He has not left you, and He is not displeased with you. Hold that against what the flat, empty stretch you are in is telling you. Spiritual dryness is not evidence of His withdrawal — it was the exact circumstance in which He said the opposite out loud. Al-Wadud did not go quiet because you stopped being worth speaking to.',
+    angleSource: 'Tafsir Ibn Kathir',
+    action: 'Do one small act of worship today without waiting to feel anything.',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'mindset',
+        icon: 'candle',
+        title: 'The silence was not rejection',
+        instruction:
+          'The Prophet ﷺ went through a period with no revelation and was mocked for it. The answer was not "try harder" — it was "your Lord has not left you." A dry stretch is a documented part of the road, not a disqualification from it.',
+        source: 'Surah Ad-Duha 93:3 — Quran',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'physical',
+        icon: 'checkmark',
+        title: 'Act without the feeling',
+        instruction:
+          'Pray two rak\'ahs, or read three ayahs, while still feeling nothing. Worship performed on an empty tank counts fully — the feeling is a gift He sends sometimes, not the entry requirement.',
+        source: 'Surah Ad-Duha 93:3 — Quran',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'verbal',
+        icon: 'heart',
+        title: 'Ask for the heart back',
+        instruction:
+          'The Prophet ﷺ asked this often. Say it plainly — you are not asking for circumstances to change, you are asking for your heart to be held steady while they do not.',
+        arabicText: 'يَا مُقَلِّبَ الْقُلُوبِ ثَبِّتْ قَلْبِي عَلَى دِينِكَ',
+        transliteration: 'Ya Muqallibal-qulub, thabbit qalbi \'ala dinik',
+        translation: 'O Turner of hearts, make my heart firm upon Your religion',
+        source: "Jami' at-Tirmidhi 2140",
+        sourceType: 'prophetic_dua',
+        sourceGrading: 'hasan',
+      },
+    ]),
+    reflection:
+      'You have read this as distance from Allah. What else could a flat stretch mean, if it happened to him too?',
+  },
+  {
+    id: 'q_angle_13_28_tired',
+    contentId: 'quran_13_28',
+    mood: 'Tired',
+    angle:
+      'Hearts find rest in the remembrance of Allah — rest, not effort. When you have nothing left, this is the door that is still open, because dhikr costs almost nothing and does not care how articulate or focused you are. You can do it lying down. You can do it badly. Ar-Rahman left one form of worship that requires no energy at all, and it happens to be the one He says settles the heart.',
+    angleSource: "Tafsir al-Sa'di",
+    action: 'Say subhanallahi wa bihamdih while lying down, until you lose count.',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'verbal',
+        icon: 'leaf',
+        title: 'The cheapest heavy deed',
+        instruction:
+          'A hundred times in a day, and sins are forgiven though they be like the foam of the sea. Say it slowly, lying down if that is where you are. There is no minimum standard of concentration you have to reach first.',
+        arabicText: 'سُبْحَانَ اللَّهِ وَبِحَمْدِهِ',
+        transliteration: 'Subhanallahi wa bihamdih',
+        translation: 'Glory be to Allah, and praise be to Him',
+        source: 'Sahih al-Bukhari 6405',
+        sourceType: 'prophetic_dhikr',
+        sourceGrading: 'sahih',
+        count: 100,
+      },
+      {
+        type: 'mindset',
+        icon: 'brain',
+        title: 'Rest, not another task',
+        instruction:
+          '"Tatma\'innu" means to settle, to come to stillness. This is not one more item for the list — it is the thing that quiets the list. If dhikr feels like another obligation you are behind on, you have the ayah backwards.',
+        source: "Tafsir al-Sa'di on 13:28",
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'physical',
+        icon: 'breathing',
+        title: 'Tie it to your breath',
+        instruction:
+          'Say the first half breathing in, the second half breathing out. Slowing the breath slows the body, and the words give a tired mind one thing to hold instead of everything.',
+        source: "Surah Ar-Ra'd 13:28 — Quran",
+        sourceType: 'quran_dua',
+      },
+    ]),
+    reflection:
+      'When your energy runs out, what is the first act of worship you drop — and is it actually the one that costs the most?',
+  },
+  {
+    id: 'q_angle_3_139_tired',
+    contentId: 'quran_3_139',
+    mood: 'Tired',
+    angle:
+      'This was said to people who had just been beaten at Uhud and were counting their dead. "Do not weaken and do not grieve" is not a demand that you feel strong — it is Allah refusing to let a bad stretch become your identity. He does not tell them the loss was small. He tells them what they still are. You are worn down, and both things are allowed to be true at once: the exhaustion is real, and it is not the final word on you.',
+    angleSource: 'Tafsir Ibn Kathir',
+    action: 'Write down one thing you did keep going with this week, however small.',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'mindset',
+        icon: 'chart',
+        title: 'A bad stretch is not a verdict',
+        instruction:
+          'Seventy companions were killed at Uhud, including the Prophet\'s ﷺ uncle. Allah did not minimise it — He addressed what they were underneath it. Your worst month is a chapter He is speaking into, not a summary of you.',
+        source: 'Surah Ali Imran 3:139 — Quran',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'physical',
+        icon: 'pen',
+        title: 'Count what held',
+        instruction:
+          'Write down three things you kept going with this week — a prayer made, a message answered, someone fed. Exhaustion makes only the failures visible; this is you correcting the record deliberately.',
+        source: 'Surah Ali Imran 3:139 — Quran',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'verbal',
+        icon: 'shield',
+        title: 'Ask not to be broken by it',
+        instruction:
+          'Say this over the specific thing that has worn you down. It asks for strength inside the difficulty rather than for the difficulty to disappear.',
+        arabicText: 'اللَّهُمَّ لَا تَجْعَلْ مُصِيبَتَنَا فِي دِينِنَا',
+        transliteration: 'Allahumma la taj\'al musibatana fi dinina',
+        translation: 'O Allah, do not let our affliction be in our religion',
+        source: "Jami' at-Tirmidhi 3502",
+        sourceType: 'prophetic_dua',
+        sourceGrading: 'hasan',
+      },
+    ]),
+    reflection:
+      'List what you kept going with this week. Read it back — would you call that person weak?',
+  },
+
+  // === LONELY ===
+  // These eight verses were already tagged 'Lonely' but had no Lonely angle, so
+  // fetchForMood's `cm.mood = ? AND ca.mood = ?` join could never return them —
+  // the whole mood shipped with a pool of two. Voice is direct-address.
+  {
+    id: 'q_angle_57_4_lonely',
+    contentId: 'quran_57_4',
+    mood: 'Lonely',
+    angle:
+      'Read the order of that ayah. The heavens, the earth, the Throne, everything going into the ground and everything coming out of it — and then, in the same breath, "He is with you wherever you are." Your name is not a footnote on a list that long. Al-Basir sees what you do when there is no one in the room to see it, which means the version of you that nobody witnesses is the one He is closest to.',
+    angleSource: 'Tafsir Ibn Kathir',
+    action: 'Say out loud to Allah the thing you have not been able to tell anyone.',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'mindset',
+        icon: 'eye',
+        title: 'Unwitnessed is not unseen',
+        instruction:
+          'The loneliest part of loneliness is usually that nobody saw it — the effort no one noticed, the day nobody asked about. That entire unwitnessed life is the part of you Al-Basir has been watching most closely.',
+        source: 'Surah Al-Hadid 57:4 — Quran',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'verbal',
+        icon: 'chat',
+        title: 'Say the unsaid part',
+        instruction:
+          'Out loud, in your own words, tell Allah the specific thing you have not told anyone. Not a formal du\'a — the actual sentence. He already knows it; saying it is for you, so it stops living only in your head.',
+        source: 'Surah Al-Hadid 57:4 — Quran',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'mindset',
+        icon: 'compass',
+        title: 'He is findable, not distant',
+        instruction:
+          'The Prophet ﷺ told a young Ibn Abbas: be mindful of Allah and you will find Him in front of you. Not summoned from far away — already there. Some of this isolation is a relationship that only gets used in emergencies; start speaking to Him on ordinary days.',
+        source: '"Be mindful of Allah and you will find Him before you." [Jami\' at-Tirmidhi 2516]',
+        sourceType: 'prophetic_dhikr',
+        sourceGrading: 'hasan',
+      },
+    ]),
+    reflection:
+      'What has happened to you this week that nobody knows about? Tell Him that one, tonight.',
+  },
+  {
+    id: 'q_angle_2_152_lonely',
+    contentId: 'quran_2_152',
+    mood: 'Lonely',
+    angle:
+      'This is an exchange no person has ever offered you: remember Me, and I will remember you. Not "I will reward you" — I will remember you, in the same words. Every other relationship you have requires you to be present, interesting, or useful enough to stay in someone\'s mind. This one runs on a single condition you can meet lying in the dark with your eyes shut. Being forgotten by people and being remembered by Allah are not the same size of thing.',
+    angleSource: 'Tafsir Ibn Kathir',
+    action: 'Say one line of dhikr and know it puts you in a better gathering than the one you are missing.',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'mindset',
+        icon: 'star',
+        title: 'Mentioned in a better assembly',
+        instruction:
+          'Allah says in a hadith qudsi that if His servant remembers Him alone, He remembers him alone; and if he remembers Him in a gathering, Allah mentions him in a gathering better than it. The room you were not invited to is not the room that decides anything.',
+        source: 'Sahih al-Bukhari 7405',
+        sourceType: 'prophetic_dhikr',
+        sourceGrading: 'sahih',
+      },
+      {
+        type: 'verbal',
+        icon: 'honey',
+        title: 'Your side of the exchange',
+        instruction:
+          'Say the command itself, slowly, ten times. This is the entire condition — the whole of what is being asked of you in order to be held in mind by the One who holds everything.',
+        arabicText: 'فَٱذْكُرُونِىٓ أَذْكُرْكُمْ',
+        transliteration: "fa-udh'kurūnī adhkur'kum",
+        translation: 'So remember Me; I will remember you',
+        source: 'Surah Al-Baqarah 2:152 — Quran',
+        sourceType: 'quran_dua',
+        count: 10,
+      },
+      {
+        type: 'physical',
+        icon: 'bird',
+        title: 'Be the one who remembers someone',
+        instruction:
+          'Message one person you have not spoken to in a while — not to be answered, just to remember them out loud. Loneliness makes you wait to be reached for; this reverses the direction once.',
+        source: 'Surah Al-Baqarah 2:152 — Quran',
+        sourceType: 'quran_dua',
+      },
+    ]),
+    reflection:
+      'Who have you been waiting to hear from? Send it first, and notice what you were making their silence mean.',
+  },
+  {
+    id: 'q_angle_2_186_lonely',
+    contentId: 'quran_2_186',
+    mood: 'Lonely',
+    angle:
+      'Everywhere else in the Quran, when people ask about something, Allah tells the Prophet ﷺ "say to them." Here, when they ask about Him, He drops the messenger out of the sentence and answers directly: I am near. Nothing stands between the question and the answer, which is the point being made. Al-Qarib does not need you to find the right words, the right posture, or a better version of yourself first. There is no waiting room.',
+    angleSource: "Tafsir al-Sa'di",
+    action: 'Make du\'a right now, in your own language, without any preamble.',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'mindset',
+        icon: 'door',
+        title: 'He answered this one Himself',
+        instruction:
+          'The scholars note the missing "qul" — every comparable ayah says "say to them," and this one does not. When the question was about His nearness, Allah removed the intermediary from the grammar itself.',
+        source: "Tafsir al-Sa'di on 2:186",
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'verbal',
+        icon: 'hands-prayer',
+        title: 'No opening formula',
+        instruction:
+          'Ask Him for the thing you actually want, in the language you actually think in. Skip the throat-clearing. The ayah promises a response to the one who calls — not to the one who calls correctly.',
+        source: 'Surah Al-Baqarah 2:186 — Quran',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'mindset',
+        icon: 'gift',
+        title: 'He will not send you away empty',
+        instruction:
+          'The Prophet ﷺ said Allah is Shy and Generous — He is shy to let a servant raise his hands to Him and return them empty. Whatever you are afraid is too small or too repetitive to ask for again, ask.',
+        source: "Jami' at-Tirmidhi 3556",
+        sourceType: 'prophetic_dua',
+        sourceGrading: 'hasan',
+      },
+    ]),
+    reflection:
+      'You would tell a friend this. What is stopping you from telling Him, given He is closer than the friend?',
+  },
+  {
+    id: 'q_angle_2_153_lonely',
+    contentId: 'quran_2_153',
+    mood: 'Lonely',
+    angle:
+      'Five times a day you have a standing appointment with the One who is never late and never busy. When you are isolated, prayer stops being an obligation on the calendar and becomes the actual structure of the day — the thing that keeps you from drifting through unbroken hours alone. And the ayah ends by telling you who is with you in it: Allah is with the patient. Not watching them. With them.',
+    angleSource: 'Tafsir Ibn Kathir',
+    action: 'Pray the next salah at its earliest time, and stay sitting for five minutes after.',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'physical',
+        icon: 'mosque',
+        title: 'Keep the appointment early',
+        instruction:
+          'Pray the next prayer at the start of its window rather than the end. When days are shapeless and empty, the prayer times are the only structure that arrives whether or not anyone else does.',
+        source: 'Surah Al-Baqarah 2:153 — Quran',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'mindset',
+        icon: 'heart',
+        title: 'He called it relief, not duty',
+        instruction:
+          'The Prophet ﷺ would say to Bilal, "Call the iqamah — give us comfort by it." He spoke about prayer as the thing that relieved him, not one more thing he owed. Come to the next one expecting that.',
+        source: 'Sunan Abu Dawud 4985',
+        sourceType: 'sunnah_action',
+        sourceGrading: 'sahih',
+      },
+      {
+        type: 'physical',
+        icon: 'clock',
+        title: 'Do not leave immediately',
+        instruction:
+          'Stay on the prayer mat for five minutes after the tasleem. Say nothing, ask for nothing. The loneliness usually returns in the gap right after worship ends — sit in that gap on purpose instead of filling it with a screen.',
+        source: 'Surah Al-Baqarah 2:153 — Quran',
+        sourceType: 'quran_dua',
+      },
+    ]),
+    reflection:
+      'Which prayer do you rush through fastest, and what are you hurrying back to?',
+  },
+  {
+    id: 'q_angle_41_30_lonely',
+    contentId: 'quran_41_30',
+    mood: 'Lonely',
+    angle:
+      'There are angels assigned to descend on people who hold steady, and what they are sent to say is: do not fear, and do not grieve. Read that as a description of your actual situation rather than a poetic image — the room you think is empty has traffic in it you cannot see. You are counting the people who did not come. The count is wrong, because you are only counting the ones with faces.',
+    angleSource: 'Tafsir Ibn Kathir',
+    action: 'Sit for ten minutes of dhikr and let it be attended, not solitary.',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'mindset',
+        icon: 'crescent',
+        title: 'The room is not empty',
+        instruction:
+          'The Prophet ﷺ said Allah has angels who travel the roads looking for gatherings of dhikr, and when they find one they call each other to it and surround it. Your dhikr on a kitchen floor at midnight is a gathering by that definition.',
+        source: 'Sahih al-Bukhari 6408',
+        sourceType: 'prophetic_dhikr',
+        sourceGrading: 'sahih',
+      },
+      {
+        type: 'verbal',
+        icon: 'star',
+        title: 'Steadiness is the whole condition',
+        instruction:
+          'The ayah names two things: saying "our Lord is Allah," and then remaining steady. Not excelling. Not feeling it. Just not walking away. Say the first part now and let today count as the second.',
+        arabicText: 'رَبُّنَا ٱللَّهُ ثُمَّ ٱسْتَقَـٰمُوا۟',
+        transliteration: 'Rabbuna Allahu thumma istaqamu',
+        translation: 'Our Lord is Allah, and then they remained steadfast',
+        source: 'Surah Fussilat 41:30 — Quran',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'physical',
+        icon: 'candle',
+        title: 'Ten minutes, out loud',
+        instruction:
+          'Sit somewhere quiet and say dhikr audibly for ten minutes — audibly matters, because silence is what makes a room feel empty. You are not performing for anyone; you are occupying the space differently.',
+        source: 'Surah Fussilat 41:30 — Quran',
+        sourceType: 'quran_dua',
+      },
+    ]),
+    reflection:
+      'What have you decided about yourself because of who did not show up? Would you conclude the same about a friend?',
+  },
+  {
+    id: 'q_angle_20_46_lonely',
+    contentId: 'quran_20_46',
+    mood: 'Lonely',
+    angle:
+      'Two men were sent to the most powerful tyrant alive, and they said plainly that they were afraid. Allah did not tell them the fear was unreasonable. He said: I am with you both, I hear and I see. He named the two things loneliness actually starves for — being heard and being seen — and attached them to Himself. As-Sami\' is not a distant listener; He is the reason you have never once spoken into an empty room.',
+    angleSource: "Tafsir al-Sa'di",
+    action: 'Say the travel du\'a naming Allah as your Companion, wherever you are.',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'mindset',
+        icon: 'shield',
+        title: 'Heard and seen, named separately',
+        instruction:
+          'He did not say "I will protect you." He said "I hear and I see." Those are the two hungers underneath isolation — that no one is listening, and no one is watching. Both are answered in one sentence before any protection is mentioned.',
+        source: "Tafsir al-Sa'di on 20:46",
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'verbal',
+        icon: 'compass',
+        title: 'He calls Himself the Companion',
+        instruction:
+          'The Prophet ﷺ taught this for travel, and the word is literal: As-Sahib, the Companion. Say it wherever you are — a hard stretch is a journey whether or not you have left the house.',
+        arabicText: 'اللَّهُمَّ أَنْتَ الصَّاحِبُ فِي السَّفَرِ',
+        transliteration: 'Allahumma anta as-Sahibu fis-safar',
+        translation: 'O Allah, You are the Companion in the journey',
+        source: 'Sahih Muslim 1342',
+        sourceType: 'prophetic_dua',
+        sourceGrading: 'sahih',
+      },
+      {
+        type: 'physical',
+        icon: 'chat',
+        title: 'Say the fear out loud first',
+        instruction:
+          'Musa and Harun stated their fear before they were reassured. Name yours in one plain sentence — "I am afraid that…" — before you ask for anything. Reassurance that skips the admission does not land.',
+        source: 'Surah Taha 20:46 — Quran',
+        sourceType: 'quran_dua',
+      },
+    ]),
+    reflection:
+      'Finish this out loud: "I am afraid that…" What came out that you had not admitted yet?',
+  },
+  {
+    id: 'q_angle_50_16_lonely',
+    contentId: 'quran_50_16',
+    mood: 'Lonely',
+    angle:
+      'He knows what your soul whispers to you. Not what you say — what you whisper to yourself, the running commentary you would never repeat to another person. That is the part of you that feels most alone, and it is the exact part this ayah says is already known. Being closer than the jugular vein means there is no version of you being kept private from Him, including the version you are ashamed of.',
+    angleSource: 'Tafsir Ibn Kathir',
+    action: 'Name one thought you have never said to anyone, and know it was already heard.',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'mindset',
+        icon: 'brain',
+        title: 'The whisper is already known',
+        instruction:
+          'You do not have to translate the inside of your head into presentable language for Allah. The unedited thought — the ugly one, the one you would not defend — has already been heard, and He is still here.',
+        source: 'Surah Qaf 50:16 — Quran',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'mindset',
+        icon: 'heart',
+        title: 'He is not reading the surface',
+        instruction:
+          'The Prophet ﷺ said Allah does not look at your appearance or your wealth, but at your hearts and your deeds. Every relationship where you had to perform is being judged on the layer you were performing over. This one is not.',
+        source: 'Sahih Muslim 2564c',
+        sourceType: 'prophetic_dhikr',
+        sourceGrading: 'sahih',
+      },
+      {
+        type: 'verbal',
+        icon: 'hands-prayer',
+        title: 'Ask about the whisper itself',
+        instruction:
+          'Take the thought you have never said out loud and make it the subject of your du\'a — not the tidy version, the real one. He named it in the ayah before you could.',
+        source: 'Surah Qaf 50:16 — Quran',
+        sourceType: 'quran_dua',
+      },
+    ]),
+    reflection:
+      'What does the whisper say about you when the day goes quiet? Would you let anyone speak to a friend that way?',
+  },
+  {
+    id: 'q_angle_13_28_lonely',
+    contentId: 'quran_13_28',
+    mood: 'Lonely',
+    angle:
+      'Hearts settle in the remembrance of Allah — and remembrance is a two-way word. You are not talking into the air and hoping. Dhikr is the one form of company available at three in the morning, in a language you do not have to prepare, with someone who does not get tired of you. Ar-Rahman built a way to be accompanied that does not depend on anybody else being awake.',
+    angleSource: "Tafsir al-Sa'di",
+    action: 'Say dhikr out loud rather than silently, and hear the room stop being quiet.',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'verbal',
+        icon: 'headphones',
+        title: 'Out loud, not in your head',
+        instruction:
+          'Say it aloud. Silent dhikr is valid, but loneliness is partly a sensory problem — an unbroken quiet. Hearing your own voice say His name changes the room in a way thinking it does not.',
+        arabicText: 'سُبْحَانَ اللَّهِ وَالْحَمْدُ لِلَّهِ وَلَا إِلَهَ إِلَّا اللَّهُ وَاللَّهُ أَكْبَرُ',
+        transliteration: 'Subhanallah, walhamdulillah, wa la ilaha illallah, wallahu akbar',
+        translation: 'Glory be to Allah, praise be to Allah, there is no god but Allah, and Allah is the Greatest',
+        source: 'Sahih Muslim 2695',
+        sourceType: 'prophetic_dhikr',
+        sourceGrading: 'sahih',
+      },
+      {
+        type: 'physical',
+        icon: 'mosque',
+        title: 'Attach yourself to a room',
+        instruction:
+          'Among the seven Allah shades on a day with no other shade is a person whose heart is attached to the masjid. Go once this week without needing to talk to anyone — proximity counts before conversation does.',
+        source: 'Sahih al-Bukhari 660',
+        sourceType: 'sunnah_action',
+        sourceGrading: 'sahih',
+      },
+      {
+        type: 'mindset',
+        icon: 'leaf',
+        title: 'Settling, not distracting',
+        instruction:
+          '"Tatma\'innu" means to come to rest. This is not something to fill the silence with so you stop noticing it — it is what makes the silence survivable without filling it.',
+        source: "Tafsir al-Sa'di on 13:28",
+        sourceType: 'quran_dua',
+      },
+    ]),
+    reflection:
+      'What do you reach for first when a room gets too quiet? What would change if you reached for this instead?',
+  },
+
+  // === GUILTY / TAWBAH ===
+  // Takes the pool from 5 to 12, now that the mood has a card on the home grid.
+  // Deliberately not reusing the hadith already carried by the existing Guilty
+  // angles (Tirmidhi 2499, Bukhari 6306, Muslim 121, Muslim 2747, Abu Dawud 1521).
+  {
+    id: 'q_angle_39_53_guilty',
+    contentId: 'quran_39_53',
+    mood: 'Guilty',
+    angle:
+      'Notice who He is talking to. Not "O believers" — "O My servants who have transgressed against themselves." He addresses you by the very thing you are ashamed of, and still calls you His. Then: all sins. Not most, not the ones you can bring yourself to name. Al-Ghafur put no category outside that sentence, so the exception you have quietly written for your own case is yours, not His.',
+    angleSource: 'Tafsir Ibn Kathir',
+    action: 'Name the sin you assume is outside this ayah, and say it back with "all" included.',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'mindset',
+        icon: 'door',
+        title: 'You are still called His servant',
+        instruction:
+          'The address comes before the reassurance. He does not wait for you to clean up before claiming you — He attaches "My servants" to the description of people who have gone too far. That order is deliberate.',
+        source: 'Tafsir Ibn Kathir on 39:53',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'mindset',
+        icon: 'chart',
+        title: 'There is no ceiling on it',
+        instruction:
+          'The Prophet ﷺ said that if you were to sin until your sins reached the clouds of the sky and then sought forgiveness, Allah would forgive you. The size you are afraid of has already been named and exceeded in the answer.',
+        source: 'Sunan Ibn Majah 4248',
+        sourceType: 'prophetic_dhikr',
+        sourceGrading: 'hasan',
+      },
+      {
+        type: 'verbal',
+        icon: 'hands-prayer',
+        title: 'Read it with your own name in it',
+        instruction:
+          'Read the ayah out loud, and where it says "My servants," hear it as directed at you specifically. Despair is not humility — the verse forbids it in the same breath as it offers the forgiveness.',
+        arabicText: 'لَا تَقْنَطُوا۟ مِن رَّحْمَةِ ٱللَّهِ',
+        transliteration: 'La taqnatu min rahmatillah',
+        translation: 'Do not despair of the mercy of Allah',
+        source: 'Surah Az-Zumar 39:53 — Quran',
+        sourceType: 'quran_dua',
+      },
+    ]),
+    reflection:
+      'Which sin have you decided is the exception to "all"? Where did that exception come from?',
+  },
+  {
+    id: 'q_angle_20_82_guilty',
+    contentId: 'quran_20_82',
+    mood: 'Guilty',
+    angle:
+      'He calls Himself Ghaffār here — not the One who forgave once, but the One whose forgiving is continuous, on repeat, as a permanent quality. And the condition He attaches is "then continues in guidance," not "then never falls again." You are not being asked for a clean record from today. You are being asked to keep facing the same direction. This was said to people who had worshipped a golden calf, so the bar is not where your shame has set it.',
+    angleSource: "Tafsir al-Sa'di",
+    action: 'Pick the direction, not the perfect record: choose one thing to keep doing this week.',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'mindset',
+        icon: 'compass',
+        title: 'Direction, not a spotless record',
+        instruction:
+          '"Thumma ihtadā" — then continues in guidance. The condition is about which way you are walking, not whether you stumble on the way. Repentance that collapses the first time you slip was never the standard.',
+        source: "Tafsir al-Sa'di on 20:82",
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'physical',
+        icon: 'rewind',
+        title: 'Answer the sin with a deed',
+        instruction:
+          'The Prophet ﷺ said to follow a bad deed with a good one, because it wipes it out. Do not wait until you feel worthy — do something small and good now, specifically as the reply to what happened.',
+        source: "Jami' at-Tirmidhi 1987",
+        sourceType: 'sunnah_action',
+        sourceGrading: 'hasan',
+      },
+      {
+        type: 'verbal',
+        icon: 'star',
+        title: 'The Name on repeat',
+        instruction:
+          'Recite His own words about Himself. "Ghaffār" is the intensive form — the One who forgives again and again — so you are not testing His patience by coming back. Repetition is built into the Name. Then call on Him with it: "Ya Ghaffār."',
+        arabicText: 'وَإِنِّى لَغَفَّارٌ لِّمَن تَابَ',
+        transliteration: 'wa-innī laghaffārun liman tāba',
+        translation: 'And indeed I am the Perpetual Forgiver of whoever repents',
+        source: 'Surah Taha 20:82 — Quran',
+        sourceType: 'quran_dua',
+      },
+    ]),
+    reflection:
+      'What one thing could you keep doing all week, even badly? Start there rather than at "never again".',
+  },
+  {
+    id: 'q_angle_7_23_guilty',
+    contentId: 'quran_7_23',
+    mood: 'Guilty',
+    angle:
+      'Adam and Iblis both disobeyed. One said "we have wronged ourselves"; the other explained why it was not really his fault. What separated them was not the sin — it was the sentence that came after it. Read the du\'a and notice what is missing: no reasons, no comparison to anyone worse, no mention of the circumstances. If your repentance keeps arriving with an explanation attached, that is the part worth dropping first.',
+    angleSource: 'Tafsir Ibn Kathir',
+    action: 'Say Adam\'s du\'a without adding a single word of explanation.',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'verbal',
+        icon: 'hands-prayer',
+        title: 'The words with nothing attached',
+        instruction:
+          'Say it exactly. Resist finishing it with "but" — the whole force of this du\'a is that it has no second half defending you.',
+        arabicText: 'رَبَّنَا ظَلَمْنَآ أَنفُسَنَا وَإِن لَّمْ تَغْفِرْ لَنَا وَتَرْحَمْنَا لَنَكُونَنَّ مِنَ ٱلْخَـٰسِرِينَ',
+        transliteration: 'Rabbana zalamna anfusana wa in lam taghfir lana wa tarhamna lanakunanna minal-khasirin',
+        translation:
+          'Our Lord, we have wronged ourselves, and if You do not forgive us and have mercy upon us, we will surely be among the losers',
+        source: "Surah Al-A'raf 7:23 — Quran",
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'mindset',
+        icon: 'brain',
+        title: 'The difference was the response',
+        instruction:
+          'Iblis had a case. He argued it, and it cost him everything. Adam had a case too and did not make it. Notice which instinct you reach for when you are caught — the defence or the admission.',
+        source: 'Tafsir Ibn Kathir on 7:23',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'mindset',
+        icon: 'clock',
+        title: 'The window is still open',
+        instruction:
+          'The Prophet ﷺ said Allah accepts a servant\'s repentance as long as the death rattle has not reached his throat. Whatever you are telling yourself about being too late — the only deadline that exists has not arrived.',
+        source: "Jami' at-Tirmidhi 3537",
+        sourceType: 'prophetic_dhikr',
+        sourceGrading: 'hasan',
+      },
+    ]),
+    reflection:
+      'Say your apology to Allah out loud, then remove every word that was defending you. What is left?',
+  },
+  {
+    id: 'q_angle_12_92_guilty',
+    contentId: 'quran_12_92',
+    mood: 'Guilty',
+    angle:
+      'Yusuf said this to the brothers who put him in a well and sold him. "No blame upon you today" — and then he asked Allah to forgive them as well, which is more than dropping his own claim. If your guilt is about a person rather than a private sin, this is the ayah for it: it shows you what the far side actually looks like, and it makes clear that the person you wronged reaching that point is possible. Ask them. Then let Ar-Rahim handle the part that is not yours to settle.',
+    angleSource: "Tafsir al-Sa'di",
+    action: 'Contact the person you wronged and ask for their pardon, plainly.',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'physical',
+        icon: 'handshake',
+        title: 'Settle it before the day it cannot be settled',
+        instruction:
+          'The Prophet ﷺ said whoever has wronged someone should seek their pardon now, before a day comes when there is no currency but good deeds. Send the message today. Do not draft the perfect version — send the plain one.',
+        source: 'Sahih al-Bukhari 2449',
+        sourceType: 'sunnah_action',
+        sourceGrading: 'sahih',
+      },
+      {
+        type: 'mindset',
+        icon: 'door',
+        title: 'No reopening it',
+        instruction:
+          '"Tathrīb" is reproach — the reopening of a settled fault. Yusuf closed the subject permanently. If someone has already forgiven you and you keep bringing it up to punish yourself, you are reopening what they closed.',
+        source: "Tafsir al-Sa'di on 12:92",
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'verbal',
+        icon: 'heart',
+        title: 'Ask for them, not just for you',
+        instruction:
+          'Yusuf went further than pardoning — he asked Allah to forgive them. Make du\'a for the person you wronged by name. It changes what the guilt is doing in you.',
+        source: 'Surah Yusuf 12:92 — Quran',
+        sourceType: 'quran_dua',
+      },
+    ]),
+    reflection:
+      'Who is owed a message from you? What are you telling yourself to justify not sending it yet?',
+  },
+  {
+    id: 'q_angle_42_25_guilty',
+    contentId: 'quran_42_25',
+    mood: 'Guilty',
+    angle:
+      'Two separate things are promised here and it is worth separating them. He accepts the turning, and He pardons the deed — the relationship and the record are both handled. Then the ayah ends: "and He knows what you do." That clause sits after the promise, not before it. At-Tawwab is not accepting your repentance because He is unaware of the details. He knows exactly what He is pardoning, and the offer stands.',
+    angleSource: "Tafsir al-Sa'di",
+    action: 'Stop rehearsing the details for Him — say it once and stop there.',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'mindset',
+        icon: 'lock',
+        title: 'He is not missing information',
+        instruction:
+          'Part of guilt is a suspicion that if He really knew the specifics, the mercy would not apply. The ayah closes that door on purpose: the knowing is stated after the pardoning, in the same sentence.',
+        source: "Tafsir al-Sa'di on 42:25",
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'verbal',
+        icon: 'sunrise',
+        title: 'His hand is out all day and all night',
+        instruction:
+          'The Prophet ﷺ said Allah extends His hand by night so the one who sinned by day may repent, and extends it by day so the one who sinned by night may repent. There is no hour when the offer is withdrawn — including this one.',
+        source: 'Sahih Muslim 2759',
+        sourceType: 'prophetic_dhikr',
+        sourceGrading: 'sahih',
+      },
+      {
+        type: 'verbal',
+        icon: 'leaf',
+        title: 'Call Him by what He does',
+        instruction:
+          'Recite what the ayah says He does. Note that it describes an action taken toward you — accepting, pardoning — not merely a permission granted. The Name At-Tawwab, from that same root, is given elsewhere in the Quran; call on Him with it after you have read this.',
+        arabicText: 'وَهُوَ ٱلَّذِى يَقْبَلُ ٱلتَّوْبَةَ عَنْ عِبَادِهِۦ',
+        transliteration: 'wahuwa alladhī yaqbalu l-tawbata ʿan ʿibādihi',
+        translation: 'And it is He who accepts repentance from His servants',
+        source: 'Surah Ash-Shura 42:25 — Quran',
+        sourceType: 'quran_dua',
+      },
+    ]),
+    reflection:
+      'How many times have you confessed the same thing? What are you waiting to feel before you count it as done?',
+  },
+  {
+    id: 'q_angle_28_16_guilty',
+    contentId: 'quran_28_16',
+    mood: 'Guilty',
+    angle:
+      'Musa had just killed a man. He said "I have wronged myself, so forgive me" — and in the same ayah, with nothing in between, "and He forgave him." No waiting period. No penance. No probation. If you are carrying something you have privately filed as unforgivable, read the gap between the request and the answer in that sentence. There isn\'t one. And Allah went on to make that same man a prophet.',
+    angleSource: 'Tafsir Ibn Kathir',
+    action: 'Say the words Musa said, about the specific thing you think is too big.',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'verbal',
+        icon: 'hands-prayer',
+        title: 'The words, for the worst of it',
+        instruction:
+          'Bring to mind the thing you least want to bring to mind, and say this over it. These are the words of a man who had taken a life, and they were enough.',
+        arabicText: 'رَبِّ إِنِّى ظَلَمْتُ نَفْسِى فَٱغْفِرْ لِى',
+        transliteration: 'Rabbi inni zalamtu nafsi faghfir li',
+        translation: 'My Lord, indeed I have wronged myself, so forgive me',
+        source: 'Surah Al-Qasas 28:16 — Quran',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'mindset',
+        icon: 'arrow-right',
+        title: 'What he became afterwards',
+        instruction:
+          'This is not the story of a man who was forgiven and then quietly lived out his days. He was sent to Pharaoh and given the Torah. Your worst act is not a ceiling on what Allah will still do with you.',
+        source: 'Tafsir Ibn Kathir on 28:16',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'physical',
+        icon: 'candle',
+        title: 'Say it once, in sujud, then stand up',
+        instruction:
+          'Go into sujud and say it a single time. Then stand. The instinct to say it forty more times is the guilt talking, not the tawbah — He answered Musa the first time.',
+        source: 'Surah Al-Qasas 28:16 — Quran',
+        sourceType: 'quran_dua',
+      },
+    ]),
+    reflection:
+      'What have you privately decided Allah will not forgive? Musa said seven words. What makes your case different?',
+  },
+  {
+    id: 'q_angle_3_133_guilty',
+    contentId: 'quran_3_133',
+    mood: 'Guilty',
+    angle:
+      'The word is "race" — not walk, not consider. And notice the order of what you are racing toward: forgiveness first, the garden second. This came straight after Uhud, addressed to people who had just failed badly and knew it. The instruction to them was not to sit with it, review it, or wait until they felt worthy. It was to move, immediately, toward Him. Guilt that keeps you still is doing the opposite of what this ayah asks.',
+    angleSource: 'Tafsir Ibn Kathir',
+    action: 'Do the smallest act of return in the next ten minutes, before you feel ready.',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'physical',
+        icon: 'target',
+        title: 'Move before you feel ready',
+        instruction:
+          'Two rak\'ahs, or wudu, or three ayahs — now, within ten minutes, while you still feel unworthy. The ayah commands speed precisely because the feeling of readiness tends never to arrive.',
+        source: 'Surah Ali Imran 3:133 — Quran',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'mindset',
+        icon: 'muscle',
+        title: 'Said to people who had just failed',
+        instruction:
+          'This follows the passage about Uhud — a defeat caused by the Muslims\' own disobedience of an order. Allah\'s instruction to them in that exact state was to race toward Him. Failure is the context this command was given in, not a disqualification from it.',
+        source: 'Tafsir Ibn Kathir on 3:133',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'mindset',
+        icon: 'chart',
+        title: 'Forgiveness is named first',
+        instruction:
+          'He puts maghfirah before the garden. What you are being urged toward, before any reward, is simply being forgiven — that is the thing worth hurrying for.',
+        source: 'Surah Ali Imran 3:133 — Quran',
+        sourceType: 'quran_dua',
+      },
+    ]),
+    reflection:
+      'Guilt has made you go still. What is the smallest thing you could do in the next ten minutes to move instead?',
+  },
+
+  // === ANGRY / ACUTE ===
+  // Framed for the flooded moment: de-escalate first, decide later. The pardon
+  // angles already in this file are the work that comes after this, not instead
+  // of it — asking someone mid-surge to forgive is asking for the last step first.
+  {
+    id: 'q_angle_7_200_angry',
+    contentId: 'quran_7_200',
+    mood: 'Angry',
+    angle:
+      'Right now you do not need a lesson about forgiveness. You need the heat to come down, and this ayah gives you one instruction for exactly that: seek refuge, immediately. Nothing about resolving the argument, nothing about who was right. "Nazgh" is a prod — a spike, not a verdict on your character. As-Sami\' is hearing this the moment you say it, and everything else can wait until your hands stop shaking.',
+    angleSource: 'Tafsir Ibn Kathir',
+    action: 'Say a\'udhu billahi min ash-shaytan ir-rajim now, before you say anything else.',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'verbal',
+        icon: 'shield',
+        title: 'The word he named for this',
+        instruction:
+          'Two men were trading insults in front of the Prophet ﷺ, one of them red in the face. He said he knew a word that would take the man\'s rage away if he said it — and named this. Say it now, before you reply to anyone.',
+        arabicText: 'أَعُوذُ بِاللَّهِ مِنَ الشَّيْطَانِ الرَّجِيمِ',
+        transliteration: 'A\'udhu billahi min ash-shaytan ir-rajim',
+        translation: 'I seek refuge in Allah from Satan, the accursed',
+        source: 'Sahih al-Bukhari 3282 / Sahih Muslim 2610',
+        sourceType: 'prophetic_dhikr',
+        sourceGrading: 'sahih',
+      },
+      {
+        type: 'physical',
+        icon: 'breathing',
+        title: 'Change your position',
+        instruction:
+          'The Prophet ﷺ instructed that if you are angry while standing, sit; if the anger does not leave, lie down. Do it literally. This is a physical instruction for a physical state, not a metaphor.',
+        source: 'Sunan Abu Dawud 4782',
+        sourceType: 'sunnah_action',
+        sourceGrading: 'sahih',
+      },
+      {
+        type: 'mindset',
+        icon: 'clock',
+        title: 'Decide nothing for now',
+        instruction:
+          'Send no message, make no ruling, end nothing. You are not deciding whether to forgive — you are only refusing to act while flooded. The decision keeps; the damage from deciding now does not.',
+        source: "Surah Al-A'raf 7:200 — Quran",
+        sourceType: 'quran_dua',
+      },
+    ]),
+    reflection:
+      'What were you about to send or say? Read it back in an hour and see if you still mean it.',
+  },
+  {
+    id: 'q_angle_23_97_98_angry',
+    contentId: 'quran_23_97_98',
+    mood: 'Angry',
+    angle:
+      'Two requests, and the second one is the interesting one. Protect me from the incitement — and protect me from them even being near me. That is a du\'a about your surroundings, not just your self-control. Some of what is boiling in you right now is a room, a conversation, a thread you keep refreshing. Leaving is not weakness or avoidance; the Quran itself asks for distance before it asks for restraint.',
+    angleSource: "Tafsir al-Sa'di",
+    action: 'Leave the room, the thread, or the conversation. Physically remove yourself for ten minutes.',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'verbal',
+        icon: 'hands-prayer',
+        title: 'Both halves of the request',
+        instruction:
+          'Say it fully. The first half asks for protection from what is pushing at you; the second asks that it not be in the room at all. Say it as you actually walk out.',
+        arabicText: 'رَّبِّ أَعُوذُ بِكَ مِنْ هَمَزَٰتِ ٱلشَّيَـٰطِينِ وَأَعُوذُ بِكَ رَبِّ أَن يَحْضُرُونِ',
+        transliteration: 'Rabbi a\'udhu bika min hamazatish-shayatin, wa a\'udhu bika Rabbi an yahdurun',
+        translation:
+          'My Lord, I seek refuge in You from the incitements of the devils, and I seek refuge in You, my Lord, lest they be present with me',
+        source: "Surah Al-Mu'minun 23:97-98 — Quran",
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'physical',
+        icon: 'door',
+        title: 'Distance is the first tool',
+        instruction:
+          'Put a wall between you and the source for ten minutes — leave the room, close the app, put the phone in a drawer. Do not use the time to rehearse your reply. You are letting a physiological surge finish, and it will.',
+        source: "Surah Al-Mu'minun 23:97-98 — Quran",
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'physical',
+        icon: 'water-drop',
+        title: 'Then wudu',
+        instruction:
+          'The Prophet ﷺ taught that anger is from fire and fire is put out with water, and instructed the angry person to make wudu. Do it slowly, and feel the water rather than rushing the motions.',
+        source: 'Sunan Abu Dawud 4784',
+        sourceType: 'sunnah_action',
+        sourceGrading: 'hasan',
+      },
+    ]),
+    reflection:
+      'What in your surroundings keeps re-lighting this? Name the room, the app, or the person you keep returning to.',
+  },
+  {
+    id: 'q_angle_42_40_angry',
+    contentId: 'quran_42_40',
+    mood: 'Angry',
+    angle:
+      'Read the first half before the second. Allah states your right to a proportionate response, and only then commends pardon. He does not open by telling you the anger is wrong. Something was done to you, and the Quran does not ask you to pretend otherwise. What it does set is a ceiling — "like it," never more — and then offers you a better option whose reward He does not even quantify. That is an invitation held out to someone with a legitimate claim, not a rebuke aimed at someone who should not be upset.',
+    angleSource: 'Tafsir Ibn Kathir',
+    action: 'Write down what was actually done to you, and what a proportionate response would be.',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'mindset',
+        icon: 'chart',
+        title: 'Your anger is not the sin',
+        instruction:
+          'Aisha (RA) said the Prophet ﷺ never took revenge for himself — but when the limits Allah set were violated, nothing could stand against his anger. Anger at genuine wrong is not a defect in you. What is being governed is what you do with it.',
+        source: 'Sahih al-Bukhari 3560',
+        sourceType: 'prophetic_dhikr',
+        sourceGrading: 'sahih',
+      },
+      {
+        type: 'physical',
+        icon: 'pen',
+        title: 'Find the ceiling',
+        instruction:
+          'Write two lines: what was done, and what an exactly proportionate response would be. Most of what rage wants is far past that line, and seeing the gap on paper is what makes the "like it" limit concrete.',
+        source: 'Surah Ash-Shura 42:40 — Quran',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'mindset',
+        icon: 'gem',
+        title: 'Pardon is an option, not an obligation',
+        instruction:
+          'The reward for pardoning is left unnamed and guaranteed by Allah directly, which the scholars read as a sign of its size. But it is offered, not commanded. If you are not there yet, you are not disobeying — you are choosing between a permitted response and a better one.',
+        source: 'Tafsir Ibn Kathir on 42:40',
+        sourceType: 'quran_dua',
+      },
+    ]),
+    reflection:
+      'What would a response exactly the size of the wrong look like? How far past it did your first impulse go?',
+  },
+  {
+    id: 'q_angle_2_263_angry',
+    contentId: 'quran_2_263',
+    mood: 'Angry',
+    angle:
+      'The ayah ends by calling Allah Al-Halim — the Forbearing. Hilm is not the inability to be angry; it is holding back a response you have every right and every power to make. He is described that way while being Al-Ghaniyy, in need of nothing from anyone. So restraint is not what weak people do because they have no option. It is what the strongest does by choice, and that is the specific quality you are being invited to imitate right now.',
+    angleSource: "Tafsir al-Sa'di",
+    action: 'Say one measured sentence instead of the one you want to say.',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'mindset',
+        icon: 'muscle',
+        title: 'Hilm requires having the power',
+        instruction:
+          'Forbearance only counts when you could have acted. If you are holding back, you are not losing the exchange — you are doing the thing the Name describes, which is available only to someone who had the option to strike back.',
+        source: "Tafsir al-Sa'di on 2:263",
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'verbal',
+        icon: 'chat',
+        title: 'Kind speech beats a poisoned gift',
+        instruction:
+          'The ayah ranks a good word above charity that comes with injury attached. Apply it to what you are about to say: an apology or a concession delivered with a sting in it is worth less than one plain, measured sentence.',
+        source: 'Surah Al-Baqarah 2:263 — Quran',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'mindset',
+        icon: 'star',
+        title: 'What restraint is worth',
+        instruction:
+          'The Prophet ﷺ said whoever restrains anger while able to act on it will be called by Allah before all creation and given his choice of reward. The moment you are in right now is the one that carries that.',
+        source: 'Sunan Abu Dawud 4777',
+        sourceType: 'prophetic_dhikr',
+        sourceGrading: 'hasan',
+      },
+    ]),
+    reflection:
+      'You have the power to say the cutting thing. What does choosing not to make you, rather than cost you?',
+  },
+  {
+    id: 'q_angle_25_63_angry',
+    contentId: 'quran_25_63',
+    mood: 'Angry',
+    angle:
+      'Allah gives the servants of Ar-Rahman a scripted exit line: when the ignorant come at them, they say "salaam." Not a comeback, not silence that leaves you seething — one word that ends your part in it. Notice it is described as what they say, not what they feel. You are not required to have calmed down first. Having a line ready is the point, because mid-surge you will use whatever is loaded.',
+    angleSource: 'Tafsir Ibn Kathir',
+    action: 'Reply with one word — "salaam" — and end your part in the exchange there.',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'verbal',
+        icon: 'leaf',
+        title: 'One word, loaded in advance',
+        instruction:
+          'Decide now that your reply to the next provocation is this single word, then walk. Deciding in advance is what makes it available later — nobody composes a measured response while flooded.',
+        arabicText: 'سَلَـٰمًا',
+        transliteration: 'salāman',
+        translation: 'Peace',
+        source: 'Surah Al-Furqan 25:63 — Quran',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'mindset',
+        icon: 'calm-face',
+        title: 'Not the same as swallowing it',
+        instruction:
+          'This is a way out of the exchange, not an instruction to bottle it. You still get to feel what you feel and address the matter later. What you are declining is the escalation, in this minute, with this person.',
+        source: 'Tafsir Ibn Kathir on 25:63',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'physical',
+        icon: 'moon',
+        title: 'Say it, then actually leave',
+        instruction:
+          'The ayah describes people walking on. The word only works if you go with it — staying in the room after saying "salaam" turns it into the opening line of a longer argument.',
+        source: 'Surah Al-Furqan 25:63 — Quran',
+        sourceType: 'quran_dua',
+      },
+    ]),
+    reflection:
+      'What is your usual first sentence when someone provokes you? Decide your replacement now, while you are calm.',
+  },
+
+  // === LONELY (pool expansion) ===
+  // Takes Lonely from 10 to 22. At 10 a user with three refreshes a day hit a
+  // repeat inside 36 hours; the simulation in scripts/verify-mood-pools territory
+  // put first-repeat at day 1.4. Nine new verses plus 9:40 / 2:257 / 11:6, which
+  // were already in the file under other moods and only needed the tag.
+  {
+    id: 'q_angle_26_62_lonely',
+    contentId: 'quran_26_62',
+    mood: 'Lonely',
+    angle:
+      'Musa said this with an army behind him and the sea in front, and the people beside him had just said out loud that they were finished. He did not argue with the facts. He said kallā — no — and then named the only thing that had changed nothing about his situation and everything about his position: my Lord is with me. Notice he says "with me," singular, standing in a crowd. Being surrounded by people had not made him less alone; being with Allah did.',
+    angleSource: "Tafsir al-Sa'di",
+    action: 'Say "inna maʿiya rabbi" out loud once, before you look for a way out.',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'verbal',
+        icon: 'shield',
+        title: 'His four words',
+        instruction:
+          'Say it in the present tense, as he did — not "He will be with me once this resolves" but "He is with me now." The sea had not parted yet when this was spoken.',
+        arabicText: 'إِنَّ مَعِىَ رَبِّى سَيَهْدِينِ',
+        transliteration: 'inna maʿiya rabbī sayahdīni',
+        translation: 'Indeed, with me is my Lord; He will guide me',
+        source: "Surah Ash-Shu'ara 26:62 — Quran",
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'mindset',
+        icon: 'compass',
+        title: 'Certainty about the company, not the exit',
+        instruction:
+          'He did not claim to know how it would end. He claimed to know who was there. When you cannot see a way through, that is still the part you can be sure of.',
+        source: "Tafsir al-Sa'di on 26:62",
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'physical',
+        icon: 'pen',
+        title: 'Write the honest and the true',
+        instruction:
+          'Two lines. First what your situation actually is, no softening. Then "and my Lord is with me." Both are true at once — the second does not require you to shrink the first.',
+        source: "Surah Ash-Shu'ara 26:62 — Quran",
+        sourceType: 'quran_dua',
+      },
+    ]),
+    reflection:
+      'Who was standing next to Musa when he said this? Being in a room with people is not the same as not being alone — which one do you actually need right now?',
+  },
+  {
+    id: 'q_angle_12_86_lonely',
+    contentId: 'quran_12_86',
+    mood: 'Lonely',
+    angle:
+      'Yaqub had lost two sons and everyone around him was telling him to stop. His answer was not to stop — it was to change who he was saying it to. "I complain of my grief to Allah." That is permission you may not know you had: you do not have to perform being fine, and you do not have to keep finding a person willing to hear it again. Al-Latif does not get tired of the same grief, and He does not need you to make it shorter.',
+    angleSource: 'Tafsir Ibn Kathir',
+    action: 'Tell Allah the thing you have stopped telling people, in full, out loud.',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'verbal',
+        icon: 'chat',
+        title: 'Complaining to Him is not complaining about Him',
+        instruction:
+          'Say the whole thing — the repetitive part, the part you are embarrassed still hurts. A prophet did this and it was recorded as his merit, not his weakness.',
+        arabicText: 'إِنَّمَآ أَشْكُوا۟ بَثِّى وَحُزْنِىٓ إِلَى ٱللَّهِ',
+        transliteration: "innamā ashkū bathī waḥuz'nī ilā l-lahi",
+        translation: 'I only complain of my suffering and my grief to Allah',
+        source: 'Surah Yusuf 12:86 — Quran',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'mindset',
+        icon: 'brain',
+        title: 'Bathth — the grief too big to hold',
+        instruction:
+          'The word he uses means sorrow a person cannot contain, the kind that spills out. He did not have a smaller version of it either. You are not required to have processed this before you bring it.',
+        source: 'Tafsir Ibn Kathir on 12:86',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'physical',
+        icon: 'moon',
+        title: 'The hour with no audience',
+        instruction:
+          'The Prophet ﷺ said our Lord descends to the lowest heaven in the last third of the night, asking who is calling on Him. Set an alarm for it once this week and say it then, when there is no one to manage but Him.',
+        source: 'Sahih al-Bukhari 1145',
+        sourceType: 'sunnah_action',
+        sourceGrading: 'sahih',
+      },
+    ]),
+    reflection:
+      'What have you stopped saying out loud because you think people are tired of hearing it? He is not.',
+  },
+  {
+    id: 'q_angle_19_48_lonely',
+    contentId: 'quran_19_48',
+    mood: 'Lonely',
+    angle:
+      'Ibrahim walked away from his father and his entire people in one sentence, and named what he was walking toward: I will call on my Lord. He did not say he expected it to be easy. He said he did not expect to be wretched in it. If your isolation came from holding a line — a habit you left, a room you stopped going to — this is the ayah for it. Read what Allah gives him two ayahs later: a family. He lost people and was not left without them.',
+    angleSource: "Tafsir al-Sa'di",
+    action: 'Make du\'a for the specific relationship your isolation cost you.',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'mindset',
+        icon: 'door',
+        title: 'Chosen distance is still distance',
+        instruction:
+          'Walking away from something harmful does not make the loneliness that follows fake. Ibrahim\'s was real enough to be recorded. You can be right about the decision and still be lonely because of it.',
+        source: "Tafsir al-Sa'di on 19:48",
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'verbal',
+        icon: 'hands-prayer',
+        title: 'What he reached for instead',
+        instruction:
+          'He replaced the company with du\'a — not as a consolation prize but as the thing he expected to be answered. Say his line and then ask for one specific person to be sent into your life.',
+        arabicText: 'وَأَدْعُوا۟ رَبِّى عَسَىٰٓ أَلَّآ أَكُونَ بِدُعَآءِ رَبِّى شَقِيًّا',
+        transliteration: 'wa-adʿū rabbī ʿasā allā akūna biduʿāi rabbī shaqiyyan',
+        translation: 'And I will invoke my Lord. I expect that I will not be unhappy in invoking my Lord',
+        source: 'Surah Maryam 19:48 — Quran',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'mindset',
+        icon: 'arrow-right',
+        title: 'Read the next ayah',
+        instruction:
+          'Verse 49: Allah gave him Ishaq and Yaqub, and made each of them a prophet. The replacement was not a smaller version of what he gave up. It rarely arrives on the timeline you would have picked.',
+        source: 'Surah Maryam 19:49 — Quran',
+        sourceType: 'quran_dua',
+      },
+    ]),
+    reflection:
+      'What did your loneliness cost you, and what were you protecting by accepting that cost?',
+  },
+  {
+    id: 'q_angle_33_3_lonely',
+    contentId: 'quran_33_3',
+    mood: 'Lonely',
+    angle:
+      'Kafā is a closed word — it does not mean Allah helps alongside everyone else, it means He is enough and the sentence ends. Al-Wakil is the One you hand a matter to completely and then stop supervising. Loneliness usually runs on a quiet audit of who has shown up and who has not. This ayah does not tell you that audit is wrong. It tells you the total was already sufficient before you started counting.',
+    angleSource: "Tafsir al-Sa'di",
+    action: 'Hand Him one thing you have been waiting for a person to handle.',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'verbal',
+        icon: 'lock',
+        title: 'Enough, full stop',
+        instruction:
+          'Say it slowly and hear where the sentence closes. There is no "and also" after kafā.',
+        arabicText: 'وَكَفَىٰ بِٱللَّهِ وَكِيلًا',
+        transliteration: 'wakafā bil-lahi wakīlan',
+        translation: 'And sufficient is Allah as Disposer of affairs',
+        source: 'Surah Al-Ahzab 33:3 — Quran',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'physical',
+        icon: 'pen',
+        title: 'Stop the audit',
+        instruction:
+          'Write the name of the person you have been waiting on. Then write what you actually needed from them. Then ask Allah for that thing directly, by name, instead of waiting for them to offer it.',
+        source: 'Surah Al-Ahzab 33:3 — Quran',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'mindset',
+        icon: 'shield',
+        title: 'Tawakkul is not passivity',
+        instruction:
+          'The ayah says rely, in the same breath as it says He is sufficient. Tie your camel and then hand over the outcome — reaching out to someone is the camel, not a failure of trust.',
+        source: "Jami' at-Tirmidhi 2517",
+        sourceType: 'sunnah_action',
+        sourceGrading: 'hasan',
+      },
+    ]),
+    reflection:
+      'Whose name have you been waiting to see on your screen? What did you actually need — and have you asked Him for it directly?',
+  },
+  {
+    id: 'q_angle_6_59_lonely',
+    contentId: 'quran_6_59',
+    mood: 'Lonely',
+    angle:
+      'Not a leaf falls but that He knows it. Read the size of that example — not a nation, not a war, a single leaf coming off a branch somewhere with nobody watching. Then a seed in the dark under the ground. Al-Alim chose the smallest unwitnessed things in creation to make the point, which means the unwitnessed parts of your day are not below the threshold. There is no threshold.',
+    angleSource: 'Tafsir Ibn Kathir',
+    action: 'Name one small thing you did today that no one saw, and know it was recorded.',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'mindset',
+        icon: 'leaf',
+        title: 'He picked the smallest example on purpose',
+        instruction:
+          'A falling leaf. A seed in the dark. The ayah could have named kingdoms and chose these instead. Whatever you did today that felt too small to matter is precisely the category being described.',
+        source: 'Tafsir Ibn Kathir on 6:59',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'physical',
+        icon: 'pen',
+        title: 'Log the unwitnessed',
+        instruction:
+          'Write three things you did today that nobody thanked you for or noticed. Not achievements — small ones. Then read the list back knowing it was already written somewhere more permanent.',
+        source: "Surah Al-An'am 6:59 — Quran",
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'verbal',
+        icon: 'eye',
+        title: 'Call on the One who sees',
+        instruction:
+          'Recite the clause itself, then call on Him with the Name it points to: "Ya Alim, ya Basir." Being known is a different need from being helped, and this is the Name that answers it.',
+        arabicText: 'وَمَا تَسْقُطُ مِن وَرَقَةٍ إِلَّا يَعْلَمُهَا',
+        transliteration: 'wamā tasquṭu min waraqatin illā yaʿlamuhā',
+        translation: 'Not a leaf falls but that He knows it',
+        source: "Surah Al-An'am 6:59 — Quran",
+        sourceType: 'quran_dua',
+      },
+    ]),
+    reflection:
+      'What did you do today that nobody knows about? Write it down — someone did.',
+  },
+  {
+    id: 'q_angle_49_10_lonely',
+    contentId: 'quran_49_10',
+    mood: 'Lonely',
+    angle:
+      'Read the grammar before the instruction. It does not say become brothers, or earn your place among them. It says the believers *are* brothers — a fact stated about you before you have done anything to deserve it. Whatever room you feel outside of, membership was not the thing in question. What the ayah asks for after that is repair, which is a job for someone already inside.',
+    angleSource: "Tafsir al-Sa'di",
+    action: 'Repair one specific rift this week — send the first message.',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'mindset',
+        icon: 'handshake',
+        title: 'Stated, not earned',
+        instruction:
+          'The bond is described as existing already. Loneliness will tell you that you are provisional, on the outside pending approval. The ayah simply does not agree with that reading.',
+        source: "Tafsir al-Sa'di on 49:10",
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'physical',
+        icon: 'home',
+        title: 'One rift, this week',
+        instruction:
+          'Pick the relationship that went quiet and send a plain message with no agenda. Not the perfectly worded one — the plain one. The ayah puts the repairing on you because you are already family, not to test whether you are.',
+        source: 'Surah Al-Hujurat 49:10 — Quran',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'mindset',
+        icon: 'shield',
+        title: 'A building, not a crowd',
+        instruction:
+          'The Prophet ﷺ said a believer to another believer is like a building, each part strengthening the rest — and he interlaced his fingers as he said it. A brick is not decoration. Withdrawing does not leave the wall unchanged.',
+        source: 'Sahih al-Bukhari 481',
+        sourceType: 'prophetic_dhikr',
+        sourceGrading: 'sahih',
+      },
+    ]),
+    reflection:
+      'Which relationship went quiet because you were both waiting for the other one to go first?',
+  },
+  {
+    id: 'q_angle_8_63_lonely',
+    contentId: 'quran_8_63',
+    mood: 'Lonely',
+    angle:
+      'The Aws and the Khazraj had been killing each other for generations. Allah tells the Prophet ﷺ that even he, spending everything on earth, could not have joined those hearts — but Allah did. So connection is not a skill you are failing at. It is not a reward for being interesting enough or trying hard enough. It is given. Which means it can be asked for, and the asking is not a lesser move than the trying.',
+    angleSource: 'Tafsir Ibn Kathir',
+    action: 'Ask Allah, by name, for one person whose heart He joins to yours.',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'mindset',
+        icon: 'gem',
+        title: 'Not a skill you lack',
+        instruction:
+          'All the money on earth could not buy it. That is stated about the best of creation. If you have been reading your loneliness as evidence you are bad at people, the ayah removes that explanation.',
+        source: 'Tafsir Ibn Kathir on 8:63',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'verbal',
+        icon: 'heart',
+        title: 'Ask for it as a gift',
+        instruction:
+          'Say: "Ya Allah, You joined hearts that had every reason to stay apart. Join mine to someone who will bring me closer to You." Then name one person, or ask for someone you have not met.',
+        source: 'Surah Al-Anfal 8:63 — Quran',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'mindset',
+        icon: 'star',
+        title: 'Souls that recognise each other',
+        instruction:
+          'The Prophet ﷺ said souls are like conscripted soldiers: those that recognise one another draw together, and those that do not stay apart. The people who have not fit were not a verdict on you.',
+        source: 'Sahih al-Bukhari 3336 / Sahih Muslim 2638',
+        sourceType: 'prophetic_dhikr',
+        sourceGrading: 'sahih',
+      },
+    ]),
+    reflection:
+      'You have been treating connection as something to earn. What changes if it is something to ask for?',
+  },
+  {
+    id: 'q_angle_2_214_lonely',
+    contentId: 'quran_2_214',
+    mood: 'Lonely',
+    angle:
+      'A messenger of Allah said out loud, "When is the help of Allah?" That question is in the Quran, preserved, not edited out. Allah did not answer it with a rebuke — He answered it with "unquestionably, the help of Allah is near." If you have been treating your own version of that question as a failure of faith, notice who asked it first and what came back.',
+    angleSource: 'Tafsir Ibn Kathir',
+    action: 'Ask the question out loud, then read the second half of the ayah as the reply.',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'mindset',
+        icon: 'chat',
+        title: 'The question is in the text',
+        instruction:
+          'It was not softened before being recorded. Being shaken is described here as what happened to the people who came before you, not as what separates you from them.',
+        source: 'Tafsir Ibn Kathir on 2:214',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'verbal',
+        icon: 'sunrise',
+        title: 'Read both halves',
+        instruction:
+          'Say the question, then say the answer. Do not skip to the answer — the ayah does not, and the reassurance only lands after the complaint has been allowed to exist.',
+        arabicText: 'أَلَآ إِنَّ نَصْرَ ٱللَّهِ قَرِيبٌ',
+        transliteration: 'alā inna naṣra l-lahi qarībun',
+        translation: 'Unquestionably, the help of Allah is near',
+        source: 'Surah Al-Baqarah 2:214 — Quran',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'physical',
+        icon: 'clock',
+        title: 'Near, on His clock',
+        instruction:
+          'Qarib means near, and nothing in the ayah promises today. Write down what you are waiting for and put the paper somewhere you will find it in a few months rather than checking it hourly.',
+        source: 'Surah Al-Baqarah 2:214 — Quran',
+        sourceType: 'quran_dua',
+      },
+    ]),
+    reflection:
+      'Say your version of "when is the help of Allah?" out loud. Did saying it feel like a failure, or like a relief?',
+  },
+  {
+    id: 'q_angle_17_110_lonely',
+    contentId: 'quran_17_110',
+    mood: 'Lonely',
+    angle:
+      'Someone objected that the Prophet ﷺ was calling on two different gods because they heard him say Ya Allah and Ya Rahman. The answer: whichever Name you call, they are all His. There is no correct door, no formula you have to get right before He listens. If part of what keeps you from speaking to Him is not knowing how it is supposed to sound, this ayah closes that gap — call Him whatever you can reach for.',
+    angleSource: "Tafsir al-Sa'di",
+    action: 'Pick the Divine Name that matches what you need tonight, and use only that one.',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'verbal',
+        icon: 'compass',
+        title: 'Pick the Name that fits',
+        instruction:
+          'Not the whole list. One. If you need company, Ya Qarib. To be heard, Ya Sami\'. To be loved, Ya Wadud. Say it thirty times slowly and let it be the whole du\'a.',
+        arabicText: 'قُلِ ٱدْعُوا۟ ٱللَّهَ أَوِ ٱدْعُوا۟ ٱلرَّحْمَـٰنَ',
+        transliteration: "quli id'ʿū l-laha awi id'ʿū l-raḥmāna",
+        translation: 'Say, call upon Allah or call upon the Most Merciful',
+        source: 'Surah Al-Isra 17:110 — Quran',
+        sourceType: 'quran_dua',
+        count: 30,
+      },
+      {
+        type: 'mindset',
+        icon: 'door',
+        title: 'No wrong door',
+        instruction:
+          'The objection in the story was about getting the form wrong. Allah answered it by widening the door rather than correcting the caller. Whatever clumsy version you have been holding back is accepted.',
+        source: "Tafsir al-Sa'di on 17:110",
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'mindset',
+        icon: 'star',
+        title: 'Ninety-nine ways in',
+        instruction:
+          'The Prophet ﷺ said Allah has ninety-nine names, and whoever takes them in will enter Paradise. Ninety-nine doors into one conversation. You only ever need the one that matches tonight.',
+        source: 'Sahih al-Bukhari 2736',
+        sourceType: 'prophetic_dhikr',
+        sourceGrading: 'sahih',
+      },
+    ]),
+    reflection:
+      'Which of His Names describes what you are missing right now? Use that one tonight and nothing else.',
+  },
+  {
+    id: 'q_angle_9_40_lonely',
+    contentId: 'quran_9_40',
+    mood: 'Lonely',
+    angle:
+      'Two men in a cave, the search party close enough to be heard, and the whole future of the religion sitting in that gap. What the Prophet ﷺ said was not a plan. It was "do not grieve, Allah is with us." Abu Bakr was not alone because a friend was there; both of them were not alone because of the third. Count your own room again with that arithmetic.',
+    angleSource: 'Tafsir Ibn Kathir',
+    action: 'Say "Allah is with us" about the situation you are facing by yourself.',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'mindset',
+        icon: 'crescent',
+        title: 'What do you think of two whose third is Allah?',
+        instruction:
+          'Abu Bakr said if any of them looked down at his feet he would see them. The Prophet ﷺ answered with that question. The odds did not change; the count did.',
+        source: 'Sahih al-Bukhari 3653',
+        sourceType: 'prophetic_dhikr',
+        sourceGrading: 'sahih',
+      },
+      {
+        type: 'verbal',
+        icon: 'shield',
+        title: 'The words from the cave',
+        instruction:
+          'Say them about your own situation, using "us" even if you are by yourself. The ayah is spoken to one frightened person by someone who could see what he could not.',
+        arabicText: 'لَا تَحْزَنْ إِنَّ ٱللَّهَ مَعَنَا',
+        transliteration: 'lā taḥzan inna l-laha maʿanā',
+        translation: 'Do not grieve; indeed Allah is with us',
+        source: 'Surah At-Tawbah 9:40 — Quran',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'physical',
+        icon: 'home',
+        title: 'Be the second man',
+        instruction:
+          'Abu Bakr\'s role in that cave was simply being there. Do that for one person this week — no advice, no fixing. Sitting with someone is a complete act.',
+        source: 'Surah At-Tawbah 9:40 — Quran',
+        sourceType: 'quran_dua',
+      },
+    ]),
+    reflection:
+      'Who is in your cave with you? And who could you be the second man for this week?',
+  },
+  {
+    id: 'q_angle_2_257_lonely',
+    contentId: 'quran_2_257',
+    mood: 'Lonely',
+    angle:
+      'Allah calls Himself your Wali — not a distant patron but the one responsible for you, the way a family takes responsibility for its own. And what the ayah says He does with that role is specific: He brings you out of darkness into light. Not sends instructions from outside it. Brings you out, which means He is in there with you first. Loneliness is one of the darknesses named in the plural here.',
+    angleSource: "Tafsir al-Sa'di",
+    action: 'Say "Ya Wali" and name the darkness you want to be brought out of.',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'mindset',
+        icon: 'candle',
+        title: 'Darknesses, plural. Light, singular.',
+        instruction:
+          'Al-Sa\'di notes the asymmetry: many kinds of dark, one light. There are countless ways to be lost and one direction out, which is why the way you got here matters less than which way you now face.',
+        source: "Tafsir al-Sa'di on 2:257",
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'verbal',
+        icon: 'hands-prayer',
+        title: 'Call Him by the role',
+        instruction:
+          'Say "Ya Wali" and then say plainly which darkness you mean. A wali is not a spectator — the word carries obligation toward the one it belongs to.',
+        arabicText: 'ٱللَّهُ وَلِىُّ ٱلَّذِينَ ءَامَنُوا۟',
+        transliteration: 'al-lahu waliyyu alladhīna āmanū',
+        translation: 'Allah is the Protecting Guardian of those who believe',
+        source: 'Surah Al-Baqarah 2:257 — Quran',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'physical',
+        icon: 'arrow-right',
+        title: 'One step toward the light',
+        instruction:
+          'Being brought out is a process with steps in it. Do one small thing today that moves toward people rather than away — a greeting, a reply you have been avoiding, showing up somewhere for ten minutes.',
+        source: 'Surah Al-Baqarah 2:257 — Quran',
+        sourceType: 'quran_dua',
+      },
+    ]),
+    reflection:
+      'Name the darkness you want out of. Now name one step — a small one — that faces the other way.',
+  },
+  {
+    id: 'q_angle_11_6_lonely',
+    contentId: 'quran_11_6',
+    mood: 'Lonely',
+    angle:
+      'Every creature on earth has its provision guaranteed, and the ayah adds something easy to skim past: He knows its dwelling place and its place of storage. Where it sleeps. Where it keeps what matters to it. That is not a statement about food — it is a statement about being located. Somewhere in creation, your address is known, and not by an administrator working from a list.',
+    angleSource: "Tafsir al-Sa'di",
+    action: 'Say where you are out loud to Allah — the actual room you are sitting in.',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'mindset',
+        icon: 'home',
+        title: 'He knows where you sleep',
+        instruction:
+          'Mustaqarr is the settling place, mustawda\' the place something is entrusted for keeping. The ayah names both for every creature. Nobody is unlocated in His knowledge, however unplaced you feel.',
+        source: "Tafsir al-Sa'di on 11:6",
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'verbal',
+        icon: 'chat',
+        title: 'Say where you are',
+        instruction:
+          'Out loud: name the room, the hour, what you can hear. It sounds strange for about four seconds. It is a way of noticing that the place you feel invisible in is a place He is already in.',
+        source: 'Surah Hud 11:6 — Quran',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'mindset',
+        icon: 'bird',
+        title: 'Provision finds the one who goes out',
+        instruction:
+          'The Prophet ﷺ said if you relied on Allah as He deserves, you would be provided like the birds — they leave hungry in the morning and return full. Note that they still leave. Being provided for is not the same as staying in.',
+        source: "Jami' at-Tirmidhi 2344",
+        sourceType: 'prophetic_dhikr',
+        sourceGrading: 'hasan',
+      },
+    ]),
+    reflection:
+      'Say the room you are in out loud, and the time. Did it change anything to name it to Him?',
+  },
+
+  // === GUILTY (pool expansion) ===
+  // 12 -> 25. Eleven new verses plus 6:54 and 8:33, already present under other
+  // moods. Hadith deliberately kept off the ones the existing Guilty angles
+  // already carry (Tirmidhi 2499, Bukhari 6306, Muslim 121, Muslim 2747,
+  // Abu Dawud 1521, Ibn Majah 4248, Tirmidhi 1987/3537, Bukhari 2449, Muslim 2759).
+  {
+    id: 'q_angle_2_37_guilty',
+    contentId: 'quran_2_37',
+    mood: 'Guilty',
+    angle:
+      'Read the direction of it. Adam did not compose an apology — he *received* words from his Lord, and then those words were accepted. The One who was wronged supplied the wording for the apology. If you have been stuck because you do not know what to say, or because nothing you draft sounds sufficient, that problem was solved in the thirty-seventh ayah of the Quran. He gives you the words too.',
+    angleSource: "Tafsir al-Sa'di",
+    action: 'Use words He already gave rather than waiting to find your own.',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'mindset',
+        icon: 'gift',
+        title: 'The apology was provided',
+        instruction:
+          'You are not required to be eloquent about this. The first repentance in human history used a script that Allah handed over. Yours can too.',
+        source: "Tafsir al-Sa'di on 2:37",
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'verbal',
+        icon: 'book-quran',
+        title: 'His Name at the end of the ayah',
+        instruction:
+          'The ayah closes by naming Him At-Tawwab — the One who turns back toward you. Recite the closing clause and let it answer the question of whether this will be received.',
+        arabicText: 'إِنَّهُۥ هُوَ ٱلتَّوَّابُ ٱلرَّحِيمُ',
+        transliteration: 'innahu huwa l-tawābu l-raḥīmu',
+        translation: 'Indeed, it is He who is the Accepting of repentance, the Merciful',
+        source: 'Surah Al-Baqarah 2:37 — Quran',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'physical',
+        icon: 'clock',
+        title: 'The rate he set',
+        instruction:
+          'The Prophet ﷺ said he sought Allah\'s forgiveness more than seventy times a day, and he had nothing to repent for the way you do. Say astaghfirullah a hundred times today, in gaps — walking, waiting, before sleep.',
+        source: 'Sahih al-Bukhari 6307',
+        sourceType: 'prophetic_dhikr',
+        sourceGrading: 'sahih',
+        count: 100,
+      },
+    ]),
+    reflection:
+      'What have you been waiting to be able to say properly? Say the given words instead, tonight.',
+  },
+  {
+    id: 'q_angle_20_122_guilty',
+    contentId: 'quran_20_122',
+    mood: 'Guilty',
+    angle:
+      'The ayah before this states Adam\'s disobedience without softening it. Then: his Lord chose him. Not tolerated, not readmitted on probation — chose. And the order runs chosen, then forgiven, then guided, which means the selecting happened on the far side of the failure. Whatever you have decided disqualifies you, this sequence was written down in the opposite order to the one your guilt assumes.',
+    angleSource: "Tafsir al-Sa'di",
+    action: 'Name the thing you think disqualified you, then read this ayah over it.',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'mindset',
+        icon: 'star',
+        title: 'Chosen comes after',
+        instruction:
+          '"Ijtabāhu" is a word of honour — selected, drawn near. It appears one ayah after the disobedience, not before it. Failure did not move him out of the category.',
+        source: "Tafsir al-Sa'di on 20:122",
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'physical',
+        icon: 'pen',
+        title: 'Write the disqualification',
+        instruction:
+          'Write the sentence your guilt keeps saying — "someone who did that cannot…". Then write the three verbs of this ayah underneath it: chose, forgave, guided. Leave the page where you will see it.',
+        source: 'Surah Taha 20:122 — Quran',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'verbal',
+        icon: 'compass',
+        title: 'Ask for the third one',
+        instruction:
+          'Guidance is listed last, after the pardon. Ask specifically for it: not only to be forgiven for what happened but to be shown the way that does not lead back there.',
+        source: 'Surah Taha 20:122 — Quran',
+        sourceType: 'quran_dua',
+      },
+    ]),
+    reflection:
+      'Finish this: "Someone who did that cannot…" Now read the ayah again. Which of you is right?',
+  },
+  {
+    id: 'q_angle_5_39_guilty',
+    contentId: 'quran_5_39',
+    mood: 'Guilty',
+    angle:
+      'Two verbs, and most people only do the first. Repents — and reforms. Aṣlaḥa means to put right, to repair the actual thing. This ayah sits in a passage about theft, so it is addressed to someone whose wrong left a mark on somebody else. If your guilt has been entirely internal so far, that is not the full instruction. The feeling is not the repentance; it is what precedes it.',
+    angleSource: "Tafsir al-Sa'di",
+    action: 'Do the concrete repair, not only the internal one — today.',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'physical',
+        icon: 'checkmark',
+        title: 'Name the repair',
+        instruction:
+          'What would actually putting this right look like? Returning something, correcting a record, an apology to a specific person. Write the one action, then set a time today to do it.',
+        source: "Surah Al-Ma'idah 5:39 — Quran",
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'mindset',
+        icon: 'brain',
+        title: 'Remorse is not the repair',
+        instruction:
+          'Feeling terrible can masquerade as doing something. The ayah names both verbs because the first without the second leaves the damage exactly where it was.',
+        source: "Tafsir al-Sa'di on 5:39",
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'verbal',
+        icon: 'hands-prayer',
+        title: 'Ask for the courage to do it',
+        instruction:
+          'The repair is usually harder than the remorse, which is why people stop at the remorse. Ask Him for the specific courage this one needs, by name.',
+        source: "Surah Al-Ma'idah 5:39 — Quran",
+        sourceType: 'quran_dua',
+      },
+    ]),
+    reflection:
+      'What would "putting it right" actually involve? Write it, and notice whether you have been avoiding it by feeling bad instead.',
+  },
+  {
+    id: 'q_angle_9_104_guilty',
+    contentId: 'quran_9_104',
+    mood: 'Guilty',
+    angle:
+      'The ayah opens with a question — do they not know? — and it is aimed at people who have already repented and cannot believe it landed. That is a different problem from sin, and it gets its own verse. He accepts. He receives. He is At-Tawwab. Your doubt about whether it counted is the thing being argued with here, not the thing you did.',
+    angleSource: 'Tafsir Ibn Kathir',
+    action: 'Give something in charity as a sealing act, however small.',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'mindset',
+        icon: 'door',
+        title: 'The doubt is the subject',
+        instruction:
+          'Notice who the question is for. Not the unrepentant — the ones who turned back and are still checking over their shoulder. He addressed that specifically.',
+        source: 'Tafsir Ibn Kathir on 9:104',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'physical',
+        icon: 'honey',
+        title: 'Charity in the same breath',
+        instruction:
+          'The ayah pairs accepting repentance with receiving charity in one sentence. Give something today — the amount is not the point, the pairing is. The Prophet ﷺ said charity extinguishes sin as water extinguishes fire.',
+        source: "Jami' at-Tirmidhi 614",
+        sourceType: 'sunnah_action',
+        sourceGrading: 'hasan',
+      },
+      {
+        type: 'verbal',
+        icon: 'leaf',
+        title: 'Stop re-submitting it',
+        instruction:
+          'Say the repentance once more, deliberately, as the last time. Then stop. Repeating it because you doubt the first one is answering the ayah with the very doubt it came to remove.',
+        source: 'Surah At-Tawbah 9:104 — Quran',
+        sourceType: 'quran_dua',
+      },
+    ]),
+    reflection:
+      'Do you doubt that He forgives, or that He forgave *you*? They are different problems — which is yours?',
+  },
+  {
+    id: 'q_angle_23_118_guilty',
+    contentId: 'quran_23_118',
+    mood: 'Guilty',
+    angle:
+      'Look at how little is asked of you here. Two verbs, forgive and have mercy, and no object named — not "forgive this specific thing" but simply forgive. Which means it covers what you can put into words and the part you cannot. On the nights when you do not have the energy to itemise anything, this is the whole du\'a, and Allah closed a surah with it.',
+    angleSource: "Tafsir al-Sa'di",
+    action: 'Say the shortest complete repentance in the Quran, three times.',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'verbal',
+        icon: 'hands-prayer',
+        title: 'Six words',
+        instruction:
+          'Say it three times, unhurried. Nothing needs to be listed. The absence of an object in the du\'a is deliberate — it reaches what you have not managed to name.',
+        arabicText: 'رَّبِّ ٱغْفِرْ وَٱرْحَمْ وَأَنتَ خَيْرُ ٱلرَّٰحِمِينَ',
+        transliteration: "rabbi igh'fir wa-ir'ḥam wa-anta khayru l-rāḥimīna",
+        translation: 'My Lord, forgive and have mercy, and You are the best of the merciful',
+        source: "Surah Al-Mu'minun 23:118 — Quran",
+        sourceType: 'quran_dua',
+        count: 3,
+      },
+      {
+        type: 'mindset',
+        icon: 'leaf',
+        title: 'Best of the merciful',
+        instruction:
+          'The du\'a ends by ranking Him against every other source of mercy you have known. Whatever the most forgiving person in your life would have done, this is above it.',
+        source: "Tafsir al-Sa'di on 23:118",
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'physical',
+        icon: 'moon',
+        title: 'For the nights with nothing left',
+        instruction:
+          'Learn it by heart tonight. It is short enough to survive exhaustion, which is exactly when the longer repentances go unsaid.',
+        source: "Surah Al-Mu'minun 23:118 — Quran",
+        sourceType: 'quran_dua',
+      },
+    ]),
+    reflection:
+      'What part of this you cannot put into words? The du\'a names no object on purpose — let it carry that part.',
+  },
+  {
+    id: 'q_angle_40_3_guilty',
+    contentId: 'quran_40_3',
+    mood: 'Guilty',
+    angle:
+      'Count the descriptions and their order: Forgiver of sin, Acceptor of repentance, severe in punishment, Owner of abundance. Two of mercy first, then the warning, then abundance — the severity is bracketed on both sides. That is not an accident of phrasing. If your picture of Allah leads with the third item, you are reading the ayah out of order, and the order is His.',
+    angleSource: "Tafsir al-Sa'di",
+    action: 'Say the first two Names of the ayah before you say anything else to Him tonight.',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'verbal',
+        icon: 'book-quran',
+        title: 'Recite them in order',
+        instruction:
+          'Say the opening of the ayah aloud and notice the sequence. The severity is real and it is not first, and it is not last either.',
+        arabicText: 'غَافِرِ ٱلذَّنۢبِ وَقَابِلِ ٱلتَّوْبِ',
+        transliteration: 'ghāfiri l-dhanbi waqābili l-tawbi',
+        translation: 'The Forgiver of sin, the Acceptor of repentance',
+        source: 'Surah Ghafir 40:3 — Quran',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'mindset',
+        icon: 'chart',
+        title: 'Two mercies, one warning',
+        instruction:
+          'Ibn Kathir distinguishes them: ghāfir al-dhanb covers the sin, qābil al-tawb the one turning. Mercy is given two separate descriptions and punishment one. Weight your fear accordingly.',
+        source: 'Tafsir Ibn Kathir on 40:3',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'physical',
+        icon: 'pen',
+        title: 'Reorder your own sentence',
+        instruction:
+          'Write how you would describe Allah in one line, honestly, as your guilt currently pictures Him. Then write the ayah\'s order underneath. Notice which one you have been praying to.',
+        source: 'Surah Ghafir 40:3 — Quran',
+        sourceType: 'quran_dua',
+      },
+    ]),
+    reflection:
+      'Describe Allah in one sentence as your guilt pictures Him. Does that sentence match the order in this ayah?',
+  },
+  {
+    id: 'q_angle_51_18_guilty',
+    contentId: 'quran_51_18',
+    mood: 'Guilty',
+    angle:
+      'These are people who barely slept, who spent the night standing in prayer — and what they do with the last hour before dawn is ask for forgiveness. Not celebrate. Istighfar is described here as the practice of the diligent, not the remedy of the negligent. Which reframes what your own seeking of forgiveness means: it is not evidence that you are failing. It is what the closest ones do.',
+    angleSource: 'Tafsir Ibn Kathir',
+    action: 'Set an alarm for the last hour before Fajr and say istighfar then.',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'mindset',
+        icon: 'star',
+        title: 'The practice of the diligent',
+        instruction:
+          'Read the two ayahs before this one: they hardly slept for worship. Then they seek forgiveness. Istighfar is not the mark of the worst among us.',
+        source: 'Tafsir Ibn Kathir on 51:18',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'physical',
+        icon: 'sunrise',
+        title: 'The hour named in the ayah',
+        instruction:
+          'Asḥār is the last stretch of night before dawn. Set an alarm for twenty minutes before Fajr once this week and use it for nothing but istighfar. It is the hour this ayah points at specifically.',
+        source: 'Surah Adh-Dhariyat 51:18 — Quran',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'verbal',
+        icon: 'candle',
+        title: 'Seventy in that hour',
+        instruction:
+          'Recite the ayah\'s own phrase, then do what it describes: say astaghfirullah slowly, seventy times. No counting rules, no perfect concentration required — let the number carry you when the feeling will not.',
+        arabicText: 'وَبِٱلْأَسْحَارِ هُمْ يَسْتَغْفِرُونَ',
+        transliteration: 'wabil-asḥāri hum yastaghfirūna',
+        translation: 'And in the hours before dawn they would ask forgiveness',
+        source: 'Surah Adh-Dhariyat 51:18 — Quran',
+        sourceType: 'quran_dua',
+        count: 70,
+      },
+    ]),
+    reflection:
+      'You treat needing forgiveness as a failing. The people in this ayah prayed all night and still asked. What does that make it?',
+  },
+  {
+    id: 'q_angle_71_10_guilty',
+    contentId: 'quran_71_10',
+    mood: 'Guilty',
+    angle:
+      'Read what Nuh promises in the two ayahs after this one: rain in abundance, wealth, children, gardens, rivers. All of it attached to istighfar. Seeking forgiveness is presented here as something that unblocks a life, not only something that clears a record. If things have felt stuck — provision, work, a situation that will not move — the scholars prescribe this ayah for exactly that, and Al-Ghaffar is the Name it rests on.',
+    angleSource: "Tafsir al-Sa'di",
+    action: 'Say istighfar over the stuck situation, not only over the sin.',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'mindset',
+        icon: 'door',
+        title: 'It opens things',
+        instruction:
+          'Verses 11 and 12 list rain, wealth, children, gardens and rivers as the consequence. Istighfar is described as a cause of provision, which is why it is prescribed for a stalled affair and not only for a guilty conscience.',
+        source: "Tafsir al-Sa'di on 71:10-12",
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'verbal',
+        icon: 'hands-prayer',
+        title: 'The instruction itself',
+        instruction:
+          'Say the ayah\'s command as it is written, then bring to mind the thing in your life that has not moved for months and say astaghfirullah over that too.',
+        arabicText: 'ٱسْتَغْفِرُوا۟ رَبَّكُمْ إِنَّهُۥ كَانَ غَفَّارًا',
+        transliteration: "is'taghfirū rabbakum innahu kāna ghaffāran",
+        translation: 'Ask forgiveness of your Lord. Indeed, He is ever a Perpetual Forgiver',
+        source: 'Surah Nuh 71:10 — Quran',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'physical',
+        icon: 'clock',
+        title: 'Nuh preached for 950 years',
+        instruction:
+          'He said this to people who had refused him for the better part of a millennium. If you are measuring your repentance against how long you have been stuck in the same thing, his timescale should settle that.',
+        source: 'Surah Nuh 71:10 — Quran',
+        sourceType: 'quran_dua',
+      },
+    ]),
+    reflection:
+      'What in your life has not moved in months? Say istighfar over that tonight and see what it is attached to.',
+  },
+  {
+    id: 'q_angle_110_3_guilty',
+    contentId: 'quran_110_3',
+    mood: 'Guilty',
+    angle:
+      'This was revealed after the conquest of Makkah — the single greatest victory of his life — and the instruction is: praise Him and ask forgiveness. Not celebrate. Aisha said he repeated it constantly after this came down. So istighfar is not only what you do in the pit. It belongs at the summit too, because nothing you accomplish is performed as well as it was owed. That includes the good things you did this week.',
+    angleSource: 'Tafsir Ibn Kathir',
+    action: 'Ask forgiveness for the shortfall inside something you did well.',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'mindset',
+        icon: 'muscle',
+        title: 'Istighfar at the summit',
+        instruction:
+          'The greatest day of his life, and the command is to seek forgiveness. Nothing you did well was done as well as it deserved — that gap is what this covers, and noticing it is not self-flagellation.',
+        source: 'Tafsir Ibn Kathir on 110:3',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'verbal',
+        icon: 'star',
+        title: 'What he said after it',
+        instruction:
+          'Aisha (RA) reported he said this often once the surah came down. Say it now, over the best thing you did this week rather than the worst.',
+        arabicText: 'سُبْحَانَكَ اللَّهُمَّ وَبِحَمْدِكَ اللَّهُمَّ اغْفِرْ لِي',
+        transliteration: 'Subhanaka Allahumma wa bihamdika, Allahumma ighfir li',
+        translation: 'Glory be to You, O Allah, and praise be to You. O Allah, forgive me',
+        source: 'Sahih al-Bukhari 4967',
+        sourceType: 'prophetic_dhikr',
+        sourceGrading: 'sahih',
+      },
+      {
+        type: 'physical',
+        icon: 'checkmark',
+        title: 'Praise first, then ask',
+        instruction:
+          'The ayah puts tasbih before istighfar. Name one thing that went right this week and thank Him for it out loud, and only then ask forgiveness for how it fell short.',
+        source: 'Surah An-Nasr 110:3 — Quran',
+        sourceType: 'quran_dua',
+      },
+    ]),
+    reflection:
+      'Name the best thing you did this week. Now name what was still owed in it — without turning that into a reason to dismiss the good.',
+  },
+  {
+    id: 'q_angle_3_16_guilty',
+    contentId: 'quran_3_16',
+    mood: 'Guilty',
+    angle:
+      'Look at the logic they use: we believed, therefore forgive us. Faith is offered as the grounds for the request, not as something they must prove first. And note where this sits — in a list of the descriptions of the righteous. Asking to be forgiven is what the good are characterised by. It is not the thing that removes you from the list; it is one of the entries on it.',
+    angleSource: "Tafsir al-Sa'di",
+    action: 'Say the du\'a using your belief as the reason, not your record.',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'verbal',
+        icon: 'hands-prayer',
+        title: 'Believing is the ground you stand on',
+        instruction:
+          'Say it and hear the structure — we believed, *so* forgive. You are not petitioning on the strength of your conduct. You are petitioning on the strength of who you are turning to.',
+        arabicText: 'رَبَّنَآ إِنَّنَآ ءَامَنَّا فَٱغْفِرْ لَنَا ذُنُوبَنَا',
+        transliteration: "rabbanā innanā āmannā fa-igh'fir lanā dhunūbanā",
+        translation: 'Our Lord, indeed we have believed, so forgive us our sins',
+        source: 'Surah Ali Imran 3:16 — Quran',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'mindset',
+        icon: 'chart',
+        title: 'It is on the list, not against it',
+        instruction:
+          'This du\'a appears among the traits of the righteous. People who ask for forgiveness are being described as good here, not as suspect.',
+        source: "Tafsir al-Sa'di on 3:16",
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'physical',
+        icon: 'sunrise',
+        title: 'The hour they said it',
+        instruction:
+          'The very next ayah describes them as those who seek forgiveness before dawn. Attach this du\'a to the end of your night rather than to the moment guilt happens to strike.',
+        source: 'Surah Ali Imran 3:17 — Quran',
+        sourceType: 'quran_dua',
+      },
+    ]),
+    reflection:
+      'Are you asking on the strength of your record or on the strength of who you are asking? One of those runs out.',
+  },
+  {
+    id: 'q_angle_4_17_guilty',
+    contentId: 'quran_4_17',
+    mood: 'Guilty',
+    angle:
+      'You may have read this ayah as a door closing — only for those who sinned "in ignorance", only if they repent "soon". The companions read it the other way. Every deliberate sin is a kind of ignorance in the moment you commit it, and "soon" means before death arrives. The window is your whole life. What the ayah is actually excluding is the person who intends never to return, and you are not him, or you would not be reading this.',
+    angleSource: 'Tafsir Ibn Kathir',
+    action: 'Stop treating a delay as a disqualification — repent now, however late.',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'mindset',
+        icon: 'brain',
+        title: 'What "in ignorance" covers',
+        instruction:
+          'Ibn Kathir records the companions holding that anyone who disobeys is ignorant in that moment, whether or not they knew better. The phrase widens the ayah rather than narrowing it.',
+        source: 'Tafsir Ibn Kathir on 4:17',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'mindset',
+        icon: 'clock',
+        title: 'What "soon" is measured against',
+        instruction:
+          'Al-Sa\'di reads "min qarīb" as before death arrives. Soon is relative to a lifetime, not to hours. The years you spent not returning are inside the window, not outside it.',
+        source: "Tafsir al-Sa'di on 4:17",
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'physical',
+        icon: 'arrow-right',
+        title: 'Close it now anyway',
+        instruction:
+          'The window is long and it does close. Do not use its length as a reason to keep the matter open — say it tonight, not in principle at some point.',
+        source: 'Surah An-Nisa 4:17 — Quran',
+        sourceType: 'quran_dua',
+      },
+    ]),
+    reflection:
+      'How long have you been meaning to repent for this? The delay is not the disqualifier — but what is it costing you?',
+  },
+  {
+    id: 'q_angle_6_54_guilty',
+    contentId: 'quran_6_54',
+    mood: 'Guilty',
+    angle:
+      'He wrote mercy upon Himself. Not "He is merciful" as a description — He made it binding on Himself, an obligation nobody could impose from outside. And the ayah instructs that peace be said to those who come, before any account is taken of what they did. That is the greeting at the door. Whatever you are bracing for as you approach Him, the text has already told you what is said first.',
+    angleSource: "Tafsir al-Sa'di",
+    action: 'Approach Him expecting the greeting the ayah names, not the one you fear.',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'mindset',
+        icon: 'door',
+        title: 'Peace, before the accounting',
+        instruction:
+          'The order in the ayah is salam first. You have probably been rehearsing a confrontation. That is not the scene described.',
+        source: "Tafsir al-Sa'di on 6:54",
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'mindset',
+        icon: 'lock',
+        title: 'Binding on Himself',
+        instruction:
+          '"Kataba ʿalā nafsihi ar-rahmah" — He prescribed mercy upon Himself. The Prophet ﷺ said that when Allah decreed the creation He wrote in a book kept with Him: My mercy prevails over My wrath.',
+        source: 'Sahih al-Bukhari 7404',
+        sourceType: 'prophetic_dhikr',
+        sourceGrading: 'sahih',
+      },
+      {
+        type: 'physical',
+        icon: 'hands-prayer',
+        title: 'Come as the ayah describes',
+        instruction:
+          'Pray two rak\'ahs and begin them expecting to be received rather than assessed. If that feels presumptuous, that feeling is the thing this ayah was revealed against.',
+        source: "Surah Al-An'am 6:54 — Quran",
+        sourceType: 'quran_dua',
+      },
+    ]),
+    reflection:
+      'What do you expect Him to say when you turn to Him? Compare that to what the ayah actually says is said first.',
+  },
+  {
+    id: 'q_angle_8_33_guilty',
+    contentId: 'quran_8_33',
+    mood: 'Guilty',
+    angle:
+      'Allah names two things that hold back punishment: the presence of the Prophet ﷺ among them, and their seeking of forgiveness. One of those is no longer available and the other still is. Istighfar is described here as an active shield over a community, not a private transaction. The words you say tonight do something in the world, not only in your record.',
+    angleSource: 'Tafsir Ibn Kathir',
+    action: 'Seek forgiveness for others by name, not only for yourself.',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'mindset',
+        icon: 'shield',
+        title: 'The one that remains',
+        instruction:
+          'Two protections named; one departed with him ﷺ. The scholars note that istighfar was left behind deliberately as the safeguard still in your hands.',
+        source: 'Tafsir Ibn Kathir on 8:33',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'verbal',
+        icon: 'heart',
+        title: 'Ask for someone else',
+        instruction:
+          'Allah commands the Prophet ﷺ himself to seek forgiveness for his own sin and for the believing men and women in one breath. Recite the clause, then do it — name two people as you say it.',
+        arabicText: 'وَٱسْتَغْفِرْ لِذَنۢبِكَ وَلِلْمُؤْمِنِينَ وَٱلْمُؤْمِنَٰتِ',
+        transliteration: "wa-is'taghfir lidhanbika walil'mu'minīna wal-mu'mināti",
+        translation: 'And ask forgiveness for your sin and for the believing men and believing women',
+        source: 'Surah Muhammad 47:19 — Quran',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'mindset',
+        icon: 'home',
+        title: 'It is not only about you',
+        instruction:
+          'Guilt turns everything inward. This ayah points the other way: your istighfar is described as covering a community. Turning outward is part of the cure, not a distraction from it.',
+        source: 'Surah Al-Anfal 8:33 — Quran',
+        sourceType: 'quran_dua',
+      },
+    ]),
+    reflection:
+      'Guilt has made this all about you. Who else could you ask forgiveness for tonight, by name?',
+  },
+
+  // === TIRED (pool expansion) ===
+  // 13 -> 24. Seven new verses plus 28:73, 2:286, 2:45 and 94:5, already in the
+  // file under other moods. The sunnah layer already serves Tired with qaylulah,
+  // Ya Hayyu Ya Qayyum, Alhamdulillah 100x and istighfar 100x — not reused here.
+  {
+    id: 'q_angle_52_48_tired',
+    contentId: 'quran_52_48',
+    mood: 'Tired',
+    angle:
+      'Bi-aʿyuninā — you are in Our eyes. Not watched the way a supervisor watches, but kept the way you keep something valuable in sight. And notice it is given as the *reason* for the patience being asked, not as a reward afterwards. The exhausting part of a long stretch is usually the suspicion that none of it is being seen. This ayah answers that before it asks anything of you.',
+    angleSource: 'Tafsir Ibn Kathir',
+    action: 'Say alhamdulillah at the moment you get up, before anything else.',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'mindset',
+        icon: 'eye',
+        title: 'Watched over, not just watched',
+        instruction:
+          'Ibn Kathir renders the phrase as under Our observation and Our protection. The endurance is not happening in an empty room. That is the whole argument the ayah makes.',
+        source: 'Tafsir Ibn Kathir on 52:48',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'verbal',
+        icon: 'sunrise',
+        title: 'Attached to getting up',
+        instruction:
+          'The ayah ties praise to "when you arise" — the hardest moment for anyone worn down. Say subhanallahi wa bihamdih the second your feet touch the floor, before the day starts making demands.',
+        arabicText: 'وَسَبِّحْ بِحَمْدِ رَبِّكَ حِينَ تَقُومُ',
+        transliteration: 'wasabbiḥ biḥamdi rabbika ḥīna taqūmu',
+        translation: 'And exalt Him with praise of your Lord when you arise',
+        source: 'Surah At-Tur 52:48 — Quran',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'physical',
+        icon: 'pen',
+        title: 'Name the unseen stretch',
+        instruction:
+          'Write the thing you have been doing that nobody has acknowledged — the caring, the covering, the showing up. One line. Then read the ayah over it.',
+        source: 'Surah At-Tur 52:48 — Quran',
+        sourceType: 'quran_dua',
+      },
+    ]),
+    reflection:
+      'What have you been carrying that nobody has noticed? Does it change the weight to know it was in view?',
+  },
+  {
+    id: 'q_angle_70_5_tired',
+    contentId: 'quran_70_5',
+    mood: 'Tired',
+    angle:
+      'Six words, and the important one is jamīl — beautiful. Scholars define ṣabr jamīl as patience without complaint to creation, not patience without pain. So you are not being told to feel less. You are being told where to take it. Half of what exhausts you in a hard season is the effort of explaining it to people who cannot carry it, and this ayah quietly removes that job.',
+    angleSource: "Tafsir al-Sa'di",
+    action: 'Take today\'s complaint to Allah instead of to the next person who asks.',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'mindset',
+        icon: 'brain',
+        title: 'Beautiful, not painless',
+        instruction:
+          'Ṣabr jamīl is patience with no resentment in it and no complaint to people — not patience with no ache. You are allowed to find this hard while doing it well.',
+        source: "Tafsir al-Sa'di on 70:5",
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'verbal',
+        icon: 'leaf',
+        title: 'Six words for a long day',
+        instruction:
+          'Short enough to say on the stairs, in a queue, between tasks. Say it when you feel the urge to explain yourself to someone who did not ask well.',
+        arabicText: 'فَٱصْبِرْ صَبْرًا جَمِيلًا',
+        transliteration: "fa-iṣ'bir ṣabran jamīlan",
+        translation: 'So be patient with gracious patience',
+        source: "Surah Al-Ma'arij 70:5 — Quran",
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'physical',
+        icon: 'moon',
+        title: 'Stop narrating it',
+        instruction:
+          'For one day, do not retell your difficulty to anyone. Notice how much energy the retelling was taking. Take the whole thing to Him at night instead, in full.',
+        source: "Surah Al-Ma'arij 70:5 — Quran",
+        sourceType: 'quran_dua',
+      },
+    ]),
+    reflection:
+      'How many times did you explain your situation to someone this week? What did each retelling cost you?',
+  },
+  {
+    id: 'q_angle_40_55_tired',
+    contentId: 'quran_40_55',
+    mood: 'Tired',
+    angle:
+      'Three instructions in one breath, and they hold each other up: be patient, because the promise is true — then seek forgiveness, then praise Him morning and evening. Notice istighfar sits in the middle. What usually drains endurance is not the difficulty but the guilt a person hauls into it, the sense of being behind before the day starts. Put that down first and the patience becomes possible.',
+    angleSource: "Tafsir al-Sa'di",
+    action: 'Two fixed points today — say subhanallahi wa bihamdih at morning and at evening.',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'mindset',
+        icon: 'lock',
+        title: 'The promise is the anchor',
+        instruction:
+          'Patience is not asked for on its own — it is asked for on the grounds that the promise is true. If the endurance feels impossible, the thing to shore up is the certainty underneath it, not the gritted teeth.',
+        source: "Tafsir al-Sa'di on 40:55",
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'verbal',
+        icon: 'clock',
+        title: 'Morning and evening, fixed',
+        instruction:
+          'The ayah names two times, not a continuous effort. Two anchored moments in the day are more sustainable than a vague intention to remember Him throughout it.',
+        arabicText: 'وَسَبِّحْ بِحَمْدِ رَبِّكَ بِٱلْعَشِىِّ وَٱلْإِبْكَـٰرِ',
+        transliteration: "wasabbiḥ biḥamdi rabbika bil-ʿashiyi wal-ib'kāri",
+        translation: 'And exalt Him with praise of your Lord in the evening and the morning',
+        source: 'Surah Ghafir 40:55 — Quran',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'physical',
+        icon: 'rewind',
+        title: 'Put the backlog down',
+        instruction:
+          'Say astaghfirullah for everything you are behind on — the missed, the half-done, the owed — once, as a single act. Carrying it into tomorrow is what makes tomorrow heavy before it starts.',
+        source: 'Surah Ghafir 40:55 — Quran',
+        sourceType: 'quran_dua',
+      },
+    ]),
+    reflection:
+      'How much of your tiredness is the work itself, and how much is the guilt you carry about it?',
+  },
+  {
+    id: 'q_angle_7_42_tired',
+    contentId: 'quran_7_42',
+    mood: 'Tired',
+    angle:
+      'Read where the clause is placed. He describes the righteous, then interrupts Himself mid-sentence — We charge no soul except within its capacity — and only then names Paradise. The limit was inserted so that nobody hearing the standard would give up on reaching it. And wusʿ means capacity, what you can bear comfortably. Not the maximum you could survive. You have been using the wrong measure.',
+    angleSource: "Tafsir al-Sa'di",
+    action: 'Set today\'s target at what you can bear comfortably, not what you could survive.',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'mindset',
+        icon: 'chart',
+        title: 'Wusʿ is not your maximum',
+        instruction:
+          'Capacity here means the comfortable range, not the outer limit. Living permanently at the edge of what you can survive is not the standard being described, and treating it as such is your addition.',
+        source: "Tafsir al-Sa'di on 7:42",
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'physical',
+        icon: 'target',
+        title: 'Reset today\'s number',
+        instruction:
+          'Whatever you planned for today, cut it to what you could do without depleting yourself. Then do that. Finishing a smaller list is worth more than abandoning a bigger one.',
+        source: "Surah Al-A'raf 7:42 — Quran",
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'mindset',
+        icon: 'door',
+        title: 'The mercy is mid-sentence',
+        instruction:
+          'He could have stated the standard and left it. Instead the limit is written into the same ayah as the promise. That placement is the reassurance — it was never a bar you had to clear alone.',
+        source: "Surah Al-A'raf 7:42 — Quran",
+        sourceType: 'quran_dua',
+      },
+    ]),
+    reflection:
+      'Are you living at your capacity or at your maximum? Name the difference in one concrete thing you did this week.',
+  },
+  {
+    id: 'q_angle_20_132_tired',
+    contentId: 'quran_20_132',
+    mood: 'Tired',
+    angle:
+      'The middle of this ayah lifts something off you specifically: We ask you not for provision; We provide for you. If you are the one everybody depends on — the earner, the carer, the one who keeps it running — that sentence reassigns the job. What is asked of you is steadfastness in prayer. What is not asked of you is supplying the outcome. You have been doing both and calling it responsibility.',
+    angleSource: 'Tafsir Ibn Kathir',
+    action: 'Name one thing you have been supplying that was never assigned to you.',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'mindset',
+        icon: 'shield',
+        title: 'That part is His',
+        instruction:
+          'Ibn Kathir notes the reversal: the one thing Allah does not ask of you is provision. You are exhausted partly from carrying a responsibility that the ayah explicitly places elsewhere.',
+        source: 'Tafsir Ibn Kathir on 20:132',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'verbal',
+        icon: 'hands-prayer',
+        title: 'Say the reassignment',
+        instruction:
+          'Read the clause aloud with the person or bill or outcome in mind that you have been shouldering. Say it as a statement of fact, not a wish.',
+        arabicText: 'لَا نَسْـَٔلُكَ رِزْقًا ۖ نَّحْنُ نَرْزُقُكَ',
+        transliteration: "lā nasaluka riz'qan naḥnu narzuquka",
+        translation: 'We ask you not for provision; We provide for you',
+        source: 'Surah Taha 20:132 — Quran',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'physical',
+        icon: 'mosque',
+        title: 'The part that is yours',
+        instruction:
+          'Iṣṭabir is an intensified patience — sustained effort over time. Applied to one thing only: the prayer. Protect the next salah as the one non-negotiable and let something else slip today instead.',
+        source: 'Surah Taha 20:132 — Quran',
+        sourceType: 'quran_dua',
+      },
+    ]),
+    reflection:
+      'What are you supplying that was never asked of you? Who told you it was your job?',
+  },
+  {
+    id: 'q_angle_17_19_tired',
+    contentId: 'quran_17_19',
+    mood: 'Tired',
+    angle:
+      'Mashkūr — appreciated, thanked. Allah describes Himself as receiving your effort with gratitude, which is a strange and enormous word to use of the Creator toward a servant. Not "recorded", not "rewarded". Thanked. Whatever you dragged yourself through this week, the response on the other side is not an audit. Ash-Shakur is a Name He chose, and it means small efforts get met with more than they were worth.',
+    angleSource: "Tafsir al-Sa'di",
+    action: 'List three things you did this week and read the word "thanked" over them.',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'mindset',
+        icon: 'gem',
+        title: 'He calls it thanks',
+        instruction:
+          'Al-Sa\'di stops on this word. The effort is not merely accepted — it is received with gratitude by the One who needed nothing from it. That is the register your week is being read in.',
+        source: "Tafsir al-Sa'di on 17:19",
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'physical',
+        icon: 'pen',
+        title: 'Three, however small',
+        instruction:
+          'Write three things you did this week for His sake — a prayer you nearly skipped, patience you nearly lost, a kindness nobody saw. Exhaustion only shows you the shortfall; this corrects the record deliberately.',
+        source: 'Surah Al-Isra 17:19 — Quran',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'verbal',
+        icon: 'star',
+        title: 'Intention is one of the three',
+        instruction:
+          'The ayah names desire, effort and faith. If the effort was small this week, the intention still counts as one of the named conditions. Renew it out loud for tomorrow before you sleep.',
+        source: 'Surah Al-Isra 17:19 — Quran',
+        sourceType: 'quran_dua',
+      },
+    ]),
+    reflection:
+      'Write the three smallest good things you did this week. Now read them as something He thanked you for.',
+  },
+  {
+    id: 'q_angle_12_18_tired',
+    contentId: 'quran_12_18',
+    mood: 'Tired',
+    angle:
+      'Yaqub is handed a bloodied shirt and knows immediately it is a lie. He says so — plainly, without softening it — and then does not rage. What he reaches for is two things: beautiful patience, and Allah as the One whose help is sought. That second half matters when you are depleted. The patience is not self-generated. Al-Mustaʿan is where it comes from, which is why it can hold when you have nothing of your own left.',
+    angleSource: 'Tafsir Ibn Kathir',
+    action: 'Say "wallahu al-mustaʿan" over the thing you have no strength left for.',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'verbal',
+        icon: 'shield',
+        title: 'Borrowed, not manufactured',
+        instruction:
+          'Say it about the specific situation. The point of the phrase is that the endurance is drawn from Him rather than squeezed out of a reserve you have already emptied.',
+        arabicText: 'وَٱللَّهُ ٱلْمُسْتَعَانُ',
+        transliteration: "wal-lahu l-mus'taʿānu",
+        translation: 'And Allah is the one whose help is sought',
+        source: 'Surah Yusuf 12:18 — Quran',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'mindset',
+        icon: 'brain',
+        title: 'He named it accurately first',
+        instruction:
+          'Yaqub did not pretend the shirt was convincing. Patience did not require him to misdescribe what had happened. You can be clear-eyed about how bad it is and still not be destroyed by it.',
+        source: 'Tafsir Ibn Kathir on 12:18',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'physical',
+        icon: 'candle',
+        title: 'One thing, handed over',
+        instruction:
+          'Pick the single item you have no strength for and say the phrase over it by name. Then leave it until tomorrow without guilt — you have handed it to the One who is asked for help.',
+        source: 'Surah Yusuf 12:18 — Quran',
+        sourceType: 'quran_dua',
+      },
+    ]),
+    reflection:
+      'What are you out of strength for? Say it by name — then say who you are asking for help with it.',
+  },
+  {
+    id: 'q_angle_28_73_tired',
+    contentId: 'quran_28_73',
+    mood: 'Tired',
+    angle:
+      'Out of His mercy He made the night and the day — the night so you can rest in it, the day so you can seek His bounty. Both halves are named as mercy. If you have been treating rest as the part you steal and work as the part that counts, you have kept half of a gift and called the other half indulgence. He built the pause into the design and then called the whole arrangement rahmah.',
+    angleSource: "Tafsir al-Sa'di",
+    action: 'Take the night as the half of the design you have been skipping.',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'mindset',
+        icon: 'moon',
+        title: 'Both halves are the mercy',
+        instruction:
+          'The ayah does not present rest as recovery time for the productive part. It names night and day together as one act of mercy. Resting is not borrowing against the gift; it is receiving it.',
+        source: "Tafsir al-Sa'di on 28:73",
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'physical',
+        icon: 'home',
+        title: 'Give the night back its job',
+        instruction:
+          'Pick the hour you usually steal from sleep and give it back tonight. One night. Notice what tomorrow is like when the design is followed rather than overridden.',
+        source: 'Surah Al-Qasas 28:73 — Quran',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'verbal',
+        icon: 'star',
+        title: 'Thank Him for the pause',
+        instruction:
+          'The ayah ends "that perhaps you will be grateful." Say alhamdulillah specifically for rest — not for what you accomplish, for the permission to stop.',
+        source: 'Surah Al-Qasas 28:73 — Quran',
+        sourceType: 'quran_dua',
+      },
+    ]),
+    reflection:
+      'Do you thank Him for what you got done, or for being allowed to stop? Which one did you last say out loud?',
+  },
+  {
+    id: 'q_angle_2_286_tired',
+    contentId: 'quran_2_286',
+    mood: 'Tired',
+    angle:
+      'The first line is a guarantee, not encouragement: Allah does not burden a soul beyond its capacity. Which means the load you are under is, by definition, one you can carry — and if it feels heavier than that, some of what you are carrying was not assigned. You added it. The rest of the ayah is the du\'a for exactly this, and Allah answered every line of it with "I have done so."',
+    angleSource: 'Tafsir Ibn Kathir',
+    action: 'Identify one weight in your load that Allah did not put there.',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'physical',
+        icon: 'pen',
+        title: 'Sort the load',
+        instruction:
+          'Two columns: what is genuinely required of you, and what you took on — to be seen a certain way, to avoid a conversation, to meet a standard nobody set. The second column is the overage.',
+        source: 'Surah Al-Baqarah 2:286 — Quran',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'verbal',
+        icon: 'hands-prayer',
+        title: 'The line for an overloaded soul',
+        instruction:
+          'Say it as it is written. This is the du\'a Allah put in your mouth for this exact state, and the Prophet ﷺ reported that Allah answered each request in it with "I have done so."',
+        arabicText: 'رَبَّنَا وَلَا تُحَمِّلْنَا مَا لَا طَاقَةَ لَنَا بِهِۦ',
+        transliteration: "rabbanā walā tuḥammil'nā mā lā ṭāqata lanā bihi",
+        translation: 'Our Lord, do not burden us with what we have no strength to bear',
+        source: 'Surah Al-Baqarah 2:286 — Quran',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'physical',
+        icon: 'moon',
+        title: 'The two that suffice',
+        instruction:
+          'The Prophet ﷺ said whoever recites the last two ayahs of Surah Al-Baqarah at night, they will suffice him. Read them before sleep tonight and let sufficing be someone else\'s job for a few hours.',
+        source: 'Sahih al-Bukhari 5009',
+        sourceType: 'sunnah_action',
+        sourceGrading: 'sahih',
+      },
+    ]),
+    reflection:
+      'Split your load into what was required and what you added. How long is the second list?',
+  },
+  {
+    id: 'q_angle_2_45_tired',
+    contentId: 'quran_2_45',
+    mood: 'Tired',
+    angle:
+      'Seek help through patience and prayer. Help — not extra duty. When you are depleted the prayer feels like one more item on a list you are already failing, and this ayah puts it on the other side of the ledger: it is the resource, not the demand. The ayah admits it is heavy too, "except for the humble." So the difficulty is acknowledged in the same breath. You are not imagining that part.',
+    angleSource: "Tafsir al-Sa'di",
+    action: 'Go to the next prayer to be helped, not to discharge an obligation.',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'mindset',
+        icon: 'compass',
+        title: 'Resource, not requirement',
+        instruction:
+          'The verb is istaʿīnū — seek help. Prayer is being handed to you as the means of getting through, not added to the pile you are getting through. Walk into the next one with that framing.',
+        source: "Tafsir al-Sa'di on 2:45",
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'mindset',
+        icon: 'heart',
+        title: 'It says it is heavy',
+        instruction:
+          'The ayah itself calls prayer burdensome except upon the humble. Your struggle with it is described in the text. That is not a sign something is wrong with you.',
+        source: 'Surah Al-Baqarah 2:45 — Quran',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'physical',
+        icon: 'mosque',
+        title: 'Ask inside the sujud',
+        instruction:
+          'In the next prostration, ask for the specific thing you are depleted for — energy for a task, patience with a person. The ayah frames prayer as where help is sought, so seek something specific in it.',
+        source: 'Surah Al-Baqarah 2:45 — Quran',
+        sourceType: 'quran_dua',
+      },
+    ]),
+    reflection:
+      'Do you approach salah as something you owe or something you are given? Which was it at the last one?',
+  },
+  {
+    id: 'q_angle_94_5_tired',
+    contentId: 'quran_94_5',
+    mood: 'Tired',
+    angle:
+      'The scholars of Arabic note the construction: the hardship carries the definite article both times — the same hardship — while ease is indefinite each time, meaning two different eases. So it is not one difficulty followed by one relief. It is one difficulty accompanied by more relief than it. And the word is maʿa, *with*, not after. The ease is not waiting on the far side of this; some of it is already in the room.',
+    angleSource: 'Tafsir Ibn Kathir',
+    action: 'Find one ease that is already present inside the hard thing.',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'mindset',
+        icon: 'light-bulb',
+        title: 'With, not after',
+        instruction:
+          'Maʿa means alongside. The ayah does not promise the difficulty will end before relief begins — it says they are travelling together. Look for what is already easier than it was, rather than only for the exit.',
+        source: 'Tafsir Ibn Kathir on 94:5-6',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'physical',
+        icon: 'pen',
+        title: 'Name the two eases',
+        instruction:
+          'One hardship, two eases — that is the grammar. Write your hardship, then find two things that are genuinely easier or better than they were a month ago. They are usually small and unregistered.',
+        source: 'Surah Ash-Sharh 94:5-6 — Quran',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'verbal',
+        icon: 'headphones',
+        title: 'Said twice for a reason',
+        instruction:
+          'Recite both ayahs aloud, one after the other, and hear the repetition. Ibn Masud (RA) reportedly said one hardship cannot overcome two eases.',
+        arabicText: 'فَإِنَّ مَعَ ٱلْعُسْرِ يُسْرًا إِنَّ مَعَ ٱلْعُسْرِ يُسْرًۭا',
+        transliteration: "fa-inna maʿa l-ʿus'ri yus'ran inna maʿa l-ʿus'ri yus'ran",
+        translation: 'So indeed, with the hardship is ease. Indeed, with the hardship is ease',
+        source: 'Surah Ash-Sharh 94:5-6 — Quran',
+        sourceType: 'quran_dua',
+      },
+    ]),
+    reflection:
+      'Name two things that are easier now than they were a month ago. You have probably not counted either.',
+  },
+
+  // === ANGRY (pool expansion) ===
+  // 18 -> 25. Weighted toward the gap the earlier audit found: the pool was
+  // almost entirely pardon-framed, so these lean on governing the response
+  // rather than on producing forgiveness the reader may not be ready for.
+  {
+    id: 'q_angle_5_8_angry',
+    contentId: 'quran_5_8',
+    mood: 'Angry',
+    angle:
+      'Read what this ayah assumes about you. It does not say stop disliking them — shanaān is intense dislike and Allah names it as present. What it forbids is letting that feeling bend your judgement. And then it says being just toward someone you cannot stand is *nearer to taqwa* than ordinary fairness, precisely because it is harder. Your anger is not the thing being corrected here. Its reach is.',
+    angleSource: 'Tafsir Ibn Kathir',
+    action: 'State one true thing in their favour, out loud, without softening your position.',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'mindset',
+        icon: 'chart',
+        title: 'The dislike is assumed',
+        instruction:
+          'The ayah legislates around the hatred instead of forbidding it. You are not failing a test by feeling this. What is being governed is whether the feeling gets to decide what you do next.',
+        source: 'Tafsir Ibn Kathir on 5:8',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'physical',
+        icon: 'checkmark',
+        title: 'One true thing in their favour',
+        instruction:
+          'Say aloud one accurate thing that counts for them — not a concession, not forgiveness, just something true you have stopped saying because you are angry. Accuracy is the standard here, not warmth.',
+        source: "Surah Al-Ma'idah 5:8 — Quran",
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'mindset',
+        icon: 'muscle',
+        title: 'Harder is the point',
+        instruction:
+          'Al-Sa\'di reads "nearer to taqwa" as tied to the difficulty. Being fair to someone you like costs nothing. This ayah is describing the version that costs, and calling it the closer one.',
+        source: "Tafsir al-Sa'di on 5:8",
+        sourceType: 'quran_dua',
+      },
+    ]),
+    reflection:
+      'What true thing have you stopped saying about them because you are angry? Does leaving it unsaid make you more accurate or less?',
+  },
+  {
+    id: 'q_angle_15_85_angry',
+    contentId: 'quran_15_85',
+    mood: 'Angry',
+    angle:
+      'Ṣafḥ is a stronger word than pardon. ʿAfw drops the claim; ṣafḥ turns the page so the matter is not reopened later. And notice the reason given for it — the Hour is coming. This is not "let it go because it did not matter." It is "let it go because it will be settled, accurately, by someone with better information than you." Forgiving from confidence is a different act from forgiving from resignation.',
+    angleSource: "Tafsir al-Sa'di",
+    action: 'Decide one grievance you will not raise again, and mean the "again".',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'mindset',
+        icon: 'rewind',
+        title: 'Turning the page, not dropping the claim',
+        instruction:
+          'Al-Sa\'di distinguishes them: pardon releases the debt, ṣafḥ stops the subject being reopened. Most of the damage in a long grievance is in the reopening, not the original wrong.',
+        source: "Tafsir al-Sa'di on 15:85",
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'mindset',
+        icon: 'clock',
+        title: 'Because it will be settled',
+        instruction:
+          'The ayah grounds the forgiveness in the Hour arriving. You are not being asked to pretend the account is empty — you are being told who is going to close it, and that it will not be you.',
+        source: 'Surah Al-Hijr 15:85 — Quran',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'physical',
+        icon: 'door',
+        title: 'Name what you will stop raising',
+        instruction:
+          'Pick one thing you bring up whenever the argument restarts. Decide, specifically, that it is closed. Write it down so you notice the next time you reach for it.',
+        source: 'Surah Al-Hijr 15:85 — Quran',
+        sourceType: 'quran_dua',
+      },
+    ]),
+    reflection:
+      'Which old grievance do you reopen every time you argue? What would it cost you to genuinely close it?',
+  },
+  {
+    id: 'q_angle_23_96_angry',
+    contentId: 'quran_23_96',
+    mood: 'Angry',
+    angle:
+      'Idfaʿ is a push — repel, drive back. This is not being told to absorb it. It is being handed a different weapon, one that works better. And the sentence after is why you can afford to: We are most knowing of what they describe. The record is already accurate. You do not have to win the argument to be correctly understood, which is usually the thing the anger is really chasing.',
+    angleSource: 'Tafsir Ibn Kathir',
+    action: 'Reply once, with the better version, and then stop replying.',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'mindset',
+        icon: 'shield',
+        title: 'This is a countermeasure',
+        instruction:
+          'Ibn Kathir reads idfaʿ as active. Responding with better is presented as the more effective move, not the meeker one. You are choosing the tactic that works, not surrendering the field.',
+        source: 'Tafsir Ibn Kathir on 23:96',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'mindset',
+        icon: 'eye',
+        title: 'The record is already right',
+        instruction:
+          'He knows exactly what was said about you. Much of the exhaustion of anger is the work of trying to correct a record in other people\'s heads. That job is already done, elsewhere, accurately.',
+        source: "Surah Al-Mu'minun 23:96 — Quran",
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'physical',
+        icon: 'chat',
+        title: 'One reply, then done',
+        instruction:
+          'Write the better response — short, accurate, no barb. Send it once. Then do not send the follow-up, and do not check for a reaction for an hour.',
+        source: "Surah Al-Mu'minun 23:96 — Quran",
+        sourceType: 'quran_dua',
+      },
+    ]),
+    reflection:
+      'What are you actually trying to make them understand? Who else already understands it correctly?',
+  },
+  {
+    id: 'q_angle_25_72_angry',
+    contentId: 'quran_25_72',
+    mood: 'Angry',
+    angle:
+      'They pass *by*. They do not stop, correct, or answer — and the word for how they do it is kirāman, with dignity. Notice this sits in the list of the qualities of the servants of the Most Merciful. Walking past something you could have answered is recorded here as a mark of nobility, not of avoidance. Not every provocation is addressed to you, and not every one that is deserves a reply.',
+    angleSource: "Tafsir al-Sa'di",
+    action: 'Scroll past, walk past, or leave the thread — without composing the reply first.',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'mindset',
+        icon: 'crescent',
+        title: 'Passing is the noble version',
+        instruction:
+          'This is listed among the descriptions of ʿibād ar-Rahman. Declining to engage is not what you settle for when you cannot win — it is what is being praised.',
+        source: "Tafsir al-Sa'di on 25:72",
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'physical',
+        icon: 'arrow-right',
+        title: 'Without drafting the reply',
+        instruction:
+          'The trick is not writing it and deleting it. Move past without composing the response in your head — that rehearsal keeps the anger alive for hours after the moment has gone.',
+        source: 'Surah Al-Furqan 25:72 — Quran',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'verbal',
+        icon: 'leaf',
+        title: 'The word for how',
+        instruction:
+          'Kirāman — with dignity. Say it to yourself as you leave the room or close the app. It names the manner, which is the part that is actually up to you.',
+        arabicText: 'وَإِذَا مَرُّوا۟ بِٱللَّغْوِ مَرُّوا۟ كِرَامًا',
+        transliteration: 'wa-idhā marrū bil-laghwi marrū kirāman',
+        translation: 'And when they pass near ill speech, they pass by with dignity',
+        source: 'Surah Al-Furqan 25:72 — Quran',
+        sourceType: 'quran_dua',
+      },
+    ]),
+    reflection:
+      'How long did you spend rehearsing a reply you never sent? What would that hour have been for otherwise?',
+  },
+  {
+    id: 'q_angle_17_53_angry',
+    contentId: 'quran_17_53',
+    mood: 'Angry',
+    angle:
+      'The same word used for the spike of anger inside you — yanzagh, to goad — is used here for the space *between* two people. He works in the gap, and harsh wording is the door he comes through. Which reframes the argument you are in: the person across from you is not the enemy the ayah names at the end. Choosing the better sentence is not politeness. It is shutting a door on something that wants the two of you apart.',
+    angleSource: "Tafsir al-Sa'di",
+    action: 'Rewrite your next sentence to the better version before you say it.',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'mindset',
+        icon: 'brain',
+        title: 'Who the enemy is',
+        instruction:
+          'The ayah names a clear enemy at the end, and it is not the person you are arguing with. Anger collapses that distinction instantly. Restoring it changes what you are actually fighting.',
+        source: "Tafsir al-Sa'di on 17:53",
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'verbal',
+        icon: 'chat',
+        title: 'Say the better one',
+        instruction:
+          'Not the softest version — the *better* one. Accurate, unarmed, no line included because it will land. Say it out loud once before you say it to them.',
+        arabicText: 'وَقُل لِّعِبَادِى يَقُولُوا۟ ٱلَّتِى هِىَ أَحْسَنُ',
+        transliteration: 'waqul liʿibādī yaqūlū allatī hiya aḥsanu',
+        translation: 'And tell My servants to say that which is best',
+        source: 'Surah Al-Isra 17:53 — Quran',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'physical',
+        icon: 'shield',
+        title: 'Close the door first',
+        instruction:
+          'Say the ta\'awwudh before you reply, not after it has gone badly. The ayah identifies the opening; the refuge is how you shut it.',
+        source: 'Surah Al-Isra 17:53 — Quran',
+        sourceType: 'quran_dua',
+      },
+    ]),
+    reflection:
+      'What is the sharpest line you are planning to use? What is it actually for — being understood, or landing a hit?',
+  },
+  {
+    id: 'q_angle_31_17_angry',
+    contentId: 'quran_31_17',
+    mood: 'Angry',
+    angle:
+      'Luqman tells his son to speak up against wrong and then, in the same breath, to be patient with what comes back. That ordering is not accidental. If you stand for something you will be answered badly for it, and the ayah bundles the standing and the absorbing into one instruction. Your anger at being treated unfairly for doing the right thing is anticipated here — and it is called ʿazm al-umūr, one of the things that takes resolve.',
+    angleSource: "Tafsir al-Sa'di",
+    action: 'Separate the stand you took from the reaction you got, and keep the first.',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'mindset',
+        icon: 'muscle',
+        title: 'The blowback was expected',
+        instruction:
+          'Patience is placed directly after enjoining good because the one causes the other. Being treated badly for doing the right thing is not evidence you did it wrong.',
+        source: "Tafsir al-Sa'di on 31:17",
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'physical',
+        icon: 'pen',
+        title: 'Two columns',
+        instruction:
+          'Write what you stood for, and separately what came back at you. Anger fuses them into one thing and makes you want to withdraw the first to escape the second. They are separable.',
+        source: 'Surah Luqman 31:17 — Quran',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'mindset',
+        icon: 'target',
+        title: 'ʿAzm al-umūr',
+        instruction:
+          'Matters requiring resolve — the things that do not happen without a decision. This is named as difficult in the text, which means the difficulty is not a sign you have chosen wrong.',
+        source: 'Surah Luqman 31:17 — Quran',
+        sourceType: 'quran_dua',
+      },
+    ]),
+    reflection:
+      'Are you angry about what you did, or about how they responded? Would you take the same stand again?',
+  },
+  {
+    id: 'q_angle_16_127_angry',
+    contentId: 'quran_16_127',
+    mood: 'Angry',
+    angle:
+      'Your patience is not but through Allah. Read that as the practical statement it is: the capacity to hold this is supplied, not summoned. So when you are at the end of yours, the move is to ask rather than to squeeze harder. And the last clause forbids ḍayq — the tightness in your chest, named specifically. He legislates about the physical sensation, not only the attitude, which means He knows exactly what this feels like in the body.',
+    angleSource: "Tafsir al-Sa'di",
+    action: 'Ask Him for the patience instead of trying to generate it.',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'verbal',
+        icon: 'hands-prayer',
+        title: 'Supplied, not summoned',
+        instruction:
+          'Say the clause and then ask directly: "Ya Allah, give me the patience for this, because I do not have it." That is not a failure of sabr — it is the mechanism the ayah describes.',
+        arabicText: 'وَٱصْبِرْ وَمَا صَبْرُكَ إِلَّا بِٱللَّهِ',
+        transliteration: "wa-iṣ'bir wamā ṣabruka illā bil-lahi",
+        translation: 'And be patient, and your patience is not but through Allah',
+        source: 'Surah An-Nahl 16:127 — Quran',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'physical',
+        icon: 'breathing',
+        title: 'The tightness has a name',
+        instruction:
+          'Ḍayq is the constriction in the chest. Put a hand there and take six slow breaths out longer than in. The ayah addresses the physical state; treat it physically first.',
+        source: 'Surah An-Nahl 16:127 — Quran',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'mindset',
+        icon: 'lock',
+        title: 'Not your job to counter the plotting',
+        instruction:
+          'The final clause tells you not to be constricted by what they are scheming. Notice it does not tell you to outmanoeuvre it. Being kept out of it is the relief being offered.',
+        source: "Tafsir al-Sa'di on 16:127",
+        sourceType: 'quran_dua',
+      },
+    ]),
+    reflection:
+      'Have you asked Him for patience with this person, in those words? Or have you only been trying to hold it together yourself?',
   },
 ];
 

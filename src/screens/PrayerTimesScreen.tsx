@@ -62,7 +62,10 @@ export default function PrayerTimesScreen({ navigation }: { navigation: any }) {
         setPrayerData(data);
       } catch (_error) {
         if (requestId !== requestIdRef.current) return;
-        Alert.alert('Error', 'Failed to fetch prayer times. Please try again.');
+        Alert.alert(
+          'Prayer times unavailable',
+          'We could not reach the prayer-time service. Check your connection and try again.',
+        );
       } finally {
         if (requestId === requestIdRef.current) setIsLoading(false);
       }

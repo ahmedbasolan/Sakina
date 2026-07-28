@@ -116,7 +116,7 @@ const ReflectionLayer: React.FC<ReflectionLayerProps> = ({
           <BlurView intensity={20} tint="dark" style={StyleSheet.absoluteFillObject} pointerEvents="none" />
           <TextInput
             style={styles.journalInput}
-            placeholder="Speak from the heart..."
+            placeholder="Write freely — even a few words count"
             placeholderTextColor={`${Colors.text.primary}2E`}
             multiline
             value={reflection}
