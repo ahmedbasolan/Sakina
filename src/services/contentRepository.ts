@@ -12,6 +12,27 @@ import { dbQuery } from '../database/schema';
 import { SupabaseDataService } from './supabaseDataService';
 import { logServiceError } from './errorLoggingService';
 
+/**
+ * Angle-id prefixes that mark an angle as belonging to one journey day.
+ *
+ * These are excluded from the mood-picker query. They are written in
+ * tafsir/scholarly voice for PathStepScreen's Understand/Matters slot, but
+ * GuidanceScreen puts `angle.angle` in the direct-address "For Your Heart"
+ * card — so serving one there is the wrong voice in the wrong slot, and five
+ * of them still carry a visible `[Bukhari 531]`-style tag.
+ *
+ * This is the single source of truth: `scripts/verify-mood-pools.mjs` parses
+ * this array rather than keeping its own copy. It previously hardcoded the
+ * same list next to a comment claiming journey angles "are fetched by id,
+ * never through the mood join" — which was never true, and the two drifting
+ * apart is what hid 28 leaked angles.
+ *
+ * A new journey only needs its prefix added here.
+ */
+export const JOURNEY_ANGLE_PREFIXES = ['rizq', 'salah', 'results', 'study'];
+
+const JOURNEY_ID_GLOBS = JOURNEY_ANGLE_PREFIXES.map((p) => `q_angle_${p}_*`);
+
 // ── Internal row shapes ────────────────────────────────────────────────────
 
 interface ContentAngleRow {
@@ -187,7 +208,13 @@ export class ContentRepository {
     try {
       const cloudData = await this.supabaseData.fetchContentByMood(mood);
       if (cloudData && cloudData.length > 0) {
-        return cloudData.map(mapCloudRow);
+        // Same journey-angle exclusion as the local query. Filtered here rather
+        // than in the Supabase call so both paths read from one list.
+        const moodOnly = cloudData.filter(
+          (row: { id?: string }) =>
+            !JOURNEY_ANGLE_PREFIXES.some((p) => row.id?.startsWith(`q_angle_${p}_`)),
+        );
+        if (moodOnly.length > 0) return moodOnly.map(mapCloudRow);
       }
     } catch (error) {
       logServiceError(
@@ -207,7 +234,10 @@ export class ContentRepository {
       // (both tables have an `id` column; SQLite last-write-wins would return
       // content.id in row.id, corrupting session dedup and history recording).
       // Also filters ca.mood = ? so angles written for other moods that happen
-      // to be attached to multi-mood content are not returned.
+      // to be attached to multi-mood content are not returned, and excludes
+      // journey angles by id — see JOURNEY_ANGLE_PREFIXES. Without that last
+      // clause 28 journey-day angles were selectable from the mood picker,
+      // including all seven Salah days, which were 7 of Calm's 23.
       const result = await db.getAllAsync(
         `SELECT
            ca.id             AS id,
@@ -241,8 +271,9 @@ export class ContentRepository {
          JOIN content_moods cm ON c.id = cm.contentId
          WHERE cm.mood = ?
            AND ca.mood = ?
+           ${JOURNEY_ID_GLOBS.map(() => 'AND ca.id NOT GLOB ?').join('\n           ')}
          ORDER BY cm.relevanceScore DESC`,
-        [mood, mood],
+        [mood, mood, ...JOURNEY_ID_GLOBS],
       );
       return (result as ContentAngleRow[]).map(mapLocalRow);
     });
