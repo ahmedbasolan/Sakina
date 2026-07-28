@@ -83,7 +83,13 @@ import type { Content, ContentAngle } from '../types';
 //      resolve, so 2803 x3 moved to 40 Hadith an-Nawawi 19, which carries both
 //      clauses verbatim, and 18449 x2 dropped to the angle's own ayah 93:11 —
 //      no hosted hadith matches it, and the verse commands exactly this.
-const SEED_VERSION = 19;
+// v20: reference audit. Ten citations read "Jami at-Tirmidhi" without the
+//      apostrophe in Jami`. The two rizq du'a steps claimed sourceGrading
+//      'hasan' and sourceType 'sunnah_action' — it is a du'a, not an action,
+//      and the grading is unsupported: Tirmidhi 3500, the only hosted route to
+//      this supplication, is graded Da'if, and the Nasa'i al-Kubra route that
+//      carries our exact wording is ungraded. Claim dropped rather than kept.
+const SEED_VERSION = 20;
 // Separate keys per content type — Quran and Hadith data change independently,
 // and each seeder used to write the SAME key at the end of its run. Since
 // initializeDatabase() awaits seedQuranContent() before seedHadithContent(),

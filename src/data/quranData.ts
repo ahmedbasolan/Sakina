@@ -10533,8 +10533,7 @@ const quranContentAnglesData: ContentAngle[] = [
         transliteration: "Allahumma ighfir li dhanbi, wa wassi' li fi dari, wa barik li fi rizqi",
         translation: 'O Allah, forgive my sin, expand my dwelling, and bless my provision',
         source: "Sunan an-Nasa'i al-Kubra 9514",
-        sourceType: 'sunnah_action',
-        sourceGrading: 'hasan',
+        sourceType: 'prophetic_dua',
       },
     ]),
     reflection:
@@ -11003,8 +11002,7 @@ const quranContentAnglesData: ContentAngle[] = [
         transliteration: "Allahumma ighfir li dhanbi, wa wassi' li fi dari, wa barik li fi rizqi",
         translation: 'O Allah, forgive my sin, expand my dwelling, and bless my provision',
         source: "Sunan an-Nasa'i al-Kubra 9514",
-        sourceType: 'sunnah_action',
-        sourceGrading: 'hasan',
+        sourceType: 'prophetic_dua',
       },
       {
         type: 'mindset',
@@ -12601,7 +12599,7 @@ const quranContentAnglesData: ContentAngle[] = [
         title: 'The surah for the end of the day',
         instruction:
           'Recite or listen to Surah Al-Mulk before you sleep. It gives a tired mind something to hold that is not your own thinking.',
-        source: 'Jami at-Tirmidhi 2891',
+        source: "Jami' at-Tirmidhi 2891",
         sourceType: 'sunnah_action',
         sourceGrading: 'hasan',
       },
@@ -12778,7 +12776,7 @@ const quranContentAnglesData: ContentAngle[] = [
         arabicText: 'يَا مُقَلِّبَ الْقُلُوبِ ثَبِّتْ قَلْبِي عَلَى دِينِكَ',
         transliteration: 'Ya Muqallibal-qulub, thabbit qalbi \'ala dinik',
         translation: 'O Turner of hearts, make my heart firm upon Your religion',
-        source: 'Jami at-Tirmidhi 2140',
+        source: "Jami' at-Tirmidhi 2140",
         sourceType: 'prophetic_dua',
         sourceGrading: 'hasan',
       },
@@ -12867,7 +12865,7 @@ const quranContentAnglesData: ContentAngle[] = [
         arabicText: 'اللَّهُمَّ لَا تَجْعَلْ مُصِيبَتَنَا فِي دِينِنَا',
         transliteration: 'Allahumma la taj\'al musibatana fi dinina',
         translation: 'O Allah, do not let our affliction be in our religion',
-        source: 'Jami at-Tirmidhi 3502',
+        source: "Jami' at-Tirmidhi 3502",
         sourceType: 'prophetic_dua',
         sourceGrading: 'hasan',
       },
@@ -12913,7 +12911,7 @@ const quranContentAnglesData: ContentAngle[] = [
         title: 'He is findable, not distant',
         instruction:
           'The Prophet ﷺ told a young Ibn Abbas: be mindful of Allah and you will find Him in front of you. Not summoned from far away — already there. Some of this isolation is a relationship that only gets used in emergencies; start speaking to Him on ordinary days.',
-        source: '"Be mindful of Allah and you will find Him before you." [Jami at-Tirmidhi 2516]',
+        source: '"Be mindful of Allah and you will find Him before you." [Jami\' at-Tirmidhi 2516]',
         sourceType: 'prophetic_dhikr',
         sourceGrading: 'hasan',
       },
@@ -12999,7 +12997,7 @@ const quranContentAnglesData: ContentAngle[] = [
         title: 'He will not send you away empty',
         instruction:
           'The Prophet ﷺ said Allah is Shy and Generous — He is shy to let a servant raise his hands to Him and return them empty. Whatever you are afraid is too small or too repetitive to ask for again, ask.',
-        source: 'Jami at-Tirmidhi 3556',
+        source: "Jami' at-Tirmidhi 3556",
         sourceType: 'prophetic_dua',
         sourceGrading: 'hasan',
       },
@@ -13295,7 +13293,7 @@ const quranContentAnglesData: ContentAngle[] = [
         title: 'Answer the sin with a deed',
         instruction:
           'The Prophet ﷺ said to follow a bad deed with a good one, because it wipes it out. Do not wait until you feel worthy — do something small and good now, specifically as the reply to what happened.',
-        source: 'Jami at-Tirmidhi 1987',
+        source: "Jami' at-Tirmidhi 1987",
         sourceType: 'sunnah_action',
         sourceGrading: 'hasan',
       },
@@ -13352,7 +13350,7 @@ const quranContentAnglesData: ContentAngle[] = [
         title: 'The window is still open',
         instruction:
           'The Prophet ﷺ said Allah accepts a servant\'s repentance as long as the death rattle has not reached his throat. Whatever you are telling yourself about being too late — the only deadline that exists has not arrived.',
-        source: 'Jami at-Tirmidhi 3537',
+        source: "Jami' at-Tirmidhi 3537",
         sourceType: 'prophetic_dhikr',
         sourceGrading: 'hasan',
       },
@@ -13920,7 +13918,7 @@ const quranContentAnglesData: ContentAngle[] = [
         title: 'Tawakkul is not passivity',
         instruction:
           'The ayah says rely, in the same breath as it says He is sufficient. Tie your camel and then hand over the outcome — reaching out to someone is the camel, not a failure of trust.',
-        source: 'Jami at-Tirmidhi 2517',
+        source: "Jami' at-Tirmidhi 2517",
         sourceType: 'sunnah_action',
         sourceGrading: 'hasan',
       },
@@ -14261,7 +14259,7 @@ const quranContentAnglesData: ContentAngle[] = [
         title: 'Provision finds the one who goes out',
         instruction:
           'The Prophet ﷺ said if you relied on Allah as He deserves, you would be provided like the birds — they leave hungry in the morning and return full. Note that they still leave. Being provided for is not the same as staying in.',
-        source: 'Jami at-Tirmidhi 2344',
+        source: "Jami' at-Tirmidhi 2344",
         sourceType: 'prophetic_dhikr',
         sourceGrading: 'hasan',
       },
@@ -14424,7 +14422,7 @@ const quranContentAnglesData: ContentAngle[] = [
         title: 'Charity in the same breath',
         instruction:
           'The ayah pairs accepting repentance with receiving charity in one sentence. Give something today — the amount is not the point, the pairing is. The Prophet ﷺ said charity extinguishes sin as water extinguishes fire.',
-        source: 'Jami at-Tirmidhi 614',
+        source: "Jami' at-Tirmidhi 614",
         sourceType: 'sunnah_action',
         sourceGrading: 'hasan',
       },
