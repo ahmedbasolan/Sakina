@@ -5100,7 +5100,7 @@ const quranContentAnglesData: ContentAngle[] = [
         count: 70,
       },
     ]),
-    reflection: "How does Allah's ability to change bad to good give you hope?",
+    reflection: 'Name one thing in your past you have written off as purely bad. What would it mean if it were not the final word on you?',
   },
 
   {
@@ -9772,7 +9772,7 @@ const quranContentAnglesData: ContentAngle[] = [
         transliteration: "Alhamdulillahi 'ala kulli hal",
         translation: 'All praise is for Allah in every condition',
         source: 'The tahmid in all circumstances — Sunan Ibn Majah 3803',
-        sourceType: 'quran_dua',
+        sourceType: 'prophetic_dhikr',
       },
     ]),
     reflection: 'What would it feel like to receive joyful news from the Hereafter?',
@@ -11507,7 +11507,7 @@ const quranContentAnglesData: ContentAngle[] = [
     action: 'Choose a clean, quiet spot for next prayer and arrive 2 minutes early.',
     actionHowTo: 'Use siwak/brush teeth before wudu and wear clean clothes as a sign of respect.',
     actionReward: 'Taking adornment for prayer is a sign of honoring the meeting with Allah.',
-    reflection: 'How did preparing intentionally change your prayer experience?',
+    reflection: 'You arrived early and clean today. Describe what the first ten seconds of that prayer felt like compared to a rushed one.',
   },
   {
     id: 'q_angle_salah_3',
