@@ -133,7 +133,15 @@ import type { Content, ContentAngle } from '../types';
 //      Bukhari 844 was the la-ilaha-illallah formula, not the istighfar +
 //      tasbih it claimed -> Sahih Muslim 591 and Sahih al-Bukhari 843. Path
 //      theme Hopeful -> Calm to match all seven angles.
-const SEED_VERSION = 26;
+// v27: Rizq Revolution's 14 angles restructured — [Tafsir] tag at the start so
+//      the footnote stops falling back to the verse's own whyThis, a split
+//      pattern so Understand/Matters breaks where intended, and mood unified to
+//      the path theme. Two hadith numbers in the angle prose were wrong and no
+//      script checked them: day 3's Tirmidhi 614 is Ka'b bin Ujrah on rulers,
+//      not "a body nourished by haram" (-> Sahih Muslim 1015), and day 13
+//      quoted "a valley of gold ... a second" where Bukhari 6436 reads "two
+//      valleys ... a third".
+const SEED_VERSION = 27;
 // Separate keys per content type — Quran and Hadith data change independently,
 // and each seeder used to write the SAME key at the end of its run. Since
 // initializeDatabase() awaits seedQuranContent() before seedHadithContent(),

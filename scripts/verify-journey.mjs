@@ -30,7 +30,7 @@ const hadith = fs.readFileSync('src/data/hadithData.ts', 'utf8');
 const JOURNEYS = [
   ['path_trusting_the_results', 'q_angle_results_', 'Overwhelmed', true],
   ['path_study_journaling', 'q_angle_study_', 'Hopeful', true],
-  ['path_rizq_revolution', 'q_angle_rizq_', 'Overwhelmed', false],
+  ['path_rizq_revolution', 'q_angle_rizq_', 'Overwhelmed', true],
   // theme moved Hopeful -> Calm with the content rebuild: all seven angles are
   // about khushu and stillness, which is Calm, and one path edit beat seven.
   ['path_salah_transformation', 'q_angle_salah_', 'Calm', true],

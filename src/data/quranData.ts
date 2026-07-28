@@ -10507,8 +10507,7 @@ const quranContentAnglesData: ContentAngle[] = [
     id: 'q_angle_rizq_day1',
     contentId: 'quran_51_22',
     mood: 'Overwhelmed',
-    angle:
-      "Ibn Kathir's Tafsir: Allah reminds us that our rizq is already written in the heavens—recorded and guaranteed. Worrying about it won't increase it, and relaxing about it won't decrease it.",
+    angle:'[Tafsir Ibn Kathir on 51:22] Ibn Kathir reads the ayah as a statement of fact rather than encouragement: your provision is already written in the heaven, recorded and guaranteed before you began chasing it. When you worry about it you do not increase it, and when you stop worrying you do not lose it — the worry was never the mechanism.',
     action: 'Redefine Wealth: Write down 5 things you have that money cannot buy.',
     actionHowTo:
       "Examples: 'I can walk, I have clean water, I know people who love me, I have my senses, I have access to knowledge.'",
@@ -10558,8 +10557,7 @@ const quranContentAnglesData: ContentAngle[] = [
     id: 'q_angle_rizq_day2',
     contentId: 'quran_11_6',
     mood: 'Overwhelmed',
-    angle:
-      "Imam Al-Ghazali: 'Ar-Razzaq is the One who created sustenance and distributed it to all creation. He provides for the bird in the sky, the fish in the ocean, and the baby in the womb—none of them earned it, yet all are sustained.' Ibn al-Qayyim: 'When you know that your Provider is Ar-Razzaq, you realize that no human can withhold what Allah has written for you. This knowledge liberates the heart from depending on creation.'",
+    angle:'[Tafsir Ibn Kathir on 11:6] Al-Ghazali described Ar-Razzaq as the One who created sustenance and distributed it to every creature: the bird in the sky, the fish in the ocean, the child in the womb — none of them earned it, and all of them are fed. When you know your Provider by that name, you stop auditioning for people who were never the source, and the heart is freed from depending on creation.',
     action: "Learn the Name: Repeat 'Ya Razzaq' (O Provider) 100 times today.",
     actionHowTo:
       'Use a digital tasbih counter. Best times: After Fajr, after any prayer, before sleep.',
@@ -10611,8 +10609,7 @@ const quranContentAnglesData: ContentAngle[] = [
     id: 'q_angle_rizq_day3',
     contentId: 'quran_2_168',
     mood: 'Overwhelmed',
-    angle:
-      "Imam Ahmad ibn Hanbal was offered a large sum to endorse a ruler's policy he disagreed with. He refused, saying: 'A single dirham earned with halal is better than a mountain of gold earned through doubt.' Prophet ﷺ said: 'A body nourished by haram will not enter Paradise.' [Tirmidhi 614] Ibn Rajab explained: 'Haram wealth blocks your duas from being answered, clouds your judgment, and removes barakah from your life.'",
+    angle:"[Tafsir Ibn Kathir on 2:168] Imam Ahmad ibn Hanbal was offered a large sum to endorse a ruler's policy he disagreed with, and refused: a single dirham earned halal is better than a mountain of gold earned through doubt. The Prophet ﷺ said: \"Allah is Good and accepts only that which is good\", then described a traveller — dishevelled, dusty, hands raised to the sky — whose food and drink are haram, and asked how such a person could be answered. [Sahih Muslim 1015]",
     action:
       'Income Audit: Review your income sources—employment, investments, side income. Ask: Does this harm others? Would I be ashamed if this transaction was made public?',
     actionHowTo:
@@ -10666,9 +10663,8 @@ const quranContentAnglesData: ContentAngle[] = [
   {
     id: 'q_angle_rizq_day4',
     contentId: 'quran_65_3_rizq',
-    mood: 'Hopeful',
-    angle:
-      "A Bedouin came to the Prophet ﷺ and asked: 'Should I tie my camel and trust in Allah, or leave it untied and trust in Allah?' The Prophet ﷺ said: 'Tie your camel, then trust in Allah.' [Tirmidhi 2517] Ibn al-Qayyim wrote: 'True tawakkul is the heart's reliance on Allah while the limbs are active in pursuing provision.'",
+    mood: 'Overwhelmed',
+    angle:"[Tafsir Ibn Kathir on 65:3] A Bedouin asked whether to tie his camel or leave it untied and trust in Allah. The Prophet ﷺ said: \"Tie it and rely upon Allah\" [Jami' at-Tirmidhi 2517]. When you treat tawakkul as the heart's reliance while the limbs stay active, the tying and the trusting stop competing — Ibn al-Qayyim called that the whole of it.",
     action:
       "Tie Your Camel: Identify one action you've been avoiding—update resume, learn a new skill, network, apply for that opportunity, start that halal project. Do it today.",
     actionHowTo:
@@ -10722,8 +10718,7 @@ const quranContentAnglesData: ContentAngle[] = [
     id: 'q_angle_rizq_day5',
     contentId: 'quran_29_60',
     mood: 'Overwhelmed',
-    angle:
-      "Ibn al-Qayyim described two types of people: (1) Those who see rizq as limited—they hoard, compete, envy, and anxiety consumes them. (2) Those who see rizq as guaranteed by Al-Waasi' (The All-Encompassing)—they give freely, compete in good, and live in peace. Shaykh Ibn Uthaymeen said: 'The one obsessed with wealth rarely finds contentment. The one content with Allah's decree often finds wealth coming to him without obsession.'",
+    angle:"[Tafsir Ibn Kathir on 29:60] Ibn al-Qayyim described two ways of seeing provision: as limited, which produces hoarding, competing and envy; or as guaranteed by Al-Waasi', which produces giving, patience and quiet. When you catch yourself measuring your portion against someone else's, you have already answered which of the two you are living in.",
     action:
       'Name the Fear: Complete this sentence—"I\'m anxious about money because I fear..." Write it down. Naming the fear weakens it.',
     actionHowTo:
@@ -10773,9 +10768,8 @@ const quranContentAnglesData: ContentAngle[] = [
   {
     id: 'q_angle_rizq_day6',
     contentId: 'quran_2_155_156',
-    mood: 'Sad',
-    angle:
-      "Imam Al-Ghazali: 'Qana'ah is satisfaction with what you have. It's not laziness or lack of ambition. It's freedom from the tyranny of \"more.\"' When Umar (ra) saw the Prophet ﷺ lying on a mat that left marks on his skin with barely any possessions, he cried. The Prophet ﷺ said: 'O Umar, are you not pleased that they have this world and we have the Hereafter?' [Bukhari 4913] Prophet ﷺ said: 'Richness is not having many possessions. Rather, richness is richness of the soul.' [Bukhari 6446]",
+    mood: 'Overwhelmed',
+    angle:"[Tafsir Ibn Kathir on 2:155-156] Al-Ghazali defined qana'ah as satisfaction with what you have — not laziness, not the absence of ambition, but freedom from the tyranny of more. The Prophet ﷺ said: \"Wealth is not in having many possessions, but rather true wealth is feeling sufficiency in the soul\". [Sahih al-Bukhari 6446] When Umar wept at the marks the mat had left on his skin, he was told: are you not pleased that they have this world and we have the Hereafter. [Sahih al-Bukhari 4913]",
     action:
       'Gratitude Reset: List 10 things you have that others are desperately making dua for—eyes that see, a bed to sleep in, you ate today, someone loves you.',
     actionHowTo:
@@ -10825,9 +10819,8 @@ const quranContentAnglesData: ContentAngle[] = [
   {
     id: 'q_angle_rizq_day7',
     contentId: 'quran_7_96',
-    mood: 'Hopeful',
-    angle:
-      "Ibn Taymiyyah: 'Barakah is when Allah places good, growth, and increase in something—even if it appears small.' $1,000 with barakah = pays all bills, saves some, gives charity, still has left over. $10,000 without barakah = mysteriously disappears, unexpected expenses, constant stress. Barakah Killers: Haram income, ingratitude, cutting family ties, lying in business, delaying prayer, stinginess. Barakah Multipliers: Honesty, waking up for Fajr, eating together as family, saying Bismillah.",
+    mood: 'Overwhelmed',
+    angle:'[Tafsir Ibn Kathir on 7:96] Ibn Taymiyyah described barakah as Allah placing good, growth and increase into something even when it looks small — which is why one household covers its needs on an income that leaves another short. When you look for what is draining it, the usual causes are ordinary: haram income, ingratitude, cut family ties, dishonest dealing, delayed prayer. The multipliers are equally ordinary — honesty, Fajr, eating together, saying Bismillah.',
     action:
       'Seek Barakah in Time: Wake up for Fajr. Prophet ﷺ said: "O Allah, bless my Ummah in their early morning." [Tirmidhi 1212].',
     actionHowTo:
@@ -10877,9 +10870,8 @@ const quranContentAnglesData: ContentAngle[] = [
   {
     id: 'q_angle_rizq_day8',
     contentId: 'quran_2_261',
-    mood: 'Tired',
-    angle:
-      "Allah doesn't just replace what you give—He multiplies it. One seed becomes 700 grains (7 ears × 100). That's a 70,000% return on investment. Shaykh Ibn Baaz said: 'Many people say they believe in this verse, but their hands refuse to give. True belief is when your wealth moves with your heart.' Prophet ﷺ said: 'His wealth is what he has sent forward (in charity), and the wealth of his heirs is what he has kept back.' [Bukhari 6442] What you keep, you lose. What you give, you keep forever.",
+    mood: 'Overwhelmed',
+    angle:"[Tafsir Ibn Kathir on 2:261] The ayah does not describe replacement but multiplication: one seed becomes seven ears, each carrying a hundred grains. The Prophet ﷺ said: \"Who among you considers the wealth of his heirs dearer to him than his own wealth?\", and told them that a man's own wealth is what he sent ahead, while what he held back already belongs to someone else [Sahih al-Bukhari 6442].",
     action:
       "Break the Fear: Give something today—not from surplus, from what you need. The Sahaba gave from their poverty, not their wealth. Amount doesn't matter. The sacrifice does.",
     actionHowTo:
@@ -10930,9 +10922,8 @@ const quranContentAnglesData: ContentAngle[] = [
   {
     id: 'q_angle_rizq_day9',
     contentId: 'quran_67_15',
-    mood: 'Tired',
-    angle:
-      "Allah didn't say 'sit and wait for provision to come to you.' He said: 'Walk among its slopes.' Ibn Kathir: 'This verse is a direct command to traverse the earth, work, trade, farm, and seek Allah's provision through action.' When Maryam (as) gave birth to Isa (as), exhausted and hungry, did Allah just drop dates into her lap? No. He said: 'Shake the trunk of the palm tree toward you.' [Quran 19:25] She had to shake the tree. Allah could have made the dates fall without her effort—but He wanted to teach us: Do your part.",
+    mood: 'Overwhelmed',
+    angle:"[Tafsir Ibn Kathir on 67:15] The command is to walk in the earth's paths and eat of His provision — Ibn Kathir reads it as an instruction to move, trade, work and seek, not to wait. When you look at how Maryam was fed, the pattern is the same: exhausted and in labour, she was told to shake the trunk of the palm toward her [Quran 19:25], and the dates fell for the shaking rather than instead of it.",
     action:
       'The Means Checklist: Ask: "What PRACTICAL step can I take today?" Send 5 job applications, take an online course, reach out to a mentor, save $10 this week, cut one unnecessary expense. Pick one. Do it before sunset.',
     actionHowTo:
@@ -10988,9 +10979,8 @@ const quranContentAnglesData: ContentAngle[] = [
   {
     id: 'q_angle_rizq_day10',
     contentId: 'quran_14_37',
-    mood: 'Hopeful',
-    angle:
-      "When Prophet Ibrahim (as) left his wife Hajar and baby Ismail in the desert—a place with zero resources—he didn't just walk away. He made dua for their rizq. Allah answered: Made the well of Zamzam appear, made people's hearts incline toward Makkah, turned a barren valley into the center of world trade. Even prophets make dua for provision. It's not a sign of weak faith—it's Sunnah.",
+    mood: 'Overwhelmed',
+    angle:'[Tafsir Ibn Kathir on 14:37] Ibrahim left Hajar and the infant Ismail in a valley with no crops and no water, and he did not simply walk away — he asked. Allah answered with Zamzam, with hearts inclined toward that valley, and with a barren place becoming a centre of trade. When you hesitate to ask for provision because it feels like weak faith, notice that a prophet asked first.',
     action:
       'Memorize the Master Dua: Say after Fajr and Maghrib daily. Make rizq dua at one of the best times: Last third of night (Tahajjud), between Adhan and Iqamah, during sujood, last hour of Friday.',
     actionHowTo:
@@ -11049,9 +11039,8 @@ const quranContentAnglesData: ContentAngle[] = [
   {
     id: 'q_angle_rizq_day11',
     contentId: 'quran_14_7',
-    mood: 'Grateful',
-    angle:
-      "This isn't a suggestion—it's a guaranteed contract from Allah. Show gratitude, get increase. It's cause and effect. Ibn al-Qayyim identified three levels of Shukr: (1) Heart: Recognizing the blessing came from Allah (2) Tongue: Saying 'Alhamdulillah' (3) Limbs: Using the blessing to obey Allah. Example: You get a salary. Heart: 'This is from Allah, not just my hard work.' Tongue: 'Alhamdulillah.' Limbs: Give zakah, spend on family, avoid haram. That's complete shukr. Shaykh Ibn Uthaymeen: 'Many people lose their wealth not because Allah took it, but because they stopped being grateful for it.'",
+    mood: 'Overwhelmed',
+    angle:'[Tafsir Ibn Kathir on 14:7] The ayah states a contract rather than an encouragement: if you are grateful, He will certainly increase you. Ibn al-Qayyim set out three levels of shukr — the heart recognising the blessing came from Allah, the tongue saying Alhamdulillah, and the limbs using the blessing in obedience. When you receive a salary, all three are available in the same hour: acknowledge the source, say it aloud, then let zakah and your family have their share of it.',
     action:
       'Gratitude Journal: Every night before bed, write down 3 specific things you\'re grateful for today—not generic. Be specific: "The taxi driver smiled at me," "I had hot tea this morning."',
     actionHowTo:
@@ -11099,9 +11088,8 @@ const quranContentAnglesData: ContentAngle[] = [
   {
     id: 'q_angle_rizq_day12',
     contentId: 'quran_65_7',
-    mood: 'Sad',
-    angle:
-      "Notice Allah didn't say 'might bring ease' or 'if you're good enough.' He said 'WILL bring ease.' It's guaranteed. Umar ibn Abdul Aziz said: 'Allah tests people with wealth to see if they're grateful, and tests them with poverty to see if they're patient. Both are tests.' The early Muslims were boycotted for 3 years—no trade, no income, eating leaves from trees. But they didn't compromise their faith for money. Allah rewarded them with the entire Arabian Peninsula. Ibn al-Qayyim: 'Sometimes Allah delays provision to test your trust, purify you from attachment to dunya, increase your reward, or prepare you for what's coming.'",
+    mood: 'Overwhelmed',
+    angle:'[Tafsir Ibn Kathir on 65:7] Allah did not say He might bring ease after hardship; the wording is that He will. Ibn al-Qayyim listed why the timing is sometimes long: to test trust, to loosen attachment to the dunya, to increase the reward, or to prepare you for what is coming. When you are inside the delay, none of those are visible — the early Muslims boycotted for three years, eating leaves, could not see the Peninsula coming either.',
     action:
       'Reframe the Struggle: Instead of "Why is Allah making this so hard?" say "What is Allah teaching me through this?" Write down what you\'re learning about your dependence on Him.',
     actionHowTo:
@@ -11154,8 +11142,7 @@ const quranContentAnglesData: ContentAngle[] = [
     id: 'q_angle_rizq_day13',
     contentId: 'quran_102_1_2',
     mood: 'Overwhelmed',
-    angle:
-      "Ibn Kathir: 'This surah is a warning to those who are so busy competing in wealth, status, and possessions that they forget death is coming. The race ends at the grave—and the winner is not who has the most, but who used what they had best.' Prophet ﷺ said: 'If the son of Adam had a valley of gold, he would want a second one. Nothing fills the belly of the son of Adam except dust (death). Yet Allah accepts the repentance of whoever repents.' [Bukhari 6436] Human nature is to always want more. The cure is remembering death.",
+    angle:'[Tafsir Ibn Kathir on 102:1-2] Ibn Kathir reads the surah as a warning to anyone so occupied with competing in wealth and status that death arrives as an interruption. The Prophet ﷺ said: "If the son of Adam had two valleys of money, he would wish for a third, for nothing can fill the belly of the son of Adam except dust — and Allah turns to whoever turns to Him" [Sahih al-Bukhari 6436]. When you notice the wanting has no ceiling, the cure is not more, it is remembering where the race ends.',
     action:
       'Death Reminder: Visit a graveyard today, or watch a funeral online, or read about someone\'s death. Ask: "When I\'m in that grave, will it matter how much I earned or how much I gave?"',
     actionHowTo:
@@ -11208,9 +11195,8 @@ const quranContentAnglesData: ContentAngle[] = [
   {
     id: 'q_angle_rizq_day14',
     contentId: 'quran_24_38',
-    mood: 'Grateful',
-    angle:
-      "Ibn al-Qayyim described the complete believer with healthy rizq mindset: (1) Belief—knows Allah is Ar-Razzaq (2) Purity—earns only halal (3) Action—works with excellence (4) Trust—doesn't obsess over results (5) Contentment—satisfied with Allah's decree (6) Quality—seeks barakah over amount (7) Generosity—gives freely (8) Means—takes practical steps (9) Dua—constantly asks Allah (10) Gratitude—thanks Allah for everything (11) Patience—endures tight times (12) Detachment—isn't enslaved by greed. Prophet ﷺ described this person: 'Richness is not having many possessions. Rather, richness is richness of the soul.' [Bukhari 6446]",
+    mood: 'Overwhelmed',
+    angle:"[Tafsir Ibn Kathir on 24:38] Ibn al-Qayyim's picture of a healthy relationship with provision is unglamorous and cumulative: know Ar-Razzaq, earn halal, work well, hold the outcome loosely, want barakah over volume, give, take practical means, ask, thank, endure the tight seasons. The Prophet ﷺ said: \"Wealth is not in having many possessions, but rather true wealth is feeling sufficiency in the soul\" [Sahih al-Bukhari 6446]. When you read that list back, notice it describes a character rather than a strategy.",
     action:
       '14-Day Review: Look back at your journey Days 1-13. Create Your Rizq Routine: Pick 3 daily habits. Example: Morning: Recite "Ya Razzaq" after Fajr. Afternoon: Give $1 sadaqah. Night: Write 3 gratitudes before bed.',
     actionHowTo:
