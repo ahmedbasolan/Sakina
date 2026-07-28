@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Colors, Spacing, BorderRadius, Typography, MoodColors, Layout } from '../theme/DesignSystem';
 import { logServiceError } from '../services/errorLoggingService';
 import {
@@ -6,6 +6,7 @@ import {
   Text,
   StyleSheet,
   ScrollView,
+  FlatList,
   TouchableOpacity,
   Dimensions,
   Animated,
@@ -76,16 +77,29 @@ interface JournalEntry {
 }
 
 // ── Entry card ───────────────────────────────────────────────────────
-function ReflectionCard({ entry, index, onPress }: { entry: JournalEntry; index: number; onPress: () => void }) {
+// Memoised: the list is virtualised, so every scroll re-renders the parent and
+// would otherwise re-render every mounted card. `onSelect` is a stable
+// useCallback in the parent rather than an inline arrow, which is what makes
+// the memo actually hold.
+const ReflectionCard = React.memo(function ReflectionCard({
+  entry,
+  index,
+  onSelect,
+}: { entry: JournalEntry; index: number; onSelect: (e: JournalEntry) => void }) {
   const moodColor = entry.mood ? (MOOD_COLORS[entry.mood] || Colors.accent.primary) : null;
   const moodIcon = entry.mood ? MOOD_ICON[entry.mood as Mood] : null;
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const slideAnim = useRef(new Animated.Value(16)).current;
+  const onPress = useCallback(() => onSelect(entry), [onSelect, entry]);
 
   useEffect(() => {
+    // Stagger is capped: under a ScrollView every card mounted at once and the
+    // ladder read as one entrance. A FlatList mounts them as they scroll in, so
+    // an uncapped index * 60 would leave entry 200 invisible for 12 seconds.
+    const delay = 60 + Math.min(index, 6) * 60;
     Animated.parallel([
-      Animated.timing(fadeAnim, { toValue: 1, duration: 400, delay: 60 + index * 60, useNativeDriver: true }),
-      Animated.timing(slideAnim, { toValue: 0, duration: 400, delay: 60 + index * 60, useNativeDriver: true }),
+      Animated.timing(fadeAnim, { toValue: 1, duration: 400, delay, useNativeDriver: true }),
+      Animated.timing(slideAnim, { toValue: 0, duration: 400, delay, useNativeDriver: true }),
     ]).start();
   }, []);
 
@@ -132,7 +146,9 @@ function ReflectionCard({ entry, index, onPress }: { entry: JournalEntry; index:
       </TouchableOpacity>
     </Animated.View>
   );
-}
+});
+
+const EntrySeparator = () => <View style={styles.entrySeparator} />;
 
 // ── Reflection detail ────────────────────────────────────────────────
 // Read-only — cards weren't tappable at all before, so a viewer that shows
@@ -430,6 +446,16 @@ export default function ReflectionHistoryScreen() {
   const [selectedEntry, setSelectedEntry] = useState<JournalEntry | null>(null);
   const headerOpacity = useRef(new Animated.Value(0)).current;
 
+  // Stable across renders so React.memo on ReflectionCard is not defeated by a
+  // fresh closure on every scroll frame.
+  const handleSelect = useCallback((entry: JournalEntry) => setSelectedEntry(entry), []);
+  const renderEntry = useCallback(
+    ({ item, index }: { item: JournalEntry; index: number }) => (
+      <ReflectionCard entry={item} index={index} onSelect={handleSelect} />
+    ),
+    [handleSelect],
+  );
+
   useEffect(() => {
     Animated.timing(headerOpacity, { toValue: 1, duration: 600, useNativeDriver: true }).start();
     loadReflections();
@@ -523,39 +549,17 @@ export default function ReflectionHistoryScreen() {
         </View>
       </Animated.View>
 
-      <ScrollView
+      {/* FlatList, not ScrollView + .map: every entry used to mount at once, so
+          the screen's cost grew with the size of the journal — the one list in
+          the app that only ever gets longer. */}
+      <FlatList
+        data={reflections}
+        keyExtractor={(r) => r.id}
+        renderItem={renderEntry}
         contentContainerStyle={[styles.listContent, { paddingBottom: insets.bottom + Layout.tabBarClearance }]}
         showsVerticalScrollIndicator={false}
-      >
-        {/* Compose CTA */}
-        <TouchableOpacity
-          activeOpacity={0.85}
-          onPress={() => setShowModal(true)}
-          accessibilityRole="button"
-          accessibilityLabel="Write a new reflection"
-        >
-          <BlurView intensity={14} tint="dark" style={styles.composeCard}>
-            <LinearGradient
-              colors={[`${COMPOSE_ACCENT}1F`, `${COMPOSE_ACCENT}08`]}
-              style={[StyleSheet.absoluteFill, { borderRadius: BorderRadius.xl }]}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 1 }}
-            />
-            <View style={[styles.composeIconCircle, { backgroundColor: `${COMPOSE_ACCENT}26` }]}>
-              <Ionicons name="add" size={20} color={COMPOSE_ACCENT} />
-            </View>
-            <View style={styles.composeTextWrap}>
-              <Text style={styles.composeTitle}>Write a New Reflection</Text>
-              <Text style={styles.composeSubtitle}>A private space, just for you</Text>
-            </View>
-            <View style={[styles.composeIconCircle, { backgroundColor: `${COMPOSE_ACCENT}26` }]}>
-              <MaterialCommunityIcons name="pen" size={16} color={COMPOSE_ACCENT} />
-            </View>
-          </BlurView>
-        </TouchableOpacity>
-
-        {/* Entry list */}
-        {reflections.length === 0 ? (
+        ItemSeparatorComponent={EntrySeparator}
+        ListEmptyComponent={
           <View style={styles.emptyState}>
             <MaterialCommunityIcons name="notebook-heart-outline" size={52} color={`${Colors.accent.primary}40`} />
             <Text style={styles.emptyTitle}>Your journal is empty</Text>
@@ -563,14 +567,37 @@ export default function ReflectionHistoryScreen() {
               Nothing here yet.{'\n'}The first entry is usually the hardest.
             </Text>
           </View>
-        ) : (
-          <View style={styles.entriesList}>
-            {reflections.map((r, i) => (
-              <ReflectionCard key={r.id} entry={r} index={i} onPress={() => setSelectedEntry(r)} />
-            ))}
+        }
+        ListHeaderComponent={
+          <View style={styles.composeHeader}>
+            <TouchableOpacity
+              activeOpacity={0.85}
+              onPress={() => setShowModal(true)}
+              accessibilityRole="button"
+              accessibilityLabel="Write a new reflection"
+            >
+              <BlurView intensity={14} tint="dark" style={styles.composeCard}>
+                <LinearGradient
+                  colors={[`${COMPOSE_ACCENT}1F`, `${COMPOSE_ACCENT}08`]}
+                  style={[StyleSheet.absoluteFill, { borderRadius: BorderRadius.xl }]}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 1 }}
+                />
+                <View style={[styles.composeIconCircle, { backgroundColor: `${COMPOSE_ACCENT}26` }]}>
+                  <Ionicons name="add" size={20} color={COMPOSE_ACCENT} />
+                </View>
+                <View style={styles.composeTextWrap}>
+                  <Text style={styles.composeTitle}>Write a New Reflection</Text>
+                  <Text style={styles.composeSubtitle}>A private space, just for you</Text>
+                </View>
+                <View style={[styles.composeIconCircle, { backgroundColor: `${COMPOSE_ACCENT}26` }]}>
+                  <MaterialCommunityIcons name="pen" size={16} color={COMPOSE_ACCENT} />
+                </View>
+              </BlurView>
+            </TouchableOpacity>
           </View>
-        )}
-      </ScrollView>
+        }
+      />
 
       <NewReflectionModal
         visible={showModal}
@@ -623,7 +650,16 @@ const styles = StyleSheet.create({
   listContent: {
     paddingHorizontal: Spacing.xl,
     paddingTop: Spacing.sm,
-    gap: Spacing.lg,
+    // No `gap` here any more. Under the old ScrollView it spaced the compose
+    // card from the entry block; a FlatList would apply it between header,
+    // every row and the footer, double-spacing against ItemSeparatorComponent.
+    // Header margin and the separator carry it explicitly instead.
+  },
+  composeHeader: {
+    marginBottom: Spacing.lg,
+  },
+  entrySeparator: {
+    height: Spacing.md,
   },
 
   // ── Compose CTA ──────────────────────────────────────────────────
@@ -656,9 +692,6 @@ const styles = StyleSheet.create({
   },
 
   // ── Entry list ───────────────────────────────────────────────────
-  entriesList: {
-    gap: Spacing.md,
-  },
   entryCard: {
     borderRadius: BorderRadius.lg,
     borderWidth: 1,
