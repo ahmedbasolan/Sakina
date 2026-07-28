@@ -52,6 +52,9 @@ const KNOWN_ORTHOGRAPHIC = new Set([
   'q_angle_10_58_energized_angle|Rejoice in faith',
   'q_angle_25_63_content|Alhamdulillah for character',
   'q_angle_66_8_guilty|Dua for perfect light',
+  // ٱلرَّحْمَـٰنِ vs الرَّحْمَنِ — the basmala, verbatim 1:1, in standard
+  // orthography like the rest of the practiceSteps corpus.
+  'q_angle_9_105_energized|Intention of worship',
 ]);
 
 const src = fs.readFileSync('src/data/quranData.ts', 'utf8');
