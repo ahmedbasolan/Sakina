@@ -19,12 +19,19 @@ function reset() {
   fs.mkdirSync(path.join(SB, 'scripts'), { recursive: true });
   for (const f of ['staticPaths.ts', 'quranData.ts', 'hadithData.ts'])
     fs.copyFileSync(path.join(REPO, 'src/data', f), path.join(SB, 'src/data', f));
-  // verify-journey.mjs derives its valid-icon set from the IconName union and
-  // its valid-sourceType set from PracticeSourceType, so the sandbox needs both
-  // of those files or every run dies with ENOENT.
+  // verify-journey.mjs derives its valid-icon set from the IconName union, its
+  // valid-sourceType set from PracticeSourceType, and its journey-angle
+  // prefixes from JOURNEY_ANGLE_PREFIXES, so the sandbox needs all three files
+  // or every run dies with ENOENT. Anything verify-journey.mjs starts reading
+  // has to be added here too.
   fs.copyFileSync(path.join(REPO, 'src/components/Icon.tsx'), path.join(SB, 'src/components/Icon.tsx'));
   fs.mkdirSync(path.join(SB, 'src', 'types'), { recursive: true });
   fs.copyFileSync(path.join(REPO, 'src/types/index.ts'), path.join(SB, 'src/types/index.ts'));
+  fs.mkdirSync(path.join(SB, 'src', 'services'), { recursive: true });
+  fs.copyFileSync(
+    path.join(REPO, 'src/services/contentRepository.ts'),
+    path.join(SB, 'src/services/contentRepository.ts'),
+  );
   fs.copyFileSync(path.join(REPO, 'scripts/verify-journey.mjs'), path.join(SB, 'scripts/verify-journey.mjs'));
 }
 
