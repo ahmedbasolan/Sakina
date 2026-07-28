@@ -264,10 +264,13 @@ for (const o of objects('q_angle_')) {
     // failing them — which is how two of the four known-bad citations went
     // unreported the first time this pass ran.
     const all = [...st.source.matchAll(/([A-Za-z'`\-. ]+?)\s+(\d+)/g)];
-    const m = all[all.length - 1];
+    // Prefer the first reference the mirror can actually answer. Sources often
+    // name two ("Sahih al-Bukhari 3282 / Sahih Muslim 2610"), and taking the
+    // last one lands on Muslim — which the mirror renumbers — so the step got
+    // skipped even though the Bukhari half was checkable.
+    const m = all.find((x) => MIRRORED[collSlug(x[1])]) || null;
     if (!m) { hSkipped++; continue; }
     const coll = collSlug(m[1]);
-    if (!coll || !MIRRORED[coll]) { hSkipped++; continue; }
     const txt = await hadithText(coll, m[2]);
     if (!txt) { hSkipped++; continue; }
     hChecked++;
@@ -284,5 +287,40 @@ console.log(`\nchecked ${hChecked} bare hadith citations against their text ` +
 console.log(`steps whose Arabic is NOT in the hadith they cite: ${mismatch.length}`);
 for (const r of mismatch) console.log(`  ${r.id}  ·  ${r.title}  ·  "${r.src}"  ·  overlap ${r.score.toFixed(2)}`);
 
-if (bad.length || unsourced.length || actionBad.length || mismatch.length) process.exit(1);
+// ── Pass 5: quran_dua steps whose source does not assert Quran ────────────
+//
+// Pass 1 only looks at sources that END with "— Quran" (or start "Quran X:Y",
+// or say "Dua of"). A step typed quran_dua under a source line like "Tafsir
+// Ibn Kathir on 4:147" renders the same green "Qur'anic" badge but was checked
+// by nothing — and three such steps carried Arabic that is not in the ayah
+// they name, including an app-composed tahmid.
+//
+// If the badge says Qur'anic and the source names a verse, the Arabic has to
+// be in that verse.
+const JOINED_AYAT = new Set([
+  // Legitimately two ayat quoted as one dhikr, and the source line says so.
+  'q_angle_rizq_day12|The Patience Dua',
+]);
+const quranish = [];
+for (const o of objects('q_angle_')) {
+  const raw = o.body.match(/practiceSteps:\s*JSON\.stringify\(([\s\S]*?)\n\s*\]\),/);
+  if (!raw) continue;
+  let steps;
+  try { steps = eval(raw[1] + '\n]'); } catch { continue; }
+  for (const st of steps) {
+    if (st.sourceType !== 'quran_dua' || !st.arabicText || !st.source) continue;
+    if (/—\s*Quran\s*$/.test(st.source) || /^Quran \d+:\d+/.test(st.source) || /—\s*Dua of/.test(st.source)) continue;
+    if (JOINED_AYAT.has(`${o.id}|${st.title}`)) continue;
+    if (KNOWN_ORTHOGRAPHIC.has(`${o.id}|${st.title}`)) continue;
+    const m = st.source.match(/(\d+):(\d+)/);
+    if (!m) { quranish.push({ id: o.id, title: st.title, src: st.source, why: 'names no verse' }); continue; }
+    const t = await ayah(`${m[1]}:${m[2]}`);
+    if (bare(t).includes(bare(st.arabicText))) continue;
+    quranish.push({ id: o.id, title: st.title, src: st.source, why: 'Arabic not in that ayah' });
+  }
+}
+console.log(`\nquran_dua steps whose source does not assert Quran: ${quranish.length} problem(s)`);
+for (const r of quranish) console.log(`  ${r.id}  ·  ${r.title}  ·  "${r.src}"  ·  ${r.why}`);
+
+if (bad.length || unsourced.length || actionBad.length || mismatch.length || quranish.length) process.exit(1);
 console.log('\nAll asserted Quran citations check out, and every chain-claiming step cites a locatable reference.');
