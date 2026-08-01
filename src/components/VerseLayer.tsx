@@ -247,6 +247,9 @@ const VerseLayer: React.FC<VerseLayerProps> = ({
 
   // skipReveal must be defined before handleContentTap (hoisted here)
   const skipRevealRef = useRef<() => void>(() => {});
+  // Held so skipReveal can stop the in-flight sequence before overwriting the
+  // values it is driving — see the comment in skipReveal.
+  const sequenceRef = useRef<Animated.CompositeAnimation | null>(null);
 
   // Called from ScrollView onTouchEnd — skip verse reveal AND toggle controls
   const handleContentTap = useCallback(() => {
@@ -294,15 +297,28 @@ const VerseLayer: React.FC<VerseLayerProps> = ({
       HapticsService.impactAsync('LIGHT');
     }, 100);
 
-    sequence.start(() => setRevealComplete(true));
+    sequenceRef.current = sequence;
+    sequence.start(({ finished }) => {
+      if (finished) setRevealComplete(true);
+    });
     return () => {
       sequence.stop();
+      sequenceRef.current = null;
       clearTimeout(hapticTimer);
     };
   }, [arabic, translation]);
 
   const skipReveal = () => {
     if (revealComplete) return;
+    // Stop the sequence before writing the settled values, so no stage can
+    // still be driving a node we are about to overwrite. NOTE: on its own this
+    // was not a proven fix — setValue() does reach the native driver (see
+    // AnimatedValue.js), so the exact cause of the stuck translation remains
+    // unconfirmed. What makes the outcome safe regardless is the o()/t() swap
+    // above the return: once revealComplete is true the styles are plain
+    // numbers and no Animated node is involved at all.
+    sequenceRef.current?.stop();
+    sequenceRef.current = null;
     arabicOpacity.setValue(1);
     arabicSlide.setValue(0);
     dividerOpacity.setValue(1);
@@ -311,6 +327,14 @@ const VerseLayer: React.FC<VerseLayerProps> = ({
     refOpacity.setValue(1);
     setRevealComplete(true);
   };
+  // Once the reveal has settled, drive these styles from plain numbers rather
+  // than from the Animated nodes. An interrupted sequence can leave a node and
+  // its native counterpart disagreeing — which is what stopped the translation
+  // ever appearing after a tap — and the settled render must not be able to
+  // inherit that state, whatever it turns out to be.
+  const o = (v: Animated.Value) => (revealComplete ? 1 : v);
+  const t = (v: Animated.Value) => (revealComplete ? 0 : v);
+
   // Keep ref in sync so handleContentTap can call the latest skipReveal
   skipRevealRef.current = skipReveal;
 
@@ -346,7 +370,7 @@ const VerseLayer: React.FC<VerseLayerProps> = ({
         }
       >
         {/* ── Reference at top ── */}
-        <Animated.View style={[styles.referenceTop, { opacity: refOpacity }]}>
+        <Animated.View style={[styles.referenceTop, { opacity: o(refOpacity) }]}>
           {/* Decorative top flourish */}
           <View style={styles.refFlourish}>
             <View style={[styles.refFlLine, { backgroundColor: accentColor + '25' }]} />
@@ -371,23 +395,23 @@ const VerseLayer: React.FC<VerseLayerProps> = ({
         {/* ── Verse content ── */}
         {isArabicPrimary ? (
           <>
-            <Animated.View style={{ opacity: arabicOpacity, transform: [{ translateY: arabicSlide }] }}>
+            <Animated.View style={{ opacity: o(arabicOpacity), transform: [{ translateY: t(arabicSlide) }] }}>
               <ArabicText text={arabic} style={isLongArabic ? styles.arabicCompact : styles.arabic} />
             </Animated.View>
 
             {showTransliteration && transliteration ? (
-              <Animated.View style={{ opacity: transOpacity }}>
+              <Animated.View style={{ opacity: o(transOpacity) }}>
                 <Text style={styles.transliteration}>{transliteration}</Text>
               </Animated.View>
             ) : null}
 
-            <Animated.View style={[styles.divider, { opacity: dividerOpacity }]}>
+            <Animated.View style={[styles.divider, { opacity: o(dividerOpacity) }]}>
               <View style={styles.dividerLine} />
               <View style={styles.dividerDiamond} />
               <View style={styles.dividerLine} />
             </Animated.View>
 
-            <Animated.View style={{ opacity: transOpacity, transform: [{ translateY: transSlide }] }}>
+            <Animated.View style={{ opacity: o(transOpacity), transform: [{ translateY: t(transSlide) }] }}>
               <Text style={[styles.translation, isLongTranslation && styles.translationCompact, { color: accentColor + 'BF' }]}>
                 {formattedTranslation}
               </Text>
@@ -395,7 +419,7 @@ const VerseLayer: React.FC<VerseLayerProps> = ({
           </>
         ) : (
           <>
-            <Animated.View style={{ opacity: arabicOpacity, transform: [{ translateY: arabicSlide }] }}>
+            <Animated.View style={{ opacity: o(arabicOpacity), transform: [{ translateY: t(arabicSlide) }] }}>
               <Text
                 style={[
                   styles.translationPrimary,
@@ -406,13 +430,13 @@ const VerseLayer: React.FC<VerseLayerProps> = ({
               </Text>
             </Animated.View>
 
-            <Animated.View style={[styles.divider, { opacity: dividerOpacity }]}>
+            <Animated.View style={[styles.divider, { opacity: o(dividerOpacity) }]}>
               <View style={styles.dividerLine} />
               <View style={styles.dividerDiamond} />
               <View style={styles.dividerLine} />
             </Animated.View>
 
-            <Animated.View style={{ opacity: transOpacity, transform: [{ translateY: transSlide }] }}>
+            <Animated.View style={{ opacity: o(transOpacity), transform: [{ translateY: t(transSlide) }] }}>
               <ArabicText
                 text={arabic}
                 style={[isLongArabic ? styles.arabicSecondaryCompact : styles.arabicSecondary, { color: accentColor }]}
@@ -420,7 +444,7 @@ const VerseLayer: React.FC<VerseLayerProps> = ({
             </Animated.View>
 
             {showTransliteration && transliteration ? (
-              <Animated.View style={{ opacity: transOpacity }}>
+              <Animated.View style={{ opacity: o(transOpacity) }}>
                 <Text style={styles.transliteration}>{transliteration}</Text>
               </Animated.View>
             ) : null}

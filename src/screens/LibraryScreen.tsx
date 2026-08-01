@@ -488,6 +488,27 @@ export default function LibraryScreen({ navigation }: any) {
     <SavedVerseCard key={item.id} verse={item} index={index} />
   ), []);
 
+  // Scrolls with the list rather than sitting in the pinned header, so the
+  // search bar and the SAVED/ALL SURAHS tabs stay reachable while it moves up
+  // and out of the way. Rendered in three places: both lists, and the
+  // saved-empty branch, which is not a list.
+  const titleBlock = (
+    <View style={styles.headerTop}>
+      <View>
+        <Text style={styles.headerPretitle}>QURANIC LIBRARY</Text>
+        <Text style={styles.headerTitle}>Sacred Words</Text>
+        <Text style={styles.headerSub}>Complete Quran · Saved Verses · Offline</Text>
+      </View>
+      <View style={styles.headerIcon}>
+        <MaterialCommunityIcons
+          name="book-open-variant"
+          size={22}
+          color={Colors.accent.primary}
+        />
+      </View>
+    </View>
+  );
+
   return (
     <View style={styles.container}>
       <LinearGradient
@@ -516,21 +537,6 @@ export default function LibraryScreen({ navigation }: any) {
       <Animated.View
         style={[styles.header, { paddingTop: insets.top + Spacing.lg, opacity: headerOpacity }]}
       >
-        <View style={styles.headerTop}>
-          <View>
-            <Text style={styles.headerPretitle}>QURANIC LIBRARY</Text>
-            <Text style={styles.headerTitle}>Sacred Words</Text>
-            <Text style={styles.headerSub}>Complete Quran · Saved Verses · Offline</Text>
-          </View>
-          <View style={styles.headerIcon}>
-            <MaterialCommunityIcons
-              name="book-open-variant"
-              size={22}
-              color={Colors.accent.primary}
-            />
-          </View>
-        </View>
-
         {/* Search — frosted so the mandala backdrop blends instead of showing a hard-edged tint */}
         <BlurView intensity={14} tint="dark" style={styles.searchBar}>
           <MaterialCommunityIcons
@@ -593,32 +599,42 @@ export default function LibraryScreen({ navigation }: any) {
       {/* ── Content ─────────────────────────────────────────────── */}
       {activeTab === 'saved' ? (
         loadingSaved ? (
-          <ActivityIndicator color={Colors.accent.primary} style={{ marginTop: 60 }} />
-        ) : savedVerses.length === 0 ? (
-          <View style={styles.emptyState}>
-            <MaterialCommunityIcons
-              name="bookmark-outline"
-              size={52}
-              color="rgba(212,175,55,0.25)"
-            />
-            <Text style={styles.emptyTitle}>No saved verses yet</Text>
-            <Text style={styles.emptySub}>
-              Bookmark a verse while reading, or save one{'\n'}from Guidance or a Journey — it lands here
-            </Text>
-            <TouchableOpacity
-              style={styles.emptyAction}
-              onPress={() => switchTab('surahs')}
-              accessibilityRole="button"
-              accessibilityLabel="Browse all surahs"
-            >
-              <Text style={styles.emptyActionText}>Browse All Surahs</Text>
-              <MaterialCommunityIcons
-                name="arrow-right"
-                size={14}
-                color={Colors.accent.primary}
-              />
-            </TouchableOpacity>
+          // 'saved' is the default tab and loadingSaved starts true, so this is
+          // the first frame of every fresh visit to the screen. Without the
+          // title here it was a bare spinner under the search bar and tabs —
+          // no indication of what screen this even is.
+          <View style={styles.emptyWrap}>
+            {titleBlock}
+            <ActivityIndicator color={Colors.accent.primary} style={{ marginTop: 60 }} />
           </View>
+        ) : savedVerses.length === 0 ? (
+          <View style={styles.emptyWrap}>
+            {titleBlock}
+            <View style={styles.emptyState}>
+              <MaterialCommunityIcons
+                name="bookmark-outline"
+                size={52}
+                color="rgba(212,175,55,0.25)"
+              />
+              <Text style={styles.emptyTitle}>No saved verses yet</Text>
+              <Text style={styles.emptySub}>
+                Bookmark a verse while reading, or save one{'\n'}from Guidance or a Journey — it lands here
+              </Text>
+              <TouchableOpacity
+                style={styles.emptyAction}
+                onPress={() => switchTab('surahs')}
+                accessibilityRole="button"
+                accessibilityLabel="Browse all surahs"
+              >
+                <Text style={styles.emptyActionText}>Browse All Surahs</Text>
+                <MaterialCommunityIcons
+                  name="arrow-right"
+                  size={14}
+                  color={Colors.accent.primary}
+                />
+              </TouchableOpacity>
+              </View>
+            </View>
         ) : (
           <FlatList
             data={savedVerses}
@@ -630,6 +646,7 @@ export default function LibraryScreen({ navigation }: any) {
             ]}
             showsVerticalScrollIndicator={false}
             ItemSeparatorComponent={() => <View style={styles.savedCardGap} />}
+            ListHeaderComponent={titleBlock}
           />
         )
       ) : (
@@ -669,6 +686,7 @@ export default function LibraryScreen({ navigation }: any) {
           }
           ListHeaderComponent={
             <>
+              {titleBlock}
               {/* Download progress banner — shown until all 114 surahs are cached */}
               {dlProgress && !dlProgress.done && (
                 <TouchableOpacity
@@ -1052,6 +1070,13 @@ const styles = StyleSheet.create({
   },
 
   // Empty state
+  // Wraps the saved-empty branch so the title block it now carries lines up
+  // with listContent's gutter.
+  emptyWrap: {
+    flex: 1,
+    paddingHorizontal: Spacing.xl,
+    paddingTop: Spacing.md,
+  },
   emptyState: {
     flex: 1,
     alignItems: 'center',

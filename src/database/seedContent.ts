@@ -141,7 +141,16 @@ import type { Content, ContentAngle } from '../types';
 //      not "a body nourished by haram" (-> Sahih Muslim 1015), and day 13
 //      quoted "a valley of gold ... a second" where Bukhari 6436 reads "two
 //      valleys ... a third".
-const SEED_VERSION = 27;
+// v28: new journey — Prayer Leadership (path_prayer_leadership), 14 free days.
+//      Week 1 is what you recite (Al-Fatihah, Al-Ikhlas, the mu'awwidhatayn,
+//      and two days on why repeating a surah is the method rather than a
+//      shortfall); week 2 is how you lead (rows and takbir, reciting aloud,
+//      transitions, sujud as-sahw, brevity, the closing sequence, and going
+//      and doing it). Adds 12 Content verses — quran_8_2 and quran_20_132
+//      already existed and are reused — 14 angles (q_angle_imam_day1..14) with
+//      3 sourced practice steps each, and 14 hadith (hadith_imam_1..14). The
+//      path was a locked stub with dailySteps: [] and isPremium: true.
+const SEED_VERSION = 28;
 // Separate keys per content type — Quran and Hadith data change independently,
 // and each seeder used to write the SAME key at the end of its run. Since
 // initializeDatabase() awaits seedQuranContent() before seedHadithContent(),

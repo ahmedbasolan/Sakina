@@ -174,6 +174,11 @@ const styles = StyleSheet.create({
     minWidth: 80,
     minHeight: 44,        // WCAG touch target
     justifyContent: 'flex-start',
+    // Labels are content-sized and can now be surah names ("Al-Ghashiyah")
+    // rather than always "Verse"/"Context". With eight layers the dot track is
+    // 118pt wide, so on a narrow device two long labels either squeezed the
+    // dots or pushed them off-centre. Let the labels give way instead.
+    flexShrink: 1,
   },
   navBtnRight: {
     justifyContent: 'flex-end',
@@ -195,6 +200,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: GAP,
     position: 'relative',
+    // The dots are the position indicator — they must never be the thing that
+    // shrinks, or the pill's translateX (computed from DOT + GAP) stops
+    // lining up with them.
+    flexShrink: 0,
   },
   dot: {
     width: DOT,

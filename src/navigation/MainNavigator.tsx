@@ -123,7 +123,18 @@ function CustomTabBar({ state, navigation }: BottomTabBarProps) {
       <View style={styles.pill}>
         {/* Frosted-glass surface — clipped to the pill's rounded shape. Sits
             behind the tab items; the floating labels still overflow the pill. */}
-        <BlurView intensity={30} tint="dark" style={styles.pillBlur} pointerEvents="none" />
+        {/* `experimentalBlurMethod` is what makes this actually blur on
+            Android — without it expo-blur falls back to a flat translucent
+            fill there, which is why the pill read as a dim rectangle over
+            scrolling content instead of frosted glass. iOS ignores the prop
+            and uses its native blur either way. */}
+        <BlurView
+          intensity={48}
+          tint="dark"
+          experimentalBlurMethod="dimezisBlurView"
+          style={styles.pillBlur}
+          pointerEvents="none"
+        />
         {state.routes.map((route, index) => {
           const focused = state.index === index;
           return (
@@ -217,18 +228,22 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     // Subtle base fill so iOS casts the shadow (a fully transparent view may not)
     // and so the pill still reads if BlurView is unavailable (e.g. some Androids).
-    backgroundColor: 'rgba(10, 18, 28, 0.4)',
+    backgroundColor: 'rgba(7, 15, 26, 0.58)',
     borderRadius: BorderRadius.full,
     height: 60,
     alignItems: 'center',
     paddingHorizontal: Spacing.xs,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.14)',
+    // Brighter than the surface it sits on so the pill reads as a raised sheet
+    // of glass with a lit edge, not a hole cut in the background.
+    borderColor: 'rgba(255, 255, 255, 0.20)',
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.45,
-    shadowRadius: 20,
-    elevation: 20,
+    shadowOffset: { width: 0, height: 10 },
+    // Deeper and wider than before: the shadow is what separates the pill from
+    // the list scrolling underneath it, and at 0.45/20 the two were merging.
+    shadowOpacity: 0.6,
+    shadowRadius: 26,
+    elevation: 24,
   },
   // Clipped frosted surface filling the pill, with a translucent navy tint over
   // the blur for contrast against bright content scrolling beneath.
@@ -236,7 +251,7 @@ const styles = StyleSheet.create({
     ...StyleSheet.absoluteFillObject,
     borderRadius: BorderRadius.full,
     overflow: 'hidden',
-    backgroundColor: 'rgba(10, 18, 28, 0.3)',
+    backgroundColor: 'rgba(7, 15, 26, 0.42)',
   },
 
   // Each tab's touch target

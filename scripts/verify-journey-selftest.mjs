@@ -17,7 +17,7 @@ function reset() {
   fs.mkdirSync(path.join(SB, 'src', 'data'), { recursive: true });
   fs.mkdirSync(path.join(SB, 'src', 'components'), { recursive: true });
   fs.mkdirSync(path.join(SB, 'scripts'), { recursive: true });
-  for (const f of ['staticPaths.ts', 'quranData.ts', 'hadithData.ts'])
+  for (const f of ['staticPaths.ts', 'quranData.ts', 'hadithData.ts', 'surahLessons.ts'])
     fs.copyFileSync(path.join(REPO, 'src/data', f), path.join(SB, 'src/data', f));
   // verify-journey.mjs derives its valid-icon set from the IconName union, its
   // valid-sourceType set from PracticeSourceType, and its journey-angle
@@ -66,6 +66,10 @@ const CASES = [
   ['no split pattern', () => patch('quranData.ts', `. When you study, the striving is the part`, `. Studying means the striving is the part`), /no split pattern/],
   ['missing angle', () => patch('staticPaths.ts', `angleId: 'q_angle_study_day5'`, `angleId: 'q_angle_study_day99'`), /missing angle q_angle_study_day99/],
   ['duplicate du\'a', () => patch('quranData.ts', `actionArabicText: 'رَبِّ زِدْنِي عِلْمًا'`, `actionArabicText: 'جَزَاكَ اللَّهُ خَيْرًا'`), /du'a repeats day/],
+  // PathStepScreen silently drops an unresolvable surah id, so a typo removes
+  // a study-sheet layer the day's instructions still tell the user to read.
+  ['missing surah lesson', () => patch('staticPaths.ts', `surahIds: ['surah_87', 'surah_88', 'surah_109']`, `surahIds: ['surah_87', 'surah_888', 'surah_109']`), /missing surah lesson surah_888/],
+  ['duplicate surah in a day', () => patch('staticPaths.ts', `surahIds: ['surah_87', 'surah_88', 'surah_109']`, `surahIds: ['surah_87', 'surah_87', 'surah_109']`), /surah surah_87 listed twice/],
 ];
 
 // Baseline must pass, or every negative result below is meaningless.

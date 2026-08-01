@@ -44,6 +44,12 @@ interface PracticeLayerProps {
   accentColor?: string;
 }
 
+// Gutter geometry, shared by the layout and by the expanded card's breakout
+// so the two can never drift apart.
+const TIMELINE_W = 30;
+const CARD_GAP = 8;
+const GUTTER = TIMELINE_W + CARD_GAP;
+
 const TYPE_COLORS: Record<PracticeStepData['type'], string> = {
   mindset: '#F5A623',
   physical: Colors.accent.primary,
@@ -197,8 +203,10 @@ const PracticeStepCard = ({
               journey photo) blend through instead of a flat opaque box */}
           <BlurView intensity={18} tint="dark" style={StyleSheet.absoluteFillObject} pointerEvents="none" />
 
-          {/* Card Header */}
-          <View style={styles.stepCardHeader}>
+          {/* Card Header — when the card has broken out of the timeline
+              gutter, pad the header back in so the icon and title still sit
+              clear of the step circle floating over the card's left edge. */}
+          <View style={[styles.stepCardHeader, isExpanded && styles.stepCardHeaderExpanded]}>
             <View style={styles.stepTitleRow}>
               <View style={[styles.stepIconBg, { backgroundColor: accentColor + '15' }]}>
                 <Icon name={item.icon} size={20} color={accentColor} />
@@ -280,9 +288,11 @@ const PracticeStepCard = ({
 
               {/* Source — omitted entirely when the step has no attribution,
                   rather than rendering an empty styled line. */}
-              {!!item.source && (
-                <Text style={styles.stepSource} numberOfLines={1}>{item.source}</Text>
-              )}
+              {/* No numberOfLines. Sources are now full quoted hadith —
+                  "He then took and brought me around him and set me on his
+                  right side… [Sunan Abi Dawud 634]" — and a one-line clamp
+                  ellipsised the very thing that proves the step. */}
+              {!!item.source && <Text style={styles.stepSource}>{item.source}</Text>}
             </View>
           )}
         </TouchableOpacity>
@@ -433,7 +443,7 @@ const styles = StyleSheet.create({
     marginBottom: 2,
   },
   timelineColumn: {
-    width: 36,
+    width: TIMELINE_W,
     alignItems: 'center',
   },
   stepCircle: {
@@ -458,7 +468,7 @@ const styles = StyleSheet.create({
   },
   stepCardColumn: {
     flex: 1,
-    paddingLeft: Spacing.md,
+    paddingLeft: CARD_GAP,
     paddingBottom: Spacing.md,
   },
 
@@ -471,13 +481,18 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   stepCardExpanded: {
-    borderColor: 'rgba(255, 235, 210, 0.2)',
+    borderColor: 'rgba(255, 235, 210, 0.28)',
+    // Break out of the timeline gutter so the open step gets the full width.
+    marginLeft: -GUTTER,
   },
   stepCardHeader: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    padding: Spacing.md,
+    padding: Spacing.lg,
+  },
+  stepCardHeaderExpanded: {
+    paddingLeft: GUTTER + Spacing.sm,
   },
   stepTitleRow: {
     flexDirection: 'row',
@@ -511,23 +526,23 @@ const styles = StyleSheet.create({
 
   /* ── Expanded Body ── */
   stepBody: {
-    paddingHorizontal: Spacing.md,
-    paddingBottom: Spacing.lg,
+    paddingHorizontal: Spacing.lg,
+    paddingBottom: Spacing.xl,
   },
   stepInstruction: {
-    fontSize: 15,
+    fontSize: 16,
     color: Colors.text.secondary,
-    lineHeight: 24,
-    marginBottom: Spacing.md,
+    lineHeight: 26,
+    marginBottom: Spacing.lg,
   },
 
   /* ── Dua block ── */
   duaBlock: {
     backgroundColor: 'rgba(255, 235, 210, 0.04)',
     borderRadius: BorderRadius.md,
-    padding: Spacing.lg,
+    padding: Spacing.xl,
     borderLeftWidth: 3,
-    marginBottom: Spacing.md,
+    marginBottom: Spacing.lg,
   },
   duaArabic: {
     fontFamily: Typography.fonts.arabic,
@@ -597,7 +612,8 @@ const styles = StyleSheet.create({
 
   /* ── Source / Footer ── */
   stepSource: {
-    fontSize: 11,
+    fontSize: 12,
+    lineHeight: 18,
     color: Colors.text.muted,
     fontStyle: 'italic',
     marginTop: Spacing.sm,

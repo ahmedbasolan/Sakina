@@ -52,6 +52,9 @@ const HadithLayer: React.FC<HadithLayerProps> = ({
   const transSlide = useRef(new Animated.Value(10)).current;
   const refOpacity = useRef(new Animated.Value(0)).current;
   const [revealComplete, setRevealComplete] = useState(false);
+  // Held so skipReveal can stop the in-flight sequence before overwriting the
+  // values it is driving — see the comment in skipReveal.
+  const sequenceRef = useRef<Animated.CompositeAnimation | null>(null);
 
   useEffect(() => {
     arabicOpacity.setValue(0);
@@ -81,15 +84,28 @@ const HadithLayer: React.FC<HadithLayerProps> = ({
       HapticsService.impactAsync('LIGHT');
     }, 100);
 
-    sequence.start(() => setRevealComplete(true));
+    sequenceRef.current = sequence;
+    sequence.start(({ finished }) => {
+      if (finished) setRevealComplete(true);
+    });
     return () => {
       sequence.stop();
+      sequenceRef.current = null;
       clearTimeout(hapticTimer);
     };
   }, [arabic, translation]);   // eslint-disable-line react-hooks/exhaustive-deps
 
   const skipReveal = () => {
     if (revealComplete) return;
+    // Stop the sequence before writing the settled values, so no stage can
+    // still be driving a node we are about to overwrite. NOTE: on its own this
+    // was not a proven fix — setValue() does reach the native driver (see
+    // AnimatedValue.js), so the exact cause of the stuck translation remains
+    // unconfirmed. What makes the outcome safe regardless is the o()/t() swap
+    // above the return: once revealComplete is true the styles are plain
+    // numbers and no Animated node is involved at all.
+    sequenceRef.current?.stop();
+    sequenceRef.current = null;
     arabicOpacity.setValue(1);
     arabicSlide.setValue(0);
     dividerOpacity.setValue(1);
@@ -98,6 +114,14 @@ const HadithLayer: React.FC<HadithLayerProps> = ({
     refOpacity.setValue(1);
     setRevealComplete(true);
   };
+  // Once the reveal has settled, drive these styles from plain numbers rather
+  // than from the Animated nodes. An interrupted sequence can leave a node and
+  // its native counterpart disagreeing — which is what stopped the translation
+  // ever appearing after a tap — and the settled render must not be able to
+  // inherit that state, whatever it turns out to be.
+  const o = (v: Animated.Value) => (revealComplete ? 1 : v);
+  const t = (v: Animated.Value) => (revealComplete ? 0 : v);
+
 
   return (
     <View style={[styles.container, { paddingTop: topInset }]}>
@@ -118,7 +142,7 @@ const HadithLayer: React.FC<HadithLayerProps> = ({
         }
       >
         {/* ── Reference at top — flourish, glowing source, grading row ── */}
-        <Animated.View style={[styles.referenceTop, { opacity: refOpacity }]}>
+        <Animated.View style={[styles.referenceTop, { opacity: o(refOpacity) }]}>
           <View style={styles.refFlourish}>
             <View style={[styles.refFlLine, { backgroundColor: accentColor + '25' }]} />
             <View style={[styles.refFlDiamond, { backgroundColor: accentColor + '40' }]} />
@@ -138,20 +162,20 @@ const HadithLayer: React.FC<HadithLayerProps> = ({
         {/* ── Hadith content — ArabicText carries the harakat-descender
             padding guard (raw Text clips Amiri's below-baseline marks) ── */}
         {arabic !== '' && (
-          <Animated.View style={{ opacity: arabicOpacity, transform: [{ translateY: arabicSlide }] }}>
+          <Animated.View style={{ opacity: o(arabicOpacity), transform: [{ translateY: t(arabicSlide) }] }}>
             <ArabicText text={arabic} style={isLongArabic ? styles.arabicCompact : styles.arabic} />
           </Animated.View>
         )}
 
         {arabic !== '' && (
-          <Animated.View style={[styles.divider, { opacity: dividerOpacity }]}>
+          <Animated.View style={[styles.divider, { opacity: o(dividerOpacity) }]}>
             <View style={styles.dividerLine} />
             <View style={styles.dividerDiamond} />
             <View style={styles.dividerLine} />
           </Animated.View>
         )}
 
-        <Animated.View style={{ opacity: transOpacity, transform: [{ translateY: transSlide }] }}>
+        <Animated.View style={{ opacity: o(transOpacity), transform: [{ translateY: t(transSlide) }] }}>
           <Text
             style={[styles.translation, isLongTranslation && styles.translationCompact]}
             allowFontScaling

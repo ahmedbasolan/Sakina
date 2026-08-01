@@ -34,6 +34,7 @@ const JOURNEYS = [
   // theme moved Hopeful -> Calm with the content rebuild: all seven angles are
   // about khushu and stillness, which is Calm, and one path edit beat seven.
   ['path_salah_transformation', 'q_angle_salah_', 'Calm', true],
+  ['path_prayer_leadership', 'q_angle_imam_', 'Hopeful', true],
 ];
 
 const contentIds = new Set([...quran.matchAll(/id: '(quran_[a-z0-9_]+)'/g)].map((m) => m[1]));
@@ -236,6 +237,53 @@ for (const pm of paths.matchAll(/id:\s*'(path_[a-zA-Z0-9_]+)'/g)) {
     console.log(`  !! ${pm[1]} day ${i + 1}: borrows mood angle ${step.angleId} — journey days need their own angle`);
     fail++;
   });
+}
+
+// ── Universal surah-lesson pass — EVERY path ──────────────────────────────
+//
+// `surahIds` adds one SurahLayer per entry to a day's pager (PathStepScreen).
+// An id that does not resolve is dropped there rather than crashing, so a typo
+// would silently remove a layer the day's instructions still refer to — "add
+// Al-A'la and Al-Ghashiyah" with no Al-Ghashiyah screen behind it.
+const surahIds = (() => {
+  const f = 'src/data/surahLessons.ts';
+  if (!fs.existsSync(f)) return null;
+  return new Set([...fs.readFileSync(f, 'utf8').matchAll(/^  (surah_\d+): \{$/gm)].map((m) => m[1]));
+})();
+if (!surahIds) {
+  console.log('!! src/data/surahLessons.ts not found — surah layers cannot be checked');
+  fail++;
+} else if (surahIds.size === 0) {
+  // A parser that silently returns nothing would report every id as missing,
+  // which reads like a data fault rather than a broken checker. Say which it is.
+  console.log('!! parsed 0 surah lessons from surahLessons.ts — the parser is broken, not the data');
+  fail++;
+} else {
+  let checked = 0;
+  for (const pm of paths.matchAll(/id:\s*'(path_[a-zA-Z0-9_]+)'/g)) {
+    const path_ = objectAt(paths, pm[1]);
+    if (!path_ || !Array.isArray(path_.dailySteps)) continue;
+    path_.dailySteps.forEach((step, i) => {
+      if (!Array.isArray(step.surahIds)) return;
+      if (step.surahIds.length === 0) {
+        console.log(`  !! ${pm[1]} day ${i + 1}: empty surahIds — drop the field instead`);
+        fail++;
+      }
+      for (const id of step.surahIds) {
+        checked++;
+        if (!surahIds.has(id)) {
+          console.log(`  !! ${pm[1]} day ${i + 1}: missing surah lesson ${id}`);
+          fail++;
+        }
+      }
+      const dup = step.surahIds.filter((x, k) => step.surahIds.indexOf(x) !== k);
+      if (dup.length) {
+        console.log(`  !! ${pm[1]} day ${i + 1}: surah ${dup[0]} listed twice`);
+        fail++;
+      }
+    });
+  }
+  console.log(`\nsurah lesson layers referenced: ${checked}, all resolving to src/data/surahLessons.ts`);
 }
 
 // ── Universal du'a-repeat pass — EVERY journey, not just the JOURNEYS list ──
