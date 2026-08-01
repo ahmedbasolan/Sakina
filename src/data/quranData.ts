@@ -505,7 +505,7 @@ const quranContentData: Content[] = [
     source: 'Surah Az-Zumar 39:53-54',
     audioKey: '39:53-54',
     whyThis: 'Ibn Abbas (RA) said this is the most hope-giving verse in the entire Quran. Allah addresses those who have "transgressed against themselves" — not minor sinners, but those who believe their sins are too great. The response is an unconditional declaration: "Indeed, Allah forgives all sins." No exception is listed. [Tafsir Ibn Kathir, Surah Az-Zumar]',
-    moods: ['Sad', 'Guilty'],
+    moods: ['Guilty'],
   },
 
   // === ANGRY / IHSAN ===
@@ -753,7 +753,7 @@ const quranContentData: Content[] = [
     // 'Sad' is required here: q_angle_3_135_sad_angle is written for the
     // sorrow-from-remorse state, and fetchForMood joins on BOTH cm.mood and
     // ca.mood — without the tag that angle can never be selected.
-    moods: ['Guilty', 'Sad'],
+    moods: ['Guilty'],
   },
   {
     id: 'quran_66_8',
@@ -771,7 +771,7 @@ const quranContentData: Content[] = [
     whyThis: 'Allah calls believers to sincere repentance as a path to success.',
     // See quran_3_135 — 'Sad' unlocks q_angle_66_8_sad_angle, which is written
     // for grief over a mistake rather than the guilt itself.
-    moods: ['Guilty', 'Sad'],
+    moods: ['Guilty'],
   },
 
   // === GRATEFUL / SHUKR ===
@@ -1911,7 +1911,7 @@ const quranContentData: Content[] = [
     source: 'Surah Al-Anfal 8:33',
     audioKey: '8:33',
     whyThis: 'Istighfar (seeking forgiveness) is a literal shield from difficulty and guilt.',
-    moods: ['Sad', 'Overwhelmed', 'Guilty'],
+    moods: ['Overwhelmed', 'Guilty'],
   },
 
   {
@@ -3264,6 +3264,179 @@ const quranContentData: Content[] = [
     whyThis: 'Al-Sa\'di stops on the parenthesis: your patience is not but through Allah. The capacity to endure is itself supplied, which is why it can be asked for rather than only summoned. Ibn Kathir notes the final clause forbids "ḍayq" — a constriction of the chest, the physical tightness of being wronged — naming the bodily sensation rather than only the attitude.',
     moods: ['Angry'],
   },
+  // === PRAYER LEADERSHIP JOURNEY VERSES ===
+  // Referenced by step_imam_1..7 in staticPaths.ts. Arabic and transliteration
+  // are the Quran.com API output, matching the rest of this file byte for byte.
+  // moods is empty on purpose: these carry journey angles only, and a mood tag
+  // with no mood angle behind it is an inert tag (verify-mood-pools warns).
+  {
+    id: 'quran_54_17',
+    type: 'Quran',
+    primaryText: "walaqad yassarnā l-qur'āna lildhik'ri fahal min muddakirin",
+    arabicText: 'وَلَقَدْ يَسَّرْنَا ٱلْقُرْءَانَ لِلذِّكْرِ فَهَلْ مِن مُّدَّكِرٍ ﴿17﴾',
+    transliteration: "walaqad yassarnā l-qur'āna lildhik'ri fahal min muddakirin",
+    englishTranslation:
+      "And We have certainly made the Qur'an easy for remembrance, so is there any who will remember?",
+    source: 'Surah Al-Qamar 54:17',
+    audioKey: '54:17',
+    whyThis:
+      "The refrain of Surah Al-Qamar is a statement about access, not about talent: the Qur'an was made retainable on purpose, and the question that closes the ayah is only whether anyone takes that up.",
+    moods: [],
+  },
+  {
+    id: 'quran_15_87',
+    type: 'Quran',
+    primaryText: "walaqad ātaynāka sabʿan mina l-mathānī wal-qur'āna l-ʿaẓīma",
+    arabicText: 'وَلَقَدْ ءَاتَيْنَـٰكَ سَبْعًا مِّنَ ٱلْمَثَانِى وَٱلْقُرْءَانَ ٱلْعَظِيمَ ﴿87﴾',
+    transliteration: "walaqad ātaynāka sabʿan mina l-mathānī wal-qur'āna l-ʿaẓīma",
+    englishTranslation:
+      "And We have certainly given you seven of the often repeated verses and the great Qur'an.",
+    source: 'Surah Al-Hijr 15:87',
+    audioKey: '15:87',
+    whyThis:
+      "The seven oft-repeated is Al-Fatihah, named in its own right alongside the great Qur'an that contains it — which is why every rak'ah is built around it and why an imam perfects it before anything else.",
+    moods: [],
+  },
+  {
+    id: 'quran_112_1_4',
+    type: 'Quran',
+    primaryText: 'qul huwa l-lahu aḥadun al-lahu l-ṣamadu lam yalid walam yūlad walam yakun lahu kufuwan aḥadun',
+    arabicText:
+      'قُلْ هُوَ ٱللَّهُ أَحَدٌ ٱللَّهُ ٱلصَّمَدُ لَمْ يَلِدْ وَلَمْ يُولَدْ وَلَمْ يَكُن لَّهُۥ كُفُوًا أَحَدٌۢ ﴿1-4﴾',
+    transliteration: 'qul huwa l-lahu aḥadun al-lahu l-ṣamadu lam yalid walam yūlad walam yakun lahu kufuwan aḥadun',
+    englishTranslation:
+      'Say, "He is Allah, who is One; Allah, the Eternal Refuge. He neither begets nor is born, nor is there to Him any equivalent."',
+    source: 'Surah Al-Ikhlas 112:1-4',
+    audioKey: '112:1-4',
+    whyThis:
+      'Four ayahs settle the question of who Allah is with nothing to spare, which is why the Prophet ﷺ weighed the surah against a third of the whole revelation — and why almost every congregation already carries it.',
+    moods: [],
+  },
+  {
+    id: 'quran_113_1_5',
+    type: 'Quran',
+    primaryText: 'qul aʿūdhu birabbi l-falaqi min sharri mā khalaqa wamin sharri ghāsiqin idhā waqaba wamin sharri l-nafāthāti fī l-ʿuqadi wamin sharri ḥāsidin idhā ḥasada',
+    arabicText:
+      'قُلْ أَعُوذُ بِرَبِّ ٱلْفَلَقِ مِن شَرِّ مَا خَلَقَ وَمِن شَرِّ غَاسِقٍ إِذَا وَقَبَ وَمِن شَرِّ ٱلنَّفَّـٰثَـٰتِ فِى ٱلْعُقَدِ وَمِن شَرِّ حَاسِدٍ إِذَا حَسَدَ ﴿1-5﴾',
+    transliteration: 'qul aʿūdhu birabbi l-falaqi min sharri mā khalaqa wamin sharri ghāsiqin idhā waqaba wamin sharri l-nafāthāti fī l-ʿuqadi wamin sharri ḥāsidin idhā ḥasada',
+    englishTranslation:
+      'Say, "I seek refuge in the Lord of daybreak, from the evil of that which He created, and from the evil of darkness when it settles, and from the evil of the blowers in knots, and from the evil of an envier when he envies."',
+    source: 'Surah Al-Falaq 113:1-5',
+    audioKey: '113:1-5',
+    whyThis:
+      'Al-Falaq names harm that reaches a person from outside; An-Nas after it names what is whispered inside. The Prophet ﷺ taught the two together and led Fajr with them the same morning.',
+    moods: [],
+  },
+  {
+    id: 'quran_7_204',
+    type: 'Quran',
+    primaryText: "wa-idhā quri-a l-qur'ānu fa-is'tamiʿū lahu wa-anṣitū laʿallakum tur'ḥamūna",
+    arabicText: 'وَإِذَا قُرِئَ ٱلْقُرْءَانُ فَٱسْتَمِعُوا۟ لَهُۥ وَأَنصِتُوا۟ لَعَلَّكُمْ تُرْحَمُونَ ﴿204﴾',
+    transliteration: "wa-idhā quri-a l-qur'ānu fa-is'tamiʿū lahu wa-anṣitū laʿallakum tur'ḥamūna",
+    englishTranslation:
+      "So when the Qur'an is recited, then listen to it and pay attention that you may receive mercy.",
+    source: "Surah Al-A'raf 7:204",
+    audioKey: '7:204',
+    whyThis:
+      'Much of the early commentary reads this as addressed first to the congregation standing behind an imam — which makes it a description of the room the one leading is reciting into.',
+    moods: [],
+  },
+  {
+    id: 'quran_2_238',
+    type: 'Quran',
+    primaryText: "ḥāfiẓū ʿalā l-ṣalawāti wal-ṣalati l-wus'ṭā waqūmū lillahi qānitīna",
+    arabicText: 'حَـٰفِظُوا۟ عَلَى ٱلصَّلَوَٰتِ وَٱلصَّلَوٰةِ ٱلْوُسْطَىٰ وَقُومُوا۟ لِلَّهِ قَـٰنِتِينَ ﴿238﴾',
+    transliteration: "ḥāfiẓū ʿalā l-ṣalawāti wal-ṣalati l-wus'ṭā waqūmū lillahi qānitīna",
+    englishTranslation:
+      'Maintain with care the prayers and the middle prayer, and stand before Allah, devoutly obedient.',
+    source: 'Surah Al-Baqarah 2:238',
+    audioKey: '2:238',
+    whyThis:
+      'Qunut here is read as obedient stillness — the posture is part of the command rather than decoration around it. An imam sets that posture for everyone behind him before he says a word.',
+    moods: [],
+  },
+  {
+    id: 'quran_33_41',
+    type: 'Quran',
+    primaryText: "yāayyuhā alladhīna āmanū udh'kurū l-laha dhik'ran kathīran",
+    arabicText: 'يَـٰٓأَيُّهَا ٱلَّذِينَ ءَامَنُوا۟ ٱذْكُرُوا۟ ٱللَّهَ ذِكْرًا كَثِيرًا ﴿41﴾',
+    transliteration: "yāayyuhā alladhīna āmanū udh'kurū l-laha dhik'ran kathīran",
+    englishTranslation: 'O you who have believed, remember Allah with much remembrance.',
+    source: 'Surah Al-Ahzab 33:41',
+    audioKey: '33:41',
+    whyThis:
+      'Abundant remembrance reaches the moments a person treats as already finished — the end of a prayer above all, where attention drops the instant the last position is reached.',
+    moods: [],
+  },
+  {
+    id: 'quran_17_106',
+    type: 'Quran',
+    primaryText: "waqur'ānan faraqnāhu litaqra-ahu ʿalā l-nāsi ʿalā muk'thin wanazzalnāhu tanzīlan",
+    arabicText:
+      'وَقُرْءَانًا فَرَقْنَـٰهُ لِتَقْرَأَهُۥ عَلَى ٱلنَّاسِ عَلَىٰ مُكْثٍ وَنَزَّلْنَـٰهُ تَنزِيلًا ﴿106﴾',
+    transliteration: "waqur'ānan faraqnāhu litaqra-ahu ʿalā l-nāsi ʿalā muk'thin wanazzalnāhu tanzīlan",
+    englishTranslation:
+      "And it is a Qur'an which We have separated by intervals that you might recite it to the people over a prolonged period. And We have sent it down progressively.",
+    source: 'Surah Al-Isra 17:106',
+    audioKey: '17:106',
+    whyThis:
+      "The Qur'an came down in stages so it could be carried and recited to people over time. Memorising it follows the shape of the revelation — in pieces, returned to again and again.",
+    moods: [],
+  },
+  {
+    id: 'quran_17_78',
+    type: 'Quran',
+    primaryText: "aqimi l-ṣalata lidulūki l-shamsi ilā ghasaqi al-layli waqur'āna l-fajri inna qur'āna l-fajri kāna mashhūdan",
+    arabicText:
+      'أَقِمِ ٱلصَّلَوٰةَ لِدُلُوكِ ٱلشَّمْسِ إِلَىٰ غَسَقِ ٱلَّيْلِ وَقُرْءَانَ ٱلْفَجْرِ ۖ إِنَّ قُرْءَانَ ٱلْفَجْرِ كَانَ مَشْهُودًا ﴿78﴾',
+    transliteration: "aqimi l-ṣalata lidulūki l-shamsi ilā ghasaqi al-layli waqur'āna l-fajri inna qur'āna l-fajri kāna mashhūdan",
+    englishTranslation:
+      "Establish prayer at the decline of the sun until the darkness of the night, and the Qur'an of dawn. Indeed, the recitation of dawn is ever witnessed.",
+    source: 'Surah Al-Isra 17:78',
+    audioKey: '17:78',
+    whyThis:
+      'The recitation of dawn is attended by the angels of the night and of the day, which is part of why Fajr is a prayer recited aloud rather than silently.',
+    moods: [],
+  },
+  {
+    id: 'quran_2_43',
+    type: 'Quran',
+    primaryText: "wa-aqīmū l-ṣalata waātū l-zakata wa-ir'kaʿū maʿa l-rākiʿīna",
+    arabicText: 'وَأَقِيمُوا۟ ٱلصَّلَوٰةَ وَءَاتُوا۟ ٱلزَّكَوٰةَ وَٱرْكَعُوا۟ مَعَ ٱلرَّٰكِعِينَ ﴿43﴾',
+    transliteration: "wa-aqīmū l-ṣalata waātū l-zakata wa-ir'kaʿū maʿa l-rākiʿīna",
+    englishTranslation: 'And establish prayer and give zakah, and bow with those who bow.',
+    source: 'Surah Al-Baqarah 2:43',
+    audioKey: '2:43',
+    whyThis:
+      'Bowing "with those who bow" is read as an instruction about praying in congregation, not merely about the posture — the word is about company, not about the joint.',
+    moods: [],
+  },
+  {
+    id: 'quran_4_28',
+    type: 'Quran',
+    primaryText: 'yurīdu l-lahu an yukhaffifa ʿankum wakhuliqa l-insānu ḍaʿīfan',
+    arabicText: 'يُرِيدُ ٱللَّهُ أَن يُخَفِّفَ عَنكُمْ ۚ وَخُلِقَ ٱلْإِنسَـٰنُ ضَعِيفًا ﴿28﴾',
+    transliteration: 'yurīdu l-lahu an yukhaffifa ʿankum wakhuliqa l-insānu ḍaʿīfan',
+    englishTranslation: 'And Allah wants to lighten for you your difficulties; and mankind was created weak.',
+    source: 'Surah An-Nisa 4:28',
+    audioKey: '4:28',
+    whyThis:
+      'Created weak is given as the reason the law is made light, not as an accusation. The prostrations of forgetfulness are one of the places that lightening is visible.',
+    moods: [],
+  },
+  {
+    id: 'quran_21_107',
+    type: 'Quran',
+    primaryText: "wamā arsalnāka illā raḥmatan lil'ʿālamīna",
+    arabicText: 'وَمَآ أَرْسَلْنَـٰكَ إِلَّا رَحْمَةً لِّلْعَـٰلَمِينَ ﴿107﴾',
+    transliteration: "wamā arsalnāka illā raḥmatan lil'ʿālamīna",
+    englishTranslation: 'And We have not sent you except as a mercy to the worlds.',
+    source: 'Surah Al-Anbiya 21:107',
+    audioKey: '21:107',
+    whyThis:
+      'Mercy to the worlds describes how he dealt with people, not only what he brought them — and in prayer that showed most clearly in how long he made it when others were standing behind him.',
+    moods: [],
+  },
 ];
 
 const quranContent: Content[] = quranContentData;
@@ -4085,7 +4258,7 @@ const quranContentAnglesData: ContentAngle[] = [
   {
     id: 'q_angle_39_53_sad',
     contentId: 'quran_39_53',
-    mood: 'Sad',
+    mood: 'Guilty',
     angle:
       'Allah says: "Say, O My servants who have transgressed against themselves, do not despair of the mercy of Allah. Indeed, Allah forgives all sins." Ibn Kathir explains this is the most hope-giving verse in the Quran—a direct divine invitation to those drowning in guilt or sadness. Al-Qurtubi notes that "all sins" means without exception when met with sincere repentance. The Prophet ﷺ said: "Allah is more delighted with the repentance of His servant than a man who finds his lost camel in the desert." [Sahih Muslim 2747] No sadness is beyond His healing. [Tafsir Ibn Kathir]',
     angleSource: 'Tafsir Ibn Kathir',
@@ -4539,7 +4712,7 @@ const quranContentAnglesData: ContentAngle[] = [
   {
     id: 'q_angle_39_53_sad_angle',
     contentId: 'quran_39_53',
-    mood: 'Sad',
+    mood: 'Guilty',
     angle:
       'Ibn Kathir emphasizes that Allah uses the phrase "ya ibadi" (O My servants)—claiming the sinners as His own servants—before telling them not to despair. This is an embrace, not a rejection. Al-Sa\'di explains that the verse establishes that no sin is too great for Allah\'s forgiveness when met with sincere repentance (tawbah nasuha). The Prophet ﷺ said: "If you were to commit sins until your sins filled the space between the heavens and earth, then you sought forgiveness from Allah, He would forgive you." [Musnad Ahmad] Despair itself is the only real barrier to healing. [Tafsir Ibn Kathir]',
     angleSource: 'Tafsir Ibn Kathir',
@@ -4760,7 +4933,7 @@ const quranContentAnglesData: ContentAngle[] = [
   {
     id: 'q_angle_8_33_sad',
     contentId: 'quran_8_33',
-    mood: 'Sad',
+    mood: 'Guilty',
     angle:
       'Allah says: "But Allah would not punish them while you are among them, and Allah would not punish them while they seek forgiveness." Ibn Kathir explains that istighfar (seeking forgiveness) serves as a shield from calamity—it is one of two protections mentioned in this verse. Al-Sa\'di adds that regularly seeking forgiveness creates a spiritual barrier against hardship and opens doors of ease. The Prophet ﷺ said: "Whoever makes istighfar a constant practice, Allah will provide him a way out of every difficulty, relief from every anxiety, and will provide for him from sources he could never ponder." [Abu Dawud 1518] Forgiveness is both healing and protection. [Tafsir Ibn Kathir]',
     angleSource: 'Tafsir Ibn Kathir',
@@ -9531,7 +9704,7 @@ const quranContentAnglesData: ContentAngle[] = [
   {
     id: 'q_angle_3_135_sad_angle',
     contentId: 'quran_3_135',
-    mood: 'Sad',
+    mood: 'Guilty',
     angle:
       'Allah says: "And those who, when they commit an immorality or wrong themselves, remember Allah and seek forgiveness for their sins—and who can forgive sins except Allah?" Ibn Kathir explains that this verse contains a powerful rhetorical question: no one but Allah can forgive sins, making Him the only source of spiritual relief. Al-Sa\'di adds that "remembering Allah" after a sin is the first step back—it means the heart has not died. The Prophet ﷺ said: "Every son of Adam sins, and the best of sinners are those who repent." [At-Tirmidhi 2499] The very fact that you feel remorse is a sign that your heart is alive and your Lord is calling you back. [Tafsir al-Sa\'di]',
     angleSource: "Tafsir al-Sa'di",
@@ -9577,7 +9750,7 @@ const quranContentAnglesData: ContentAngle[] = [
   {
     id: 'q_angle_66_8_sad_angle',
     contentId: 'quran_66_8',
-    mood: 'Sad',
+    mood: 'Guilty',
     angle:
       'Allah says: "O you who have believed, repent to Allah with sincere repentance. Perhaps your Lord will remove from you your misdeeds." Ibn Kathir explains that "tawbah nasuha" (sincere repentance) requires three conditions: genuine regret, immediate cessation of the sin, and a firm resolve not to return to it. Al-Sa\'di adds that the word "perhaps" (\'asa) when used by Allah indicates near-certainty—meaning sincere repentance almost guarantees forgiveness. The Prophet ﷺ said: "The one who repents from sin is like one who has no sin." [Ibn Majah 4250] A new beginning is always one sincere moment away. [Tafsir al-Sa\'di]',
     angleSource: "Tafsir al-Sa'di",
@@ -15807,6 +15980,563 @@ const quranContentAnglesData: ContentAngle[] = [
     ]),
     reflection:
       'Have you asked Him for patience with this person, in those words? Or have you only been trying to hold it together yourself?',
+  },
+  // === PRAYER LEADERSHIP JOURNEY ANGLES ===
+  // Referenced by step_imam_1..14. Prefix 'imam' is registered in
+  // JOURNEY_ANGLE_PREFIXES so these never leak into the mood picker.
+  //
+  // Every English inside quotation marks is the published translation
+  // (sunnah.com for Sahih Muslim, the hadith-api mirror for the rest), not a
+  // rendering of the Arabic. The first draft of this journey rendered all nine
+  // Muslim quotes by hand because the scraper matched class="text_details"
+  // while sunnah.com writes it unquoted, so the English field came back empty.
+  {
+    id: 'q_angle_imam_day1',
+    contentId: 'quran_54_17',
+    mood: 'Hopeful',
+    angle:
+      '[Tafsir Ibn Kathir on 54:17] Ibn Kathir reads "We have made it easy for remembrance" as a statement about access rather than about talent, closing on a question that asks who will actually take it up. The bar for stepping forward is far narrower than most people assume it is. The Prophet ﷺ said: "The one who is most versed in Allah\'s Book should act as Imam for the people" [Sahih Muslim 673] — not the most learned in fiqh, not the eldest, not the most respected in the room. What you can already recite without stumbling is the exact thing that hadith measures.',
+    action: 'Write down every surah you can recite from memory without hesitating.',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'mindset',
+        icon: 'brain',
+        title: 'Count what you already hold',
+        instruction:
+          "Write the list out. Most people who assume they cannot lead find they have Al-Fatihah and four or five short surahs — which is already enough for two rak'ahs.",
+        source: '"The one who is most versed in Allah\'s Book should act as Imam for the people." [Sahih Muslim 673]',
+      },
+      {
+        type: 'physical',
+        icon: 'person',
+        title: 'Lead the smallest congregation there is',
+        instruction:
+          'Lead one prayer at home this week — your family, or one friend. If only one person joins you he stands level with you on your right, not behind; a row behind only forms once there are two. Confidence is built at that size, not at the front of a full masjid.',
+        source: '"Lead your people in prayer." [Sahih Muslim 468]',
+      },
+      {
+        type: 'verbal',
+        icon: 'hands-prayer',
+        title: 'The du\'a of the one sent to speak',
+        instruction:
+          'Musa asked for this before he was sent to speak in front of people who frightened him. Say it before you step forward.',
+        arabicText: 'رَبِّ ٱشْرَحْ لِى صَدْرِى وَيَسِّرْ لِىٓ أَمْرِى وَٱحْلُلْ عُقْدَةً مِّن لِّسَانِى يَفْقَهُوا۟ قَوْلِى',
+        transliteration: "rabbi ish'raḥ lī ṣadrī wayassir lī amrī wa-uḥ'lul ʿuq'datan min lisānī yafqahū qawlī",
+        translation:
+          'My Lord, expand for me my breast, and ease for me my task, and untie the knot from my tongue that they may understand my speech.',
+        source: 'Quran 20:25-28',
+        sourceType: 'quran_dua',
+      },
+    ]),
+    reflection:
+      'What is actually holding you back — not knowing enough, or not wanting to be seen trying?',
+  },
+  {
+    id: 'q_angle_imam_day2',
+    contentId: 'quran_15_87',
+    mood: 'Hopeful',
+    angle:
+      '[Tafsir Ibn Kathir on 15:87] Ibn Kathir records that the seven oft-repeated is Al-Fatihah, singled out in the same breath as the great Qur\'an that contains it, and read by the early commentators as the reason the surah returns in every unit of every prayer. Nothing else you memorise carries that weight. The Prophet ﷺ said: "Whoever does not recite Al-Fatiha in his prayer, his prayer is invalid" [Sahih al-Bukhari 756] — so this is the one text to make flawless before you add anything else to your list. When you lead, it is also the only thing the congregation hears from you in every single rak\'ah.',
+    action: 'Recite Al-Fatihah aloud to someone who can correct you.',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'verbal',
+        icon: 'chat',
+        title: 'Recite it to someone who will stop you',
+        instruction:
+          'Say it out loud to a person who knows it well and ask them to interrupt at every slip. Silent self-review does not catch what a listener catches.',
+        source: '"Whoever does not recite Al-Fatiha in his prayer, his prayer is invalid." [Sahih al-Bukhari 756]',
+      },
+      {
+        type: 'mindset',
+        icon: 'heart',
+        title: 'Hear the reply to each line',
+        instruction:
+          'Allah answers this surah line by line. Recite it once slowly and pause after each ayah for the response the hadith records.',
+        source: '"I have divided the prayer into two halves between Me and My servant, and My servant will receive what he asks." [Sahih Muslim 395]',
+      },
+      {
+        type: 'physical',
+        icon: 'clock',
+        title: 'Stop cleanly at every ayah',
+        instruction:
+          'Ayah endings are where a nervous imam runs words together. Practise breathing at each break until the pause happens without you thinking about it.',
+        source: 'Surah Al-Hijr 15:87',
+      },
+    ]),
+    reflection:
+      'Read your Fatihah honestly: which word do you rush past every single time?',
+  },
+  {
+    id: 'q_angle_imam_day3',
+    contentId: 'quran_112_1_4',
+    mood: 'Hopeful',
+    angle:
+      '[Tafsir Ibn Kathir on 112:1-4] Ibn Kathir reports that Al-Ikhlas came down in answer to people who asked the Prophet ﷺ to describe his Lord, and that its four ayahs settle the question without a word to spare. It is the shortest complete answer in the Qur\'an to the largest question anyone can ask. The Prophet ﷺ said: "By Him in Whose Hand my life is, this Surah is equal to one-third of the Qur\'an" [Sahih al-Bukhari 5013] — which is part of why it is the surah nearly every congregation already knows by heart. When you recite it in the second rak\'ah, nobody standing behind you is lost.',
+    action: "Recite Al-Ikhlas in the second rak'ah of your next prayer.",
+    practiceSteps: JSON.stringify([
+      {
+        type: 'verbal',
+        icon: 'book-quran',
+        title: 'Perfect the four ayahs',
+        instruction:
+          'Recite it until the fourth ayah arrives without a pause before it. That last ayah is the one people hesitate on under pressure.',
+        source: '"By Him in Whose Hand my life is, this Surah is equal to one-third of the Qur\'an." [Sahih al-Bukhari 5013]',
+      },
+      {
+        type: 'mindset',
+        icon: 'star',
+        title: 'Know what you are saying about Him',
+        instruction:
+          'As-Samad is the One everything turns to and who turns to no one. Say the surah once holding that meaning before you ever say it in front of anyone.',
+        source: 'Surah Al-Ikhlas 112:1-4',
+      },
+      {
+        type: 'physical',
+        icon: 'mosque',
+        title: 'Use it tonight, not eventually',
+        instruction:
+          "Put it in the second rak'ah of your next prayer. A surah you have recited in a real prayer is one you will not lose when people are behind you.",
+        source: 'Surah Al-Ikhlas 112:1-4',
+      },
+    ]),
+    reflection:
+      'Say Al-Ikhlas from memory right now, out loud. Where did your voice slow down?',
+  },
+  {
+    id: 'q_angle_imam_day4',
+    contentId: 'quran_113_1_5',
+    mood: 'Hopeful',
+    angle:
+      '[Tafsir Ibn Kathir on 113:1-5] Ibn Kathir treats Al-Falaq and An-Nas as a pair: refuge from harm that reaches you from outside, then refuge from what is whispered inside, and he notes that the sunnah keeps them together for exactly that reason. Learning one without the other leaves the pair half-built. The Prophet ﷺ said: "Shall I not teach you two best surahs ever recited?" and taught Uqbah these two, then led the morning prayer with them that same day [Abu Dawud 1462] — the pairing is his, not a later habit. When you learn both, you are holding the two surahs he chose to stand in front of people with.',
+    action: 'Memorise Al-Falaq and An-Nas back to back.',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'verbal',
+        icon: 'shield',
+        title: 'Al-Falaq first',
+        instruction:
+          'Five short ayahs, each naming a specific harm. Learn it to the point where you could begin it without thinking about how it starts.',
+        source: '"Shall I not teach you two best surahs ever recited?" [Sunan Abi Dawud 1462]',
+      },
+      {
+        type: 'verbal',
+        icon: 'moon',
+        title: 'Then An-Nas',
+        instruction:
+          'Six ayahs, and the one people blur into Al-Falaq under pressure because both open the same way. Recite them one after the other until the endings stay separate.',
+        arabicText: 'قُلْ أَعُوذُ بِرَبِّ ٱلنَّاسِ مَلِكِ ٱلنَّاسِ إِلَـٰهِ ٱلنَّاسِ مِن شَرِّ ٱلْوَسْوَاسِ ٱلْخَنَّاسِ ٱلَّذِى يُوَسْوِسُ فِى صُدُورِ ٱلنَّاسِ مِنَ ٱلْجِنَّةِ وَٱلنَّاسِ',
+        transliteration: 'qul aʿūdhu birabbi l-nāsi maliki l-nāsi ilāhi l-nāsi min sharri l-waswāsi l-khanāsi alladhī yuwaswisu fī ṣudūri l-nāsi mina l-jinati wal-nāsi',
+        translation:
+          'Say, "I seek refuge in the Lord of mankind, the Sovereign of mankind, the God of mankind, from the evil of the retreating whisperer who whispers into the breasts of mankind, from among the jinn and mankind."',
+        source: 'Quran 114:1-6',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'physical',
+        icon: 'sunrise',
+        title: 'Lead a Fajr with the pair',
+        instruction:
+          "Recite them in the two rak'ahs of Fajr — these are the two he chose the morning he led the prayer after teaching them.",
+        source: '"He led the people in the morning prayer and recited them in prayer." [Sunan Abi Dawud 1462]',
+      },
+    ]),
+    reflection:
+      'Recite both without looking. Which one did you reach for first, and why that one?',
+  },
+  {
+    id: 'q_angle_imam_day5',
+    contentId: 'quran_17_106',
+    mood: 'Hopeful',
+    angle:
+      '[Tafsir Ibn Kathir on 17:106] Ibn Kathir notes that the Qur\'an was sent down in separated stages precisely so it could be recited to people gradually rather than delivered at once. Memorising it works the way it was revealed: in pieces, returned to again and again. The Prophet ﷺ said: "Commit yourself to the Qur\'an, for by Him in whose Hand is my soul, it is surely more prone to break away than a camel in its bind" [Sahih al-Bukhari 5033] — what you learned last month leaves unless you keep going back to it. So repeating a surah you already know is not standing still; it is the one thing that stops it slipping away.',
+    action: 'Recite the same short surah in every prayer for the next seven days.',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'mindset',
+        icon: 'rewind',
+        title: 'Repetition is the work, not a shortcut',
+        instruction:
+          'Reciting the same surah for the twentieth time is not treading water. A surah is only usable when it arrives without you having to go and fetch it.',
+        source: '"Commit yourself to the Qur\'an, for by Him in whose Hand is my soul, it is surely more prone to break away than a camel in its bind." [Sahih al-Bukhari 5033]',
+      },
+      {
+        type: 'physical',
+        icon: 'clock',
+        title: 'One surah, seven days',
+        instruction:
+          'Take a single short surah and use it in every prayer you pray this week. Seven days on one surah will hold it far better than seven days spent on seven.',
+        source: 'Surah Al-Isra 17:106',
+      },
+      {
+        type: 'verbal',
+        icon: 'headphones',
+        title: 'Out loud, every time',
+        instruction:
+          'Say it aloud rather than reviewing it in your head. Silent review quietly skips the exact words your tongue trips on when people can hear you.',
+        source: 'Surah Al-Muzzammil 73:4',
+      },
+    ]),
+    reflection:
+      'Which surah did you last learn, and can you still recite it now without checking?',
+  },
+  {
+    id: 'q_angle_imam_day6',
+    contentId: 'quran_8_2',
+    mood: 'Hopeful',
+    angle:
+      '[Tafsir Ibn Kathir on 8:2] Ibn Kathir reads the increase in faith here as something the recitation itself does to the listener, not something the reciter has to manufacture by varying his material. A congregation is not grading your repertoire, and nobody behind you is keeping a list. Your job is to recite well what you actually hold, and to hold more of it over time. The Prophet ﷺ sent a man on an expedition who led his companions and closed every rak\'ah with Qul huwa Allahu ahad; asked why, he said it describes the Most Merciful and he loved to recite it, and the answer sent back was "Tell him that Allah loves him" [Sahih al-Bukhari 7375] — repeating the one surah was what earned that, not what had to be excused.',
+    action: 'Lead with the two surahs you are most solid on, and use them again.',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'mindset',
+        icon: 'heart',
+        title: 'Nobody is keeping a list',
+        instruction:
+          "The worry that people noticed you used Al-Ikhlas again is yours, not theirs. The man who ended every rak'ah with it was told that Allah loved him for it.",
+        source: '"Tell him that Allah loves him." [Sahih al-Bukhari 7375]',
+      },
+      {
+        type: 'verbal',
+        icon: 'book-quran',
+        title: 'Pick your two and use them',
+        instruction:
+          'Choose the two surahs you are steadiest on and lead with those for a week. Variety is worth having after reliability, not instead of it.',
+        source: 'Surah Al-Anfal 8:2',
+      },
+      {
+        type: 'mindset',
+        icon: 'light-bulb',
+        title: 'Add one, keep the rest',
+        instruction:
+          'When you add a new surah, keep reciting the old ones alongside it. Swapping the new in for the old is how people end up with nothing they trust.',
+        source: 'Surah Al-Anfal 8:2',
+      },
+    ]),
+    reflection:
+      'Has the fear of repeating yourself ever stopped you volunteering? Write down what you thought people would think.',
+  },
+  {
+    id: 'q_angle_imam_day7',
+    contentId: 'quran_7_204',
+    mood: 'Hopeful',
+    angle:
+      '[Tafsir al-Qurtubi on 7:204] Al-Qurtubi records that much of the early commentary read the command to listen and stay silent as addressed first to the congregation standing behind an imam. That is the room you are reciting into: people whose instruction is to stop talking and follow your voice. The Prophet ﷺ used to recite "Glorify the name of Thy Lord, the Most High" and "Has there come to thee the news of the overwhelming event" on the two Eids and on Jumu\'ah [Sahih Muslim 878] — short surahs, chosen for the fullest congregations of the year. So pick from the set the congregation already carries, and keep it brief enough that the weakest person behind you is not being tested.',
+    action: 'Choose two short surahs the congregation already knows and drill them this week.',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'verbal',
+        icon: 'book-quran',
+        title: "Add Al-A'la and Al-Ghashiyah",
+        instruction:
+          'Both are short, both are heard every Jumu\'ah, and a congregation recognises them from the first line. Learn them in that order.',
+        source: '"The Messenger of Allah used to recite on two Eids and in Friday prayer: Glorify the name of Thy Lord, the Most High, and: Has there come to thee the news of the overwhelming event." [Sahih Muslim 878]',
+      },
+      {
+        type: 'verbal',
+        icon: 'sunrise',
+        title: 'Add Al-Kafirun',
+        instruction:
+          "He paired it with Al-Ikhlas in the two rak'ahs before Fajr. Two surahs you already half-know, fixed into one pair you can reach for without deciding.",
+        source: '"The Messenger of Allah recited in the two rak\'ahs of the dawn prayer: Say: O unbelievers, and Say: Allah is one." [Sahih Muslim 726]',
+      },
+      {
+        type: 'mindset',
+        icon: 'target',
+        title: 'Build a set, not a library',
+        instruction:
+          'Five surahs you can start without hesitating will carry you through any prayer you are asked to lead. Aim at that number before you aim at more.',
+        source: "Surah Al-A'raf 7:204",
+      },
+    ]),
+    reflection:
+      'Which surah would you reach for if the iqamah were called and everyone turned to you right now?',
+  },
+  {
+    id: 'q_angle_imam_day8',
+    contentId: 'quran_2_238',
+    mood: 'Hopeful',
+    angle:
+      '[Tafsir Ibn Kathir on 2:238] Ibn Kathir glosses qanitin as standing in obedient stillness, making the posture part of the command rather than decoration around it. An imam sets that posture for everyone behind him before he has said a word. The Prophet ﷺ said: "Straighten your rows, for the straightening of a row is a part of the perfection of prayer" [Sahih Muslim 433] — so the first thing you do as imam is not recite, it is look up and level the line. When that is done, the takbir, the silent opening du\'a and the recitation follow in an order that never changes.',
+    action: 'Straighten the row and pause before you say the opening takbir.',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'physical',
+        icon: 'person',
+        title: 'Where they stand, by how many',
+        instruction:
+          'One man praying with you stands level with you on your right, not behind you — the Prophet ﷺ twice moved someone from his left round to his right. When a second man arrives, both step back and form a row. Only from that point are you alone in front.',
+        source: '"He then took and brought me around him and set me on his right side. Then Ibn Sakhr came and stood on his left side. He then took us with his both hands and made us stand behind him." [Sunan Abi Dawud 634]',
+      },
+      {
+        type: 'physical',
+        icon: 'home',
+        title: 'Where your household stands',
+        instruction:
+          'Women pray in their own row behind the men however few there are. So leading your wife alone, she is behind you rather than beside you; with a son as well, he is at your right and she is behind you both. Once there is a row, level it before the takbir.',
+        source: '"Where stood Anas with him? He replied: He was on the right side." [Sahih Muslim 660] · "The orphan and I aligned behind him and the old lady stood behind us." [Sahih al-Bukhari 380]',
+      },
+      {
+        type: 'verbal',
+        icon: 'hands-prayer',
+        title: 'The silence after the takbir',
+        instruction:
+          'He stayed silent for a moment between the takbir and the recitation. This is what he said in that gap — say it before you begin Al-Fatihah.',
+        arabicText: 'اللَّهُمَّ بَاعِدْ بَيْنِي وَبَيْنَ خَطَايَاىَ كَمَا بَاعَدْتَ بَيْنَ الْمَشْرِقِ وَالْمَغْرِبِ، اللَّهُمَّ نَقِّنِي مِنَ الْخَطَايَا كَمَا يُنَقَّى الثَّوْبُ الأَبْيَضُ مِنَ الدَّنَسِ، اللَّهُمَّ اغْسِلْ خَطَايَاىَ بِالْمَاءِ وَالثَّلْجِ وَالْبَرَدِ',
+        transliteration:
+          "Allahumma ba'id bayni wa bayna khatayaya kama ba'adta bayna al-mashriqi wal-maghrib. Allahumma naqqini min al-khataya kama yunaqqa ath-thawb al-abyad min ad-danas. Allahumma ighsil khatayaya bil-ma'i wath-thalji wal-barad.",
+        translation:
+          'O Allah, set me apart from my sins as You have set apart the East and the West. O Allah, cleanse me of my sins as a white garment is cleansed of dirt. O Allah, wash away my sins with water, snow and hail.',
+        source: 'Sahih al-Bukhari 744',
+        sourceType: 'prophetic_dua',
+        sourceGrading: 'sahih',
+      },
+      {
+        type: 'verbal',
+        icon: 'muscle',
+        title: 'Say the takbir loud enough to be followed',
+        instruction:
+          'The opening takbir is a signal before it is a phrase. If the back of the row cannot hear it, they start after you and stay behind for the whole prayer.',
+        source: '"The Imam is to be followed. Say the Takbir when he says it." [Sahih al-Bukhari 734]',
+      },
+    ]),
+    reflection:
+      'Picture the moment before the takbir. What do you do with your hands, your eyes, the row in front of you?',
+  },
+  {
+    id: 'q_angle_imam_day9',
+    contentId: 'quran_17_78',
+    mood: 'Hopeful',
+    angle:
+      '[Tafsir Ibn Kathir on 17:78] Ibn Kathir records that "the recitation of dawn is ever witnessed" refers to the angels of the night and of the day attending it, which is part of why Fajr is recited aloud rather than silently. The Prophet ﷺ said: "Say Amin when the Imam says it" [Sahih al-Bukhari 780] — so reciting out loud is not performance, it is the congregation being handed something to answer. Your voice is now setting the pace for every person standing behind you, which means steady matters far more than impressive, and the beat you leave after Al-Fatihah is where the row catches up with you.',
+    action: 'Recite aloud in Fajr, Maghrib and Isha, slower than feels natural.',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'mindset',
+        icon: 'sun',
+        title: 'Know which prayers are aloud',
+        instruction:
+          'Fajr, Maghrib and Isha are recited aloud; Dhuhr and Asr are not. The split is inherited practice rather than preference — the companions described it as simply doing what they had heard him do.',
+        source: '"In those prayers in which Allah\'s Messenger recited aloud for us, we recite aloud in the same prayers for you; and the prayers in which the Prophet recited quietly, we recite quietly." [Sahih al-Bukhari 772]',
+      },
+      {
+        type: 'physical',
+        icon: 'breathing',
+        title: 'Slower than feels natural',
+        instruction:
+          'Nerves speed you up without your noticing. Recite deliberately slower than you would alone — measured recitation is what is asked for and what a row can actually follow.',
+        source: 'Surah Al-Muzzammil 73:4',
+      },
+      {
+        type: 'verbal',
+        icon: 'chat',
+        title: 'Leave a beat for the Ameen',
+        instruction:
+          'Say Ameen after the last ayah of Al-Fatihah, then pause before starting the surah. That silence is where the row says it with you.',
+        source: '"Say Amin when the Imam says it." [Sahih al-Bukhari 780]',
+      },
+    ]),
+    reflection:
+      'Record yourself reciting Al-Fatihah aloud and play it back. Was it slower or faster than you expected?',
+  },
+  {
+    id: 'q_angle_imam_day10',
+    contentId: 'quran_2_43',
+    mood: 'Hopeful',
+    angle:
+      '[Tafsir Ibn Kathir on 2:43] Ibn Kathir notes that the command to bow "with those who bow" is read as an instruction about praying in congregation rather than merely about the posture. Once people are behind you, every movement you make has become an instruction to them. The Prophet ﷺ said: "The Imam is appointed to be followed. So do not differ from him, bow when he bows, and say Rabbana lakal hamd if he says Sami\'a llahu liman hamidah" [Sahih al-Bukhari 722] — which means your transitions have to be audible and unhurried, or the row cannot stay with you.',
+    action: 'Say every transition takbir clearly and settle before the next one.',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'verbal',
+        icon: 'chat',
+        title: 'Say the transitions out loud',
+        instruction:
+          'The takbir going down into ruku and sujood, and Sami\'a llahu liman hamidah coming up, are the only signals the row has. Say them clearly enough to reach the back.',
+        source: '"The Imam is appointed to be followed. So do not differ from him." [Sahih al-Bukhari 722]',
+      },
+      {
+        type: 'physical',
+        icon: 'clock',
+        title: 'Arrive before you move on',
+        instruction:
+          'Settle fully into each position before you call the next takbir. Everyone behind you is always half a second later than you are.',
+        source: 'Surah Al-Baqarah 2:43',
+      },
+      {
+        type: 'mindset',
+        icon: 'person',
+        title: 'Your pace is now their pace',
+        instruction:
+          'What felt comfortable praying alone is usually too quick for a row. Assume you are faster than you think and slow down before you are told.',
+        source: 'Surah Al-Baqarah 2:43',
+      },
+    ]),
+    reflection:
+      'In the last congregation you prayed in, did the imam ever move before you had settled? What did that feel like?',
+  },
+  {
+    id: 'q_angle_imam_day11',
+    contentId: 'quran_4_28',
+    mood: 'Hopeful',
+    angle:
+      "[Tafsir al-Sa'di on 4:28] Al-Sa'di takes \"created weak\" as the reason the law is made light rather than as an accusation, and the prostrations of forgetfulness are one of the places that lightening becomes visible. Everyone who has ever led has lost their place at some point. The Prophet ﷺ said: \"He should cast aside his doubt and base his prayer on what he is sure of, then perform two prostrations before giving salutations\" [Sahih Muslim 571] — there is a fixed procedure, which tells you the slip was expected. When you forget, you do not stop; you take the number you are certain of and finish.",
+    action: 'Learn the two prostrations of forgetfulness before you need them.',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'mindset',
+        icon: 'shield',
+        title: 'Take the lower number',
+        instruction:
+          'If you cannot remember whether that was three or four, treat it as three, complete the prayer, and prostrate twice before the salam.',
+        source: '"He should cast aside his doubt and base his prayer on what he is sure of, then perform two prostrations before giving salutations." [Sahih Muslim 571]',
+      },
+      {
+        type: 'physical',
+        icon: 'chat',
+        title: 'How they will correct you',
+        instruction:
+          'Men behind you say Subhan Allah and women clap. It is a prompt rather than a complaint — take the correction and carry on without turning round.',
+        source: '"The saying Subhan Allah is for men and clapping is for women." [Sahih al-Bukhari 1203]',
+      },
+      {
+        type: 'mindset',
+        icon: 'calm-face',
+        title: 'A blank is not a disqualification',
+        instruction:
+          "If a surah leaves you mid-rak'ah, move to one you know, or simply go into ruku — Al-Fatihah on its own is enough for the rak'ah to stand. Being human in front of people is provided for.",
+        source: '"If you recite Al-Fatiha only it is sufficient, but if you recite something else in addition, it is better." [Sahih al-Bukhari 772]',
+      },
+    ]),
+    reflection:
+      'What is the specific mistake you are most afraid of making in front of people? Write down what would actually happen next.',
+  },
+  {
+    id: 'q_angle_imam_day12',
+    contentId: 'quran_21_107',
+    mood: 'Hopeful',
+    angle:
+      '[Tafsir Ibn Kathir on 21:107] Ibn Kathir reads "a mercy to the worlds" as describing how he dealt with people and not only what he brought them, and the clearest place that shows in prayer is how long he made it when others were standing behind him. Length stops being devotion at the point where it is being spent out of someone else\'s day. The Prophet ﷺ said: "If anyone of you leads the people in the prayer, he should shorten it for amongst them are the weak, the sick and the old" [Sahih al-Bukhari 703] — and the same hadith adds that praying alone you may lengthen it as much as you wish. When you are unsure which surah to take, take the shorter one.',
+    action: 'Choose the shorter surah every time you are unsure.',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'mindset',
+        icon: 'clock',
+        title: 'Short is the instruction, not the compromise',
+        instruction:
+          'Keeping it brief while leading is what was commanded, not a concession you are making for your own sake. That reframing is what stops it feeling like cutting corners.',
+        source: '"If anyone of you leads the people in the prayer, he should shorten it for amongst them are the weak, the sick and the old." [Sahih al-Bukhari 703]',
+      },
+      {
+        type: 'mindset',
+        icon: 'person',
+        title: 'Look at who is actually behind you',
+        instruction:
+          'An elderly man, someone straight from work, a parent with a child who will not last. He named exactly these people as the reason.',
+        source: '"He who acts as Imam of the people, he must be brief, for among them are the aged, among them are the sick, among them are the weak, and among them are the people who have business to attend." [Sahih Muslim 468]',
+      },
+      {
+        type: 'physical',
+        icon: 'muscle',
+        title: 'Take the long recitation into your own prayer',
+        instruction:
+          'Nothing is lost — the same hadith that shortens the congregation hands the length back to you when you pray alone. Put the long surah there.',
+        source: '"But when any of you prays alone, he may pray as he likes." [Sahih Muslim 468]',
+      },
+    ]),
+    reflection:
+      'Think of the longest congregational prayer you have stood in. Who in that row was struggling?',
+  },
+  {
+    id: 'q_angle_imam_day13',
+    contentId: 'quran_33_41',
+    mood: 'Hopeful',
+    angle:
+      "[Tafsir al-Sa'di on 33:41] Al-Sa'di reads abundant remembrance as reaching the moments a person treats as already finished — the end of a prayer above all, where attention drops the instant the last position is reached. An imam who rushes the closing teaches everyone behind him to rush it too. The Prophet ﷺ would sit for the tashahhud, send salawat, and after turning from the prayer seek forgiveness three times before saying anything else [Sahih Muslim 591] — the ending is a sequence, not a stop. When you finish, stay seated long enough for that dhikr before you turn round.",
+    action: 'Sit through the full closing sequence without shortening any part of it.',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'verbal',
+        icon: 'hands-prayer',
+        title: 'The tashahhud, word for word',
+        instruction:
+          'This is the wording he taught for every sitting. Learn it to the point where you are not reconstructing it mid-prayer.',
+        arabicText: 'التَّحِيَّاتُ لِلَّهِ وَالصَّلَوَاتُ وَالطَّيِّبَاتُ، السَّلاَمُ عَلَيْكَ أَيُّهَا النَّبِيُّ وَرَحْمَةُ اللَّهِ وَبَرَكَاتُهُ، السَّلاَمُ عَلَيْنَا وَعَلَى عِبَادِ اللَّهِ الصَّالِحِينَ، أَشْهَدُ أَنْ لاَ إِلَهَ إِلاَّ اللَّهُ، وَأَشْهَدُ أَنَّ مُحَمَّدًا عَبْدُهُ وَرَسُولُهُ',
+        transliteration:
+          'At-tahiyyatu lillahi was-salawatu wat-tayyibat. As-salamu alayka ayyuha an-Nabiyyu wa rahmatullahi wa barakatuh. As-salamu alayna wa ala ibadillahi as-salihin. Ashhadu an la ilaha illallah, wa ashhadu anna Muhammadan abduhu wa rasuluh.',
+        translation:
+          'All greetings, prayers and good things are for Allah. Peace be upon you, O Prophet, and the mercy of Allah and His blessings. Peace be upon us and upon the righteous slaves of Allah. I bear witness that there is no god but Allah, and I bear witness that Muhammad is His slave and His Messenger.',
+        source: 'Sahih al-Bukhari 831',
+        sourceType: 'prophetic_dhikr',
+        sourceGrading: 'sahih',
+      },
+      {
+        type: 'verbal',
+        icon: 'heart',
+        title: 'Salawat in the final sitting',
+        instruction:
+          'The companions asked him how to send blessings on him, and this was the answer. Say it after the tashahhud in the last sitting.',
+        arabicText: 'اللَّهُمَّ صَلِّ عَلَى مُحَمَّدٍ، وَعَلَى آلِ مُحَمَّدٍ، كَمَا صَلَّيْتَ عَلَى إِبْرَاهِيمَ وَعَلَى آلِ إِبْرَاهِيمَ، إِنَّكَ حَمِيدٌ مَجِيدٌ، اللَّهُمَّ بَارِكْ عَلَى مُحَمَّدٍ، وَعَلَى آلِ مُحَمَّدٍ، كَمَا بَارَكْتَ عَلَى إِبْرَاهِيمَ، وَعَلَى آلِ إِبْرَاهِيمَ، إِنَّكَ حَمِيدٌ مَجِيدٌ',
+        transliteration:
+          'Allahumma salli ala Muhammadin wa ala ali Muhammadin kama sallayta ala Ibrahima wa ala ali Ibrahima innaka Hamidun Majid. Allahumma barik ala Muhammadin wa ala ali Muhammadin kama barakta ala Ibrahima wa ala ali Ibrahima innaka Hamidun Majid.',
+        translation:
+          'O Allah, send Your mercy upon Muhammad and upon the family of Muhammad, as You sent Your mercy upon Ibrahim and upon the family of Ibrahim; You are Praiseworthy, Glorious. O Allah, send Your blessings upon Muhammad and upon the family of Muhammad, as You sent Your blessings upon Ibrahim and upon the family of Ibrahim; You are Praiseworthy, Glorious.',
+        source: 'Sahih al-Bukhari 3370',
+        sourceType: 'prophetic_dhikr',
+        sourceGrading: 'sahih',
+      },
+      {
+        type: 'mindset',
+        icon: 'candle',
+        title: 'Do not stand straight up',
+        instruction:
+          'Give the salam to your right and then to your left, and then stay where you are. Seeking forgiveness three times and the dhikr that follows is the first thing he did, before he spoke to anyone.',
+        source: '"He said the salam to his right and to his left." [Sunan an-Nasa\'i 1319] · "O Allah! Thou art Peace, and peace comes from Thee." [Sahih Muslim 591]',
+      },
+    ]),
+    reflection:
+      'After your next prayer, stay seated for the closing dhikr. What did you usually stand up in the middle of?',
+  },
+  {
+    id: 'q_angle_imam_day14',
+    contentId: 'quran_20_132',
+    mood: 'Hopeful',
+    angle:
+      "[Tafsir al-Sa'di on 20:132] Al-Sa'di reads the command to enjoin prayer on your household as landing first on the one giving the instruction, since \"be steadfast therein\" is addressed to him before anyone else is asked to obey. Your first congregation is the people already in your house. The Prophet ﷺ said: \"When its time is due, one of you should pronounce the Adhan for the prayer and the oldest one amongst you should lead the prayer\" [Sahih al-Bukhari 628] — he was speaking to young men who had been with him barely three weeks, and he sent them home to lead rather than telling them to wait until they were qualified enough. So pick a prayer, pick the people, and stand in front.",
+    action: 'Name one prayer in the next three days that you will lead.',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'physical',
+        icon: 'home',
+        title: 'Name the prayer and the people',
+        instruction:
+          'Choose one specific prayer in the next three days and who will be praying with you. An unnamed intention is how this stays a plan forever.',
+        source: '"When its time is due, one of you should pronounce the Adhan for the prayer and the oldest one amongst you should lead the prayer." [Sahih al-Bukhari 628]',
+      },
+      {
+        type: 'mindset',
+        icon: 'checkmark',
+        title: 'Fix your two surahs in advance',
+        instruction:
+          'Decide now which surah goes in each rak\'ah, and write it down. Choosing at the takbir is what makes people freeze.',
+        source: 'Surah Ta-Ha 20:132',
+      },
+      {
+        type: 'verbal',
+        icon: 'hands-prayer',
+        title: 'Ask to be made one who leads',
+        instruction:
+          'The believers in Surah Al-Furqan ask for exactly this. Say it before you step forward.',
+        arabicText: 'رَبَّنَا هَبْ لَنَا مِنْ أَزْوَٰجِنَا وَذُرِّيَّـٰتِنَا قُرَّةَ أَعْيُنٍ وَٱجْعَلْنَا لِلْمُتَّقِينَ إِمَامًا',
+        transliteration: "rabbanā hab lanā min azwājinā wadhurriyyātinā qurrata aʿyunin wa-ij'ʿalnā lil'muttaqīna imāman",
+        translation:
+          'Our Lord, grant us from among our wives and offspring comfort to our eyes, and make us an example for the righteous.',
+        source: 'Quran 25:74',
+        sourceType: 'quran_dua',
+      },
+    ]),
+    reflection:
+      'Which prayer, which day, and who will be praying with you? Write the three answers down now.',
   },
 ];
 

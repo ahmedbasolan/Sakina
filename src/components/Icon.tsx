@@ -57,7 +57,12 @@ export type IconName =
 const iconPaths: Record<IconName, React.ReactNode> = {
   'hands-prayer': (
     <G>
-      <Path d="M12 2C11.45 2 11 2.45 11 3V11H9V3C9 2.45 8.55 2 8 2C7.45 2 7 2.45 7 3V11H5V3C5 2.45 4.55 2 4 2C3.45 2 3 2.45 3 3V13C3 15.76 5.24 18 8 18H9V21C9 21.55 9.45 22 10 22C10.55 22 11 21.55 11 21V18H12C14.76 18 17 15.76 17 13V3C17 2.45 16.55 2 16 2C15.45 2 15 2.45 15 3V11H13V3C13 2.45 12.55 2 12 2Z" />
+      {/* Cupped palms raised in du'a: two outer thumbs, fingers rising in the
+          middle, and a bowl at the base.
+
+          The previous path was a dinner fork — four tines down to a handle —
+          which is what rendered above every step badged "Prophetic Du'a". */}
+      <Path d="M4.6 8.3a1.6 1.6 0 0 1 2 1.1l1 3.4c.1.4.5.6.9.5s.6-.5.5-.9L7.6 6.1a1.6 1.6 0 1 1 3.1-.8l1.3 5.2 1.3-5.2a1.6 1.6 0 1 1 3.1.8l-1.4 6.3c-.1.4.1.8.5.9s.8-.1.9-.5l1-3.4a1.6 1.6 0 1 1 3.1.9l-1.6 5.6A7 7 0 0 1 12 21a7 7 0 0 1-6.9-5.1l-1.6-5.6a1.6 1.6 0 0 1 1.1-2z" />
     </G>
   ),
   brain: (

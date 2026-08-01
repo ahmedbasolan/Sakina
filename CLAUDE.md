@@ -60,6 +60,20 @@ translate to our stack — never paste web code.
 - Animate `transform`/`opacity` only; never animate layout (`width`/`height`).
   For SVG-prop animations (e.g. `Ionicons`/`react-native-svg` opacity), use
   `useNativeDriver: false`.
+- **A "skip the intro" tap must not leave the settled state owned by an
+  `Animated.Value`.** `VerseLayer` and `HadithLayer` both shipped a `skipReveal`
+  that wrote six final values while the staged sequence was still running, and
+  tapping during the reveal could leave the translation stuck near zero opacity
+  — invisible until the screen was popped and re-entered. Three parts to the
+  fix, and only the third is load-bearing: hold the `CompositeAnimation` in a
+  ref and stop it before writing; guard the completion callback on `finished`;
+  and **gate the styles on the completion flag** (`revealComplete ? 1 : anim`)
+  so the settled render contains plain numbers and no Animated node at all.
+  Do not repeat the explanation the first fix was committed with — that
+  `setValue()` "does not reach the native driver" is **false**;
+  `AnimatedValue.setValue` calls `NativeAnimatedAPI.setAnimatedNodeValue` when
+  `__isNative`. The true cause was never isolated, which is exactly why the
+  settled state must not depend on it.
 
 **Navigation & icon indicators**
 - Bare icons only — never wrap back arrows, chevrons, or nav indicators in circular
@@ -183,6 +197,41 @@ has nothing to do with the du'a printed above them.
      al-Adab al-Mufrad, Hisn al-Muslim, Nawawi's Forty, Mishkat, Riyad
      as-Salihin. Check before declaring something unhostable — that claim was
      made about Ibn Hibban and was wrong.
+   - **sunnah.com writes its class attributes unquoted.** The English lives in
+     `<div class=hadith_narrated>` (the "X reported:" line) and
+     `<div class=text_details>` (the matn); the Arabic is the one that *is*
+     quoted, `<div class="arabic_hadith_full arabic">`. A scraper matching
+     `class="text_details"` returns an empty English field and reports nothing
+     wrong. That is how the Prayer Leadership journey first shipped with all
+     nine of its Sahih Muslim quotations rendered from the Arabic by hand,
+     inside quotation marks, attributed to Muslim — the Arabic was right and
+     the meaning was right, but the English was not the published translation
+     it presented itself as. When you put an English sentence in quotes next to
+     a citation, fetch that sentence.
+
+7. **A correct citation does not make the instruction around it correct.**
+   Every rule above polices the *source line*. The `instruction` above it is
+   app-written prose that no verifier reads, and it can assert fiqh the source
+   never said. Prayer Leadership day 1 shipped "lead one prayer … with a single
+   friend **behind** you" under a properly-quoted Sahih Muslim 468 — the
+   citation was right, the practice was wrong. A single male follower stands
+   level with the imam on his **right** (Bukhari 697/699/726, Muslim 763: the
+   Prophet ﷺ moved Ibn Abbas from his left round to his right); a row behind
+   forms only from two followers on (Abu Dawud 634: Jabir moved to the right,
+   then both pushed behind when Ibn Sakhr arrived); women pray in their own row
+   behind the men however few (Bukhari 727). Before writing any instruction
+   that tells the user where to stand, what order to move in, which prayers are
+   audible, or what to do when something goes wrong, **fetch a hadith for that
+   specific claim** — not for the theme it sits under. If you cannot source the
+   mechanic, describe less.
+
+8. **Check the id before adding a `Content`.** `quran_8_2` and `quran_20_132`
+   already existed with mood angles of their own when a new journey tried to
+   add them, which would have put two entries under one id into the seeder.
+   A generator that asserts every id it needs resolves *exactly once* catches
+   this; a generator that only appends does not. Reusing the existing verse is
+   the right outcome — journey angles are exempt from the mood-join check, so
+   sharing a verse with a mood angle costs nothing.
 
 `node scripts/verify-citations.mjs` enforces all of this in six passes: the
 Arabic of an asserted-Quran step is in the ayah; every chain-claiming step
@@ -416,8 +465,25 @@ Four scripts, none of which need a device:
 - `node scripts/verify-journey-roundtrip.mjs` — seeds every angle into a real
   in-memory SQLite using the actual DDL and seeder column list, reads back via
   `fetchAngleById`'s query, and replays PathStepScreen + ContextLayer on the
-  result. This is what proves a day renders, not just that it parses.
-- `node scripts/verify-journey-selftest.mjs` — injects 12 known faults into a
+  result. This is what proves a day renders, not just that it parses. It has no
+  selftest harness, so it carries its own negative-test hook: `RT_INJECT=1 node
+  scripts/verify-journey-roundtrip.mjs` corrupts every Arabic-carrying step on
+  read and exits 0 only if it corrupted something *and* the checks then failed —
+  the first version pinned a single angle id, and renumbering a journey moved
+  the Arabic off it, leaving a negative test that passed by doing nothing.
+  Add each new journey to its path list — it compares the
+  post-DB steps against the pre-DB source, which is stricter than any shape
+  rule. (It used to require every `verbal` step to carry Arabic. That encoded a
+  habit of the first two journeys: `PracticeLayer` guards the du'a block on
+  `item.arabicText`, so "recite Al-Fatihah to someone who will correct you"
+  renders correctly with none.)
+- `node scripts/verify-surah-lessons.mjs` — re-fetches every ayah in
+  `src/data/surahLessons.ts` (the study-sheet layers a day lists in
+  `surahIds`) and compares it byte for byte with quran.com. That file is
+  generated, and the generator shipped footnote markers glued to words on its
+  first run — stripping `<sup>` tags without their contents leaves the digit.
+  Needs network and `curl`.
+- `node scripts/verify-journey-selftest.mjs` — injects 14 known faults into a
   sandbox copy and asserts the verifier catches each. Run it after editing
   `verify-journey.mjs`; a checker that only ever prints "passed" is untested.
 

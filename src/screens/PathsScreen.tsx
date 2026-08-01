@@ -31,12 +31,17 @@ import { getPathVisual } from '../constants/pathVisuals';
 
 const SCREEN_W = Dimensions.get('window').width;
 
+// Height reserved for the pinned header (star field + filter/search row). The
+// star positions below are fractions of it, so the two cannot drift apart.
+const HEADER_H = 124;
+
 // ── Paths available for users to start ─────────────────────────
 const AVAILABLE_PATH_IDS = new Set([
   'path_rizq_revolution',
   'path_salah_transformation',
   'path_study_journaling',
   'path_trusting_the_results',
+  'path_prayer_leadership',
 ]);
 
 // ── Star positions for the header backdrop ──────────────────────
@@ -427,21 +432,13 @@ export default function PathsScreen() {
           <TwinklingStar
             key={i}
             x={s.x * SCREEN_W}
-            y={s.y * 200}
+            y={s.y * HEADER_H}
             delay={s.delay}
             size={s.size}
             color={Colors.accent.primary}
             duration={2400}
           />
         ))}
-
-        <View style={styles.headerText}>
-          <Text style={styles.headerPretitle}>GUIDED PROGRAMS</Text>
-          <Text style={styles.headerTitle}>Sacred Journeys</Text>
-          <Text style={styles.headerSub}>
-            Curated paths for lasting spiritual transformation.
-          </Text>
-        </View>
 
         {/* Tabs + search live in the fixed header so they never scroll away,
             and share one row via a cross-fade instead of two separate bars. */}
@@ -501,6 +498,18 @@ export default function PathsScreen() {
         keyExtractor={(item) => item.id}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={[styles.content, { paddingBottom: insets.bottom + 100 }]}
+        // The title scrolls; the filter tabs and search above it do not. Being
+        // list content rather than an animated header is what makes it reclaim
+        // its space without animating layout.
+        ListHeaderComponent={
+          <View style={styles.headerText}>
+            <Text style={styles.headerPretitle}>GUIDED PROGRAMS</Text>
+            <Text style={styles.headerTitle}>Sacred Journeys</Text>
+            <Text style={styles.headerSub}>
+              Curated paths for lasting spiritual transformation.
+            </Text>
+          </View>
+        }
         ItemSeparatorComponent={() => <View style={{ height: Spacing.lg }} />}
         ListEmptyComponent={
           <View style={styles.emptyState}>
@@ -553,9 +562,16 @@ const styles = StyleSheet.create({
     paddingBottom: Spacing.lg,
     zIndex: 2,
     overflow: 'hidden',
-    minHeight: 200,
+    // Only the star field and the controls live here now — the title block
+    // scrolls with the list.
+    minHeight: HEADER_H,
   },
-  headerText: { zIndex: 1 },
+  headerText: {
+    zIndex: 1,
+    // Was inside the fixed header, which supplied this padding; as list
+    // content it has to carry its own.
+    paddingBottom: Spacing.xl,
+  },
   headerPretitle: {
     fontSize: 10,
     color: 'rgba(201,168,76,0.8)',
@@ -584,7 +600,7 @@ const styles = StyleSheet.create({
   headerControls: {
     position: 'relative',
     height: 44,
-    marginTop: Spacing.lg,
+    marginTop: Spacing.sm,
   },
   filterSearchRow: {
     flexDirection: 'row',

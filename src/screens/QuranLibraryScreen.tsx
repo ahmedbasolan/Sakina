@@ -265,15 +265,6 @@ export default function QuranLibraryScreen({ navigation }: { navigation: any }) 
             />
           </Svg>
         </TouchableOpacity>
-
-        <View>
-          <Text style={styles.headerPretitle}>SACRED WORDS</Text>
-          <Text style={styles.headerTitle}>Quran Library</Text>
-          <Text style={styles.headerSub}>
-            {filteredVerses.length} verse{filteredVerses.length !== 1 ? 's' : ''}
-            {selectedMood !== 'All' ? ` · ${selectedMood}` : ''}
-          </Text>
-        </View>
       </Animated.View>
 
       <FlatList
@@ -293,9 +284,20 @@ export default function QuranLibraryScreen({ navigation }: { navigation: any }) 
       />
 
       {loading ? (
-        <View style={styles.loadingWrap}>
-          <ActivityIndicator size="large" color={Colors.accent.primary} />
-          <Text style={styles.loadingText}>Loading verses…</Text>
+        <View style={{ flex: 1 }}>
+          {/* The title lives in the verse FlatList's ListHeaderComponent
+              below, which doesn't exist yet on this branch — `loading` starts
+              true, so every fresh mount hits this first. Without its own copy
+              here, the first frame of this screen was a back arrow and a mood
+              rail over a bare spinner with no indication of what screen it was. */}
+          <View style={[styles.listTitle, { paddingHorizontal: Spacing.xl }]}>
+            <Text style={styles.headerPretitle}>SACRED WORDS</Text>
+            <Text style={styles.headerTitle}>Quran Library</Text>
+          </View>
+          <View style={styles.loadingWrap}>
+            <ActivityIndicator size="large" color={Colors.accent.primary} />
+            <Text style={styles.loadingText}>Loading verses…</Text>
+          </View>
         </View>
       ) : (
         <FlatList
@@ -304,6 +306,19 @@ export default function QuranLibraryScreen({ navigation }: { navigation: any }) 
           keyExtractor={(item) => item.surah}
           contentContainerStyle={[styles.listContent, { paddingBottom: insets.bottom + Spacing.xxxl }]}
           showsVerticalScrollIndicator={false}
+          // Scrolls away; the back arrow and the mood rail above it do not.
+          // FlatList still renders this with zero rows, so a filter that
+          // matches nothing keeps its title.
+          ListHeaderComponent={
+            <View style={styles.listTitle}>
+              <Text style={styles.headerPretitle}>SACRED WORDS</Text>
+              <Text style={styles.headerTitle}>Quran Library</Text>
+              <Text style={styles.headerSub}>
+                {filteredVerses.length} verse{filteredVerses.length !== 1 ? 's' : ''}
+                {selectedMood !== 'All' ? ` · ${selectedMood}` : ''}
+              </Text>
+            </View>
+          }
           renderItem={({ item: group }) => (
             <View style={styles.surahGroup}>
               <Text style={styles.surahHeader}>{group.surah}</Text>
@@ -341,9 +356,14 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: Spacing.xl,
-    paddingBottom: Spacing.lg,
+    paddingBottom: Spacing.sm,
     gap: Spacing.md,
     zIndex: 2,
+  },
+  // The title block in its list-header position. listContent already supplies
+  // the horizontal gutter, so this only owns its bottom gap.
+  listTitle: {
+    paddingBottom: Spacing.lg,
   },
   backButton: {
     // Bare icon — no circular container (CLAUDE.md nav rule); hitSlop on the

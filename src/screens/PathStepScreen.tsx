@@ -24,8 +24,10 @@ import { extractVerseKey } from '../utils';
 import { Colors } from '../theme/DesignSystem';
 import { useSwipeGesture } from '../hooks/useSwipeGesture';
 import SwipeNextOverlay from '../components/SwipeNextOverlay';
+import SurahLayer from '../components/SurahLayer';
+import { getSurahLesson, SurahLesson } from '../data/surahLessons';
 
-type LayerType = 'hadith' | 'verse' | 'context' | 'practice' | 'reflection';
+type LayerType = 'hadith' | 'verse' | 'surah' | 'context' | 'practice' | 'reflection';
 
 export const PathStepScreen: React.FC = () => {
   const route = useRoute<any>();
@@ -130,9 +132,35 @@ export const PathStepScreen: React.FC = () => {
   const [hadithContent, setHadithContent] = useState<Content | null>(hadithContentParam ?? null);
 
   const hasHadith = !!(step.hadithContentId && hadithContent);
-  const layerTypes: LayerType[] = hasHadith
-    ? ['hadith', 'verse', 'context', 'practice', 'reflection']
-    : ['verse', 'context', 'practice', 'reflection'];
+
+  // Surahs this day asks the user to learn. Each gets its own layer directly
+  // after the verse — the verse layer stays exactly as it was, showing the one
+  // ayah the lesson is built on. Unresolvable ids are dropped rather than
+  // rendering an empty layer.
+  // Annotated because `route` is `useRoute<any>()`, so `step` arrives untyped.
+  const stepSurahIds: string[] = step.surahIds ?? [];
+  const surahLessons: SurahLesson[] = useMemo(
+    () => stepSurahIds.map(getSurahLesson).filter((s): s is SurahLesson => s !== null),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [step.surahIds],
+  );
+
+  const layerTypes: LayerType[] = [
+    ...(hasHadith ? (['hadith'] as LayerType[]) : []),
+    'verse',
+    ...surahLessons.map(() => 'surah' as LayerType),
+    'context',
+    'practice',
+    'reflection',
+  ];
+  const layerLabels: string[] = [
+    ...(hasHadith ? ['Hadith'] : []),
+    'Verse',
+    ...surahLessons.map((s) => s.name),
+    'Context',
+    'Practice',
+    'Reflection',
+  ];
 
   // Swipe right → advance to the next layer (mirrors swipe-up on LayerContainer).
   // Uses functional state update so it never reads stale currentLayerIndex.
@@ -190,7 +218,20 @@ export const PathStepScreen: React.FC = () => {
     };
   }, [step.hadithContentId, hadithContent, rotationEngine]);
 
-  const currentLayerType = layerTypes[currentLayerIndex];
+  // Clamp on read. The effect below re-anchors the index whenever the day
+  // changes, but effects run after render — without this, the first frame of a
+  // day with fewer layers than the last one reads past the end of layerTypes
+  // and renders nothing at all.
+  const safeLayerIndex = Math.min(currentLayerIndex, layerTypes.length - 1);
+  const currentLayerType = layerTypes[safeLayerIndex];
+
+  // Which surah this index is showing: count the 'surah' entries before it, so
+  // the layer list stays a flat LayerType[] and the hadith shift below keeps
+  // working unchanged.
+  const currentSurah =
+    currentLayerType === 'surah'
+      ? surahLessons[layerTypes.slice(0, safeLayerIndex).filter((t) => t === 'surah').length] ?? null
+      : null;
 
   // currentLayerIndex is a raw numeric index into layerTypes, whose length
   // depends on hasHadith. The fallback fetch above can flip hasHadith from
@@ -207,6 +248,26 @@ export const PathStepScreen: React.FC = () => {
     }
     hadHadithRef.current = hasHadith;
   }, [hasHadith]);
+
+  // Re-anchor everything that is per-day when the step changes underneath us.
+  // completeAndAdvance advances with navigation.replace and already clears the
+  // reflection text on the assumption that this screen instance may be reused
+  // rather than remounted; the layer index, the saved flag and the prefetched
+  // hadith need the same treatment. The index one is now load-bearing: days no
+  // longer all have the same number of layers, so a carried-over index can sit
+  // past the end of the new day's list.
+  const stepIdRef = useRef(step.id);
+  useEffect(() => {
+    if (stepIdRef.current === step.id) return;
+    stepIdRef.current = step.id;
+    setCurrentLayerIndex(0);
+    setIsSaved(false);
+    const incoming = hadithContentParam ?? null;
+    setHadithContent(incoming);
+    // Keep the shift guard in sync, or the next hasHadith flip double-counts.
+    hadHadithRef.current = !!(step.hadithContentId && incoming);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [step.id]);
 
   // Build structured practice steps from angle data
   const practiceSteps: PracticeStepData[] = useMemo(() => {
@@ -378,6 +439,10 @@ export const PathStepScreen: React.FC = () => {
             audioKey={extractVerseKey(guidanceExperience.content.source || '')}
           />
         );
+      case 'surah':
+        return currentSurah ? (
+          <SurahLayer lesson={currentSurah} accentColor={accentColor} />
+        ) : null;
       case 'context':
         return (
           <ContextLayer
@@ -425,15 +490,15 @@ export const PathStepScreen: React.FC = () => {
       />
 
       <View style={{ flex: 1 }} {...swipePanHandlers}>
-        {currentLayerIndex < layerTypes.length - 1 && (
+        {safeLayerIndex < layerTypes.length - 1 && (
           <SwipeNextOverlay
             animValue={swipeOverlayAnim}
             accentColor={accentColor}
-            label={layerTypes[currentLayerIndex + 1] ? `NEXT: ${layerTypes[currentLayerIndex + 1].toUpperCase()}` : 'NEXT'}
+            label={layerTypes[safeLayerIndex + 1] ? `NEXT: ${layerLabels[safeLayerIndex + 1].toUpperCase()}` : 'NEXT'}
           />
         )}
         <LayerContainer
-          currentLayer={currentLayerIndex}
+          currentLayer={safeLayerIndex}
           totalLayers={layerTypes.length}
           onLayerChange={setCurrentLayerIndex}
         >
@@ -460,12 +525,8 @@ export const PathStepScreen: React.FC = () => {
 
       <LayerPager
         total={layerTypes.length}
-        current={currentLayerIndex}
-        labels={
-          hasHadith
-            ? ['Hadith', 'Verse', 'Context', 'Practice', 'Reflection']
-            : ['Verse', 'Context', 'Practice', 'Reflection']
-        }
+        current={safeLayerIndex}
+        labels={layerLabels}
         accentColor={accentColor}
         onLayerChange={setCurrentLayerIndex}
       />

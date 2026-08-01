@@ -240,6 +240,12 @@ export interface PathStep {
   isCompleted: boolean;
   completedAt?: number;
   hadithContentId?: string;
+  /**
+   * Surahs this day asks the user to LEARN, each rendered on its own layer
+   * after the verse (see src/data/surahLessons.ts). Separate from contentId,
+   * which is the single ayah the day's lesson is built on.
+   */
+  surahIds?: string[];
 }
 
 export interface UserPathProgress {

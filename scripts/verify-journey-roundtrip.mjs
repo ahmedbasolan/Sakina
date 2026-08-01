@@ -64,10 +64,27 @@ for (const a of quranContentAngles) {
 console.log(`seeded ${quranContentAngles.length} angles into sqlite\n`);
 
 // ContentRepository.fetchAngleById
+let injected = 0;
 const sel = db.prepare(`SELECT * FROM content_angles WHERE id = ?`);
 const fetchAngleById = (id) => {
   const row = sel.get(id);
   if (!row) return null;
+  // Negative-test hook. This script has no selftest harness of its own, so the
+  // only way to show the round-trip checks below actually fail on a broken read
+  // is to break one deliberately: `RT_INJECT=1 node scripts/verify-journey-roundtrip.mjs`
+  // must report a source mismatch and a lost-Arabic failure. Never set in CI.
+  //
+  // It targets whichever angle actually carries Arabic rather than a fixed id,
+  // and throws if the substitution changed nothing. The first version named
+  // q_angle_imam_day7; renumbering a journey moved the Arabic off that day and
+  // the hook silently became a no-op, reporting 0 failures and "proving" the
+  // checks worked. A negative test that cannot fail is worse than no test.
+  if (process.env.RT_INJECT === '1' && /"arabicText":"[^"]/.test(row.practiceSteps ?? '')) {
+    const broken = row.practiceSteps.replace(/"arabicText":"[^"]*"/, '"arabicText":"lost"');
+    if (broken === row.practiceSteps) throw new Error('RT_INJECT changed nothing — the hook is dead');
+    row.practiceSteps = broken;
+    injected++;
+  }
   return { id: row.id, contentId: row.contentId, mood: row.mood, angle: row.angle,
     angleSource: row.angleSource, action: row.action, actionArabicText: row.actionArabicText,
     actionTransliteration: row.actionTransliteration, actionSource: row.actionSource,
@@ -82,7 +99,9 @@ const clean = (t) => t.replace(/\s*\[(?:Tafsir[^\]]*|Sahih[^\]]*|At-Tirmidhi[^\]
 let fail = 0;
 const contentById = new Map(quranContent.map((c) => [c.id, c]));
 
-for (const pathId of ['path_trusting_the_results', 'path_study_journaling']) {
+const angleSrc = new Map(quranContentAngles.map((a) => [a.id, a]));
+
+for (const pathId of ['path_trusting_the_results', 'path_study_journaling', 'path_prayer_leadership']) {
   const path = STATIC_SPIRITUAL_PATHS.find((p) => p.id === pathId);
   console.log(`=== ${path.title} ===`);
   for (const step of path.dailySteps) {
@@ -94,10 +113,24 @@ for (const pathId of ['path_trusting_the_results', 'path_study_journaling']) {
     try { ps = JSON.parse(a.practiceSteps); } catch { console.log(`  !! day ${step.day}: practiceSteps unparseable after round trip`); fail++; }
     if (!ps.length) { console.log(`  !! day ${step.day}: 0 practice steps -> empty Practice layer`); fail++; }
 
-    // Every verbal step must carry its Arabic through the DB unchanged.
-    for (const s of ps.filter((x) => x.type === 'verbal')) {
-      if (!s.arabicText || !/[؀-ۿ]/.test(s.arabicText)) { console.log(`  !! day ${step.day}: verbal step "${s.title}" lost its Arabic`); fail++; }
-      if (!s.translation) { console.log(`  !! day ${step.day}: verbal step "${s.title}" has no translation`); fail++; }
+    // Compare against the pre-DB source of truth rather than against a shape
+    // rule. The previous check required every `verbal` step to carry Arabic,
+    // which encoded a habit of the first two journeys rather than a
+    // requirement: PracticeLayer guards the du'a block on `item.arabicText`
+    // (line ~264), so a verbal step that only asks you to recite something
+    // aloud renders correctly with none. What actually has to hold is that
+    // whatever the source declares survives seed -> SQLite -> fetch intact.
+    const srcAngle = angleSrc.get(step.angleId);
+    let srcSteps = [];
+    try { srcSteps = JSON.parse(srcAngle?.practiceSteps ?? '[]'); } catch { /* the parse check above owns this */ }
+    if (JSON.stringify(srcSteps) !== JSON.stringify(ps)) {
+      console.log(`  !! day ${step.day}: practiceSteps do not match the source after the round trip`);
+      fail++;
+    }
+    // A step that does declare Arabic must still have it, and must be readable.
+    for (const s of ps.filter((x) => x.arabicText)) {
+      if (!/[؀-ۿ]/.test(s.arabicText)) { console.log(`  !! day ${step.day}: step "${s.title}" lost its Arabic`); fail++; }
+      if (!s.translation) { console.log(`  !! day ${step.day}: step "${s.title}" shows Arabic with no translation`); fail++; }
     }
 
     // ContextLayer sections + footnote
@@ -112,7 +145,7 @@ for (const pathId of ['path_trusting_the_results', 'path_study_journaling']) {
 
     // Layer count PathStepScreen will build
     const layers = step.hadithContentId ? 5 : 4;
-    console.log(`  day ${step.day}: ${layers} layers · ${ps.length} practice (${ps.filter((x)=>x.type==='verbal').length} verbal) · footnote "${label.slice(0,34)}" · U ${clean(u).length}ch / M ${clean(m).length}ch`);
+    console.log(`  day ${step.day}: ${layers} layers · ${ps.length} practice (${ps.filter((x)=>x.arabicText).length} with Arabic) · footnote "${label.slice(0,34)}" · U ${clean(u).length}ch / M ${clean(m).length}ch`);
   }
   console.log();
 }
@@ -123,6 +156,15 @@ for (const id of ['q_angle_3_159_angry','q_angle_2_216_sad','q_angle_94_5_stress
   if (!fetchAngleById(id)) { console.log(`!! orphaned: ${id} no longer in the seed`); fail++; }
 }
 console.log('mood angles still intact for the mood picker: yes');
+
+if (process.env.RT_INJECT === '1') {
+  console.log(`\nRT_INJECT corrupted ${injected} angle(s); ${fail} failure(s) reported.`);
+  if (!injected || !fail) {
+    console.log('*** the negative test proved nothing — it must corrupt at least one angle and fail.');
+    process.exit(1);
+  }
+  process.exit(0);
+}
 
 console.log(fail ? `\n*** ${fail} FAILURES` : '\nRound trip clean.');
 process.exit(fail ? 1 : 0);
