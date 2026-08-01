@@ -433,7 +433,11 @@ export default function MoodHistoryCalendarScreen({ onBack }: MoodHistoryCalenda
       <Animated.View style={{ flex: 1, opacity: contentOpacity }}>
         <ScrollView
           style={styles.scrollView}
-          contentContainerStyle={[styles.scrollContent, { paddingBottom: bottomInset + 40 }]}
+          // Matches the floating tab bar's clearance on Home/Journeys/Library
+          // (insets.bottom + 100). This screen used +40, which left the
+          // calendar's date cells resting directly behind the pill at rest,
+          // not just passing under it mid-scroll.
+          contentContainerStyle={[styles.scrollContent, { paddingBottom: bottomInset + 100 }]}
           showsVerticalScrollIndicator={false}
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} tintColor={Colors.accent.primary} />

@@ -471,7 +471,14 @@ const VerseLayer: React.FC<VerseLayerProps> = ({
             },
           ]}
         >
-          <BlurView intensity={65} tint="dark" style={styles.actionBarInner}>
+          {/* experimentalBlurMethod is what makes this actually blur on
+              Android — see the same fix on the tab bar in MainNavigator. */}
+          <BlurView
+            intensity={65}
+            tint="dark"
+            experimentalBlurMethod="dimezisBlurView"
+            style={styles.actionBarInner}
+          >
             {/* Save */}
             {onSave && (
               <TouchableOpacity

@@ -113,7 +113,14 @@ const ReflectionLayer: React.FC<ReflectionLayerProps> = ({
           isFocused && { borderColor: accentColor + '40' },
           { opacity: fadeAnim },
         ]}>
-          <BlurView intensity={20} tint="dark" style={StyleSheet.absoluteFillObject} pointerEvents="none" />
+          {/* experimentalBlurMethod — same Android blur fix as the tab bar. */}
+          <BlurView
+            intensity={20}
+            tint="dark"
+            experimentalBlurMethod="dimezisBlurView"
+            style={StyleSheet.absoluteFillObject}
+            pointerEvents="none"
+          />
           <TextInput
             style={styles.journalInput}
             placeholder="Write freely — even a few words count"
