@@ -537,8 +537,15 @@ export default function LibraryScreen({ navigation }: any) {
       <Animated.View
         style={[styles.header, { paddingTop: insets.top + Spacing.lg, opacity: headerOpacity }]}
       >
-        {/* Search — frosted so the mandala backdrop blends instead of showing a hard-edged tint */}
-        <BlurView intensity={14} tint="dark" style={styles.searchBar}>
+        {/* Search — frosted so the mandala backdrop blends instead of showing a
+            hard-edged tint. experimentalBlurMethod is the Android blur fix
+            already applied to the tab bar in MainNavigator. */}
+        <BlurView
+          intensity={14}
+          tint="dark"
+          experimentalBlurMethod="dimezisBlurView"
+          style={styles.searchBar}
+        >
           <MaterialCommunityIcons
             name="magnify"
             size={18}
@@ -568,8 +575,15 @@ export default function LibraryScreen({ navigation }: any) {
           )}
         </BlurView>
 
-        {/* Tab switcher — same frosted treatment as the bottom nav pill */}
-        <BlurView intensity={14} tint="dark" style={styles.tabSwitcher}>
+        {/* Tab switcher — same frosted treatment as the bottom nav pill,
+            which means the same experimentalBlurMethod fix: without it this
+            claim was false on Android and it rendered as a flat fill. */}
+        <BlurView
+          intensity={14}
+          tint="dark"
+          experimentalBlurMethod="dimezisBlurView"
+          style={styles.tabSwitcher}
+        >
           <Animated.View style={[styles.tabIndicator, { left: indicatorLeft }]} />
           <TouchableOpacity
             style={styles.tabBtn}

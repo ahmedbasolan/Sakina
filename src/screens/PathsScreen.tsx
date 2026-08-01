@@ -212,9 +212,11 @@ function JourneyCard({ path, index, isActive, isLocked, userProgress, onPress }:
         accessibilityHint={isLocked ? undefined : 'Double tap to open this journey'}
         accessibilityState={{ disabled: isLocked }}
       >
+        {/* experimentalBlurMethod — same Android blur fix as the tab bar. */}
         <BlurView
           intensity={10}
           tint="dark"
+          experimentalBlurMethod="dimezisBlurView"
           style={[
             styles.journeyCard,
             !isActive && !isLocked && { borderColor: 'rgba(212, 175, 55, 0.20)' },

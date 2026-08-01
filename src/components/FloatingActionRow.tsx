@@ -87,7 +87,14 @@ const FloatingActionRow: React.FC<FloatingActionRowProps> = ({
   return (
     <View style={styles.container}>
       {/* Frosted-glass surface, clipped to the pill */}
-      <BlurView intensity={45} tint="dark" style={styles.blurFill} pointerEvents="none" />
+      {/* experimentalBlurMethod — same Android blur fix as the tab bar. */}
+      <BlurView
+        intensity={45}
+        tint="dark"
+        experimentalBlurMethod="dimezisBlurView"
+        style={styles.blurFill}
+        pointerEvents="none"
+      />
 
       <TouchableOpacity
         style={styles.actionButton}

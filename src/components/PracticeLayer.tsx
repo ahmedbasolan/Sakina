@@ -201,7 +201,14 @@ const PracticeStepCard = ({
         >
           {/* Frosted-glass surface — lets the immersive background (mandala or
               journey photo) blend through instead of a flat opaque box */}
-          <BlurView intensity={18} tint="dark" style={StyleSheet.absoluteFillObject} pointerEvents="none" />
+          {/* experimentalBlurMethod — same Android blur fix as the tab bar. */}
+          <BlurView
+            intensity={18}
+            tint="dark"
+            experimentalBlurMethod="dimezisBlurView"
+            style={StyleSheet.absoluteFillObject}
+            pointerEvents="none"
+          />
 
           {/* Card Header — when the card has broken out of the timeline
               gutter, pad the header back in so the icon and title still sit
