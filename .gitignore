@@ -74,3 +74,8 @@ coverage/
 
 # Supabase CLI local link cache (machine-local project ref, not shared state)
 supabase/.temp/
+
+# Raw device screenshots used as compositor input for store assets —
+# personal captures, not meant to live in the repo. Re-supply locally
+# when regenerating store-assets/app-store/_compose-real.js output.
+store-assets/app-store/real-screenshots/
