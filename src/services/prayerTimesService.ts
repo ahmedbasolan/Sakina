@@ -153,6 +153,26 @@ class PrayerTimesService {
   private static instance: PrayerTimesService;
   private readonly BASE_URL = 'https://api.aladhan.com/v1/timingsByCity';
 
+  // Concurrent callers for the same city/method/day share one in-flight
+  // fetch instead of each independently retrying. getCurrentPrayerContext
+  // (this class's own fallback path) is called from several unrelated
+  // places on a single Home mount — useHomeData's prayer fetch,
+  // FreemiumService.initialize's syncPrayerWindow, and every
+  // fetchWindowGuidance call's own syncPrayerWindow — and without this,
+  // each paid its own full 3-attempt/~25s retry cost against the same
+  // degraded connection. Stacked back to back, that read as GuidanceScreen
+  // "loading endlessly" even though no single call actually hung.
+  private inFlightCityFetches = new Map<string, Promise<PrayerTimesData>>();
+
+  // A recent failure for a given key means the endpoint was just
+  // unreachable — repeat callers within this cooldown skip straight to the
+  // stale fallback (or a fast throw) instead of re-paying the retry tax
+  // seconds later. Cleared on the next success. Matches the request-dedup
+  // pattern quranService.ts's fetchAndCacheSurah already uses
+  // (inFlightSurahFetches), applied here to failures as well as successes.
+  private recentCityFetchFailures = new Map<string, number>();
+  private static readonly FAILURE_COOLDOWN_MS = 60_000;
+
   private constructor() { }
 
   public static getInstance(): PrayerTimesService {
@@ -186,19 +206,50 @@ class PrayerTimesService {
     const today = formatDateYMD();
     // Normalize user-supplied city/country so special characters can't produce
     // unexpected AsyncStorage keys or break the startsWith pruning logic.
-    const safeCity = city.replace(/[^a-zA-Z0-9\-]/g, '_').slice(0, 50);
-    const safeCountry = country.replace(/[^a-zA-Z0-9\-]/g, '_').slice(0, 10);
+    const safeCity = city.replace(/[^a-zA-Z0-9-]/g, '_').slice(0, 50);
+    const safeCountry = country.replace(/[^a-zA-Z0-9-]/g, '_').slice(0, 10);
     const cacheKey = `@prayer_timings_${safeCity}_${safeCountry}_m${resolvedMethod}_s${school}_${today}`;
     // Cross-day fallback key — stores the most recently successful response
     // regardless of date, so first-launch / day-rollover with no connectivity
     // still has something to show rather than a complete blank.
     const fallbackKey = `@prayer_timings_${safeCity}_${safeCountry}_m${resolvedMethod}_s${school}_fallback`;
 
-    try {
-      // 1. Serve today's cached data if available
-      const cachedData = await AsyncStorage.getItem(cacheKey);
-      if (cachedData) return JSON.parse(cachedData);
+    const existing = this.inFlightCityFetches.get(cacheKey);
+    if (existing) return existing;
 
+    const promise = this.fetchTimingsByCityUncached(cacheKey, fallbackKey, city, country, resolvedMethod, school, today);
+    this.inFlightCityFetches.set(cacheKey, promise);
+    try {
+      return await promise;
+    } finally {
+      this.inFlightCityFetches.delete(cacheKey);
+    }
+  }
+
+  private async fetchTimingsByCityUncached(
+    cacheKey: string,
+    fallbackKey: string,
+    city: string,
+    country: string,
+    resolvedMethod: number,
+    school: number,
+    today: string,
+  ): Promise<PrayerTimesData> {
+    // 1. Serve today's cached data if available
+    const cachedData = await AsyncStorage.getItem(cacheKey);
+    if (cachedData) return JSON.parse(cachedData);
+
+    // A very recent failure for this exact key means the endpoint was just
+    // unreachable — go straight to the stale fallback (or fail fast) instead
+    // of re-paying the full retry tax seconds later.
+    const lastFailure = this.recentCityFetchFailures.get(cacheKey);
+    if (lastFailure !== undefined && Date.now() - lastFailure < PrayerTimesService.FAILURE_COOLDOWN_MS) {
+      const stale = await AsyncStorage.getItem(fallbackKey);
+      if (stale) return JSON.parse(stale);
+      throw new Error('Prayer-time service recently unreachable');
+    }
+
+    try {
       // 2. Fetch with exponential back-off retry (3 attempts, up to 8s max).
       // `timeout` is required here — axios defaults to no timeout at all, so on
       // a degraded connection each attempt would hang on the OS socket timeout
@@ -223,12 +274,14 @@ class PrayerTimesService {
       // 3. Persist today's data + update cross-day fallback
       await AsyncStorage.setItem(cacheKey, JSON.stringify(data));
       await AsyncStorage.setItem(fallbackKey, JSON.stringify(data));
+      this.recentCityFetchFailures.delete(cacheKey);
       // Drop previous days' per-date caches so AsyncStorage doesn't accumulate
       // one stale entry per city/method/day forever. Today's keys and the
       // cross-day fallback keys are preserved.
       this.pruneStaleTimingCaches(today).catch(() => {});
       return data;
     } catch (error: any) {
+      this.recentCityFetchFailures.set(cacheKey, Date.now());
       logNetworkError(this.BASE_URL, 'GET', error instanceof Error ? error : new Error(String(error)), { city, country });
 
       // 4. Cross-day stale fallback — better than throwing and showing nothing
