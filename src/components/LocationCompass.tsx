@@ -36,6 +36,36 @@ import { qiblaBearing, formatBearing } from '../utils/qibla';
 
 const HIT_SLOP = { top: 12, bottom: 12, left: 12, right: 12 };
 
+// ─── Astrolabe ring geometry ────────────────────────────────────────────────
+// The ring SVGs use a fixed 0-100 viewBox regardless of compassSize — pixel
+// scaling is handled by the outer <Svg width/height>, so this geometry only
+// needs computing once, at module load, not per render.
+
+/** Point on a circle of radius `r` centered at (50,50); `angleDeg` measured clockwise from north (top). */
+function ringPoint(angleDeg: number, r: number): [number, number] {
+  const rad = ((angleDeg - 90) * Math.PI) / 180;
+  return [50 + r * Math.cos(rad), 50 + r * Math.sin(rad)];
+}
+
+// Classic 8-pointed star ({8/3} star polygon) inscribed exactly on the main
+// ring (r=44) — the same family of Islamic star-lattice geometry as the
+// mandala backdrop (AnimatedMandala's generateStarWeb), so the ring reads as
+// part of one astrolabe instrument rather than a plain compass rose sitting
+// in front of unrelated decoration.
+const ASTROLABE_LATTICE_PATH = Array.from({ length: 8 }, (_, i) => {
+  const [x1, y1] = ringPoint(i * 45, 44);
+  const [x2, y2] = ringPoint(((i + 3) % 8) * 45, 44);
+  return `M ${x1.toFixed(2)},${y1.toFixed(2)} L ${x2.toFixed(2)},${y2.toFixed(2)}`;
+}).join(' ');
+
+// Intercardinal (NE/SE/SW/NW) tick marks — shorter and fainter than the four
+// cardinal ticks below, so N/E/S/W still read first at a glance.
+const INTERCARDINAL_TICKS = [45, 135, 225, 315].map((angle) => {
+  const [x1, y1] = ringPoint(angle, 44);
+  const [x2, y2] = ringPoint(angle, 39);
+  return { key: angle, x1, y1, x2, y2 };
+});
+
 // A small, globally-spread default shortlist — shown before the user types.
 const POPULAR_CITIES: { city: string; country: string }[] = [
   { city: 'Mecca', country: 'Saudi Arabia' },
@@ -410,7 +440,7 @@ export function LocationCompass({
           style={{ width: compassSize, height: compassSize, transform: [{ scale: pressScale }] }}
         >
           <View style={StyleSheet.absoluteFill} pointerEvents="none">
-            <AnimatedMandala size={compassSize} color={Colors.accent.primary} opacity={0.42} webLayers={2} />
+            <AnimatedMandala size={compassSize} color={Colors.accent.primary} opacity={0.55} webLayers={2} />
           </View>
 
           <Animated.View
@@ -435,11 +465,27 @@ export function LocationCompass({
             style={{ position: 'absolute', top: (compassSize - ringSize) / 2, left: (compassSize - ringSize) / 2 }}
             pointerEvents="none"
           >
-            <Circle cx={50} cy={50} r={44} stroke={Colors.accent.primary} strokeOpacity={0.5} strokeWidth={1} fill="none" />
-            <Line x1={50} y1={4} x2={50} y2={12} stroke={Colors.accent.primary} strokeOpacity={0.65} strokeWidth={1.5} strokeLinecap="round" />
-            <Line x1={96} y1={50} x2={88} y2={50} stroke={Colors.accent.primary} strokeOpacity={0.65} strokeWidth={1.5} strokeLinecap="round" />
-            <Line x1={50} y1={96} x2={50} y2={88} stroke={Colors.accent.primary} strokeOpacity={0.65} strokeWidth={1.5} strokeLinecap="round" />
-            <Line x1={4} y1={50} x2={12} y2={50} stroke={Colors.accent.primary} strokeOpacity={0.65} strokeWidth={1.5} strokeLinecap="round" />
+            {/* Outer limb — a faint second plate, the layered-rings depth real astrolabes have. */}
+            <Circle cx={50} cy={50} r={48} stroke={Colors.accent.primary} strokeOpacity={0.22} strokeWidth={0.6} fill="none" />
+            {/* 8-point star lattice bound to the ring itself, not the looser ambient
+                mandala backdrop — this is what makes it read as an astrolabe rete
+                plate instead of a compass icon floating over unrelated decoration. */}
+            <Path d={ASTROLABE_LATTICE_PATH} stroke={Colors.accent.primary} strokeOpacity={0.32} strokeWidth={0.7} fill="none" />
+            <Circle cx={50} cy={50} r={44} stroke={Colors.accent.primary} strokeOpacity={0.8} strokeWidth={1.5} fill="none" />
+            {INTERCARDINAL_TICKS.map((t) => (
+              <Line
+                key={t.key}
+                x1={t.x1} y1={t.y1} x2={t.x2} y2={t.y2}
+                stroke={Colors.accent.primary}
+                strokeOpacity={0.45}
+                strokeWidth={1.2}
+                strokeLinecap="round"
+              />
+            ))}
+            <Line x1={50} y1={4} x2={50} y2={12} stroke={Colors.accent.primary} strokeOpacity={0.85} strokeWidth={1.8} strokeLinecap="round" />
+            <Line x1={96} y1={50} x2={88} y2={50} stroke={Colors.accent.primary} strokeOpacity={0.85} strokeWidth={1.8} strokeLinecap="round" />
+            <Line x1={50} y1={96} x2={50} y2={88} stroke={Colors.accent.primary} strokeOpacity={0.85} strokeWidth={1.8} strokeLinecap="round" />
+            <Line x1={4} y1={50} x2={12} y2={50} stroke={Colors.accent.primary} strokeOpacity={0.85} strokeWidth={1.8} strokeLinecap="round" />
           </Svg>
 
           <Animated.View
