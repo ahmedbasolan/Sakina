@@ -165,7 +165,6 @@ function AudioPlayerButtonInternal({
   const initialUri = useMemo(() => {
     const firstReciterUrls = getAudioUrls(verseKey, RECITER_FALLBACKS[0]);
     return getCachedAudioUri(firstReciterUrls[0]) ?? firstReciterUrls[0];
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [verseKey]);
 
   // These hooks are now safe because they are inside a component

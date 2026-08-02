@@ -297,7 +297,7 @@ const VerseRow = React.memo(function VerseRow({
         <View style={styles.rowDividerLine} />
       </View>
 
-      <Text style={styles.rowTranslation}>"{verse.translation}"</Text>
+      <Text style={styles.rowTranslation}>&quot;{verse.translation}&quot;</Text>
 
       <View style={styles.rowActions}>
         <TouchableOpacity
@@ -824,7 +824,7 @@ export default function SurahReaderScreen({ route, navigation }: Props) {
 
             {/* Translation */}
             <Text style={styles.translation}>
-              "{verse.translation}"
+              &quot;{verse.translation}&quot;
             </Text>
           </Animated.View>
 

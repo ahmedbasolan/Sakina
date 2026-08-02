@@ -423,7 +423,7 @@ export function LoginScreen({ navigation }: AuthScreenProps) {
 
           {/* Footer link */}
           <Animated.View style={[styles.footerRow, { opacity: footerOpacity }]}>
-            <Text style={styles.footerText}>Don't have an account? </Text>
+            <Text style={styles.footerText}>Don&apos;t have an account? </Text>
             <TouchableOpacity
               onPress={() => navigation.navigate('SignUp')}
               accessibilityRole="button"

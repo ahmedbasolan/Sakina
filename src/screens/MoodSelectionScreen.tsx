@@ -340,7 +340,7 @@ export default function MoodSelectionScreen({ navigation }: any) {
             Choose how you feel right now.
           </Text>
           <Text style={styles.headerReassurance}>
-            There's no wrong answer. Just be honest.
+            There&apos;s no wrong answer. Just be honest.
           </Text>
         </View>
       </Animated.View>

@@ -128,7 +128,7 @@ const CardContent = ({
             },
           ]}
         >
-          "{content.text}"
+          &quot;{content.text}&quot;
         </Text>
       )}
     </View>

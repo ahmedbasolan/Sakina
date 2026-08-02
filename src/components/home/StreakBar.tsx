@@ -119,7 +119,7 @@ export function StreakBar({ streakDays, fadeAnim, slideAnim, onPress }: StreakBa
                 ellipsis-truncating Quran text is the same bug as showing a
                 partial ayah, just at render time instead of in the data. */}
             <Text style={styles.streakVerseText}>
-              "{streakVerse.text}" <Text style={styles.streakVerseRef}>— {streakVerse.ref}</Text>
+              &quot;{streakVerse.text}&quot; <Text style={styles.streakVerseRef}>— {streakVerse.ref}</Text>
             </Text>
           </View>
         </LinearGradient>
