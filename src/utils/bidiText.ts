@@ -11,6 +11,10 @@
  * island, fixing the "Arabic and English mixing" garble without altering
  * any visible characters.
  */
+// The Arabic Presentation Forms-B range's upper bound (U+FEFF territory)
+// reads as a whitespace/format character to the rule below; it's a genuine,
+// intentional range boundary here, not accidental whitespace in the source.
+// eslint-disable-next-line no-irregular-whitespace
 const ARABIC_RUN = /[؀-ۿݐ-ݿࢠ-ࣿﭐ-﷿ﹰ-﻿]+/g;
 
 export function isolateBidiRuns(text: string): string {

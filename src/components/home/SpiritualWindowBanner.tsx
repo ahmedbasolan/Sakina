@@ -93,7 +93,7 @@ export function SpiritualWindowBanner({ prayerContext, fadeAnim, slideAnim, onPr
                   ellipsis-truncating Quran text is the same bug as showing a
                   partial ayah, just at render time instead of in the data. */}
               <Text style={styles.bannerVerse}>
-                "{verse.text}" <Text style={styles.bannerVerseRef}>— {verse.ref}</Text>
+                &quot;{verse.text}&quot; <Text style={styles.bannerVerseRef}>— {verse.ref}</Text>
               </Text>
               <View style={styles.bannerCTA}>
                 <Text style={styles.bannerCTAText}>{actionText}</Text>

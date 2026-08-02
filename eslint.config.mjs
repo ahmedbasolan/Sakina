@@ -40,6 +40,7 @@ export default [
         URL: 'readonly',
         FormData: 'readonly',
         AbortController: 'readonly',
+        Response: 'readonly',
         requestAnimationFrame: 'readonly',
         cancelAnimationFrame: 'readonly',
         alert: 'readonly',
@@ -54,8 +55,26 @@ export default [
     rules: {
       ...typescriptEslint.configs.recommended.rules,
       ...reactPlugin.configs.recommended.rules,
-      ...reactHooksPlugin.configs.recommended.rules,
+      // NOT reactHooksPlugin.configs.recommended — as of eslint-plugin-react-hooks
+      // v5+/v7, "recommended" is the React Compiler rule set (refs/purity/
+      // immutability/static-components/etc.), not just hooks correctness. This
+      // app doesn't use the React Compiler (no babel plugin for it), and those
+      // rules flagged 330 false positives on the standard, safe RN idiom
+      // `useRef(new Animated.Value(x)).current` used throughout the codebase —
+      // reading `.current` once at mount is fine under React's actual (non-
+      // compiled) runtime; it's only unsafe under compiler memoization
+      // assumptions this project doesn't make. Only the two rules that predate
+      // the compiler era and apply regardless are kept, explicitly below.
       'react/react-in-jsx-scope': 'off',
+      // A pre-TypeScript-era rule (runtime PropTypes.propTypes declarations) —
+      // this codebase has none; prop validation is TypeScript's job. Only ever
+      // fired 2 false positives on typed-but-not-PropTypes-declared props.
+      'react/prop-types': 'off',
+      // React Native's Metro bundler requires `require('./x.png')` for static
+      // image assets — `import` doesn't resolve them the same way, so this
+      // TypeScript-import-style rule is unusable here. Also flagged Jest's own
+      // dynamic `require()` re-import pattern in tests.
+      '@typescript-eslint/no-require-imports': 'off',
       // Respect the `_`-prefix convention for intentionally-unused bindings
       // (ignored catch errors, placeholder params for a stable signature, etc.).
       'no-unused-vars': 'off',
@@ -73,6 +92,10 @@ export default [
       'react-native/no-inline-styles': 'warn',
       'react-hooks/rules-of-hooks': 'error',
       'react-hooks/exhaustive-deps': 'warn',
+      // Matches the codebase's existing `.catch(() => {})` no-op convention —
+      // an empty catch is a deliberate "best effort, degrade silently" choice
+      // here, not an accident.
+      'no-empty': ['error', { allowEmptyCatch: true }],
       ...prettierConfig.rules,
       'prettier/prettier': 'error',
     },

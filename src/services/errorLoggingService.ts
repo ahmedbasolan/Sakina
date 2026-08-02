@@ -9,7 +9,7 @@ enum ErrorSeverity {
 
 /** Regex patterns that redact PII embedded in free-text strings. */
 const PII_PATTERNS: Array<{ re: RegExp; sub: string }> = [
-  { re: /[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}/g, sub: '[email]' },
+  { re: /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g, sub: '[email]' },
   { re: /\b(eyJ[A-Za-z0-9\-_]+\.[A-Za-z0-9\-_]+\.[A-Za-z0-9\-_]*)/g, sub: '[token]' },
 ];
 

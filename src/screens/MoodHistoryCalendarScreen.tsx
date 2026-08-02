@@ -504,7 +504,7 @@ export default function MoodHistoryCalendarScreen({ onBack }: MoodHistoryCalenda
 
                 {/* Hadith quote */}
                 <Text style={styles.quoteText}>
-                  "The most beloved deeds to Allah are those done consistently, even if they are small."
+                  &quot;The most beloved deeds to Allah are those done consistently, even if they are small.&quot;
                 </Text>
                 <Text style={styles.quoteAttrib}>— Prophet Muhammad ﷺ</Text>
               </View>

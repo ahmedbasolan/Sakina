@@ -19,10 +19,8 @@
 import PostHog from 'posthog-react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-// @ts-ignore — env var via react-native-dotenv
 const API_KEY: string = (() => {
   try {
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
     return require('@env').POSTHOG_API_KEY ?? '';
   } catch {
     return '';

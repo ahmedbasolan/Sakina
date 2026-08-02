@@ -283,7 +283,7 @@ const PracticeStepCard = ({
                     <Text style={[styles.duaTranslit, { color: accentColor }]}>{item.transliteration}</Text>
                   )}
                   {item.translation && (
-                    <Text style={styles.duaTranslation}>"{item.translation}"</Text>
+                    <Text style={styles.duaTranslation}>&quot;{item.translation}&quot;</Text>
                   )}
                 </View>
               )}

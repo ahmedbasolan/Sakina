@@ -168,7 +168,7 @@ const ReflectionLayer: React.FC<ReflectionLayerProps> = ({
               accessibilityRole="button"
               accessibilityLabel="I'll reflect later"
             >
-              <Text style={styles.skipText}>I'll reflect later</Text>
+              <Text style={styles.skipText}>I&apos;ll reflect later</Text>
               <Ionicons name="arrow-forward" size={16} color={Colors.text.muted} />
             </TouchableOpacity>
           )}
