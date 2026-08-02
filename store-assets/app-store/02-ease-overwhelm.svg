@@ -1,0 +1,90 @@
+<svg width="1290" height="2796" viewBox="0 0 1290 2796" xmlns="http://www.w3.org/2000/svg" role="img">
+<title>Sakina App Store screenshot 2 — ease overwhelm with the right verse</title>
+<desc>Dark navy celestial background with a bold EASE headline above an iPhone mockup bleeding off the bottom edge, showing a Quran verse matched to the Overwhelmed mood.</desc>
+<defs>
+  <linearGradient id="bgGrad2" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#07111E"/>
+    <stop offset="0.55" stop-color="#0C1A2E"/>
+    <stop offset="1" stop-color="#0F1F30"/>
+  </linearGradient>
+  <linearGradient id="screenGlow2" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#D4AF37" stop-opacity="0.10"/>
+    <stop offset="1" stop-color="#D4AF37" stop-opacity="0"/>
+  </linearGradient>
+  <clipPath id="deviceScreenClip2"><rect x="148" y="718" width="994" height="2244" rx="54"/></clipPath>
+</defs>
+
+<rect x="0" y="0" width="1290" height="2796" fill="url(#bgGrad2)"/>
+
+<g transform="translate(405,100) scale(4.8)" opacity="0.16" fill="none" stroke="#D4AF37" stroke-linejoin="round" stroke-linecap="round"><circle cx="50" cy="50" r="48" stroke-width="0.5" opacity="0.6"/><path d="M 50.00,2.00 L 98.00,50.00 M 74.00,8.43 L 91.57,74.00 M 91.57,26.00 L 74.00,91.57 M 98.00,50.00 L 50.00,98.00 M 91.57,74.00 L 26.00,91.57 M 74.00,91.57 L 8.43,74.00 M 50.00,98.00 L 2.00,50.00 M 26.00,91.57 L 8.43,26.00 M 8.43,74.00 L 26.00,8.43 M 2.00,50.00 L 50.00,2.00 M 8.43,26.00 L 74.00,8.43 M 26.00,8.43 L 91.57,26.00" stroke-width="0.27" opacity="0.1"/><path d="M 50.00,2.00 L 91.57,74.00 M 74.00,8.43 L 74.00,91.57 M 91.57,26.00 L 50.00,98.00 M 98.00,50.00 L 26.00,91.57 M 91.57,74.00 L 8.43,74.00 M 74.00,91.57 L 2.00,50.00 M 50.00,98.00 L 8.43,26.00 M 26.00,91.57 L 26.00,8.43 M 8.43,74.00 L 50.00,2.00 M 2.00,50.00 L 74.00,8.43 M 8.43,26.00 L 91.57,26.00 M 26.00,8.43 L 98.00,50.00" stroke-width="0.27" opacity="0.1"/><path d="M 50.00,2.00 L 74.00,91.57 M 74.00,8.43 L 50.00,98.00 M 91.57,26.00 L 26.00,91.57 M 98.00,50.00 L 8.43,74.00 M 91.57,74.00 L 2.00,50.00 M 74.00,91.57 L 8.43,26.00 M 50.00,98.00 L 26.00,8.43 M 26.00,91.57 L 50.00,2.00 M 8.43,74.00 L 74.00,8.43 M 2.00,50.00 L 91.57,26.00 M 8.43,26.00 L 98.00,50.00 M 26.00,8.43 L 91.57,74.00" stroke-width="0.27" opacity="0.15"/><circle cx="50" cy="50" r="24" stroke-width="0.24" opacity="0.3"/><circle cx="50" cy="50" r="8.64" stroke-width="0.5" opacity="0.6"/></g>
+
+<g fill="#D4AF37">
+  <circle cx="120" cy="90" r="4" fill-opacity="0.8"/>
+  <circle cx="1150" cy="130" r="3" fill-opacity="0.6"/>
+  <circle cx="220" cy="210" r="3.5" fill-opacity="0.7"/>
+  <circle cx="1040" cy="60" r="3" fill-opacity="0.55"/>
+  <circle cx="600" cy="50" r="3" fill-opacity="0.6"/>
+  <circle cx="70" cy="330" r="3" fill-opacity="0.5"/>
+  <circle cx="1200" cy="340" r="3.5" fill-opacity="0.6"/>
+  <circle cx="900" cy="220" r="2.5" fill-opacity="0.5"/>
+</g>
+
+<text x="645" y="300" text-anchor="middle" font-family="Georgia, serif" font-size="152" font-weight="bold" letter-spacing="2" fill="#F5EDE3">EASE</text>
+<text x="645" y="392" text-anchor="middle" font-family="Georgia, serif" font-size="54" letter-spacing="1" fill="#F5EDE3" fill-opacity="0.85">OVERWHELM, ONE VERSE AT A TIME</text>
+
+<rect x="130" y="700" width="1030" height="2280" rx="72" fill="#0C1A2E" stroke="#D4AF37" stroke-opacity="0.35" stroke-width="3"/>
+<rect x="148" y="718" width="994" height="2244" rx="54" fill="#07111E"/>
+<rect x="148" y="718" width="994" height="2244" rx="54" fill="url(#screenGlow2)"/>
+<rect x="580" y="742" width="130" height="36" rx="18" fill="#040D1A"/>
+<rect x="124" y="840" width="6" height="70" rx="3" fill="#0C1A2E" stroke="#D4AF37" stroke-opacity="0.35" stroke-width="1.5"/>
+<rect x="124" y="930" width="6" height="110" rx="3" fill="#0C1A2E" stroke="#D4AF37" stroke-opacity="0.35" stroke-width="1.5"/>
+<rect x="1160" y="900" width="6" height="150" rx="3" fill="#0C1A2E" stroke="#D4AF37" stroke-opacity="0.35" stroke-width="1.5"/>
+
+<g clip-path="url(#deviceScreenClip2)">
+  <g transform="translate(-68.775,102.0) scale(1.3218)">
+    <text x="200" y="520" font-family="Arial, sans-serif" font-size="22" fill="#F5EDE3" fill-opacity="0.7">9:41</text>
+    <rect x="860" y="500" width="28" height="14" rx="3" fill="none" stroke="#F5EDE3" stroke-opacity="0.6" stroke-width="1.5"/>
+
+    <!-- mood tag pill -->
+    <rect x="200" y="610" width="220" height="56" rx="28" fill="#818CF8" fill-opacity="0.16" stroke="#818CF8" stroke-opacity="0.45" stroke-width="1.5"/>
+    <circle cx="230" cy="638" r="7" fill="#818CF8"/>
+    <text x="252" y="646" font-family="Arial, sans-serif" font-size="22" font-weight="bold" fill="#818CF8">Overwhelmed</text>
+
+    <!-- reference row -->
+    <text x="540" y="770" text-anchor="middle" font-family="Georgia, serif" font-size="20" letter-spacing="2" fill="#D4AF37" fill-opacity="0.8">SURAH AL-BAQARAH · 2:286</text>
+
+    <!-- arabic verse -->
+    <text x="540" y="880" text-anchor="middle" font-family="Times New Roman, serif" font-size="46" fill="#EDD9A3" direction="rtl">لَا يُكَلِّفُ اللَّهُ نَفْسًا إِلَّا وُسْعَهَا</text>
+
+    <line x1="440" y1="960" x2="640" y2="960" stroke="#F5EDE3" stroke-opacity="0.15" stroke-width="1.5"/>
+    <circle cx="540" cy="960" r="5" fill="#D4AF37" fill-opacity="0.6"/>
+
+    <text x="540" y="1075" text-anchor="middle" font-family="Georgia, serif" font-style="italic" font-size="38" fill="#F5EDE3" fill-opacity="0.92">
+      <tspan x="540" dy="0">"Allah does not burden a</tspan>
+      <tspan x="540" dy="52">soul beyond what it can bear."</tspan>
+    </text>
+
+    <line x1="470" y1="1230" x2="610" y2="1230" stroke="#D4AF37" stroke-opacity="0.25" stroke-width="1.5"/>
+    <text x="540" y="1280" text-anchor="middle" font-family="Georgia, serif" font-style="italic" font-size="22" fill="#F5EDE3" fill-opacity="0.5">
+      <tspan x="540" dy="0">Whatever feels too heavy right now</tspan>
+      <tspan x="540" dy="32">was never meant for you to carry alone.</tspan>
+    </text>
+
+    <!-- bottom tab bar (Home active) -->
+    <rect x="240" y="1650" width="600" height="90" rx="45" fill="#F5EDE3" fill-opacity="0.05" stroke="#D4AF37" stroke-opacity="0.15" stroke-width="1.5"/>
+    <g stroke="#D4AF37" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M288,1683 L300,1673 L312,1683 L312,1702 L288,1702 Z"/>
+    </g>
+    <g stroke="#F5EDE3" stroke-opacity="0.35" stroke-width="2" fill="none">
+      <circle cx="420" cy="1695" r="13"/>
+      <path d="M414,1701 L426,1689"/>
+      <path d="M540,1683 C543,1689 546,1691 543,1695 C546,1694 547,1698 543,1699 C537,1701 533,1695 535,1690 C537,1687 540,1683 540,1683 Z" fill="#F5EDE3" fill-opacity="0.35" stroke="none"/>
+      <line x1="648" y1="1687" x2="672" y2="1687"/>
+      <line x1="648" y1="1695" x2="672" y2="1695"/>
+      <line x1="648" y1="1703" x2="672" y2="1703"/>
+      <rect x="768" y="1683" width="24" height="24" rx="3"/>
+      <line x1="780" y1="1683" x2="780" y2="1707"/>
+    </g>
+  </g>
+</g>
+</svg>

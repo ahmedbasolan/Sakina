@@ -16,18 +16,7 @@
 
 <rect x="0" y="0" width="1080" height="1920" fill="url(#bgGrad2)"/>
 
-<g stroke="#D4AF37" stroke-opacity="0.10" fill="none" stroke-width="2">
-  <circle cx="540" cy="300" r="230"/>
-  <circle cx="540" cy="300" r="170"/>
-  <g transform="translate(540,300)">
-    <ellipse cx="0" cy="0" rx="230" ry="46" transform="rotate(0)"/>
-    <ellipse cx="0" cy="0" rx="230" ry="46" transform="rotate(30)"/>
-    <ellipse cx="0" cy="0" rx="230" ry="46" transform="rotate(60)"/>
-    <ellipse cx="0" cy="0" rx="230" ry="46" transform="rotate(90)"/>
-    <ellipse cx="0" cy="0" rx="230" ry="46" transform="rotate(120)"/>
-    <ellipse cx="0" cy="0" rx="230" ry="46" transform="rotate(150)"/>
-  </g>
-</g>
+<g transform="translate(300,60) scale(4.8)" opacity="0.16" fill="none" stroke="#D4AF37" stroke-linejoin="round" stroke-linecap="round"><circle cx="50" cy="50" r="48" stroke-width="0.5" opacity="0.6"/><path d="M 50.00,2.00 L 98.00,50.00 M 74.00,8.43 L 91.57,74.00 M 91.57,26.00 L 74.00,91.57 M 98.00,50.00 L 50.00,98.00 M 91.57,74.00 L 26.00,91.57 M 74.00,91.57 L 8.43,74.00 M 50.00,98.00 L 2.00,50.00 M 26.00,91.57 L 8.43,26.00 M 8.43,74.00 L 26.00,8.43 M 2.00,50.00 L 50.00,2.00 M 8.43,26.00 L 74.00,8.43 M 26.00,8.43 L 91.57,26.00" stroke-width="0.27" opacity="0.1"/><path d="M 50.00,2.00 L 91.57,74.00 M 74.00,8.43 L 74.00,91.57 M 91.57,26.00 L 50.00,98.00 M 98.00,50.00 L 26.00,91.57 M 91.57,74.00 L 8.43,74.00 M 74.00,91.57 L 2.00,50.00 M 50.00,98.00 L 8.43,26.00 M 26.00,91.57 L 26.00,8.43 M 8.43,74.00 L 50.00,2.00 M 2.00,50.00 L 74.00,8.43 M 8.43,26.00 L 91.57,26.00 M 26.00,8.43 L 98.00,50.00" stroke-width="0.27" opacity="0.1"/><path d="M 50.00,2.00 L 74.00,91.57 M 74.00,8.43 L 50.00,98.00 M 91.57,26.00 L 26.00,91.57 M 98.00,50.00 L 8.43,74.00 M 91.57,74.00 L 2.00,50.00 M 74.00,91.57 L 8.43,26.00 M 50.00,98.00 L 26.00,8.43 M 26.00,91.57 L 50.00,2.00 M 8.43,74.00 L 74.00,8.43 M 2.00,50.00 L 91.57,26.00 M 8.43,26.00 L 98.00,50.00 M 26.00,8.43 L 91.57,74.00" stroke-width="0.27" opacity="0.15"/><circle cx="50" cy="50" r="24" stroke-width="0.24" opacity="0.3"/><circle cx="50" cy="50" r="8.64" stroke-width="0.5" opacity="0.6"/></g>
 
 <g fill="#D4AF37">
   <circle cx="130" cy="90" r="4" fill-opacity="0.8"/>
@@ -70,17 +59,18 @@
   <line x1="440" y1="960" x2="640" y2="960" stroke="#F5EDE3" stroke-opacity="0.15" stroke-width="1.5"/>
   <circle cx="540" cy="960" r="5" fill="#D4AF37" fill-opacity="0.6"/>
 
-  <!-- translation -->
-  <text x="540" y="1050" text-anchor="middle" font-family="Georgia, serif" font-style="italic" font-size="32" fill="#F5EDE3" fill-opacity="0.85">
+  <!-- translation — the focal payoff line -->
+  <text x="540" y="1075" text-anchor="middle" font-family="Georgia, serif" font-style="italic" font-size="38" fill="#F5EDE3" fill-opacity="0.92">
     <tspan x="540" dy="0">"Allah does not burden a</tspan>
-    <tspan x="540" dy="46">soul beyond what it can bear."</tspan>
+    <tspan x="540" dy="52">soul beyond what it can bear."</tspan>
   </text>
 
-  <!-- reflection chip -->
-  <rect x="200" y="1200" width="656" height="140" rx="24" fill="#F5EDE3" fill-opacity="0.04" stroke="#D4AF37" stroke-opacity="0.15" stroke-width="1.5"/>
-  <text x="230" y="1250" font-family="Arial, sans-serif" font-size="18" letter-spacing="2" fill="#D4AF37" fill-opacity="0.8">REFLECTION</text>
-  <text x="230" y="1295" font-family="Georgia, serif" font-size="24" fill="#F5EDE3" fill-opacity="0.75">Whatever feels too heavy right now</text>
-  <text x="230" y="1325" font-family="Georgia, serif" font-size="24" fill="#F5EDE3" fill-opacity="0.75">was never meant for you to carry alone.</text>
+  <!-- quiet reflection aside, demoted below the translation -->
+  <line x1="470" y1="1230" x2="610" y2="1230" stroke="#D4AF37" stroke-opacity="0.25" stroke-width="1.5"/>
+  <text x="540" y="1280" text-anchor="middle" font-family="Georgia, serif" font-style="italic" font-size="22" fill="#F5EDE3" fill-opacity="0.5">
+    <tspan x="540" dy="0">Whatever feels too heavy right now</tspan>
+    <tspan x="540" dy="32">was never meant for you to carry alone.</tspan>
+  </text>
 
   <!-- bottom tab bar (Home active) -->
   <rect x="240" y="1650" width="600" height="90" rx="45" fill="#F5EDE3" fill-opacity="0.05" stroke="#D4AF37" stroke-opacity="0.15" stroke-width="1.5"/>

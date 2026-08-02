@@ -1,0 +1,80 @@
+<svg width="1290" height="2796" viewBox="0 0 1290 2796" xmlns="http://www.w3.org/2000/svg" role="img">
+<title>Sakina App Store screenshot 5 — begin your journey to Sakina</title>
+<desc>Dark navy celestial background with a bold BEGIN headline above an iPhone mockup bleeding off the bottom edge, showing the onboarding welcome screen with an honest no-signup line.</desc>
+<defs>
+  <linearGradient id="bgGrad5" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#07111E"/>
+    <stop offset="0.55" stop-color="#0C1A2E"/>
+    <stop offset="1" stop-color="#0F1F30"/>
+  </linearGradient>
+  <linearGradient id="screenGlow5" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#D4AF37" stop-opacity="0.12"/>
+    <stop offset="1" stop-color="#D4AF37" stop-opacity="0"/>
+  </linearGradient>
+  <radialGradient id="lanternGlow5" cx="0.5" cy="0.5" r="0.5">
+    <stop offset="0" stop-color="#D4AF37" stop-opacity="0.35"/>
+    <stop offset="1" stop-color="#D4AF37" stop-opacity="0"/>
+  </radialGradient>
+  <clipPath id="deviceScreenClip5"><rect x="148" y="718" width="994" height="2244" rx="54"/></clipPath>
+</defs>
+
+<rect x="0" y="0" width="1290" height="2796" fill="url(#bgGrad5)"/>
+
+<g transform="translate(405,100) scale(4.8)" opacity="0.16" fill="none" stroke="#D4AF37" stroke-linejoin="round" stroke-linecap="round"><circle cx="50" cy="50" r="48" stroke-width="0.5" opacity="0.6"/><path d="M 50.00,2.00 L 98.00,50.00 M 74.00,8.43 L 91.57,74.00 M 91.57,26.00 L 74.00,91.57 M 98.00,50.00 L 50.00,98.00 M 91.57,74.00 L 26.00,91.57 M 74.00,91.57 L 8.43,74.00 M 50.00,98.00 L 2.00,50.00 M 26.00,91.57 L 8.43,26.00 M 8.43,74.00 L 26.00,8.43 M 2.00,50.00 L 50.00,2.00 M 8.43,26.00 L 74.00,8.43 M 26.00,8.43 L 91.57,26.00" stroke-width="0.27" opacity="0.1"/><path d="M 50.00,2.00 L 91.57,74.00 M 74.00,8.43 L 74.00,91.57 M 91.57,26.00 L 50.00,98.00 M 98.00,50.00 L 26.00,91.57 M 91.57,74.00 L 8.43,74.00 M 74.00,91.57 L 2.00,50.00 M 50.00,98.00 L 8.43,26.00 M 26.00,91.57 L 26.00,8.43 M 8.43,74.00 L 50.00,2.00 M 2.00,50.00 L 74.00,8.43 M 8.43,26.00 L 91.57,26.00 M 26.00,8.43 L 98.00,50.00" stroke-width="0.27" opacity="0.1"/><path d="M 50.00,2.00 L 74.00,91.57 M 74.00,8.43 L 50.00,98.00 M 91.57,26.00 L 26.00,91.57 M 98.00,50.00 L 8.43,74.00 M 91.57,74.00 L 2.00,50.00 M 74.00,91.57 L 8.43,26.00 M 50.00,98.00 L 26.00,8.43 M 26.00,91.57 L 50.00,2.00 M 8.43,74.00 L 74.00,8.43 M 2.00,50.00 L 91.57,26.00 M 8.43,26.00 L 98.00,50.00 M 26.00,8.43 L 91.57,74.00" stroke-width="0.27" opacity="0.15"/><circle cx="50" cy="50" r="24" stroke-width="0.24" opacity="0.3"/><circle cx="50" cy="50" r="8.64" stroke-width="0.5" opacity="0.6"/></g>
+
+<g fill="#D4AF37">
+  <circle cx="120" cy="90" r="4" fill-opacity="0.8"/>
+  <circle cx="1150" cy="130" r="3" fill-opacity="0.6"/>
+  <circle cx="220" cy="210" r="3.5" fill-opacity="0.7"/>
+  <circle cx="1040" cy="60" r="3" fill-opacity="0.55"/>
+  <circle cx="600" cy="50" r="3" fill-opacity="0.6"/>
+  <circle cx="70" cy="330" r="3" fill-opacity="0.5"/>
+  <circle cx="1200" cy="340" r="3.5" fill-opacity="0.6"/>
+  <circle cx="900" cy="220" r="2.5" fill-opacity="0.5"/>
+</g>
+
+<text x="645" y="300" text-anchor="middle" font-family="Georgia, serif" font-size="152" font-weight="bold" letter-spacing="2" fill="#F5EDE3">BEGIN</text>
+<text x="645" y="392" text-anchor="middle" font-family="Georgia, serif" font-size="54" letter-spacing="1" fill="#F5EDE3" fill-opacity="0.85">YOUR JOURNEY TO SAKINA</text>
+
+<rect x="130" y="700" width="1030" height="2280" rx="72" fill="#0C1A2E" stroke="#D4AF37" stroke-opacity="0.35" stroke-width="3"/>
+<rect x="148" y="718" width="994" height="2244" rx="54" fill="#07111E"/>
+<rect x="148" y="718" width="994" height="2244" rx="54" fill="url(#screenGlow5)"/>
+<rect x="580" y="742" width="130" height="36" rx="18" fill="#040D1A"/>
+<rect x="124" y="840" width="6" height="70" rx="3" fill="#0C1A2E" stroke="#D4AF37" stroke-opacity="0.35" stroke-width="1.5"/>
+<rect x="124" y="930" width="6" height="110" rx="3" fill="#0C1A2E" stroke="#D4AF37" stroke-opacity="0.35" stroke-width="1.5"/>
+<rect x="1160" y="900" width="6" height="150" rx="3" fill="#0C1A2E" stroke="#D4AF37" stroke-opacity="0.35" stroke-width="1.5"/>
+
+<g clip-path="url(#deviceScreenClip5)">
+  <g transform="translate(-68.775,102.0) scale(1.3218)">
+    <text x="200" y="520" font-family="Arial, sans-serif" font-size="22" fill="#F5EDE3" fill-opacity="0.7">9:41</text>
+    <rect x="860" y="500" width="28" height="14" rx="3" fill="none" stroke="#F5EDE3" stroke-opacity="0.6" stroke-width="1.5"/>
+
+    <!-- lantern mark -->
+    <circle cx="540" cy="820" r="180" fill="url(#lanternGlow5)"/>
+    <g stroke="#D4AF37" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+      <line x1="540" y1="680" x2="540" y2="700"/>
+      <circle cx="540" cy="672" r="8" fill="#D4AF37"/>
+      <path d="M480,780 Q540,740 600,780 L600,920 Q540,950 480,920 Z" fill="#0C1A2E" fill-opacity="0.6"/>
+      <line x1="500" y1="800" x2="500" y2="900"/>
+      <line x1="540" y1="795" x2="540" y2="905"/>
+      <line x1="580" y1="800" x2="580" y2="900"/>
+      <path d="M460,920 L620,920" />
+      <path d="M470,960 Q540,930 610,960" />
+    </g>
+
+    <!-- title -->
+    <text x="540" y="1080" text-anchor="middle" font-family="Georgia, serif" font-size="52" font-weight="bold" fill="#F5EDE3">Welcome to Sakina</text>
+    <text x="540" y="1140" text-anchor="middle" font-family="Georgia, serif" font-size="26" fill="#F5EDE3" fill-opacity="0.7">
+      <tspan x="540" dy="0">Your companion for spiritual growth,</tspan>
+      <tspan x="540" dy="36">guided by the wisdom of the Quran</tspan>
+    </text>
+
+    <!-- CTA -->
+    <rect x="240" y="1560" width="600" height="96" rx="48" fill="#D4AF37"/>
+    <text x="540" y="1618" text-anchor="middle" font-family="Georgia, serif" font-size="32" font-weight="bold" fill="#07111E">Begin Your Journey</text>
+
+    <!-- footer -->
+    <text x="540" y="1730" text-anchor="middle" font-family="Arial, sans-serif" font-size="26" letter-spacing="1" fill="#F5EDE3" fill-opacity="0.55">Free to begin  ·  No sign-up required</text>
+  </g>
+</g>
+</svg>
