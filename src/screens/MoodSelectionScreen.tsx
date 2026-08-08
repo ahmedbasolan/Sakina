@@ -13,7 +13,7 @@ import {
   StyleSheet,
   ScrollView,
   TouchableOpacity,
-  Dimensions,
+  useWindowDimensions,
   Animated,
   StatusBar,
 } from 'react-native';
@@ -25,9 +25,6 @@ import { useReduceMotion } from '../hooks/useReduceMotion';
 import { useAppContext } from '../context/AppContext';
 import { fetchWindowGuidance } from '../services/guidanceWindowFetch';
 import { Mood, GuidanceExperience } from '../types';
-
-const { width, height } = Dimensions.get('window');
-const CARD_WIDTH = (width - Spacing.xl * 2 - 12) / 2;
 
 // Star positions scattered across the dark background
 const STARS = [
@@ -149,13 +146,15 @@ function TwinklingStar({ x, y, s: size, d: delay }: any) {
     anim.start();
     return () => anim.stop();
   }, [reduceMotion]);
+
+  const { width: screenWidth, height: screenHeight } = useWindowDimensions();
   return (
     <Animated.View
       pointerEvents="none"
       style={{
         position: 'absolute',
-        left: x * width,
-        top: y * height,
+        left: x * screenWidth,
+        top: y * screenHeight,
         width: size,
         height: size,
         borderRadius: size / 2,
@@ -167,7 +166,7 @@ function TwinklingStar({ x, y, s: size, d: delay }: any) {
   );
 }
 
-function MoodCard({ mood, onPress, index }: { mood: typeof MOODS[0]; onPress: () => void; index: number }) {
+function MoodCard({ mood, onPress, index, cardWidth }: { mood: typeof MOODS[0]; onPress: () => void; index: number; cardWidth: number }) {
   const scale = useRef(new Animated.Value(0.9)).current;
   const opacity = useRef(new Animated.Value(0)).current;
 
@@ -185,7 +184,7 @@ function MoodCard({ mood, onPress, index }: { mood: typeof MOODS[0]; onPress: ()
   return (
     <Animated.View style={{ opacity, transform: [{ scale }] }}>
       <TouchableOpacity
-        style={[styles.moodCard, { backgroundColor: mood.bg, borderColor: mood.border }]}
+        style={[styles.moodCard, { width: cardWidth, backgroundColor: mood.bg, borderColor: mood.border }]}
         onPress={onPress}
         activeOpacity={0.8}
         accessibilityRole="button"
@@ -218,6 +217,8 @@ function MoodCard({ mood, onPress, index }: { mood: typeof MOODS[0]; onPress: ()
 }
 
 export default function MoodSelectionScreen({ navigation }: any) {
+  const { width: screenWidth } = useWindowDimensions();
+  const cardWidth = (screenWidth - Spacing.xl * 2 - 12) / 2;
   const insets = useSafeAreaInsets();
   const { rotationEngine } = useAppContext();
   const headerOpacity = useRef(new Animated.Value(0)).current;
@@ -362,6 +363,7 @@ export default function MoodSelectionScreen({ navigation }: any) {
               <MoodCard
                 mood={mood}
                 index={i}
+                cardWidth={cardWidth}
                 onPress={() => handleMoodSelect(mood, i)}
               />
             </Animated.View>
@@ -381,12 +383,12 @@ const styles = StyleSheet.create({
     height: 250,
     borderRadius: 125,
     backgroundColor: 'rgba(201,168,76,0.05)',
-    left: width / 2 - 125,
+    alignSelf: 'center',
     top: 60,
   },
   mandalaWrap: {
     position: 'absolute',
-    left: width / 2 - 150,
+    alignSelf: 'center',
     top: 40,
     zIndex: 0,
   },
@@ -445,7 +447,6 @@ const styles = StyleSheet.create({
   },
 
   moodCard: {
-    width: CARD_WIDTH,
     borderRadius: 20,
     borderWidth: 1,
     padding: 16,

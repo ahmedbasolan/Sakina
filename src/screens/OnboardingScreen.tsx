@@ -17,6 +17,7 @@ import {
   Easing,
   StatusBar,
   TouchableOpacity,
+  useWindowDimensions,
   Dimensions,
 } from 'react-native';
 import { PanGestureHandler, State, GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -43,7 +44,6 @@ import { useReduceMotion } from '../hooks/useReduceMotion';
 const TOTAL_SCREENS = 8;
 const SWIPE_THRESHOLD = 50;
 const VELOCITY_THRESHOLD = 0.5;
-const SCREEN_W = Dimensions.get('window').width;
 // One continuous page-turn slide (300–500ms "page transition" band). Both the
 // outgoing and incoming pages move together, so the old page never plays a
 // solo exit before the new one arrives.
@@ -66,6 +66,7 @@ function BackArrow() {
 }
 
 export default function OnboardingScreen() {
+  const { width: screenWidth } = useWindowDimensions();
   const [currentScreen, setCurrentScreen] = useState(0);
   // While a page-turn is in flight, the target page is mounted alongside the
   // current one so the two can cross-slide together.
@@ -249,11 +250,11 @@ export default function OnboardingScreen() {
   const sign = direction === 'forward' ? 1 : -1;
   const outgoingX = slideAnim.interpolate({
     inputRange: [0, 1],
-    outputRange: [0, -sign * SCREEN_W],
+    outputRange: [0, -sign * screenWidth],
   });
   const incomingX = slideAnim.interpolate({
     inputRange: [0, 1],
-    outputRange: [sign * SCREEN_W, 0],
+    outputRange: [sign * screenWidth, 0],
   });
 
   // Keyed layers (same element type + key across the transition→settle boundary)

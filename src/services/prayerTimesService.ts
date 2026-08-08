@@ -262,13 +262,13 @@ class PrayerTimesService {
         async () => {
           const response = await axios.get(this.BASE_URL, {
             params: { city, country, method: resolvedMethod, school },
-            timeout: 10_000,
+            timeout: 5_000,
           });
           if (response.data.code === 200) return response.data.data;
           throw new Error(response.data.status || 'Failed to fetch prayer times');
         },
         'PrayerTimesService.getTimingsByCity',
-        AXIOS_RETRY_CONFIG,
+        { maxRetries: 2, retryDelayMs: 500, maxDelayMs: 3000 },
       );
 
       // 3. Persist today's data + update cross-day fallback
@@ -445,12 +445,12 @@ class PrayerTimesService {
 
       const hijri = await withRetry(
         async () => {
-          const response = await axios.get(`https://api.aladhan.com/v1/gToH/${dmy}`, { timeout: 10_000 });
+          const response = await axios.get(`https://api.aladhan.com/v1/gToH/${dmy}`, { timeout: 5_000 });
           if (response.data.code === 200) return response.data.data.hijri;
           throw new Error(response.data.status || 'Failed to fetch Hijri date');
         },
         'PrayerTimesService.getHijriDate',
-        AXIOS_RETRY_CONFIG,
+        { maxRetries: 2, retryDelayMs: 500, maxDelayMs: 3000 },
       );
 
       await AsyncStorage.setItem(cacheKey, JSON.stringify(hijri));

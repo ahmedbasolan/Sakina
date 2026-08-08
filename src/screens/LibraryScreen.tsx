@@ -16,7 +16,7 @@ import {
   FlatList,
   TouchableOpacity,
   TextInput,
-  Dimensions,
+  useWindowDimensions,
   Animated,
   ActivityIndicator,
 } from 'react-native';
@@ -46,8 +46,6 @@ import { Mood } from '../types';
 const MOOD_COLORS: Record<string, string> = Object.fromEntries(
   Object.entries(MoodColors).map(([k, v]) => [k, v.accent]),
 );
-
-const { width } = Dimensions.get('window');
 
 // ─── Stars ────────────────────────────────────────────────────────────────────
 
@@ -797,7 +795,7 @@ const styles = StyleSheet.create({
 
   mandalaWrap: {
     position: 'absolute',
-    left: width / 2 - 130,
+    alignSelf: 'center',
     top: 20,
     zIndex: 0,
   },

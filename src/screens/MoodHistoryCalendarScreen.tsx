@@ -9,7 +9,7 @@ import {
   ScrollView,
   TouchableOpacity,
   Animated,
-  Dimensions,
+  useWindowDimensions,
   ActivityIndicator,
   RefreshControl,
 } from 'react-native';
@@ -33,7 +33,6 @@ import { NoReflections } from '../components/EmptyStates';
 import { logServiceError } from '../services/errorLoggingService';
 import { useReduceMotion } from '../hooks/useReduceMotion';
 
-const { width } = Dimensions.get('window');
 const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 
 // ── Mood visual config ──────────────────────────────────────────────
@@ -881,8 +880,6 @@ function InsightCard({ insight }: { insight: MoodInsight }) {
 }
 
 // ── Styles ──────────────────────────────────────────────────────────
-const CELL_SIZE = Math.floor((width - 48 - 24) / 7); // 48 = padding, 24 = gaps
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -1103,7 +1100,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   weekdayCell: {
-    width: CELL_SIZE,
+    flexBasis: '14.28%',
     alignItems: 'center',
   },
   weekdayText: {
@@ -1118,8 +1115,8 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
   },
   calendarCell: {
-    width: CELL_SIZE,
-    height: CELL_SIZE,
+    flexBasis: '14.28%',
+    aspectRatio: 1,
     borderRadius: 12,
     alignItems: 'center',
     justifyContent: 'center',
@@ -1350,7 +1347,7 @@ const styles = StyleSheet.create({
   },
   mandalaWrap: {
     position: 'absolute',
-    left: width / 2 - 140,
+    alignSelf: 'center',
     top: 16,
     zIndex: 0,
   },

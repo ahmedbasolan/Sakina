@@ -11,7 +11,7 @@ import {
   Text,
   StyleSheet,
   Animated,
-  Dimensions,
+  useWindowDimensions,
   TouchableOpacity,
   Image,
   ScrollView,
@@ -20,9 +20,6 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useStaggerEntry } from '../../hooks/useStaggerEntry';
 import { InteractiveStarfield } from './InteractiveStarfield';
 import { ShimmerButton } from '../ShimmerButton';
-
-const { width } = Dimensions.get('window');
-const ICON_SIZE = Math.min(Math.round(width * 0.28), 120);
 
 const STAR_POS = [
   { x: 0.07, y: 0.05, s: 2.5, d: 0 },
@@ -162,8 +159,8 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.xl,
   },
   appIcon: {
-    width: ICON_SIZE,
-    height: ICON_SIZE,
+    width: 100,
+    height: 100,
     borderRadius: BorderRadius.xxl,
   },
   title: {

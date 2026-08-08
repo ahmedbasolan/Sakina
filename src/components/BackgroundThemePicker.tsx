@@ -8,7 +8,7 @@ import {
     Platform,
     FlatList,
     Image,
-    Dimensions,
+    useWindowDimensions,
     Alert,
     ScrollView,
 } from 'react-native';
@@ -18,9 +18,7 @@ import { Colors, Spacing, Typography, BorderRadius } from '../theme/DesignSystem
 import { BackgroundTheme, BackgroundThemeCategory } from '../types';
 import { BACKGROUND_THEMES, THEME_CATEGORIES } from '../services/backgroundThemeService';
 
-const { width } = Dimensions.get('window');
 const COLUMN_COUNT = 2;
-const ITEM_WIDTH = (width - Spacing.xxl * 2 - Spacing.md) / COLUMN_COUNT;
 
 interface BackgroundThemePickerProps {
     isVisible: boolean;
@@ -40,6 +38,8 @@ const BackgroundThemePicker: React.FC<BackgroundThemePickerProps> = ({
     onSelectTheme,
     onUpgrade,
 }) => {
+    const { width: screenWidth } = useWindowDimensions();
+    const itemWidth = (screenWidth - Spacing.xxl * 2 - Spacing.md) / COLUMN_COUNT;
     const [activeCategory, setActiveCategory] = useState<BackgroundThemeCategory | 'all'>('all');
 
     const filteredThemes = activeCategory === 'all'
@@ -67,7 +67,7 @@ const BackgroundThemePicker: React.FC<BackgroundThemePickerProps> = ({
 
         return (
             <TouchableOpacity
-                style={[styles.themeItem, isSelected && styles.themeItemActive]}
+                style={[styles.themeItem, { width: itemWidth, height: itemWidth * 1.4 }, isSelected && styles.themeItemActive]}
                 onPress={() => handleThemePress(item)}
                 activeOpacity={0.8}
                 accessibilityRole="button"
@@ -291,8 +291,6 @@ const styles = StyleSheet.create({
         gap: Spacing.md,
     },
     themeItem: {
-        width: ITEM_WIDTH,
-        height: ITEM_WIDTH * 1.4,
         borderRadius: BorderRadius.lg,
         overflow: 'hidden',
         backgroundColor: Colors.background.tertiary,

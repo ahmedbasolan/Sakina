@@ -148,6 +148,25 @@ export const SURAH_LESSONS: Record<string, SurahLesson> = {
       { n: 6, arabic: 'لَكُمْ دِينُكُمْ وَلِىَ دِينِ', transliteration: 'lakum dīnukum waliya dīni', translation: 'For you is your religion, and for me is my religion."' },
     ],
   },
+  surah_113: {
+    id: 'surah_113',
+    number: 113,
+    name: 'Al-Falaq',
+    arabicName: 'الفلق',
+    translatedName: 'The Daybreak',
+    versesCount: 5,
+    whyLearn:
+      'The first of the two he called the best surahs ever recited — five ayahs against outside harm (envy, magic, the dark) before An-Nas\'s protection from what whispers within. Learn the order, not just the words: reciting them out of sequence is the most common slip once a congregation is listening.',
+    source:
+      '"Shall I not teach you two best surahs ever recited?" [Sunan Abi Dawud 1462]',
+    ayahs: [
+      { n: 1, arabic: 'قُلْ أَعُوذُ بِرَبِّ ٱلْفَلَقِ', transliteration: 'qul aʿūdhu birabbi l-falaqi', translation: 'Say, "I seek refuge in the Lord of daybreak' },
+      { n: 2, arabic: 'مِن شَرِّ مَا خَلَقَ', transliteration: 'min sharri mā khalaqa', translation: 'From the evil of that which He created' },
+      { n: 3, arabic: 'وَمِن شَرِّ غَاسِقٍ إِذَا وَقَبَ', transliteration: 'wamin sharri ghāsiqin idhā waqaba', translation: 'And from the evil of darkness when it settles' },
+      { n: 4, arabic: 'وَمِن شَرِّ ٱلنَّفَّـٰثَـٰتِ فِى ٱلْعُقَدِ', transliteration: 'wamin sharri l-nafāthāti fī l-ʿuqadi', translation: 'And from the evil of the blowers in knots' },
+      { n: 5, arabic: 'وَمِن شَرِّ حَاسِدٍ إِذَا حَسَدَ', transliteration: 'wamin sharri ḥāsidin idhā ḥasada', translation: 'And from the evil of an envier when he envies."' },
+    ],
+  },
   surah_114: {
     id: 'surah_114',
     number: 114,

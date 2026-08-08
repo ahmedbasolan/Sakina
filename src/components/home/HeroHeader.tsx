@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
   Animated,
   Easing,
-  Dimensions,
+  useWindowDimensions,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Colors, Spacing, Typography } from '../../theme/DesignSystem';
@@ -14,8 +14,6 @@ import { Ionicons } from '@expo/vector-icons';
 import { AnimatedMandala } from '../AnimatedMandala';
 import { TwinklingStar } from '../TwinklingStar';
 import { useReduceMotion } from '../../hooks/useReduceMotion';
-
-const SCREEN_W = Dimensions.get('window').width;
 
 // Fractions of screen width / the 200px header star band.
 const starPositions = [
@@ -42,6 +40,7 @@ const OUTER_SIZE = 300;
 const INNER_SIZE = 220;
 
 export function HeroHeader({ fadeAnim, slideAnim, onSettingsPress, greeting }: HeroHeaderProps) {
+  const { width: screenWidth } = useWindowDimensions();
   const insets = useSafeAreaInsets();
   const reduceMotion = useReduceMotion();
   // Single source of truth for safe-area floor used by both the top bar and
@@ -73,7 +72,7 @@ export function HeroHeader({ fadeAnim, slideAnim, onSettingsPress, greeting }: H
       {starPositions.map((s, i) => (
         <TwinklingStar
           key={i}
-          x={s.x * SCREEN_W}
+          x={s.x * screenWidth}
           y={s.y * 200}
           delay={s.delay}
           size={s.size}

@@ -12,7 +12,7 @@ import {
   Text,
   StyleSheet,
   Animated,
-  Dimensions,
+  useWindowDimensions,
   TouchableOpacity,
   ScrollView,
 } from 'react-native';
@@ -26,13 +26,6 @@ import { useStaggerEntry } from '../../hooks/useStaggerEntry';
 import { AnimatedMandala } from '../AnimatedMandala';
 import { InteractiveStarfield } from './InteractiveStarfield';
 import { Mood } from '../../types';
-
-const { width, height } = Dimensions.get('window');
-
-const CARD_WIDTH = width * 0.72;
-const CARD_GAP = 16;
-const SNAP_INTERVAL = CARD_WIDTH + CARD_GAP;
-const SIDE_OFFSET = (width - CARD_WIDTH) / 2;
 
 const STAR_POS = [
   { x: 0.06, y: 0.05, s: 2.5, d: 0 },
@@ -161,14 +154,20 @@ interface Props {
 }
 
 export default function HeartCheckInScreen({ isActive, onNext }: Props) {
+  const { width: screenWidth, height: screenHeight } = useWindowDimensions();
+  const cardWidth = screenWidth * 0.72;
+  const cardGap = 16;
+  const snapInterval = cardWidth + cardGap;
+  const sideOffset = (screenWidth - cardWidth) / 2;
+
   const [selectedMood, setSelectedMood] = useState<string | null>(null);
   const [activeIndex, setActiveIndex] = useState(0);
   const insets = useSafeAreaInsets();
+  const scrollRef = useRef<ScrollView>(null);
 
   // [0] title, [1] subtitle, [2] carousel
   const s = useStaggerEntry(isActive, 3);
 
-  const scrollRef = useRef<ScrollView>(null);
   const cardScales = useRef(MOODS.map((_, i) => new Animated.Value(i === 0 ? 1 : 0.92))).current;
   const checkScales = useRef(MOODS.map(() => new Animated.Value(0))).current;
   const dotAnims = useRef(MOODS.map((_, i) => new Animated.Value(i === 0 ? 1 : 0))).current;
@@ -199,14 +198,14 @@ export default function HeartCheckInScreen({ isActive, onNext }: Props) {
     Animated.timing(dotAnims[prev], { toValue: 0, duration: 150, useNativeDriver: true }).start();
     Animated.timing(dotAnims[index], { toValue: 1, duration: 150, useNativeDriver: true }).start();
     setActiveIndex(index);
-  }, [cardScales, dotAnims]); // no longer depends on activeIndex
+  }, [cardScales, dotAnims]);
 
   const handleScroll = useCallback((e: any) => {
     const x = e.nativeEvent.contentOffset.x;
-    const index = Math.round(x / SNAP_INTERVAL);
+    const index = Math.round(x / snapInterval);
     const clamped = Math.max(0, Math.min(MOODS.length - 1, index));
     updateActiveIndex(clamped);
-  }, [updateActiveIndex]);
+  }, [snapInterval, updateActiveIndex]);
 
   // Timer ref for cleanup — prevents state update on unmounted component
   // if the user navigates back within the 800ms selection window.
@@ -235,7 +234,7 @@ export default function HeartCheckInScreen({ isActive, onNext }: Props) {
     <View style={styles.container}>
       <InteractiveStarfield positions={STAR_POS.map(p => ({ ...p, y: p.y * 1.5 }))} />
 
-      <View style={styles.mandalaWrap} pointerEvents="none">
+      <View style={[styles.mandalaWrap, { top: screenHeight * 0.02 }]} pointerEvents="none">
         <AnimatedMandala size={320} color={Colors.accent.primary} opacity={0.15} webLayers={2} />
       </View>
 
@@ -257,9 +256,9 @@ export default function HeartCheckInScreen({ isActive, onNext }: Props) {
           ref={scrollRef}
           horizontal
           showsHorizontalScrollIndicator={false}
-          snapToInterval={SNAP_INTERVAL}
+          snapToInterval={snapInterval}
           decelerationRate="fast"
-          contentContainerStyle={styles.carouselContent}
+          contentContainerStyle={[styles.carouselContent, { paddingHorizontal: sideOffset, gap: cardGap }]}
           onScroll={handleScroll}
           scrollEventThrottle={50}
           scrollEnabled={!selectedMood}
@@ -269,7 +268,7 @@ export default function HeartCheckInScreen({ isActive, onNext }: Props) {
               key={mood.id}
               style={[
                 styles.cardOuter,
-                { transform: [{ scale: cardScales[i] }] },
+                { width: cardWidth, transform: [{ scale: cardScales[i] }] },
               ]}
             >
               <TouchableOpacity
@@ -283,7 +282,7 @@ export default function HeartCheckInScreen({ isActive, onNext }: Props) {
               >
                 <LinearGradient
                   colors={mood.gradientColors}
-                  style={[styles.card, { borderColor: mood.color + '45' }]}
+                  style={[styles.card, { width: cardWidth, height: screenHeight * 0.46, borderColor: mood.color + '45' }]}
                   start={{ x: 0, y: 0 }}
                   end={{ x: 0, y: 1 }}
                 >
@@ -358,7 +357,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     alignItems: 'center',
-    top: height * 0.02,
+    top: '2%',
     zIndex: 0,
   },
   headerArea: {
@@ -389,20 +388,14 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   carouselContent: {
-    paddingHorizontal: SIDE_OFFSET,
-    gap: CARD_GAP,
     alignItems: 'center',
   },
-  cardOuter: {
-    width: CARD_WIDTH,
-  },
+  cardOuter: {},
   cardTouch: {
     borderRadius: 24,
     overflow: 'hidden',
   },
   card: {
-    width: CARD_WIDTH,
-    height: height * 0.46,
     borderRadius: 24,
     borderWidth: 1,
     alignItems: 'center',

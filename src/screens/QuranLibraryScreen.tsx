@@ -5,7 +5,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   FlatList,
-  Dimensions,
+  useWindowDimensions,
   Animated,
   ActivityIndicator,
 } from 'react-native';
@@ -17,8 +17,6 @@ import { Content, Mood } from '../types';
 import { dbQuery } from '../database/schema';
 import { AnimatedMandala } from '../components/AnimatedMandala';
 import { TwinklingStar } from '../components/TwinklingStar';
-
-const { width } = Dimensions.get('window');
 
 const STARS = [
   { x: '8%',  y: '4%',  size: 2,   delay: 200 },
@@ -203,12 +201,12 @@ export default function QuranLibraryScreen({ navigation }: { navigation: any }) 
 
   const filteredVerses = useMemo(() => {
     if (selectedMood === 'All') return quranVerses;
-    return quranVerses.filter((v) => v.moods.includes(selectedMood));
+    return quranVerses.filter((v: Content) => v.moods.includes(selectedMood));
   }, [selectedMood, quranVerses]);
 
   const groupedBySurah = useMemo(() => {
     const groups: Record<string, Content[]> = {};
-    filteredVerses.forEach((v) => {
+    filteredVerses.forEach((v: Content) => {
       const match = v.source.match(/^Surah\s+(.+?)\s+\d/);
       const surah = match ? match[1] : 'Other';
       if (!groups[surah]) groups[surah] = [];
@@ -222,7 +220,7 @@ export default function QuranLibraryScreen({ navigation }: { navigation: any }) 
   const moodCounts = useMemo(() => {
     const counts: Record<string, number> = { All: quranVerses.length };
     ALL_MOODS.forEach((mood) => {
-      counts[mood] = quranVerses.filter((v) => v.moods.includes(mood)).length;
+      counts[mood] = quranVerses.filter((v: Content) => v.moods.includes(mood)).length;
     });
     return counts;
   }, [quranVerses]);
@@ -322,7 +320,7 @@ export default function QuranLibraryScreen({ navigation }: { navigation: any }) 
           renderItem={({ item: group }) => (
             <View style={styles.surahGroup}>
               <Text style={styles.surahHeader}>{group.surah}</Text>
-              {group.verses.map((verse) => (
+              {group.verses.map((verse: Content) => (
                 <VerseCard key={verse.id} verse={verse} />
               ))}
             </View>
@@ -342,12 +340,12 @@ const styles = StyleSheet.create({
     height: 220,
     borderRadius: 110,
     backgroundColor: Colors.accent.glow,
-    left: width / 2 - 110,
+    alignSelf: 'center',
     top: 30,
   },
   mandalaWrap: {
     position: 'absolute',
-    left: width / 2 - 130,
+    alignSelf: 'center',
     top: 20,
     zIndex: 0,
   },
