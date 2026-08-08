@@ -8,7 +8,7 @@ interface SwipeNextOverlayProps {
   animValue: Animated.AnimatedValue;
   /** Primary accent color to tint the overlay icon and glow */
   accentColor?: string;
-  /** Label to show under the arrow, e.g. "NEXT VERSE" or "NEXT LAYER" */
+  /** Accessibility label for the overlay, e.g. "NEXT VERSE" or "NEXT LAYER" — not shown visually. */
   label?: string;
 }
 
@@ -45,6 +45,7 @@ const SwipeNextOverlay: React.FC<SwipeNextOverlayProps> = ({
   return (
     <View style={styles.container} pointerEvents="none">
       <Animated.View
+        accessibilityLabel={label}
         style={[
           styles.overlayBox,
           {
@@ -56,11 +57,6 @@ const SwipeNextOverlay: React.FC<SwipeNextOverlayProps> = ({
         ]}
       >
         <Ionicons name="arrow-forward" size={28} color={accentColor} />
-        <Animated.Text style={[styles.label, { color: accentColor }]}>
-          {label}
-        </Animated.Text>
-        {/* Soft background glow halo */}
-        <View style={[styles.glow, { backgroundColor: accentColor }]} />
       </Animated.View>
     </View>
   );
@@ -87,21 +83,6 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
     elevation: 6,
     overflow: 'hidden',
-  },
-  label: {
-    fontSize: 9,
-    fontWeight: '800',
-    letterSpacing: 1.2,
-    marginTop: 2,
-    textAlign: 'center',
-  },
-  glow: {
-    position: 'absolute',
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    opacity: 0.15,
-    zIndex: -1,
   },
 });
 

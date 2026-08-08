@@ -5,7 +5,7 @@ import {
   Text,
   TouchableOpacity,
   Animated,
-  Dimensions,
+  useWindowDimensions,
   Modal,
   TouchableWithoutFeedback,
   ScrollView,
@@ -26,8 +26,6 @@ import { BackgroundTheme } from '../types';
 import { BACKGROUND_THEMES } from '../services/backgroundThemeService';
 import BackgroundThemePicker from './BackgroundThemePicker';
 import { resolveCardBackground, buildShareText, CardTheme } from '../utils/shareCard';
-
-const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
 interface ShareSheetProps {
   isVisible: boolean;
@@ -145,8 +143,9 @@ const CardContent = ({
 );
 
 const ShareSheet = ({ isVisible, onClose, isPremium, onUpgrade, content }: ShareSheetProps) => {
+  const { height: screenHeight } = useWindowDimensions();
   const insets = useSafeAreaInsets();
-  const slideAnim = useRef(new Animated.Value(SCREEN_HEIGHT)).current;
+  const slideAnim = useRef(new Animated.Value(screenHeight)).current;
   const fadeAnim = useRef(new Animated.Value(0)).current;
 
   // Personalization State
@@ -195,7 +194,7 @@ const ShareSheet = ({ isVisible, onClose, isPremium, onUpgrade, content }: Share
     } else {
       Animated.parallel([
         Animated.timing(slideAnim, {
-          toValue: SCREEN_HEIGHT,
+          toValue: screenHeight,
           duration: 250,
           useNativeDriver: true,
         }),
@@ -610,7 +609,7 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: BorderRadius.xxl,
     borderTopRightRadius: BorderRadius.xxl,
     paddingHorizontal: Spacing.xl,
-    maxHeight: SCREEN_HEIGHT * 0.92,
+    maxHeight: '92%',
     width: '100%',
   },
   scrollContent: {

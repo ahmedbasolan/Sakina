@@ -1,9 +1,7 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Animated, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Animated, useWindowDimensions } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Colors } from '../theme/DesignSystem';
-
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 // ── Types ───────────────────────────────────────────────────────────
 interface BaseEmptyStateProps {
@@ -142,7 +140,7 @@ const styles = StyleSheet.create({
   },
   content: {
     alignItems: 'center',
-    maxWidth: SCREEN_WIDTH - 48,
+    maxWidth: 400,
     width: '100%',
     gap: 16,
   },

@@ -12,7 +12,7 @@ import {
   Text,
   StyleSheet,
   Animated,
-  Dimensions,
+  useWindowDimensions,
   TouchableOpacity,
   ScrollView,
 } from 'react-native';
@@ -26,8 +26,6 @@ import { useStaggerEntry } from '../../hooks/useStaggerEntry';
 import { AnimatedMandala } from '../AnimatedMandala';
 import { InteractiveStarfield } from './InteractiveStarfield';
 
-const { width, height } = Dimensions.get('window');
-
 const STAR_POS = [
   { x: 0.08, y: 0.06, s: 2.5, d: 0 },
   { x: 0.88, y: 0.04, s: 2, d: 500 },
@@ -35,9 +33,6 @@ const STAR_POS = [
   { x: 0.82, y: 0.15, s: 2, d: 750 },
   { x: 0.50, y: 0.08, s: 1.5, d: 100 },
 ];
-
-
-const CARD_SIZE = (width - 64 - 14) / 2;
 
 interface GoalOption {
   id: string;
@@ -290,7 +285,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     alignItems: 'center',
-    top: height * 0.08,
+    top: '8%',
     zIndex: 0,
   },
   // ScrollView's own layout box — takes the space above the fixed bottom chip.
@@ -304,7 +299,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: Spacing.xl,
-    paddingTop: height * 0.07,
+    paddingTop: '7%',
   },
   title: {
     fontFamily: Typography.fonts.serif,
@@ -328,8 +323,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   cardWrap: {
-    width: CARD_SIZE,
-    height: CARD_SIZE * 1.35,
+    flexBasis: '46%',
+    aspectRatio: 1 / 1.35,
   },
   cardTouch: {
     flex: 1,

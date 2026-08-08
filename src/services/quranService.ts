@@ -222,15 +222,15 @@ interface RawApiSurah {
 
 async function fetchEditionBulk(edition: string): Promise<RawApiSurah[]> {
   const controller = new AbortController();
-  // The whole-Quran payload is a few MB, not a few KB — give it more room
-  // than the single-surah timeout before calling it dead.
-  const timeoutId = setTimeout(() => controller.abort(), 25_000);
+  // The whole-Quran payload is a few MB — 12s timeout allows fast fallback
+  // if network is unresponsive.
+  const timeoutId = setTimeout(() => controller.abort(), 12_000);
   try {
     const url = `https://api.alquran.cloud/v1/quran/${edition}`;
     const res = await Promise.race([
       fetch(url, { signal: controller.signal }),
       new Promise<Response>((_, reject) =>
-        setTimeout(() => reject(new Error(`Timed out fetching edition ${edition}`)), 26_000),
+        setTimeout(() => reject(new Error(`Timed out fetching edition ${edition}`)), 13_000),
       ),
     ]);
     if (!res.ok) throw new Error(`HTTP ${res.status} for edition ${edition}`);
@@ -243,12 +243,12 @@ async function fetchEditionBulk(edition: string): Promise<RawApiSurah[]> {
 
 async function fetchEditionBulkWithRetry(edition: string): Promise<RawApiSurah[]> {
   let lastError: unknown;
-  for (let attempt = 1; attempt <= 3; attempt++) {
+  for (let attempt = 1; attempt <= 2; attempt++) {
     try {
       return await fetchEditionBulk(edition);
     } catch (error) {
       lastError = error;
-      if (attempt < 3) {
+      if (attempt < 2) {
         const isRateLimited = error instanceof Error && error.message.includes('HTTP 429');
         await sleep((isRateLimited ? 2000 : 800) * attempt);
       }

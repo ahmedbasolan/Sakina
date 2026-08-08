@@ -7,6 +7,7 @@ import {
   Dimensions,
   Animated,
   LayoutAnimation,
+  Alert,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { BlurView } from 'expo-blur';
@@ -15,7 +16,12 @@ import { Colors, Spacing, Typography, BorderRadius } from '../theme/DesignSystem
 import { Ionicons } from '@expo/vector-icons';
 import { HapticsService } from '../services/hapticsService';
 import { PracticeSourceType, HadithGrading } from '../types';
+import { BuildService } from '../services/buildService';
 import Icon, { IconName } from './Icon';
+
+// Same "hide gracefully if the native module is missing" guard AudioPlayerButton
+// uses — a stale dev client without expo-audio linked must not crash this screen.
+const AudioModule = BuildService.getCapabilities().audio ? require('expo-audio') : null;
 
 export interface PracticeStepData {
   type: 'mindset' | 'physical' | 'verbal';
@@ -129,6 +135,146 @@ const DhikrCounter = ({ target, accentColor }: { target: number; accentColor: st
   );
 };
 
+// ─── Dua Recorder — record yourself reciting a dua, then listen back ───
+// Wrapper hides the feature entirely on a stale dev client missing the
+// native module, same guard AudioPlayerButton uses.
+const DuaRecorder = ({ accentColor }: { accentColor: string }) => {
+  if (!AudioModule) return null;
+  return <DuaRecorderInner accentColor={accentColor} />;
+};
+
+const DuaRecorderInner = ({ accentColor }: { accentColor: string }) => {
+  const recorder = AudioModule.useAudioRecorder(AudioModule.RecordingPresets.HIGH_QUALITY);
+  const recorderState = AudioModule.useAudioRecorderState(recorder);
+  const [recordedUri, setRecordedUri] = useState<string | null>(null);
+  const player = AudioModule.useAudioPlayer(recordedUri);
+  const playerStatus = AudioModule.useAudioPlayerStatus(player);
+
+  const isRecording = recorderState?.isRecording ?? false;
+  const isPlaying = playerStatus?.playing ?? false;
+
+  // If this card collapses — or another step is expanded — mid-recording,
+  // DuaRecorderInner unmounts immediately (it only renders inside the
+  // single-select isExpanded body below). Without this, the native
+  // recorder is left with nothing to ever call stop() on, and the global
+  // `allowsRecording` flag set in startRecording stays stuck on for the
+  // rest of the app, silencing/altering other audio (e.g. the verse
+  // recitation AudioPlayerButtons elsewhere). Safe to call even when not
+  // currently recording — errors are swallowed, matching this file's own
+  // best-effort-cleanup convention elsewhere.
+  useEffect(() => {
+    return () => {
+      recorder.stop().catch(() => {});
+      AudioModule.setAudioModeAsync({ allowsRecording: false }).catch(() => {});
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const startRecording = async () => {
+    try {
+      const { granted } = await AudioModule.requestRecordingPermissionsAsync();
+      if (!granted) {
+        Alert.alert(
+          'Microphone access needed',
+          'Allow microphone access in Settings to record yourself reciting.',
+        );
+        return;
+      }
+      // Global session toggle — flipped back off in stopRecording so it
+      // doesn't linger and affect unrelated audio (e.g. verse recitation)
+      // elsewhere in the app once the user is done recording.
+      await AudioModule.setAudioModeAsync({ allowsRecording: true, playsInSilentMode: true });
+      HapticsService.impactAsync('LIGHT');
+      await recorder.prepareToRecordAsync();
+      recorder.record();
+    } catch (error) {
+      console.error('DuaRecorder: failed to start recording', error);
+    }
+  };
+
+  const stopRecording = async () => {
+    try {
+      await recorder.stop();
+      await AudioModule.setAudioModeAsync({ allowsRecording: false });
+      HapticsService.impactAsync('LIGHT');
+      if (recorder.uri) setRecordedUri(recorder.uri);
+    } catch (error) {
+      console.error('DuaRecorder: failed to stop recording', error);
+    }
+  };
+
+  const togglePlayback = () => {
+    HapticsService.impactAsync('LIGHT');
+    if (isPlaying) {
+      player.pause();
+    } else {
+      if (playerStatus?.didJustFinish) player.seekTo(0);
+      player.play();
+    }
+  };
+
+  const reRecord = () => {
+    if (isPlaying) player.pause();
+    setRecordedUri(null);
+  };
+
+  if (isRecording) {
+    return (
+      <TouchableOpacity
+        style={[styles.recorderRow, { borderColor: Colors.status.error + '55' }]}
+        onPress={stopRecording}
+        activeOpacity={0.85}
+        accessibilityRole="button"
+        accessibilityLabel="Stop recording"
+      >
+        <View style={styles.recordingDot} />
+        <Text style={[styles.recorderLabel, { color: Colors.status.error }]}>
+          Recording — {Math.round((recorderState?.durationMillis ?? 0) / 1000)}s · tap to stop
+        </Text>
+      </TouchableOpacity>
+    );
+  }
+
+  if (recordedUri) {
+    return (
+      <View style={[styles.recorderRow, { borderColor: accentColor + '40' }]}>
+        <TouchableOpacity
+          onPress={togglePlayback}
+          hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+          accessibilityRole="button"
+          accessibilityLabel={isPlaying ? 'Pause your recording' : 'Play your recording'}
+        >
+          <Ionicons name={isPlaying ? 'pause' : 'play'} size={16} color={accentColor} />
+        </TouchableOpacity>
+        <Text style={[styles.recorderLabel, { color: accentColor }]}>
+          {isPlaying ? 'Playing your recitation' : 'Listen to yourself'}
+        </Text>
+        <TouchableOpacity
+          onPress={reRecord}
+          hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+          accessibilityRole="button"
+          accessibilityLabel="Record again"
+        >
+          <Ionicons name="refresh" size={16} color={Colors.text.muted} />
+        </TouchableOpacity>
+      </View>
+    );
+  }
+
+  return (
+    <TouchableOpacity
+      style={[styles.recorderRow, { borderColor: accentColor + '30' }]}
+      onPress={startRecording}
+      activeOpacity={0.85}
+      accessibilityRole="button"
+      accessibilityLabel="Record yourself reciting"
+    >
+      <Ionicons name="mic-outline" size={16} color={accentColor} />
+      <Text style={[styles.recorderLabel, { color: accentColor }]}>Record yourself reciting</Text>
+    </TouchableOpacity>
+  );
+};
+
 // ─── Step Card ─────────────────────────────────────────────────
 const PracticeStepCard = ({
   item,
@@ -203,7 +349,7 @@ const PracticeStepCard = ({
               journey photo) blend through instead of a flat opaque box */}
           {/* experimentalBlurMethod — same Android blur fix as the tab bar. */}
           <BlurView
-            intensity={18}
+            intensity={10}
             tint="dark"
             experimentalBlurMethod="dimezisBlurView"
             style={StyleSheet.absoluteFillObject}
@@ -285,6 +431,7 @@ const PracticeStepCard = ({
                   {item.translation && (
                     <Text style={styles.duaTranslation}>&quot;{item.translation}&quot;</Text>
                   )}
+                  <DuaRecorder accentColor={accentColor} />
                 </View>
               )}
 
@@ -571,6 +718,30 @@ const styles = StyleSheet.create({
     color: Colors.text.secondary,
     lineHeight: 22,
     fontStyle: 'italic',
+  },
+
+  /* ── Dua Recorder ── */
+  recorderRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.sm,
+    marginTop: Spacing.lg,
+    paddingVertical: Spacing.sm + 2,
+    paddingHorizontal: Spacing.md,
+    borderRadius: BorderRadius.full,
+    borderWidth: 1,
+    backgroundColor: 'rgba(255, 255, 255, 0.03)',
+  },
+  recorderLabel: {
+    flex: 1,
+    fontSize: 13,
+    fontWeight: '600',
+  },
+  recordingDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: Colors.status.error,
   },
 
   /* ── Dhikr Counter ── */

@@ -387,7 +387,7 @@ export const STATIC_SPIRITUAL_PATHS: SpiritualPath[] = [
         contentId: 'quran_113_1_5',
         angleId: 'q_angle_imam_day4',
         hadithContentId: 'hadith_imam_4',
-        surahIds: ['surah_114'],
+        surahIds: ['surah_113', 'surah_114'],
         isCompleted: false,
       },
       {

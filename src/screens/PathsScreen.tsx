@@ -16,7 +16,7 @@ import {
   TouchableOpacity,
   TextInput,
   Animated,
-  Dimensions,
+  useWindowDimensions,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
@@ -28,8 +28,6 @@ import { PathsService } from '../services/pathsService';
 import { JourneyMandalaBackdrop } from '../components/JourneyMandalaBackdrop';
 import { TwinklingStar } from '../components/TwinklingStar';
 import { getPathVisual } from '../constants/pathVisuals';
-
-const SCREEN_W = Dimensions.get('window').width;
 
 // Height reserved for the pinned header (star field + filter/search row). The
 // star positions below are fractions of it, so the two cannot drift apart.
@@ -318,6 +316,7 @@ function JourneyCard({ path, index, isActive, isLocked, userProgress, onPress }:
 
 // ── PathsScreen ─────────────────────────────────────────────────
 export default function PathsScreen() {
+  const { width: screenWidth } = useWindowDimensions();
   const navigation = useNavigation<any>();
   const insets = useSafeAreaInsets();
   const [PATHS, setPaths] = useState<any[]>([]);
@@ -433,7 +432,7 @@ export default function PathsScreen() {
         {STAR_POSITIONS.map((s, i) => (
           <TwinklingStar
             key={i}
-            x={s.x * SCREEN_W}
+            x={s.x * screenWidth}
             y={s.y * HEADER_H}
             delay={s.delay}
             size={s.size}

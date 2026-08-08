@@ -11,7 +11,7 @@ import {
   Image,
   StyleSheet,
   Animated,
-  Dimensions,
+  useWindowDimensions,
   Text,
   ScrollView,
 } from 'react-native';
@@ -19,8 +19,6 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useStaggerEntry } from '../../hooks/useStaggerEntry';
 import { InteractiveStarfield } from './InteractiveStarfield';
 import { ShimmerButton } from '../ShimmerButton';
-
-const { width } = Dimensions.get('window');
 
 const STAR_POS = [
   { x: 0.06, y: 0.06, s: 2.5, d: 0 },
@@ -31,8 +29,6 @@ const STAR_POS = [
   { x: 0.12, y: 0.42, s: 1.5, d: 450 },
   { x: 0.88, y: 0.36, s: 2,   d: 700 },
 ];
-
-const IMG_SIZE = width * 0.36;
 
 const GLOW = {
   textShadowColor: 'rgba(212, 175, 55, 0.45)',
@@ -119,13 +115,13 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.xxl,
   },
   imageClip: {
-    width: IMG_SIZE,
-    height: IMG_SIZE,
+    width: 140,
+    height: 140,
     overflow: 'hidden',
   },
   calligraphyImage: {
-    width: IMG_SIZE,
-    height: IMG_SIZE,
+    width: 140,
+    height: 140,
     tintColor: Colors.accent.primary,
   },
   subtitle: {

@@ -30,7 +30,6 @@
         "android.permission.MODIFY_AUDIO_SETTINGS"
       ],
       "blockedPermissions": [
-        "android.permission.RECORD_AUDIO",
         "android.permission.ACCESS_FINE_LOCATION"
       ],
       "package": "com.lelahmed.sakina"
@@ -40,7 +39,12 @@
     },
     "plugins": [
       "expo-font",
-      "expo-audio",
+      [
+        "expo-audio",
+        {
+          "microphonePermission": "Sakina uses your microphone so you can record yourself reciting a du'a and listen back."
+        }
+      ],
       "expo-sqlite",
       "expo-asset",
       [

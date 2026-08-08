@@ -496,6 +496,9 @@ of which a typecheck can see.
 3. Every ayah verified per "Quoting Quran Text" above — fetch the raw JSON, do
    not trust `WebFetch` or memory.
 4. `practiceSteps` JSON parses; `type`/`icon`/`sourceType` are valid union members.
+   3 steps minimum, 6 maximum — use as many as the day's actual content needs.
+   Don't force-compact a day that genuinely has 4 or 5 distinct things to do
+   down to a tidy 3, and don't pad a thin day up to a round number either.
 5. Verse and hadith source not already used by another day in the same journey.
 6. Each day's du'a is distinct from the other days'.
 7. `SEED_VERSION` bumped.

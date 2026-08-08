@@ -78,11 +78,9 @@ export class FreemiumService {
           };
         }
       }).catch(() => {});
-      // Pre-warm the prayer-window session so the first mood tap doesn't
-      // wait for a cold SQLite read. Awaited so the mutex is released before
-      // isLoaded = true — a tap-time syncPrayerWindow() call would otherwise
-      // block on the same lock until this finishes, causing first-tap latency.
-      await this.syncPrayerWindow().catch(() => {});
+      // Pre-warm the prayer-window session in the background so the initialization
+      // completes immediately without waiting on network prayer-time calls.
+      this.syncPrayerWindow().catch(() => {});
       this.isLoaded = true;
     })();
 

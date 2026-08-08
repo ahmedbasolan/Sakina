@@ -4,6 +4,7 @@ import { Colors, Spacing, Typography, BorderRadius } from '../theme/DesignSystem
 import { SurahLesson } from '../data/surahLessons';
 import { GeometricOrnament } from './VerseLayer';
 import ArabicText from './ArabicText';
+import AudioPlayerButton from './AudioPlayerButton';
 import { useReduceMotion } from '../hooks/useReduceMotion';
 
 interface SurahLayerProps {
@@ -100,6 +101,15 @@ const SurahLayer: React.FC<SurahLayerProps> = ({
                 <Text style={[styles.ayahNum, { color: accentColor }]}>{ayah.n}</Text>
               </View>
               <View style={[styles.ayahRule, { backgroundColor: accentColor + '18' }]} />
+              <AudioPlayerButton
+                verseKey={`${lesson.number}:${ayah.n}`}
+                size={28}
+                iconSize={16}
+                color={accentColor}
+                showLabel={false}
+                containerStyle={styles.ayahAudioBtn}
+                style={styles.ayahAudioBtnWrap}
+              />
             </View>
 
             <ArabicText
@@ -210,6 +220,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: 6,
+  },
+  // Resets AudioPlayerButton's standalone vertical margin so it sits flush
+  // in the compact ayah-head row instead of pushing the row taller.
+  ayahAudioBtnWrap: {
+    marginVertical: 0,
+  },
+  ayahAudioBtn: {
+    backgroundColor: 'transparent',
+    borderWidth: 0,
   },
   ayahNum: {
     fontFamily: Typography.fonts.latin,

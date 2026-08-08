@@ -8,7 +8,7 @@ import {
   ScrollView,
   FlatList,
   TouchableOpacity,
-  Dimensions,
+  useWindowDimensions,
   Animated,
   TextInput,
   Modal,
@@ -36,8 +36,6 @@ import { Mood } from '../types';
 if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
   UIManager.setLayoutAnimationEnabledExperimental(true);
 }
-
-const { width } = Dimensions.get('window');
 
 const STARS = [
   { x: '6%',  y: '4%',  size: 2.5, delay: 0 },
@@ -614,7 +612,7 @@ const styles = StyleSheet.create({
 
   mandalaWrap: {
     position: 'absolute',
-    left: width / 2 - 135, top: 15, zIndex: 0,
+    alignSelf: 'center', top: 15, zIndex: 0,
   },
 
   header: {

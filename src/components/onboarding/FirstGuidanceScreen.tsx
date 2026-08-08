@@ -12,7 +12,7 @@ import {
   Text,
   StyleSheet,
   Animated,
-  Dimensions,
+  useWindowDimensions,
   TouchableOpacity,
   ScrollView,
 } from 'react-native';
@@ -23,8 +23,6 @@ import { useStaggerEntry } from '../../hooks/useStaggerEntry';
 import { AnimatedMandala } from '../AnimatedMandala';
 import { InteractiveStarfield } from './InteractiveStarfield';
 import { GoldenMotes } from '../GoldenMotes';
-
-const { width, height } = Dimensions.get('window');
 
 const STAR_POS = [
   { x: 0.08, y: 0.04, s: 2.5, d: 0 },
@@ -275,7 +273,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     alignItems: 'center',
-    top: height * 0.25,
+    top: '25%',
     zIndex: 0,
   },
   // ScrollView's own layout box — takes the space above the fixed bottom
@@ -303,7 +301,7 @@ const styles = StyleSheet.create({
     fontStyle: 'italic',
   },
   goldLineWrap: {
-    width: width * 0.55,
+    width: '55%',
     height: 1.5,
     marginBottom: Spacing.xxl,
   },
