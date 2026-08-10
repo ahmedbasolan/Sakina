@@ -218,7 +218,9 @@ const tableDefinitions: TableDefinition[] = [
     );`,
   },
   {
-    // Per-surah verse cache from alquran.cloud. JSON blob, TTL = 7 days.
+    // Per-surah verse cache from alquran.cloud. JSON blob; a cached surah
+    // never expires (see quranService.ts's module doc comment) — only a
+    // CACHE_FORMAT_VERSION bump clears it.
     name: 'quran_cache',
     sql: `CREATE TABLE IF NOT EXISTS quran_cache (
       surahNumber INTEGER PRIMARY KEY,

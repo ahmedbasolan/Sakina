@@ -5,9 +5,11 @@
  *  1. On first open of LibraryScreen, kick off `prefetchAllSurahs()`.
  *  2. Fetches surahs in small batches from alquran.cloud (Uthmani + en.sahih —
  *     Sahih International, the translation edition used app-wide).
- *  3. Each surah is stored in `quran_cache` (TTL = 7 days).
+ *  3. Each surah is stored in `quran_cache` and, once cached, never expires —
+ *     Quran text doesn't change, so a downloaded surah stays readable offline
+ *     forever. The only thing that invalidates a cached surah is a
+ *     CACHE_FORMAT_VERSION bump (a real content/shape change on our side).
  *  4. Download progress is persisted to `kv_store` so progress survives app restarts.
- *  5. After `CACHE_TTL_MS` the whole Quran is quietly refreshed in the background.
  */
 import { dbQuery } from '../database/schema';
 
@@ -38,7 +40,6 @@ export interface DownloadProgress {
 // ─── Constants ────────────────────────────────────────────────────────────────
 
 const TOTAL_SURAHS = 114;
-const CACHE_TTL_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
 
 // Module-level singleton so multiple LibraryScreen mounts don't double-fetch
 let _isFetching = false;
@@ -73,7 +74,7 @@ function stripEmbeddedBismillah(text: string, surahNumber: number, numberInSurah
 // ─── One-time cache migration ───────────────────────────────────────────────
 // Bump this when the stored verse shape/content changes so previously
 // cached (now-stale) surahs get re-fetched instead of showing old data
-// forever within the 7-day TTL.
+// forever — a cached surah has no other expiry.
 // v4: switched translation edition from en.asad to en.sahih (Sahih
 // International), matching the edition used everywhere else in the app.
 const CACHE_FORMAT_VERSION = 4;
@@ -134,7 +135,7 @@ async function fetchSurahFromApi(surahNumber: number): Promise<QuranVerse[]> {
     // if one edition's ayah list came back short (a transient upstream hiccup
     // on just that edition, seen on surah 50) the zip silently misaligns and
     // every subsequent ayah gets the wrong/blank transliteration, then that
-    // gets cached for 7 days with no error surfaced. Fail the whole fetch
+    // gets cached indefinitely with no error surfaced. Fail the whole fetch
     // instead so the caller's catch skips it and retries next launch.
     if (englishs.length !== arabics.length || transliterations.length !== arabics.length) {
       throw new Error(
@@ -191,7 +192,9 @@ async function writeSurahCache(surahNumber: number, verses: QuranVerse[]): Promi
 // ─── Public API ───────────────────────────────────────────────────────────────
 
 /**
- * Returns how many of the 114 surahs are currently cached and fresh.
+ * Returns how many of the 114 surahs are currently cached. A cached surah
+ * never expires on its own — see the module doc comment — so this is a
+ * plain count, not a freshness filter.
  */
 export async function getDownloadProgress(): Promise<DownloadProgress> {
   await ensureCacheFormatVersion();
@@ -199,13 +202,10 @@ export async function getDownloadProgress(): Promise<DownloadProgress> {
     const rows = await db.getAllAsync<{ surahNumber: number; cachedAt: number }>(
       'SELECT surahNumber, cachedAt FROM quran_cache',
     );
-    const freshCount = rows.filter(
-      (r) => Date.now() - r.cachedAt < CACHE_TTL_MS,
-    ).length;
     return {
-      cached: freshCount,
+      cached: rows.length,
       total: 114,
-      done: freshCount >= TOTAL_SURAHS,
+      done: rows.length >= TOTAL_SURAHS,
       fetching: _isFetching,
     } as DownloadProgress;
   });
@@ -329,34 +329,30 @@ export async function prefetchAllSurahs(
 
   try {
     await ensureCacheFormatVersion();
-    const freshSet = await dbQuery(async (db) => {
+    const cachedSet = await dbQuery(async (db) => {
       const rows = await db.getAllAsync<{ surahNumber: number; cachedAt: number }>(
         'SELECT surahNumber, cachedAt FROM quran_cache',
       );
-      return new Set(
-        rows
-          .filter((r) => Date.now() - r.cachedAt < CACHE_TTL_MS)
-          .map((r) => r.surahNumber),
-      );
+      return new Set(rows.map((r) => r.surahNumber));
     });
 
-    if (freshSet.size >= TOTAL_SURAHS) {
+    if (cachedSet.size >= TOTAL_SURAHS) {
       onProgress?.({ cached: TOTAL_SURAHS, total: 114, done: true, fetching: false });
       return;
     }
 
-    onProgress?.({ cached: freshSet.size, total: 114, done: false, fetching: true });
+    onProgress?.({ cached: cachedSet.size, total: 114, done: false, fetching: true });
 
     const allSurahs = await fetchFullQuranFromApi();
     const fetchedAt = Date.now();
-    let cached = freshSet.size;
+    let cached = cachedSet.size;
 
     // One transaction for all inserts — 114 individual dbQuery round trips
     // would reintroduce the exact multi-second stall this rewrite removes.
     await dbQuery(async (db) => {
       await db.withTransactionAsync(async () => {
         for (let n = 1; n <= TOTAL_SURAHS; n++) {
-          if (freshSet.has(n)) continue;
+          if (cachedSet.has(n)) continue;
           const verses = allSurahs.get(n);
           if (!verses) continue; // this surah's zip failed — an on-demand open will retry it
           await db.runAsync(
@@ -414,7 +410,8 @@ export async function fetchAndCacheSurah(surahNumber: number): Promise<QuranVers
 
 /**
  * Returns cached verses for a surah from SQLite.
- * Returns null if not cached (caller should fetch from API).
+ * Returns null if not cached (caller should fetch from API). A cached
+ * surah never expires on its own — see the module doc comment.
  */
 export async function getCachedSurah(surahNumber: number): Promise<QuranVerse[] | null> {
   await ensureCacheFormatVersion();
@@ -424,7 +421,13 @@ export async function getCachedSurah(surahNumber: number): Promise<QuranVerse[] 
       [surahNumber],
     );
     if (!row) return null;
-    if (Date.now() - row.cachedAt > CACHE_TTL_MS) return null;
     try { return JSON.parse(row.data) as QuranVerse[]; } catch { return null; }
   });
+}
+
+/** Test-only: reset module state between cases. */
+export function __resetQuranServiceForTests(): void {
+  versionChecked = false;
+  _isFetching = false;
+  inFlightSurahFetches.clear();
 }
