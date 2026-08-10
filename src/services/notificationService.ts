@@ -20,6 +20,17 @@ const CH_DAILY = 'daily-reminders';
 const CH_PRAYER = 'prayer-times';
 const CH_SPIRITUAL = 'spiritual-windows';
 
+// iOS silently drops any local notification scheduled past this many
+// pending — no error, no callback, the OS just never delivers it. Android
+// has no equivalent hard cap. Current usage (5 prayers + 3 spiritual
+// windows, 7 days each, plus 1 daily repeating) tops out at 57, but that's
+// arithmetic on what we *intend* to schedule — this checks the OS's actual
+// count after every schedule call, so a future category, an extra day, or a
+// stray leftover from an older app version shows up here before users start
+// silently missing reminders.
+const IOS_PENDING_NOTIFICATION_CAP = 64;
+const IOS_PENDING_NOTIFICATION_WARN_AT = 58;
+
 interface ReminderSettings {
   hour: number;    // 24h format
   minute: number;
@@ -138,6 +149,32 @@ class NotificationService {
     }
   }
 
+  /**
+   * Best-effort diagnostic — never let it break scheduling. Call after any
+   * successful schedule so the check reflects the OS's real state, not just
+   * what this call site thinks it scheduled. `caller` identifies which of
+   * the three scheduling methods triggered the check — three call sites
+   * share this guard, and a bare "warnIfNearPendingCap" label in the log
+   * can't tell a future debugger which one actually pushed the count up.
+   */
+  private async warnIfNearPendingCap(caller: string): Promise<void> {
+    if (Platform.OS !== 'ios') return;
+    try {
+      const pending = await Notifications.getAllScheduledNotificationsAsync();
+      if (pending.length >= IOS_PENDING_NOTIFICATION_WARN_AT) {
+        logServiceError(
+          'NotificationService',
+          `warnIfNearPendingCap:${caller}`,
+          new Error(
+            `${pending.length} notifications pending, approaching iOS's ${IOS_PENDING_NOTIFICATION_CAP}-notification cap`,
+          ),
+        );
+      }
+    } catch {
+      // Diagnostic only — a failed count check must never block scheduling.
+    }
+  }
+
   public async requestPermissions(): Promise<boolean> {
     await this.ensureAndroidChannels();
     const { status: existingStatus } = await Notifications.getPermissionsAsync();
@@ -171,6 +208,18 @@ class NotificationService {
   // Builds up to 7 one-shot DATE triggers, one per day offset, all in
   // parallel. `times[dayOffset]` carries that day's own clock time (null =
   // skip that day). Only future dates are scheduled; past slots are skipped.
+  //
+  // On Android 12+, exact delivery of these DATE triggers depends entirely on
+  // the app holding android.permission.SCHEDULE_EXACT_ALARM (declared in
+  // app.json's android.permissions — expo-notifications' own AndroidManifest
+  // does NOT include it, see its CHANGELOG). Without it, expo-notifications'
+  // native scheduler (ExpoSchedulingDelegate.setupAlarm) silently falls back
+  // to AlarmManager.setAndAllowWhileIdle instead of setExactAndAllowWhileIdle
+  // — Doze can then defer and batch multiple unrelated notifications (e.g.
+  // Isha, Maghrib, evening adhkar, each scheduled hours apart) and release
+  // them all at once at the next maintenance window, hours late. This shipped
+  // broken (missing permission) and produced exactly that symptom on a real
+  // device before the permission was added.
   private async scheduleWeeklyTrigger(
     times: ReadonlyArray<{ hour: number; minute: number } | null>,
     content: Notifications.NotificationContentInput,
@@ -272,6 +321,7 @@ class NotificationService {
         new Error('Prayer notifications: 0 scheduled despite valid weekly timings'),
       );
     }
+    await this.warnIfNearPendingCap('schedulePrayerNotifications');
   }
 
   /**
@@ -338,6 +388,7 @@ class NotificationService {
     ]);
 
     await setTrackedIds(SPIRITUAL_NOTIF_IDS_KEY, [...tahajjudIds, ...morningIds, ...eveningIds]);
+    await this.warnIfNearPendingCap('scheduleSpiritualReminders');
   }
 
   public async getPrayerEnabled(): Promise<boolean> {
@@ -459,6 +510,7 @@ class NotificationService {
       JSON.stringify({ hour: hour24, minute, enabled: true }),
     );
 
+    await this.warnIfNearPendingCap('scheduleReminder');
     return true;
   }
 

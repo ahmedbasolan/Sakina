@@ -32,16 +32,25 @@ jest.mock('expo-notifications', () => ({
   scheduleNotificationAsync: jest.fn(),
   cancelScheduledNotificationAsync: jest.fn().mockResolvedValue(undefined),
   cancelAllScheduledNotificationsAsync: jest.fn().mockResolvedValue(undefined),
+  getAllScheduledNotificationsAsync: jest.fn().mockResolvedValue([]),
   AndroidImportance: { HIGH: 4, DEFAULT: 3 },
   AndroidNotificationPriority: { HIGH: 'high' },
   SchedulableTriggerInputTypes: { DATE: 'date', DAILY: 'daily' },
 }));
 
+jest.mock('../errorLoggingService', () => ({
+  logServiceError: jest.fn(),
+}));
+
+import { Platform } from 'react-native';
 import * as Notifications from 'expo-notifications';
 import NotificationService from '../notificationService';
 import { PrayerTimings } from '../prayerTimesService';
+import { logServiceError } from '../errorLoggingService';
 
 const mockSchedule = Notifications.scheduleNotificationAsync as jest.Mock;
+const mockGetAllScheduled = Notifications.getAllScheduledNotificationsAsync as jest.Mock;
+const mockLogServiceError = logServiceError as jest.Mock;
 
 const TIMINGS: PrayerTimings = {
   Fajr: '05:00',
@@ -66,6 +75,8 @@ beforeEach(() => {
   Object.keys(mockStore).forEach((k) => delete mockStore[k]);
   let id = 0;
   mockSchedule.mockImplementation(() => Promise.resolve(`id-${++id}`));
+  mockGetAllScheduled.mockResolvedValue([]);
+  Platform.OS = 'ios';
   // Fixed clock: a morning hour, so evening slots for day 0 are still in the
   // future and every day-offset schedules deterministically.
   jest.useFakeTimers({ now: new Date(2026, 6, 20, 8, 0, 0) });
@@ -75,6 +86,7 @@ beforeEach(() => {
 
 afterEach(() => {
   jest.useRealTimers();
+  Platform.OS = 'ios';
 });
 
 describe('scheduleSpiritualReminders — window alignment', () => {
@@ -184,5 +196,63 @@ describe('iOS pending-notification budget', () => {
     const scheduled = mockSchedule.mock.calls.length;
     expect(scheduled).toBeGreaterThan(0);
     expect(scheduled).toBeLessThanOrEqual(63); // leaves room for the daily reminder
+  });
+});
+
+describe('iOS pending-notification guard (runtime check)', () => {
+  // The static ceiling test above pins our own intended schedule, but the OS's
+  // actual pending count can drift from that (a future category, a stray
+  // leftover from an older app version) — this checks the real device state
+  // after every schedule call, not just our own arithmetic.
+  it('does not warn when the real pending count stays well under the cap', async () => {
+    mockGetAllScheduled.mockResolvedValue(new Array(10).fill({}));
+
+    await service.schedulePrayerNotifications(TIMINGS, 'Dubai');
+
+    expect(mockLogServiceError).not.toHaveBeenCalled();
+  });
+
+  it('warns via logServiceError when the pending count nears the 64-notification iOS cap, naming the triggering scheduler', async () => {
+    mockGetAllScheduled.mockResolvedValue(new Array(60).fill({}));
+
+    await service.schedulePrayerNotifications(TIMINGS, 'Dubai');
+
+    expect(mockLogServiceError).toHaveBeenCalledTimes(1);
+    const [serviceName, operation, error] = mockLogServiceError.mock.calls[0];
+    expect(serviceName).toBe('NotificationService');
+    // Must identify WHICH scheduler triggered it — with three call sites
+    // sharing this check, a bare "warnIfNearPendingCap" label can't tell a
+    // future debugger which one pushed the count over, only that one did.
+    expect(operation).toContain('schedulePrayerNotifications');
+    expect(error).toBeInstanceOf(Error);
+    expect((error as Error).message).toContain('60');
+  });
+
+  it('skips the check on Android, which has no such cap', async () => {
+    Platform.OS = 'android';
+    mockGetAllScheduled.mockResolvedValue(new Array(60).fill({}));
+
+    await service.schedulePrayerNotifications(TIMINGS, 'Dubai');
+
+    expect(mockGetAllScheduled).not.toHaveBeenCalled();
+    expect(mockLogServiceError).not.toHaveBeenCalled();
+  });
+
+  it('also checks after scheduling spiritual reminders, naming that scheduler', async () => {
+    mockGetAllScheduled.mockResolvedValue(new Array(60).fill({}));
+
+    await service.scheduleSpiritualReminders(TIMINGS);
+
+    expect(mockLogServiceError).toHaveBeenCalledTimes(1);
+    expect(mockLogServiceError.mock.calls[0][1]).toContain('scheduleSpiritualReminders');
+  });
+
+  it('also checks after scheduling the daily reminder, naming that scheduler', async () => {
+    mockGetAllScheduled.mockResolvedValue(new Array(60).fill({}));
+
+    await service.scheduleReminder(7, 30);
+
+    expect(mockLogServiceError).toHaveBeenCalledTimes(1);
+    expect(mockLogServiceError.mock.calls[0][1]).toContain('scheduleReminder');
   });
 });
