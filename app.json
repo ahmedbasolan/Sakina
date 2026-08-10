@@ -27,7 +27,8 @@
         "backgroundColor": "#040D1A"
       },
       "permissions": [
-        "android.permission.MODIFY_AUDIO_SETTINGS"
+        "android.permission.MODIFY_AUDIO_SETTINGS",
+        "android.permission.SCHEDULE_EXACT_ALARM"
       ],
       "blockedPermissions": [
         "android.permission.ACCESS_FINE_LOCATION"
