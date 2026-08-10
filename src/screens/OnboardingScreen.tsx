@@ -19,6 +19,7 @@ import {
   TouchableOpacity,
   useWindowDimensions,
   Dimensions,
+  Alert,
 } from 'react-native';
 import { PanGestureHandler, State, GestureHandlerRootView } from 'react-native-gesture-handler';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -34,6 +35,12 @@ import LocationScreen from '../components/onboarding/LocationScreen';
 import NotificationScreen from '../components/onboarding/NotificationScreen';
 import CommitScreen from '../components/onboarding/CommitScreen';
 import NotificationService from '../services/notificationService';
+import {
+  needsExactAlarmPermission,
+  openExactAlarmSettings,
+  hasAskedExactAlarmPermission,
+  markExactAlarmPermissionAsked,
+} from '../services/exactAlarmPermission';
 import { ProgressMandala } from '../components/onboarding/ProgressMandala';
 import { touchEmitter } from '../components/onboarding/InteractiveStarfield';
 import { useTheme } from '../context/ThemeContext';
@@ -199,7 +206,24 @@ export default function OnboardingScreen() {
   // --- Notification handlers — advance to CommitScreen ---
   const handleAllowNotifications = useCallback(async () => {
     try {
-      await NotificationService.getInstance().requestPermissions();
+      const granted = await NotificationService.getInstance().requestPermissions();
+      // Android 13+ doesn't auto-grant exact-alarm scheduling — without it,
+      // the OS can defer and batch prayer/spiritual notifications together
+      // hours late (see exactAlarmPermission.ts). Ask once, right here,
+      // since the user is already in "granting permissions" mode. A manual
+      // fallback also lives in Daily Reminders settings for anyone who
+      // dismisses this or already passed onboarding before this existed.
+      if (granted && needsExactAlarmPermission() && !(await hasAskedExactAlarmPermission())) {
+        await markExactAlarmPermissionAsked();
+        Alert.alert(
+          'One More Step for On-Time Alerts',
+          'Android can delay and bundle your prayer reminders together unless exact alarms are enabled for Sakina.',
+          [
+            { text: 'Not Now', style: 'cancel' },
+            { text: 'Open Settings', onPress: () => { openExactAlarmSettings().catch(() => {}); } },
+          ],
+        );
+      }
     } catch (_e) {
       // User denied or error — continue anyway
     }

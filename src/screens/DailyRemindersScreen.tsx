@@ -18,6 +18,7 @@ import { HapticsService } from '../services/hapticsService';
 import NotificationService from '../services/notificationService';
 import { topUpScheduledNotifications } from '../services/notificationTopUpTask';
 import { logServiceError } from '../services/errorLoggingService';
+import { needsExactAlarmPermission, openExactAlarmSettings } from '../services/exactAlarmPermission';
 import { Colors, Typography, Spacing, BorderRadius } from '../theme/DesignSystem';
 import { useReduceMotion } from '../hooks/useReduceMotion';
 
@@ -262,6 +263,17 @@ export default function DailyRemindersScreen({ onBack }: DailyRemindersScreenPro
       }
       return m - 5;
     });
+  };
+
+  const handleOpenExactAlarmSettings = () => {
+    HapticsService.impactAsync('LIGHT');
+    openExactAlarmSettings().catch((error) =>
+      logServiceError(
+        'DailyRemindersScreen',
+        'openExactAlarmSettings',
+        error instanceof Error ? error : new Error(String(error)),
+      ),
+    );
   };
 
   const showPermissionAlert = () => {
@@ -724,6 +736,32 @@ export default function DailyRemindersScreen({ onBack }: DailyRemindersScreenPro
             </TouchableOpacity>
           </View>
 
+          {/* Exact Prayer Alerts — Android 13+ only. Without this permission
+              Android silently downgrades every prayer/spiritual alarm to
+              "inexact", which Doze can defer and release in one batch hours
+              late (the bug this row exists to fix). There's no reliable way
+              to read the current grant state back from the OS, so this is a
+              persistent action row rather than a toggle reflecting real state. */}
+          {needsExactAlarmPermission() && (
+            <View style={[styles.glassPanel, { marginTop: Spacing.sm }]}>
+              <View style={styles.toggleContent}>
+                <Text style={styles.toggleTitle}>Exact Prayer Alerts</Text>
+                <Text style={styles.toggleSubtitle}>
+                  Android can delay and bundle alerts together without this — enable it in settings.
+                </Text>
+              </View>
+              <TouchableOpacity
+                style={styles.exactAlarmButton}
+                onPress={handleOpenExactAlarmSettings}
+                activeOpacity={0.8}
+                accessibilityRole="button"
+                accessibilityLabel="Open exact alarm settings"
+              >
+                <Text style={styles.exactAlarmButtonText}>Open Settings</Text>
+              </TouchableOpacity>
+            </View>
+          )}
+
           {/* Set Reminder Button */}
           <TouchableOpacity
             style={[styles.setButton, { marginTop: Spacing.lg }]}
@@ -1048,6 +1086,20 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.4,
     shadowRadius: 10,
+  },
+  exactAlarmButton: {
+    borderRadius: BorderRadius.full,
+    borderWidth: 1,
+    borderColor: Colors.accent.glow,
+    backgroundColor: Colors.accent.muted,
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.sm,
+  },
+  exactAlarmButtonText: {
+    fontSize: Typography.sizes.detail,
+    color: Colors.accent.primary,
+    fontWeight: '600',
+    letterSpacing: 0.3,
   },
   footer: {
     paddingHorizontal: Spacing.xxl,
