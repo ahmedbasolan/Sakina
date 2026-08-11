@@ -33,7 +33,25 @@ const HadithLayer: React.FC<HadithLayerProps> = ({
   topInset = 0,
 }) => {
   const arabic = hadith.arabicText || '';
-  const translation = hadith.englishTranslation || hadith.translation || '';
+  // `primaryText` is the tight, word-for-word translation of exactly the
+  // Arabic shown above — `englishTranslation`/`translation` is documented on
+  // the Content type as "detailed context/instruction" and on ~half of this
+  // journey's hadith entries is the FULL narrated account (setup + quote +
+  // reply), which can run much longer than the quoted Arabic actually covers
+  // (e.g. hadith_imam_6: the Arabic is only the Prophet's closing line, "Tell
+  // him that Allah loves him", but englishTranslation is the whole story of
+  // the man and his recitation). Pairing Arabic directly with that longer
+  // text read as if it were a literal translation, which it isn't.
+  const directCaption = hadith.primaryText || hadith.translation || hadith.englishTranslation || '';
+  const fullAccount = hadith.englishTranslation || hadith.translation || '';
+  // Only a distinct thing when it actually adds something beyond the direct
+  // caption — most entries' full account IS the direct translation verbatim.
+  const hasFullAccount = fullAccount.length > directCaption.length + 20;
+  // When the two diverge, the short caption stays a caption (Arabic is still
+  // the hero) and the fuller narrative takes over the main reading role the
+  // translation always had. When they don't diverge, there's nothing to
+  // caption — show the one text at normal weight, same as before.
+  const translation = hasFullAccount ? fullAccount : directCaption;
   const grading = (hadith.propheticPractice?.grading || 'authentic')
     .replace(/_/g, ' ')
     .split(' ')
@@ -164,6 +182,17 @@ const HadithLayer: React.FC<HadithLayerProps> = ({
         {arabic !== '' && (
           <Animated.View style={{ opacity: o(arabicOpacity), transform: [{ translateY: t(arabicSlide) }] }}>
             <ArabicText text={arabic} style={isLongArabic ? styles.arabicCompact : styles.arabic} />
+            {/* A quiet, small gloss directly under the Arabic — always the
+                literal translation of exactly what's shown above, never the
+                fuller narrative. Arabic stays the visual hero; this is a
+                caption, not a second reading block. Only rendered when it
+                differs from the main text below (otherwise it would just
+                repeat the same sentence twice). */}
+            {hasFullAccount && (
+              <Text style={styles.directCaption} allowFontScaling>
+                {directCaption}
+              </Text>
+            )}
           </Animated.View>
         )}
 
@@ -274,6 +303,18 @@ const styles = StyleSheet.create({
     fontSize: 20,
     lineHeight: 42,
     color: Colors.text.primary,
+  },
+  // Small, quiet gloss directly under the Arabic — a caption, not a second
+  // reading block, so the Arabic stays the visual hero.
+  directCaption: {
+    fontFamily: Typography.fonts.serif,
+    fontSize: 14,
+    lineHeight: 20,
+    fontStyle: 'italic',
+    color: Colors.text.muted,
+    textAlign: 'center',
+    marginTop: Spacing.md,
+    paddingHorizontal: Spacing.lg,
   },
 
   /* ── Divider ── */
