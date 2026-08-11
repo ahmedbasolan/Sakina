@@ -66,6 +66,16 @@ const INTERCARDINAL_TICKS = [45, 135, 225, 315].map((angle) => {
   return { key: angle, x1, y1, x2, y2 };
 });
 
+// A graduated degree scale around the outer limb — the fine markings a real
+// astrolabe's limb/rule carries, and the detail that makes the limb's own
+// rotation (see the "locating" search animation) actually visible: a bare
+// stroked circle is rotationally symmetric, so spinning it alone would show
+// no motion at all.
+const LIMB_SCALE_DOTS = Array.from({ length: 24 }, (_, i) => {
+  const [cx, cy] = ringPoint(i * 15, 48);
+  return { key: i, cx, cy, major: i % 6 === 0 };
+});
+
 // A small, globally-spread default shortlist — shown before the user types.
 const POPULAR_CITIES: { city: string; country: string }[] = [
   { city: 'Mecca', country: 'Saudi Arabia' },
@@ -146,6 +156,14 @@ export function LocationCompass({
   const reduceMotion = useReduceMotion();
 
   const rotation = useRef(new Animated.Value(0)).current; // "turns" — 0 = needle up
+  // The limb (outer graduated ring) and the star lattice turn against each
+  // other while searching — like a rete rotating over a fixed mater plate —
+  // instead of only the needle spinning. A single element spinning alone is
+  // indistinguishable from a generic loading wheel; two rings counter-
+  // rotating around a needle that's doing its own slower sweep reads as an
+  // instrument actually working, not a spinner borrowed from anywhere.
+  const limbRotation = useRef(new Animated.Value(0)).current;
+  const latticeRotation = useRef(new Animated.Value(0)).current;
   const needleOpacity = useRef(new Animated.Value(1)).current;
   const glowOpacity = useRef(new Animated.Value(0)).current;
   const checkScale = useRef(new Animated.Value(0)).current;
@@ -153,6 +171,8 @@ export function LocationCompass({
   const pressScale = useRef(new Animated.Value(1)).current;
 
   const spinLoop = useRef<Animated.CompositeAnimation | null>(null);
+  const limbLoop = useRef<Animated.CompositeAnimation | null>(null);
+  const latticeLoop = useRef<Animated.CompositeAnimation | null>(null);
   const mountedRef = useRef(true);
   const advanceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   // Mirrors `rotation`'s current value. The settle animation needs to know
@@ -160,6 +180,8 @@ export function LocationCompass({
   // (see completeLocation) — reading it back is the only way, since the spin
   // loop leaves it at an arbitrary point whenever GPS happens to resolve.
   const rotationValue = useRef(0);
+  const limbRotationValue = useRef(0);
+  const latticeRotationValue = useRef(0);
 
   useEffect(() => {
     const id = rotation.addListener(({ value }) => {
@@ -169,10 +191,22 @@ export function LocationCompass({
   }, [rotation]);
 
   useEffect(() => {
+    const id = limbRotation.addListener(({ value }) => { limbRotationValue.current = value; });
+    return () => limbRotation.removeListener(id);
+  }, [limbRotation]);
+
+  useEffect(() => {
+    const id = latticeRotation.addListener(({ value }) => { latticeRotationValue.current = value; });
+    return () => latticeRotation.removeListener(id);
+  }, [latticeRotation]);
+
+  useEffect(() => {
     mountedRef.current = true;
     return () => {
       mountedRef.current = false;
       spinLoop.current?.stop();
+      limbLoop.current?.stop();
+      latticeLoop.current?.stop();
       if (advanceTimer.current) clearTimeout(advanceTimer.current);
     };
   }, []);
@@ -193,20 +227,44 @@ export function LocationCompass({
     return () => loop.stop();
   }, [phase, reduceMotion]);
 
-  // Searching — a continuous, faster spin signals "looking for your sky".
-  // Under reduce-motion the needle stays still; the ActivityIndicator elsewhere
-  // in this component already communicates the in-progress state.
+  // Searching — the limb turns one way, the lattice turns the other, and the
+  // needle sweeps slower than either, like it's actively sampling rather than
+  // spinning in place. Deliberately un-synchronised periods (2600 / 4200 /
+  // 3100ms) so no two layers ever repeat the same relative alignment twice
+  // during a typical search — a locked-step rhythm is what makes multi-layer
+  // motion read as "gears" instead of "calculating."
+  // Under reduce-motion every layer stays still; the ActivityIndicator
+  // elsewhere in this component already communicates the in-progress state.
   useEffect(() => {
     if (phase !== 'locating') return;
     spinLoop.current?.stop();
+    limbLoop.current?.stop();
+    latticeLoop.current?.stop();
     rotation.setValue(0);
+    limbRotation.setValue(0);
+    latticeRotation.setValue(0);
     if (reduceMotion) return;
-    const loop = Animated.loop(
-      Animated.timing(rotation, { toValue: 1, duration: 850, easing: Easing.linear, useNativeDriver: true }),
+
+    const needle = Animated.loop(
+      Animated.timing(rotation, { toValue: 1, duration: 2600, easing: Easing.linear, useNativeDriver: true }),
     );
-    spinLoop.current = loop;
-    loop.start();
-    return () => loop.stop();
+    const limb = Animated.loop(
+      Animated.timing(limbRotation, { toValue: 1, duration: 4200, easing: Easing.linear, useNativeDriver: true }),
+    );
+    const lattice = Animated.loop(
+      Animated.timing(latticeRotation, { toValue: -1, duration: 3100, easing: Easing.linear, useNativeDriver: true }),
+    );
+    spinLoop.current = needle;
+    limbLoop.current = limb;
+    latticeLoop.current = lattice;
+    needle.start();
+    limb.start();
+    lattice.start();
+    return () => {
+      needle.stop();
+      limb.stop();
+      lattice.stop();
+    };
   }, [phase, reduceMotion]);
 
   // Manual mode dims the needle — it's resting, not searching.
@@ -234,6 +292,25 @@ export function LocationCompass({
       setPhase('found');
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => {});
       spinLoop.current?.stop();
+      limbLoop.current?.stop();
+      latticeLoop.current?.stop();
+      // The two search rings lock back to their resting alignment at the same
+      // moment the needle settles on the bearing below — the "everything
+      // clicks into place" beat that makes the search read as having found
+      // something, not just stopped.
+      const ringSettleDuration = reduceMotion ? 0 : 650;
+      Animated.timing(limbRotation, {
+        toValue: Math.round(limbRotationValue.current),
+        duration: ringSettleDuration,
+        easing: Easing.out(Easing.cubic),
+        useNativeDriver: true,
+      }).start();
+      Animated.timing(latticeRotation, {
+        toValue: Math.round(latticeRotationValue.current),
+        duration: ringSettleDuration,
+        easing: Easing.out(Easing.cubic),
+        useNativeDriver: true,
+      }).start();
 
       // The needle settles on the QIBLA — the real great-circle bearing from
       // here to the Kaaba. A compass needle carries a strong, universal promise
@@ -288,23 +365,39 @@ export function LocationCompass({
 
       onResolved?.(location, longitude);
     },
-    [onResolved, onComplete, settleDelay, reduceMotion, rotation, glowOpacity, checkScale],
+    [onResolved, onComplete, settleDelay, reduceMotion, rotation, limbRotation, latticeRotation, glowOpacity, checkScale],
   );
 
   const revealManual = useCallback(() => {
     if (!mountedRef.current) return;
     spinLoop.current?.stop();
+    limbLoop.current?.stop();
+    latticeLoop.current?.stop();
     // Unwind to north instead of freezing mid-spin. Stopping the loop used to
     // abandon the needle at whatever arbitrary angle GPS failed at — a dimmed
     // needle stuck at 237° reads as a broken instrument, not a resting one.
+    // Same treatment for the two search rings, or they'd freeze mid-turn too.
+    const unwindDuration = reduceMotion ? 0 : 500;
     Animated.timing(rotation, {
       toValue: Math.round(rotationValue.current),
-      duration: reduceMotion ? 0 : 500,
+      duration: unwindDuration,
+      easing: Easing.out(Easing.cubic),
+      useNativeDriver: true,
+    }).start();
+    Animated.timing(limbRotation, {
+      toValue: Math.round(limbRotationValue.current),
+      duration: unwindDuration,
+      easing: Easing.out(Easing.cubic),
+      useNativeDriver: true,
+    }).start();
+    Animated.timing(latticeRotation, {
+      toValue: Math.round(latticeRotationValue.current),
+      duration: unwindDuration,
       easing: Easing.out(Easing.cubic),
       useNativeDriver: true,
     }).start();
     setPhase('manual');
-  }, [rotation, reduceMotion]);
+  }, [rotation, limbRotation, latticeRotation, reduceMotion]);
 
   const handleUseLocation = useCallback(async () => {
     // 'manual' is allowed through so a denied/failed attempt can be retried —
@@ -383,6 +476,8 @@ export function LocationCompass({
       : '✦ Prayer times are ready for you';
 
   const rotateDeg = rotation.interpolate({ inputRange: [0, 1], outputRange: ['0deg', '360deg'] });
+  const limbRotateDeg = limbRotation.interpolate({ inputRange: [0, 1], outputRange: ['0deg', '360deg'] });
+  const latticeRotateDeg = latticeRotation.interpolate({ inputRange: [-1, 0], outputRange: ['-360deg', '0deg'] });
   const inputBorderColor = inputFocusAnim.interpolate({
     inputRange: [0, 1],
     outputRange: [Colors.glass.border, 'rgba(212, 175, 55, 0.5)'],
@@ -458,6 +553,55 @@ export function LocationCompass({
             pointerEvents="none"
           />
 
+          {/* Limb (outer graduated ring) — rotates independently while searching,
+              like a rete turning over a fixed mater plate. A bare stroked
+              circle is rotationally symmetric, so the degree-scale dots exist
+              specifically to make this layer's motion visible. */}
+          <Animated.View
+            style={{
+              position: 'absolute',
+              top: (compassSize - ringSize) / 2,
+              left: (compassSize - ringSize) / 2,
+              transform: [{ rotate: limbRotateDeg }],
+            }}
+            pointerEvents="none"
+          >
+            <Svg width={ringSize} height={ringSize} viewBox="0 0 100 100">
+              <Circle cx={50} cy={50} r={48} stroke={Colors.accent.primary} strokeOpacity={0.22} strokeWidth={0.6} fill="none" />
+              {LIMB_SCALE_DOTS.map((d) => (
+                <Circle
+                  key={d.key}
+                  cx={d.cx}
+                  cy={d.cy}
+                  r={d.major ? 0.7 : 0.4}
+                  fill={Colors.accent.primary}
+                  fillOpacity={d.major ? 0.55 : 0.3}
+                />
+              ))}
+            </Svg>
+          </Animated.View>
+
+          {/* 8-point star lattice — turns the opposite way from the limb above.
+              Bound to the ring itself, not the looser ambient mandala backdrop,
+              so it reads as an astrolabe rete plate rather than a compass icon
+              floating over unrelated decoration. */}
+          <Animated.View
+            style={{
+              position: 'absolute',
+              top: (compassSize - ringSize) / 2,
+              left: (compassSize - ringSize) / 2,
+              transform: [{ rotate: latticeRotateDeg }],
+            }}
+            pointerEvents="none"
+          >
+            <Svg width={ringSize} height={ringSize} viewBox="0 0 100 100">
+              <Path d={ASTROLABE_LATTICE_PATH} stroke={Colors.accent.primary} strokeOpacity={0.32} strokeWidth={0.7} fill="none" />
+            </Svg>
+          </Animated.View>
+
+          {/* Main ring + ticks — the one fixed layer. Everything else moves
+              against this frame, which is what makes the motion read as
+              layered instrument parts rather than the whole thing spinning. */}
           <Svg
             width={ringSize}
             height={ringSize}
@@ -465,12 +609,6 @@ export function LocationCompass({
             style={{ position: 'absolute', top: (compassSize - ringSize) / 2, left: (compassSize - ringSize) / 2 }}
             pointerEvents="none"
           >
-            {/* Outer limb — a faint second plate, the layered-rings depth real astrolabes have. */}
-            <Circle cx={50} cy={50} r={48} stroke={Colors.accent.primary} strokeOpacity={0.22} strokeWidth={0.6} fill="none" />
-            {/* 8-point star lattice bound to the ring itself, not the looser ambient
-                mandala backdrop — this is what makes it read as an astrolabe rete
-                plate instead of a compass icon floating over unrelated decoration. */}
-            <Path d={ASTROLABE_LATTICE_PATH} stroke={Colors.accent.primary} strokeOpacity={0.32} strokeWidth={0.7} fill="none" />
             <Circle cx={50} cy={50} r={44} stroke={Colors.accent.primary} strokeOpacity={0.8} strokeWidth={1.5} fill="none" />
             {INTERCARDINAL_TICKS.map((t) => (
               <Line
