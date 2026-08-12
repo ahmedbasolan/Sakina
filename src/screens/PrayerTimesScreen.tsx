@@ -53,7 +53,12 @@ export default function PrayerTimesScreen({ navigation }: { navigation: any }) {
       setIsLoading(true);
       try {
         let data: PrayerTimesData;
-        if (loc.latitude && loc.longitude) {
+        // `!== undefined`, not truthiness — a coordinate of exactly 0 is
+        // valid (lon 0 covers Greenwich and Accra; lat 0 covers Quito and
+        // Kampala), and truthiness silently sent those users to the network
+        // city lookup instead of the on-device calculation. Every other call
+        // site already guards this way.
+        if (loc.latitude !== undefined && loc.longitude !== undefined) {
           data = await service.getTimingsByCoordinates(loc.latitude, loc.longitude, loc.country);
         } else {
           data = await service.getTimingsByCity(loc.city, loc.country);
