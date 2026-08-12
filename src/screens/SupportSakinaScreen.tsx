@@ -72,7 +72,7 @@ const FEATURES: {
   {
     icon: 'color-palette-outline',
     title: 'Beautiful background themes',
-    description: 'Transform your sanctuary with exclusive Islamic art backgrounds',
+    description: 'A different mandala or nightscape behind every session, not just the one default',
     showThemePreview: true,
   },
   {
@@ -93,7 +93,7 @@ const FEATURES: {
   {
     icon: 'pie-chart-outline',
     title: 'Mood analytics & insights',
-    description: 'See your comprehensive mood distribution and personalized spiritual insights',
+    description: 'See which days and moods actually repeat, instead of just remembering the loudest ones',
   },
 ];
 
