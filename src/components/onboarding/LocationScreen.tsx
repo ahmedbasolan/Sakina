@@ -47,11 +47,26 @@ async function warmHomeCaches(location: UserLocation): Promise<void> {
     const prayerService = PrayerTimesService.getInstance();
     const city = location.city || 'Dubai';
     const country = location.country || 'UAE';
-    const tasks: Promise<unknown>[] = [prayerService.getTimingsByCity(city, country)];
-    if (location.latitude !== undefined && location.longitude !== undefined) {
-      tasks.push(prayerService.getTimingsByCoordinates(location.latitude, location.longitude, country));
-    }
-    await Promise.all(tasks);
+    // When GPS coordinates are on file, timings are computed on-device by
+    // adhan.js and the city lookup is pure redundancy — every consumer
+    // (useHomeData, PrayerTimesScreen, notificationTopUpTask,
+    // getCurrentPrayerContext, GuidanceScreen) prefers coordinates, so the
+    // city cache it fills would never be read. It was also a liability: this
+    // used to unconditionally fetch the city AND `await Promise.all(tasks)`,
+    // so one failed api.aladhan.com request — a network call that did not
+    // need to happen — rejected before the loop below and silently skipped
+    // pre-warming ALL NINE moods. The user finished onboarding with a cold
+    // Home and paid a live fetch on their first tap.
+    //
+    // `!== undefined`, not truthiness — a coordinate of exactly 0 is valid.
+    const hasCoords = location.latitude !== undefined && location.longitude !== undefined;
+    const warmTimings = hasCoords
+      ? prayerService.getTimingsByCoordinates(location.latitude!, location.longitude!, country)
+      : prayerService.getTimingsByCity(city, country);
+
+    // allSettled, not all: prayer timings are a nice-to-have here and must
+    // never gate the mood warming, which is the part the first tap depends on.
+    await Promise.allSettled([warmTimings]);
 
     // The onboarding-picked mood is the most likely first tap — warm it first.
     const pickedMood = (await AsyncStorage.getItem('@onboarding_mood')) as Mood | null;

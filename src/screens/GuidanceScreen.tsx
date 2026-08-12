@@ -280,7 +280,21 @@ const GuidanceScreen: React.FC = () => {
         const location = await getUserLocation();
         if (!location) return;
         const prayerService = PrayerTimesService.getInstance();
-        const data = await prayerService.getTimingsByCity(location.city, location.country);
+        // Prefer coordinates: adhan.js computes these on-device with no
+        // network at all, so the resting card resolves even offline and on a
+        // cold day-rollover when the city cache is empty. This was the last
+        // call site still going straight to the city endpoint while GPS was
+        // sitting on the same `location` object — the source of the recurring
+        // "NetworkService: Network Error … timingsByCity" report.
+        // `!== undefined`, not truthiness — a coordinate of exactly 0 is valid.
+        const data =
+          location.latitude !== undefined && location.longitude !== undefined
+            ? await prayerService.getTimingsByCoordinates(
+              location.latitude,
+              location.longitude,
+              location.country,
+            )
+            : await prayerService.getTimingsByCity(location.city, location.country);
         const next = prayerService.getNextPrayerInfo(data.timings);
         if (!cancelled) {
           setReturnAfter(`${next.name} · ${formatPrayerTime(next.time, timeFormat)}`);
