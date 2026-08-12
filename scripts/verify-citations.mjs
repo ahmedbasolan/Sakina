@@ -249,6 +249,24 @@ async function hadithText(coll, n) {
   return hCache.get(k);
 }
 
+// English sibling of hadithText. Pass 7's hadith check below compares an
+// ENGLISH quotation, and reaching for hadithText() (which pulls `ara-`) would
+// have scored every entry near zero — a check that fails everything is as
+// useless as one that passes everything.
+const hEnCache = new Map();
+async function hadithTextEn(coll, n) {
+  const k = `${coll}/${n}`;
+  if (!hEnCache.has(k)) {
+    let t = null;
+    try {
+      const r = await fetch(`https://cdn.jsdelivr.net/gh/fawazahmed0/hadith-api@1/editions/eng-${coll}/${n}.json`);
+      if (r.ok) t = (await r.json()).hadiths?.[0]?.text ?? null;
+    } catch { /* network — treated as skipped, never as a failure */ }
+    hEnCache.set(k, t);
+  }
+  return hEnCache.get(k);
+}
+
 const mismatch = [];
 let hChecked = 0, hSkipped = 0;
 for (const o of objects('q_angle_')) {
@@ -470,9 +488,45 @@ for (const e of motivations) {
   const score = qw.filter((w) => av.has(w)).length / qw.length;
   if (score < 0.6) motBad.push({ ...e, why: `quoted English does not match ${ref[1]} (overlap ${score.toFixed(2)})` });
 }
+// Hadith entries get the same treatment against the mirror. Pass 7 originally
+// checked only locatability + ellipsis + the Quran overlap above, which is how
+// a Muslim 597a quotation shipped from this very script's own "fix" ending at
+// "...his sins will be forgiven" — dropping "even if these are as abundant as
+// the foam of the sea" and closing the quote with a period. That is the same
+// fault this file already flags elsewhere (Muslim 2328a's missing "except when
+// fighting in the cause of Allah"), so it gets a check rather than a promise.
+//
+// LIMITS, stated so nobody trusts this further than it goes: word overlap
+// catches a quote attached to the WRONG hadith, not a quote that stops early —
+// a truncation's words are all still present, so it scores 1.00. Detecting
+// truncation would need alignment against a translation this app deliberately
+// paraphrases, so it is not attempted. Sahih Muslim is skipped outright: the
+// mirror renumbers it (see pass 4), and checking there would "correct" right
+// citations into wrong ones.
+let motHadithChecked = 0, motHadithSkipped = 0;
+for (const e of motivations) {
+  if (/\[Quran \d+:\d+\]/.test(e.text)) continue;
+  const m = e.text.match(/\[([A-Za-z' -]+?)\s+(\d+)[a-z]?\]/);
+  if (!m) continue;
+  const slug = collSlug(m[1]);
+  if (!MIRRORED[slug]) { motHadithSkipped++; continue; }
+  const txt = await hadithTextEn(slug, m[2]);
+  if (!txt) { motHadithSkipped++; continue; }
+  const qw = enWords(e.text.replace(/\[[^\]]*\]/g, ''));
+  if (qw.length < MIN_EN_WORDS) { motHadithSkipped++; continue; }
+  motHadithChecked++;
+  const hv = new Set(enWords(txt));
+  const score = qw.filter((w) => hv.has(w)).length / qw.length;
+  if (score < 0.5) {
+    motBad.push({ ...e, why: `quoted English does not match ${m[1]} ${m[2]} (overlap ${score.toFixed(2)})` });
+  }
+}
+
 console.log(`\nchecked ${motivations.length} getStepMotivation entries ` +
             `(${motQuranChecked} Quran quotes re-read from quran.com, ` +
-            `${motQuranShort} too short to score)`);
+            `${motQuranShort} too short to score; ` +
+            `${motHadithChecked} hadith quotes re-read from the mirror, ` +
+            `${motHadithSkipped} skipped — Sahih Muslim is renumbered there)`);
 console.log(`entries with an unlocatable, truncated or drifting citation: ${motBad.length}`);
 for (const r of motBad) console.log(`  ${r.key}  ·  ${r.why}\n      "${r.text.slice(0, 110)}"`);
 

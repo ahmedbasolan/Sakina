@@ -5112,7 +5112,7 @@ const quranContentAnglesData: ContentAngle[] = [
     contentId: 'quran_3_134',
     mood: 'Angry',
     angle:
-      'Allah describes the people of Taqwa as "those who restrain anger and who pardon the people—and Allah loves the doers of good." Ibn Kathir explains that "kazm al-ghayz" (restraining anger) means swallowing it when you have the power to act on it. Al-Qurtubi adds that this verse places anger management alongside spending in charity and prayer as qualities of the God-conscious. The Prophet ﷺ said: "The strong man is not the one who can wrestle, but the strong man is the one who controls himself at the time of anger." [Sahih Bukhari 6114] You had the opening to let it out just now, and you didn\'t take it. Notice what that actually cost you to do. [Tafsir Ibn Kathir]',
+      'Allah describes the people of Taqwa as "those who restrain anger and who pardon the people—and Allah loves the doers of good." Ibn Kathir explains that "kazm al-ghayz" (restraining anger) means swallowing it when you have the power to act on it. Al-Qurtubi adds that this verse places anger management alongside spending in charity and prayer as qualities of the God-conscious. The Prophet ﷺ said: "The strong man is not the one who can wrestle, but the strong man is the one who controls himself at the time of anger." [Sahih Bukhari 6114] Whatever you did with the last surge, the restraint being described costs something real in the moment — which is why this ayah lists it beside charity and prayer, not beneath them. [Tafsir Ibn Kathir]',
     angleSource: 'Tafsir Ibn Kathir',
     action: 'Before responding, count to 10 and make wudu if possible.',
     practiceSteps: JSON.stringify([
@@ -5700,7 +5700,7 @@ const quranContentAnglesData: ContentAngle[] = [
     contentId: 'quran_29_20',
     mood: 'Grateful',
     angle:
-      'Allah does not simply ask you to believe in His power — He tells you to go and look for it. Ibn Kathir explains this ayah as a command to travel and observe creation as living proof that the One who originated it can just as easily bring it back — the same argument He makes in Surah Ar-Rum: "He it is who originates creation, then repeats it, and that is easier for Him" (30:27). "Travel through the land and observe how He began creation" is an invitation to notice the evidence you walk past every day: a barren patch of earth turning green after rain, a single seed becoming a full tree, life beginning again and again all around you. You walked past two or three of these today and didn\'t count a single one as evidence of anything. [Tafsir Ibn Kathir, Surah Al-Ankabut]',
+      'Allah does not simply ask you to believe in His power — He tells you to go and look for it. Ibn Kathir explains this ayah as a command to travel and observe creation as living proof that the One who originated it can just as easily bring it back — the same argument He makes in Surah Ar-Rum: "He it is who originates creation, then repeats it, and that is easier for Him" (30:27). "Travel through the land and observe how He began creation" is an invitation to notice the evidence you walk past every day: a barren patch of earth turning green after rain, a single seed becoming a full tree, life beginning again and again all around you. Pick one you can see from where you are sitting — a plant, the light, your own breathing — and let it count as the evidence it already is. [Tafsir Ibn Kathir, Surah Al-Ankabut]',
     angleSource: 'Tafsir Ibn Kathir',
     action: 'Notice one ordinary sign of creation today and thank Allah for it specifically.',
     reflection: 'What is one everyday "beginning" in creation — a plant, a sunrise, a birth — that you have stopped truly noticing?',
@@ -6022,7 +6022,7 @@ const quranContentAnglesData: ContentAngle[] = [
     contentId: 'quran_4_147',
     mood: 'Grateful',
     angle:
-      'Allah says: "What would Allah do with your punishment if you are grateful and believe? And ever is Allah Appreciative and Knowing." Ibn Kathir explains that this verse reveals that gratitude combined with faith removes the very purpose of divine punishment—if you are thankful and believing, there is no need for correction. Al-Qurtubi adds that Allah describes Himself as "Appreciative" (Shakir), meaning He acknowledges and rewards even the smallest act of gratitude from His servants. The Prophet ﷺ said: "Allah is more pleased with the repentance of His servant than one of you who finds his lost animal." [Sahih Bukhari 6309] Between the two of those, there is remarkably little left for punishment to be about. [Tafsir al-Qurtubi]',
+      'Allah says: "What would Allah do with your punishment if you are grateful and believe? And ever is Allah Appreciative and Knowing." Ibn Kathir explains that this verse reveals that gratitude combined with faith removes the very purpose of divine punishment—if you are thankful and believing, there is no need for correction. Al-Qurtubi adds that Allah describes Himself as "Appreciative" (Shakir), meaning He acknowledges and rewards even the smallest act of gratitude from His servants. The Prophet ﷺ said: "Allah is more pleased with the repentance of His servant than one of you who finds his lost animal." [Sahih Bukhari 6309] It is put to you as a question because the answer is meant to be plain: gratitude and belief together leave punishment with nothing to correct. [Tafsir al-Qurtubi]',
     angleSource: 'Tafsir al-Qurtubi',
     action: 'Say "Alhamdulillah" for your faith and your safety.',
     practiceSteps: JSON.stringify([
@@ -6553,7 +6553,7 @@ const quranContentAnglesData: ContentAngle[] = [
     contentId: 'quran_14_7',
     mood: 'Grateful',
     angle:
-      'Allah declares: "If you are grateful, I will surely increase you." Ibn Kathir explains that this divine law applies to all blessings—when you express gratitude for what you have, Allah multiplies it. Al-Sa\'di adds that the "increase" is not limited to material wealth; it includes peace of heart, clarity of mind, and satisfaction with one\'s portion. The Prophet ﷺ said: "Richness is not having many possessions. Rather, richness is the richness of the soul." [Sahih Bukhari 6446] Go through what\'s already in front of you before you add anything to the list. Most of it, you hadn\'t noticed was a gift. [Tafsir al-Sa\'di]',
+      'Allah declares: "If you are grateful, I will surely increase you." Ibn Kathir explains that this divine law applies to all blessings—when you express gratitude for what you have, Allah multiplies it. Al-Sa\'di adds that the "increase" is not limited to material wealth; it includes peace of heart, clarity of mind, and satisfaction with one\'s portion. The Prophet ﷺ said: "Richness is not having many possessions. Rather, richness is the richness of the soul." [Sahih Bukhari 6446] Go through what is already in front of you before you add anything to the list. The increase promised here starts with what gets counted, not with what gets acquired. [Tafsir al-Sa\'di]',
     angleSource: "Tafsir al-Sa'di",
     action: 'Look around and say "Alhamdulillah" for the roof over your head.',
     practiceSteps: JSON.stringify([

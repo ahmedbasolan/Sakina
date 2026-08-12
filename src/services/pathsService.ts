@@ -182,7 +182,7 @@ export class PathsService {
       'The Forgotten Moments':
         '"I noticed the prayer of Muhammad ﷺ — his standing, his bowing, his returning to standing after bowing, his prostration, his sitting between the two prostrations — and all these were nearly equal to one another." [Muslim 471a]',
       'Complete the Circle':
-        '"Whoever extols Allah after every prayer thirty-three times, praises Allah thirty-three times, and declares His greatness thirty-three times, then says to complete a hundred: there is no god but Allah alone, having no partner with Him, to Him belongs sovereignty and to Him is praise due, and He is Potent over everything — his sins will be forgiven." [Muslim 597a]',
+        '"Whoever extols Allah after every prayer thirty-three times, praises Allah thirty-three times, and declares His greatness thirty-three times, then says to complete a hundred: there is no god but Allah, having no partner with Him, to Him belongs sovereignty and to Him is praise due, and He is Potent over everything — his sins will be forgiven even if these are as abundant as the foam of the sea." [Muslim 597a]',
     };
 
     return motivations[step.title] || 'Take this step with sincerity and trust in Allah.';
