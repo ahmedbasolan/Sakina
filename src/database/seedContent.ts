@@ -150,7 +150,15 @@ import type { Content, ContentAngle } from '../types';
 //      already existed and are reused — 14 angles (q_angle_imam_day1..14) with
 //      3 sourced practice steps each, and 14 hadith (hadith_imam_1..14). The
 //      path was a locked stub with dailySteps: [] and isPremium: true.
-const SEED_VERSION = 28;
+// v29: no new content — a rename that recovers content already written but
+//      never reachable. Two angles on quran_50_16 both carried the id
+//      `q_angle_50_16_lonely`: one mood 'Sad' (with its own practiceSteps and
+//      a Bukhari 7405 citation), one mood 'Lonely'. `content_angles.id` is a
+//      PRIMARY KEY and the inserts below are INSERT OR REPLACE, so the later
+//      array entry silently overwrote the earlier one and the Sad angle had
+//      never existed on any device. The Sad one is now
+//      `q_angle_50_16_sad_angle`; this bump is what actually delivers it.
+const SEED_VERSION = 29;
 // Separate keys per content type — Quran and Hadith data change independently,
 // and each seeder used to write the SAME key at the end of its run. Since
 // initializeDatabase() awaits seedQuranContent() before seedHadithContent(),

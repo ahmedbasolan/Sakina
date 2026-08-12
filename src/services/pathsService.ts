@@ -88,73 +88,101 @@ export class PathsService {
     return userProgress.completedDays.length >= path.duration;
   }
 
-  // NOTE: getStepMotivation currently has no call sites in src/ — if you wire
-  // it into a screen, re-verify against CLAUDE.md's "Quoting Quran Text"
-  // rules first. Every [Quran X:Y] entry below is the complete ayah,
-  // verified against api.alquran.cloud; a few were swapped for a different,
-  // genuinely complete verse where the true full ayah was a fiqh ruling or
-  // mid-story dialogue that didn't fit a short motivational line.
+  // NOTE: getStepMotivation currently has no call sites in src/, AND 22 of the
+  // 28 keys below match no `title` in staticPaths.ts — so even if it were
+  // wired up, most entries could never be reached. Do not treat this map as
+  // an audited content source; the lessons' real, verified content lives in
+  // `practiceSteps` in quranData.ts. Left in place rather than deleted because
+  // removing product copy is the owner's call, not a cleanup's.
+  //
+  // Every entry is nonetheless now citable, because an uncited quotation is a
+  // trap whether or not it renders today. `scripts/verify-citations.mjs`
+  // (pass 7) enforces it. What was here before:
+  //   - two quotations with NO source at all ("Trust in Allah, for He knows
+  //     what is best for His servants", "Tranquility (Sakina) is a gift…");
+  //   - "Allah loves to forgive, so seek His forgiveness. [Prophetic
+  //     Tradition]" — a provenance claim naming nothing locatable, and not a
+  //     wording any collection carries;
+  //   - the "Allah turns His Face towards him" hadith attributed to Bukhari
+  //     when it is Sunan Abi Dawud 909 (Abu Dharr);
+  //   - a Bukhari 5641 quote with an ellipsis eating four of its six items;
+  //   - Muslim 2328a with its "except when fighting in the cause of Allah"
+  //     exception dropped, which changes what the hadith claims;
+  //   - 28:16 spliced so Musa appears to narrate his own forgiveness inside
+  //     his own du'a;
+  //   - ~16 bare [Bukhari] / [Tirmidhi] / [At-Tabarani] tags with no number,
+  //     the exact form CLAUDE.md's "Citing Hadith" rule 2 bans.
+  // Two were replaced rather than renumbered: the Ayat al-Kursi promise, whose
+  // only reachable reference (Mishkat 974) sunnah.com itself grades weak, and
+  // the "keep silent" narration, whose number could not be fetched — CLAUDE.md
+  // rule 1: if you cannot fetch it, do not cite it.
+  //
+  // Every [Quran X:Y] entry is the complete ayah, verified against
+  // api.alquran.cloud; a few were swapped for a different, genuinely complete
+  // verse where the true full ayah was a fiqh ruling or mid-story dialogue
+  // that didn't fit a short motivational line.
   //
   // Not to be confused with `getConsistencyMessage` in
   // PathCompletionCelebration.tsx: that one is generic goal-gradient copy
-  // keyed by day-position, shown once on the post-completion modal. This one
-  // is topic-specific Quran/hadith citation keyed by step title, meant for
-  // the lesson itself if it's ever wired up — a different moment, different
-  // content, intentionally not merged into one function.
+  // keyed by day-position, shown once on the post-completion modal.
   getStepMotivation(step: PathStep): string {
     const motivations: Record<string, string> = {
       'Recognizing Anxiety':
-        '"No fatigue, nor sorrow, nor sadness... but that Allah expiates some of his sins for that." [Bukhari]',
-      'Turning to Allah': '"When anything distressed the Prophet ﷺ, he would pray." [Abu Dawud]',
+        '"No fatigue, nor disease, nor sorrow, nor sadness, nor hurt, nor distress befalls a Muslim, even if it were the prick he receives from a thorn, but that Allah expiates some of his sins for that." [Bukhari 5641]',
+      'Turning to Allah': '"When anything distressed the Prophet ﷺ, he prayed." [Abu Dawud 1319]',
       "Allah's Presence":
         '"And We have already created man and know what his soul whispers to him, and We are closer to him than his jugular vein." [Quran 50:16]',
       'The Promise of Ease': '"Verily, with hardship comes ease." [Quran 94:6]',
       'Letting Go of Control':
-        '"If you depend on Allah with true reliance, He would give you provision as He gives it to birds." [Tirmidhi]',
-      'Patience in Trust': '"Trust in Allah, for He knows what is best for His servants."',
+        '"If you were to rely upon Allah with the required reliance, then He would provide for you just as a bird is provided for — it goes out in the morning empty, and returns full." [Tirmidhi 2344]',
+      'Patience in Trust':
+        '"Strange are the ways of a believer, for there is good in every affair of his, and this is not the case with anyone except a believer: if he has an occasion to feel delight, he thanks Allah, and there is good for him in it; and if he gets into trouble and shows resignation, there is good for him in it." [Muslim 2999]',
       'Living with Tawakkul':
         '"And He will provide for him from where he does not expect. And whoever relies upon Allah — then He is sufficient for him. Indeed, Allah will accomplish His purpose. Allah has already set for everything a due measure." [Quran 65:3]',
 
       'Acknowledging Guilt':
-        '"Every son of Adam commits sin, and the best of those who sin are those who repent." [Tirmidhi]',
+        '"Every son of Adam sins, and the best of the sinners are the repentant." [Tirmidhi 2499]',
       'The Door of Repentance':
-        '"O My servants who have transgressed against themselves, do not despair of the mercy of Allah. Indeed, Allah forgives all sins. He is truly the Forgiving, the Merciful." [Quran 39:53]',
-      'Sincere Remorse': '"Regret is repentance." [Ibn Majah]',
+        '"Say, O My servants who have transgressed against themselves, do not despair of the mercy of Allah. Indeed, Allah forgives all sins. Indeed, it is He who is the Forgiving, the Merciful." [Quran 39:53]',
+      'Sincere Remorse': '"Regret is repentance." [Ibn Majah 4252]',
       'Taking Responsibility':
-        '"My Lord, indeed I have wronged myself, so forgive me — and He forgave him. Indeed, He is the Forgiving, the Merciful." [Quran 28:16]',
+        'He said, "My Lord, indeed I have wronged myself, so forgive me," and He forgave him. Indeed, He is the Forgiving, the Merciful. [Quran 28:16]',
       'Seeking Forgiveness':
-        '"Allah loves to forgive, so seek His forgiveness." [Prophetic Tradition]',
-      'Making Amends': '"Follow a bad deed with a good deed and it will wipe it out." [Tirmidhi]',
-      'Renewed Purity': '"The one who repents from sin is like one who has no sin." [Ibn Majah]',
+        '"By Allah! I ask for forgiveness from Allah and turn to Him in repentance more than seventy times a day." [Bukhari 6307]',
+      'Making Amends':
+        '"Have taqwa of Allah wherever you are, and follow an evil deed with a good one to wipe it out, and treat the people with good behaviour." [Tirmidhi 1987]',
+      'Renewed Purity':
+        '"The one who repents from sin is like one who did not sin." [Ibn Majah 4250]',
 
       'Understanding Anger':
-        '"The strong man is the one who controls himself in a fit of rage." [Bukhari]',
+        '"The strong is not the one who overcomes the people by his strength, but the strong is the one who controls himself while in anger." [Bukhari 6114]',
       "The Prophet's Example":
-        '"He ﷺ never struck anyone with his hand, neither a woman nor a servant." [Muslim]',
-      'The Power of Silence': '"If any of you becomes angry, let him keep silent." [Ahmad]',
-      'Transforming Energy': '"Do not be angry, and for you is Paradise." [At-Tabarani]',
+        '"Allah\'s Messenger ﷺ never beat anyone with his hand, neither a woman nor a servant, except when he had been fighting in the cause of Allah." [Muslim 2328a]',
+      'The Power of Silence': '"Do not become angry and furious." [Bukhari 6116]',
+      'Transforming Energy':
+        '"When one of you becomes angry while standing, he should sit down. If the anger leaves him, well and good; otherwise he should lie down." [Abu Dawud 4782]',
       'The Strength of Patience':
-        '"Whoever remains patient, Allah will bestow patience upon him." [Bukhari]',
+        '"Whoever remains patient, Allah will make him patient." [Bukhari 1469]',
       'Forgiveness as Freedom':
         '"The retribution for an evil act is an evil one like it, but whoever pardons and makes reconciliation — his reward is due from Allah. Indeed, He does not like wrongdoers." [Quran 42:40]',
       'Inner Tranquility':
-        '"Tranquility (Sakina) is a gift from the Most Merciful into the heart of the believer."',
+        '"Those who have believed and whose hearts are assured by the remembrance of Allah. Unquestionably, by the remembrance of Allah hearts are assured." [Quran 13:28]',
 
       // Salah Transformation Journey
       'What Steals Your Focus?':
-        '"When a servant stands to pray, Allah turns His Face towards him, as long as he does not look away." [Bukhari]',
+        '"Allah continues to turn favourably towards a servant while he is engaged in prayer, as long as he does not look to the side; but if he does so, He turns away from him." [Abu Dawud 909]',
       'Prepare Your Space, Prepare Your Heart':
-        '"The whole earth has been made a place of prayer and a means of purification for me." [Sahih Muslim]',
+        '"The whole earth has been made a mosque for us, and its dust has been made a purifier for us in case water is not available." [Muslim 522a]',
       'The First Takbir That Changes Everything':
-        '"The key to prayer is purification; its beginning is the Takbir." [Abu Dawud]',
+        '"The key to prayer is purification; its beginning is takbir and its end is taslim." [Abu Dawud 61]',
       "Understand What You're Saying":
-        '"Allah has divided the prayer between Himself and His servant into two halves." [Hadith Qudsi]',
+        '"I have divided the prayer into two halves between Me and My servant." [Muslim 395a]',
       'Let Your Body Speak':
-        '"The closest a servant is to his Lord is when he is in prostration." [Sahih Muslim]',
+        '"The nearest a servant comes to his Lord is when he is prostrating himself, so make supplication in this state." [Muslim 482]',
       'The Forgotten Moments':
-        '"The Prophet ﷺ used to be as still in his transitions as his positions." [Bukhari]',
+        '"I noticed the prayer of Muhammad ﷺ — his standing, his bowing, his returning to standing after bowing, his prostration, his sitting between the two prostrations — and all these were nearly equal to one another." [Muslim 471a]',
       'Complete the Circle':
-        '"Whoever recites Ayat al-Kursi after every prayer, nothing prevents him from entering Paradise except death." [An-Nasa\'i]',
+        '"Whoever extols Allah after every prayer thirty-three times, praises Allah thirty-three times, and declares His greatness thirty-three times, then says to complete a hundred: there is no god but Allah alone, having no partner with Him, to Him belongs sovereignty and to Him is praise due, and He is Potent over everything — his sins will be forgiven." [Muslim 597a]',
     };
 
     return motivations[step.title] || 'Take this step with sincerity and trust in Allah.';

@@ -70,8 +70,46 @@ const moodsOf = (b) =>
   (b.match(/moods:\s*\[([^\]]*)\]/) || [, ''])[1]
     .replace(/'/g, '').split(',').map((x) => x.trim()).filter(Boolean);
 
-const verses = Object.fromEntries(objects('quran_').map((o) => [o.id, moodsOf(o.body)]));
-const angles = objects('q_angle_').map((o) => ({
+const verseObjects = objects('quran_');
+const angleObjects = objects('q_angle_');
+
+// ── ID uniqueness ───────────────────────────────────────────────────
+// Runs FIRST, and against the raw object lists, because every downstream
+// structure here collapses duplicates silently: `Object.fromEntries` below
+// keeps the last verse of a repeated id, and `content`/`content_angles` use
+// `id TEXT PRIMARY KEY` with `INSERT OR REPLACE` (seedContent.ts), so on a
+// device the later array entry overwrites the earlier one with no error.
+//
+// That is not hypothetical. Two different angles on quran_50_16 both carried
+// the id `q_angle_50_16_lonely` — one mood 'Sad' with its own practiceSteps,
+// one mood 'Lonely'. The Sad one had never existed on any install, and the
+// pool counts below happily reported both. Nothing else in the repo — not
+// this script, not verify-journey, not verify-citations, not a typecheck —
+// noticed for as long as it shipped.
+const dupErrors = [];
+for (const [label, list] of [['content', verseObjects], ['angle', angleObjects]]) {
+  const seen = new Map();
+  for (const o of list) {
+    if (seen.has(o.id)) {
+      const mood = (b) => field(b, 'mood') || moodsOf(b).join('/') || '?';
+      dupErrors.push(
+        `duplicate ${label} id '${o.id}' — declared twice ` +
+        `(first as [${mood(seen.get(o.id).body)}], then as [${mood(o.body)}]). ` +
+        `PRIMARY KEY + INSERT OR REPLACE means only the LAST one reaches a device.`,
+      );
+    } else {
+      seen.set(o.id, o);
+    }
+  }
+}
+if (dupErrors.length) {
+  console.log(`${dupErrors.length} error(s):`);
+  dupErrors.forEach((e) => console.log(`  x ${e}`));
+  process.exit(1);
+}
+
+const verses = Object.fromEntries(verseObjects.map((o) => [o.id, moodsOf(o.body)]));
+const angles = angleObjects.map((o) => ({
   id: o.id,
   contentId: field(o.body, 'contentId'),
   mood: field(o.body, 'mood'),

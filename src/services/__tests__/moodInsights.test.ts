@@ -81,8 +81,20 @@ describe('computeInsights — day dedup (taps never inflate counts)', () => {
     const rows = [0, 1, 2, 3].map((age) => row(age, 'Grateful'));
     const card = find(rows, 'Shukr Champion');
     expect(card).toBeDefined();
-    // "4 of your last 4 days" — the user's own numbers, checkable on screen.
-    expect(card!.description).toContain('4 of your last 4 days');
+    // The user's own numbers, checkable on screen.
+    expect(card!.description).toContain('4 days you checked in, you met 4');
+  });
+
+  it('never calls logged days "your last N days" when they are not consecutive', () => {
+    // THE BUG: totalDays counts LOGGED days. Four grateful check-ins spread
+    // across a month rendered as "4 of your last 4 days" — telling a sporadic
+    // user they were grateful every recent day. The old copy passed the test
+    // above only because those four ages (0,1,2,3) happen to be consecutive.
+    const rows = [0, 9, 18, 27].map((age) => row(age, 'Grateful'));
+    const card = find(rows, 'Shukr Champion');
+    expect(card).toBeDefined();
+    expect(card!.description).not.toMatch(/your last \d+ days/i);
+    expect(card!.description).toContain('4 days you checked in');
   });
 });
 
@@ -105,6 +117,23 @@ describe('computeInsights — weekday pattern (rate-based, verifiable)', () => {
   it('states the fact, not a lifelong-sounding "you tend to" claim', () => {
     const card = find(rows, 'Pattern Detected');
     expect(card!.description).not.toMatch(/you tend to/i);
+  });
+
+  it('never claims the day beat every other weekday — a tie disproves it', () => {
+    // THE BUG: the copy said "more than any other day of the week", but the
+    // loop only ranks days that clear MIN_WEEKDAY_SAMPLE/MIN_WEEKDAY_HEAVY_DAYS
+    // and breaks ties on `Object.entries` order. Here two weekdays are BOTH
+    // 3/3 heavy — both fully qualifying, exactly tied — so whichever is named,
+    // the superlative is false about the other.
+    const tied = [
+      row(1, 'Sad'), row(8, 'Sad'), row(15, 'Sad'), // weekday A, 3/3 heavy
+      row(3, 'Tired'), row(10, 'Tired'), row(17, 'Tired'), // weekday B, 3/3 heavy
+      row(4, 'Calm'), row(5, 'Grateful'), row(6, 'Hopeful'),
+      row(11, 'Calm'), row(12, 'Grateful'),
+    ];
+    const card = find(tied, 'Pattern Detected');
+    expect(card).toBeDefined();
+    expect(card!.description).not.toMatch(/more than any other day/i);
   });
 
   it('honours Guilty as heavy inside the pattern (old bug: ignored it)', () => {
@@ -133,6 +162,25 @@ describe('computeInsights — trend uses days, not fake percentages', () => {
   });
 });
 
+describe('computeInsights — the 30-day claim is self-enforced', () => {
+  it('drops rows outside the window rather than trusting the caller', () => {
+    // Every string says "in the last 30 days", so the window has to be applied
+    // here — a caller passing a wider range would otherwise make that a lie.
+    const rows = [
+      ...[0, 1, 2].map((a) => row(a, 'Grateful' as Mood)),
+      row(45, 'Sad'), row(60, 'Sad'), // far outside the window
+    ];
+    const card = find(rows, 'Shukr Champion');
+    expect(card).toBeDefined();
+    expect(card!.description).toContain('3 days you checked in');
+  });
+
+  it('ignores future-dated rows from the caller\'s boundary padding', () => {
+    const rows = [...[0, 1, 2].map((a) => row(a, 'Grateful' as Mood)), row(-1, 'Sad')];
+    expect(find(rows, 'Shukr Champion')!.description).toContain('3 days you checked in');
+  });
+});
+
 describe('computeInsights — copy honesty', () => {
   it('never says "this month" (window is a rolling 30 days)', () => {
     const rows = ['Sad', 'Angry', 'Tired', 'Grateful', 'Calm', 'Hopeful', 'Lonely']
@@ -140,5 +188,17 @@ describe('computeInsights — copy honesty', () => {
     for (const insight of computeInsights(rows, 5, NOW)) {
       expect(insight.description).not.toMatch(/this month/i);
     }
+  });
+
+  it('never quotes a clause of an ayah under a bare ayah number', () => {
+    // The gratitude card used to render: Allah promises: "If you are grateful,
+    // I will surely increase you." [14:7] — a fragment cited as the whole ayah,
+    // dropping "but if you deny, indeed My punishment is severe". CLAUDE.md's
+    // "Quoting Quran Text" rule 1 forbids exactly this; rule 3 says swap the
+    // verse rather than cut it, which is why the card now carries 2:152 whole.
+    const rows = [0, 1, 2, 3].map((age) => row(age, 'Grateful' as Mood));
+    const card = find(rows, 'Shukr Champion')!;
+    expect(card.description).not.toContain('I will surely increase you');
+    expect(card.description).not.toMatch(/\[14:7\]/);
   });
 });

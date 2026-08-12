@@ -404,6 +404,78 @@ console.log(`\nchecked ${sChecked} citations against sunnah.com directly ` +
 console.log(`steps whose Arabic is NOT in the hadith they cite: ${sMismatch.length}`);
 for (const r of sMismatch) console.log(`  ${r.id}  ·  ${r.title}  ·  ${r.ref}  ·  overlap ${r.score.toFixed(2)}`);
 
+// ── Pass 7: pathsService.getStepMotivation ────────────────────────────────
+//
+// Passes 1–6 all read quranData.ts. `getStepMotivation` is the one other place
+// in src/ that puts a sentence in quotation marks next to a citation, and it
+// had no coverage at all — which is how it came to hold two quotations with no
+// source whatsoever, an "[Prophetic Tradition]" label over an unlocatable
+// wording, a hadith attributed to Bukhari that is Abu Dawud 909, an ellipsis
+// eating four items out of Bukhari 5641, and ~16 bare collection tags with no
+// number. None of it rendered (the function has no call sites), which is
+// exactly why nobody looked.
+//
+// The bar is CLAUDE.md "Citing Hadith" rule 2: collection + number, or an ayah
+// reference. Ellipsis inside a quotation is treated as truncation — if the
+// quote does not fit, shorten to a clause that is whole, do not elide.
+const svc = fs.readFileSync('src/services/pathsService.ts', 'utf8');
+const mBlock = svc.match(/const motivations: Record<string, string> = \{([\s\S]*?)\n    \};/);
+if (!mBlock) {
+  console.error('\ncould not locate the motivations map in pathsService.ts — refusing to pass');
+  process.exit(1);
+}
+const QURAN_REF = /\[Quran \d+:\d+\]/;
+const motivations = [];
+{
+  // Entries are `key:` then a string literal, possibly wrapped to the next line.
+  const re = /(?:'((?:[^'\\]|\\.)*)'|"((?:[^"\\]|\\.)*)")\s*:\s*\n?\s*('(?:[^'\\]|\\.)*')/g;
+  for (const m of mBlock[1].matchAll(re)) {
+    motivations.push({
+      key: (m[1] ?? m[2]).replace(/\\(['"])/g, '$1'),
+      text: m[3].slice(1, -1).replace(/\\(['"])/g, '$1'),
+    });
+  }
+}
+const motBad = [];
+for (const e of motivations) {
+  if (!LOOKUPABLE.test(e.text) && !QURAN_REF.test(e.text)) {
+    motBad.push({ ...e, why: 'no locatable citation (collection + number, or [Quran X:Y])' });
+    continue;
+  }
+  if (/\.\.\.|…/.test(e.text)) motBad.push({ ...e, why: 'ellipsis inside a quotation — truncated' });
+}
+// Quran entries additionally get their English checked against the ayah, so a
+// quote cannot drift from the verse it cites the way 28:16 did.
+// This catches a quote attached to the WRONG verse, not translator variance:
+// two faithful renderings of one ayah differ freely on connectives ("Verily"
+// vs "Indeed", "comes" vs "will be"). On a short ayah those choices are most
+// of the content, so 94:6 — complete and accurate — scored 0.50 against Sahih
+// International and would have failed a naive threshold. Quotes under
+// MIN_EN_WORDS carry too little signal to judge and are reported, not failed.
+const MIN_EN_WORDS = 8;
+let motQuranChecked = 0, motQuranShort = 0;
+const stop = new Set(['the', 'and', 'of', 'to', 'a', 'in', 'is', 'for', 'he', 'his', 'him', 'it', 'that', 'who', 'not', 'you', 'your', 'we', 'from', 'has', 'have', 'so', 'but', 'with', 'be', 'are', 'i', 'my', 'them', 'their', 'what', 'this', 'will', 'any', 'upon', 'then', 'there']);
+const enWords = (s) => (s || '').toLowerCase().replace(/[^a-z\s]/g, ' ').split(/\s+/)
+  .filter((w) => w.length > 2 && !stop.has(w));
+for (const e of motivations) {
+  const ref = e.text.match(/\[Quran (\d+:\d+)\]/);
+  if (!ref) continue;
+  const qw = enWords(e.text.replace(/\[Quran \d+:\d+\]/, ''));
+  if (qw.length < MIN_EN_WORDS) { motQuranShort++; continue; }
+  const r = await (await fetch(`https://api.quran.com/api/v4/quran/translations/20?verse_key=${ref[1]}`)).json();
+  const en = (r.translations?.[0]?.text || '').replace(/<[^>]*>/g, ' ');
+  if (!en) { console.log(`  (unreadable ayah: ${ref[1]})`); continue; }
+  motQuranChecked++;
+  const av = new Set(enWords(en));
+  const score = qw.filter((w) => av.has(w)).length / qw.length;
+  if (score < 0.6) motBad.push({ ...e, why: `quoted English does not match ${ref[1]} (overlap ${score.toFixed(2)})` });
+}
+console.log(`\nchecked ${motivations.length} getStepMotivation entries ` +
+            `(${motQuranChecked} Quran quotes re-read from quran.com, ` +
+            `${motQuranShort} too short to score)`);
+console.log(`entries with an unlocatable, truncated or drifting citation: ${motBad.length}`);
+for (const r of motBad) console.log(`  ${r.key}  ·  ${r.why}\n      "${r.text.slice(0, 110)}"`);
+
 if (bad.length || unsourced.length || actionBad.length || mismatch.length ||
-    quranish.length || sMismatch.length) process.exit(1);
+    quranish.length || sMismatch.length || motBad.length) process.exit(1);
 console.log('\nAll asserted Quran citations check out, and every chain-claiming step cites a locatable reference.');
