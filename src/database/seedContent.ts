@@ -158,7 +158,16 @@ import type { Content, ContentAngle } from '../types';
 //      array entry silently overwrote the earlier one and the Sad angle had
 //      never existed on any device. The Sad one is now
 //      `q_angle_50_16_sad_angle`; this bump is what actually delivers it.
-const SEED_VERSION = 29;
+// v30: no new content — voice pass. 31 mood-angle closing lines rewrote a
+//      templated "X is not Y — it is Z" / "the ultimate X" / "the engine of
+//      X" construction into specific, second-person, non-swappable text.
+//      Scope was strictly the app's OWN unattributed sentence at the end of
+//      an angle — never a translated ayah, a translated hadith, or a
+//      sentence framed as a named scholar's paraphrase ("Ibn Kathir
+//      explains...", "Al-Sa'di adds..."); those were left untouched even
+//      where they used the same construction. Meaning was preserved in every
+//      case; only the sentence's own wording changed.
+const SEED_VERSION = 30;
 // Separate keys per content type — Quran and Hadith data change independently,
 // and each seeder used to write the SAME key at the end of its run. Since
 // initializeDatabase() awaits seedQuranContent() before seedHadithContent(),
