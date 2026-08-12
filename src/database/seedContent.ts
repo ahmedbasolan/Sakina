@@ -167,7 +167,17 @@ import type { Content, ContentAngle } from '../types';
 //      explains...", "Al-Sa'di adds..."); those were left untouched even
 //      where they used the same construction. Meaning was preserved in every
 //      case; only the sentence's own wording changed.
-const SEED_VERSION = 30;
+// v31: no new content — self-audit correction to four of v30's own rewrites.
+//      Three had swapped a general statement for an assertion about what the
+//      reader had just done ("You had the opening to let it out just now, and
+//      you didn't take it"), which is simply false for many users and, on
+//      q_angle_3_134_angry, congratulates a user who tapped ANGRY for
+//      restraint they may not have shown. q_angle_29_20_grateful scolded a
+//      user who opened the app feeling grateful for noticing nothing. The
+//      fourth ("remarkably little left for punishment to be about") was flip
+//      about divine punishment. All four now address the reader without
+//      claiming to know what they did.
+const SEED_VERSION = 31;
 // Separate keys per content type — Quran and Hadith data change independently,
 // and each seeder used to write the SAME key at the end of its run. Since
 // initializeDatabase() awaits seedQuranContent() before seedHadithContent(),

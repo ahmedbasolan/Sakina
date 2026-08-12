@@ -48,6 +48,17 @@ const FAULTS = [
     to: '[Quran 50:17]',
     expect: "Allah's Presence",
   },
+  {
+    // The hadith-overlap check was added after a Muslim 597a quotation
+    // shipped from this repo's own citation "fix" with a clause dropped.
+    // It catches a quote on the WRONG hadith; it does NOT catch a quote that
+    // merely stops early (see the LIMITS note in verify-citations.mjs pass 7),
+    // which is why this fault is a renumber rather than a truncation.
+    name: 'hadith quote pointed at the wrong number in the right collection',
+    from: '[Bukhari 6114]',
+    to: '[Bukhari 1]',
+    expect: 'Understanding Anger',
+  },
 ];
 
 const original = fs.readFileSync(FILE, 'utf8');
