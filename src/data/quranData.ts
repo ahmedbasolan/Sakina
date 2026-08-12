@@ -8926,7 +8926,7 @@ const quranContentAnglesData: ContentAngle[] = [
 
   // === LONELY ANGLES ===
   {
-    id: 'q_angle_50_16_lonely',
+    id: 'q_angle_50_16_sad_angle',
     contentId: 'quran_50_16',
     mood: 'Sad',
     angle:

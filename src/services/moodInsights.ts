@@ -75,12 +75,19 @@ export function computeInsights(
     dayMood.set(dateStr, rows[i].mood as Mood);
   }
 
-  const days = Array.from(dayMood.entries()).map(([dateStr, mood]) => ({
-    dateStr,
-    mood,
-    dow: new Date(dateStr + 'T00:00:00').getDay(),
-    ageDays: dayAge(dateStr, now),
-  }));
+  // Apply the window HERE rather than trusting the caller. Every string below
+  // says "in the last 30 days", so the filter that makes that true has to live
+  // next to the claim — `moodHistoryService` deliberately over-fetches by a day
+  // on each side to survive the UTC boundary, and a future-dated row (ageDays
+  // < 0) would otherwise inflate totalDays and could enter a weekday pattern.
+  const days = Array.from(dayMood.entries())
+    .map(([dateStr, mood]) => ({
+      dateStr,
+      mood,
+      dow: new Date(dateStr + 'T00:00:00').getDay(),
+      ageDays: dayAge(dateStr, now),
+    }))
+    .filter((d) => d.ageDays >= 0 && d.ageDays < INSIGHT_WINDOW_DAYS);
   const totalDays = days.length;
 
   if (totalDays === 0) {
@@ -121,10 +128,19 @@ export function computeInsights(
     }
     if (best) {
       const dayName = DAY_NAMES[best.dow];
+      // The copy may only claim what the loop above actually established: this
+      // day's heavy RATE beat the pooled baseline. It must NOT claim the day
+      // beat every other weekday — days under MIN_WEEKDAY_SAMPLE never entered
+      // the comparison at all, and an exact tie between two qualifying days
+      // resolves to whichever `Object.entries` yielded first. Both cases used
+      // to render as "more than any other day of the week", which was false.
+      // (rate > pooled baseline does imply rate > the rest combined, since the
+      // baseline is a weighted mean that includes this day — so the weaker
+      // claim below is safe.)
       insights.push({
         type: 'pattern',
         title: 'Pattern Detected',
-        description: `On ${best.heavy} of your ${best.total} ${dayName}s in the last 30 days you logged a heavier mood — more than any other day of the week. A little extra rest or dhikr on ${dayName}s may help.`,
+        description: `On ${best.heavy} of your ${best.total} ${dayName}s in the last 30 days you logged a heavier mood — more often than on your other days. A little extra rest or dhikr on ${dayName}s may help.`,
         icon: '🔍',
       });
     }
@@ -163,7 +179,7 @@ export function computeInsights(
     insights.push({
       type: 'streak',
       title: `${currentStreak}-Day Streak`,
-      description: `You've checked in ${currentStreak} days running. The Prophet ﷺ said the most beloved deeds to Allah are the most consistent, even if small.`,
+      description: `You've checked in ${currentStreak} days running. The Prophet ﷺ was asked which deeds Allah loves most; he said: "The most regular constant deeds even though they may be few." [Bukhari 6465]`,
       icon: '🔥',
     });
   }
@@ -185,7 +201,14 @@ export function computeInsights(
     insights.push({
       type: 'tip',
       title: 'Shukr Champion',
-      description: `You met ${gratefulDays} of your last ${totalDays} days with gratitude. Allah promises: "If you are grateful, I will surely increase you." [14:7]`,
+      // "your last N days" was wrong: totalDays counts LOGGED days, not calendar
+      // days, so 4 grateful check-ins spread over a month read as "4 of your
+      // last 4 days". And the old 14:7 line quoted one clause of the ayah under
+      // a bare [14:7] — the banned pattern in CLAUDE.md's "Quoting Quran Text",
+      // dropping "but if you deny, indeed My punishment is severe". Per rule 3
+      // the verse is swapped rather than cut: 2:152 is complete here, is short
+      // enough for a card, and is already the app's own `quran_2_152` wording.
+      description: `Of the ${totalDays} days you checked in, you met ${gratefulDays} with gratitude. Allah says: "So remember Me; I will remember you. And be grateful to Me, and do not be ungrateful to Me." [Surah Al-Baqarah 2:152]`,
       icon: '✨',
     });
   }
