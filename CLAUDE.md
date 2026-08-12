@@ -147,9 +147,17 @@ they were the full ayah). Treat these as hard rules, not style preferences:
    with extra steps.
 5. **Places with verse content, so far:** `src/data/quranData.ts` (already
    sourced from the Quran.com API — the standard to match), and the three
-   files above. `hadithService.ts`, `quranService.ts`, `contentRepository.ts`,
-   and `sunnahEnricher.ts` also carry Quran/hadith text and have not yet been
-   audited against these rules — check them the next time you're in that area.
+   files above. Swept 2026-08-12 and currently clean: `dailyVerseService.ts`
+   and `StreakBar.tsx` (every entry carries a sibling `ref` field with the
+   ayah complete), `pathsService.ts`'s `getStepMotivation`, and
+   `NotificationScreen.tsx`'s onboarding previews. `quranService.ts`,
+   `contentRepository.ts` and `sunnahEnricher.ts` were checked the same day
+   and hold **no literal verse text** — they move it, so they are not a
+   citation surface (there is no `hadithService.ts`; that entry was wrong).
+   Note the sibling-field shape when sweeping: a grep for a quotation without
+   a citation on the *same line* reports all of these as faults and all of
+   them are false. What was genuinely uncited was the one place with no `ref`
+   field at all — see `NotificationScreen.tsx`'s history in git.
 
 ---
 
@@ -287,6 +295,46 @@ about at the top of `verify-citations.mjs` — and hit again one pass below the
 warning), and one anchored its regex at end-of-string so citations with a
 trailing grading were skipped rather than checked.
 
+**A new check must state, in the file, which sub-classes of its fault it does
+NOT catch.** Whoever reads a green run next reads it as "the content is
+correct", and the only defence is writing the gap down beside the check.
+`verify-citations.mjs` pass 7 shipped checking locatability, ellipsis and
+Quran-English overlap with **no hadith text check at all** — which is exactly
+why a truncated Sahih Muslim quotation passed a fully green run in the same
+commit series that added the pass. Two limits worth knowing because they are
+not obvious: a word-overlap check catches a quote attached to the **wrong**
+source, but provably **cannot** catch a quote that stops early (a truncation's
+words are all still present, so it scores 1.00); and reaching for an existing
+helper without reading it can invert a check — the first draft of that hadith
+comparison called `hadithText()`, which pulls the **Arabic** edition, and would
+have scored every English quotation near zero. A check that fails everything is
+as useless as one that passes everything.
+
+## Auditing — your own output is the least-audited code in the repo
+
+Every fault above was found by an audit. These were introduced *by* one.
+
+- **Run your own replacement through the check you just wrote.** The moment
+  you are most authoritative is the moment nothing is checking you. The
+  2026-08-12 audit flagged Muslim 2328a for dropping "except when fighting in
+  the cause of Allah", then, in the same commit series, wrote a Muslim 597a
+  citation ending at "his sins will be forgiven" — dropping "even if these are
+  as abundant as the foam of the sea" and closing the quote with a period.
+  Identical fault, held against the original author and then committed.
+- **A helper that truncates its own output will be read past.** That audit's
+  fetch script sliced hadith text at 420 chars; a clause beyond the cutoff was
+  then quoted from memory and merely happened to be correct. Print the full
+  text, or make the truncation impossible to miss. This is the mechanism
+  behind "never write a hadith from memory" — the rule fails quietly when the
+  tool hides where the evidence ended.
+- **Before reporting a finding derived from a transform, re-read the raw
+  source for at least one hit.** A closer-extraction script that stripped
+  quotation marks spliced fragments into `The Prophet ﷺ said: Restraint is not
+  weakness — it is the highest form of strength`, which reads as the app
+  attributing its own aphorism to the Prophet ﷺ. It was an artifact of the
+  script. The data was fine. That finding was one step from being reported as
+  a scandal.
+
 ---
 
 ## "For Your Heart" — Content Voice
@@ -297,12 +345,26 @@ fed by `ContentAngle.angle`) has a distinct job from the "Understand"/
 story and scholarly explanation (`Content.whyThis`) — "For Your Heart" is
 not a second helping of the same voice.
 
-For any **new or edited** `angle` entry (existing entries in `quranData.ts`
-are not being retroactively rewritten — see
-`docs/superpowers/specs/2026-07-16-for-your-heart-reflection-design.md`):
+For any **new or edited** `angle` entry (the spec at
+`docs/superpowers/specs/2026-07-16-for-your-heart-reflection-design.md` said
+existing entries would not be retroactively rewritten; that held until
+2026-08-12, when 31 mood-angle closing lines were rewritten off a templated
+"X is not Y — it is Z" / "the ultimate X" construction — SEED_VERSION 30):
 
 - Second person, present tense. Speak to the reader directly as a believer,
   not about a Prophet or companion's situation.
+- **Address the reader; do not narrate their afternoon back to them.** This
+  copy is chosen by the mood they declared one screen earlier, so any claim
+  about their recent behaviour lands on precisely the person most likely to
+  contradict it. Four of those 31 rewrites had to be corrected the same day
+  (SEED_VERSION 31): "You had the opening to let it out just now, and you
+  didn't take it" congratulates restraint to someone who tapped **Angry**,
+  possibly seconds after losing their temper, and "You walked past two or
+  three of these today and didn't count a single one" scolds someone who
+  opened the app feeling **Grateful**. Invite, ask, or name something true —
+  "Pick one you can see from where you are sitting" costs nothing and is never
+  wrong about them. Chasing warmth is what produces this: a specific-sounding
+  sentence feels more human right up until it is false for the reader.
 - Anchor it in a Divine Name or a promise/address verse to Allah's slaves
   (e.g. 39:53's "O My servants who have transgressed against yourselves, do
   not despair of the mercy of Allah") rather than narrating what happened
