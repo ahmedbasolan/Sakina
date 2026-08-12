@@ -37,24 +37,32 @@ interface Props {
   onSkip: () => void;
 }
 
+// All three previews quote a COMPLETE ayah and name it. They previously did
+// neither: Morning carried only the second sentence of 13:28 and Evening only
+// a clause out of the middle of 57:4 (a long ayah about the six days and the
+// Throne), both in quotation marks with no reference at all — scripture the
+// reader could neither place nor look up. Morning and Evening were swapped
+// rather than extended, per CLAUDE.md rule 3: when the whole ayah will not fit
+// the slot, change the verse, never trim it. Afternoon was already whole
+// (94:6) and only needed its reference.
 const PREVIEWS = [
   {
     label: 'Morning',
     context: 'Begin the day grounded',
     icon: '🌙',
-    verse: '"Verily, in the remembrance of Allah do hearts find rest."',
+    verse: '"So remember Me; I will remember you. And be grateful to Me, and do not be ungrateful to Me." · 2:152',
   },
   {
     label: 'Afternoon',
     context: 'A pause when you need it',
     icon: '☀️',
-    verse: '"Indeed, with hardship comes ease."',
+    verse: '"Indeed, with hardship comes ease." · 94:6',
   },
   {
     label: 'Evening',
     context: 'Close the day with peace',
     icon: '⭐',
-    verse: '"And He is with you wherever you are."',
+    verse: '"Your Lord has not forsaken you, nor is He displeased." · 93:3',
   },
 ];
 

@@ -61,9 +61,14 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
       return (
         <View style={styles.container}>
           <Text style={styles.icon}>🕊️</Text>
-          <Text style={styles.title}>Something went wrong</Text>
+          {/* This is the one screen a user reaches at their most frustrated,
+              so it does not get boilerplate. "Something went wrong / We
+              apologize for the inconvenience" is the default every template
+              ships with: passive about whose fault it is, and it gives the
+              user nothing to do. Name it, own it, hand them one action. */}
+          <Text style={styles.title}>Sakina stopped unexpectedly</Text>
           <Text style={styles.message}>
-            We apologize for the inconvenience. Please try again.
+            This one is on us, not on you. Close the app and open it again.
           </Text>
           
           {__DEV__ && this.state.error && (

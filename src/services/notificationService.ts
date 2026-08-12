@@ -484,8 +484,12 @@ class NotificationService {
 
     const id = await Notifications.scheduleNotificationAsync({
       content: {
-        title: 'Time for Reflection',
-        body: 'Take a moment to check in with your heart.',
+        // Kept in the same voice as the prayer-window notifications above
+        // ("The Silent Hour", "Start with Light", "Closing the Day") — this
+        // one had drifted into app-store filler, and it is the reminder most
+        // users see most often.
+        title: 'A Quiet Minute',
+        body: 'However today has gone so far, it is worth a minute with it.',
         sound: true,
       },
       // CALENDAR triggers are iOS-only in expo-notifications (see
