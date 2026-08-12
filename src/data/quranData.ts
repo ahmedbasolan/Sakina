@@ -3692,7 +3692,7 @@ const quranContentAnglesData: ContentAngle[] = [
     contentId: 'quran_3_173',
     mood: 'Overwhelmed',
     angle:
-      'Ibn Abbas said this phrase was used by Ibrahim (as) when thrown into the fire, and by the Prophet ﷺ during hardship. It is the ultimate statement of reliance in times of peak pressure. [Sahih Bukhari 4563]',
+      'Ibn Abbas said this phrase was used by Ibrahim (as) when thrown into the fire, and by the Prophet ﷺ during hardship. Say it about whatever is sitting on your chest right now — it was never a phrase reserved for prophets in fire. [Sahih Bukhari 4563]',
     action: 'Recite "Hasbunallahu wa ni\'mal-wakil" whenever you feel overwhelmed.',
     actionHowTo:
       'Repeat the phrase slowly, mentally handing over your worry to the "Best Disposer" with each breath.',
@@ -4153,7 +4153,7 @@ const quranContentAnglesData: ContentAngle[] = [
     contentId: 'quran_10_62',
     mood: 'Overwhelmed',
     angle:
-      'Allah declares: "Unquestionably, the allies (awliya) of Allah—no fear will there be concerning them, nor will they grieve." Ibn Kathir defines the awliya as those who believe and have taqwa (God-consciousness). Al-Qurtubi explains that the promise of "no fear" refers to the future (the Hereafter), while "no grief" refers to what they left behind in this world. The Prophet ﷺ said: "Allah said: Whoever shows enmity to a wali of Mine, I declare war against him." Being an ally of Allah is the ultimate security. [Tafsir Ibn Kathir, Sahih Bukhari 6502]',
+      'Allah declares: "Unquestionably, the allies (awliya) of Allah—no fear will there be concerning them, nor will they grieve." Ibn Kathir defines the awliya as those who believe and have taqwa (God-consciousness). Al-Qurtubi explains that the promise of "no fear" refers to the future (the Hereafter), while "no grief" refers to what they left behind in this world. The Prophet ﷺ said: "Allah said: Whoever shows enmity to a wali of Mine, I declare war against him." That is what is actually on offer here — not a guarantee nothing bad happens, but a standing with Him nothing outside Him can undo. [Tafsir Ibn Kathir, Sahih Bukhari 6502]',
     angleSource: 'Tafsir Ibn Kathir',
     action: "Make a small intention to do one thing today purely for Allah's sake",
     practiceSteps: JSON.stringify([
@@ -4581,7 +4581,7 @@ const quranContentAnglesData: ContentAngle[] = [
     contentId: 'quran_40_60',
     mood: 'Sad',
     angle:
-      'Allah says: "Call upon Me; I will respond to you." Ibn Kathir explains that this is one of the most direct promises in the Quran—Allah Himself guarantees a response to every sincere caller. Al-Sa\'di notes that the word "ud\'uni" (call upon Me) is an invitation, meaning Allah wants you to bring your pain, your sadness, and your needs to Him. The Prophet ﷺ said: "Your Lord is Generous and Shy; if His servant raises his hands to Him, He is shy to return them empty." [Abu Dawud 1488] Your grief is not a burden to Allah—it is the very reason He invites you to speak. [Tafsir al-Sa\'di]',
+      'Allah says: "Call upon Me; I will respond to you." Ibn Kathir explains that this is one of the most direct promises in the Quran—Allah Himself guarantees a response to every sincere caller. Al-Sa\'di notes that the word "ud\'uni" (call upon Me) is an invitation, meaning Allah wants you to bring your pain, your sadness, and your needs to Him. The Prophet ﷺ said: "Your Lord is Generous and Shy; if His servant raises his hands to Him, He is shy to return them empty." [Abu Dawud 1488] Bring Him the grief exactly as it is, unedited and unresolved — that is what the invitation was actually for. [Tafsir al-Sa\'di]',
     angleSource: "Tafsir al-Sa'di",
     action: 'Talk to Allah in your own language about what hurts.',
     practiceSteps: JSON.stringify([
@@ -4802,7 +4802,7 @@ const quranContentAnglesData: ContentAngle[] = [
     contentId: 'quran_41_30',
     mood: 'Sad',
     angle:
-      'Allah says: "Indeed, those who have said, \'Our Lord is Allah,\' and then remained on a right course—the angels will descend upon them, saying: Do not fear and do not grieve, and receive good tidings of Paradise." Ibn Kathir explains that "istiqamah" (remaining steadfast) means consistency in faith through both ease and hardship. Al-Qurtubi adds that the angels descend not only at death but throughout life, bringing unseen comfort and reassurance to the steadfast believer. The Prophet ﷺ said: "Say: I believe in Allah, then be steadfast." [Sahih Muslim 38] Steadfastness in sadness is itself an act that summons angelic support. [Tafsir Ibn Kathir]',
+      'Allah says: "Indeed, those who have said, \'Our Lord is Allah,\' and then remained on a right course—the angels will descend upon them, saying: Do not fear and do not grieve, and receive good tidings of Paradise." Ibn Kathir explains that "istiqamah" (remaining steadfast) means consistency in faith through both ease and hardship. Al-Qurtubi adds that the angels descend not only at death but throughout life, bringing unseen comfort and reassurance to the steadfast believer. The Prophet ﷺ said: "Say: I believe in Allah, then be steadfast." [Sahih Muslim 38] Staying steady while you are sad is not you hiding how you feel. It is the exact thing this ayah says draws the angels close. [Tafsir Ibn Kathir]',
     angleSource: 'Tafsir Ibn Kathir',
     action: 'Affirm your faith by saying "Rabbunāllāh" (Our Lord is Allah) and remain steadfast.',
     actionHowTo:
@@ -5112,7 +5112,7 @@ const quranContentAnglesData: ContentAngle[] = [
     contentId: 'quran_3_134',
     mood: 'Angry',
     angle:
-      'Allah describes the people of Taqwa as "those who restrain anger and who pardon the people—and Allah loves the doers of good." Ibn Kathir explains that "kazm al-ghayz" (restraining anger) means swallowing it when you have the power to act on it. Al-Qurtubi adds that this verse places anger management alongside spending in charity and prayer as qualities of the God-conscious. The Prophet ﷺ said: "The strong man is not the one who can wrestle, but the strong man is the one who controls himself at the time of anger." [Sahih Bukhari 6114] Restraint is not weakness—it is the highest form of strength. [Tafsir Ibn Kathir]',
+      'Allah describes the people of Taqwa as "those who restrain anger and who pardon the people—and Allah loves the doers of good." Ibn Kathir explains that "kazm al-ghayz" (restraining anger) means swallowing it when you have the power to act on it. Al-Qurtubi adds that this verse places anger management alongside spending in charity and prayer as qualities of the God-conscious. The Prophet ﷺ said: "The strong man is not the one who can wrestle, but the strong man is the one who controls himself at the time of anger." [Sahih Bukhari 6114] You had the opening to let it out just now, and you didn\'t take it. Notice what that actually cost you to do. [Tafsir Ibn Kathir]',
     angleSource: 'Tafsir Ibn Kathir',
     action: 'Before responding, count to 10 and make wudu if possible.',
     practiceSteps: JSON.stringify([
@@ -5477,7 +5477,7 @@ const quranContentAnglesData: ContentAngle[] = [
     contentId: 'quran_5_13',
     mood: 'Angry',
     angle:
-      'Allah says: "So pardon them and overlook. Indeed, Allah loves the doers of good (Muhsineen)." Ibn Kathir explains that pardoning and overlooking faults is classified as "ihsan" (excellence)—the highest level of worship. Al-Sa\'di adds that the Muhsineen are those who go beyond what is required: justice demands equal retaliation, but ihsan chooses to forgive when you have the right to punish. The Prophet ﷺ said: "Ihsan is to worship Allah as though you see Him, and if you cannot see Him, then He sees you." [Sahih Bukhari 50] Pardoning with this awareness elevates a simple act into the highest form of devotion. [Tafsir al-Sa\'di]',
+      'Allah says: "So pardon them and overlook. Indeed, Allah loves the doers of good (Muhsineen)." Ibn Kathir explains that pardoning and overlooking faults is classified as "ihsan" (excellence)—the highest level of worship. Al-Sa\'di adds that the Muhsineen are those who go beyond what is required: justice demands equal retaliation, but ihsan chooses to forgive when you have the right to punish. The Prophet ﷺ said: "Ihsan is to worship Allah as though you see Him, and if you cannot see Him, then He sees you." [Sahih Bukhari 50] Pardoning someone while you still have every right to answer them — that is where this worship actually happens, not in the prayer afterward. [Tafsir al-Sa\'di]',
     angleSource: "Tafsir al-Sa'di",
     action: 'Deliberately overlook a minor annoyance today.',
     practiceSteps: JSON.stringify([
@@ -5609,7 +5609,7 @@ const quranContentAnglesData: ContentAngle[] = [
     contentId: 'quran_45_14',
     mood: 'Angry',
     angle:
-      'Allah says: "Tell those who believe to forgive those who do not expect the Days of Allah, so that He may recompense a people for what they used to earn." Ibn Kathir explains that this verse commands believers to rise above provocation by focusing on the Hereafter—Allah will settle all accounts with perfect justice. Al-Qurtubi adds that "those who do not expect the Days of Allah" refers to people who act without fear of divine reckoning; the believer\'s response is to leave their case to the ultimate Judge. The Prophet ﷺ said: "Do not be angry, do not be angry, do not be angry." [Sahih Bukhari 6116] Rising above is not ignoring injustice—it is trusting the Judge. [Tafsir al-Qurtubi]',
+      'Allah says: "Tell those who believe to forgive those who do not expect the Days of Allah, so that He may recompense a people for what they used to earn." Ibn Kathir explains that this verse commands believers to rise above provocation by focusing on the Hereafter—Allah will settle all accounts with perfect justice. Al-Qurtubi adds that "those who do not expect the Days of Allah" refers to people who act without fear of divine reckoning; the believer\'s response is to leave their case to the ultimate Judge. The Prophet ﷺ said: "Do not be angry, do not be angry, do not be angry." [Sahih Bukhari 6116] Handing it to Him doesn\'t mean pretending it didn\'t happen. It means deciding who actually gets to rule on it. [Tafsir al-Qurtubi]',
     angleSource: 'Tafsir al-Qurtubi',
     action: 'Remind yourself that your account is with Allah, not with the people.',
     practiceSteps: JSON.stringify([
@@ -5655,7 +5655,7 @@ const quranContentAnglesData: ContentAngle[] = [
     contentId: 'quran_14_7',
     mood: 'Grateful',
     angle:
-      'Allah declares: "If you are grateful, I will surely increase you; but if you deny, indeed, My punishment is severe." Ibn Kathir explains that this is a divine law: gratitude triggers increase (ziyadah) in every blessing—health, wealth, faith, and peace. Al-Sa\'di adds that the "increase" is not limited to the specific blessing you are grateful for; it overflows into all areas of life. The Prophet ﷺ said: "Look at those below you and do not look at those above you, for that is more likely to prevent you from belittling Allah\'s favor upon you." [Sahih Muslim 2963] Gratitude is not just appreciation—it is the engine of divine abundance. [Tafsir al-Sa\'di]',
+      'Allah declares: "If you are grateful, I will surely increase you; but if you deny, indeed, My punishment is severe." Ibn Kathir explains that this is a divine law: gratitude triggers increase (ziyadah) in every blessing—health, wealth, faith, and peace. Al-Sa\'di adds that the "increase" is not limited to the specific blessing you are grateful for; it overflows into all areas of life. The Prophet ﷺ said: "Look at those below you and do not look at those above you, for that is more likely to prevent you from belittling Allah\'s favor upon you." [Sahih Muslim 2963] Every time you actually say it, not just think it, you are pulling on something this ayah says is connected to more. [Tafsir al-Sa\'di]',
     angleSource: "Tafsir al-Sa'di",
     action: 'Say "Alhamdulillah" for a blessing you often take for granted.',
     practiceSteps: JSON.stringify([
@@ -5700,7 +5700,7 @@ const quranContentAnglesData: ContentAngle[] = [
     contentId: 'quran_29_20',
     mood: 'Grateful',
     angle:
-      'Allah does not simply ask you to believe in His power — He tells you to go and look for it. Ibn Kathir explains this ayah as a command to travel and observe creation as living proof that the One who originated it can just as easily bring it back — the same argument He makes in Surah Ar-Rum: "He it is who originates creation, then repeats it, and that is easier for Him" (30:27). "Travel through the land and observe how He began creation" is an invitation to notice the evidence you walk past every day: a barren patch of earth turning green after rain, a single seed becoming a full tree, life beginning again and again all around you. Each of these small beginnings is itself a sign, and gratitude grows naturally once you actually stop to see them instead of taking them for granted. [Tafsir Ibn Kathir, Surah Al-Ankabut]',
+      'Allah does not simply ask you to believe in His power — He tells you to go and look for it. Ibn Kathir explains this ayah as a command to travel and observe creation as living proof that the One who originated it can just as easily bring it back — the same argument He makes in Surah Ar-Rum: "He it is who originates creation, then repeats it, and that is easier for Him" (30:27). "Travel through the land and observe how He began creation" is an invitation to notice the evidence you walk past every day: a barren patch of earth turning green after rain, a single seed becoming a full tree, life beginning again and again all around you. You walked past two or three of these today and didn\'t count a single one as evidence of anything. [Tafsir Ibn Kathir, Surah Al-Ankabut]',
     angleSource: 'Tafsir Ibn Kathir',
     action: 'Notice one ordinary sign of creation today and thank Allah for it specifically.',
     reflection: 'What is one everyday "beginning" in creation — a plant, a sunrise, a birth — that you have stopped truly noticing?',
@@ -5933,7 +5933,7 @@ const quranContentAnglesData: ContentAngle[] = [
     contentId: 'quran_54_35',
     mood: 'Grateful',
     angle:
-      'Allah says: "As a favor from Us. Thus do We reward he who is grateful." Ibn Kathir explains that Allah explicitly links His favors to gratitude—those who recognize and appreciate His blessings are rewarded with more. Al-Sa\'di adds that the word "ni\'matan" (as a favor) shows that rescue from hardship is itself a gift, not something earned. The Prophet ﷺ said: "Whoever says when morning comes: O Allah, whatever blessing I have received or any of Your creation has received is from You alone, with no partner to You—then he has fulfilled the gratitude of that day." [Abu Dawud 5073] Recognition is the seed; divine increase is the harvest. [Tafsir al-Sa\'di]',
+      'Allah says: "As a favor from Us. Thus do We reward he who is grateful." Ibn Kathir explains that Allah explicitly links His favors to gratitude—those who recognize and appreciate His blessings are rewarded with more. Al-Sa\'di adds that the word "ni\'matan" (as a favor) shows that rescue from hardship is itself a gift, not something earned. The Prophet ﷺ said: "Whoever says when morning comes: O Allah, whatever blessing I have received or any of Your creation has received is from You alone, with no partner to You—then he has fulfilled the gratitude of that day." [Abu Dawud 5073] Naming it out loud is the part that is actually yours to do. What grows from it was never going to be up to you anyway. [Tafsir al-Sa\'di]',
     angleSource: "Tafsir al-Sa'di",
     action: 'Recognize a recent positive outcome as a direct favor from Allah.',
     practiceSteps: JSON.stringify([
@@ -6022,7 +6022,7 @@ const quranContentAnglesData: ContentAngle[] = [
     contentId: 'quran_4_147',
     mood: 'Grateful',
     angle:
-      'Allah says: "What would Allah do with your punishment if you are grateful and believe? And ever is Allah Appreciative and Knowing." Ibn Kathir explains that this verse reveals that gratitude combined with faith removes the very purpose of divine punishment—if you are thankful and believing, there is no need for correction. Al-Qurtubi adds that Allah describes Himself as "Appreciative" (Shakir), meaning He acknowledges and rewards even the smallest act of gratitude from His servants. The Prophet ﷺ said: "Allah is more pleased with the repentance of His servant than one of you who finds his lost animal." [Sahih Bukhari 6309] Gratitude and belief together form the ultimate spiritual shield. [Tafsir al-Qurtubi]',
+      'Allah says: "What would Allah do with your punishment if you are grateful and believe? And ever is Allah Appreciative and Knowing." Ibn Kathir explains that this verse reveals that gratitude combined with faith removes the very purpose of divine punishment—if you are thankful and believing, there is no need for correction. Al-Qurtubi adds that Allah describes Himself as "Appreciative" (Shakir), meaning He acknowledges and rewards even the smallest act of gratitude from His servants. The Prophet ﷺ said: "Allah is more pleased with the repentance of His servant than one of you who finds his lost animal." [Sahih Bukhari 6309] Between the two of those, there is remarkably little left for punishment to be about. [Tafsir al-Qurtubi]',
     angleSource: 'Tafsir al-Qurtubi',
     action: 'Say "Alhamdulillah" for your faith and your safety.',
     practiceSteps: JSON.stringify([
@@ -6110,7 +6110,7 @@ const quranContentAnglesData: ContentAngle[] = [
     contentId: 'quran_35_12',
     mood: 'Grateful',
     angle:
-      'Allah says: "He merges the night into the day and merges the day into the night, and He subjected the sun and the moon—that you may seek the bounty of Allah, and perhaps you will be grateful." Ibn Kathir explains that the entire divine order—day, night, sun, moon—is arranged so that humans can work, earn, and then express gratitude. Al-Sa\'di adds that "la\'allakum tashkurun" (perhaps you will be grateful) shows that gratitude is the ultimate goal of all provision. The Prophet ﷺ said: "Whoever among you wakes up secure in his property, healthy in his body, and has food for the day, it is as though he were given the entire world." [At-Tirmidhi 2346] Seeking provision with gratitude transforms work into worship. [Tafsir Ibn Kathir]',
+      'Allah says: "He merges the night into the day and merges the day into the night, and He subjected the sun and the moon—that you may seek the bounty of Allah, and perhaps you will be grateful." Ibn Kathir explains that the entire divine order—day, night, sun, moon—is arranged so that humans can work, earn, and then express gratitude. Al-Sa\'di adds that "la\'allakum tashkurun" (perhaps you will be grateful) shows that gratitude is the ultimate goal of all provision. The Prophet ﷺ said: "Whoever among you wakes up secure in his property, healthy in his body, and has food for the day, it is as though he were given the entire world." [At-Tirmidhi 2346] Do the same work tomorrow with a thank You already said, and notice if it still feels like just a shift. [Tafsir Ibn Kathir]',
     angleSource: 'Tafsir Ibn Kathir',
     action: 'Set a goal for your work that includes sharing the benefits with others.',
     practiceSteps: JSON.stringify([
@@ -6155,7 +6155,7 @@ const quranContentAnglesData: ContentAngle[] = [
     contentId: 'quran_39_7',
     mood: 'Grateful',
     angle:
-      'Allah says: "If you disbelieve—indeed, Allah is Free from need of you. And He does not approve for His servants disbelief. And if you are grateful, He approves it for you." Ibn Kathir explains that while Allah needs nothing from His creation, He is pleased (yardahu) by gratitude—making it one of the few human actions that earns divine approval explicitly. Al-Sa\'di adds that Allah\'s approval (rida) is the highest reward a servant can receive, surpassing even Paradise itself in spiritual significance. The Prophet ﷺ said: "Allah is pleased with a servant who praises Him when eating and praises Him when drinking." [Sahih Muslim 2734] Earning the rida of Allah is the ultimate achievement. [Tafsir al-Sa\'di]',
+      'Allah says: "If you disbelieve—indeed, Allah is Free from need of you. And He does not approve for His servants disbelief. And if you are grateful, He approves it for you." Ibn Kathir explains that while Allah needs nothing from His creation, He is pleased (yardahu) by gratitude—making it one of the few human actions that earns divine approval explicitly. Al-Sa\'di adds that Allah\'s approval (rida) is the highest reward a servant can receive, surpassing even Paradise itself in spiritual significance. The Prophet ﷺ said: "Allah is pleased with a servant who praises Him when eating and praises Him when drinking." [Sahih Muslim 2734] Nothing else on your list this week outranks that, even the things that feel more urgent right now. [Tafsir al-Sa\'di]',
     angleSource: "Tafsir al-Sa'di",
     action: 'Do one small thing today that you know pleases your Lord.',
     practiceSteps: JSON.stringify([
@@ -6329,7 +6329,7 @@ const quranContentAnglesData: ContentAngle[] = [
     contentId: 'quran_2_153',
     mood: 'Overwhelmed',
     angle:
-      'Allah says: "Seek help through patience and prayer. And indeed, it is difficult except for the humbly submissive." Ibn Kathir explains that Allah prescribes two specific tools for difficulty: sabr (patience) and salah (prayer)—and places them together because each strengthens the other. Al-Qurtubi adds that the companions would rush to prayer whenever they felt anxious or troubled, following the Prophetic example. The Prophet ﷺ said: "Whenever a matter distressed the Prophet, he would rush to prayer." [Abu Dawud 1319] Prayer is not just worship—it is a stabilizer for the overwhelmed soul. [Tafsir al-Qurtubi]',
+      'Allah says: "Seek help through patience and prayer. And indeed, it is difficult except for the humbly submissive." Ibn Kathir explains that Allah prescribes two specific tools for difficulty: sabr (patience) and salah (prayer)—and places them together because each strengthens the other. Al-Qurtubi adds that the companions would rush to prayer whenever they felt anxious or troubled, following the Prophetic example. The Prophet ﷺ said: "Whenever a matter distressed the Prophet, he would rush to prayer." [Abu Dawud 1319] Notice that the companions didn\'t wait to feel calm before they prayed. The prayer was what got them there. [Tafsir al-Qurtubi]',
     angleSource: 'Tafsir al-Qurtubi',
     action: 'Slow down your next prayer by 2 minutes to anchor your mind.',
     practiceSteps: JSON.stringify([
@@ -6463,7 +6463,7 @@ const quranContentAnglesData: ContentAngle[] = [
     contentId: 'quran_20_25_28',
     mood: 'Overwhelmed',
     angle:
-      'Musa (AS) made a comprehensive dua: "My Lord, expand for me my breast, ease for me my task, and untie the knot from my tongue that they may understand my speech." Ibn Kathir explains that this dua addresses three dimensions of difficulty: internal constriction (chest), external burden (task), and communication barriers (tongue). Al-Qurtubi adds that Musa asked for these before his mission to Pharaoh—showing that even prophets sought divine help before facing overwhelming situations. The Prophet ﷺ used to recite specific duas before important matters. This dua is a complete toolkit for anyone facing a daunting task. [Tafsir Ibn Kathir]',
+      'Musa (AS) made a comprehensive dua: "My Lord, expand for me my breast, ease for me my task, and untie the knot from my tongue that they may understand my speech." Ibn Kathir explains that this dua addresses three dimensions of difficulty: internal constriction (chest), external burden (task), and communication barriers (tongue). Al-Qurtubi adds that Musa asked for these before his mission to Pharaoh—showing that even prophets sought divine help before facing overwhelming situations. The Prophet ﷺ used to recite specific duas before important matters. Before you rehearse what you\'ll say, ask for the chest to say it from — Musa did, and he was about to face Pharaoh. [Tafsir Ibn Kathir]',
     angleSource: 'Tafsir Ibn Kathir',
     action: 'Recite the full prayer of Musa (AS) including the request for clarity.',
     practiceSteps: JSON.stringify([
@@ -6553,7 +6553,7 @@ const quranContentAnglesData: ContentAngle[] = [
     contentId: 'quran_14_7',
     mood: 'Grateful',
     angle:
-      'Allah declares: "If you are grateful, I will surely increase you." Ibn Kathir explains that this divine law applies to all blessings—when you express gratitude for what you have, Allah multiplies it. Al-Sa\'di adds that the "increase" is not limited to material wealth; it includes peace of heart, clarity of mind, and satisfaction with one\'s portion. The Prophet ﷺ said: "Richness is not having many possessions. Rather, richness is the richness of the soul." [Sahih Bukhari 6446] Contentment is not about having more—it is about recognizing what you already have as a gift from the Most Generous. [Tafsir al-Sa\'di]',
+      'Allah declares: "If you are grateful, I will surely increase you." Ibn Kathir explains that this divine law applies to all blessings—when you express gratitude for what you have, Allah multiplies it. Al-Sa\'di adds that the "increase" is not limited to material wealth; it includes peace of heart, clarity of mind, and satisfaction with one\'s portion. The Prophet ﷺ said: "Richness is not having many possessions. Rather, richness is the richness of the soul." [Sahih Bukhari 6446] Go through what\'s already in front of you before you add anything to the list. Most of it, you hadn\'t noticed was a gift. [Tafsir al-Sa\'di]',
     angleSource: "Tafsir al-Sa'di",
     action: 'Look around and say "Alhamdulillah" for the roof over your head.',
     practiceSteps: JSON.stringify([
@@ -6725,7 +6725,7 @@ const quranContentAnglesData: ContentAngle[] = [
     contentId: 'quran_31_12',
     mood: 'Grateful',
     angle:
-      'Allah says: "And whoever is grateful is grateful for the benefit of himself. And whoever denies—then indeed, Allah is Free of need and Praiseworthy." Ibn Kathir explains that gratitude and contentment are investments in your own spiritual health—Allah gains nothing from your thanks, but you gain everything. Al-Sa\'di adds that recognizing this transforms gratitude from a duty into a privilege: you are not doing Allah a favor by being content; you are doing yourself one. The Prophet ﷺ said: "Be content with what Allah has apportioned for you and you will be the richest of people." [At-Tirmidhi 2305] Contentment is the ultimate gift you give yourself. [Tafsir al-Sa\'di]',
+      'Allah says: "And whoever is grateful is grateful for the benefit of himself. And whoever denies—then indeed, Allah is Free of need and Praiseworthy." Ibn Kathir explains that gratitude and contentment are investments in your own spiritual health—Allah gains nothing from your thanks, but you gain everything. Al-Sa\'di adds that recognizing this transforms gratitude from a duty into a privilege: you are not doing Allah a favor by being content; you are doing yourself one. The Prophet ﷺ said: "Be content with what Allah has apportioned for you and you will be the richest of people." [At-Tirmidhi 2305] No one else benefits from your contentment the way you do — this is one you are doing entirely for yourself. [Tafsir al-Sa\'di]',
     angleSource: "Tafsir al-Sa'di",
     action: 'Recognize that your current feeling of peace is a gift you are giving yourself.',
     practiceSteps: JSON.stringify([
@@ -6768,7 +6768,7 @@ const quranContentAnglesData: ContentAngle[] = [
     contentId: 'quran_5_3',
     mood: 'Grateful',
     angle:
-      'Allah says: "This day I have perfected for you your religion and completed My favor upon you and have approved for you Islam as religion." Ibn Kathir explains this was revealed on the day of Arafah during the farewell pilgrimage—and it made Umar (RA) weep because he understood that perfection implies completion. Al-Qurtubi adds that "completed My favor" means Islam provides a comprehensive guide for every aspect of life—spiritual, social, personal, and moral. The Prophet ﷺ received this verse as a capstone of 23 years of revelation, and no legislation was revealed after it. Having a "perfected" faith is itself the greatest contentment. [Tafsir Ibn Kathir]',
+      'Allah says: "This day I have perfected for you your religion and completed My favor upon you and have approved for you Islam as religion." Ibn Kathir explains this was revealed on the day of Arafah during the farewell pilgrimage—and it made Umar (RA) weep because he understood that perfection implies completion. Al-Qurtubi adds that "completed My favor" means Islam provides a comprehensive guide for every aspect of life—spiritual, social, personal, and moral. The Prophet ﷺ received this verse as a capstone of 23 years of revelation, and no legislation was revealed after it. Whatever you still feel is missing, it was not left out of what was completed for you that day. [Tafsir Ibn Kathir]',
     angleSource: 'Tafsir Ibn Kathir',
     action: 'Reflect on the completeness of your faith as a guide for life.',
     practiceSteps: JSON.stringify([
@@ -6811,7 +6811,7 @@ const quranContentAnglesData: ContentAngle[] = [
     contentId: 'quran_28_73',
     mood: 'Grateful',
     angle:
-      'Allah says: "And out of His mercy He made for you the night and the day that you may rest therein and seek from His bounty and that perhaps you will be grateful." Ibn Kathir explains that the alternation of night and day is a deliberate act of mercy—night for rest and recovery, day for work and provision. Al-Sa\'di adds that this natural rhythm provides a natural container for human contentment: there is a time for effort and a time for stillness, both divinely ordained. The Prophet ﷺ would say when evening came: "The night has come and the day has departed, and Allah is praised." [Abu Dawud] Finding peace in natural rhythms is itself a form of worship. [Tafsir Ibn Kathir]',
+      'Allah says: "And out of His mercy He made for you the night and the day that you may rest therein and seek from His bounty and that perhaps you will be grateful." Ibn Kathir explains that the alternation of night and day is a deliberate act of mercy—night for rest and recovery, day for work and provision. Al-Sa\'di adds that this natural rhythm provides a natural container for human contentment: there is a time for effort and a time for stillness, both divinely ordained. The Prophet ﷺ would say when evening came: "The night has come and the day has departed, and Allah is praised." [Abu Dawud] Letting the day actually end, instead of dragging it into the night, is not laziness. It is following the pattern He set. [Tafsir Ibn Kathir]',
     angleSource: 'Tafsir Ibn Kathir',
     action: 'Observe the light (or dark) outside and see it as a deliberate mercy.',
     practiceSteps: JSON.stringify([
@@ -6941,7 +6941,7 @@ const quranContentAnglesData: ContentAngle[] = [
     contentId: 'quran_89_27_30',
     mood: 'Grateful',
     angle:
-      'Allah says: "O reassured soul, return to your Lord, well-pleased and pleasing to Him. Enter among My righteous servants, and enter My Paradise." Ibn Kathir explains that the "nafs al-mutma\'innah" (reassured soul) is the one that found deep contentment through faith and certainty in Allah. Al-Baghawi adds that "return to your Lord" is the most beautiful invitation—a homecoming for the soul that was always meant to be with its Creator. The Prophet ﷺ said: "When Allah loves a servant, He calls Jibril and says: I love so-and-so, so love him." [Sahih Bukhari 3209] The ultimate contentment is knowing you are heading home. [Tafsir al-Baghawi]',
+      'Allah says: "O reassured soul, return to your Lord, well-pleased and pleasing to Him. Enter among My righteous servants, and enter My Paradise." Ibn Kathir explains that the "nafs al-mutma\'innah" (reassured soul) is the one that found deep contentment through faith and certainty in Allah. Al-Baghawi adds that "return to your Lord" is the most beautiful invitation—a homecoming for the soul that was always meant to be with its Creator. The Prophet ﷺ said: "When Allah loves a servant, He calls Jibril and says: I love so-and-so, so love him." [Sahih Bukhari 3209] Read "return to your Lord" again — not as a destination you\'re working toward, but as a homecoming you\'re already on. [Tafsir al-Baghawi]',
     angleSource: 'Tafsir al-Baghawi',
     action: 'Reflect on the peace of a soul that has found its home in Allah.',
     practiceSteps: JSON.stringify([
@@ -6985,7 +6985,7 @@ const quranContentAnglesData: ContentAngle[] = [
     contentId: 'quran_13_28',
     mood: 'Calm',
     angle:
-      'Allah says: "Verily, in the remembrance of Allah do hearts find rest." Ibn Kathir explains that this verse establishes a universal principle: the human heart was created with a void that only the remembrance of Allah can fill—no wealth, status, or relationship can substitute. Al-Sa\'di adds that "tatma\'innu" (find rest) means a deep, settled peace that comes only when the heart is connected to its Creator. The Prophet ﷺ said: "Shall I not tell you the best of your deeds, the purest of them with your Lord, which raises your ranks the most? It is the remembrance of Allah." [At-Tirmidhi 3377] Dhikr is not ritual—it is the heart\'s medicine. [Tafsir al-Sa\'di]',
+      'Allah says: "Verily, in the remembrance of Allah do hearts find rest." Ibn Kathir explains that this verse establishes a universal principle: the human heart was created with a void that only the remembrance of Allah can fill—no wealth, status, or relationship can substitute. Al-Sa\'di adds that "tatma\'innu" (find rest) means a deep, settled peace that comes only when the heart is connected to its Creator. The Prophet ﷺ said: "Shall I not tell you the best of your deeds, the purest of them with your Lord, which raises your ranks the most? It is the remembrance of Allah." [At-Tirmidhi 3377] Notice that dhikr doesn\'t just describe a settled heart here. It\'s named as the one thing that actually produces it. [Tafsir al-Sa\'di]',
     angleSource: "Tafsir al-Sa'di",
     action: 'Close your eyes and recite "SubhanAllah" with awareness of its meaning.',
     practiceSteps: JSON.stringify([
@@ -7117,7 +7117,7 @@ const quranContentAnglesData: ContentAngle[] = [
     contentId: 'quran_16_32',
     mood: 'Calm',
     angle:
-      'Allah says: "The ones whom the angels take in death, being good and pure. The angels will say: Peace be upon you. Enter Paradise for what you used to do." Ibn Kathir explains that "tayyibeen" (good and pure) refers to souls whose hearts were cleansed through faith and righteous deeds. Al-Sa\'di adds that the angels\' greeting of "Salam" at the moment of death is reserved for those who cultivated inner purity during life. The Prophet ﷺ said: "Truly, Allah does not look at your appearance or wealth, but He looks at your hearts and your deeds." [Sahih Muslim 2564] Inner purity is the passport to angelic peace. [Tafsir al-Sa\'di]',
+      'Allah says: "The ones whom the angels take in death, being good and pure. The angels will say: Peace be upon you. Enter Paradise for what you used to do." Ibn Kathir explains that "tayyibeen" (good and pure) refers to souls whose hearts were cleansed through faith and righteous deeds. Al-Sa\'di adds that the angels\' greeting of "Salam" at the moment of death is reserved for those who cultivated inner purity during life. The Prophet ﷺ said: "Truly, Allah does not look at your appearance or wealth, but He looks at your hearts and your deeds." [Sahih Muslim 2564] What the angels greet at that moment is not your record of achievements. It\'s what you actually kept your heart clean of. [Tafsir al-Sa\'di]',
     angleSource: "Tafsir al-Sa'di",
     action: 'Focus on purifying your intention for your next task.',
     practiceSteps: JSON.stringify([
@@ -7519,7 +7519,7 @@ const quranContentAnglesData: ContentAngle[] = [
     contentId: 'quran_2_152',
     mood: 'Grateful',
     angle:
-      'Allah says: "So remember Me; I will remember you. And be grateful to Me and do not deny Me." Ibn Kathir explains that gratitude and remembrance are linked—when you thank Allah, you are also remembering Him, and He remembers you in return. Al-Sa\'di adds that the ability to be grateful is itself a blessing that deserves gratitude, creating a beautiful cycle: gratitude leads to remembrance, which leads to divine attention, which leads to more blessings. The Prophet ﷺ said: "If he remembers Me in himself, I remember him in Myself." [Sahih Bukhari 7405] Your gratitude is not just acknowledged—it is reciprocated by the King of Kings. [Tafsir al-Sa\'di]',
+      'Allah says: "So remember Me; I will remember you. And be grateful to Me and do not deny Me." Ibn Kathir explains that gratitude and remembrance are linked—when you thank Allah, you are also remembering Him, and He remembers you in return. Al-Sa\'di adds that the ability to be grateful is itself a blessing that deserves gratitude, creating a beautiful cycle: gratitude leads to remembrance, which leads to divine attention, which leads to more blessings. The Prophet ﷺ said: "If he remembers Me in himself, I remember him in Myself." [Sahih Bukhari 7405] Say thank You quietly today and notice this ayah\'s claim: it does not go unanswered, even when no one else hears it. [Tafsir al-Sa\'di]',
     angleSource: "Tafsir al-Sa'di",
     action: 'Thank Allah for the strength to even remember Him.',
     practiceSteps: JSON.stringify([
@@ -7605,7 +7605,7 @@ const quranContentAnglesData: ContentAngle[] = [
     contentId: 'quran_20_25',
     mood: 'Overwhelmed',
     angle:
-      'Musa (AS) prayed: "My Lord, expand for me my breast." Ibn Kathir explains that "sharh al-sadr" is the removal of tightness, anxiety, and spiritual constriction—replacing them with light, confidence, and inner spaciousness. Al-Qurtubi adds that this dua was made before Musa\'s most challenging moment (facing Pharaoh), showing it is specifically designed for overwhelming situations. The Prophet ﷺ was also granted this gift: "Have We not expanded for you your breast?" [94:1] The Prophet ﷺ said: "Make things easy for the people, and do not make it difficult for them." [Sahih Bukhari 6125] Seeking expansion is the antidote to the constriction of anxiety. [Tafsir al-Qurtubi]',
+      'Musa (AS) prayed: "My Lord, expand for me my breast." Ibn Kathir explains that "sharh al-sadr" is the removal of tightness, anxiety, and spiritual constriction—replacing them with light, confidence, and inner spaciousness. Al-Qurtubi adds that this dua was made before Musa\'s most challenging moment (facing Pharaoh), showing it is specifically designed for overwhelming situations. The Prophet ﷺ was also granted this gift: "Have We not expanded for you your breast?" [94:1] The Prophet ﷺ said: "Make things easy for the people, and do not make it difficult for them." [Sahih Bukhari 6125] Notice what Musa asked for first — not a plan, not courage, but room. Ask for the same thing before you ask for anything else. [Tafsir al-Qurtubi]',
     angleSource: 'Tafsir al-Qurtubi',
     action: 'Recite "Rabbish-rah li sadri" three times slowly.',
     practiceSteps: JSON.stringify([
@@ -8191,7 +8191,7 @@ const quranContentAnglesData: ContentAngle[] = [
     contentId: 'quran_27_62',
     mood: 'Overwhelmed',
     angle:
-      'Allah asks: "Is He not the One who responds to the desperate one when he calls upon Him and removes evil?" Ibn Kathir explains that "al-mudtarr" (the desperate one) is given a special status—Allah specifically promises to answer those who have reached the end of their rope. Al-Qurtubi adds that this verse is phrased as a rhetorical question, meaning the answer is so obvious it needs no debate: of course Allah responds to the desperate. The Prophet ﷺ said: "The dua of the distressed person is: O Allah, I hope for Your mercy; do not leave me to myself even for the blink of an eye." [Abu Dawud 5090] Desperation is not weakness—it is the key to divine response. [Tafsir al-Qurtubi]',
+      'Allah asks: "Is He not the One who responds to the desperate one when he calls upon Him and removes evil?" Ibn Kathir explains that "al-mudtarr" (the desperate one) is given a special status—Allah specifically promises to answer those who have reached the end of their rope. Al-Qurtubi adds that this verse is phrased as a rhetorical question, meaning the answer is so obvious it needs no debate: of course Allah responds to the desperate. The Prophet ﷺ said: "The dua of the distressed person is: O Allah, I hope for Your mercy; do not leave me to myself even for the blink of an eye." [Abu Dawud 5090] The version of you with nothing left to perform is the version this ayah is actually speaking to. [Tafsir al-Qurtubi]',
     angleSource: 'Tafsir al-Qurtubi',
     action: 'Call out to Allah with the desperation of someone who has no other helper.',
     practiceSteps: JSON.stringify([
@@ -8323,7 +8323,7 @@ const quranContentAnglesData: ContentAngle[] = [
     contentId: 'quran_48_4',
     mood: 'Calm',
     angle:
-      'Allah says: "It is He who sent down tranquility (sakina) into the hearts of the believers that they would increase in faith along with their present faith." Ibn Kathir explains that sakina is a special divine gift—a descending peace that settles the heart during turbulence. Al-Sa\'di adds that sakina came to the believers at Hudaybiyyah when they were frustrated and confused, turning their agitation into calm certainty. The Prophet ﷺ said: "Tranquility descends upon the people of dhikr, mercy covers them, and the angels surround them." [Sahih Muslim 2700] Sakina is not earned by effort alone—it is a gift from the Lord of the heavens and earth. [Tafsir al-Sa\'di]',
+      'Allah says: "It is He who sent down tranquility (sakina) into the hearts of the believers that they would increase in faith along with their present faith." Ibn Kathir explains that sakina is a special divine gift—a descending peace that settles the heart during turbulence. Al-Sa\'di adds that sakina came to the believers at Hudaybiyyah when they were frustrated and confused, turning their agitation into calm certainty. The Prophet ﷺ said: "Tranquility descends upon the people of dhikr, mercy covers them, and the angels surround them." [Sahih Muslim 2700] You cannot manufacture this feeling by trying harder. You can only make room and wait for it to be sent. [Tafsir al-Sa\'di]',
     angleSource: "Tafsir al-Sa'di",
     action: 'Ask Allah specifically for "Sakina" (tranquility) to descend on your heart.',
     practiceSteps: JSON.stringify([
@@ -8581,7 +8581,7 @@ const quranContentAnglesData: ContentAngle[] = [
     contentId: 'quran_17_11',
     mood: 'Hopeful',
     angle:
-      'Allah says: "Man supplicates for evil as he supplicates for good, and man is ever hasty." Ibn Kathir explains that human beings, in their impatience, sometimes unknowingly ask for what would harm them—wanting things to happen immediately rather than trusting Allah\'s timing. Al-Sa\'di adds that this verse is a gentle reminder: your haste is not wisdom, but Allah\'s delay is always wisdom. The Prophet ﷺ said: "The supplication of every one of you is granted if he does not grow impatient and say: I made dua but it was not answered." [Sahih Bukhari 6340] Patience with divine timing is the truest form of hope. [Tafsir al-Sa\'di]',
+      'Allah says: "Man supplicates for evil as he supplicates for good, and man is ever hasty." Ibn Kathir explains that human beings, in their impatience, sometimes unknowingly ask for what would harm them—wanting things to happen immediately rather than trusting Allah\'s timing. Al-Sa\'di adds that this verse is a gentle reminder: your haste is not wisdom, but Allah\'s delay is always wisdom. The Prophet ﷺ said: "The supplication of every one of you is granted if he does not grow impatient and say: I made dua but it was not answered." [Sahih Bukhari 6340] The thing you\'re rushing wasn\'t necessarily going to be good for you at the pace you wanted it. [Tafsir al-Sa\'di]',
     angleSource: "Tafsir al-Sa'di",
     action: "Pause and acknowledge that Allah's timing is more hopeful than mine",
     practiceSteps: JSON.stringify([
@@ -9278,7 +9278,7 @@ const quranContentAnglesData: ContentAngle[] = [
     contentId: 'quran_29_69',
     mood: 'Hopeful',
     angle:
-      'Allah says: "And those who strive for Us—We will surely guide them to Our ways." Ibn Kathir explains that divine guidance is proportional to effort—the more you strive (jihad in the broader sense of exerting effort), the more paths of guidance Allah opens for you. Al-Sa\'di adds that "subulana" (Our ways) is plural, meaning Allah opens multiple paths of guidance, not just one. The Prophet ﷺ said: "Whoever treads a path seeking knowledge, Allah will make easy for him the path to Paradise." [Sahih Muslim 2699] Your effort today is the seed; divine guidance is the harvest that grows from it. [Tafsir al-Sa\'di]',
+      'Allah says: "And those who strive for Us—We will surely guide them to Our ways." Ibn Kathir explains that divine guidance is proportional to effort—the more you strive (jihad in the broader sense of exerting effort), the more paths of guidance Allah opens for you. Al-Sa\'di adds that "subulana" (Our ways) is plural, meaning Allah opens multiple paths of guidance, not just one. The Prophet ﷺ said: "Whoever treads a path seeking knowledge, Allah will make easy for him the path to Paradise." [Sahih Muslim 2699] What you actually control today is the striving, not the outcome — that part was always going to be given, not earned. [Tafsir al-Sa\'di]',
     angleSource: "Tafsir al-Sa'di",
     action: 'Set a deliberate spiritual goal for your current burst of energy.',
     practiceSteps: JSON.stringify([
@@ -9363,7 +9363,7 @@ const quranContentAnglesData: ContentAngle[] = [
     contentId: 'quran_67_2',
     mood: 'Hopeful',
     angle:
-      'Allah says: "He who created death and life to test you as to which of you is best in deed." Ibn Kathir explains that "ahsanu \'amala" (best in deed) refers not to the quantity of deeds but their quality—sincerity, excellence, and conformity to divine guidance. Al-Sa\'di adds that life itself is framed as a test of performance: every moment is an opportunity to demonstrate your best. The Prophet ﷺ said: "Ihsan is to worship Allah as though you see Him, and if you cannot see Him, then He sees you." [Sahih Bukhari 50] The test is not about doing more—it is about doing better. [Tafsir al-Sa\'di]',
+      'Allah says: "He who created death and life to test you as to which of you is best in deed." Ibn Kathir explains that "ahsanu \'amala" (best in deed) refers not to the quantity of deeds but their quality—sincerity, excellence, and conformity to divine guidance. Al-Sa\'di adds that life itself is framed as a test of performance: every moment is an opportunity to demonstrate your best. The Prophet ﷺ said: "Ihsan is to worship Allah as though you see Him, and if you cannot see Him, then He sees you." [Sahih Bukhari 50] Compare today against your best version of it, not against how much you managed to get through. [Tafsir al-Sa\'di]',
     angleSource: "Tafsir al-Sa'di",
     action: 'Pick a task and perform it with the highest level of mastery (Ihsan).',
     practiceSteps: JSON.stringify([
@@ -10231,7 +10231,7 @@ const quranContentAnglesData: ContentAngle[] = [
     contentId: 'quran_7_199',
     mood: 'Angry',
     angle:
-      'Allah says: "Take what is given freely, enjoin what is good, and turn away from the ignorant." Ibn Kathir explains that this verse contains three comprehensive commands: accept people\'s natural imperfections (\'afw), promote good (amr bil-ma\'ruf), and disengage from provocation (i\'rad). Al-Sa\'di adds that "take what is given freely" means accepting people as they are rather than demanding perfection—a key to reducing anger. The Prophet ﷺ said: "Make things easy and do not make them difficult. Give good news and do not drive people away." [Sahih Bukhari 6125] Pardoning is not about the other person—it is about preserving your own inner peace. [Tafsir al-Sa\'di]',
+      'Allah says: "Take what is given freely, enjoin what is good, and turn away from the ignorant." Ibn Kathir explains that this verse contains three comprehensive commands: accept people\'s natural imperfections (\'afw), promote good (amr bil-ma\'ruf), and disengage from provocation (i\'rad). Al-Sa\'di adds that "take what is given freely" means accepting people as they are rather than demanding perfection—a key to reducing anger. The Prophet ﷺ said: "Make things easy and do not make them difficult. Give good news and do not drive people away." [Sahih Bukhari 6125] The person you\'re angry with may never know you chose to let it go. You\'re the one who has to live with either choice. [Tafsir al-Sa\'di]',
     angleSource: "Tafsir al-Sa'di",
     action: 'Choose to overlook a fault today just for the sake of your own peace.',
     practiceSteps: JSON.stringify([
@@ -12838,7 +12838,7 @@ const quranContentAnglesData: ContentAngle[] = [
     contentId: 'quran_50_38',
     mood: 'Tired',
     angle:
-      'He made the heavens and the earth and no weariness touched Him — and He says so specifically, because tirelessness is His and not yours. Al-Qawiyy is the Strong One; you are not, and were never asked to be. Somewhere you started treating your own limits as a character flaw. They are not. They are the built-in difference between a servant and his Lord, and running your body as though it should never deplete is not devotion — it is trying to borrow an attribute that belongs to Him alone.',
+      'He made the heavens and the earth and no weariness touched Him — and He says so specifically, because tirelessness is His and not yours. Al-Qawiyy is the Strong One; you are not, and were never asked to be. Somewhere you started treating your own limits as a character flaw. They are not. They are the built-in difference between a servant and his Lord — and your limits were never yours to be ashamed of. They were His decision, not your failure.',
     angleSource: 'Tafsir Ibn Kathir',
     action: 'Hand one task to someone else today, or move it to next week.',
     practiceSteps: JSON.stringify([
