@@ -50,7 +50,7 @@ const BackgroundThemePicker: React.FC<BackgroundThemePickerProps> = ({
         if (theme.isPremium && !isPremium) {
             Alert.alert(
                 'Premium Feature',
-                'Nature background themes are available for premium members to enhance your spiritual sanctuary.',
+                'These nature themes are part of Sakina\'s paid support — the rest of the app stays free either way.',
                 [
                     { text: 'Later', style: 'cancel' },
                     { text: 'Upgrade Now', onPress: () => onUpgrade?.() }
