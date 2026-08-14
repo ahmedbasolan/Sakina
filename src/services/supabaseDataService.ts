@@ -19,6 +19,16 @@ import { withTimeout } from '../utils';
 // guidance delivery waiting on the network.
 const HISTORY_NETWORK_TIMEOUT_MS = 5000;
 
+// Explicit column lists instead of select('*'). RLS already scopes these reads
+// to the caller's own rows, so this isn't closing a leak — it pins the response
+// shape so a later migration that adds a column (an internal flag, a
+// moderation note, anything server-side) doesn't silently start shipping it to
+// every client. Keep in sync with the row interfaces below.
+const PATH_PROGRESS_COLUMNS =
+    'path_id, current_day, start_date, completed_days, is_completed, completed_at';
+const USER_PROFILE_COLUMNS =
+    'id, display_name, subscription_tier, subscription_type, subscription_end, is_active, unlocked_bundles, created_at, updated_at';
+
 // ── Supabase Row Types ──────────────────────────────────────────────
 
 export interface SupabaseHistoryRow {
@@ -615,7 +625,7 @@ export class SupabaseDataService {
         if (userId) {
             const { data, error } = await supabase
                 .from('user_path_progress')
-                .select('*')
+                .select(PATH_PROGRESS_COLUMNS)
                 .eq('user_id', userId)
                 .eq('path_id', pathId)
                 .single();
@@ -662,7 +672,7 @@ export class SupabaseDataService {
         if (userId) {
             const { data, error } = await supabase
                 .from('user_path_progress')
-                .select('*')
+                .select(PATH_PROGRESS_COLUMNS)
                 .eq('user_id', userId);
 
             if (error) {
@@ -707,7 +717,7 @@ export class SupabaseDataService {
 
         const { data, error } = await supabase
             .from('user_profiles')
-            .select('*')
+            .select(USER_PROFILE_COLUMNS)
             .eq('id', userId)
             .single();
 
