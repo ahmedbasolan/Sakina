@@ -65,9 +65,15 @@ Resolve the asset to a local URI via `expo-asset` (`Asset.fromModule(...)`,
 
 ## 3. Backgrounds — reuse, build nothing
 
-`backgroundThemeService.ts` already ships **34 `BackgroundTheme` entries
-(28 premium, 6 free)** across sky / mountains / nature / landscapes / ocean /
-animals, and `ShareSheet` already renders a picker over them.
+`backgroundThemeService.ts` already ships **28 `BackgroundTheme` entries, all
+of them premium**, across 6 categories (sky / mountains / nature / landscapes /
+ocean / animals), and `ShareSheet` already renders a picker over them.
+
+> Corrected 2026-08-15: an earlier revision of this section said "34 themes,
+> 28 premium, 6 free". That was `THEME_CATEGORIES`' six ids being counted as
+> themes. There are **no free themes**, which is why the background fallback
+> in `lockscreenVerseService` does not filter on `isPremium` — the feature is
+> premium-gated, so any theme is legitimate for a user who reaches it.
 
 - No new assets.
 - No new picker component.
@@ -163,7 +169,7 @@ Opens a dedicated setup screen:
 | Tahajjud | On | 1 hour before Fajr |
 | Morning adhkar | On | At sunrise |
 | Evening adhkar | On | Existing window timing |
-| Background | Current ShareSheet theme, else first free theme | Reuses `BACKGROUND_THEMES` picker |
+| Background | Lock screen choice, else ShareSheet theme, else `BACKGROUND_THEMES[0]` | Reuses the existing picker |
 | Show transliteration | **Off** | See §7 |
 
 Per-window toggles matter: Tahajjud fires roughly an hour before Fajr, and
