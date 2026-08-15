@@ -13,6 +13,28 @@ const STORAGE_KEY = '@daily_verse';
 const HISTORY_KEY = '@daily_verse_history';
 const HISTORY_WINDOW = 30; // Don't repeat within 30 days
 
+// Lock screen verses draw three per day (one per spiritual window) and keep a
+// SEPARATE history from the verse of the day. Sharing one history would make
+// the daily verse depend on whether the lock screen feature is switched on,
+// which would quietly change a surface that has already shipped.
+const WINDOW_HISTORY_KEY = '@window_verse_history';
+
+/**
+ * Rolling history size for lock screen verses, in entries (not days).
+ *
+ * MUST stay below POOL_SIZE. selectVerseIndex walks forward from a hashed base
+ * looking for an index absent from the history; if the history covers the whole
+ * pool the walk finds nothing and every window collapses onto the same base —
+ * three identical verses in one day, with no error. At three draws per day,
+ * matching the daily verse's 30-DAY guarantee would need 90 entries, well over
+ * the 52-verse pool. 36 entries is roughly 12 days, which is the honest ceiling
+ * until the pool grows. See the 2026-08-15 lock screen spec.
+ */
+export const WINDOW_HISTORY_SIZE = 36;
+
+export const SPIRITUAL_WINDOWS = ['tahajjud', 'morning', 'evening'] as const;
+export type SpiritualWindow = (typeof SPIRITUAL_WINDOWS)[number];
+
 export interface DailyVerse {
   arabic: string;
   translation: string;
@@ -291,7 +313,7 @@ const VERSE_POOL: Omit<DailyVerse, 'dateKey'>[] = [
   },
 ];
 
-const POOL_SIZE = VERSE_POOL.length;
+export const POOL_SIZE = VERSE_POOL.length;
 
 /**
  * Simple deterministic hash from a date string.
@@ -319,9 +341,9 @@ function todayKey(): string {
 /**
  * Load the recent history of shown verse indices.
  */
-async function loadHistory(): Promise<{ dateKey: string; index: number }[]> {
+async function loadHistory(key: string = HISTORY_KEY): Promise<{ dateKey: string; index: number }[]> {
   try {
-    const raw = await AsyncStorage.getItem(HISTORY_KEY);
+    const raw = await AsyncStorage.getItem(key);
     if (raw) return JSON.parse(raw);
   } catch { /* fresh start */ }
   return [];
@@ -330,28 +352,73 @@ async function loadHistory(): Promise<{ dateKey: string; index: number }[]> {
 /**
  * Save updated history, trimming to the window size.
  */
-async function saveHistory(history: { dateKey: string; index: number }[]): Promise<void> {
-  const trimmed = history.slice(-HISTORY_WINDOW);
-  await AsyncStorage.setItem(HISTORY_KEY, JSON.stringify(trimmed));
+async function saveHistory(
+  history: { dateKey: string; index: number }[],
+  key: string = HISTORY_KEY,
+  limit: number = HISTORY_WINDOW,
+): Promise<void> {
+  const trimmed = history.slice(-limit);
+  await AsyncStorage.setItem(key, JSON.stringify(trimmed));
 }
 
 /**
- * Select today's verse index, avoiding recent history.
+ * Select a verse index for `seed`, avoiding recent history.
+ *
+ * `mustAvoid` is honoured even when history is saturated. Callers that need a
+ * hard guarantee (the three lock screen windows, which must never land on the
+ * same verse in one day) pass it; the verse of the day does not.
  */
-function selectVerseIndex(dateKey: string, recentIndices: Set<number>): number {
-  const base = dateHash(dateKey) % POOL_SIZE;
+function selectVerseIndex(
+  seed: string,
+  recentIndices: Set<number>,
+  mustAvoid?: Set<number>,
+): number {
+  const base = dateHash(seed) % POOL_SIZE;
 
-  // If base hasn't been shown recently, use it
-  if (!recentIndices.has(base)) return base;
-
-  // Walk forward to find the next unused index
-  for (let offset = 1; offset < POOL_SIZE; offset++) {
+  // Preferred: satisfy the recent-history constraint.
+  for (let offset = 0; offset < POOL_SIZE; offset++) {
     const candidate = (base + offset) % POOL_SIZE;
     if (!recentIndices.has(candidate)) return candidate;
   }
 
-  // Fallback (all shown — shouldn't happen since POOL_SIZE stays well above HISTORY_WINDOW)
+  // History covers the whole pool. Drop that constraint — it is a preference —
+  // but keep mustAvoid, which is a correctness requirement. Without this second
+  // pass the fallback below would hand every caller the same base.
+  if (mustAvoid) {
+    for (let offset = 0; offset < POOL_SIZE; offset++) {
+      const candidate = (base + offset) % POOL_SIZE;
+      if (!mustAvoid.has(candidate)) return candidate;
+    }
+  }
+
   return base;
+}
+
+/**
+ * Pick one verse index per spiritual window for a given day.
+ *
+ * The three are guaranteed distinct: each window excludes the indices already
+ * taken by earlier windows the same day, and that exclusion survives a
+ * saturated history via selectVerseIndex's mustAvoid pass. Distinctness holds
+ * for any POOL_SIZE >= SPIRITUAL_WINDOWS.length.
+ */
+export function selectWindowIndices(
+  dateKey: string,
+  recentIndices: Set<number>,
+): Record<SpiritualWindow, number> {
+  const takenToday = new Set<number>();
+  const picked = {} as Record<SpiritualWindow, number>;
+
+  for (const window of SPIRITUAL_WINDOWS) {
+    const avoid = new Set<number>(recentIndices);
+    for (const t of takenToday) avoid.add(t);
+
+    const index = selectVerseIndex(`${dateKey}:${window}`, avoid, takenToday);
+    picked[window] = index;
+    takenToday.add(index);
+  }
+
+  return picked;
 }
 
 /**
@@ -391,4 +458,42 @@ export function getDailyVerseSync(): DailyVerse {
   const today = todayKey();
   const index = dateHash(today) % POOL_SIZE;
   return { ...VERSE_POOL[index], dateKey: today };
+}
+
+/**
+ * Get the verse for one spiritual window on a given day (defaults to today).
+ *
+ * Used to build the lock screen notification payload. Deterministic for a
+ * (dateKey, window) pair given the same history, so re-scheduling the same day
+ * does not shuffle what the user already saw.
+ *
+ * The three windows on one day are always distinct — see selectWindowIndices.
+ */
+export async function getWindowVerse(
+  window: SpiritualWindow,
+  dateKey?: string,
+): Promise<DailyVerse> {
+  const day = dateKey ?? todayKey();
+
+  const history = await loadHistory(WINDOW_HISTORY_KEY);
+  // Only days OTHER than the one being computed count as "recent". Including
+  // today's own entries would make a second call for the same day avoid the
+  // verse it just returned, which would break determinism on re-schedule.
+  const recentIndices = new Set(
+    history.filter((h) => h.dateKey !== day).map((h) => h.index),
+  );
+
+  const picked = selectWindowIndices(day, recentIndices);
+  const index = picked[window];
+
+  const alreadyRecorded = history.some((h) => h.dateKey === day && h.index === index);
+  if (!alreadyRecorded) {
+    await saveHistory(
+      [...history, { dateKey: day, index }],
+      WINDOW_HISTORY_KEY,
+      WINDOW_HISTORY_SIZE,
+    );
+  }
+
+  return { ...VERSE_POOL[index], dateKey: day };
 }
