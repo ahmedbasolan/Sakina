@@ -13,7 +13,6 @@ import {
   Platform,
   Clipboard,
   Image,
-  ImageBackground,
 } from 'react-native';
 import ViewShot from 'react-native-view-shot';
 import * as Sharing from 'expo-sharing';
@@ -346,11 +345,23 @@ const ShareSheet = ({ isVisible, onClose, isPremium, onUpgrade, content }: Share
             <View style={styles.previewCardShadow}>
               <ViewShot ref={viewShotRef} options={{ format: 'png', quality: 1 }}>
                 {background.kind === 'photo' ? (
-                  <ImageBackground
-                    source={background.imageSource}
-                    style={styles.previewCard}
-                    imageStyle={styles.previewCardImage}
-                  >
+                  // Plain View + absolutely-positioned Image instead of
+                  // ImageBackground: previewCard's height is content-driven
+                  // (minHeight, no fixed height), and ImageBackground's own
+                  // implementation re-proxies width/height from the outer
+                  // style onto its inner <Image> (see its "Temporary
+                  // Workaround" comment in react-native/Libraries/Image/
+                  // ImageBackground.js) — with no resolved height to proxy,
+                  // the image fell back to its own intrinsic aspect ratio
+                  // instead of covering the card, leaving bare strips at the
+                  // sides. A directly absoluteFill'd Image has no such
+                  // proxy step and reliably covers the card's real box.
+                  <View style={styles.previewCard}>
+                    <Image
+                      source={background.imageSource}
+                      style={StyleSheet.absoluteFillObject}
+                      resizeMode="cover"
+                    />
                     <LinearGradient
                       colors={['transparent', 'rgba(0,0,0,0.65)']}
                       style={StyleSheet.absoluteFillObject}
@@ -365,7 +376,7 @@ const ShareSheet = ({ isVisible, onClose, isPremium, onUpgrade, content }: Share
                       showTransliteration={showTransliteration}
                       showEnglish={showEnglish}
                     />
-                  </ImageBackground>
+                  </View>
                 ) : (
                   <LinearGradient
                     colors={background.colors}
@@ -644,9 +655,6 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.xxl,
     alignItems: 'center',
     justifyContent: 'space-between',
-  },
-  previewCardImage: {
-    borderRadius: BorderRadius.xxl,
   },
   cardHeader: {
     width: '100%',

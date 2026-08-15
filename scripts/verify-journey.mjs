@@ -35,6 +35,7 @@ const JOURNEYS = [
   // about khushu and stillness, which is Calm, and one path edit beat seven.
   ['path_salah_transformation', 'q_angle_salah_', 'Calm', true],
   ['path_prayer_leadership', 'q_angle_imam_', 'Hopeful', true],
+  ['path_hope_after_crisis', 'q_angle_crisis_', 'Sad', true],
 ];
 
 const contentIds = new Set([...quran.matchAll(/id: '(quran_[a-z0-9_]+)'/g)].map((m) => m[1]));

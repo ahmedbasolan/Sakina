@@ -35,6 +35,10 @@ interface AudioPlayerButtonProps {
   isLocked?: boolean;
   style?: StyleProp<ViewStyle>;
   containerStyle?: StyleProp<ViewStyle>;
+  /** Fires whenever this button's own playing state flips — lets a parent
+   *  rendering many verses (e.g. SurahLayer) know which one is currently
+   *  reciting, without lifting the player itself out of this component. */
+  onPlayingChange?: (playing: boolean) => void;
 }
 
 import { BuildService } from '../services/buildService';
@@ -123,6 +127,7 @@ function AudioPlayerButtonInternal({
   isLocked = false,
   style,
   containerStyle,
+  onPlayingChange,
 }: AudioPlayerButtonProps) {
   // Visual glyph height — explicit iconSize wins, else the historical 45% of size.
   const iconPx = iconSize ?? size * 0.45;
@@ -174,6 +179,23 @@ function AudioPlayerButtonInternal({
 
   const isPlaying = status?.playing || false;
   const isBuffering = status?.isBuffering || false;
+
+  // Report this button's own playing state to whoever asked — SurahLayer
+  // uses this to highlight the verse currently being recited. Each
+  // AudioPlayerButton instance owns its own player, so this is the only
+  // place that state exists; the parent never touches the player directly.
+  useEffect(() => {
+    onPlayingChange?.(isPlaying);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isPlaying]);
+
+  // Also report "stopped" on unmount — otherwise swapping verseKey via a
+  // remount (a caller using `key={verseKey}`) would leave the parent
+  // thinking a verse is still playing after its button is gone.
+  useEffect(() => {
+    return () => { onPlayingChange?.(false); };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Warm the disk cache for the current verse in the background so the next
   // time it's opened (revisiting a Surah, replaying the daily verse) it's
