@@ -3,6 +3,8 @@ import { Platform } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { PrayerTimings } from './prayerTimesService';
 import { logServiceError } from './errorLoggingService';
+import type { SpiritualWindow } from './dailyVerseService';
+import { buildWindowContent, loadLockscreenPrefs } from './lockscreenVerseService';
 
 const REMINDER_SETTINGS_KEY = '@daily_reminder_settings';
 const DAILY_REMINDER_IDS_KEY = '@notif_ids/daily_reminder';
@@ -220,9 +222,19 @@ class NotificationService {
   // them all at once at the next maintenance window, hours late. This shipped
   // broken (missing permission) and produced exactly that symptom on a real
   // device before the permission was added.
+  /**
+   * `content` may be a fixed payload or a per-date factory.
+   *
+   * The factory exists for lock screen verses, which need a DIFFERENT verse on
+   * each of the seven scheduled days. A single shared payload would pin one
+   * verse for the whole week. Prayer notifications pass a fixed object and are
+   * unaffected.
+   */
   private async scheduleWeeklyTrigger(
     times: ReadonlyArray<{ hour: number; minute: number } | null>,
-    content: Notifications.NotificationContentInput,
+    content:
+      | Notifications.NotificationContentInput
+      | ((date: Date) => Promise<Notifications.NotificationContentInput>),
     channelId: string,
   ): Promise<string[]> {
     const now = new Date();
@@ -234,24 +246,32 @@ class NotificationService {
       date.setHours(t.hour, t.minute, 0, 0);
       if (date > now) dates.push(date);
     });
+    const resolveContent =
+      typeof content === 'function' ? content : async () => content;
     const ids = await Promise.all(
-      dates.map((date) =>
-        Notifications.scheduleNotificationAsync({
-          content,
-          trigger: { type: Notifications.SchedulableTriggerInputTypes.DATE, date, channelId },
-        }).catch((error) => {
-          // Was silently discarding the error — prayer/spiritual notifications
-          // are ~35+21 one-shot DATE alarms scheduled per top-up, and a
-          // per-call failure here (OS alarm quota, restricted background
-          // scheduling on some OEMs, etc.) previously left zero trace of why
-          // a category went silent while others kept working.
-          logServiceError(
-            'NotificationService',
-            'scheduleWeeklyTrigger',
-            error instanceof Error ? error : new Error(String(error)),
-          );
-          return null;
-        }),
+      dates.map(async (date) =>
+        // The factory is inside the try so a failed verse lookup degrades that
+        // one notification instead of rejecting the whole category.
+        resolveContent(date)
+          .then((resolved) =>
+            Notifications.scheduleNotificationAsync({
+              content: resolved,
+              trigger: { type: Notifications.SchedulableTriggerInputTypes.DATE, date, channelId },
+            }),
+          )
+          .catch((error) => {
+            // Was silently discarding the error — prayer/spiritual notifications
+            // are ~35+21 one-shot DATE alarms scheduled per top-up, and a
+            // per-call failure here (OS alarm quota, restricted background
+            // scheduling on some OEMs, etc.) previously left zero trace of why
+            // a category went silent while others kept working.
+            logServiceError(
+              'NotificationService',
+              'scheduleWeeklyTrigger',
+              error instanceof Error ? error : new Error(String(error)),
+            );
+            return null;
+          }),
       ),
     );
     return ids.filter((id): id is string => id !== null);
@@ -369,22 +389,33 @@ class NotificationService {
       };
     });
 
+    // Static copy shipped before lock screen verses existed. It remains the
+    // payload whenever the feature is off or a window is opted out, so this
+    // category never goes silent.
+    const staticCopy: Record<SpiritualWindow, { title: string; body: string }> = {
+      tahajjud: { title: 'The Silent Hour', body: 'It is the time of Tahajjud. A moment for deep reflection and conversation with your Lord.' },
+      morning: { title: 'Start with Light', body: 'The sun is rising. Remember Allah with the morning adhkars to protect your day.' },
+      evening: { title: 'Closing the Day', body: 'The day is ending. Find peace in the evening remembrance before the night sets in.' },
+    };
+
+    // Read preferences once, not per notification — 21 reads of the same key
+    // would be pointless work inside a background top-up.
+    //
+    // Premium is NOT re-checked here. `enabled` can only be set by the premium
+    // setup screen, and resetLockscreenPrefsOnLapse() clears it when premium
+    // lapses. Gating here as well would need freemiumService, which imports
+    // this module's siblings and would risk a cycle.
+    const prefs = await loadLockscreenPrefs();
+
+    const contentFor =
+      (window: SpiritualWindow) =>
+      async (date: Date): Promise<Notifications.NotificationContentInput> =>
+        (await buildWindowContent(window, date, prefs)) ?? { ...staticCopy[window], sound: true };
+
     const [tahajjudIds, morningIds, eveningIds] = await Promise.all([
-      this.scheduleWeeklyTrigger(
-        perDay.map((d) => d.tahajjud),
-        { title: 'The Silent Hour', body: 'It is the time of Tahajjud. A moment for deep reflection and conversation with your Lord.' },
-        CH_SPIRITUAL,
-      ),
-      this.scheduleWeeklyTrigger(
-        perDay.map((d) => d.morning),
-        { title: 'Start with Light', body: 'The sun is rising. Remember Allah with the morning adhkars to protect your day.' },
-        CH_SPIRITUAL,
-      ),
-      this.scheduleWeeklyTrigger(
-        perDay.map((d) => d.evening),
-        { title: 'Closing the Day', body: 'The day is ending. Find peace in the evening remembrance before the night sets in.' },
-        CH_SPIRITUAL,
-      ),
+      this.scheduleWeeklyTrigger(perDay.map((d) => d.tahajjud), contentFor('tahajjud'), CH_SPIRITUAL),
+      this.scheduleWeeklyTrigger(perDay.map((d) => d.morning), contentFor('morning'), CH_SPIRITUAL),
+      this.scheduleWeeklyTrigger(perDay.map((d) => d.evening), contentFor('evening'), CH_SPIRITUAL),
     ]);
 
     await setTrackedIds(SPIRITUAL_NOTIF_IDS_KEY, [...tahajjudIds, ...morningIds, ...eveningIds]);

@@ -42,6 +42,14 @@ jest.mock('../errorLoggingService', () => ({
   logServiceError: jest.fn(),
 }));
 
+// Pulled in transitively via lockscreenVerseService, which the spiritual
+// scheduler consults for verse payloads.
+jest.mock('expo-asset', () => ({
+  Asset: {
+    fromModule: () => ({ localUri: 'file:///themes/sky.jpg', downloadAsync: jest.fn() }),
+  },
+}));
+
 import { Platform } from 'react-native';
 import * as Notifications from 'expo-notifications';
 import NotificationService from '../notificationService';
@@ -196,6 +204,51 @@ describe('iOS pending-notification budget', () => {
     const scheduled = mockSchedule.mock.calls.length;
     expect(scheduled).toBeGreaterThan(0);
     expect(scheduled).toBeLessThanOrEqual(63); // leaves room for the daily reminder
+  });
+
+  // The check above runs with lock screen verses OFF, which is the default —
+  // so on its own it says nothing about the feature's cost. Lock screen verses
+  // are meant to change the PAYLOAD of the three spiritual reminders, not add
+  // any, and this pins that. If someone later schedules verses as a fourth
+  // category instead, the count jumps from 56 to 77 and this fails.
+  it('costs no extra notification slots when lock screen verses are on', async () => {
+    const weekly: PrayerTimings[] = Array(7).fill(TIMINGS);
+
+    await service.schedulePrayerNotifications(weekly, 'Dubai');
+    await service.scheduleSpiritualReminders(weekly);
+    const withFeatureOff = mockSchedule.mock.calls.length;
+
+    mockSchedule.mockClear();
+    mockStore['@lockscreen_verses'] = JSON.stringify({
+      enabled: true,
+      windows: { tahajjud: true, morning: true, evening: true },
+      themeId: null,
+      showTransliteration: false,
+    });
+
+    await service.schedulePrayerNotifications(weekly, 'Dubai');
+    await service.scheduleSpiritualReminders(weekly);
+    const withFeatureOn = mockSchedule.mock.calls.length;
+
+    expect(withFeatureOn).toBe(withFeatureOff);
+    expect(withFeatureOn).toBeLessThanOrEqual(63);
+  });
+
+  it('puts verse text in the spiritual payload once enabled', async () => {
+    mockStore['@lockscreen_verses'] = JSON.stringify({
+      enabled: true,
+      windows: { tahajjud: true, morning: true, evening: true },
+      themeId: null,
+      showTransliteration: false,
+    });
+
+    await service.scheduleSpiritualReminders(Array(7).fill(TIMINGS));
+
+    const bodies = mockSchedule.mock.calls.map((c) => c[0]?.content?.body ?? '');
+    // The shipped static copy must be gone, replaced by ayah text carrying a
+    // surah:ayah citation.
+    expect(bodies.some((b: string) => b.includes('It is the time of Tahajjud'))).toBe(false);
+    expect(bodies.every((b: string) => /\d+:\d+/.test(b))).toBe(true);
   });
 });
 
