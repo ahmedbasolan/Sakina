@@ -37,6 +37,15 @@ export type SpiritualWindow = (typeof SPIRITUAL_WINDOWS)[number];
 
 export interface DailyVerse {
   arabic: string;
+  /**
+   * Latin transliteration, shown only when the user enables it.
+   *
+   * Fetched from api.alquran.cloud's `en.transliteration` edition by
+   * scripts/backfill-transliteration.mjs — never written by hand. Multi-ayah
+   * entries (94:5-6, 20:25-26, 103:1-3, 112:1-4) have each ayah fetched and
+   * joined so the span matches `arabic`.
+   */
+  transliteration: string;
   translation: string;
   ref: string;
   dateKey: string; // YYYY-MM-DD
@@ -53,261 +62,313 @@ export interface DailyVerse {
 const VERSE_POOL: Omit<DailyVerse, 'dateKey'>[] = [
   {
     arabic: 'ٱلَّذِينَ ءَامَنُوا۟ وَتَطْمَئِنُّ قُلُوبُهُم بِذِكْرِ ٱللَّهِ ۗ أَلَا بِذِكْرِ ٱللَّهِ تَطْمَئِنُّ ٱلْقُلُوبُ ﴿28﴾',
+    transliteration: "Allazeena aamanoo wa tatma'innu quloobuhum bizikril laah; alaa bizikril laahi tatma'innul quloob",
     translation: 'Those who have believed and whose hearts find rest in the remembrance of Allah. Verily, in the remembrance of Allah do hearts find rest.',
     ref: 'Ar-Ra\'d 13:28',
   },
   {
     arabic: 'فَإِنَّ مَعَ ٱلْعُسْرِ يُسْرًا إِنَّ مَعَ ٱلْعُسْرِ يُسْرًۭا ﴿5-6﴾',
+    transliteration: "Fa inna ma'al usri yusra Inna ma'al 'usri yusra",
     translation: 'So indeed, with hardship comes ease. Indeed, with hardship comes ease.',
     ref: 'Ash-Sharh 94:5-6',
   },
   {
     arabic: 'وَلَلْءَاخِرَةُ خَيْرٌۭ لَّكَ مِنَ ٱلْأُولَىٰ ﴿4﴾',
+    transliteration: "Walal-aakhiratu khairul laka minal-oola",
     translation: 'And the Hereafter is better for you than the first life.',
     ref: 'Ad-Duha 93:4',
   },
   {
     arabic: 'وَلَسَوْفَ يُعْطِيكَ رَبُّكَ فَتَرْضَىٰٓ ﴿5﴾',
+    transliteration: "Wa la sawfa y'uteeka rabbuka fatarda",
     translation: 'And your Lord is going to give you, and you will be satisfied.',
     ref: 'Ad-Duha 93:5',
   },
   {
     arabic: 'وَيَرْزُقْهُ مِنْ حَيْثُ لَا يَحْتَسِبُ ۚ وَمَن يَتَوَكَّلْ عَلَى ٱللَّهِ فَهُوَ حَسْبُهُۥٓ ۚ إِنَّ ٱللَّهَ بَٰلِغُ أَمْرِهِۦ ۚ قَدْ جَعَلَ ٱللَّهُ لِكُلِّ شَىْءٍۢ قَدْرًۭا ﴿3﴾',
+    transliteration: "Wa yarzuqhu min haisu laa yahtasib; wa many yatawakkal 'alal laahi fahuwa husbuh; innal laaha baalighu amrih; qad ja'alal laahu likulli shai'in qadraa",
     translation: 'And He will provide for him from where he does not expect. And whoever relies upon Allah — He is sufficient for him. Indeed, Allah will accomplish His purpose. Allah has already set a due measure for everything.',
     ref: 'At-Talaq 65:3',
   },
   {
     arabic: 'وَلَقَدْ خَلَقْنَا ٱلْإِنسَٰنَ وَنَعْلَمُ مَا تُوَسْوِسُ بِهِۦ نَفْسُهُۥ ۖ وَنَحْنُ أَقْرَبُ إِلَيْهِ مِنْ حَبْلِ ٱلْوَرِيدِ ﴿16﴾',
+    transliteration: "Wa laqad khalaqnal insaana wa na'lamu maa tuwaswisu bihee nafsuhoo wa Nahnu aqrabu ilaihi min hablil wareed",
     translation: 'And We have already created man and know what his soul whispers to him, and We are closer to him than his jugular vein.',
     ref: 'Qaf 50:16',
   },
   {
     arabic: 'يَٰٓأَيُّهَا ٱلَّذِينَ ءَامَنُوا۟ ٱسْتَعِينُوا۟ بِٱلصَّبْرِ وَٱلصَّلَوٰةِ ۚ إِنَّ ٱللَّهَ مَعَ ٱلصَّٰبِرِينَ ﴿153﴾',
+    transliteration: "Yaaa ayyuhal laazeena aamanus ta'eenoo bissabri was Salaah; innal laaha ma'as-saabireen",
     translation: 'O you who have believed, seek help through patience and prayer. Indeed, Allah is with the patient.',
     ref: 'Al-Baqarah 2:153',
   },
   {
     arabic: 'وَإِذَا سَأَلَكَ عِبَادِى عَنِّى فَإِنِّى قَرِيبٌ ۖ أُجِيبُ دَعْوَةَ ٱلدَّاعِ إِذَا دَعَانِ ۖ فَلْيَسْتَجِيبُوا۟ لِى وَلْيُؤْمِنُوا۟ بِى لَعَلَّهُمْ يَرْشُدُونَ ﴿186﴾',
+    transliteration: "Wa izaa sa alaka 'ibaadee 'annnee fa innee qareebun ujeebu da'wataddaa'i izaa da'aani falyastajeeboo lee walyu minoo beela 'allahum yarshudoon",
     translation: 'And when My servants ask you concerning Me — indeed I am near. I respond to the call of the caller when he calls upon Me. So let them respond to Me and believe in Me, that they may be rightly guided.',
     ref: 'Al-Baqarah 2:186',
   },
   {
     arabic: 'وَمِنْهُم مَّن يَقُولُ رَبَّنَآ ءَاتِنَا فِى ٱلدُّنْيَا حَسَنَةًۭ وَفِى ٱلْءَاخِرَةِ حَسَنَةًۭ وَقِنَا عَذَابَ ٱلنَّارِ ﴿201﴾',
+    transliteration: "Wa minhum mai yaqoolu rabbanaaa aatina fid dunyaa hasanatawn wa fil aakhirati hasanatanw wa qinaa azaaban Naar",
     translation: 'And among them is he who says, "Our Lord, give us good in this world and good in the Hereafter, and protect us from the punishment of the Fire."',
     ref: 'Al-Baqarah 2:201',
   },
   {
     arabic: 'رَبَّنَا لَا تُزِغْ قُلُوبَنَا بَعْدَ إِذْ هَدَيْتَنَا وَهَبْ لَنَا مِن لَّدُنكَ رَحْمَةً ۚ إِنَّكَ أَنتَ ٱلْوَهَّابُ ﴿8﴾',
+    transliteration: "Rabbanaa laa tuzigh quloobanaa ba'da iz hadaitanaa wa hab lanaa mil ladunka rahmah; innaka antal Wahhaab",
     translation: 'Our Lord, do not let our hearts deviate after You have guided us, and grant us mercy from Yourself. Indeed, You are the Bestower.',
     ref: 'Aal-Imran 3:8',
   },
   {
     arabic: 'وَٱعْتَصِمُوا۟ بِحَبْلِ ٱللَّهِ جَمِيعًۭا وَلَا تَفَرَّقُوا۟ ۚ وَٱذْكُرُوا۟ نِعْمَتَ ٱللَّهِ عَلَيْكُمْ إِذْ كُنتُمْ أَعْدَآءًۭ فَأَلَّفَ بَيْنَ قُلُوبِكُمْ فَأَصْبَحْتُم بِنِعْمَتِهِۦٓ إِخْوَٰنًۭا وَكُنتُمْ عَلَىٰ شَفَا حُفْرَةٍۢ مِّنَ ٱلنَّارِ فَأَنقَذَكُم مِّنْهَا ۗ كَذَٰلِكَ يُبَيِّنُ ٱللَّهُ لَكُمْ ءَايَٰتِهِۦ لَعَلَّكُمْ تَهْتَدُونَ ﴿103﴾',
+    transliteration: "Wa'tasimoo bi Hablil laahi jamee'anw wa laa tafarraqoo; wazkuroo ni'matal laahi alaikum iz kuntum a'daaa'an fa allafa baina quloobikum fa asbah tum bini'matiheee ikhwaananw wa kuntum 'alaa shafaa hufratim minan Naari fa anqazakum minhaa; kazaalika yubaiyinul laahu lakum aayaatihee la'allakum tahtadoon",
     translation: 'And hold firmly to the rope of Allah, all together, and do not become divided. And remember the favor of Allah upon you — when you were enemies, and He joined your hearts, so that by His favor you became brothers. And you were on the edge of a pit of the Fire, and He saved you from it. Thus Allah makes His verses clear to you, that you may be guided.',
     ref: 'Aal-Imran 3:103',
   },
   {
     arabic: 'وَلَا تَهِنُوا۟ وَلَا تَحْزَنُوا۟ وَأَنتُمُ ٱلْأَعْلَوْنَ إِن كُنتُم مُّؤْمِنِينَ ﴿139﴾',
+    transliteration: "Wa laa tahinoo wa laa tahzanoo wa antumul a'lawna in kuntum mu'mineen",
     translation: 'Do not weaken, and do not grieve — for you will have the upper hand, if you are believers.',
     ref: 'Aal-Imran 3:139',
   },
   {
     arabic: 'وَكَأَيِّن مِّن نَّبِىٍّۢ قَٰتَلَ مَعَهُۥ رِبِّيُّونَ كَثِيرٌۭ فَمَا وَهَنُوا۟ لِمَآ أَصَابَهُمْ فِى سَبِيلِ ٱللَّهِ وَمَا ضَعُفُوا۟ وَمَا ٱسْتَكَانُوا۟ ۗ وَٱللَّهُ يُحِبُّ ٱلصَّٰبِرِينَ ﴿146﴾',
+    transliteration: "Wa ka aiyim min Nabiyyin qaatala ma'ahoo ribbiyyoona kaseerun famaa wahanoo limaaa Asaabahum fee sabeelil laahi wa maa da'ufoo wa mas takaanoo; wallaahu yuhibbus saabireen",
     translation: 'And how many a prophet fought alongside many religious scholars. They did not lose heart over what befell them in the way of Allah, nor did they weaken or give in. And Allah loves the steadfast.',
     ref: 'Aal-Imran 3:146',
   },
   {
     arabic: 'وَٱصْبِرْ فَإِنَّ ٱللَّهَ لَا يُضِيعُ أَجْرَ ٱلْمُحْسِنِينَ ﴿115﴾',
+    transliteration: "Wasbir fa innal laaha laa yudee'u ajral muhsineen",
     translation: 'And be patient, for indeed, Allah does not let the reward of those who do good go to waste.',
     ref: 'Hud 11:115',
   },
   {
     arabic: 'فَٱذْكُرُونِىٓ أَذْكُرْكُمْ وَٱشْكُرُوا۟ لِى وَلَا تَكْفُرُونِ ﴿152﴾',
+    transliteration: "Fazkurooneee azkurkum washkuroo lee wa laa takfuroon",
     translation: 'So remember Me; I will remember you. And be grateful to Me, and do not deny Me.',
     ref: 'Al-Baqarah 2:152',
   },
   {
     arabic: 'قَالَ رَبِّ ٱشْرَحْ لِى صَدْرِى وَيَسِّرْ لِىٓ أَمْرِى ﴿25-26﴾',
+    transliteration: "Qaala Rabbish rah lee sadree Wa yassir leee amree",
     translation: 'He said, "My Lord, expand for me my chest, and ease for me my task."',
     ref: 'Ta-Ha 20:25-26',
   },
   {
     arabic: 'ٱلَّذِينَ قَالَ لَهُمُ ٱلنَّاسُ إِنَّ ٱلنَّاسَ قَدْ جَمَعُوا۟ لَكُمْ فَٱخْشَوْهُمْ فَزَادَهُمْ إِيمَٰنًۭا وَقَالُوا۟ حَسْبُنَا ٱللَّهُ وَنِعْمَ ٱلْوَكِيلُ ﴿173﴾',
+    transliteration: "Allazeena qaala lahumun naasu innan naasa qad jama'oo lakum fakhshawhuin fazaadahum eemaannanwa wa qaaloo hasbunal laahu wa ni'malwakeel",
     translation: 'Those who were told, "Indeed, the people have gathered against you, so fear them" — it only increased them in faith, and they said, "Allah is sufficient for us, and He is the best Disposer of affairs."',
     ref: 'Aal-Imran 3:173',
   },
   {
     arabic: 'وَتَوَكَّلْ عَلَى ٱلْحَىِّ ٱلَّذِى لَا يَمُوتُ وَسَبِّحْ بِحَمْدِهِۦ ۚ وَكَفَىٰ بِهِۦ بِذُنُوبِ عِبَادِهِۦ خَبِيرًا ﴿58﴾',
+    transliteration: "Wa tawakkal 'alal Haiyil lazee laa yamootu wa sabbih bihamdih; wa kafaa bihee bizunoobi 'ibaadihee khabeeraa",
     translation: 'And put your trust in the Ever-Living who never dies, and glorify Him with His praise. Sufficient is He as the One who is Acquainted with the sins of His servants.',
     ref: 'Al-Furqan 25:58',
   },
   {
     arabic: 'وَلَا تُفْسِدُوا۟ فِى ٱلْأَرْضِ بَعْدَ إِصْلَٰحِهَا وَٱدْعُوهُ خَوْفًۭا وَطَمَعًا ۚ إِنَّ رَحْمَتَ ٱللَّهِ قَرِيبٌۭ مِّنَ ٱلْمُحْسِنِينَ ﴿56﴾',
+    transliteration: "Wa laa tufsidoo fil ardi ba'da islaahihaa wad'oohu khawfanw wa tama'aa; inna rahmatal laahi qareebum minal muhsineen",
     translation: 'And cause not corruption upon the earth after its reformation, and invoke Him in fear and hope. Indeed, the mercy of Allah is near to the doers of good.',
     ref: 'Al-A\'raf 7:56',
   },
   {
     arabic: 'هُوَ ٱلَّذِى خَلَقَ ٱلسَّمَٰوَٰتِ وَٱلْأَرْضَ فِى سِتَّةِ أَيَّامٍۢ ثُمَّ ٱسْتَوَىٰ عَلَى ٱلْعَرْشِ ۚ يَعْلَمُ مَا يَلِجُ فِى ٱلْأَرْضِ وَمَا يَخْرُجُ مِنْهَا وَمَا يَنزِلُ مِنَ ٱلسَّمَآءِ وَمَا يَعْرُجُ فِيهَا ۖ وَهُوَ مَعَكُمْ أَيْنَ مَا كُنتُمْ ۚ وَٱللَّهُ بِمَا تَعْمَلُونَ بَصِيرٌۭ ﴿4﴾',
+    transliteration: "Huwal lazee khalaqas samaawaati wal arda fee sittati ayyaamin summas tawaa 'alal 'Arsh; ya'lamu maa yaliju filardi wa maa yakhruju minhaa wa maa yanzilu minas samaaa'i wa maa ya'ruju feeha wa Huwa ma'akum ayna maa kuntum; wallaahu bimaa ta'maloona Baseer",
     translation: 'It is He who created the heavens and the earth in six days, then established Himself above the Throne. He knows what enters the earth and what comes out of it, what descends from the sky and what ascends to it. And He is with you wherever you are. And Allah sees all that you do.',
     ref: 'Al-Hadid 57:4',
   },
   {
     arabic: 'قُلْ يَٰعِبَادِىَ ٱلَّذِينَ أَسْرَفُوا۟ عَلَىٰٓ أَنفُسِهِمْ لَا تَقْنَطُوا۟ مِن رَّحْمَةِ ٱللَّهِ ۚ إِنَّ ٱللَّهَ يَغْفِرُ ٱلذُّنُوبَ جَمِيعًا ۚ إِنَّهُۥ هُوَ ٱلْغَفُورُ ٱلرَّحِيمُ ﴿53﴾',
+    transliteration: "Qul yaa'ibaadiyal lazeena asrafoo 'alaaa anfusihim laa taqnatoo mirrahmatil laah; innal laaha yaghfiruz zunooba jamee'aa; innahoo Huwal Ghafoorur Raheem",
     translation: 'Say: "O My servants who have transgressed against themselves, do not despair of the mercy of Allah. Indeed, Allah forgives all sins. He is truly the Forgiving, the Merciful."',
     ref: 'Az-Zumar 39:53',
   },
   {
     arabic: 'قُلْ إِن كُنتُمْ تُحِبُّونَ ٱللَّهَ فَٱتَّبِعُونِى يُحْبِبْكُمُ ٱللَّهُ وَيَغْفِرْ لَكُمْ ذُنُوبَكُمْ ۗ وَٱللَّهُ غَفُورٌۭ رَّحِيمٌۭ ﴿31﴾',
+    transliteration: "Qul in kuntum tuhibboonal laaha fattabi' oonee yuhbibkumul laahu wa yaghfir lakum zunoobakum; wallaahu Ghafoorur Raheem",
     translation: 'Say: "If you love Allah, then follow me; Allah will love you and forgive you your sins." And Allah is Forgiving, Merciful.',
     ref: 'Aal-Imran 3:31',
   },
   {
     arabic: 'قَالَ يَٰقَوْمِ أَرَءَيْتُمْ إِن كُنتُ عَلَىٰ بَيِّنَةٍۢ مِّن رَّبِّى وَرَزَقَنِى مِنْهُ رِزْقًا حَسَنًۭا ۚ وَمَآ أُرِيدُ أَنْ أُخَالِفَكُمْ إِلَىٰ مَآ أَنْهَىٰكُمْ عَنْهُ ۚ إِنْ أُرِيدُ إِلَّا ٱلْإِصْلَٰحَ مَا ٱسْتَطَعْتُ ۚ وَمَا تَوْفِيقِىٓ إِلَّا بِٱللَّهِ ۚ عَلَيْهِ تَوَكَّلْتُ وَإِلَيْهِ أُنِيبُ ﴿88﴾',
+    transliteration: "Qaala yaa qawmi ara'aitum in kuntu 'alaa baiyinatim mir Rabbee wa razaqanee minhu rizqan hasanaa; wa maaa ureedu an ukhaalifakum ilaa maaa anhaakum 'anh; in ureedu illal islaaha mastata't; wa maa tawfeeqeee illaa billaah; 'alaihi tawakkaltu wa ilaihi uneeb",
     translation: 'He said, "O my people, have you considered: if I am upon clear evidence from my Lord, and He has provided me with good provision from Himself...? I do not intend to differ from you in what I have forbidden you; I only intend reform as much as I am able. My success is not but through Allah. Upon Him I have relied, and to Him I turn."',
     ref: 'Hud 11:88',
   },
   {
     arabic: 'يَٰبَنِىَّ ٱذْهَبُوا۟ فَتَحَسَّسُوا۟ مِن يُوسُفَ وَأَخِيهِ وَلَا تَا۟يْـَٔسُوا۟ مِن رَّوْحِ ٱللَّهِ ۖ إِنَّهُۥ لَا يَا۟يْـَٔسُ مِن رَّوْحِ ٱللَّهِ إِلَّا ٱلْقَوْمُ ٱلْكَٰفِرُونَ ﴿87﴾',
+    transliteration: "Yaa baniyyaz haboo fatahassasoo miny Yoosufa wa akheehi wa laa tai'asoo mir rawhil laahi innahoo laa yai'asu mir rawhil laahi illal qawmul kaafiroon",
     translation: 'O my sons, go and search for Joseph and his brother, and do not despair of relief from Allah. Indeed, no one despairs of relief from Allah except the disbelieving people.',
     ref: 'Yusuf 12:87',
   },
   {
     arabic: 'لَهُۥ مُعَقِّبَٰتٌۭ مِّنۢ بَيْنِ يَدَيْهِ وَمِنْ خَلْفِهِۦ يَحْفَظُونَهُۥ مِنْ أَمْرِ ٱللَّهِ ۗ إِنَّ ٱللَّهَ لَا يُغَيِّرُ مَا بِقَوْمٍ حَتَّىٰ يُغَيِّرُوا۟ مَا بِأَنفُسِهِمْ ۗ وَإِذَآ أَرَادَ ٱللَّهُ بِقَوْمٍۢ سُوٓءًۭا فَلَا مَرَدَّ لَهُۥ ۚ وَمَا لَهُم مِّن دُونِهِۦ مِن وَالٍ ﴿11﴾',
+    transliteration: "Lahoo mu'aqqibaatum mim baini yadaihi wa min khalfihee yahfazoonahoo min amril laah; innal laaha laa yughaiyiru maa biqawmin hattaa yughaiyiroo maa bianfusihim; wa izaaa araadal laahu biqawmin sooo'an falaa maradda lah; wa maa lahum min dooniheeminw waal",
     translation: 'For each one are angels in succession, before him and behind him, protecting him by the decree of Allah. Indeed, Allah will not change the condition of a people until they change what is within themselves. And when Allah intends ill for a people, there is no turning it back, nor do they have any protector besides Him.',
     ref: 'Ar-Ra\'d 13:11',
   },
   {
     arabic: 'وَءَاتَىٰكُم مِّن كُلِّ مَا سَأَلْتُمُوهُ ۚ وَإِن تَعُدُّوا۟ نِعْمَتَ ٱللَّهِ لَا تُحْصُوهَآ ۗ إِنَّ ٱلْإِنسَٰنَ لَظَلُومٌۭ كَفَّارٌۭ ﴿34﴾',
+    transliteration: "Wa aataakum min kulli maa sa altumooh; wa in ta'uddoo ni'matal laahi laa tuhsoohaa; innal insaana lazaloo mun kaffaar",
     translation: 'And He gave you from all that you asked of Him. And if you tried to count the blessings of Allah, you could never number them. Indeed, mankind is deeply unjust and ungrateful.',
     ref: 'Ibrahim 14:34',
   },
   {
     arabic: 'وَقَضَىٰ رَبُّكَ أَلَّا تَعْبُدُوٓا۟ إِلَّآ إِيَّاهُ وَبِٱلْوَٰلِدَيْنِ إِحْسَٰنًا ۚ إِمَّا يَبْلُغَنَّ عِندَكَ ٱلْكِبَرَ أَحَدُهُمَآ أَوْ كِلَاهُمَا فَلَا تَقُل لَّهُمَآ أُفٍّۢ وَلَا تَنْهَرْهُمَا وَقُل لَّهُمَا قَوْلًۭا كَرِيمًۭا ﴿23﴾',
+    transliteration: "Wa qadaa Rabbuka allaa ta'budooo illaaa iyyaahu wa bilwaalidaini ihsaanaa; immaa yablughanna 'indakal kibara ahaduhumaaa aw kilaahumaa falaa taqul lahumaaa uffinw wa laa tanharhumaa wa qullahumaa qawlan kareemaa",
     translation: 'And your Lord has decreed that you worship none but Him, and that you be kind to your parents. Whether one or both of them reach old age with you, do not say to them any word of contempt, nor repel them, but speak to them a noble word.',
     ref: 'Al-Isra 17:23',
   },
   {
     arabic: 'وَٱخْفِضْ لَهُمَا جَنَاحَ ٱلذُّلِّ مِنَ ٱلرَّحْمَةِ وَقُل رَّبِّ ٱرْحَمْهُمَا كَمَا رَبَّيَانِى صَغِيرًۭا ﴿24﴾',
+    transliteration: "Wakhfid lahumaa janaahaz zulli minar rahmati wa qur Rabbir hamhumaa kamaa rabbayaanee sagheera",
     translation: 'And lower to them the wing of humility out of mercy, and say: "My Lord, have mercy upon them as they raised me when I was small."',
     ref: 'Al-Isra 17:24',
   },
   {
     arabic: 'وَنُنَزِّلُ مِنَ ٱلْقُرْءَانِ مَا هُوَ شِفَآءٌۭ وَرَحْمَةٌۭ لِّلْمُؤْمِنِينَ ۙ وَلَا يَزِيدُ ٱلظَّٰلِمِينَ إِلَّا خَسَارًۭا ﴿82﴾',
+    transliteration: "Wa nunazzilu minal quraani maa huwa shifaaa'unw wa rahmatul lilmu;mineena wa laa yazeeduz zaalimeena illaa khasaaraa",
     translation: 'And We send down of the Quran that which is a healing and a mercy for the believers, but it increases the wrongdoers only in loss.',
     ref: 'Al-Isra 17:82',
   },
   {
     arabic: 'إِنَّ ٱلَّذِينَ ءَامَنُوا۟ وَعَمِلُوا۟ ٱلصَّٰلِحَٰتِ سَيَجْعَلُ لَهُمُ ٱلرَّحْمَٰنُ وُدًّۭا ﴿96﴾',
+    transliteration: "Innal lazeena aamanoo wa 'amilus saalihaati sa yaj'alu lahumur Rahmaanu wuddaa",
     translation: 'Indeed, those who believe and do righteous deeds — the Most Merciful will bestow upon them love.',
     ref: 'Maryam 19:96',
   },
   {
     arabic: 'فَتَعَٰلَى ٱللَّهُ ٱلْمَلِكُ ٱلْحَقُّ ۗ وَلَا تَعْجَلْ بِٱلْقُرْءَانِ مِن قَبْلِ أَن يُقْضَىٰٓ إِلَيْكَ وَحْيُهُۥ ۖ وَقُل رَّبِّ زِدْنِى عِلْمًۭا ﴿114﴾',
+    transliteration: "Fata'aalal laahul Malikul Haqq; wa laa ta'jal bil Quraani min qabli ai yuqdaaa ilaika wahyuhoo wa qur Rabbi zidnee 'ilmaa",
     translation: 'So exalted is Allah, the True Sovereign. Do not hasten with the Quran before its revelation is completed to you, and say: "My Lord, increase me in knowledge."',
     ref: 'Ta-Ha 20:114',
   },
   {
     arabic: 'وَقَالَ رَبُّكُمُ ٱدْعُونِىٓ أَسْتَجِبْ لَكُمْ ۚ إِنَّ ٱلَّذِينَ يَسْتَكْبِرُونَ عَنْ عِبَادَتِى سَيَدْخُلُونَ جَهَنَّمَ دَاخِرِينَ ﴿60﴾',
+    transliteration: "Wa qaala Rabbukumud 'ooneee astajib lakum; innal lazeena yastakbiroona an 'ibaadatee sa yadkhuloona jahannama daakhireen",
     translation: 'And your Lord says: "Call upon Me; I will respond to you." Indeed, those who are too arrogant to worship Me will enter Hell, utterly humbled.',
     ref: 'Ghafir 40:60',
   },
   {
     arabic: 'وَٱكْتُبْ لَنَا فِى هَٰذِهِ ٱلدُّنْيَا حَسَنَةًۭ وَفِى ٱلْءَاخِرَةِ إِنَّا هُدْنَآ إِلَيْكَ ۚ قَالَ عَذَابِىٓ أُصِيبُ بِهِۦ مَنْ أَشَآءُ ۖ وَرَحْمَتِى وَسِعَتْ كُلَّ شَىْءٍۢ ۚ فَسَأَكْتُبُهَا لِلَّذِينَ يَتَّقُونَ وَيُؤْتُونَ ٱلزَّكَوٰةَ وَٱلَّذِينَ هُم بِـَٔايَٰتِنَا يُؤْمِنُونَ ﴿156﴾',
+    transliteration: "Waktub lanaa fee haazi hid dunyaa hasanatanw wa fil Aakhirati innnaa hudnaaa ilaik; qaala 'azaabee useebu bihee man ashaaa'u wa rahmatee wasi'at kulla shai'; fasa aktubuhaa lillazeena yattaqoona wa yu'toonaz Zakaata wallazeena hum bi Aayaatinaa yu'minoon",
     translation: 'And ordain for us good in this world, and in the Hereafter. Indeed, we have turned back to You. Allah said, "My punishment — I afflict with it whom I will, but My mercy encompasses all things. I will ordain it for those who are mindful of Allah, give zakah, and believe in Our verses."',
     ref: 'Al-A\'raf 7:156',
   },
   {
     arabic: 'يَكَادُ ٱلْبَرْقُ يَخْطَفُ أَبْصَٰرَهُمْ ۖ كُلَّمَآ أَضَآءَ لَهُم مَّشَوْا۟ فِيهِ وَإِذَآ أَظْلَمَ عَلَيْهِمْ قَامُوا۟ ۚ وَلَوْ شَآءَ ٱللَّهُ لَذَهَبَ بِسَمْعِهِمْ وَأَبْصَٰرِهِمْ ۚ إِنَّ ٱللَّهَ عَلَىٰ كُلِّ شَىْءٍۢ قَدِيرٌۭ ﴿20﴾',
+    transliteration: "Yakaadul barqu yakhtafu absaarahum kullamaaa adaaa'a lahum mashaw feehi wa izaaa azlama 'alaihim qaamoo; wa law shaaa'al laahu lazahaba bisam'ihim wa absaarihim; innal laaha 'alaa kulli shai'in Qadeer",
     translation: 'The lightning almost snatches away their sight. Whenever it flashes for them, they walk on; but when it darkens over them, they stand still. Had Allah willed, He could have taken away their hearing and their sight. Indeed, Allah has power over all things.',
     ref: 'Al-Baqarah 2:20',
   },
   {
     arabic: 'وَمَنْ أَحْسَنُ قَوْلًۭا مِّمَّن دَعَآ إِلَى ٱللَّهِ وَعَمِلَ صَٰلِحًۭا وَقَالَ إِنَّنِى مِنَ ٱلْمُسْلِمِينَ ﴿33﴾',
+    transliteration: "Wa man ahsanu qawlam mimman da'aaa ilal laahi wa 'amila saalihanw wa qaala innanee minal muslimeen",
     translation: 'And who is better in speech than one who calls to Allah, does righteous deeds, and says, "Indeed, I am of the Muslims"?',
     ref: 'Fussilat 41:33',
   },
   {
     arabic: 'يَٰٓأَيُّهَا ٱلنَّاسُ إِنَّا خَلَقْنَٰكُم مِّن ذَكَرٍۢ وَأُنثَىٰ وَجَعَلْنَٰكُمْ شُعُوبًۭا وَقَبَآئِلَ لِتَعَارَفُوٓا۟ ۚ إِنَّ أَكْرَمَكُمْ عِندَ ٱللَّهِ أَتْقَىٰكُمْ ۚ إِنَّ ٱللَّهَ عَلِيمٌ خَبِيرٌۭ ﴿13﴾',
+    transliteration: "Yaaa ayyuhan naasu innaa khalaqnaakum min zakarinw wa unsaa wa ja'alnaakum shu'oobanw wa qabaaa'ila lita'aarafoo inna akramakum 'indal laahi atqaakum innal laaha 'Aleemun khabeer",
     translation: 'O humanity, We created you from a male and a female, and made you into nations and tribes so that you may know one another. Indeed, the most noble of you in the sight of Allah is the most righteous of you. Indeed, Allah is All-Knowing, All-Aware.',
     ref: 'Al-Hujurat 49:13',
   },
   {
     arabic: 'وَذَكِّرْ فَإِنَّ ٱلذِّكْرَىٰ تَنفَعُ ٱلْمُؤْمِنِينَ ﴿55﴾',
+    transliteration: "Wa zakkir fa innaz zikraa tanfa'ul mu'mineen",
     translation: 'And remind, for indeed, the reminder benefits the believers.',
     ref: 'Adh-Dhariyat 51:55',
   },
   {
     arabic: 'وَمَا خَلَقْتُ ٱلْجِنَّ وَٱلْإِنسَ إِلَّا لِيَعْبُدُونِ ﴿56﴾',
+    transliteration: "Wa maa khalaqtul jinna wal insa illaa liya'budoon",
     translation: 'And I did not create the jinn and mankind except to worship Me.',
     ref: 'Adh-Dhariyat 51:56',
   },
   {
     arabic: 'وَلَقَدْ يَسَّرْنَا ٱلْقُرْءَانَ لِلذِّكْرِ فَهَلْ مِن مُّدَّكِرٍۢ ﴿17﴾',
+    transliteration: "Wa laqad yassamal Quraana liz zikri fahal mimmuddakir",
     translation: 'And We have made the Quran easy to remember — so is there anyone who will be mindful?',
     ref: 'Al-Qamar 54:17',
   },
   {
     arabic: 'فَبِأَىِّ ءَالَآءِ رَبِّكُمَا تُكَذِّبَانِ ﴿13﴾',
+    transliteration: "Fabi ayyi aalaaa'i Rabbikumaa tukazzibaan",
     translation: 'So which of the favors of your Lord would you deny?',
     ref: 'Ar-Rahman 55:13',
   },
   {
     arabic: 'ٱقْرَأْ بِٱسْمِ رَبِّكَ ٱلَّذِى خَلَقَ ﴿1﴾',
+    transliteration: "Iqra bismi rab bikal lazee khalaq",
     translation: 'Read in the name of your Lord who created.',
     ref: 'Al-Alaq 96:1',
   },
   {
     arabic: 'سَلَٰمٌ هِىَ حَتَّىٰ مَطْلَعِ ٱلْفَجْرِ ﴿5﴾',
+    transliteration: "Salaamun hiya hattaa mat la'il fajr",
     translation: 'It is peace until the emergence of dawn.',
     ref: 'Al-Qadr 97:5',
   },
   {
     arabic: 'وَٱلْعَصْرِ إِنَّ ٱلْإِنسَٰنَ لَفِى خُسْرٍ إِلَّا ٱلَّذِينَ ءَامَنُوا۟ وَعَمِلُوا۟ ٱلصَّٰلِحَٰتِ وَتَوَاصَوْا۟ بِٱلْحَقِّ وَتَوَاصَوْا۟ بِٱلصَّبْرِ ﴿1-3﴾',
+    transliteration: "Wal' asr Innal insaana lafee khusr Il lal lazeena aamanu wa 'amilus saali haati wa tawa saw bil haqqi wa tawa saw bis sabr",
     translation: 'By time, indeed mankind is in loss — except for those who believe, do righteous deeds, and urge one another to truth and urge one another to patience.',
     ref: 'Al-Asr 103:1-3',
   },
   {
     arabic: 'قُلْ هُوَ ٱللَّهُ أَحَدٌ ٱللَّهُ ٱلصَّمَدُ لَمْ يَلِدْ وَلَمْ يُولَدْ وَلَمْ يَكُن لَّهُۥ كُفُوًا أَحَدٌۢ ﴿1-4﴾',
+    transliteration: "Qul huwal laahu ahad Allah hus-samad Lam yalid wa lam yoolad Wa lam yakul-lahu kufuwan ahad",
     translation: 'Say: "He is Allah, the One. Allah, the Eternal Refuge. He neither begets nor is born, nor is there to Him any equivalent."',
     ref: 'Al-Ikhlas 112:1-4',
   },
   {
     arabic: 'وَلَنَبْلُوَنَّكُم بِشَىْءٍۢ مِّنَ ٱلْخَوْفِ وَٱلْجُوعِ وَنَقْصٍۢ مِّنَ ٱلْأَمْوَٰلِ وَٱلْأَنفُسِ وَٱلثَّمَرَٰتِ ۗ وَبَشِّرِ ٱلصَّٰبِرِينَ ﴿155﴾',
+    transliteration: "Wa lanablu wannakum bishai'im minal khawfi waljoo'i wa naqsim minal amwaali wal anfusi was samaraat; wa bashshiris saabireen",
     translation: 'And We will surely test you with something of fear and hunger and loss of wealth, lives, and fruits — but give good tidings to the patient.',
     ref: 'Al-Baqarah 2:155',
   },
   {
     arabic: 'وَلَمَّا بَرَزُوا۟ لِجَالُوتَ وَجُنُودِهِۦ قَالُوا۟ رَبَّنَآ أَفْرِغْ عَلَيْنَا صَبْرًۭا وَثَبِّتْ أَقْدَامَنَا وَٱنصُرْنَا عَلَى ٱلْقَوْمِ ٱلْكَٰفِرِينَ ﴿250﴾',
+    transliteration: "Wa lammaa barazoo liJaaloota wa junoodihee qaaloo Rabbanaaa afrigh 'alainaa sabranw wa sabbit aqdaamanaa wansurnaa 'alal qawmil kaafireen",
     translation: 'And when they went forth to face Goliath and his soldiers, they said: "Our Lord, pour upon us patience, make our steps firm, and give us victory over the disbelieving people."',
     ref: 'Al-Baqarah 2:250',
   },
   {
     arabic: 'وَلَا تُصَعِّرْ خَدَّكَ لِلنَّاسِ وَلَا تَمْشِ فِى ٱلْأَرْضِ مَرَحًا ۖ إِنَّ ٱللَّهَ لَا يُحِبُّ كُلَّ مُخْتَالٍۢ فَخُورٍۢ ﴿18﴾',
+    transliteration: "Wa laa tusa'-'ir khaddaka linnaasi wa laa tamshi fil ardi maarahan innal laaha laa yuhibbu kulla mukhtaalin fakhoor",
     translation: 'And do not turn your cheek in contempt toward people, and do not walk through the earth exultantly. Indeed, Allah does not like anyone self-conceited and boastful.',
     ref: 'Luqman 31:18',
   },
   {
     arabic: 'إِنَّ ٱللَّهَ وَمَلَٰٓئِكَتَهُۥ يُصَلُّونَ عَلَى ٱلنَّبِىِّ ۚ يَٰٓأَيُّهَا ٱلَّذِينَ ءَامَنُوا۟ صَلُّوا۟ عَلَيْهِ وَسَلِّمُوا۟ تَسْلِيمًا ﴿56﴾',
+    transliteration: "Innal laaha wa malaaa'i katahoo yusalloona 'alan Nabiyy; yaaa aiyuhal lazeena aamanoo salloo 'alaihi wa sallimoo tasleemaa",
     translation: 'Indeed, Allah and His angels send blessings upon the Prophet. O you who believe, ask Allah to bless him and grant him peace.',
     ref: 'Al-Ahzab 33:56',
   },
   {
     arabic: 'يَٰٓأَيُّهَا ٱلَّذِينَ ءَامَنُوا۟ كُتِبَ عَلَيْكُمُ ٱلصِّيَامُ كَمَا كُتِبَ عَلَى ٱلَّذِينَ مِن قَبْلِكُمْ لَعَلَّكُمْ تَتَّقُونَ ﴿183﴾',
+    transliteration: "Yaa ayyuhal lazeena aamanoo kutiba 'alaikumus Siyaamu kamaa kutiba 'alal lazeena min qablikum la'allakum tattaqoon",
     translation: 'O you who believe, fasting has been decreed for you, as it was decreed for those before you, so that you may attain righteousness.',
     ref: 'Al-Baqarah 2:183',
   },
   {
     arabic: 'كُلُّ نَفْسٍۢ ذَآئِقَةُ ٱلْمَوْتِ ۖ ثُمَّ إِلَيْنَا تُرْجَعُونَ ﴿57﴾',
+    transliteration: "Kullu nafsin zaaa'iqatul mawti summa ilainaa turja'oon",
     translation: 'Every soul will taste death. Then to Us you will be returned.',
     ref: 'Al-Ankabut 29:57',
   },
   {
     arabic: 'وَٱسْتَغْفِرُوا۟ رَبَّكُمْ ثُمَّ تُوبُوٓا۟ إِلَيْهِ ۚ إِنَّ رَبِّى رَحِيمٌۭ وَدُودٌۭ ﴿90﴾',
+    transliteration: "Wastaghfiroo Rabbakum summa toobooo ilaih; inna Rabbee Raheemunw Wadood",
     translation: 'And ask forgiveness of your Lord and then repent to Him. Indeed, my Lord is Merciful and Loving.',
     ref: 'Hud 11:90',
   },
   {
     arabic: 'قُلْ سِيرُوا۟ فِى ٱلْأَرْضِ فَٱنظُرُوا۟ كَيْفَ بَدَأَ ٱلْخَلْقَ ۚ ثُمَّ ٱللَّهُ يُنشِئُ ٱلنَّشْأَةَ ٱلْءَاخِرَةَ ۚ إِنَّ ٱللَّهَ عَلَىٰ كُلِّ شَىْءٍۢ قَدِيرٌۭ ﴿20﴾',
+    transliteration: "Qul seeroo fil ardi fanzuroo kaifa baa al khalqa summal laahu yunshi''un nash atal Aakhirah; innal laaha 'alaa kulli shai'in Qadeer",
     translation: 'Say, [O Muhammad], "Travel through the land and observe how He began creation. Then Allah will produce the final creation. Indeed Allah, over all things, is competent."',
     ref: 'Al-Ankabut 29:20',
   },
