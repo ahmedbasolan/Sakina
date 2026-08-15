@@ -27,6 +27,7 @@ import PrayerTimesScreen from '../screens/PrayerTimesScreen';
 import QuranLibraryScreen from '../screens/QuranLibraryScreen';
 import MoodHistoryCalendarScreen from '../screens/MoodHistoryCalendarScreen';
 import DailyRemindersScreen from '../screens/DailyRemindersScreen';
+import LockscreenVersesScreen from '../screens/LockscreenVersesScreen';
 import MoodSelectionScreen from '../screens/MoodSelectionScreen';
 import LibraryScreen from '../screens/LibraryScreen';
 import SurahReaderScreen from '../screens/SurahReaderScreen';
@@ -201,6 +202,7 @@ export default function MainNavigator() {
           <RootStack.Screen name="QuranLibrary" component={QuranLibraryScreen} />
           <RootStack.Screen name="MoodHistory" component={MoodHistoryCalendarScreen} />
           <RootStack.Screen name="DailyReminders" component={DailyRemindersScreen} />
+          <RootStack.Screen name="LockscreenVerses" component={LockscreenVersesScreen} />
           <RootStack.Screen name="Settings" component={SettingsScreen} />
           <RootStack.Screen name="SurahReader" component={SurahReaderScreen} />
           <RootStack.Screen name="Support" component={SupportSakinaScreen} />

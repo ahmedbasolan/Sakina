@@ -402,9 +402,10 @@ class NotificationService {
     // would be pointless work inside a background top-up.
     //
     // Premium is NOT re-checked here. `enabled` can only be set by the premium
-    // setup screen, and resetLockscreenPrefsOnLapse() clears it when premium
-    // lapses. Gating here as well would need freemiumService, which imports
-    // this module's siblings and would risk a cycle.
+    // setup screen, and SubscriptionService.syncFromCustomerInfo() calls
+    // resetLockscreenPrefsOnLapse() on the active -> inactive transition.
+    // Gating here as well would need freemiumService, which imports this
+    // module's siblings and would risk a cycle.
     const prefs = await loadLockscreenPrefs();
 
     const contentFor =
