@@ -233,9 +233,25 @@ export function useHomeData({ setStreakCount }: UseHomeDataOptions) {
       const { PathsService } = await import('../services/pathsService');
       const pathsService = PathsService.getInstance();
       const allProgress = await pathsService.getAllProgress();
-      if (allProgress.length === 0) return;
 
-      const latest = allProgress[0];
+      // getAllProgress has no defined row order (no ORDER BY, locally or on
+      // Supabase), so `allProgress[0]` was whichever journey happened to be
+      // started FIRST — including an already-finished one — and stayed
+      // pinned there for the life of the app regardless of what the user
+      // was actually working through. UserPathProgress carries no
+      // last-touched timestamp, so `startDate` descending, filtered to
+      // unfinished journeys, is the closest available proxy for "the one
+      // the user is currently on."
+      const inProgress = allProgress
+        .filter((p) => !p.isCompleted)
+        .sort((a, b) => b.startDate - a.startDate);
+
+      if (inProgress.length === 0) {
+        setActivePath(null);
+        return;
+      }
+
+      const latest = inProgress[0];
       const path = pathsService.getPathById(latest.pathId);
       if (!path) return;
 

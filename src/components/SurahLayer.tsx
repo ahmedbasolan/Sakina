@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { StyleSheet, View, Text, Animated } from 'react-native';
 import { Colors, Spacing, Typography, BorderRadius } from '../theme/DesignSystem';
 import { SurahLesson } from '../data/surahLessons';
@@ -37,6 +37,28 @@ const SurahLayer: React.FC<SurahLayerProps> = ({
 }) => {
   const reduceMotion = useReduceMotion();
   const fade = useRef(new Animated.Value(0)).current;
+
+  // Which ayah's audio is currently playing, so it can be highlighted while
+  // read aloud. Each ayah's AudioPlayerButton owns its own player and
+  // reports its state up via onPlayingChange rather than this layer
+  // reaching into any player directly.
+  const [playingAyah, setPlayingAyah] = useState<number | null>(null);
+  useEffect(() => {
+    // A new lesson means every previous button has unmounted (or is about
+    // to) — don't carry a stale highlight into the next surah.
+    setPlayingAyah(null);
+  }, [lesson.id]);
+
+  const handlePlayingChange = useCallback((ayahNum: number, playing: boolean) => {
+    setPlayingAyah((prev) => {
+      if (playing) return ayahNum;
+      // Only clear the highlight if THIS ayah was the one holding it — a
+      // stop report from a different button (mount-time false, or an
+      // unmount race while advancing) must not blank another ayah's
+      // in-progress highlight.
+      return prev === ayahNum ? null : prev;
+    });
+  }, []);
 
   useEffect(() => {
     if (reduceMotion) {
@@ -91,35 +113,55 @@ const SurahLayer: React.FC<SurahLayerProps> = ({
         </View>
 
         {/* ── The surah itself ──────────────────────────────────────── */}
-        {lesson.ayahs.map((ayah, i) => (
-          <View
-            key={ayah.n}
-            style={[styles.ayahBlock, i === lesson.ayahs.length - 1 && styles.ayahBlockLast]}
-          >
-            <View style={styles.ayahHead}>
-              <View style={[styles.ayahBadge, { borderColor: accentColor + '40' }]}>
-                <Text style={[styles.ayahNum, { color: accentColor }]}>{ayah.n}</Text>
+        {lesson.ayahs.map((ayah, i) => {
+          const isActive = playingAyah === ayah.n;
+          return (
+            <View
+              key={ayah.n}
+              style={[
+                styles.ayahBlock,
+                i === lesson.ayahs.length - 1 && styles.ayahBlockLast,
+                isActive && { backgroundColor: accentColor + '0F', borderColor: accentColor + '30' },
+              ]}
+            >
+              <View style={styles.ayahHead}>
+                <View
+                  style={[
+                    styles.ayahBadge,
+                    { borderColor: accentColor + '40' },
+                    isActive && { backgroundColor: accentColor, borderColor: accentColor },
+                  ]}
+                >
+                  <Text style={[styles.ayahNum, { color: isActive ? Colors.background.primary : accentColor }]}>
+                    {ayah.n}
+                  </Text>
+                </View>
+                <View style={[styles.ayahRule, { backgroundColor: accentColor + '18' }]} />
+                <AudioPlayerButton
+                  verseKey={`${lesson.number}:${ayah.n}`}
+                  size={28}
+                  iconSize={16}
+                  color={accentColor}
+                  showLabel={false}
+                  containerStyle={styles.ayahAudioBtn}
+                  style={styles.ayahAudioBtnWrap}
+                  onPlayingChange={(playing) => handlePlayingChange(ayah.n, playing)}
+                />
               </View>
-              <View style={[styles.ayahRule, { backgroundColor: accentColor + '18' }]} />
-              <AudioPlayerButton
-                verseKey={`${lesson.number}:${ayah.n}`}
-                size={28}
-                iconSize={16}
-                color={accentColor}
-                showLabel={false}
-                containerStyle={styles.ayahAudioBtn}
-                style={styles.ayahAudioBtnWrap}
-              />
-            </View>
 
-            <ArabicText
-              text={ayah.arabic}
-              style={isLong ? styles.ayahArabicCompact : styles.ayahArabic}
-            />
-            <Text style={[styles.translit, { color: accentColor }]}>{ayah.transliteration}</Text>
-            <Text style={styles.translation}>{ayah.translation}</Text>
-          </View>
-        ))}
+              <ArabicText
+                text={ayah.arabic}
+                style={isLong ? styles.ayahArabicCompact : styles.ayahArabic}
+              />
+              <Text style={[styles.translit, { color: accentColor }, isActive && styles.ayahTextActive]}>
+                {ayah.transliteration}
+              </Text>
+              <Text style={[styles.translation, isActive && styles.ayahTextActive]}>
+                {ayah.translation}
+              </Text>
+            </View>
+          );
+        })}
       </Animated.ScrollView>
     </View>
   );
@@ -200,11 +242,26 @@ const styles = StyleSheet.create({
   },
 
   /* ── Ayahs ── */
+  // Horizontal padding + a permanent (default-transparent) border reserve
+  // the space the active highlight needs, so a verse starting/stopping
+  // playback never shifts its neighbours' layout — only backgroundColor/
+  // borderColor change. The negative marginHorizontal cancels the padding's
+  // visual indent so an idle verse still lines up exactly where it did
+  // before this was added. Deliberately no vertical padding: that would
+  // change the scroll rhythm between every ayah, not just the active one.
   ayahBlock: {
     marginBottom: Spacing.xxl,
+    marginHorizontal: -Spacing.md,
+    paddingHorizontal: Spacing.md,
+    borderRadius: BorderRadius.lg,
+    borderWidth: 1,
+    borderColor: 'transparent',
   },
   ayahBlockLast: {
     marginBottom: Spacing.lg,
+  },
+  ayahTextActive: {
+    opacity: 1,
   },
   ayahHead: {
     flexDirection: 'row',
@@ -222,9 +279,15 @@ const styles = StyleSheet.create({
     paddingHorizontal: 6,
   },
   // Resets AudioPlayerButton's standalone vertical margin so it sits flush
-  // in the compact ayah-head row instead of pushing the row taller.
+  // in the compact ayah-head row instead of pushing the row taller. The
+  // breathing glow ring AudioPlayerButton draws while playing is `size+16`,
+  // centred on the button — 8px wider than the button on every side. With
+  // `ayahRule` (flex:1) pushing this button flush to the row's right edge,
+  // that 8px of glow overflow landed past the ScrollView's own clip
+  // boundary and got sliced off mid-circle. marginRight gives it room.
   ayahAudioBtnWrap: {
     marginVertical: 0,
+    marginRight: Spacing.md,
   },
   ayahAudioBtn: {
     backgroundColor: 'transparent',

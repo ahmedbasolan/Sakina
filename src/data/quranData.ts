@@ -3437,6 +3437,23 @@ const quranContentData: Content[] = [
       'Mercy to the worlds describes how he dealt with people, not only what he brought them — and in prayer that showed most clearly in how long he made it when others were standing behind him.',
     moods: [],
   },
+  {
+    id: 'quran_17_70',
+    type: 'Quran',
+    primaryText:
+      'walaqad karramnā banī ādama waḥamalnāhum fī l-bari wal-baḥri warazaqnāhum mina l-ṭayibāti wafaḍḍalnāhum ʿalā kathīrin mimman khalaqnā tafḍīlan',
+    arabicText:
+      '۞ وَلَقَدْ كَرَّمْنَا بَنِىٓ ءَادَمَ وَحَمَلْنَـٰهُمْ فِى ٱلْبَرِّ وَٱلْبَحْرِ وَرَزَقْنَـٰهُم مِّنَ ٱلطَّيِّبَـٰتِ وَفَضَّلْنَـٰهُمْ عَلَىٰ كَثِيرٍ مِّمَّنْ خَلَقْنَا تَفْضِيلًا ﴿70﴾',
+    transliteration:
+      'walaqad karramnā banī ādama waḥamalnāhum fī l-bari wal-baḥri warazaqnāhum mina l-ṭayibāti wafaḍḍalnāhum ʿalā kathīrin mimman khalaqnā tafḍīlan',
+    englishTranslation:
+      'And We have certainly honored the children of Adam and carried them on the land and sea and provided for them of the good things and preferred them over much of what We have created, with definite preference.',
+    source: 'Surah Al-Isra 17:70',
+    audioKey: '17:70',
+    whyThis:
+      'Al-Sa’di notes that every clause here reports something Allah did — carriage, provision, preference — and none of it is offered as a reward for performance. The honouring of the children of Adam is stated as already accomplished, which places a person’s worth outside their own assessment of it.',
+    moods: ['Sad', 'Lonely'],
+  },
 ];
 
 const quranContent: Content[] = quranContentData;
@@ -16344,7 +16361,7 @@ const quranContentAnglesData: ContentAngle[] = [
     contentId: 'quran_2_43',
     mood: 'Hopeful',
     angle:
-      '[Tafsir Ibn Kathir on 2:43] Ibn Kathir notes that the command to bow "with those who bow" is read as an instruction about praying in congregation rather than merely about the posture. Once people are behind you, every movement you make has become an instruction to them. The Prophet ﷺ said: "The Imam is appointed to be followed. So do not differ from him, bow when he bows, and say Rabbana lakal hamd if he says Sami\'a llahu liman hamidah" [Sahih al-Bukhari 722] — which means your transitions have to be audible and unhurried, or the row cannot stay with you.',
+      '[Tafsir Ibn Kathir on 2:43] Ibn Kathir notes that the command to bow "with those who bow" is read as an instruction about praying in congregation rather than merely about the posture. Once people are behind you, every movement you make has become an instruction to them. The Prophet ﷺ said: "The Imam is appointed to be followed. So do not differ from him, bow when he bows, and say Rabbana lakal hamd [Our Lord, to You is all praise] if he says Sami\'a llahu liman hamidah [Allah has heard whoever praises Him]" [Sahih al-Bukhari 722] — which means your transitions have to be audible and unhurried, or the row cannot stay with you.',
     action: 'Say every transition takbir clearly and settle before the next one.',
     practiceSteps: JSON.stringify([
       {
@@ -16352,7 +16369,7 @@ const quranContentAnglesData: ContentAngle[] = [
         icon: 'chat',
         title: 'Say the transitions out loud',
         instruction:
-          'The takbir going down into ruku and sujood, and Sami\'a llahu liman hamidah coming up, are the only signals the row has. Say them clearly enough to reach the back.',
+          'The takbir going down into ruku and sujood, and Sami\'a llahu liman hamidah [Allah has heard whoever praises Him] coming up, are the only signals the row has. Say them clearly enough to reach the back.',
         source: '"The Imam is appointed to be followed. So do not differ from him." [Sahih al-Bukhari 722]',
       },
       {
@@ -16537,6 +16554,337 @@ const quranContentAnglesData: ContentAngle[] = [
     ]),
     reflection:
       'Which prayer, which day, and who will be praying with you? Write the three answers down now.',
+  },
+  {
+    id: 'q_angle_crisis_day1',
+    contentId: 'quran_12_86',
+    mood: 'Sad',
+    angle:
+      '[Tafsir Ibn Kathir on 12:86] Yaqub (peace be upon him) had lost two sons and wept until his sight failed, and the people around him told him plainly to stop. He did not argue with them and he did not pretend the weight was lighter than it was — he moved where he was carrying it: "I only complain of my suffering and my grief to Allah." Ibn Kathir explains bathth as grief so heavy the one holding it can no longer keep it inside, and al-Sa’di draws the distinction that decides everything here — complaining to Allah is not complaining about Him, which is why this sentence is recorded as the speech of a prophet rather than as a crack in his certainty. The Prophet ﷺ said: "You see the believers as regards their being merciful among themselves and showing love among themselves and being kind, resembling one body, so that, if any part of the body is not well then the whole body shares the sleeplessness (insomnia) and fever with it." [Bukhari 6011] A body does not ask an injured part to stay silent so the rest can carry on. Saying the weight out loud — to Allah first, and then to one person who can sit with you — is what this day asks for, and nothing in this religion treats that asking as a failure.',
+    action:
+      'Say the weight out loud today — to Allah, and to one human being.',
+    actionSource: 'Abu Dawud 5090 — the supplication of the distressed',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'physical',
+        icon: 'chat',
+        title: 'Tell one person today',
+        instruction: 'If you are thinking about ending your life, stop here and tell someone before you read on. Call your local emergency number, or open findahelpline.com to find a free, confidential helpline in your country. If you would rather start smaller, send one person a single message: "I am not okay and I did not want to say it alone." Telling someone is not a betrayal of your faith, your family, or your privacy — it is the first care this day is asking of you.',
+        source: 'Safety guidance — not a fiqh ruling',
+      },
+      {
+        type: 'mindset',
+        icon: 'heart',
+        title: 'Grief is not a crack in your faith',
+        instruction: 'Yaqub (peace be upon him) did not deny his grief or wait until it passed to speak. He named it and addressed it to Allah, and the Quran preserves that as prophetic speech. Complaining to Allah is not complaining about Him — the distinction is the whole ayah, and it means the weight you are carrying does not have to be hidden before you are allowed to pray.',
+        source: 'Tafsir Ibn Kathir on 12:86',
+      },
+      {
+        type: 'verbal',
+        icon: 'hands-prayer',
+        title: 'The supplication of the distressed',
+        instruction: 'The Prophet ﷺ named this the du’a for one who is distressed. Notice what it asks for: not that the situation change, but that you not be left holding yourself up alone, even for the length of a blink.',
+        arabicText: 'اللَّهُمَّ رَحْمَتَكَ أَرْجُو فَلاَ تَكِلْنِي إِلَى نَفْسِي طَرْفَةَ عَيْنٍ وَأَصْلِحْ لِي شَأْنِي كُلَّهُ لاَ إِلَهَ إِلاَّ أَنْتَ',
+        transliteration: 'Allahumma rahmataka arjoo, fala takilni ila nafsi tarfata ayn, wa aslih li sha’ni kullah, la ilaha illa ant',
+        translation: 'O Allah, Your mercy is what I hope for. Do not abandon me to myself for an instant, but put all my affairs in good order for me. There is no god but You.',
+        source: 'Abu Dawud 5090',
+        sourceType: 'prophetic_dua',
+      },
+      {
+        type: 'physical',
+        icon: 'pen',
+        title: 'Write the sentence you cannot say',
+        instruction: 'Write down the one thing you have not been able to tell anyone. You are not obliged to show it to a single person. The point is to move it out of the place where it has only been circulating, which is the same thing Yaqub did with his grief before he did anything else.',
+        source: 'Reflects Yaqub’s complaint in 12:86',
+      },
+    ]),
+    reflection:
+      'Who is the one person you could tell, and what is the single sentence you would say to them? Write the sentence now, before you decide whether to send it.',
+  },
+  {
+    id: 'q_angle_crisis_day2',
+    contentId: 'quran_39_53',
+    mood: 'Sad',
+    angle:
+      '[Tafsir Ibn Kathir on 39:53] Ibn Abbas (may Allah be pleased with him) called this the most hope-giving ayah in the Quran, and the reason is who it addresses. Allah does not speak here to the careful or the nearly-good — He calls out to those who have transgressed against themselves, the people who have already concluded that what they have done or become is past repair. To exactly them He says la taqnatu: do not despair. Ibn Kathir notes that the ayah then closes the escape route despair always looks for, the private exception, because "Indeed, Allah forgives all sins" is stated with no list of what is excluded from it. Despair is therefore a claim about the limits of Allah’s mercy rather than a report about yourself, and it is precisely that claim the ayah refuses. The Prophet ﷺ said: "When Allah completed the creation, He wrote in His Book which is with Him on His Throne, ‘My Mercy overpowers My Anger.’" [Bukhari 3194] That was written before you existed, and it was not written conditionally.',
+    action:
+      'Name the verdict you have passed on yourself, and put the ayah beside it.',
+    actionSource: 'Quran 7:23 — the supplication of Adam (peace be upon him)',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'mindset',
+        icon: 'light-bulb',
+        title: 'Despair is a claim about Allah',
+        instruction: 'Read who the ayah is addressed to before you read what it says. It is not spoken to people with small mistakes; it is spoken to those who have wronged themselves and know it. The despair that says "not me, not this" is making a statement about how far Allah’s mercy reaches — and the ayah answers that statement without listing an exception.',
+        source: 'Tafsir Ibn Kathir on 39:53',
+      },
+      {
+        type: 'physical',
+        icon: 'pen',
+        title: 'Write the verdict, then the ayah',
+        instruction: 'Write the sentence you believe about yourself — the plain one, in your own words. Underneath it, write: "Indeed, Allah forgives all sins." Do not try to feel differently about it today. Put them next to each other and let the second one stand there unanswered.',
+        source: 'Surah Az-Zumar 39:53',
+      },
+      {
+        type: 'verbal',
+        icon: 'hands-prayer',
+        title: 'The supplication of Adam',
+        instruction: 'This is what Adam and Hawwa (peace be upon them) said after the worst moment of their lives. It admits the wrong fully and asks anyway — the admission and the asking are in the same breath, which is the shape the Quran keeps giving to repentance.',
+        arabicText: 'رَبَّنَا ظَلَمْنَآ أَنفُسَنَا وَإِن لَّمْ تَغْفِرْ لَنَا وَتَرْحَمْنَا لَنَكُونَنَّ مِنَ ٱلْخَـٰسِرِينَ',
+        transliteration: 'Rabbana zalamna anfusana wa in lam taghfir lana wa tarhamna lanakoonanna mina al-khasireen',
+        translation: 'Our Lord, we have wronged ourselves, and if You do not forgive us and have mercy upon us, we will surely be among the losers.',
+        source: 'Quran 7:23',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'mindset',
+        icon: 'shield',
+        title: 'Written before you existed',
+        instruction: 'The mercy that outweighs the anger was recorded when creation was completed — before your record began, and without reference to it. Whatever you have concluded about your own case was decided after that, by you, with less information.',
+        source: 'Bukhari 3194',
+      },
+    ]),
+    reflection:
+      'What have you decided about yourself that this ayah does not agree with? Write both sentences on the same page and read them in order.',
+  },
+  {
+    id: 'q_angle_crisis_day3',
+    contentId: 'quran_21_87',
+    mood: 'Sad',
+    angle:
+      '[Tafsir al-Sa’di on 21:87] Yunus (peace be upon him) is described in the darknesses — the word is plural: the night, the sea, and the belly of the fish, layered one inside the other, with no exit any effort of his could reach. What he had left was his voice. He did not open by asking to be released; he opened by declaring who Allah is, glorifying Him, and naming his own wrong: "There is no deity except You; exalted are You. Indeed, I have been of the wrongdoers." The following ayah records what that produced — "So We responded to him and saved him from the distress. And thus do We save the believers" [Quran 21:88] — and al-Sa’di stresses that the closing clause deliberately widens the promise past Yunus to anyone who calls the way he called. When you cannot see a way out, du’a is not the last resort after the options are exhausted. It is the option, and this one has a recorded outcome attached to it.',
+    action:
+      'Call the way Yunus called — from inside it, not after it clears.',
+    actionSource: 'Quran 21:87 — the supplication of Dhun-Nun',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'mindset',
+        icon: 'moon',
+        title: 'Darkness in layers',
+        instruction: 'The ayah says darknesses, not darkness. Al-Sa’di reads it as layers — night inside sea inside fish — because that is how being trapped actually feels: not one problem but several stacked, each one blocking the exit from the last. The Quran describes that state precisely, which means it is a described state and not the end of the account.',
+        source: 'Tafsir al-Sa’di on 21:87',
+      },
+      {
+        type: 'verbal',
+        icon: 'hands-prayer',
+        title: 'The supplication of Dhun-Nun',
+        instruction: 'Say it slowly enough to hear the order it is in: who Allah is, then His perfection, then your own wrong — and no request at all. The asking is implied by the calling. Repeat it as long as it takes to mean it, not to reach a number.',
+        arabicText: 'لَّآ إِلَـٰهَ إِلَّآ أَنتَ سُبْحَـٰنَكَ إِنِّى كُنتُ مِنَ ٱلظَّـٰلِمِينَ',
+        transliteration: 'La ilaha illa anta subhanaka inni kuntu mina az-zalimeen',
+        translation: 'There is no deity except You; exalted are You. Indeed, I have been of the wrongdoers.',
+        source: 'Quran 21:87',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'mindset',
+        icon: 'star',
+        title: 'The promise widens past Yunus',
+        instruction: 'The Prophet ﷺ said of this du’a: "So indeed, no Muslim man supplicates with it for anything, ever, except Allah responds to him." [Tirmidhi 3505] The ayah itself ends the same way — "and thus do We save the believers" — which is the Quran generalising a rescue rather than reporting a one-off.',
+        source: '"So indeed, no Muslim man supplicates with it for anything, ever, except Allah responds to him." [Tirmidhi 3505]',
+      },
+      {
+        type: 'physical',
+        icon: 'breathing',
+        title: 'Stay with it for four breaths',
+        instruction: 'Say the du’a once on each of four slow out-breaths. If your mind leaves, bring it back to the first word and start again. You are not trying to generate a feeling — you are keeping your voice in use, which is the one thing Yunus still had.',
+        source: 'A pacing practice for the du’a above — Quran 21:87',
+      },
+    ]),
+    reflection:
+      'Yunus called before anything changed. What would you say to Allah right now if you did not wait for the situation to improve first?',
+  },
+  {
+    id: 'q_angle_crisis_day4',
+    contentId: 'quran_50_16',
+    mood: 'Sad',
+    angle:
+      '[Tafsir Ibn Kathir on 50:16] The ayah does not say Allah knows what a person says or does. It says He knows what his soul whispers to him — the traffic underneath speech, the part that never gets said to anyone. Ibn Kathir reads the closeness that follows as knowledge and encompassment: nearer than the jugular vein, the vessel a person cannot live without and has never seen. Two things follow from that, and they run in different directions. The first is that the thought you have not managed to say out loud has already been heard, so there is no confession standing between you and turning to Him. The second is that being fully known has not made Him withdraw. The Prophet ﷺ said: "Allah is more merciful to His slaves than this lady to her son." [Bukhari 5999] He said it of a woman among captives who, having lost her own child, took up any child she found and nursed him — and the comparison runs upward from her, not down to her.',
+    action:
+      'Pray without preparing the sentence first — it has already been heard.',
+    actionSource: 'Bukhari 6346 — the words of relief at a time of distress',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'mindset',
+        icon: 'eye',
+        title: 'The whisper, not the speech',
+        instruction: 'The ayah names what the soul whispers — not what you manage to articulate. Whatever you have not been able to put into words for a friend, a parent, or an imam is not outside what Allah is already attending to. Nothing has to be made presentable first.',
+        source: 'Tafsir Ibn Kathir on 50:16',
+      },
+      {
+        type: 'verbal',
+        icon: 'hands-prayer',
+        title: 'The words of relief',
+        instruction: 'These are the words the Prophet ﷺ used at a time of distress. They contain no request either — only who Allah is, repeated until the ground steadies. Say them when the thoughts speed up.',
+        arabicText: 'لاَ إِلَهَ إِلاَّ اللَّهُ الْعَظِيمُ الْحَلِيمُ، لاَ إِلَهَ إِلاَّ اللَّهُ رَبُّ الْعَرْشِ الْعَظِيمِ، لاَ إِلَهَ إِلاَّ اللَّهُ رَبُّ السَّمَوَاتِ وَرَبُّ الأَرْضِ وَرَبُّ الْعَرْشِ الْكَرِيمِ',
+        transliteration: 'La ilaha illa Allahu al-Azeem al-Haleem, la ilaha illa Allahu Rabb al-Arsh al-Azeem, la ilaha illa Allahu Rabb as-samawati wa Rabb al-ard wa Rabb al-Arsh al-Kareem',
+        translation: 'There is no god but Allah, the Magnificent, the Forbearing. There is no god but Allah, Lord of the Magnificent Throne. There is no god but Allah, Lord of the heavens and Lord of the earth and Lord of the Noble Throne.',
+        source: 'Bukhari 6346',
+        sourceType: 'prophetic_dua',
+      },
+      {
+        type: 'mindset',
+        icon: 'heart',
+        title: 'Known, and not withdrawn from',
+        instruction: 'The mother in the hadith had lost her own child and was nursing other people’s. The Prophet ﷺ used her as the lower bound of Allah’s mercy, not the upper one. Being completely known by Him is not the same as being judged by Him, and today is for holding those two apart.',
+        source: '"Allah is more merciful to His slaves than this lady to her son." [Bukhari 5999]',
+      },
+      {
+        type: 'physical',
+        icon: 'door',
+        title: 'Pray unprepared',
+        instruction: 'Make du’a once today without composing it first — no opening, no ordering of the words, no editing out the parts that sound ungrateful. Speak it the way it actually sits in you. The ayah has already established that nothing in it is new information.',
+        source: 'Reflects the closeness described in Surah Qaf 50:16',
+      },
+    ]),
+    reflection:
+      'What have you been assuming you would have to explain before you could pray? Notice that the ayah has already removed that step.',
+  },
+  {
+    id: 'q_angle_crisis_day5',
+    contentId: 'quran_17_70',
+    mood: 'Sad',
+    angle:
+      '[Tafsir al-Sa’di on 17:70] The honouring in this ayah is reported as something already done — We have certainly honoured the children of Adam — and every clause that follows describes what Allah did, not what anybody achieved. Al-Sa’di lists them: carriage over land and sea, provision from what is good, preference over much of creation. None of it is presented as a reward for performance, which is exactly why it is usable on a day when a person has stopped believing they are worth anything. The ayah locates worth outside self-assessment: it was conferred by the One who made you, and a mood is not in a position to revoke it. Your body and your soul hold a standing claim on you that does not lapse when you stop feeling they deserve one. Salman said as much to Abu Ad-Darda when he found him burning himself out: "Your Lord has a right on you, your soul has a right on you, and your family has a right on you; so you should give the rights of all those who has a right on you" — and when it was brought to the Prophet ﷺ, he said, "Salman has spoken the truth." [Bukhari 1968]',
+    action:
+      'Give your body one thing it is owed today, before you have decided you deserve it.',
+    actionSource: 'Ibn Majah 3851 — the supplication for well-being',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'mindset',
+        icon: 'gem',
+        title: 'Conferred, not earned',
+        instruction: 'Read the verbs: honoured, carried, provided, preferred. Every one of them has Allah as the subject and you as the object. Al-Sa’di’s point is that this dignity was assigned, not achieved — so it is not yours to withdraw on a bad day, and your current opinion of yourself is not the authority on it.',
+        source: 'Tafsir al-Sa’di on 17:70',
+      },
+      {
+        type: 'physical',
+        icon: 'leaf',
+        title: 'Pay one right today',
+        instruction: 'Pick one and do it before the day ends: eat a real meal, drink water, sleep at a normal hour, step outside for ten minutes, or wash properly. Not as self-improvement and not because you have earned it. Salman’s correction was that the claim exists whether or not you feel it does.',
+        source: 'Bukhari 1968',
+      },
+      {
+        type: 'verbal',
+        icon: 'hands-prayer',
+        title: 'Ask for well-being',
+        instruction: 'The Prophet ﷺ said no supplication a servant makes is better than this one. It asks for mu’afah — soundness and being kept well — in this life and the next, which is a request for your own preservation, made out loud.',
+        arabicText: 'اللَّهُمَّ إِنِّي أَسْأَلُكَ الْمُعَافَاةَ فِي الدُّنْيَا وَالآخِرَةِ',
+        transliteration: 'Allahumma inni as’aluka al-mu’afata fid-dunya wal-akhirah',
+        translation: 'O Allah, I ask You for well-being in this world and in the Hereafter.',
+        source: 'Ibn Majah 3851',
+        sourceType: 'prophetic_dua',
+      },
+      {
+        type: 'physical',
+        icon: 'pen',
+        title: 'List what has lapsed',
+        instruction: 'Write the three rights you have quietly stopped paying — sleep, food, company, prayer, daylight, whatever they actually are. Do not plan to fix all three. Circle the one you will pay tomorrow and leave the other two on the page.',
+        source: 'Reflects the rights named in Bukhari 1968',
+      },
+    ]),
+    reflection:
+      'Name one right your body or your soul has on you that you have not been giving. What is the smallest version of it you could give today?',
+  },
+  {
+    id: 'q_angle_crisis_day6',
+    contentId: 'quran_94_5',
+    mood: 'Sad',
+    angle:
+      '[Tafsir Ibn Kathir on 94:5-6] The preposition carries the whole lesson. Allah says maa al-usr — with the hardship — not baad, after it. Ibn Kathir records the grammatical observation the scholars drew from the repetition: "the hardship" takes the definite article both times, so it is one hardship, while "ease" is indefinite both times, so these are two different eases; from this Ibn Masud (may Allah be pleased with him) is reported to have said that one hardship cannot overcome two eases. Notice what the ayah does not promise, which is a date. It promises that relief is bound to this hardship rather than waiting on the far side of it — a different claim, and a more usable one when the far side is not visible from where you are standing. The Prophet ﷺ said: "No fatigue, nor disease, nor sorrow, nor sadness, nor hurt, nor distress befalls a Muslim, even if it were the prick he receives from a thorn, but that Allah expiates some of his sins for that." [Bukhari 5642] Sorrow and sadness are named there by name — not as evidence of a defect, but as conditions Allah is already responding to.',
+    action:
+      'Look for the ease attached to today, not the one waiting after it.',
+    actionSource: 'Quran 3:173 — the words said when people gathered against them',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'mindset',
+        icon: 'sunrise',
+        title: 'With, not after',
+        instruction: 'The ayah does not say ease comes when the hardship ends. It says ease accompanies it. That reframes the question from "how long until this is over" — which nobody can answer for you today — to "what is present alongside it right now", which you can actually look for.',
+        source: 'Tafsir Ibn Kathir on 94:5-6',
+      },
+      {
+        type: 'physical',
+        icon: 'pen',
+        title: 'Find the accompanying ease',
+        instruction: 'Write down one thing that is genuinely holding today up: a person who answered, a meal, warmth, an hour you slept, the fact that you opened this. Small is the point — you are testing whether ease is present, not whether it is sufficient.',
+        source: 'Surah Ash-Sharh 94:5-6',
+      },
+      {
+        type: 'mindset',
+        icon: 'shield',
+        title: 'Sadness is named, not indicted',
+        instruction: 'The hadith lists sorrow and sadness among the things that befall a Muslim — alongside fatigue and illness, in the same breath as a thorn prick. It treats them as things that happen to a believer, not as proof of a weak one. Whatever else your sadness is today, this narration does not read it as a verdict on your faith.',
+        source: '"No fatigue, nor disease, nor sorrow, nor sadness, nor hurt, nor distress befalls a Muslim, even if it were the prick he receives from a thorn, but that Allah expiates some of his sins for that." [Bukhari 5642]',
+      },
+      {
+        type: 'verbal',
+        icon: 'star',
+        title: 'Sufficient for us is Allah',
+        instruction: 'This is what the believers said when they were told the odds were against them — and the Quran reports that it increased them in faith rather than steadying their circumstances. Say it when the size of the thing in front of you is the problem.',
+        arabicText: 'حَسْبُنَا ٱللَّهُ وَنِعْمَ ٱلْوَكِيلُ',
+        transliteration: 'Hasbunallahu wa nimal wakeel',
+        translation: 'Sufficient for us is Allah, and He is the best Disposer of affairs.',
+        source: 'Quran 3:173',
+        sourceType: 'quran_dua',
+      },
+    ]),
+    reflection:
+      'Name one ease that is present today alongside the hardship — not instead of it. It does not have to be large to count.',
+  },
+  {
+    id: 'q_angle_crisis_day7',
+    contentId: 'quran_13_28',
+    mood: 'Sad',
+    angle:
+      '[Tafsir Madarij al-Salikin on 13:28] Tatmainnu is not the word for cheerfulness. It describes something coming to rest and staying there — the same root used for the soul at peace — and the ayah assigns that settling to a single cause, then states it a second time as a general rule: "Unquestionably, by the remembrance of Allah hearts are assured." Ibn al-Qayyim’s argument in Madarij al-Salikin is that the heart will try every other resting place first and will not settle in any of them, because it was not built to settle there. When you reach the end of a week like this one, the question stops being how to survive the next hour and becomes what you will keep doing once the pressure drops. The Prophet ﷺ said: "The example of the one who celebrates the Praises of his Lord (Allah) in comparison to the one who does not celebrate the Praises of his Lord, is that of a living creature compared to a dead one." [Bukhari 6407] What carried you through this week was not intensity — it was returning. Build the smallest version of that you could still keep on your worst day.',
+    action:
+      'Write the plan you will use the next time this returns.',
+    actionSource: 'Bukhari 6405 — the dhikr said one hundred times a day',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'mindset',
+        icon: 'home',
+        title: 'From crisis to maintenance',
+        instruction: 'Tatmainnu describes settling, not elation, which is a lower and far more reachable bar. Ibn al-Qayyim’s claim is that the heart keeps testing other resting places and does not stay in them. That makes the practical question for today not how to feel better, but where you will return to when the feeling drops again.',
+        source: 'Madarij al-Salikin — Ibn al-Qayyim on 13:28',
+      },
+      {
+        type: 'physical',
+        icon: 'pen',
+        title: 'Write your plan on one page',
+        instruction: 'Four lines, no more. One: the two signs that tell you this is returning. Two: the names and numbers of two people you will contact, plus your local crisis line or findahelpline.com. Three: the one thing that reliably takes the edge off for ten minutes. Four: the smallest dhikr you will keep daily. Put it somewhere you will find it without searching.',
+        source: 'Safety guidance — not a fiqh ruling',
+      },
+      {
+        type: 'physical',
+        icon: 'person',
+        title: 'Tell the person from day one',
+        instruction: 'Go back to whoever you told on day one and tell them what is on the page — particularly the two warning signs. A plan only one person knows is a plan that disappears exactly when you are least able to reach for it.',
+        source: 'Safety guidance — not a fiqh ruling',
+      },
+      {
+        type: 'verbal',
+        icon: 'star',
+        title: 'The dhikr you keep',
+        instruction: 'The Prophet ﷺ said whoever says it one hundred times a day will have his sins removed, "even if they were as much as the foam of the sea." Split it across the day if a hundred at once is too much — the point of this one is the returning, not the sitting.',
+        arabicText: 'سُبْحَانَ اللَّهِ وَبِحَمْدِهِ',
+        transliteration: 'Subhana Allahi wa bihamdihi',
+        translation: 'Glory is to Allah, and praise is to Him.',
+        source: 'Bukhari 6405',
+        sourceType: 'prophetic_dhikr',
+        count: 100,
+        countSource: 'Bukhari 6405',
+      },
+      {
+        type: 'mindset',
+        icon: 'candle',
+        title: 'The plan is for the bad day',
+        instruction: 'You are writing this while you can think clearly, for a version of you who will not be able to. That is the entire reason it goes on paper instead of staying an intention. Do not make it impressive — make it something you could do at your worst, because that is the only day it will ever be used.',
+        source: 'Reflects the returning described in Bukhari 6407',
+      },
+    ]),
+    reflection:
+      'What is the smallest daily practice you could genuinely keep on your worst day — and who will know if you stop?',
   },
 ];
 

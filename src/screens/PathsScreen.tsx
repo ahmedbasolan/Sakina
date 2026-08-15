@@ -40,6 +40,7 @@ const AVAILABLE_PATH_IDS = new Set([
   'path_study_journaling',
   'path_trusting_the_results',
   'path_prayer_leadership',
+  'path_hope_after_crisis',
 ]);
 
 // ── Star positions for the header backdrop ──────────────────────

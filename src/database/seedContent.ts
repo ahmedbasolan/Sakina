@@ -177,7 +177,24 @@ import type { Content, ContentAngle } from '../types';
 //      fourth ("remarkably little left for punishment to be about") was flip
 //      about divine punishment. All four now address the reader without
 //      claiming to know what they did.
-const SEED_VERSION = 31;
+// v32: new content — Suicidal Thoughts → Hope (path_hope_after_crisis), 7 days.
+//      Adds quran_17_70 (Content) and q_angle_crisis_day1..day7 (angles),
+//      each carrying its own verified ayah, hadith, and practiceSteps.
+//      Journey unlocked in AVAILABLE_PATH_IDS the same commit.
+// v33: no new content — translation-accuracy fixes, not additions. Two bugs
+//      surfaced by device testing: hadith_results_2's `primaryText` held the
+//      TRANSLITERATION instead of an English gloss (HadithLayer prefers
+//      primaryText when it isn't meaningfully shorter than the full
+//      translation, so the wrong field silently won and the correct
+//      translation/englishTranslation never rendered); and Prayer Leadership
+//      day 10 quoted "Rabbana lakal hamd" / "Sami'a llahu liman hamidah"
+//      transliterated, with no English meaning, in three places that all
+//      trace back to the same hadith — hadith_imam_10's translation/
+//      englishTranslation, q_angle_imam_day10's angle prose, and its
+//      practiceStep instruction. All three now carry bracketed glosses
+//      ("Rabbana lakal hamd" [Our Lord, to You is all praise]). No Arabic,
+//      citation, or claim changed — only the missing English meaning added.
+const SEED_VERSION = 33;
 // Separate keys per content type — Quran and Hadith data change independently,
 // and each seeder used to write the SAME key at the end of its run. Since
 // initializeDatabase() awaits seedQuranContent() before seedHadithContent(),

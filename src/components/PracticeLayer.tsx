@@ -10,7 +10,6 @@ import {
   Alert,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { BlurView } from 'expo-blur';
 const { height } = Dimensions.get('window');
 import { Colors, Spacing, Typography, BorderRadius } from '../theme/DesignSystem';
 import { Ionicons } from '@expo/vector-icons';
@@ -84,10 +83,13 @@ const DhikrCounter = ({ target, accentColor }: { target: number; accentColor: st
       HapticsService.impactAsync('LIGHT');
       setCount(count + 1);
 
-      // Micro-bounce on tap
+      // Minimal tap feedback — plain timing, no spring/overshoot. CLAUDE.md's
+      // micro-feedback band is 100-150ms; a spring here previously overshot
+      // and settled with a visible wobble, reading as a pulse/bounce rather
+      // than calm feedback.
       Animated.sequence([
-        Animated.timing(scaleAnim, { toValue: 1.08, duration: 80, useNativeDriver: true }),
-        Animated.spring(scaleAnim, { toValue: 1, friction: 4, useNativeDriver: true }),
+        Animated.timing(scaleAnim, { toValue: 1.04, duration: 100, useNativeDriver: true }),
+        Animated.timing(scaleAnim, { toValue: 1, duration: 100, useNativeDriver: true }),
       ]).start();
 
       if (count + 1 >= target) {
@@ -345,17 +347,6 @@ const PracticeStepCard = ({
           accessibilityLabel={item.title}
           accessibilityState={{ expanded: isExpanded }}
         >
-          {/* Frosted-glass surface — lets the immersive background (mandala or
-              journey photo) blend through instead of a flat opaque box */}
-          {/* experimentalBlurMethod — same Android blur fix as the tab bar. */}
-          <BlurView
-            intensity={10}
-            tint="dark"
-            experimentalBlurMethod="dimezisBlurView"
-            style={StyleSheet.absoluteFillObject}
-            pointerEvents="none"
-          />
-
           {/* Card Header — when the card has broken out of the timeline
               gutter, pad the header back in so the icon and title still sit
               clear of the step circle floating over the card's left edge. */}
