@@ -10,6 +10,8 @@ import { SubscriptionState, SubscriptionTier, SubscriptionType } from '../types'
 import { SupabaseDataService } from './supabaseDataService';
 import { revenueCat } from './revenueCatService';
 import { CustomerInfo } from 'react-native-purchases';
+import { resetLockscreenPrefsOnLapse } from './lockscreenVerseService';
+import { logServiceError } from './errorLoggingService';
 
 // Dev-only owner override — treat these accounts as premium WITHOUT a real
 // purchase, so premium features can be tested on a signed-in account. Gated
@@ -174,6 +176,21 @@ export class SubscriptionService {
       : undefined;
 
     const currentBundles = this.subscriptionState?.unlockedBundleIds ?? [];
+
+    // Premium just lapsed. Lock screen verses are premium-only and are read by
+    // the notification scheduler, which never re-checks entitlement itself — so
+    // without this the feature would keep delivering after a subscription
+    // ended. Fire-and-forget: a storage failure must not block the sync.
+    const wasActive = this.subscriptionState?.isActive === true;
+    if (wasActive && !isActive) {
+      resetLockscreenPrefsOnLapse().catch((error) =>
+        logServiceError(
+          'SubscriptionService',
+          'syncFromCustomerInfo/lockscreenLapse',
+          error instanceof Error ? error : new Error(String(error)),
+        ),
+      );
+    }
 
     this.subscriptionState = {
       tier,

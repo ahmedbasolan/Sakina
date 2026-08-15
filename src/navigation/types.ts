@@ -23,6 +23,7 @@ export type RootStackParamList = {
     guidanceExperience: GuidanceExperience;
   };
   DailyReminders: undefined;
+  LockscreenVerses: undefined;
   MoodHistory: undefined;
   MoodSelection: undefined;
   PrayerTimes: undefined;

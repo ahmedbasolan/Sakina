@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState, useCallback } from 'react';
 import {
   StyleSheet,
   View,
@@ -21,6 +21,8 @@ import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Colors, BorderRadius, Spacing, Typography } from '../theme/DesignSystem';
+import { loadLockscreenPrefs, saveLockscreenPrefs } from '../services/lockscreenVerseService';
+import { topUpScheduledNotifications } from '../services/notificationTopUpTask';
 import { BackgroundTheme } from '../types';
 import { BACKGROUND_THEMES } from '../services/backgroundThemeService';
 import BackgroundThemePicker from './BackgroundThemePicker';
@@ -159,6 +161,40 @@ const ShareSheet = ({ isVisible, onClose, isPremium, onUpgrade, content }: Share
   useEffect(() => {
     if (!isPremium) setSelectedPhotoTheme(null);
   }, [isPremium]);
+
+  // Reflects whether the currently selected photo is already the lock screen
+  // background, so the checkbox shows real state rather than always starting
+  // unchecked.
+  const [useOnLockScreen, setUseOnLockScreen] = useState(false);
+  useEffect(() => {
+    let active = true;
+    loadLockscreenPrefs().then((prefs) => {
+      if (!active) return;
+      setUseOnLockScreen(
+        !!selectedPhotoTheme && prefs.enabled && prefs.themeId === selectedPhotoTheme.id,
+      );
+    });
+    return () => {
+      active = false;
+    };
+  }, [selectedPhotoTheme]);
+
+  const handleUseOnLockScreen = useCallback(async () => {
+    if (!selectedPhotoTheme) return;
+    const next = !useOnLockScreen;
+    setUseOnLockScreen(next);
+    // Turning it on both selects this theme and enables the feature — a user
+    // ticking this box has expressed the whole intent, and leaving them to also
+    // find the Settings screen would make the box do nothing visible.
+    // Turning it off only clears the theme override; it does not disable lock
+    // screen verses, which the user may have set up deliberately elsewhere.
+    await saveLockscreenPrefs(
+      next ? { enabled: true, themeId: selectedPhotoTheme.id } : { themeId: null },
+    );
+    topUpScheduledNotifications().catch(() => {
+      /* scheduling is best-effort here; the setup screen surfaces failures */
+    });
+  }, [selectedPhotoTheme, useOnLockScreen]);
 
   // Content Filtering State
   const [showArabic, setShowArabic] = useState(!!content.arabicText);
@@ -510,6 +546,27 @@ const ShareSheet = ({ isVisible, onClose, isPremium, onUpgrade, content }: Share
                 </TouchableOpacity>
               </ScrollView>
 
+              {/* Carries the photo the user just picked straight over to lock
+                  screen verses, so choosing a background twice is unnecessary.
+                  Only offered once a photo theme is actually selected — there
+                  is nothing to carry over otherwise. */}
+              {isPremium && selectedPhotoTheme && (
+                <TouchableOpacity
+                  style={styles.lockscreenRow}
+                  onPress={handleUseOnLockScreen}
+                  accessibilityRole="switch"
+                  accessibilityLabel="Also use on lock screen"
+                  accessibilityState={{ checked: useOnLockScreen }}
+                >
+                  <Ionicons
+                    name={useOnLockScreen ? 'checkbox-outline' : 'square-outline'}
+                    size={18}
+                    color={useOnLockScreen ? Colors.accent.primary : Colors.text.secondary}
+                  />
+                  <Text style={styles.lockscreenLabel}>Also use on Lock Screen</Text>
+                </TouchableOpacity>
+              )}
+
               {/* PERSONALIZE - FONTS */}
               <View style={styles.fontSelector}>
                 {FONTS.map((font) => (
@@ -750,6 +807,18 @@ const styles = StyleSheet.create({
   themeCircle: {
     flex: 1,
     borderRadius: 22,
+  },
+  lockscreenRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: Spacing.md,
+    paddingHorizontal: Spacing.xs,
+  },
+  lockscreenLabel: {
+    marginLeft: Spacing.sm,
+    fontFamily: Typography.fonts.latin,
+    fontSize: Typography.sizes.small,
+    color: Colors.text.secondary,
   },
   photoThemeCircle: {
     flex: 1,

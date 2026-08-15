@@ -8,6 +8,7 @@ import {
   Switch,
   Alert,
   Linking,
+  Platform,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation, useFocusEffect, CompositeNavigationProp } from '@react-navigation/native';
@@ -18,7 +19,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../context/AuthContext';
 import { RootStackParamList, MainTabParamList } from '../navigation/types';
 import { logServiceError } from '../services/errorLoggingService';
-import { AuthService } from '../services/authService';
+import { AuthService, ACCOUNT_DELETED_BUT_LOCAL_WIPE_FAILED } from '../services/authService';
 import Icon from '../components/Icon';
 import { SubscriptionService } from '../services/subscriptionService';
 import { SupabaseDataService } from '../services/supabaseDataService';
@@ -27,9 +28,25 @@ import { Colors, Spacing, Typography, BorderRadius } from '../theme/DesignSystem
 import { getAnalyticsConsent, setAnalyticsConsent } from '../config/posthog';
 import { LEGAL_URLS } from '../constants';
 
-// Fill in your Apple App Store numeric ID after submission.
-// Format: https://apps.apple.com/app/id<YOUR_ID>?action=write-review
+// Fill in your Apple App Store numeric ID after the first submission is
+// accepted. Format: https://apps.apple.com/app/id<YOUR_ID>?action=write-review
+//
+// Leave it empty until you have the ID — the "Rate Sakina" row is hidden while
+// this is blank rather than shown with a placeholder behind it. A row that
+// answers a tap with "this will be available after launch" is an App Review
+// 2.1 (App Completeness) rejection, and a reviewer will tap it.
 const APP_STORE_REVIEW_URL = '';
+
+// Android needs no store ID — the Play listing is keyed by the package name
+// from app.json, so this one works today. Deliberately the https:// form, not
+// market://, so it still resolves on devices without the Play Store app.
+const PLAY_STORE_REVIEW_URL = 'https://play.google.com/store/apps/details?id=com.lelahmed.sakina';
+
+const STORE_REVIEW_URL = Platform.select({
+  ios: APP_STORE_REVIEW_URL,
+  android: PLAY_STORE_REVIEW_URL,
+  default: '',
+}) as string;
 
 const SUPPORT_EMAIL = 'support@sakinaapp.com';
 
@@ -299,6 +316,15 @@ export default function SettingsScreen() {
                     } catch (error) {
                       logServiceError('SettingsScreen', 'deleteAccount', error instanceof Error ? error : new Error(String(error)));
                       const msg = error instanceof Error ? error.message : String(error);
+
+                      // The account IS gone — only the on-device cleanup failed.
+                      // Must not offer a retry: re-running deletion would 401
+                      // against an account that no longer exists.
+                      if (msg === ACCOUNT_DELETED_BUT_LOCAL_WIPE_FAILED) {
+                        Alert.alert('Account Deleted', msg);
+                        return; // signed out already; component is unmounting
+                      }
+
                       Alert.alert(
                         'Error',
                         msg.includes('sign in again')
@@ -316,13 +342,8 @@ export default function SettingsScreen() {
     );
   };
 
-  const handleRateApp = () => {
-    if (APP_STORE_REVIEW_URL) {
-      openURL(APP_STORE_REVIEW_URL);
-    } else {
-      Alert.alert('Rate Sakina', 'App Store rating will be available after launch. Thank you for your support!');
-    }
-  };
+  // Only ever called from a row that is rendered when STORE_REVIEW_URL is set.
+  const handleRateApp = () => openURL(STORE_REVIEW_URL);
 
   const handleFeedback = () => {
     openURL(`mailto:${SUPPORT_EMAIL}?subject=Sakina Feedback`);
@@ -399,6 +420,15 @@ export default function SettingsScreen() {
             icon="notifications-outline"
             onPress={() => navigation.navigate('DailyReminders')}
           />
+          {/* Row stays visible for free users — the screen itself carries the
+              locked state and routes to Support, matching how the other
+              premium affordances behave. */}
+          <SettingRow
+            label="Lock Screen Verses"
+            icon="phone-portrait-outline"
+            value={isPremium ? undefined : '✦'}
+            onPress={() => navigation.navigate('LockscreenVerses')}
+          />
           <SettingRow
             label="Show Transliteration"
             icon="text-outline"
@@ -456,11 +486,13 @@ export default function SettingsScreen() {
         {/* Support */}
         <SectionHeader title="SUPPORT" />
         <View style={styles.section}>
-          <SettingRow
-            label="Rate Sakina"
-            icon="star-outline"
-            onPress={handleRateApp}
-          />
+          {STORE_REVIEW_URL ? (
+            <SettingRow
+              label="Rate Sakina"
+              icon="star-outline"
+              onPress={handleRateApp}
+            />
+          ) : null}
           <SettingRow
             label="Send Feedback"
             icon="mail-outline"
