@@ -581,6 +581,41 @@ availability, or it will route users into an empty journey.
 
 ---
 
+---
+
+## Account Deletion & Local Data Ownership
+
+Deleting the account must clear the device too, and local rows must never be
+uploaded under an account that did not write them. Both shipped broken.
+
+- **`clearAllLocalUserData()`** (`database/operations.ts`) empties the seven
+  personal tables plus the personal `kv_store` keys, and is called from
+  `AuthService.deleteAccount()` after the server delete confirms. Before it,
+  "Delete Account" cleared Supabase only — the confirmation's "deleted forever"
+  was false on-device, and the leftovers were re-uploaded on the next sign-in.
+- **`claimLocalDataForUser()`** (`supabaseDataService.ts`) is the ONLY
+  legitimate caller of `migrateGuestDataToSupabase()` on a sign-in path. The
+  bare migration sweeps every local row regardless of who wrote it, which is
+  how account A's history reached account B on a shared device
+  (`hasClaimedLocalData` in AuthContext is a ref — it resets on app restart).
+  Ownership lives in `kv_store`'s `local_data_owner`.
+- **`syncPendingHistory()` requires a positive owner match.** It is called
+  opportunistically by `recordHistory` on every successful write, and `dbQuery`
+  is a serialized queue, so at app start it can run before the async claim
+  finishes. "Not someone else" is not sufficient — pre-marker rows have no
+  identifiable owner and must not be uploaded either.
+- Adding a table that holds personal data means adding it to **both**
+  `clearAllLocalUserData` and the `PERSONAL` list in `verify-local-wipe.mjs`.
+  The verifier's subset check catches an omission from the wipe, not from both.
+
 ## Commands
 - Typecheck: `npx tsc --noEmit -p tsconfig.json`
+- Tests: `npx jest` (ownership rules: `src/services/__tests__/localDataOwnership.test.ts`)
+- `node scripts/verify-local-wipe.mjs` — replays `clearAllLocalUserData`'s
+  statements against a real SQLite built from the app's own DDL, reading the
+  table list out of `operations.ts` so it tests the shipped function rather than
+  a copy. `NO_WIPE=1 node scripts/verify-local-wipe.mjs` is its negative mode
+  and, like `RT_INJECT`, exits 0 only when the assertions actually failed.
+  **Both modes exiting 0 is the green state.** The header lists what it does
+  not catch — notably that it never proves anything *calls* the wipe.
 - (Run on device via Expo to verify visual changes — visuals can't be confirmed from a typecheck alone.)
