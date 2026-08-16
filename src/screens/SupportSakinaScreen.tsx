@@ -97,7 +97,14 @@ const FEATURES: {
   },
 ];
 
-const SupportSakinaScreen: React.FC = () => {
+interface Props {
+  /** True when rendered as onboarding's final step instead of a pushed Settings screen. */
+  embedded?: boolean;
+  /** Called instead of navigation.goBack() when embedded — subscribe, restore, or skip all funnel through this. */
+  onDone?: () => void;
+}
+
+const SupportSakinaScreen: React.FC<Props> = ({ embedded = false, onDone }) => {
   const navigation = useNavigation<any>();
   const insets = useSafeAreaInsets();
   const reduceMotion = useReduceMotion();
@@ -199,7 +206,8 @@ const SupportSakinaScreen: React.FC = () => {
           : await freemium.activatePremium('monthly');
       if (ok) {
         HapticsService.notificationAsync('SUCCESS');
-        navigation.goBack();
+        if (embedded) onDone?.();
+        else navigation.goBack();
       }
       // ok === false covers both user-cancel (no message needed) and a quiet
       // RC failure; the button simply re-enables so they can try again.
@@ -221,7 +229,8 @@ const SupportSakinaScreen: React.FC = () => {
       const restored = await freemium.restorePurchase();
       if (restored) {
         HapticsService.notificationAsync('SUCCESS');
-        navigation.goBack();
+        if (embedded) onDone?.();
+        else navigation.goBack();
       } else {
         Alert.alert(
           'Nothing to restore',
@@ -247,10 +256,10 @@ const SupportSakinaScreen: React.FC = () => {
       {/* Close */}
       <TouchableOpacity
         style={[styles.closeBtn, { top: insets.top + Spacing.sm }]}
-        onPress={() => navigation.goBack()}
+        onPress={() => (embedded ? onDone?.() : navigation.goBack())}
         hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
         accessibilityRole="button"
-        accessibilityLabel="Close"
+        accessibilityLabel={embedded ? 'Continue with the free plan' : 'Close'}
       >
         <Ionicons name="close" size={22} color={Colors.text.secondary} />
       </TouchableOpacity>
@@ -392,9 +401,26 @@ const SupportSakinaScreen: React.FC = () => {
         </TouchableOpacity>
 
         <Text style={styles.priceNote}>{priceNote}</Text>
-        <Text style={styles.continueFreeNote}>
-          Prefer to wait? Sakina stays fully usable free — no pressure.
-        </Text>
+        {/* Embedded (onboarding) has no back destination, so this existing line
+            doubles as the skip affordance rather than adding a second element —
+            a new button here would duplicate the copy and disturb the footer
+            height that `scroll.paddingBottom` is already tuned to clear. */}
+        {embedded ? (
+          <TouchableOpacity
+            onPress={onDone}
+            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+            accessibilityRole="button"
+            accessibilityLabel="Continue with the free plan"
+          >
+            <Text style={styles.continueFreeNote}>
+              Prefer to wait? Sakina stays fully usable free — no pressure.
+            </Text>
+          </TouchableOpacity>
+        ) : (
+          <Text style={styles.continueFreeNote}>
+            Prefer to wait? Sakina stays fully usable free — no pressure.
+          </Text>
+        )}
 
         <View style={styles.links}>
           <TouchableOpacity
