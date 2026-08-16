@@ -11,10 +11,21 @@
  * Consent: call `loadAnalyticsConsent()` once during app init, then use
  * `setAnalyticsConsent(bool)` from SettingsScreen to honor user choice.
  *
- * Default state is opted-OUT. PostHog starts disabled and is only enabled
- * after loadAnalyticsConsent() resolves with a stored 'true' preference.
- * This prevents the global error handler (wired at module load, before the
- * async consent read completes) from firing events without consent.
+ * Default state is opted-OUT. This prevents the global error handler (wired at
+ * module load, before the async consent read completes) from firing events
+ * without consent.
+ *
+ * The opt-out default MUST come from `defaultOptIn: false`, never from
+ * `disabled: true`. `disabled` is assigned once in the PostHog constructor
+ * (@posthog/core posthog-core-stateless.ts) and is never reassigned; `optIn()`
+ * runs inside `wrap()`, which returns early while disabled. So `disabled: true`
+ * makes optIn() a permanent no-op — the Settings toggle flips, the consent is
+ * persisted, and not a single event is ever sent. It shipped that way.
+ *
+ * `defaultOptIn: false` closes the same race properly: `optedOut` resolves to
+ * `persisted ?? !defaultOptIn`, and RN's persisted store hydrates async, so
+ * everything before hydration reads as opted out. `enqueue()` checks `optedOut`
+ * and drops the event.
  */
 import PostHog from 'posthog-react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -29,12 +40,18 @@ const API_KEY: string = (() => {
 
 const CONSENT_KEY = '@analytics_consent';
 
-// Start disabled — consent must be explicitly loaded before any events fire.
-// This covers the race window between module load (when error handlers are
-// installed) and the async loadAnalyticsConsent() call in app init.
+// Opted out until the user says otherwise — see the note above on why this is
+// `defaultOptIn: false` and not `disabled: true`. Covers the race window between
+// module load (when error handlers are installed) and the async
+// loadAnalyticsConsent() call in app init.
 const posthog = new PostHog(API_KEY || 'phc_placeholder', {
   host: 'https://us.i.posthog.com',
-  disabled: true,
+  defaultOptIn: false,
+  // The one legitimate use of `disabled`: with no key configured there is no
+  // project to report to, so stay hard-off rather than posting the placeholder
+  // key at a real ingest host. With a key present this is false and consent
+  // alone decides, which is the whole point of the change above.
+  disabled: !API_KEY,
   // Crash/error reporting only — no usage analytics. App-lifecycle events
   // (App Opened/Backgrounded/Installed/Updated) default to ON in the SDK, so we
   // disable them here to keep the "Share Crash Reports" consent label accurate
