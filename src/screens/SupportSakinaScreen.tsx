@@ -3,7 +3,7 @@
  * Annual / Monthly plan picker → feature list → fixed CTA footer.
  * Framing is supporter/identity, not "you've hit a limit."
  */
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   Alert,
   Animated,
@@ -117,10 +117,15 @@ const SupportSakinaScreen: React.FC<Props> = ({ embedded = false, onDone }) => {
   // for first-time users on the common path. Returning users who used their
   // trial flip to false and see a plain "Subscribe" CTA (App Store guideline).
   const [trialEligible, setTrialEligible] = useState(true);
-  // Pricing — initialise from freemium (may be static fallback on cold start),
-  // then refresh from RC offerings on mount so the correct store-localized
-  // price is always shown before the user taps the CTA.
+  // Pricing — store-localized or nothing. `null` means we could not read the
+  // store, in which case the plan picker and purchase CTA are withheld rather
+  // than showing an invented price (see freemiumService.getPricing).
   const [pricing, setPricingState] = useState(() => freemium.getPricing());
+  // 'loading' until the RC fetch settles; 'unavailable' once it has failed or
+  // returned nothing, which is what drives the retry state in the UI.
+  const [pricingStatus, setPricingStatus] = useState<'loading' | 'ready' | 'unavailable'>(() =>
+    freemium.getPricing() ? 'ready' : 'loading',
+  );
 
   const enter = useRef(new Animated.Value(0)).current;
 
@@ -134,6 +139,36 @@ const SupportSakinaScreen: React.FC<Props> = ({ embedded = false, onDone }) => {
     }
   }, []);
 
+  // Held in a ref so the retry handler can cancel an in-flight attempt's
+  // setState without needing to live inside the effect closure.
+  const pricingAttempt = useRef(0);
+
+  const loadPricing = useCallback(() => {
+    const attempt = ++pricingAttempt.current;
+    setPricingStatus((s) => (s === 'ready' ? s : 'loading'));
+    revenueCat
+      .getPricing()
+      .then((p) => {
+        if (attempt !== pricingAttempt.current) return;
+        if (p) {
+          setPricingState({
+            monthlyUSD: p.monthlyPriceAmount,
+            yearlyUSD: p.yearlyPriceAmount,
+            monthlyPrice: p.monthlyPrice,
+            yearlyPrice: p.yearlyPrice,
+            trialDays: p.trialDays,
+          });
+          setPricingStatus('ready');
+        } else {
+          // No offering — never fall back to a hardcoded price.
+          setPricingStatus('unavailable');
+        }
+      })
+      .catch(() => {
+        if (attempt === pricingAttempt.current) setPricingStatus('unavailable');
+      });
+  }, []);
+
   useEffect(() => {
     let cancelled = false;
     revenueCat
@@ -142,24 +177,13 @@ const SupportSakinaScreen: React.FC<Props> = ({ embedded = false, onDone }) => {
         if (!cancelled) setTrialEligible(eligible);
       })
       .catch(() => {});
-    revenueCat
-      .getPricing()
-      .then((p) => {
-        if (!cancelled && p) {
-          setPricingState({
-            monthlyUSD: p.monthlyPriceAmount,
-            yearlyUSD: p.yearlyPriceAmount,
-            monthlyPrice: p.monthlyPrice,
-            yearlyPrice: p.yearlyPrice,
-            trialDays: p.trialDays,
-          });
-        }
-      })
-      .catch(() => {});
+    loadPricing();
     return () => {
       cancelled = true;
+      // Invalidate any in-flight pricing attempt so it can't setState after unmount.
+      pricingAttempt.current++;
     };
-  }, []);
+  }, [loadPricing]);
 
   useEffect(() => {
     if (reduceMotion) {
@@ -175,21 +199,28 @@ const SupportSakinaScreen: React.FC<Props> = ({ embedded = false, onDone }) => {
 
   const translateY = enter.interpolate({ inputRange: [0, 1], outputRange: [24, 0] });
 
-  const monthlyEquiv = perMonthFromYearly(pricing.yearlyPrice, pricing.yearlyUSD);
+  const monthlyEquiv = pricing ? perMonthFromYearly(pricing.yearlyPrice, pricing.yearlyUSD) : '';
   // Currency-independent ratio — correct regardless of store currency. Guarded
   // so a non-positive value (annual not cheaper) never renders "Save 0%".
-  const savePercent = Math.round((1 - pricing.yearlyUSD / (pricing.monthlyUSD * 12)) * 100);
+  const savePercent = pricing
+    ? Math.round((1 - pricing.yearlyUSD / (pricing.monthlyUSD * 12)) * 100)
+    : 0;
   const showSaveBadge = savePercent > 0;
 
-  const ctaLabel =
-    selectedPlan === 'yearly'
+  const ctaLabel = !pricing
+    ? 'Subscribe'
+    : selectedPlan === 'yearly'
       ? trialEligible
         ? `Start ${pricing.trialDays}-day free trial`
         : 'Subscribe yearly'
       : 'Subscribe monthly';
 
-  const priceNote =
-    selectedPlan === 'yearly'
+  // Never rendered without `pricing` — the whole CTA block is withheld when
+  // pricing is null, because App Store Guideline 3.1.2 requires the actual
+  // price alongside the purchase control.
+  const priceNote = !pricing
+    ? ''
+    : selectedPlan === 'yearly'
       ? trialEligible
         ? `Then ${pricing.yearlyPrice}/year, auto-renews annually · cancel anytime`
         : `${pricing.yearlyPrice}/year, auto-renews annually · cancel anytime`
@@ -285,7 +316,11 @@ const SupportSakinaScreen: React.FC<Props> = ({ embedded = false, onDone }) => {
             reminders and journeys free for everyone — and unlocks a little more for you.
           </Text>
 
-          {/* ── Plan picker ── */}
+          {/* ── Plan picker ──
+              Rendered only with real store pricing. When the store can't be
+              reached we show the status block below instead of inventing a
+              price to put on these cards. */}
+          {pricing && (
           <View style={styles.plans}>
             {/* Annual */}
             <TouchableOpacity
@@ -347,6 +382,34 @@ const SupportSakinaScreen: React.FC<Props> = ({ embedded = false, onDone }) => {
               </Text>
             </TouchableOpacity>
           </View>
+          )}
+
+          {/* Store unreachable — say so plainly instead of showing a price we
+              can't source. The feature list below still renders (it's true
+              regardless), and the skip affordance in the footer still works,
+              so onboarding is never dead-ended by an offline install. */}
+          {!pricing && (
+            <View style={styles.pricingStatus}>
+              {pricingStatus === 'loading' ? (
+                <Text style={styles.pricingStatusText}>Loading plans…</Text>
+              ) : (
+                <>
+                  <Text style={styles.pricingStatusText}>
+                    We couldn&apos;t reach the App Store to load current prices. Check your
+                    connection and try again — everything else in Sakina works either way.
+                  </Text>
+                  <TouchableOpacity
+                    onPress={loadPricing}
+                    hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                    accessibilityRole="button"
+                    accessibilityLabel="Retry loading plans"
+                  >
+                    <Text style={styles.pricingRetry}>Try again</Text>
+                  </TouchableOpacity>
+                </>
+              )}
+            </View>
+          )}
 
           {/* ── Features ── */}
           <Text style={styles.sectionLabel}>WHAT&apos;S INCLUDED</Text>
@@ -389,18 +452,24 @@ const SupportSakinaScreen: React.FC<Props> = ({ embedded = false, onDone }) => {
 
       {/* ── Fixed footer ── */}
       <View style={[styles.footer, { paddingBottom: insets.bottom + Spacing.md }]}>
-        <TouchableOpacity
-          style={[styles.cta, loading && styles.ctaLoading]}
-          onPress={handleContinue}
-          disabled={loading}
-          activeOpacity={0.85}
-          accessibilityRole="button"
-          accessibilityLabel={ctaLabel}
-        >
-          <Text style={styles.ctaText}>{loading ? 'Processing…' : ctaLabel}</Text>
-        </TouchableOpacity>
+        {/* No price, no purchase control. Guideline 3.1.2 requires the actual
+            price beside the CTA, and we will not invent one. */}
+        {pricing && (
+          <>
+            <TouchableOpacity
+              style={[styles.cta, loading && styles.ctaLoading]}
+              onPress={handleContinue}
+              disabled={loading}
+              activeOpacity={0.85}
+              accessibilityRole="button"
+              accessibilityLabel={ctaLabel}
+            >
+              <Text style={styles.ctaText}>{loading ? 'Processing…' : ctaLabel}</Text>
+            </TouchableOpacity>
 
-        <Text style={styles.priceNote}>{priceNote}</Text>
+            <Text style={styles.priceNote}>{priceNote}</Text>
+          </>
+        )}
         {/* Embedded (onboarding) has no back destination, so this existing line
             doubles as the skip affordance rather than adding a second element —
             a new button here would duplicate the copy and disturb the footer
@@ -712,6 +781,33 @@ const styles = StyleSheet.create({
     color: Colors.text.muted,
     textAlign: 'center',
     marginTop: Spacing.xs,
+  },
+
+  // ── Pricing unavailable / loading ──
+  pricingStatus: {
+    width: '100%',
+    alignItems: 'center',
+    gap: Spacing.sm,
+    backgroundColor: Colors.glass.medium,
+    borderWidth: 1,
+    borderColor: Colors.glass.border,
+    borderRadius: BorderRadius.lg,
+    paddingVertical: Spacing.lg,
+    paddingHorizontal: Spacing.lg,
+    marginBottom: Spacing.xxl,
+  },
+  pricingStatusText: {
+    fontFamily: Typography.fonts.latin,
+    fontSize: Typography.sizes.small,
+    lineHeight: Typography.sizes.small * 1.5,
+    color: Colors.text.secondary,
+    textAlign: 'center',
+  },
+  pricingRetry: {
+    fontFamily: Typography.fonts.latin,
+    fontSize: Typography.sizes.small,
+    fontWeight: '600',
+    color: Colors.accent.primary,
   },
   links: {
     flexDirection: 'row',

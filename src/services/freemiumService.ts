@@ -7,11 +7,22 @@ import {
 } from '../types';
 import { SessionService } from './sessionService';
 import { SubscriptionService } from './subscriptionService';
-import {
-  FREEMIUM_LIMITS,
-  UPGRADE_ASK_COOLDOWN_MS,
-  SUBSCRIPTION_PRICING,
-} from '../constants';
+import { FREEMIUM_LIMITS, UPGRADE_ASK_COOLDOWN_MS } from '../constants';
+
+/**
+ * Store-localized pricing for display. `monthlyPrice`/`yearlyPrice` are the
+ * strings carrying the store's own currency symbol ("$4.99", "AU$59.99",
+ * "44,99 €"); the *USD-suffixed numbers are the raw local-currency amounts
+ * kept for arithmetic (savings %, per-month equivalent) and are NOT
+ * necessarily USD despite the name.
+ */
+export interface DisplayPricing {
+  monthlyUSD: number;
+  yearlyUSD: number;
+  monthlyPrice: string;
+  yearlyPrice: string;
+  trialDays: number;
+}
 import { revenueCat } from './revenueCatService';
 import { dbQuery } from '../database/schema';
 import { loadUpgradeAsk, saveUpgradeAsk, UpgradeAskState } from './upgradeAskStore';
@@ -36,7 +47,7 @@ export class FreemiumService {
   // in render/handlers; recordUpgradeAsk() updates this and persists.
   private upgradeAsk: UpgradeAskState = { lastAskAt: 0, lastContext: null };
   // Store-localized prices fetched from RC offerings during init.
-  // Falls back to SUBSCRIPTION_PRICING constants when RC is unavailable.
+  // Stays null when RC is unavailable — there is no hardcoded fallback.
   // `monthlyPrice`/`yearlyPrice` are the display strings ("$4.99", "€4,99")
   // carrying the correct currency symbol; the *USD numbers are kept for math
   // (savings %, per-month equivalent).
@@ -120,25 +131,20 @@ export class FreemiumService {
 
   /**
    * Single display-price source (spec §7). Returns store-localized prices from
-   * RC when available (fetched during init), falling back to the static
-   * SUBSCRIPTION_PRICING constants when RC is offline or not yet loaded.
+   * RC, or **null** when they could not be read.
+   *
+   * There is deliberately no hardcoded fallback. This used to synthesise
+   * `$${SUBSCRIPTION_PRICING.yearlyUSD}` whenever RC was offline or still
+   * loading, which printed "$39.99" to every user regardless of their store.
+   * Verified against App Store Connect on 2026-08-16, the real annual price is
+   * AU$59.99 in Australia, €44.99 in Austria and $49.99 in Albania — so that
+   * fallback was showing a wrong price, not an approximate one, and a paywall
+   * must state the actual price the user will be charged (App Store Guideline
+   * 3.1.2). Callers must handle null by withholding the purchase CTA rather
+   * than inventing a number.
    */
-  getPricing(): {
-    monthlyUSD: number;
-    yearlyUSD: number;
-    monthlyPrice: string;
-    yearlyPrice: string;
-    trialDays: number;
-  } {
-    if (this.rcPricing) return this.rcPricing;
-    // RC offline / not yet loaded — fall back to the static USD constants,
-    // synthesising display strings with a dollar sign (correct for the
-    // default store, swapped for the store-localized string once RC loads).
-    return {
-      ...SUBSCRIPTION_PRICING,
-      monthlyPrice: `$${SUBSCRIPTION_PRICING.monthlyUSD}`,
-      yearlyPrice: `$${SUBSCRIPTION_PRICING.yearlyUSD}`,
-    };
+  getPricing(): DisplayPricing | null {
+    return this.rcPricing;
   }
 
   canStartGuidanceSession(): boolean {
