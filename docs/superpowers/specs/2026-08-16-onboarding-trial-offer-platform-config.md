@@ -1,7 +1,56 @@
 # Onboarding Trial Offer — External Platform Configuration
 
 **Date:** 2026-08-16
+**Status:** v2 — verified against the live dashboards 2026-08-16
 **Companion to:** [2026-08-16-onboarding-trial-offer-design.md](2026-08-16-onboarding-trial-offer-design.md)
+
+## VERIFIED STATE (checked in App Store Connect + RevenueCat, 2026-08-16)
+
+v1 of this document was written from code alone and **got several things
+wrong**. Corrections, from direct inspection:
+
+| Item | v1 claimed | Actually |
+|---|---|---|
+| RevenueCat iOS app | "reportedly none, stale key" | **Exists** — `Sakina (App Store)`, `app1334151fdb`, bundle `com.lelahmed.sakina` |
+| Apple team / app record | "no Apple team on EAS" | **App exists** — `Sakina: Quran & Reflection`, Apple ID `6801511292` |
+| 7-day trial | "highest-risk item, likely missing" | **Already configured** — "Free for the first week" on `sakina_pro_yearly` in **all 175** regions |
+| Entitlement name | needs checking | **`Sakina Pro`** — exact match to `RC_ENTITLEMENT_ID` |
+| Offering packages | needs checking | `default` has `$rc_monthly`→`sakina_pro_monthly`, `$rc_annual`→`sakina_pro_yearly` |
+| Prices | unknown | **$39.99/yr, $4.99/mo USD** — exactly match the code's fallback constants |
+
+**The feature's core dependency is satisfied.** The trial exists. The
+"silently degrades to Subscribe yearly" scenario v1 warned about is not the
+current state on iOS.
+
+### Real remaining gaps
+
+1. **RevenueCat is missing the App Store Connect API key (`.p8`).** The
+   *In-App Purchase* key IS uploaded and reads "Valid credentials"
+   (`77R4DNC4W3.p8`) — that is the one purchases actually need. The separate
+   **App Store Connect API** P8 field is empty, which is why both products
+   show status **"Could not check"**. This blocks product import and automatic
+   price syncing, not purchasing. Uploading it is a credential operation and
+   must be done by the account owner.
+2. **Subscriptions are "Prepare for Submission".** ASC states: *"Your first
+   subscription group must be submitted with a new app version."* Until the
+   first build ships with them, they are not live — sandbox testing works, but
+   production purchases do not.
+3. **Play Store has zero products in RevenueCat.** Android is entirely
+   unconfigured; Play Console not yet verified by the owner.
+4. **The `default` offering's Lifetime package has no App Store product**
+   attached (Test Store only). Harmless — the code reads only MONTHLY/ANNUAL —
+   but it is a dangling package.
+5. **Regional prices diverge from the hardcoded fallback, confirmed.** Real
+   prices include AUD 59.99 (Australia), €44.99 (Austria), $49.99 (Albania)
+   for the annual. The code's `SUBSCRIPTION_PRICING` fallback is a flat
+   $39.99/$4.99 USD. If the RC offering fails to load, an Australian user is
+   shown "$39.99" for something that will charge AUD 59.99. This was
+   hypothetical in v1; it is now a measured discrepancy.
+
+Everything below is the original code-derived requirements analysis, retained
+because it explains *why* each item matters.
+
+---
 
 ## Why this document exists
 
