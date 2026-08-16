@@ -164,15 +164,17 @@ const ERROR_MESSAGES = {
   unknown: 'Something did not work as expected. Please try again.',
 } as const;
 
-// Subscription price — the single display source (spec §7 "dynamic price").
-// Placeholder values until Phase 3 wires real StoreKit/RevenueCat store-localized
-// prices; the UI reads these via freemiumService.getPricing() so the swap is
-// one place. trialDays is the peak-offered free trial (spec §6).
-export const SUBSCRIPTION_PRICING = {
-  monthlyUSD: 4.99,
-  yearlyUSD: 39.99,
-  trialDays: 7,
-} as const;
+// NOTE: there is deliberately no SUBSCRIPTION_PRICING constant here any more.
+// It used to hold monthlyUSD 4.99 / yearlyUSD 39.99 as a "placeholder until
+// StoreKit is wired", and freemiumService.getPricing() fell back to it whenever
+// RevenueCat was offline or still loading — rendering "$39.99" to every user
+// regardless of their storefront. Verified in App Store Connect on 2026-08-16,
+// the live annual price is AU$59.99 in Australia, €44.99 in Austria and $49.99
+// in Albania, so that fallback displayed a wrong price rather than an
+// approximate one, next to a purchase button (App Store Guideline 3.1.2).
+// Prices now come only from the store via revenueCat.getPricing(); when that
+// is unavailable the paywall withholds the plan cards and CTA instead.
+// Don't reintroduce a hardcoded price here.
 
 // Legal links shown on the paywall (App Store Guideline 3.1.2 requires both to
 // be reachable on any auto-renewable subscription screen). Fill these in with
