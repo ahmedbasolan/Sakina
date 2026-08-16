@@ -165,7 +165,6 @@ export async function buildWindowContent(
   if (!prefs.windows[window]) return null;
 
   const verse = await getWindowVerse(window, dateKeyOf(date));
-  const attachmentUri = await resolveThemeAttachment(prefs.themeId);
 
   const content: Notifications.NotificationContentInput = {
     title: WINDOW_TITLES[window],
@@ -173,17 +172,20 @@ export async function buildWindowContent(
     sound: true,
   };
 
-  // Attachments are an iOS concept in expo-notifications; Android ignores the
-  // field, so the photo simply does not appear there. Gate it explicitly rather
-  // than relying on that being a no-op forever.
-  //
-  // `identifier` and `type` are both required by the iOS attachment type.
-  // `type` is a UTI, not a MIME type — every theme asset is .jpg
-  // (backgroundThemeService), so public.jpeg is correct for all of them.
-  if (attachmentUri && Platform.OS === 'ios') {
-    content.attachments = [
-      { identifier: `sakina-verse-${window}`, type: 'public.jpeg', url: attachmentUri },
-    ];
+  // Attachments are genuinely iOS-only, confirmed by reading the native
+  // Android builder (expo-notifications 0.32.17): for a LOCALLY scheduled
+  // notification it always renders NotificationCompat.BigTextStyle and its
+  // getImage() only reads a static AndroidManifest large-icon meta-data key,
+  // never anything from this call's content. There is no per-notification
+  // image on Android without a native module — not a config gap, an API gap.
+  // The theme is resolved (and its asset downloaded) only when it can matter.
+  if (Platform.OS === 'ios') {
+    const attachmentUri = await resolveThemeAttachment(prefs.themeId);
+    if (attachmentUri) {
+      content.attachments = [
+        { identifier: `sakina-verse-${window}`, type: 'public.jpeg', url: attachmentUri },
+      ];
+    }
   }
 
   return content;
