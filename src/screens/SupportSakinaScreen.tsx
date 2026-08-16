@@ -9,6 +9,7 @@ import {
   Animated,
   Image,
   Linking,
+  Platform,
   ScrollView,
   StyleSheet,
   Text,
@@ -74,6 +75,19 @@ const FEATURES: {
     title: 'Beautiful background themes',
     description: 'A different mandala or nightscape behind every session, not just the one default',
     showThemePreview: true,
+  },
+  {
+    icon: 'phone-portrait-outline',
+    title: 'Verses on your lock screen',
+    // Platform-conditional because the claim must be true everywhere it
+    // renders: the background photo is iOS-only (expo-notifications has no
+    // per-notification image on Android — see lockscreenVerseService.ts).
+    // The paywall must not promise what the platform can't deliver, same
+    // discipline as the in-app setup screen and its Android preview.
+    description:
+      Platform.OS === 'ios'
+        ? 'A complete ayah over your chosen background, at Tahajjud, morning, and evening remembrance'
+        : 'A complete ayah waiting for you at Tahajjud, morning, and evening remembrance',
   },
   {
     icon: 'infinite-outline',
