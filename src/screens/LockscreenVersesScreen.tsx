@@ -15,6 +15,14 @@
  *  - Everything else stays quiet. Hairline separators rather than a glass card
  *    around every switch, and no eyebrow above a title that says the same
  *    thing.
+ *
+ * Background photos are IOS-ONLY, confirmed by reading expo-notifications'
+ * native Android builder rather than assumed: a locally scheduled notification
+ * on Android always renders BigTextStyle and its image hook only reads a
+ * static manifest icon, never per-call content. There is no config fix — a
+ * real photo on Android needs a native module. The preview and the background
+ * picker are therefore gated to iOS; showing either on Android would promise a
+ * result the platform cannot deliver.
  */
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
@@ -29,6 +37,7 @@ import {
   ActivityIndicator,
   ImageStyle,
   ImageBackground,
+  Platform,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
@@ -73,6 +82,46 @@ const WINDOW_ARC: Record<
 
 const CAROUSEL_CARD_W = 108;
 
+/**
+ * The notification mockup, shared by the iOS (over-photo) and Android
+ * (flat-surface) preview branches so the two never drift out of sync with
+ * each other — a change to how the notification is worded only needs editing
+ * once.
+ */
+function NotifCard({
+  window,
+  verse,
+  showTransliteration,
+}: {
+  window: SpiritualWindow;
+  verse: DailyVerse | null;
+  showTransliteration: boolean;
+}) {
+  return (
+    <View style={styles.notif}>
+      <View style={styles.notifHead}>
+        <Image source={require('../../assets/icon.png')} style={notifIconStyle} />
+        <Text style={styles.notifApp}>SAKINA</Text>
+        <Text style={styles.notifNow}>now</Text>
+      </View>
+      <Text style={styles.notifTitle}>{WINDOW_TITLES[window]}</Text>
+      {/* No numberOfLines anywhere in here: clamping an ayah with no way to
+          reach the rest is banned outright (CLAUDE.md §4). The card grows
+          instead. */}
+      {verse && (
+        <>
+          <Text style={styles.notifArabic}>{verse.arabic}</Text>
+          {showTransliteration && (
+            <Text style={styles.notifTranslit}>{verse.transliteration}</Text>
+          )}
+          <Text style={styles.notifBody}>{verse.translation}</Text>
+          <Text style={styles.notifRef}>{verse.ref}</Text>
+        </>
+      )}
+    </View>
+  );
+}
+
 interface Props {
   onBack?: () => void;
 }
@@ -91,6 +140,8 @@ export default function LockscreenVersesScreen({ onBack }: Props) {
   const isMounted = useRef(true);
 
   const handleBack = onBack || (() => navigation.goBack());
+
+  const supportsPhotoBackground = Platform.OS === 'ios';
 
   /** The preview shows the first window still switched on — the next one they'd actually receive. */
   const previewWindow = useMemo<SpiritualWindow>(
@@ -225,47 +276,41 @@ export default function LockscreenVersesScreen({ onBack }: Props) {
               </View>
             ) : (
               <>
-                {/* ---- Hero: live lock screen preview ---- */}
+                {/* ---- Hero: live lock screen preview ----
+                    Photo background is iOS-only — see the file header for why.
+                    The Android branch shows exactly what Android actually
+                    delivers: the same card, on a flat surface, no photo. */}
                 <View style={styles.previewFrame}>
-                  <ImageBackground
-                    source={previewTheme.imageSource}
-                    style={styles.previewImage}
-                    imageStyle={previewImageRadius}
-                  >
-                    <LinearGradient
-                      colors={['rgba(7,17,30,0.15)', 'rgba(7,17,30,0.85)']}
-                      style={StyleSheet.absoluteFill}
-                      pointerEvents="none"
-                    />
-
-                    {/* Real current time, not a mocked one — the preview reads
-                        as "your lock screen" rather than a stock illustration. */}
-                    <Text style={styles.previewClock}>{clock}</Text>
-
-                    {/* Shaped like the notification it previews, not a generic card. */}
-                    <View style={styles.notif}>
-                      <View style={styles.notifHead}>
-                        <Image source={require('../../assets/icon.png')} style={notifIconStyle} />
-                        <Text style={styles.notifApp}>SAKINA</Text>
-                        <Text style={styles.notifNow}>now</Text>
-                      </View>
-                      <Text style={styles.notifTitle}>{WINDOW_TITLES[previewWindow]}</Text>
-                      {/* No numberOfLines anywhere in here: clamping an ayah with no
-                          way to reach the rest is banned outright (CLAUDE.md §4).
-                          The card grows instead. */}
-                      {verse && (
-                        <>
-                          <Text style={styles.notifArabic}>{verse.arabic}</Text>
-                          {prefs.showTransliteration && (
-                            <Text style={styles.notifTranslit}>{verse.transliteration}</Text>
-                          )}
-                          <Text style={styles.notifBody}>{verse.translation}</Text>
-                          <Text style={styles.notifRef}>{verse.ref}</Text>
-                        </>
-                      )}
+                  {supportsPhotoBackground ? (
+                    <ImageBackground
+                      source={previewTheme.imageSource}
+                      style={styles.previewImage}
+                      imageStyle={previewImageRadius}
+                    >
+                      <LinearGradient
+                        colors={['rgba(7,17,30,0.15)', 'rgba(7,17,30,0.85)']}
+                        style={StyleSheet.absoluteFill}
+                        pointerEvents="none"
+                      />
+                      {/* Real current time, not a mocked one — the preview reads
+                          as "your lock screen" rather than a stock illustration. */}
+                      <Text style={styles.previewClock}>{clock}</Text>
+                      <NotifCard window={previewWindow} verse={verse} showTransliteration={prefs.showTransliteration} />
+                    </ImageBackground>
+                  ) : (
+                    <View style={[styles.previewImage, styles.previewImageFlat]}>
+                      <Text style={styles.previewClock}>{clock}</Text>
+                      <NotifCard window={previewWindow} verse={verse} showTransliteration={prefs.showTransliteration} />
                     </View>
-                  </ImageBackground>
+                  )}
                 </View>
+
+                {!supportsPhotoBackground && (
+                  <Text style={styles.androidNote}>
+                    Backgrounds are shown on iPhone. On Android, verses arrive with the text above
+                    — no photo.
+                  </Text>
+                )}
 
                 <Text style={styles.previewCaption}>
                   {prefs.enabled
@@ -328,31 +373,38 @@ export default function LockscreenVersesScreen({ onBack }: Props) {
                       })}
                     </View>
 
-                    {/* ---- Backgrounds ---- */}
-                    <Text style={styles.sectionLabel}>Background</Text>
-                    <FlatList
-                      data={BACKGROUND_THEMES}
-                      keyExtractor={(item) => item.id}
-                      horizontal
-                      showsHorizontalScrollIndicator={false}
-                      snapToInterval={CAROUSEL_CARD_W + Spacing.sm}
-                      decelerationRate="fast"
-                      contentContainerStyle={styles.carousel}
-                      renderItem={({ item }) => {
-                        const selected = previewTheme.id === item.id;
-                        return (
-                          <TouchableOpacity
-                            style={[styles.swatch, selected && styles.swatchSelected]}
-                            onPress={() => apply({ themeId: item.id })}
-                            accessibilityRole="button"
-                            accessibilityLabel={item.name}
-                            accessibilityState={{ selected }}
-                          >
-                            <Image source={item.imageSource} style={swatchImageStyle} />
-                          </TouchableOpacity>
-                        );
-                      }}
-                    />
+                    {/* ---- Backgrounds ----
+                        iOS only. Rendering this on Android would offer a
+                        choice with no observable effect — see the file
+                        header. */}
+                    {supportsPhotoBackground && (
+                      <>
+                        <Text style={styles.sectionLabel}>Background</Text>
+                        <FlatList
+                          data={BACKGROUND_THEMES}
+                          keyExtractor={(item) => item.id}
+                          horizontal
+                          showsHorizontalScrollIndicator={false}
+                          snapToInterval={CAROUSEL_CARD_W + Spacing.sm}
+                          decelerationRate="fast"
+                          contentContainerStyle={styles.carousel}
+                          renderItem={({ item }) => {
+                            const selected = previewTheme.id === item.id;
+                            return (
+                              <TouchableOpacity
+                                style={[styles.swatch, selected && styles.swatchSelected]}
+                                onPress={() => apply({ themeId: item.id })}
+                                accessibilityRole="button"
+                                accessibilityLabel={item.name}
+                                accessibilityState={{ selected }}
+                              >
+                                <Image source={item.imageSource} style={swatchImageStyle} />
+                              </TouchableOpacity>
+                            );
+                          }}
+                        />
+                      </>
+                    )}
 
                     {/* ---- Reading ---- */}
                     <TouchableOpacity
@@ -416,6 +468,12 @@ const styles = StyleSheet.create({
     paddingTop: Spacing.xxl,
     paddingBottom: Spacing.lg,
     justifyContent: 'flex-start',
+  },
+  // Android's honest preview: same card, no photo — matches what the
+  // platform actually delivers rather than the iOS mockup's wallpaper.
+  previewImageFlat: {
+    backgroundColor: Colors.background.secondary,
+    borderRadius: BorderRadius.xxl,
   },
   previewClock: {
     fontFamily: Typography.fonts.latin,
@@ -490,6 +548,14 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginTop: Spacing.md,
     marginBottom: Spacing.xl,
+  },
+  androidNote: {
+    fontFamily: Typography.fonts.latin,
+    fontSize: Typography.sizes.detail,
+    lineHeight: Typography.sizes.detail * 1.5,
+    color: Colors.text.steel,
+    textAlign: 'center',
+    marginTop: Spacing.md,
   },
 
   // ---- Rows ----
