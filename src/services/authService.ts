@@ -5,9 +5,22 @@ import { makeRedirectUri } from 'expo-auth-session';
 import * as QueryParams from 'expo-auth-session/build/QueryParams';
 import { supabase } from '../config/supabaseClient';
 import { Session } from '@supabase/supabase-js';
+import { clearAllLocalUserData } from '../database/schema';
 
 // Lets the in-app browser dismiss itself and hand the redirect back to the app.
 WebBrowser.maybeCompleteAuthSession();
+
+/**
+ * Thrown by `deleteAccount()` when the server-side delete SUCCEEDED but the
+ * on-device wipe did not. Exported so callers can match it exactly instead of
+ * sniffing the prose — the two sides would otherwise desync the moment either
+ * copy is reworded, and the failure mode is a user being told to retry a
+ * deletion that already happened.
+ *
+ * The text is user-facing: show it verbatim.
+ */
+export const ACCOUNT_DELETED_BUT_LOCAL_WIPE_FAILED =
+  'Your account was deleted, but some data could not be removed from this device. Reinstalling Sakina will clear it.';
 
 // Deep-link the OAuth provider redirects back to — derived from the "sakina"
 // scheme in app.json (e.g. sakina://). This EXACT value must be added to the
@@ -180,6 +193,24 @@ export class AuthService {
 
     if (error) throw new Error(`Account deletion failed: ${error.message}`);
 
+    // Wipe the on-device copy BEFORE dropping the session. The server rows are
+    // already gone; leaving the local ones behind both makes the Settings
+    // confirmation ("deleted forever") false and lets the next sign-in on this
+    // device re-upload this account's history into someone else's — see
+    // clearAllLocalUserData's docstring. Awaited, not fire-and-forget: the
+    // auth listener fires on signOut below and starts tearing the tree down.
+    let localWipeFailed = false;
+    try {
+      await clearAllLocalUserData();
+    } catch (wipeError) {
+      // Past the point of no return: the account is gone server-side. Do NOT
+      // rethrow as a deletion failure — the caller would tell the user to retry
+      // an operation that already succeeded and can only fail from here on.
+      // Sign out anyway so they aren't stranded in a session for a dead account.
+      localWipeFailed = true;
+      console.error('[AuthService] Local data wipe after account deletion failed:', wipeError);
+    }
+
     // Clear local session only — the account no longer exists server-side so a
     // global signOut round-trip would fail (user not found). scope:'local' skips
     // the network call and just wipes the stored token.
@@ -187,6 +218,11 @@ export class AuthService {
       await supabase.auth.signOut({ scope: 'local' });
     } catch {
       // Best-effort: auth listener will still fire and clear local state.
+    }
+
+    if (localWipeFailed) {
+      // Deliberately thrown after the sign-out: deletion succeeded, cleanup did not.
+      throw new Error(ACCOUNT_DELETED_BUT_LOCAL_WIPE_FAILED);
     }
   }
 }

@@ -40,7 +40,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
   const [onboardingComplete, setOnboardingComplete] = useState(false);
   const authService = AuthService.getInstance();
-  const hasMigrated = useRef(false);
+  // Guards the once-per-process local-data claim below. A ref, so it resets on
+  // app restart — which is precisely why the claim has to re-derive ownership
+  // from storage rather than assume the data belongs to whoever signs in.
+  const hasClaimedLocalData = useRef(false);
 
   useEffect(() => {
     // Initial session check
@@ -57,6 +60,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           // SIGNED_IN listener below only fires on a fresh sign-in transition,
           // not on the INITIAL_SESSION read, so cold boot needs its own resync.
           SubscriptionService.getInstance().resync(currentSession.user.email).catch(() => {});
+          // Cold boot with a session never passes through the SIGNED_IN claim
+          // below, so installs predating the ownership marker would otherwise
+          // never get one — and their queued offline rows would never sync.
+          // No-ops when a marker already exists.
+          SupabaseDataService.getInstance()
+            .ensureLocalDataOwnerStamp(currentSession.user.id)
+            .catch((err) => console.error('[Auth] Owner stamp error:', err));
         } else {
           // No Supabase session — check AsyncStorage flags set during onboarding.
           // `onboarding` = completed onboarding at least once (never show it again).
@@ -109,17 +119,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         // account's premium/free status until an app restart.
         syncEntitlementAfter(revenueCat.logIn(currentSession.user.id), currentSession.user.email);
 
-        // One-time migration: sync guest data to Supabase on first sign-in
-        if (!hasMigrated.current) {
-          hasMigrated.current = true;
+        // Decide what the on-device rows are before touching them: this user's
+        // own queued writes, unowned guest data to migrate, or another
+        // account's leftovers to wipe. Must stay claimLocalDataForUser and not
+        // migrateGuestDataToSupabase — the bare migration uploads whatever is
+        // on the device under whoever just signed in, which is how account A's
+        // history ended up in account B on a shared device.
+        if (!hasClaimedLocalData.current) {
+          hasClaimedLocalData.current = true;
           SupabaseDataService.getInstance()
-            .migrateGuestDataToSupabase()
-            .then(({ migratedCount }) => {
-              if (migratedCount > 0) {
+            .claimLocalDataForUser(currentSession.user.id)
+            .then(({ migratedCount, wipedForeignData }) => {
+              if (wipedForeignData) {
+                console.log('[Auth] Cleared another account\'s local data before sign-in');
+              } else if (migratedCount > 0) {
                 console.log(`[Auth] Migrated ${migratedCount} guest history entries to Supabase`);
               }
             })
-            .catch((err) => console.error('[Auth] Guest migration error:', err));
+            .catch((err) => console.error('[Auth] Local data claim error:', err));
         }
       } else {
         // SIGNED_OUT — token expiry, account deletion, or explicit sign-out.

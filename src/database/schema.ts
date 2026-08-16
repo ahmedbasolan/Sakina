@@ -24,4 +24,6 @@ export {
   refreshContentOnly,
   resetDatabase,
   migrateDatabase,
+  clearAllLocalUserData,
+  LOCAL_DATA_OWNER_KEY,
 } from './operations';
