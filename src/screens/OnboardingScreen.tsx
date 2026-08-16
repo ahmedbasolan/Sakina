@@ -1,13 +1,18 @@
 /**
  * Onboarding Orchestrator
  *
- * 8-screen flow with progress bar, animated transitions,
+ * 9-screen flow with progress bar, animated transitions,
  * swipe navigation, and consistent back arrow.
  *
  * Flow: Bismillah → Welcome → Heart Check-In → Personalization →
- *       First Guidance → Location → Notification → Commit → Main
+ *       First Guidance → Location → Notification → Commit →
+ *       Trial Offer → Main
  *
- * No cold paywall in onboarding (spec §8) — upgrade asks live only at peaks.
+ * No cold paywall in onboarding (spec §8) — upgrade asks otherwise live only
+ * at peaks. The one exception is the final Trial Offer step: a single warm,
+ * always-skippable ask placed after real value (First Guidance) and
+ * emotional commitment (Commit), never before either. See
+ * docs/superpowers/specs/2026-08-16-onboarding-trial-offer-design.md.
  */
 import React, { useState, useRef, useCallback, useEffect } from 'react';
 import {
@@ -47,8 +52,10 @@ import { useTheme } from '../context/ThemeContext';
 import { useAuth } from '../context/AuthContext';
 import { Animations, Spacing, Colors } from '../theme/DesignSystem';
 import { useReduceMotion } from '../hooks/useReduceMotion';
+import SupportSakinaScreen from './SupportSakinaScreen';
+import { canSwipeForward } from '../utils/onboardingNavigation';
 
-const TOTAL_SCREENS = 8;
+const TOTAL_SCREENS = 9;
 const SWIPE_THRESHOLD = 50;
 const VELOCITY_THRESHOLD = 0.5;
 // One continuous page-turn slide (300–500ms "page transition" band). Both the
@@ -184,7 +191,7 @@ export default function OnboardingScreen() {
       if (gestureState === State.END) {
         if (
           (translationX < -SWIPE_THRESHOLD || velocityX < -VELOCITY_THRESHOLD) &&
-          currentScreen < TOTAL_SCREENS - 1
+          canSwipeForward(currentScreen, TOTAL_SCREENS)
         ) {
           goNext();
         } else if (
@@ -198,8 +205,9 @@ export default function OnboardingScreen() {
     [currentScreen, goNext, goBack],
   );
 
-  // --- Final: enter the app as guest ---
-  const handleCommitComplete = useCallback(async () => {
+  // --- Final: enter the app as guest (fired by the trial-offer step's
+  // onDone, whether the user subscribed, restored, or skipped) ---
+  const handleOfferDone = useCallback(async () => {
     await enterGuestMode(true);
   }, [enterGuestMode]);
 
@@ -262,7 +270,9 @@ export default function OnboardingScreen() {
           />
         );
       case 7:
-        return <CommitScreen isActive={isActive} onCommit={handleCommitComplete} />;
+        return <CommitScreen isActive={isActive} onCommit={goNext} />;
+      case 8:
+        return <SupportSakinaScreen embedded onDone={handleOfferDone} />;
       default:
         return null;
     }
