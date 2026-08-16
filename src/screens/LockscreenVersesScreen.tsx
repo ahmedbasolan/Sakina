@@ -1,11 +1,22 @@
 /**
  * Lock Screen Verses — setup.
  *
- * Premium-gated. Lets the user turn on verse delivery at the three spiritual
- * windows, choose which windows, pick a background photo, and toggle
- * transliteration. See docs/superpowers/specs/2026-08-15-lockscreen-verses-design.md.
+ * Premium-gated. See docs/superpowers/specs/2026-08-15-lockscreen-verses-design.md.
+ *
+ * Design intent, so a later edit does not flatten it back into a settings list:
+ *
+ *  - The hero is a LIVE PREVIEW of the lock screen, not a list header. The
+ *    screen's job is "see what will appear, then shape it", and a background
+ *    chosen from a thumbnail with no preview is a choice made blind.
+ *  - The three windows are laid out on a TIME RAIL because they are not
+ *    equivalent options — they are three moments in the passage of one night
+ *    and day (deep night -> dawn -> dusk). The rail encodes that order; it is
+ *    structure, not ornament.
+ *  - Everything else stays quiet. Hairline separators rather than a glass card
+ *    around every switch, and no eyebrow above a title that says the same
+ *    thing.
  */
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   View,
   Text,
@@ -17,6 +28,7 @@ import {
   Animated,
   ActivityIndicator,
   ImageStyle,
+  ImageBackground,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
@@ -28,23 +40,38 @@ import { useReduceMotion } from '../hooks/useReduceMotion';
 import { HapticsService } from '../services/hapticsService';
 import { SubscriptionService } from '../services/subscriptionService';
 import { BACKGROUND_THEMES } from '../services/backgroundThemeService';
-import { SPIRITUAL_WINDOWS, SpiritualWindow } from '../services/dailyVerseService';
+import {
+  SPIRITUAL_WINDOWS,
+  SpiritualWindow,
+  DailyVerse,
+  getWindowVerse,
+} from '../services/dailyVerseService';
 import {
   LockscreenVersePrefs,
   DEFAULT_LOCKSCREEN_PREFS,
   loadLockscreenPrefs,
   saveLockscreenPrefs,
+  WINDOW_TITLES,
 } from '../services/lockscreenVerseService';
 import { topUpScheduledNotifications } from '../services/notificationTopUpTask';
 import { logServiceError } from '../services/errorLoggingService';
 
-const WINDOW_COPY: Record<SpiritualWindow, { title: string; subtitle: string }> = {
-  tahajjud: { title: 'Tahajjud', subtitle: 'The silent hour, about an hour before Fajr.' },
-  morning: { title: 'Morning Adhkar', subtitle: 'Shortly after Fajr, as the day opens.' },
-  evening: { title: 'Evening Adhkar', subtitle: 'Before Maghrib, as the day closes.' },
+/**
+ * Each window's place on the night-to-day arc. `when` is relational rather than
+ * a computed clock time on purpose: prayer times shift daily and by location,
+ * and printing a stale hour on a settings screen would be worse than printing
+ * none. The relation is always true.
+ */
+const WINDOW_ARC: Record<
+  SpiritualWindow,
+  { label: string; when: string; icon: keyof typeof Ionicons.glyphMap }
+> = {
+  tahajjud: { label: 'Tahajjud', when: 'An hour before Fajr', icon: 'moon-outline' },
+  morning: { label: 'Morning adhkar', when: 'Just after Fajr', icon: 'partly-sunny-outline' },
+  evening: { label: 'Evening adhkar', when: 'Before Maghrib', icon: 'cloudy-night-outline' },
 };
 
-const THEME_COLUMNS = 3;
+const CAROUSEL_CARD_W = 108;
 
 interface Props {
   onBack?: () => void;
@@ -57,6 +84,7 @@ export default function LockscreenVersesScreen({ onBack }: Props) {
 
   const [isPremium, setIsPremium] = useState(false);
   const [prefs, setPrefs] = useState<LockscreenVersePrefs>(DEFAULT_LOCKSCREEN_PREFS);
+  const [verse, setVerse] = useState<DailyVerse | null>(null);
   const [loading, setLoading] = useState(true);
 
   const fade = useRef(new Animated.Value(0)).current;
@@ -64,15 +92,25 @@ export default function LockscreenVersesScreen({ onBack }: Props) {
 
   const handleBack = onBack || (() => navigation.goBack());
 
+  /** The preview shows the first window still switched on — the next one they'd actually receive. */
+  const previewWindow = useMemo<SpiritualWindow>(
+    () => SPIRITUAL_WINDOWS.find((w) => prefs.windows[w]) ?? 'morning',
+    [prefs.windows],
+  );
+
+  const previewTheme = useMemo(
+    () =>
+      (prefs.themeId ? BACKGROUND_THEMES.find((t) => t.id === prefs.themeId) : null) ??
+      BACKGROUND_THEMES[0],
+    [prefs.themeId],
+  );
+
   useEffect(() => {
     isMounted.current = true;
     (async () => {
-      const [premium, stored] = await Promise.all([
-        Promise.resolve(SubscriptionService.getInstance().isPremium()),
-        loadLockscreenPrefs(),
-      ]);
+      const [stored] = await Promise.all([loadLockscreenPrefs()]);
       if (!isMounted.current) return;
-      setIsPremium(premium);
+      setIsPremium(SubscriptionService.getInstance().isPremium());
       setPrefs(stored);
       setLoading(false);
     })();
@@ -80,6 +118,22 @@ export default function LockscreenVersesScreen({ onBack }: Props) {
       isMounted.current = false;
     };
   }, []);
+
+  // Re-read whenever the previewed window changes so the card shows that
+  // window's actual verse, not a stand-in.
+  useEffect(() => {
+    let active = true;
+    getWindowVerse(previewWindow)
+      .then((v) => {
+        if (active && isMounted.current) setVerse(v);
+      })
+      .catch(() => {
+        /* preview degrades to background-only; the notification itself is unaffected */
+      });
+    return () => {
+      active = false;
+    };
+  }, [previewWindow]);
 
   useEffect(() => {
     if (loading) return;
@@ -95,9 +149,9 @@ export default function LockscreenVersesScreen({ onBack }: Props) {
   }, [loading, reduceMotion, fade]);
 
   /**
-   * Persist and re-schedule. Notifications carry the verse in their payload, so
-   * any preference change has to re-run the scheduler — editing prefs alone
-   * would leave the already-queued notifications showing the old choice.
+   * Persist, then re-run the scheduler. The verse lives in the notification
+   * payload, so saving alone would leave already-queued notifications showing
+   * the previous choice.
    */
   const apply = useCallback(async (patch: Partial<LockscreenVersePrefs>) => {
     HapticsService.selectionAsync();
@@ -112,44 +166,23 @@ export default function LockscreenVersesScreen({ onBack }: Props) {
     );
   }, []);
 
-  const toggleWindow = useCallback(
-    (window: SpiritualWindow) => {
-      apply({ windows: { ...prefs.windows, [window]: !prefs.windows[window] } });
-    },
-    [apply, prefs.windows],
-  );
+  const activeCount = SPIRITUAL_WINDOWS.filter((w) => prefs.windows[w]).length;
 
-  const renderToggle = (
-    label: string,
-    subtitle: string,
-    value: boolean,
-    onPress: () => void,
-  ) => (
-    <View style={styles.panel} key={label}>
-      <View style={styles.panelText}>
-        <Text style={styles.panelTitle}>{label}</Text>
-        <Text style={styles.panelSubtitle}>{subtitle}</Text>
-      </View>
-      <TouchableOpacity
-        style={[styles.switch, value && styles.switchActive]}
-        onPress={onPress}
-        activeOpacity={0.8}
-        accessibilityRole="switch"
-        accessibilityLabel={label}
-        accessibilityState={{ checked: value }}
-      >
-        <View style={[styles.knob, value && styles.knobActive]} />
-      </TouchableOpacity>
-    </View>
+  // Computed once per mount rather than ticking: a live-updating clock on a
+  // settings preview is motion with no purpose, and would defeat reduce-motion.
+  const clock = useMemo(
+    () =>
+      new Date().toLocaleTimeString([], {
+        hour: 'numeric',
+        minute: '2-digit',
+        hour12: true,
+      }).replace(/\s?[AP]M$/i, ''),
+    [],
   );
 
   return (
     <View style={styles.container}>
-      <LinearGradient
-        colors={Colors.celestialWash}
-        style={StyleSheet.absoluteFill}
-        pointerEvents="none"
-      />
+      <LinearGradient colors={Colors.celestialWash} style={StyleSheet.absoluteFill} pointerEvents="none" />
 
       <View style={[styles.header, { paddingTop: Math.max(insets.top, Spacing.lg) }]}>
         <TouchableOpacity
@@ -169,31 +202,17 @@ export default function LockscreenVersesScreen({ onBack }: Props) {
       ) : (
         <Animated.View style={{ flex: 1, opacity: fade }}>
           <ScrollView
-            contentContainerStyle={[
-              styles.content,
-              { paddingBottom: insets.bottom + Spacing.xxxl },
-            ]}
+            contentContainerStyle={[styles.content, { paddingBottom: insets.bottom + Spacing.xxxl }]}
             showsVerticalScrollIndicator={false}
           >
-            <Text style={styles.eyebrow}>LOCK SCREEN VERSES</Text>
             <Text style={styles.title}>A verse where you'll see it</Text>
-            <Text style={styles.intro}>
-              At each spiritual window, Sakina sends the complete ayah for that moment
-              over a background you choose.
-            </Text>
 
             {!isPremium ? (
               <View style={styles.lockedCard}>
-                <Ionicons
-                  name="lock-closed-outline"
-                  size={24}
-                  color={Colors.accent.primary}
-                  style={{ marginBottom: Spacing.md }}
-                />
                 <Text style={styles.lockedTitle}>Part of Sakina Pro</Text>
                 <Text style={styles.lockedBody}>
-                  Lock screen verses come with Pro, alongside unlimited refreshes and
-                  saved verses.
+                  Lock screen verses arrive at each spiritual window, over a background you
+                  choose.
                 </Text>
                 <TouchableOpacity
                   style={styles.cta}
@@ -206,60 +225,153 @@ export default function LockscreenVersesScreen({ onBack }: Props) {
               </View>
             ) : (
               <>
-                {renderToggle(
-                  'Lock Screen Verses',
-                  'Deliver a verse at each window you keep on below.',
-                  prefs.enabled,
-                  () => apply({ enabled: !prefs.enabled }),
-                )}
+                {/* ---- Hero: live lock screen preview ---- */}
+                <View style={styles.previewFrame}>
+                  <ImageBackground
+                    source={previewTheme.imageSource}
+                    style={styles.previewImage}
+                    imageStyle={previewImageRadius}
+                  >
+                    <LinearGradient
+                      colors={['rgba(7,17,30,0.15)', 'rgba(7,17,30,0.85)']}
+                      style={StyleSheet.absoluteFill}
+                      pointerEvents="none"
+                    />
+
+                    {/* Real current time, not a mocked one — the preview reads
+                        as "your lock screen" rather than a stock illustration. */}
+                    <Text style={styles.previewClock}>{clock}</Text>
+
+                    {/* Shaped like the notification it previews, not a generic card. */}
+                    <View style={styles.notif}>
+                      <View style={styles.notifHead}>
+                        <Image source={require('../../assets/icon.png')} style={notifIconStyle} />
+                        <Text style={styles.notifApp}>SAKINA</Text>
+                        <Text style={styles.notifNow}>now</Text>
+                      </View>
+                      <Text style={styles.notifTitle}>{WINDOW_TITLES[previewWindow]}</Text>
+                      {/* No numberOfLines anywhere in here: clamping an ayah with no
+                          way to reach the rest is banned outright (CLAUDE.md §4).
+                          The card grows instead. */}
+                      {verse && (
+                        <>
+                          <Text style={styles.notifArabic}>{verse.arabic}</Text>
+                          {prefs.showTransliteration && (
+                            <Text style={styles.notifTranslit}>{verse.transliteration}</Text>
+                          )}
+                          <Text style={styles.notifBody}>{verse.translation}</Text>
+                          <Text style={styles.notifRef}>{verse.ref}</Text>
+                        </>
+                      )}
+                    </View>
+                  </ImageBackground>
+                </View>
+
+                <Text style={styles.previewCaption}>
+                  {prefs.enabled
+                    ? `Arriving at ${activeCount} of 3 windows`
+                    : 'Preview only. Not delivering yet.'}
+                </Text>
+
+                <TouchableOpacity
+                  style={styles.masterRow}
+                  onPress={() => apply({ enabled: !prefs.enabled })}
+                  accessibilityRole="switch"
+                  accessibilityLabel="Lock screen verses"
+                  accessibilityState={{ checked: prefs.enabled }}
+                >
+                  <Text style={styles.masterLabel}>Lock screen verses</Text>
+                  <View style={[styles.switch, prefs.enabled && styles.switchActive]}>
+                    <View style={[styles.knob, prefs.enabled && styles.knobActive]} />
+                  </View>
+                </TouchableOpacity>
 
                 {prefs.enabled && (
                   <>
-                    <Text style={styles.sectionHeader}>WINDOWS</Text>
-                    {SPIRITUAL_WINDOWS.map((w) =>
-                      renderToggle(
-                        WINDOW_COPY[w].title,
-                        WINDOW_COPY[w].subtitle,
-                        prefs.windows[w],
-                        () => toggleWindow(w),
-                      ),
-                    )}
+                    {/* ---- Time rail ---- */}
+                    <Text style={styles.sectionLabel}>Through the night and day</Text>
+                    <View style={styles.rail}>
+                      <View style={styles.railLine} pointerEvents="none" />
+                      {SPIRITUAL_WINDOWS.map((w) => {
+                        const on = prefs.windows[w];
+                        return (
+                          <TouchableOpacity
+                            key={w}
+                            style={styles.railStop}
+                            onPress={() =>
+                              apply({ windows: { ...prefs.windows, [w]: !prefs.windows[w] } })
+                            }
+                            accessibilityRole="switch"
+                            accessibilityLabel={WINDOW_ARC[w].label}
+                            accessibilityState={{ checked: on }}
+                          >
+                            <View style={[styles.railNode, on && styles.railNodeOn]}>
+                              <Ionicons
+                                name={WINDOW_ARC[w].icon}
+                                size={14}
+                                color={on ? Colors.background.primary : Colors.text.steel}
+                              />
+                            </View>
+                            <View style={styles.railText}>
+                              <Text style={[styles.railLabel, !on && styles.railLabelOff]}>
+                                {WINDOW_ARC[w].label}
+                              </Text>
+                              <Text style={styles.railWhen}>{WINDOW_ARC[w].when}</Text>
+                            </View>
+                            <Ionicons
+                              name={on ? 'checkmark' : 'add'}
+                              size={16}
+                              color={on ? Colors.accent.primary : Colors.text.steel}
+                            />
+                          </TouchableOpacity>
+                        );
+                      })}
+                    </View>
 
-                    <Text style={styles.sectionHeader}>READING</Text>
-                    {renderToggle(
-                      'Show Transliteration',
-                      'Adds the Latin reading between the Arabic and the translation.',
-                      prefs.showTransliteration,
-                      () => apply({ showTransliteration: !prefs.showTransliteration }),
-                    )}
-
-                    <Text style={styles.sectionHeader}>BACKGROUND</Text>
+                    {/* ---- Backgrounds ---- */}
+                    <Text style={styles.sectionLabel}>Background</Text>
                     <FlatList
                       data={BACKGROUND_THEMES}
                       keyExtractor={(item) => item.id}
-                      numColumns={THEME_COLUMNS}
-                      scrollEnabled={false}
-                      columnWrapperStyle={styles.themeRow}
+                      horizontal
+                      showsHorizontalScrollIndicator={false}
+                      snapToInterval={CAROUSEL_CARD_W + Spacing.sm}
+                      decelerationRate="fast"
+                      contentContainerStyle={styles.carousel}
                       renderItem={({ item }) => {
-                        const selected = prefs.themeId === item.id;
+                        const selected = previewTheme.id === item.id;
                         return (
                           <TouchableOpacity
-                            style={[styles.themeTile, selected && styles.themeTileSelected]}
+                            style={[styles.swatch, selected && styles.swatchSelected]}
                             onPress={() => apply({ themeId: item.id })}
                             accessibilityRole="button"
                             accessibilityLabel={item.name}
                             accessibilityState={{ selected }}
                           >
-                            <Image source={item.imageSource} style={themeThumbStyle} />
-                            {selected && (
-                              <View style={styles.themeCheck}>
-                                <Ionicons name="checkmark" size={14} color={Colors.background.primary} />
-                              </View>
-                            )}
+                            <Image source={item.imageSource} style={swatchImageStyle} />
                           </TouchableOpacity>
                         );
                       }}
                     />
+
+                    {/* ---- Reading ---- */}
+                    <TouchableOpacity
+                      style={styles.plainRow}
+                      onPress={() => apply({ showTransliteration: !prefs.showTransliteration })}
+                      accessibilityRole="switch"
+                      accessibilityLabel="Show transliteration"
+                      accessibilityState={{ checked: prefs.showTransliteration }}
+                    >
+                      <View style={styles.plainRowText}>
+                        <Text style={styles.plainLabel}>Show transliteration</Text>
+                        <Text style={styles.plainHint}>Latin reading, above the translation</Text>
+                      </View>
+                      <View style={[styles.switch, prefs.showTransliteration && styles.switchActive]}>
+                        <View
+                          style={[styles.knob, prefs.showTransliteration && styles.knobActive]}
+                        />
+                      </View>
+                    </TouchableOpacity>
                   </>
                 )}
               </>
@@ -271,72 +383,219 @@ export default function LockscreenVersesScreen({ onBack }: Props) {
   );
 }
 
-// Kept out of StyleSheet.create's object: that call widens every entry to a
+// Image styles live outside StyleSheet.create: that call widens entries to a
 // ViewStyle | TextStyle | ImageStyle union, which <Image style> rejects.
-const themeThumbStyle: ImageStyle = { width: '100%', height: '100%' };
+const notifIconStyle: ImageStyle = { width: 14, height: 14, borderRadius: 3 };
+const swatchImageStyle: ImageStyle = { width: '100%', height: '100%' };
+const previewImageRadius: ImageStyle = { borderRadius: BorderRadius.xxl };
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: Colors.background.primary },
-  header: {
-    paddingHorizontal: Spacing.xl,
-    paddingBottom: Spacing.md,
-  },
+  header: { paddingHorizontal: Spacing.xl, paddingBottom: Spacing.sm },
   loading: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-  content: {
-    paddingHorizontal: Spacing.xl,
-    paddingTop: Spacing.md,
-  },
-  eyebrow: {
-    fontFamily: Typography.fonts.latin,
-    fontSize: Typography.sizes.detail,
-    letterSpacing: 1.5,
-    color: Colors.accent.primary,
-    marginBottom: Spacing.sm,
-  },
+  content: { paddingHorizontal: Spacing.xl, paddingTop: Spacing.sm },
+
   title: {
     fontFamily: Typography.fonts.serif,
     fontSize: Typography.sizes.h1,
     color: Colors.text.primary,
-    marginBottom: Spacing.md,
+    marginBottom: Spacing.xl,
   },
-  intro: {
+
+  // ---- Preview ----
+  previewFrame: {
+    borderRadius: BorderRadius.xxl,
+    overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: Colors.glass.border,
+  },
+  previewImage: {
+    width: '100%',
+    minHeight: 300,
+    paddingHorizontal: Spacing.lg,
+    paddingTop: Spacing.xxl,
+    paddingBottom: Spacing.lg,
+    justifyContent: 'flex-start',
+  },
+  previewClock: {
     fontFamily: Typography.fonts.latin,
-    fontSize: Typography.sizes.small,
-    lineHeight: Typography.sizes.small * 1.5,
-    color: Colors.text.secondary,
-    marginBottom: Spacing.xxl,
+    fontSize: 44,
+    fontWeight: '300',
+    color: Colors.text.primary,
+    textAlign: 'center',
+    marginBottom: Spacing.xl,
   },
-  sectionHeader: {
-    fontFamily: Typography.fonts.latin,
-    fontSize: Typography.sizes.detail,
-    letterSpacing: 1.2,
-    color: Colors.text.muted,
-    marginTop: Spacing.xxl,
-    marginBottom: Spacing.md,
-  },
-  panel: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: Colors.glass.medium,
+  notif: {
+    backgroundColor: 'rgba(12,26,46,0.72)',
     borderRadius: BorderRadius.lg,
     borderWidth: 1,
     borderColor: Colors.glass.border,
-    padding: Spacing.lg,
-    marginBottom: Spacing.sm,
+    padding: Spacing.md,
   },
-  panelText: { flex: 1, paddingRight: Spacing.md },
-  panelTitle: {
+  notifHead: { flexDirection: 'row', alignItems: 'center', marginBottom: Spacing.sm },
+  notifApp: {
+    flex: 1,
+    marginLeft: Spacing.xs,
     fontFamily: Typography.fonts.latin,
-    fontSize: Typography.sizes.body,
+    fontSize: 10,
+    letterSpacing: 1.2,
+    color: Colors.text.secondary,
+  },
+  notifNow: {
+    fontFamily: Typography.fonts.latin,
+    fontSize: 10,
+    color: Colors.text.steel,
+  },
+  notifTitle: {
+    fontFamily: Typography.fonts.latin,
+    fontSize: Typography.sizes.small,
+    fontWeight: '600',
     color: Colors.text.primary,
     marginBottom: Spacing.xs,
   },
-  panelSubtitle: {
+  notifArabic: {
+    fontFamily: Typography.fonts.arabic,
+    fontSize: 17,
+    lineHeight: 30,
+    color: Colors.text.primary,
+    textAlign: 'right',
+    writingDirection: 'rtl',
+    marginBottom: Spacing.sm,
+  },
+  notifTranslit: {
     fontFamily: Typography.fonts.latin,
     fontSize: Typography.sizes.detail,
-    lineHeight: Typography.sizes.detail * 1.4,
+    fontStyle: 'italic',
+    lineHeight: Typography.sizes.detail * 1.5,
+    color: Colors.accent.light,
+    marginBottom: Spacing.xs,
+  },
+  notifBody: {
+    fontFamily: Typography.fonts.latin,
+    fontSize: Typography.sizes.detail,
+    lineHeight: Typography.sizes.detail * 1.5,
     color: Colors.text.secondary,
   },
+  notifRef: {
+    fontFamily: Typography.fonts.latin,
+    fontSize: 10,
+    letterSpacing: 0.6,
+    color: Colors.accent.primary,
+    marginTop: Spacing.sm,
+  },
+  previewCaption: {
+    fontFamily: Typography.fonts.latin,
+    fontSize: Typography.sizes.detail,
+    color: Colors.text.steel,
+    textAlign: 'center',
+    marginTop: Spacing.md,
+    marginBottom: Spacing.xl,
+  },
+
+  // ---- Rows ----
+  masterRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: Spacing.lg,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderColor: Colors.glass.border,
+  },
+  masterLabel: {
+    fontFamily: Typography.fonts.latin,
+    fontSize: Typography.sizes.body,
+    color: Colors.text.primary,
+  },
+  sectionLabel: {
+    fontFamily: Typography.fonts.latin,
+    fontSize: Typography.sizes.detail,
+    letterSpacing: 1.2,
+    textTransform: 'uppercase',
+    color: Colors.text.steel,
+    marginTop: Spacing.xxl,
+    marginBottom: Spacing.lg,
+  },
+
+  // ---- Time rail ----
+  rail: { position: 'relative' },
+  railLine: {
+    position: 'absolute',
+    left: 15,
+    top: Spacing.lg,
+    bottom: Spacing.lg,
+    width: StyleSheet.hairlineWidth,
+    backgroundColor: Colors.glass.border,
+  },
+  railStop: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: Spacing.md,
+  },
+  railNode: {
+    width: 32,
+    height: 32,
+    borderRadius: BorderRadius.full,
+    backgroundColor: Colors.background.secondary,
+    borderWidth: 1,
+    borderColor: Colors.glass.border,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  railNodeOn: {
+    backgroundColor: Colors.accent.primary,
+    borderColor: Colors.accent.primary,
+  },
+  railText: { flex: 1, marginLeft: Spacing.lg },
+  railLabel: {
+    fontFamily: Typography.fonts.latin,
+    fontSize: Typography.sizes.body,
+    color: Colors.text.primary,
+  },
+  railLabelOff: { color: Colors.text.muted },
+  railWhen: {
+    fontFamily: Typography.fonts.latin,
+    fontSize: Typography.sizes.detail,
+    color: Colors.text.steel,
+    marginTop: 2,
+  },
+
+  // ---- Backgrounds ----
+  carousel: { paddingRight: Spacing.xl },
+  swatch: {
+    width: CAROUSEL_CARD_W,
+    height: 148,
+    borderRadius: BorderRadius.lg,
+    overflow: 'hidden',
+    marginRight: Spacing.sm,
+    borderWidth: 2,
+    borderColor: 'transparent',
+  },
+  swatchSelected: { borderColor: Colors.accent.primary },
+
+  plainRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: Spacing.lg,
+    marginTop: Spacing.xxl,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderColor: Colors.glass.border,
+  },
+  plainRowText: { flex: 1, paddingRight: Spacing.md },
+  plainLabel: {
+    fontFamily: Typography.fonts.latin,
+    fontSize: Typography.sizes.body,
+    color: Colors.text.primary,
+  },
+  plainHint: {
+    fontFamily: Typography.fonts.latin,
+    fontSize: Typography.sizes.detail,
+    color: Colors.text.steel,
+    marginTop: 2,
+  },
+
+  // ---- Switch ----
   switch: {
     width: 48,
     height: 28,
@@ -353,13 +612,14 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.text.secondary,
   },
   knobActive: { backgroundColor: Colors.background.primary, alignSelf: 'flex-end' },
+
+  // ---- Locked ----
   lockedCard: {
     backgroundColor: Colors.glass.medium,
     borderRadius: BorderRadius.xl,
     borderWidth: 1,
     borderColor: Colors.glass.border,
     padding: Spacing.xl,
-    alignItems: 'center',
   },
   lockedTitle: {
     fontFamily: Typography.fonts.serif,
@@ -372,40 +632,17 @@ const styles = StyleSheet.create({
     fontSize: Typography.sizes.small,
     lineHeight: Typography.sizes.small * 1.5,
     color: Colors.text.secondary,
-    textAlign: 'center',
     marginBottom: Spacing.xl,
   },
   cta: {
     backgroundColor: Colors.accent.primary,
     borderRadius: BorderRadius.full,
     paddingVertical: Spacing.md,
-    paddingHorizontal: Spacing.xxl,
+    alignItems: 'center',
   },
   ctaText: {
     fontFamily: Typography.fonts.latin,
     fontSize: Typography.sizes.body,
     color: Colors.background.primary,
-  },
-  themeRow: { justifyContent: 'space-between', marginBottom: Spacing.sm },
-  themeTile: {
-    flex: 1 / THEME_COLUMNS,
-    aspectRatio: 1,
-    borderRadius: BorderRadius.md,
-    overflow: 'hidden',
-    marginRight: Spacing.sm,
-    borderWidth: 2,
-    borderColor: 'transparent',
-  },
-  themeTileSelected: { borderColor: Colors.accent.primary },
-  themeCheck: {
-    position: 'absolute',
-    top: Spacing.xs,
-    right: Spacing.xs,
-    width: 20,
-    height: 20,
-    borderRadius: BorderRadius.full,
-    backgroundColor: Colors.accent.primary,
-    alignItems: 'center',
-    justifyContent: 'center',
   },
 });
