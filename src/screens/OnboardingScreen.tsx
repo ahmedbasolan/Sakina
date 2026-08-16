@@ -53,7 +53,11 @@ import { useAuth } from '../context/AuthContext';
 import { Animations, Spacing, Colors } from '../theme/DesignSystem';
 import { useReduceMotion } from '../hooks/useReduceMotion';
 import SupportSakinaScreen from './SupportSakinaScreen';
-import { canSwipeForward } from '../utils/onboardingNavigation';
+import {
+  canSwipeForward,
+  canSwipeBack,
+  showsOnboardingChrome,
+} from '../utils/onboardingNavigation';
 
 const TOTAL_SCREENS = 9;
 const SWIPE_THRESHOLD = 50;
@@ -196,7 +200,7 @@ export default function OnboardingScreen() {
           goNext();
         } else if (
           (translationX > SWIPE_THRESHOLD || velocityX > VELOCITY_THRESHOLD) &&
-          currentScreen > 0
+          canSwipeBack(currentScreen)
         ) {
           goBack();
         }
@@ -312,7 +316,12 @@ export default function OnboardingScreen() {
         onTouchMove={(e) => touchEmitter.emit(e.nativeEvent.pageX, e.nativeEvent.pageY)}
         onTouchStart={(e) => touchEmitter.emit(e.nativeEvent.pageX, e.nativeEvent.pageY)}
       >
-        {/* Header: back arrow + progress mandala */}
+        {/* Header: back arrow + progress mandala.
+            Hidden on the trial-offer step — that screen embeds a full paywall
+            which paints its own close button in the same top-right corner this
+            header's mandala occupies (both 44px, within 8px on each axis), and
+            this header sits at zIndex 10 so it would render over it. */}
+        {showsOnboardingChrome(currentScreen) && (
         <View style={[styles.headerRow, { top: insets.top + 12 }]}>
           {/* Left section: back arrow / theme toggle */}
           <View style={styles.headerLeft}>
@@ -339,6 +348,7 @@ export default function OnboardingScreen() {
             </Animated.View>
           </View>
         </View>
+        )}
 
         {/* Screen content */}
         <PanGestureHandler onHandlerStateChange={onHandlerStateChange} activeOffsetX={[-15, 15]} enabled={currentScreen !== 2}>

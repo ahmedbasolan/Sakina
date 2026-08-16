@@ -1,4 +1,10 @@
-import { canSwipeForward, COMMIT_SCREEN_INDEX } from '../onboardingNavigation';
+import {
+  canSwipeForward,
+  canSwipeBack,
+  showsOnboardingChrome,
+  COMMIT_SCREEN_INDEX,
+  OFFER_SCREEN_INDEX,
+} from '../onboardingNavigation';
 
 describe('canSwipeForward', () => {
   it('allows forward swipe on ordinary screens before the last one', () => {
@@ -20,5 +26,38 @@ describe('canSwipeForward', () => {
 
   it("matches today's pre-change behavior when Commit is still the last screen", () => {
     expect(canSwipeForward(COMMIT_SCREEN_INDEX, 8)).toBe(false);
+  });
+});
+
+describe('canSwipeBack', () => {
+  it('allows back swipe on ordinary screens', () => {
+    expect(canSwipeBack(3)).toBe(true);
+    expect(canSwipeBack(COMMIT_SCREEN_INDEX)).toBe(true);
+  });
+
+  it('blocks back swipe on the very first screen', () => {
+    expect(canSwipeBack(0)).toBe(false);
+  });
+
+  it('blocks back swipe out of the trial offer into the commit ritual', () => {
+    // The offer is terminal: swiping back would re-enter CommitScreen, whose
+    // isActive effect resets isComplete, forcing the user to hold the star
+    // again to escape. Nothing after Commit should re-open it.
+    expect(canSwipeBack(OFFER_SCREEN_INDEX)).toBe(false);
+  });
+});
+
+describe('showsOnboardingChrome', () => {
+  it('shows the back arrow + progress mandala on ordinary screens', () => {
+    expect(showsOnboardingChrome(0)).toBe(true);
+    expect(showsOnboardingChrome(COMMIT_SCREEN_INDEX)).toBe(true);
+  });
+
+  it('hides onboarding chrome on the trial offer step', () => {
+    // OnboardingScreen's headerRow is zIndex 10 and right-aligned, landing the
+    // 44px progress mandala directly on top of SupportSakinaScreen's own 44px
+    // close button (both ~insets.top, right edge). The embedded paywall owns
+    // its chrome; onboarding's must not paint over it.
+    expect(showsOnboardingChrome(OFFER_SCREEN_INDEX)).toBe(false);
   });
 });
