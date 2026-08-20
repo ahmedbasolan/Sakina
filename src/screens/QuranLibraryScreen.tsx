@@ -304,6 +304,13 @@ export default function QuranLibraryScreen({ navigation }: { navigation: any }) 
           keyExtractor={(item) => item.surah}
           contentContainerStyle={[styles.listContent, { paddingBottom: insets.bottom + Spacing.xxxl }]}
           showsVerticalScrollIndicator={false}
+          // Saved verses are unbounded user data, and each group renders a
+          // card per verse, so a row here can be far taller than one screen.
+          // Bounded for the same reason as PathsScreen (which also documents
+          // why removeClippedSubviews stays off).
+          initialNumToRender={6}
+          maxToRenderPerBatch={6}
+          windowSize={7}
           // Scrolls away; the back arrow and the mood rail above it do not.
           // FlatList still renders this with zero rows, so a filter that
           // matches nothing keeps its title.

@@ -2,7 +2,7 @@ import React, { useMemo, useEffect, useRef, useState, useCallback } from 'react'
 import { StyleSheet, View, Text, Animated, TouchableOpacity } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Svg, { Path, Circle as SvgCircle, G } from 'react-native-svg';
-import { BlurView } from 'expo-blur';
+import { FrostedSurface } from './FrostedSurface';
 import { Colors, Spacing, Typography } from '../theme/DesignSystem';
 import { Ionicons } from '@expo/vector-icons';
 import { HapticsService } from '../services/hapticsService';
@@ -471,12 +471,16 @@ const VerseLayer: React.FC<VerseLayerProps> = ({
             },
           ]}
         >
-          {/* experimentalBlurMethod is what makes this actually blur on
-              Android — see the same fix on the tab bar in MainNavigator. */}
-          <BlurView
+          {/* This pill floats over the verse ScrollView, so on Android the
+              old dimezisBlurView re-blurred the whole screen on every scroll
+              frame — during the exact interaction it exists to sit on top of.
+              Unlike the other frosted surfaces this one has no fill of its
+              own underneath (actionBar contributes only the border and the
+              rounded clip), so the Android value has to carry the whole
+              surface and keep the icons legible over verse text. */}
+          <FrostedSurface
             intensity={65}
-            tint="dark"
-            experimentalBlurMethod="dimezisBlurView"
+            androidFill="rgba(10, 16, 27, 0.72)"
             style={styles.actionBarInner}
           >
             {/* Save */}
@@ -546,7 +550,7 @@ const VerseLayer: React.FC<VerseLayerProps> = ({
                 </TouchableOpacity>
               </>
             )}
-          </BlurView>
+          </FrostedSurface>
         </Animated.View>
 
         {/* Gesture hint row — brief one-shot discovery aid, then disappears */}

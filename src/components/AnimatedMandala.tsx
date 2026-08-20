@@ -119,6 +119,15 @@ function AnimatedMandalaInner({
 
   return (
     <Animated.View
+      // The lattice is ~50 stroked vector paths and it rotates continuously.
+      // Without a hardware layer, Android re-rasterises those paths every
+      // frame of the rotation; with one, the view is rasterised once into a
+      // GPU texture and the rotation is just a matrix on that texture. This is
+      // the Android counterpart to `shouldRasterizeIOS`, and it is only a win
+      // while something is actually animating — a hardware layer on a static
+      // view is wasted GPU memory, so it follows the same reduce-motion gate
+      // that decides whether the rotation runs at all.
+      renderToHardwareTextureAndroid={!reduceMotion}
       style={{ width: size, height: size, opacity, transform: [{ rotate }] }}
       pointerEvents="none"
     >

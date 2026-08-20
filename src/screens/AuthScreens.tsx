@@ -33,7 +33,7 @@ import { LEGAL_URLS } from '../constants';
 import { isValidEmail, isValidPassword } from '../utils';
 import * as Haptics from 'expo-haptics';
 
-type AuthNavigation = StackNavigationProp<RootStackParamList, 'Login' | 'SignUp'>;
+type AuthNavigation = StackNavigationProp<RootStackParamList, 'Login' | 'SignUp' | 'ResetPassword'>;
 
 interface AuthScreenProps {
   navigation: AuthNavigation;
@@ -45,7 +45,15 @@ interface AuthScreenProps {
 // else pops them once a session exists. Without an explicit reset here, a
 // successful sign-in silently left the user stranded on the auth form (the
 // screen it "bounced back" to was never left in the first place).
-function goToMain(navigation: AuthNavigation) {
+// `completePasswordRecovery` is required, not optional, so every call site
+// has to make a decision rather than silently skip it. It's a no-op when the
+// user reached this screen normally (isPasswordRecovery was already false),
+// and load-bearing exactly once: a user who cancels mid-reset and signs back
+// in via the Login screen inside MainNavigator's recovery-only stack (see
+// ResetPasswordScreen's Cancel button) needs THIS success path to clear the
+// gate, or they'd land back on the reset screen on every subsequent launch.
+function goToMain(navigation: AuthNavigation, completePasswordRecovery: () => void) {
+  completePasswordRecovery();
   navigation.reset({ index: 0, routes: [{ name: 'Main' }] });
 }
 
@@ -189,12 +197,13 @@ function useAppleSignIn(
   setIsLoading: (loading: boolean) => void,
   navigation: AuthNavigation,
 ) {
+  const { completePasswordRecovery } = useAuth();
   return useCallback(async () => {
     setIsLoading(true);
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     try {
       await authService.signInWithApple();
-      goToMain(navigation);
+      goToMain(navigation, completePasswordRecovery);
     } catch (error: any) {
       if (error?.code !== 'ERR_REQUEST_CANCELED') {
         Alert.alert('Apple Sign-In Failed', error?.message || 'Please try again.');
@@ -202,7 +211,7 @@ function useAppleSignIn(
     } finally {
       setIsLoading(false);
     }
-  }, [authService, setIsLoading, navigation]);
+  }, [authService, setIsLoading, navigation, completePasswordRecovery]);
 }
 
 // ==================== LOGIN SCREEN ====================
@@ -213,7 +222,7 @@ export function LoginScreen({ navigation }: AuthScreenProps) {
   const [isLoading, setIsLoading] = useState(false);
   const insets = useSafeAreaInsets();
 
-  const { enterGuestMode } = useAuth();
+  const { enterGuestMode, completePasswordRecovery } = useAuth();
   const authService = AuthService.getInstance();
   const handleGuestMode = useCallback(async () => { await enterGuestMode(); }, [enterGuestMode]);
 
@@ -233,7 +242,7 @@ export function LoginScreen({ navigation }: AuthScreenProps) {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     try {
       await authService.signInWithEmail(trimmedEmail, password);
-      goToMain(navigation);
+      goToMain(navigation, completePasswordRecovery);
     } catch (error: any) {
       Alert.alert('Sign In Failed', error.message || 'We could not sign you in. Please try again in a moment.');
     } finally {
@@ -272,7 +281,7 @@ export function LoginScreen({ navigation }: AuthScreenProps) {
     try {
       const session = await authService.signInWithGoogle();
       // null = user dismissed the browser — nothing to navigate to.
-      if (session) goToMain(navigation);
+      if (session) goToMain(navigation, completePasswordRecovery);
     } catch (error: any) {
       Alert.alert('Google Sign-In Failed', error?.message || 'Please try again.');
     } finally {
@@ -448,7 +457,7 @@ export function SignUpScreen({ navigation }: AuthScreenProps) {
   const [isLoading, setIsLoading] = useState(false);
   const insets = useSafeAreaInsets();
 
-  const { enterGuestMode } = useAuth();
+  const { enterGuestMode, completePasswordRecovery } = useAuth();
   const authService = AuthService.getInstance();
   const handleGuestMode = useCallback(async () => { await enterGuestMode(); }, [enterGuestMode]);
 
@@ -498,7 +507,7 @@ export function SignUpScreen({ navigation }: AuthScreenProps) {
     try {
       const session = await authService.signInWithGoogle();
       // null = user dismissed the browser — nothing to navigate to.
-      if (session) goToMain(navigation);
+      if (session) goToMain(navigation, completePasswordRecovery);
     } catch (error: any) {
       Alert.alert('Google Sign-In Failed', error?.message || 'Please try again.');
     } finally {
@@ -689,6 +698,158 @@ export function SignUpScreen({ navigation }: AuthScreenProps) {
               accessibilityLabel="Sign in"
             >
               <Text style={styles.footerLink}>Sign in</Text>
+            </TouchableOpacity>
+          </Animated.View>
+        </ScrollView>
+      </AuthBackground>
+    </KeyboardAvoidingView>
+  );
+}
+
+// ==================== RESET PASSWORD SCREEN ====================
+// Only ever mounted by MainNavigator's isolated recovery stack, reached by
+// tapping a "reset your password" email link — see AuthContext's deep-link
+// listener for how the app gets here. Not reachable through normal
+// navigation, and there is deliberately no "change password" entry point
+// elsewhere in Settings for a signed-in user (that would be a different,
+// legitimate feature this isn't — see updatePassword's doc comment).
+export function ResetPasswordScreen({ navigation }: AuthScreenProps) {
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const insets = useSafeAreaInsets();
+
+  const { cancelPasswordRecovery, completePasswordRecovery } = useAuth();
+  const authService = AuthService.getInstance();
+
+  const { logoOpacity, logoSlide, formOpacity, formSlide, footerOpacity } = useAuthEntryAnimation();
+
+  const handleSetPassword = async () => {
+    if (!isValidPassword(newPassword)) {
+      Alert.alert('Password too short', 'Use at least 8 characters.');
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      Alert.alert("Passwords don't match", 'Re-enter both fields so they match exactly.');
+      return;
+    }
+    setIsLoading(true);
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    try {
+      await authService.updatePassword(newPassword);
+      // No success alert — clearing the gate unmounts this whole isolated
+      // stack and drops the user straight into Main on a session that's
+      // already valid; landing in the app IS the confirmation.
+      completePasswordRecovery();
+    } catch (error: any) {
+      Alert.alert('Could not update password', error?.message || 'Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleCancel = async () => {
+    setIsLoading(true);
+    try {
+      await cancelPasswordRecovery();
+      // Deliberately navigate within THIS isolated stack rather than clearing
+      // isPasswordRecovery here — clearing it now, with no session, would
+      // fall through to MainNavigator's normal !user branch, which is
+      // Onboarding, not Login. Wrong destination for someone who already has
+      // an account and was mid-reset. completePasswordRecovery() runs later,
+      // inside goToMain, the moment they actually sign back in from here.
+      navigation.navigate('Login');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <KeyboardAvoidingView
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      style={styles.container}
+    >
+      <AuthBackground>
+        <ScrollView
+          contentContainerStyle={[styles.scrollContent, { paddingTop: insets.top + Spacing.xl }]}
+          showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
+        >
+          <Animated.View
+            style={[styles.headerWrap, { opacity: logoOpacity, transform: [{ translateY: logoSlide }] }]}
+          >
+            <View style={styles.emblemWrap}>
+              <View style={styles.emblemGlow} />
+              <Image source={require('../../assets/icon.png')} style={styles.emblemIcon} resizeMode="contain" />
+            </View>
+
+            <Text style={styles.heroTitle}>Set a New Password</Text>
+            <Text style={styles.heroSubtitle}>Choose a password you haven&apos;t used before</Text>
+          </Animated.View>
+
+          <Animated.View
+            style={[styles.formCard, { opacity: formOpacity, transform: [{ translateY: formSlide }] }]}
+          >
+            <TintWash radius={BorderRadius.xl} />
+            <Text style={styles.inputLabel}>New password</Text>
+            <AuthInput
+              icon={<LockIcon size={18} color="rgba(212, 175, 55, 0.6)" />}
+              placeholder="At least 8 characters"
+              value={newPassword}
+              onChangeText={setNewPassword}
+              secureTextEntry={!showPassword}
+              trailing={
+                <TouchableOpacity
+                  onPress={() => setShowPassword(!showPassword)}
+                  hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                  accessibilityRole="button"
+                  accessibilityLabel={showPassword ? 'Hide password' : 'Show password'}
+                >
+                  {showPassword ? (
+                    <EyeOffIcon size={18} color={`${Colors.text.primary}66`} />
+                  ) : (
+                    <EyeIcon size={18} color={`${Colors.text.primary}66`} />
+                  )}
+                </TouchableOpacity>
+              }
+            />
+
+            <Text style={styles.inputLabel}>Confirm password</Text>
+            <AuthInput
+              icon={<LockIcon size={18} color="rgba(212, 175, 55, 0.6)" />}
+              placeholder="Type it again"
+              value={confirmPassword}
+              onChangeText={setConfirmPassword}
+              secureTextEntry={!showPassword}
+            />
+
+            <TouchableOpacity
+              activeOpacity={0.85}
+              onPress={handleSetPassword}
+              disabled={isLoading}
+              accessibilityRole="button"
+              accessibilityLabel="Set new password"
+              accessibilityState={{ disabled: isLoading, busy: isLoading }}
+            >
+              <LinearGradient colors={['#E8C84A', '#B8860B']} style={styles.primaryBtn}>
+                {isLoading ? (
+                  <ActivityIndicator color={Colors.background.secondary} />
+                ) : (
+                  <Text style={styles.primaryBtnText}>Set New Password</Text>
+                )}
+              </LinearGradient>
+            </TouchableOpacity>
+          </Animated.View>
+
+          <Animated.View style={[styles.footerRow, { opacity: footerOpacity }]}>
+            <TouchableOpacity
+              onPress={handleCancel}
+              disabled={isLoading}
+              accessibilityRole="button"
+              accessibilityLabel="Cancel and sign in instead"
+            >
+              <Text style={styles.footerLink}>Cancel and sign in instead</Text>
             </TouchableOpacity>
           </Animated.View>
         </ScrollView>

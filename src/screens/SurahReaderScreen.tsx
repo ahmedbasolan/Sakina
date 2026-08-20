@@ -11,7 +11,7 @@ import {
   ActivityIndicator, Animated, FlatList,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { BlurView } from 'expo-blur';
+import { FrostedSurface } from '../components/FrostedSurface';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
@@ -196,6 +196,32 @@ function compactTafsir(text: string): string {
   return picked.join(' ');
 }
 
+// Ibn Kathir (Abridged) writes one commentary block per THEME, which often
+// spans several consecutive ayahs (e.g. one block covers 33:1-3). The API
+// returns that identical block for every ayah in the range, which is what
+// made opening "Context" on consecutive verses show the exact same text
+// twice or three times in a row.
+//
+// Splits `sentences` into `n` contiguous, in-order chunks — one per verse in
+// the range, each capped at MAX_SENTENCES — so a shared block reads as
+// "first part on the first verse, next part on the next verse" instead of
+// repeating. A verse whose fair share rounds down to zero sentences gets an
+// empty chunk; the caller treats that as "no context for this verse" rather
+// than inventing filler.
+function distributeSentences(sentences: string[], n: number): string[][] {
+  const chunks: string[][] = Array.from({ length: n }, () => []);
+  if (sentences.length === 0 || n <= 0) return chunks;
+  const base = Math.floor(sentences.length / n);
+  const remainder = sentences.length % n;
+  let idx = 0;
+  for (let i = 0; i < n; i++) {
+    const fairShare = base + (i < remainder ? 1 : 0);
+    chunks[i] = sentences.slice(idx, idx + Math.min(fairShare, MAX_SENTENCES));
+    idx += fairShare;
+  }
+  return chunks;
+}
+
 async function fetchTafsir(surahNumber: number, verseNumber: number): Promise<TafsirEntry | null> {
   const key = `${surahNumber}:${verseNumber}`;
   if (tafsirCache.has(key)) return tafsirCache.get(key) ?? null;
@@ -208,6 +234,20 @@ async function fetchTafsir(surahNumber: number, verseNumber: number): Promise<Ta
     const json = await res.json();
     const html: string | undefined = json?.tafsir?.text;
     if (!html) { tafsirCache.set(key, null); return null; }
+
+    // `tafsir.verses` names every ayah this block covers, e.g.
+    // {"33:1":{...},"33:2":{...},"33:3":{...}} for a shared block, or a
+    // single entry when the commentary is specific to one ayah. Sort by ayah
+    // number — object key order isn't guaranteed — so the split below reads
+    // in the same order as the surah, not API response order.
+    const versesField = json?.tafsir?.verses;
+    const rangeKeys: string[] =
+      versesField && typeof versesField === 'object' && Object.keys(versesField).length > 0
+        ? Object.keys(versesField).sort(
+            (a, b) => Number(a.split(':')[1]) - Number(b.split(':')[1]),
+          )
+        : [key];
+
     // Strip HTML tags then decode common entities
     const text = html
       .replace(/<[^>]+>/g, '')
@@ -225,12 +265,29 @@ async function fetchTafsir(surahNumber: number, verseNumber: number): Promise<Ta
       .replace(/&#x([0-9a-f]+);/gi, (_, h) => String.fromCharCode(parseInt(h, 16)))
       .replace(/\s+/g, ' ')
       .trim();
-    if (!text) { tafsirCache.set(key, null); return null; }
-    const compact = compactTafsir(text);
-    if (!compact) { tafsirCache.set(key, null); return null; }
-    const entry: TafsirEntry = { text: compact, source: 'Ibn Kathir · quran.com' };
-    tafsirCache.set(key, entry);
-    return entry;
+    if (!text) {
+      for (const k of rangeKeys) tafsirCache.set(k, null);
+      return null;
+    }
+
+    if (rangeKeys.length <= 1) {
+      const compact = compactTafsir(text);
+      const entry: TafsirEntry | null = compact ? { text: compact, source: 'Ibn Kathir · quran.com' } : null;
+      tafsirCache.set(key, entry);
+      return entry;
+    }
+
+    // Shared block: divide the clean sentence pool across every verse it
+    // covers instead of repeating the whole thing on each one.
+    const cleanSentences = splitSentences(text).filter(s => !isChainSentence(s));
+    const perVerse = distributeSentences(cleanSentences, rangeKeys.length);
+    rangeKeys.forEach((k, i) => {
+      const slice = perVerse[i];
+      const entry: TafsirEntry | null =
+        slice.length > 0 ? { text: slice.join(' '), source: 'Ibn Kathir · quran.com' } : null;
+      tafsirCache.set(k, entry);
+    });
+    return tafsirCache.get(key) ?? null;
   } catch {
     return null;
   }
@@ -372,7 +429,11 @@ const VerseRow = React.memo(function VerseRow({
               <Text style={styles.rowContextSource}>{tafsirEntry.source}</Text>
             </>
           ) : (
-            <Text style={styles.rowContextText}>{verse.translation}</Text>
+            // No commentary for this specific verse — most often because a
+            // shared block's sentences were fully claimed by its neighbors.
+            // The translation is already shown above; repeating it here was
+            // the other half of the duplication this fixes.
+            <Text style={styles.rowContextEmpty}>No additional commentary for this verse.</Text>
           )}
         </View>
       )}
@@ -869,7 +930,10 @@ export default function SurahReaderScreen({ route, navigation }: Props) {
                     </View>
                   </>
                 ) : (
-                  <Text style={styles.reflectionText}>{verse.translation}</Text>
+                  // No commentary for this specific verse — see VerseRow's
+                  // matching branch above for why this no longer repeats the
+                  // translation that's already shown higher on this card.
+                  <Text style={styles.reflectionEmpty}>No additional commentary for this verse.</Text>
                 )}
               </Animated.View>
             )}
@@ -917,7 +981,12 @@ export default function SurahReaderScreen({ route, navigation }: Props) {
 
           {/* Save · Share · Audio */}
           <View style={styles.pill}>
-            <BlurView intensity={80} tint="dark" style={styles.pillInner}>
+            {/* androidFill is transparent on purpose: pillBacking, the very
+                next child, is an absolute-fill at rgba(8,14,23,0.88), so the
+                surface is already ~88% opaque and any fill here would just
+                stack underneath something opaque. (That backing also means
+                the iOS blur was never really visible either.) */}
+            <FrostedSurface intensity={80} androidFill="transparent" style={styles.pillInner}>
               {/* Solid backing on top of the blur — on some devices blur alone
                   still lets scrolling text underneath show through and clash
                   with the icons, so this guarantees a clean, legible surface. */}
@@ -969,7 +1038,7 @@ export default function SurahReaderScreen({ route, navigation }: Props) {
                 </View>
               ) : null}
 
-            </BlurView>
+            </FrostedSurface>
           </View>
 
           {/* ← verse counter → */}
@@ -1318,6 +1387,13 @@ const styles = StyleSheet.create({
     lineHeight: 26,
     color: Colors.text.secondary,
   },
+  reflectionEmpty: {
+    fontFamily: Typography.fonts.serif,
+    fontStyle: 'italic',
+    fontSize: 15,
+    lineHeight: 26,
+    color: Colors.text.muted,
+  },
   tafsirSpinner: {
     marginVertical: Spacing.lg,
   },
@@ -1510,6 +1586,13 @@ const styles = StyleSheet.create({
     fontSize: 14,
     lineHeight: 24,
     color: Colors.text.secondary,
+  },
+  rowContextEmpty: {
+    fontFamily: Typography.fonts.serif,
+    fontStyle: 'italic',
+    fontSize: 14,
+    lineHeight: 24,
+    color: Colors.text.muted,
   },
   rowContextSource: {
     fontSize: Typography.sizes.detail,

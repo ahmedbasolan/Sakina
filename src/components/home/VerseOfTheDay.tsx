@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { View, Text, StyleSheet, Animated } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { BlurView } from 'expo-blur';
+import { FrostedSurface } from '../FrostedSurface';
 import { Colors, Typography, Spacing, BorderRadius } from '../../theme/DesignSystem';
 import { DailyVerse } from '../../services/dailyVerseService';
 
@@ -46,7 +46,17 @@ function VerseOfTheDayBase({ dailyVerse, fadeAnim, slideAnim }: VerseOfTheDayPro
 
   return (
     <Animated.View style={[styles.verseSection, { opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
-      <BlurView intensity={16} tint="dark" style={styles.verseCard}>
+      {/* Android never blurred here (no experimentalBlurMethod was ever set,
+          and its default is 'none'), so this only swaps expo-blur's neutral
+          grey fallback for the app's navy — and drops a native view. The
+          card's own `verseCard` fill is background.secondary at 0x99; this
+          nudges it to 0xA8 to stand in for the faint wash the fallback used
+          to add on top. */}
+      <FrostedSurface
+        intensity={16}
+        androidFill={`${Colors.background.secondary}A8`}
+        style={styles.verseCard}
+      >
         {/* Gold corner tint — same diagonal-wash treatment as the streak bar
             (1F→05 alpha), so this card reads with the same warmth/pop instead
             of the flatter steel-blue wash it used to carry. */}
@@ -90,7 +100,7 @@ function VerseOfTheDayBase({ dailyVerse, fadeAnim, slideAnim }: VerseOfTheDayPro
 
         {/* Gold bottom line */}
         <LinearGradient colors={['transparent', Colors.accent.primary + '60', 'transparent']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={styles.verseBorderLineBottom} />
-      </BlurView>
+      </FrostedSurface>
     </Animated.View>
   );
 }

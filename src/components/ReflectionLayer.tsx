@@ -11,7 +11,7 @@ import {
   Animated,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { BlurView } from 'expo-blur';
+import { FrostedSurface } from './FrostedSurface';
 const { height } = Dimensions.get('window');
 import { Colors, Spacing, Typography, BorderRadius } from '../theme/DesignSystem';
 import { Ionicons } from '@expo/vector-icons';
@@ -113,11 +113,13 @@ const ReflectionLayer: React.FC<ReflectionLayerProps> = ({
           isFocused && { borderColor: accentColor + '40' },
           { opacity: fadeAnim },
         ]}>
-          {/* experimentalBlurMethod — same Android blur fix as the tab bar. */}
-          <BlurView
+          {/* A live Android blur behind a TextInput re-blurred the screen on
+              every keystroke and every caret blink. journalContainer already
+              paints its own glass wash, so Android only needs a touch more
+              on top. See FrostedSurface. */}
+          <FrostedSurface
             intensity={20}
-            tint="dark"
-            experimentalBlurMethod="dimezisBlurView"
+            androidFill="rgba(255, 235, 210, 0.025)"
             style={StyleSheet.absoluteFillObject}
             pointerEvents="none"
           />
