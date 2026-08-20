@@ -55,8 +55,20 @@ export default function AudioPlayerButton(props: AudioPlayerButtonProps) {
 
 // ── Sound wave bars — replaces the old icon when playing ─────────────────────
 // Three bars with different heights and cycle durations give an organic,
-// calm feel. Heights animate on the JS thread (useNativeDriver: false) but
-// the update rate is slow so it stays smooth without frame drops.
+// calm feel.
+//
+// These animate `scaleY` on a fixed-height bar, anchored to the bottom via
+// `transformOrigin`, NOT `height`. Animating `height` is a layout property:
+// it cannot use the native driver, so every frame crossed to JS and forced a
+// Yoga re-layout plus a measure/layout pass, three bars at once, for the whole
+// time audio was playing — which is exactly when the user is scrolling the
+// verse they're listening to. That also broke the project's own rule
+// (CLAUDE.md: animate transform/opacity only, never layout). The old comment
+// here claimed the slow update rate kept it smooth; the *value* moves slowly,
+// but the animation still ticks every frame.
+//
+// The Animated.Values are now scale ratios (0–1), so they no longer depend on
+// the pixel height and the loops don't restart when `height` changes.
 const WaveBars = React.memo(function WaveBars({
   height,
   color,
@@ -68,30 +80,30 @@ const WaveBars = React.memo(function WaveBars({
   const barW    = Math.max(2.5, height * 0.22);
   const reduceMotion = useReduceMotion();
 
-  const b1 = useRef(new Animated.Value(barMaxH * 0.28)).current;
-  const b2 = useRef(new Animated.Value(barMaxH * 0.72)).current;
-  const b3 = useRef(new Animated.Value(barMaxH * 0.48)).current;
+  const b1 = useRef(new Animated.Value(0.28)).current;
+  const b2 = useRef(new Animated.Value(0.72)).current;
+  const b3 = useRef(new Animated.Value(0.48)).current;
 
   useEffect(() => {
     if (reduceMotion) return;
     const loop = (anim: Animated.Value, lo: number, hi: number, dur: number) =>
       Animated.loop(
         Animated.sequence([
-          Animated.timing(anim, { toValue: hi, duration: dur, useNativeDriver: false }),
-          Animated.timing(anim, { toValue: lo, duration: dur, useNativeDriver: false }),
+          Animated.timing(anim, { toValue: hi, duration: dur, useNativeDriver: true }),
+          Animated.timing(anim, { toValue: lo, duration: dur, useNativeDriver: true }),
         ]),
       );
 
-    const a1 = loop(b1, barMaxH * 0.18, barMaxH,        740);
-    const a2 = loop(b2, barMaxH * 0.42, barMaxH,        1010);
-    const a3 = loop(b3, barMaxH * 0.18, barMaxH * 0.88, 630);
+    const a1 = loop(b1, 0.18, 1,    740);
+    const a2 = loop(b2, 0.42, 1,    1010);
+    const a3 = loop(b3, 0.18, 0.88, 630);
 
     a1.start();
     a2.start();
     a3.start();
 
     return () => { a1.stop(); a2.stop(); a3.stop(); };
-  }, [barMaxH, reduceMotion]);
+  }, [reduceMotion]);
 
   return (
     <View
@@ -105,12 +117,16 @@ const WaveBars = React.memo(function WaveBars({
       {([b1, b2, b3] as Animated.Value[]).map((anim, i) => (
         <Animated.View
           key={i}
-          style={{
-            width: barW,
-            height: anim,
-            borderRadius: barW / 2,
-            backgroundColor: color,
-          }}
+          style={[
+            styles.waveBar,
+            {
+              width: barW,
+              height: barMaxH,
+              borderRadius: barW / 2,
+              backgroundColor: color,
+              transform: [{ scaleY: anim }],
+            },
+          ]}
         />
       ))}
     </View>
@@ -437,6 +453,13 @@ const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
     marginVertical: Spacing.md,
+  },
+  // Anchors WaveBars' scaleY to each bar's base so it grows upward out of the
+  // baseline, the way a level meter reads — the default centred origin would
+  // make the bars bloom symmetrically from the middle instead. The rest of a
+  // bar's style depends on props, so only this static piece lives here.
+  waveBar: {
+    transformOrigin: 'bottom',
   },
   buttonContainer: {
     flexDirection: 'row',

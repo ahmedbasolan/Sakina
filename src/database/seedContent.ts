@@ -194,7 +194,18 @@ import type { Content, ContentAngle } from '../types';
 //      practiceStep instruction. All three now carry bracketed glosses
 //      ("Rabbana lakal hamd" [Our Lord, to You is all praise]). No Arabic,
 //      citation, or claim changed — only the missing English meaning added.
-const SEED_VERSION = 33;
+// v34: new content — Marriage Seeker (path_marriage_seeker), 14 days. Adds 9
+//      new verified verses (quran_49_13, quran_17_32, quran_24_32,
+//      quran_25_74, quran_4_1, quran_20_131, quran_98_5, quran_33_21; a 10th
+//      candidate, quran_2_216, turned out to already exist — reused, not
+//      duplicated) and q_angle_marriage_day1..day14, each carrying its own
+//      verified ayah and, on 6 of the 14 days, a verified hadith
+//      (hadith_marriage_2/3/4/8/9/12 in hadithData.ts). Path was a locked
+//      stub with dailySteps: [] and isPremium: true; still NOT in
+//      AVAILABLE_PATH_IDS as of this bump — wiring it into PathsScreen.tsx is
+//      a separate step, deferred because that file has unrelated in-flight
+//      changes from another session.
+const SEED_VERSION = 34;
 // Separate keys per content type — Quran and Hadith data change independently,
 // and each seeder used to write the SAME key at the end of its run. Since
 // initializeDatabase() awaits seedQuranContent() before seedHadithContent(),

@@ -29,7 +29,7 @@ import { logServiceError } from './errorLoggingService';
  *
  * A new journey only needs its prefix added here.
  */
-export const JOURNEY_ANGLE_PREFIXES = ['rizq', 'salah', 'results', 'study', 'imam', 'crisis'];
+export const JOURNEY_ANGLE_PREFIXES = ['rizq', 'salah', 'results', 'study', 'imam', 'crisis', 'marriage'];
 
 const JOURNEY_ID_GLOBS = JOURNEY_ANGLE_PREFIXES.map((p) => `q_angle_${p}_*`);
 

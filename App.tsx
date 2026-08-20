@@ -12,12 +12,7 @@ import {
 } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import * as Font from 'expo-font';
-import { Amiri_400Regular, Amiri_700Bold } from '@expo-google-fonts/amiri';
 import { AmiriQuran_400Regular } from '@expo-google-fonts/amiri-quran';
-import {
-  ScheherazadeNew_400Regular,
-  ScheherazadeNew_700Bold,
-} from '@expo-google-fonts/scheherazade-new';
 import { MaterialCommunityIcons as MCIIcons, Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { PostHogProvider } from 'posthog-react-native';
@@ -147,12 +142,18 @@ export default function App() {
   useEffect(() => {
     const loadFonts = async () => {
       try {
+        // Amiri-Quran is the ONLY custom family the app actually renders — it
+        // is what Typography.fonts.arabic resolves to, and every `fontFamily`
+        // value in src/ is a static string, so nothing can reach a family that
+        // isn't named here. 'Amiri-Regular', 'Amiri-Bold',
+        // 'ScheherazadeNew-Regular' and 'ScheherazadeNew-Bold' were also being
+        // loaded and were referenced by exactly nothing: ~1.7 MB of TTF
+        // (411 + 395 + 319 + 575 KB) parsed on every cold start, awaited
+        // before `setFontsLoaded` lets the app render at all. Amiri-Quran
+        // itself is 133 KB. If a second Arabic face is ever wanted, add it
+        // back here together with the Typography token that selects it.
         await Font.loadAsync({
-          'Amiri-Regular': Amiri_400Regular,
-          'Amiri-Bold': Amiri_700Bold,
           'Amiri-Quran': AmiriQuran_400Regular,
-          'ScheherazadeNew-Regular': ScheherazadeNew_400Regular,
-          'ScheherazadeNew-Bold': ScheherazadeNew_700Bold,
           ...MCIIcons.font,
           ...Ionicons.font,
         });

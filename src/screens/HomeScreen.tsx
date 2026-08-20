@@ -121,6 +121,7 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
     nextPrayer,
     showLocationModal, setShowLocationModal,
     loadPrayerData,
+    loadActivePath,
     currentCity,
     currentCountry,
     streakDays,
@@ -170,7 +171,12 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
   useFocusEffect(useCallback(() => {
     if (!hasPrayerFocusedRef.current) { hasPrayerFocusedRef.current = true; return; }
     loadPrayerData();
-  }, [loadPrayerData]));
+    // Also refresh the Sacred Journey card. Completing a day and backing out
+    // to Home is the single most likely way to reach this screen with stale
+    // journey state, and it was the one thing focus did not reload — the card
+    // kept its old path/day until the app was backgrounded or pulled to refresh.
+    loadActivePath();
+  }, [loadPrayerData, loadActivePath]));
 
   const scrollContentStyle = useMemo(
     () => [styles.scrollContent, { paddingBottom: insets.bottom + Layout.tabBarClearance }],
@@ -475,7 +481,14 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
                 </TouchableOpacity>
               </View>
 
-              <TouchableOpacity activeOpacity={0.9} onPress={() => navigation.navigate('Journeys')}>
+              {/* Opens the journey itself. This used to go to the Journeys
+                  list, so the one card showing "Day 2 of 14" of a specific
+                  path dropped the user on a catalogue and made them find it
+                  again. "All paths" above is the route to the list. */}
+              <TouchableOpacity
+                activeOpacity={0.9}
+                onPress={() => navigation.navigate('PathDetail', { pathId: activePath.pathId })}
+              >
                 {/* Shadow on a plain outer View — see ShareSheet.tsx's previewCardShadow
                     for why elevation can't share a view with overflow:'hidden'+borderRadius
                     on Android (shadow's rounded-rect backing shows through the clip). */}
@@ -501,7 +514,7 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
                   <View style={styles.journeyCardTop}>
                     <View style={styles.journeyCardTopLeft}>
                       <View style={[styles.journeyIcon, { backgroundColor: activePath.color + '15', borderColor: activePath.color + '25' }]}>
-                        <MaterialCommunityIcons name="barley" size={20} color={activePath.color} />
+                        <MaterialCommunityIcons name={activePath.icon} size={20} color={activePath.color} />
                       </View>
                       <View style={styles.journeyInfo}>
                         <Text style={[styles.journeyPathLabel, { color: activePath.color }]}>{activePath.pathLabel}</Text>

@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useEffect, useState, useRef } from 'react';
+import { Linking } from 'react-native';
 import { Session, User } from '@supabase/supabase-js';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { AuthService } from '../services/authService';
@@ -15,6 +16,23 @@ interface AuthContextType {
   onboardingComplete: boolean;
   signOut: () => Promise<void>;
   enterGuestMode: (didCompleteOnboarding?: boolean) => Promise<void>;
+  /**
+   * True from the moment a tapped password-recovery email link has been
+   * exchanged for a session until the user either finishes changing their
+   * password or cancels. MainNavigator reads this to show ONLY the
+   * password-reset screen — Supabase's own `setSession` call from that link
+   * is otherwise indistinguishable from a normal sign-in, so without this
+   * flag a stale recovery link would drop the user straight into the app
+   * signed in, with their old (compromised/forgotten) password still valid
+   * and nothing having actually been reset.
+   */
+  isPasswordRecovery: boolean;
+  /** Ends the recovery session and returns to a normal signed-out state. */
+  cancelPasswordRecovery: () => Promise<void>;
+  /** Clears the recovery gate once a new password is set, or once the user
+   *  signs in normally instead of finishing the reset — see the Cancel path
+   *  on ResetPasswordScreen for why sign-in also needs to call this. */
+  completePasswordRecovery: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -39,6 +57,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [isGuest, setIsGuest] = useState(false);
   const [loading, setLoading] = useState(true);
   const [onboardingComplete, setOnboardingComplete] = useState(false);
+  const [isPasswordRecovery, setIsPasswordRecovery] = useState(false);
   const authService = AuthService.getInstance();
   // Guards the once-per-process local-data claim below. A ref, so it resets on
   // app restart — which is precisely why the claim has to re-derive ownership
@@ -156,6 +175,45 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
   }, []);
 
+  // Deep-link listener for auth redirects that arrive OUTSIDE any in-app
+  // browser session — specifically, a password-recovery link tapped in the
+  // user's email app. Google OAuth doesn't need this: it captures its
+  // redirect directly via WebBrowser.openAuthSessionAsync's own return value
+  // (see signInWithGoogle). A recovery link has no such capture point — the
+  // OS hands the URL to Sakina however the app happens to be at that moment,
+  // running (the 'url' event) or not (getInitialURL, for a cold start).
+  useEffect(() => {
+    const handleUrl = async (url: string) => {
+      try {
+        const { session: recoverySession, type } = await authService.completeDeepLink(url);
+        if (recoverySession && type === 'recovery') {
+          setIsPasswordRecovery(true);
+        }
+        // A non-recovery deep link (or none at all) needs no action here —
+        // completeDeepLink's own setSession call, if it made one, already
+        // let the onAuthStateChange listener above pick up the new session
+        // through its normal SIGNED_IN handling.
+      } catch (error) {
+        console.error('[Auth] Failed to process deep link:', error);
+      }
+    };
+
+    Linking.getInitialURL().then((url) => {
+      if (url) handleUrl(url);
+    });
+    const subscription = Linking.addEventListener('url', ({ url }) => handleUrl(url));
+    return () => subscription.remove();
+  }, []);
+
+  const cancelPasswordRecovery = async () => {
+    await authService.cancelPasswordRecovery();
+    setIsPasswordRecovery(false);
+  };
+
+  const completePasswordRecovery = () => {
+    setIsPasswordRecovery(false);
+  };
+
   const signOut = async () => {
     setLoading(true);
     try {
@@ -188,7 +246,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, session, isGuest, loading, onboardingComplete, signOut, enterGuestMode }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        session,
+        isGuest,
+        loading,
+        onboardingComplete,
+        signOut,
+        enterGuestMode,
+        isPasswordRecovery,
+        cancelPasswordRecovery,
+        completePasswordRecovery,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );

@@ -1,5 +1,6 @@
 import React, { useState, useMemo, useRef, useEffect } from 'react';
-import { Share, View, PanResponder, StyleSheet } from 'react-native';
+import { Share, View, StyleSheet } from 'react-native';
+import { GestureDetector } from 'react-native-gesture-handler';
 import { HapticsService } from '../services/hapticsService';
 import { UserPathProgress, Content } from '../types';
 import { PathsService } from '../services/pathsService';
@@ -9,7 +10,7 @@ import LayerContainer from '../components/LayerContainer';
 import LayerPager from '../components/LayerPager';
 import HadithLayer from '../components/HadithLayer';
 import VerseLayer from '../components/VerseLayer';
-import ContextLayer from '../components/ContextLayer';
+import ContextLayer, { extractSourceLabel, stripCitationTags } from '../components/ContextLayer';
 import PracticeLayer, { PracticeStepData } from '../components/PracticeLayer';
 import ReflectionLayer from '../components/ReflectionLayer';
 import FloatingActionRow from '../components/FloatingActionRow';
@@ -173,7 +174,7 @@ export const PathStepScreen: React.FC = () => {
   // Swipe left → next layer.
   // Uses a horizontal-dominant threshold so it never conflicts with
   // LayerContainer's vertical-swipe gesture.
-  const { panHandlers: swipePanHandlers, swipeAnim: swipeOverlayAnim } = useSwipeGesture({
+  const { gesture: swipeGesture, swipeAnim: swipeOverlayAnim } = useSwipeGesture({
     onNext: () => {
       setCurrentLayerIndex((prev) => {
         const next = Math.min(prev + 1, layerTypesRef.current.length - 1);
@@ -355,6 +356,28 @@ export const PathStepScreen: React.FC = () => {
     }
   };
 
+  // Distinct from handleShare (which always shares the verse): the context
+  // layer's floating row was wired to the same handler, so sharing while
+  // reading the tafsir/reflection text silently shared the verse instead.
+  // Mirrors ContextLayer's own text-cleaning so what gets shared matches what
+  // was actually on screen — same tag-stripped body, same extracted label.
+  const handleShareContext = async () => {
+    try {
+      const angleText = guidanceExperience.angle.angle;
+      const body = stripCitationTags(angleText);
+      const label = extractSourceLabel(angleText, guidanceExperience.content.whyThis || 'Islamic Guidance');
+      await Share.share({
+        message: `${body}\n\n— ${label}\nReflect more on Sakina.`,
+      });
+    } catch (error) {
+      logServiceError(
+        'PathStepScreen',
+        'handleShareContext',
+        error instanceof Error ? error : new Error(String(error)),
+      );
+    }
+  };
+
   const handleComplete = (reflection: string) => {
     if (reflection && reflection.trim().length > 0) {
       setReflectionWritten(true);
@@ -489,39 +512,39 @@ export const PathStepScreen: React.FC = () => {
         onBack={onBack}
       />
 
-      <View style={{ flex: 1 }} {...swipePanHandlers}>
-        {safeLayerIndex < layerTypes.length - 1 && (
-          <SwipeNextOverlay
-            animValue={swipeOverlayAnim}
-            accentColor={accentColor}
-            label={layerTypes[safeLayerIndex + 1] ? `NEXT: ${layerLabels[safeLayerIndex + 1].toUpperCase()}` : 'NEXT'}
-          />
-        )}
-        <LayerContainer
-          currentLayer={safeLayerIndex}
-          totalLayers={layerTypes.length}
-          onLayerChange={setCurrentLayerIndex}
-        >
-          {renderLayer()}
-        </LayerContainer>
-
-        {/* Verse, practice, and reflection layers own their controls (cinema-mode
-            bar / check toggles / save-skip). Only the context layer lacks its own
-            action surface, so the floating row is reserved for it. Anchored to
-            the bottom of this flex:1 area (not a flow sibling of LayerPager
-            below) so it floats just above the pager — matching VerseLayer's own
-            absolutely-positioned footer instead of stacking under the tabs. */}
-        {currentLayerType === 'context' && (
-          <View style={styles.floatingActionWrap} pointerEvents="box-none">
-            <FloatingActionRow
-              layerType={currentLayerType}
-              onShare={handleShare}
-              onSave={() => setIsSaved(!isSaved)}
-              isSaved={isSaved}
+      <GestureDetector gesture={swipeGesture}>
+        <View style={{ flex: 1 }}>
+          {safeLayerIndex < layerTypes.length - 1 && (
+            <SwipeNextOverlay
+              animValue={swipeOverlayAnim}
+              accentColor={accentColor}
+              label={layerTypes[safeLayerIndex + 1] ? `NEXT: ${layerLabels[safeLayerIndex + 1].toUpperCase()}` : 'NEXT'}
             />
-          </View>
-        )}
-      </View>
+          )}
+          <LayerContainer
+            currentLayer={safeLayerIndex}
+            totalLayers={layerTypes.length}
+            onLayerChange={setCurrentLayerIndex}
+          >
+            {renderLayer()}
+          </LayerContainer>
+
+          {/* Verse, practice, and reflection layers own their controls (cinema-mode
+              bar / check toggles / save-skip). Only the context layer lacks its own
+              action surface, so the floating row is reserved for it. Anchored to
+              the bottom of this flex:1 area (not a flow sibling of LayerPager
+              below) so it floats just above the pager — matching VerseLayer's own
+              absolutely-positioned footer instead of stacking under the tabs. */}
+          {currentLayerType === 'context' && (
+            <View style={styles.floatingActionWrap} pointerEvents="box-none">
+              <FloatingActionRow
+                layerType={currentLayerType}
+                onShare={handleShareContext}
+              />
+            </View>
+          )}
+        </View>
+      </GestureDetector>
 
       <LayerPager
         total={layerTypes.length}

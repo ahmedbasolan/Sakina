@@ -611,6 +611,19 @@ uploaded under an account that did not write them. Both shipped broken.
 ## Commands
 - Typecheck: `npx tsc --noEmit -p tsconfig.json`
 - Tests: `npx jest` (ownership rules: `src/services/__tests__/localDataOwnership.test.ts`)
+- `node scripts/verify-render-hazards.mjs` — three static checks for render
+  faults a typecheck and Jest cannot see, and that only show on a device
+  (usually Android): `elevation` sharing a view with `overflow:'hidden'` + a
+  border radius (the Android shadow-through-clip artifact); an `Animated`
+  `toValue` frozen by an empty-dep `useEffect`; and an iOS-only `shadow*` with
+  no `elevation`. `RH_INJECT=1 node scripts/verify-render-hazards.mjs` is its
+  selftest and, like `RT_INJECT`, **both modes exiting 0 is the green state**.
+  Intentional hits live in an `ALLOW` map in the file, each with a reason, and
+  a failing run prints the exact allowlist key to add. The header lists what
+  each pass does NOT catch — most importantly that pass 3 cannot tell a depth
+  shadow from a decorative *glow*, and a glow must never be "fixed" by adding
+  `elevation` (Android's elevation draws a directional dark shadow and cannot
+  render a coloured halo).
 - `node scripts/verify-local-wipe.mjs` — replays `clearAllLocalUserData`'s
   statements against a real SQLite built from the app's own DDL, reading the
   table list out of `operations.ts` so it tests the shipped function rather than

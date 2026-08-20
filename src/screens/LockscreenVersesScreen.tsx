@@ -40,7 +40,7 @@ import {
   Platform,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -48,6 +48,7 @@ import { Colors, Typography, Spacing, BorderRadius, Animations } from '../theme/
 import { useReduceMotion } from '../hooks/useReduceMotion';
 import { HapticsService } from '../services/hapticsService';
 import { SubscriptionService } from '../services/subscriptionService';
+import NotificationService from '../services/notificationService';
 import { BACKGROUND_THEMES } from '../services/backgroundThemeService';
 import {
   SPIRITUAL_WINDOWS,
@@ -135,6 +136,12 @@ export default function LockscreenVersesScreen({ onBack }: Props) {
   const [prefs, setPrefs] = useState<LockscreenVersePrefs>(DEFAULT_LOCKSCREEN_PREFS);
   const [verse, setVerse] = useState<DailyVerse | null>(null);
   const [loading, setLoading] = useState(true);
+  // Lock screen verses are entirely a payload change on the "Spiritual
+  // Windows" notification category (Daily Reminders screen) — with that
+  // category off, nothing schedules no matter what this screen's toggle
+  // says. Re-checked on focus, not just mount, so leaving for Daily
+  // Reminders and coming back reflects the real state immediately.
+  const [spiritualWindowsEnabled, setSpiritualWindowsEnabled] = useState(true);
 
   const fade = useRef(new Animated.Value(0)).current;
   const isMounted = useRef(true);
@@ -159,16 +166,34 @@ export default function LockscreenVersesScreen({ onBack }: Props) {
   useEffect(() => {
     isMounted.current = true;
     (async () => {
-      const [stored] = await Promise.all([loadLockscreenPrefs()]);
+      const [stored, spiritualOn] = await Promise.all([
+        loadLockscreenPrefs(),
+        NotificationService.getInstance().getSpiritualEnabled(),
+      ]);
       if (!isMounted.current) return;
       setIsPremium(SubscriptionService.getInstance().isPremium());
       setPrefs(stored);
+      setSpiritualWindowsEnabled(spiritualOn);
       setLoading(false);
     })();
     return () => {
       isMounted.current = false;
     };
   }, []);
+
+  // The mount effect above only runs once, so a trip to Daily Reminders and
+  // back would otherwise leave this screen showing a stale "Arriving at 3 of
+  // 3 windows" even after the user switched Spiritual Windows off there.
+  useFocusEffect(
+    useCallback(() => {
+      NotificationService.getInstance()
+        .getSpiritualEnabled()
+        .then((enabled) => {
+          if (isMounted.current) setSpiritualWindowsEnabled(enabled);
+        })
+        .catch(() => {});
+    }, []),
+  );
 
   // Re-read whenever the previewed window changes so the card shows that
   // window's actual verse, not a stand-in.
@@ -312,11 +337,24 @@ export default function LockscreenVersesScreen({ onBack }: Props) {
                   </Text>
                 )}
 
-                <Text style={styles.previewCaption}>
-                  {prefs.enabled
-                    ? `Arriving at ${activeCount} of 3 windows`
-                    : 'Preview only. Not delivering yet.'}
-                </Text>
+                {prefs.enabled && !spiritualWindowsEnabled ? (
+                  <TouchableOpacity
+                    onPress={() => navigation.navigate('DailyReminders')}
+                    accessibilityRole="button"
+                    accessibilityLabel="Spiritual window reminders are off, so nothing will arrive. Open Daily Reminders to turn them on."
+                  >
+                    <Text style={[styles.previewCaption, styles.previewCaptionWarn]}>
+                      Spiritual window reminders are off, so nothing will arrive. Turn them on in
+                      Daily Reminders →
+                    </Text>
+                  </TouchableOpacity>
+                ) : (
+                  <Text style={styles.previewCaption}>
+                    {prefs.enabled
+                      ? `Arriving at ${activeCount} of 3 windows`
+                      : 'Preview only. Not delivering yet.'}
+                  </Text>
+                )}
 
                 <TouchableOpacity
                   style={styles.masterRow}
@@ -548,6 +586,9 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginTop: Spacing.md,
     marginBottom: Spacing.xl,
+  },
+  previewCaptionWarn: {
+    color: Colors.status.error,
   },
   androidNote: {
     fontFamily: Typography.fonts.latin,

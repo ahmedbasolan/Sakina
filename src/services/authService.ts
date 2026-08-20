@@ -85,9 +85,51 @@ export class AuthService {
     return data.subscription;
   }
 
+  /**
+   * Sends the reset email with `redirectTo` set to the app's own deep link
+   * (the same URI OAuth already uses — see OAUTH_REDIRECT below). Without
+   * this, Supabase's default reset link opens Supabase's own generic web
+   * page instead of coming back into Sakina, and the recovery flow below
+   * never gets a chance to run at all.
+   *
+   * Requires OAUTH_REDIRECT's value in the Supabase dashboard's Auth →
+   * URL Configuration → Redirect URLs allow-list (the same requirement the
+   * OAuth comment above already documents — it's one shared list, not
+   * per-provider, so no separate entry is needed once that's done).
+   */
   async sendPasswordResetEmail(email: string) {
-    const { error } = await supabase.auth.resetPasswordForEmail(email);
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: OAUTH_REDIRECT,
+    });
     if (error) throw error;
+  }
+
+  /**
+   * Sets a new password on the CURRENT session. Only meaningful right after
+   * `completeDeepLink` has set a session from a recovery link — Supabase's
+   * `updateUser` changes whichever account is currently signed in, so this
+   * must never be exposed anywhere a normal signed-in user could reach it by
+   * accident (that's a legitimate "change my password" feature, just not
+   * this one).
+   */
+  async updatePassword(newPassword: string): Promise<void> {
+    const { error } = await supabase.auth.updateUser({ password: newPassword });
+    if (error) throw error;
+  }
+
+  /**
+   * Ends a recovery session started by tapping a reset-password email link,
+   * without the app-wide implications of a normal sign-out (there are none
+   * here — the session backing it only ever existed for the recovery flow).
+   * `scope: 'local'` matches deleteAccount()'s reasoning: this only clears
+   * the token stored on-device, no network round-trip needed.
+   */
+  async cancelPasswordRecovery(): Promise<void> {
+    try {
+      await supabase.auth.signOut({ scope: 'local' });
+    } catch {
+      // Best-effort — the auth listener still clears local state either way.
+    }
   }
 
   // ── OAuth ──────────────────────────────────────────────────────────────────
@@ -122,19 +164,48 @@ export class AuthService {
     const result = await WebBrowser.openAuthSessionAsync(data.url, OAUTH_REDIRECT);
     if (result.type !== 'success' || !result.url) return null; // dismissed / cancelled
 
-    return this.createSessionFromUrl(result.url);
+    const { session } = await this.completeDeepLink(result.url);
+    // completeDeepLink treats a tokenless URL as benign (see its own doc
+    // comment — a generic sakina:// link legitimately might not carry auth
+    // tokens). That tolerance is wrong here specifically: WebBrowser already
+    // reported this exact redirect as 'success', so at this call site the URL
+    // is guaranteed to be Supabase's own OAuth response — missing tokens on
+    // it means something broke, not "nothing to do." Re-assert the error this
+    // path used to throw before completeDeepLink was generalised, or a
+    // misconfigured provider fails completely silently instead of showing
+    // "Google Sign-In Failed".
+    if (!session) throw new Error('Sign-in did not return a complete session.');
+    return session;
   }
 
-  /** Exchange the OAuth redirect URL for a persisted Supabase session. */
-  private async createSessionFromUrl(url: string): Promise<Session | null> {
+  /**
+   * Exchanges any Supabase auth redirect URL — OAuth success, or a tapped
+   * password-recovery email link — for a persisted session, and reports
+   * `type` (Supabase's own `?type=recovery` param, `null` for a plain OAuth
+   * redirect) so the caller can tell which one it just completed.
+   *
+   * `detectSessionInUrl: false` in supabaseClient.ts means Supabase's own
+   * auto-detection never runs (there's no URL bar for it to read), so this
+   * manual exchange is required for BOTH flows, not just recovery — this
+   * used to be `createSessionFromUrl`, private to the Google OAuth path
+   * only, generalised here so the deep-link listener in AuthContext can
+   * reuse the exact same token-exchange logic instead of a second copy of it.
+   */
+  async completeDeepLink(url: string): Promise<{ session: Session | null; type: string | null }> {
     const { params, errorCode } = QueryParams.getQueryParams(url);
     if (errorCode) throw new Error(errorCode);
-    const { access_token, refresh_token } = params;
-    if (!access_token || !refresh_token) throw new Error('Sign-in did not return a complete session.');
+    const { access_token, refresh_token, type } = params;
+    if (!access_token || !refresh_token) {
+      // Not every URL the app's scheme receives is an auth link — a share
+      // link or a future feature could reuse the same `sakina://` scheme
+      // with no tokens at all. Absence is not an error here, just "nothing
+      // to complete."
+      return { session: null, type: null };
+    }
 
     const { data, error } = await supabase.auth.setSession({ access_token, refresh_token });
     if (error) throw error;
-    return data.session;
+    return { session: data.session, type: type ?? null };
   }
 
   /**

@@ -82,7 +82,14 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 8,
     elevation: 6,
-    overflow: 'hidden',
+    // NO `overflow: 'hidden'` here. Pairing it with `elevation` + a border
+    // radius on one view is the Android conflict documented in ShareSheet.tsx
+    // (the clip and the elevation shadow fight, and the shadow's own
+    // rounded-rect backing shows through the clip) — here it rendered as an
+    // angular blob sitting behind this circle. Nothing needs clipping anyway:
+    // the only child is a single centred 28px icon inside a 72px box, so the
+    // clip was buying nothing and costing the artifact. With the clip gone,
+    // elevation follows the view's real rounded outline on Android.
   },
 });
 

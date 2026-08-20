@@ -20,7 +20,7 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
-import { BlurView } from 'expo-blur';
+import { FrostedSurface } from '../components/FrostedSurface';
 import { MaterialCommunityIcons, Ionicons } from '@expo/vector-icons';
 import { AnimatedMandala } from '../components/AnimatedMandala';
 import { TwinklingStar } from '../components/TwinklingStar';
@@ -554,6 +554,14 @@ export default function ReflectionHistoryScreen() {
         data={reflections}
         keyExtractor={(r) => r.id}
         renderItem={renderEntry}
+        // Reflection history is unbounded user data and each row is a card
+        // with its own entrance animation, so the default windowSize of 21
+        // means a long-time user mounts (and animates) dozens of off-screen
+        // rows on every open. See PathsScreen for why removeClippedSubviews
+        // is deliberately left off.
+        initialNumToRender={8}
+        maxToRenderPerBatch={8}
+        windowSize={7}
         contentContainerStyle={[styles.listContent, { paddingBottom: insets.bottom + Layout.tabBarClearance }]}
         showsVerticalScrollIndicator={false}
         ItemSeparatorComponent={EntrySeparator}
@@ -574,7 +582,15 @@ export default function ReflectionHistoryScreen() {
               accessibilityRole="button"
               accessibilityLabel="Write a new reflection"
             >
-              <BlurView intensity={14} tint="dark" style={styles.composeCard}>
+              {/* composeCard carries no fill of its own, so on Android this
+                  surface was expo-blur's grey fallback at ~10% — very close to
+                  invisible against the celestial wash. Same light-glass value
+                  LibraryScreen's header surfaces use. */}
+              <FrostedSurface
+                intensity={14}
+                androidFill="rgba(255, 255, 255, 0.055)"
+                style={styles.composeCard}
+              >
                 <LinearGradient
                   colors={[`${COMPOSE_ACCENT}1F`, `${COMPOSE_ACCENT}08`]}
                   style={[StyleSheet.absoluteFill, { borderRadius: BorderRadius.xl }]}
@@ -591,7 +607,7 @@ export default function ReflectionHistoryScreen() {
                 <View style={[styles.composeIconCircle, { backgroundColor: `${COMPOSE_ACCENT}26` }]}>
                   <MaterialCommunityIcons name="pen" size={16} color={COMPOSE_ACCENT} />
                 </View>
-              </BlurView>
+              </FrostedSurface>
             </TouchableOpacity>
           </View>
         }

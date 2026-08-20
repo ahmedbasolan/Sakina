@@ -2,6 +2,30 @@ import { SpiritualPath, PathStep, UserPathProgress, Mood, SpecialEditionBundle }
 import { STATIC_SPIRITUAL_PATHS, SPECIAL_EDITION_BUNDLES } from '../data/staticPaths';
 import { SupabaseDataService } from './supabaseDataService';
 
+/**
+ * kv_store key holding the id of the journey whose day was opened most
+ * recently. `UserPathProgress` has no last-touched timestamp, so without this
+ * the Home screen's Sacred Journey card fell back to `startDate` descending —
+ * "most recently STARTED", which is not "the one I'm working through". A user
+ * partway through Rizq who then started a newer journey saw the card pinned to
+ * the newer one, and finishing a Rizq day changed nothing on Home.
+ *
+ * Deliberately local-only (kv_store, not a Supabase column): it is a UI
+ * pointer, not user content, so it needs no server migration and carries
+ * nothing worth syncing. It still names a journey the user was walking, so
+ * `clearAllLocalUserData` deletes this key along with the other personal ones.
+ */
+const LAST_OPENED_PATH_KEY = 'last_opened_path';
+
+/**
+ * Imported lazily rather than at module scope: `database/schema` pulls in the
+ * seeder and its AsyncStorage-backed dependencies, and importing that eagerly
+ * here broke pathsService.test.ts, which has no reason to know about the DB
+ * layer. Same pattern useHomeData uses to reach PathsService itself. Both
+ * callers are cold paths (opening a journey day, loading Home).
+ */
+const getDbQuery = async () => (await import('../database/schema')).dbQuery;
+
 export class PathsService {
   private static instance: PathsService;
 
@@ -14,9 +38,12 @@ export class PathsService {
 
   getAllPaths(_isPremium: boolean = false, _unlockedBundleIds: string[] = []): SpiritualPath[] {
     // Free-core model (spec §5): every journey's text is free, distress journeys
-    // included. The paid layer is the enhanced edition (audio/PDF), gated at the
-    // content level in a later phase — not by hiding the journey here.
-    // `_isPremium` / `_unlockedBundleIds` are reserved for early-access windows (§6).
+    // included, EXCEPT the paths PathsScreen.tsx's PREMIUM_GATED_PATHS names —
+    // those are real journeys deliberately staged behind Sakina Pro first, with
+    // a dated free-tier unlock. That gate lives screen-side (list + tap handler),
+    // not here — this always returns the full catalog and the params below are
+    // still unused; `_isPremium` / `_unlockedBundleIds` were reserved for
+    // early-access windows (§6) and that is what ended up building this.
     return STATIC_SPIRITUAL_PATHS;
   }
 
@@ -215,6 +242,36 @@ export class PathsService {
     } catch (error) {
       console.error('Error loading all path progress:', error);
       return [];
+    }
+  }
+
+  /** Remember which journey the user just opened a day of. See LAST_OPENED_PATH_KEY. */
+  async setLastOpenedPath(pathId: string): Promise<void> {
+    try {
+      const dbQuery = await getDbQuery();
+      await dbQuery(async (db) => {
+        await db.runAsync('INSERT OR REPLACE INTO kv_store (key, value) VALUES (?, ?)', [
+          LAST_OPENED_PATH_KEY,
+          pathId,
+        ]);
+      });
+    } catch (error) {
+      // Non-fatal: the Home card just falls back to its startDate ordering.
+      console.warn('[PathsService] Could not record last opened path:', error);
+    }
+  }
+
+  async getLastOpenedPath(): Promise<string | null> {
+    try {
+      const dbQuery = await getDbQuery();
+      const row = await dbQuery(async (db) =>
+        db.getFirstAsync<{ value: string }>('SELECT value FROM kv_store WHERE key = ?', [
+          LAST_OPENED_PATH_KEY,
+        ]),
+      );
+      return row?.value ?? null;
+    } catch {
+      return null;
     }
   }
 }
