@@ -34,6 +34,7 @@ export interface MoodConfig {
   id: Mood;
   label: string;
   sublabel: string;
+  arabic: string;
   color: string;
   bgColor: string;
   borderColor: string;

@@ -90,17 +90,19 @@ const SmartMoodCard = memo(function SmartMoodCard({
         accessibilityHint="Tap to receive guidance for this mood"
       >
         <LinearGradient
-          colors={[Colors.background.secondary, Colors.background.primary]}
-          style={[styles.card, { borderColor: isChecked ? mood.color + 'CC' : mood.color + '40' }]}
+          colors={mood.gradientColors}
+          style={[styles.card, { borderColor: isChecked ? mood.color : mood.borderColor }]}
           start={{ x: 0, y: 0 }}
           end={{ x: 0, y: 1 }}
         >
-          {/* Mood-color tint — same low-alpha diagonal wash as the streak bar */}
+          {/* Top sheen — accent backlight fading to transparent, same treatment
+              as the mood cards in onboarding's HeartCheckInScreen and the
+              check-in modal, so all three surfaces read as one family. */}
           <LinearGradient
-            colors={[mood.color + '1F', mood.color + '05']}
+            colors={[mood.color + '26', 'transparent']}
+            start={{ x: 0.5, y: 0 }}
+            end={{ x: 0.5, y: 0.6 }}
             style={StyleSheet.absoluteFill}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 1 }}
             pointerEvents="none"
           />
           {/* Checked glow overlay */}
@@ -115,12 +117,16 @@ const SmartMoodCard = memo(function SmartMoodCard({
               styles.iconCircle,
               isChecked
                 ? { backgroundColor: mood.color, borderColor: mood.color }
-                : { backgroundColor: mood.color + '26', borderColor: mood.color + '40' },
+                : { backgroundColor: mood.color + '20', borderColor: mood.color + '40' },
             ]}>
               {isLoading ? (
                 <ActivityIndicator size="small" color="#FFFFFF" />
               ) : (
-                <Ionicons name={mood.iconName as any} size={20} color="#FFFFFF" />
+                <Ionicons
+                  name={mood.iconName as any}
+                  size={20}
+                  color={isChecked ? Colors.background.primary : mood.color}
+                />
               )}
             </View>
             <View style={styles.cardText}>
@@ -137,10 +143,19 @@ const SmartMoodCard = memo(function SmartMoodCard({
                   styles.cardSublabel,
                   { color: 'rgba(255,255,255,0.75)', opacity: isChecked ? 0.9 : 0.7 },
                 ]}
+                numberOfLines={1}
               >
                 {mood.sublabel}
               </Text>
             </View>
+            <Text
+              style={[styles.arabicText, { color: mood.color }]}
+              numberOfLines={1}
+              accessibilityElementsHidden
+              importantForAccessibility="no"
+            >
+              {mood.arabic}
+            </Text>
           </View>
         </LinearGradient>
       </TouchableOpacity>
@@ -257,6 +272,12 @@ const styles = StyleSheet.create({
     fontFamily: Typography.fonts.serif,
     fontStyle: 'italic',
     marginTop: 2,
+  },
+  arabicText: {
+    fontFamily: Typography.fonts.arabic,
+    fontSize: 15,
+    fontWeight: '600',
+    opacity: 0.95,
   },
   expandBtn: {
     flexDirection: 'row',
