@@ -48,7 +48,7 @@ const STORE_REVIEW_URL = Platform.select({
   default: '',
 }) as string;
 
-const SUPPORT_EMAIL = 'support@sakinaapp.com';
+const SUPPORT_EMAIL = 'ahmed.basolan97@gmail.com';
 
 type SettingsNavProp = CompositeNavigationProp<
   StackNavigationProp<RootStackParamList, 'Settings'>,
