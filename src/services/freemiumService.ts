@@ -24,7 +24,7 @@ export interface DisplayPricing {
   trialDays: number;
 }
 import { revenueCat } from './revenueCatService';
-import { dbQuery } from '../database/schema';
+import { dbQuery } from '../database/connection';
 import { loadUpgradeAsk, saveUpgradeAsk, UpgradeAskState } from './upgradeAskStore';
 
 const PREMIUM_LIMITS: FreemiumLimits = {

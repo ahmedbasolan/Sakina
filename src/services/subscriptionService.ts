@@ -5,7 +5,7 @@
  * for offline reads; Supabase is updated so the server side stays in sync.
  * Phase 3 replaces the old local-only flow with real App Store purchases.
  */
-import { dbQuery } from '../database/schema';
+import { dbQuery } from '../database/connection';
 import { SubscriptionState, SubscriptionTier, SubscriptionType } from '../types';
 import { SupabaseDataService } from './supabaseDataService';
 import { revenueCat } from './revenueCatService';

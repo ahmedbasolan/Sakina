@@ -13,7 +13,7 @@ import { FreemiumService } from './freemiumService';
 import { getCachedGuidance, setCachedGuidance } from './windowGuidanceCache';
 import { getCachedSurah, fetchAndCacheSurah } from './quranService';
 import { logServiceError } from './errorLoggingService';
-import { dbQuery } from '../database/schema';
+import { dbQuery } from '../database/connection';
 
 export async function fetchWindowGuidance(
   rotationEngine: RotationEngine,

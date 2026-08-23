@@ -25,11 +25,13 @@ import { useFocusEffect } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { FrostedSurface } from '../components/FrostedSurface';
 import { MaterialCommunityIcons, Ionicons } from '@expo/vector-icons';
-import { dbQuery } from '../database/schema';
 import { AnimatedMandala } from '../components/AnimatedMandala';
 import { TwinklingStar } from '../components/TwinklingStar';
-import { loadReadingProgress } from './SurahReaderScreen';
-import type { ReadingProgress } from './SurahReaderScreen';
+import {
+  loadReadingProgress,
+  getAllBookmarks,
+  type ReadingProgress,
+} from '../services/readerRepository';
 import {
   getDownloadProgress,
   prefetchAllSurahs,
@@ -387,13 +389,7 @@ export default function LibraryScreen({ navigation }: any) {
   const loadSavedVerses = async () => {
     try {
       const [bookmarked, savedReflections] = await Promise.all([
-        dbQuery(async (db) =>
-          db.getAllAsync<any>(`
-            SELECT id, surahNumber, verseNumber, arabicText, translation, surahName, bookmarkedAt
-            FROM bookmarked_verses
-            ORDER BY bookmarkedAt DESC
-          `),
-        ),
+        getAllBookmarks(),
         ReflectionRepository.getInstance().getAll(),
       ]);
 

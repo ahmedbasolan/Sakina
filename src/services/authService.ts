@@ -5,7 +5,7 @@ import { makeRedirectUri } from 'expo-auth-session';
 import * as QueryParams from 'expo-auth-session/build/QueryParams';
 import { supabase } from '../config/supabaseClient';
 import { Session } from '@supabase/supabase-js';
-import { clearAllLocalUserData } from '../database/schema';
+import { clearAllLocalUserData } from '../database/operations';
 
 // Lets the in-app browser dismiss itself and hand the redirect back to the app.
 WebBrowser.maybeCompleteAuthSession();

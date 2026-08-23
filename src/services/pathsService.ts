@@ -18,13 +18,13 @@ import { SupabaseDataService } from './supabaseDataService';
 const LAST_OPENED_PATH_KEY = 'last_opened_path';
 
 /**
- * Imported lazily rather than at module scope: `database/schema` pulls in the
- * seeder and its AsyncStorage-backed dependencies, and importing that eagerly
- * here broke pathsService.test.ts, which has no reason to know about the DB
- * layer. Same pattern useHomeData uses to reach PathsService itself. Both
- * callers are cold paths (opening a journey day, loading Home).
+ * Imported lazily rather than at module scope: `database/connection` pulls in
+ * the seeder and its AsyncStorage-backed dependencies, and importing that
+ * eagerly here broke pathsService.test.ts, which has no reason to know about
+ * the DB layer. Same pattern useHomeData uses to reach PathsService itself.
+ * Both callers are cold paths (opening a journey day, loading Home).
  */
-const getDbQuery = async () => (await import('../database/schema')).dbQuery;
+const getDbQuery = async () => (await import('../database/connection')).dbQuery;
 
 export class PathsService {
   private static instance: PathsService;

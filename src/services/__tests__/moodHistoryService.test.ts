@@ -1,7 +1,7 @@
 /**
  * computeStreaks — streak walk with one "mercy day" (rahma) per streak.
  */
-jest.mock('../../database/schema', () => ({ dbQuery: jest.fn() }));
+jest.mock('../../database/connection', () => ({ dbQuery: jest.fn() }));
 jest.mock('../supabaseDataService', () => ({
   SupabaseDataService: { getInstance: () => ({}) },
 }));

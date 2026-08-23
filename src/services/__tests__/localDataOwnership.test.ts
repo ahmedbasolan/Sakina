@@ -72,7 +72,7 @@ const mockExecAsync = jest.fn((sql: string) => {
   return Promise.resolve();
 });
 
-jest.mock('../../database/schema', () => ({
+jest.mock('../../database/connection', () => ({
   dbQuery: jest.fn((op: any) =>
     op({
       getFirstAsync: mockGetFirstAsync,
@@ -82,6 +82,9 @@ jest.mock('../../database/schema', () => ({
       withTransactionAsync: jest.fn((fn: () => Promise<void>) => fn()),
     }),
   ),
+}));
+
+jest.mock('../../database/operations', () => ({
   clearAllLocalUserData: (...a: any[]) => mockClearAllLocalUserData(...(a as [])),
   LOCAL_DATA_OWNER_KEY: 'local_data_owner',
 }));

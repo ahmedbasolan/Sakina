@@ -36,8 +36,13 @@ jest.mock('../../services/hapticsService', () => ({
   },
 }));
 
-jest.mock('../../database/schema', () => ({
-  dbQuery: jest.fn(() => Promise.resolve(null)),
+jest.mock('../../services/reflectionRepository', () => ({
+  saveBookmarkMarker: jest.fn(() => Promise.resolve()),
+  deleteBookmarkMarker: jest.fn(() => Promise.resolve()),
+}));
+
+jest.mock('../../services/readerRepository', () => ({
+  deleteLegacyGuidanceBookmark: jest.fn(() => Promise.resolve()),
 }));
 
 const experience: any = {
@@ -317,36 +322,31 @@ describe('useGuidanceLogic — reflections', () => {
 });
 
 describe('useGuidanceLogic — handleSave bookmark cleanup', () => {
+  let saveMarker: jest.Mock;
+  let deleteMarker: jest.Mock;
+  let deleteLegacy: jest.Mock;
+
   beforeEach(() => {
     jest.clearAllMocks();
     const freemium = require('../../services/freemiumService').FreemiumService.getInstance();
     freemium.getRemainingRefreshes.mockReturnValue(3);
+    saveMarker = require('../../services/reflectionRepository').saveBookmarkMarker;
+    deleteMarker = require('../../services/reflectionRepository').deleteBookmarkMarker;
+    deleteLegacy = require('../../services/readerRepository').deleteLegacyGuidanceBookmark;
   });
 
-  afterEach(() => {
-    // Restore the module-level default so this custom implementation
-    // doesn't leak into other describe blocks in this file.
-    const { dbQuery } = require('../../database/schema');
-    (dbQuery as jest.Mock).mockImplementation(() => Promise.resolve(null));
-  });
+  it('saving a bookmark writes an empty-reflection marker row', async () => {
+    const { result } = render('Calm', jest.fn());
 
-  it('unsaving a bookmark only deletes empty-reflection rows, not a written reflection', async () => {
-    const { dbQuery } = require('../../database/schema');
-    let capturedSql = '';
-    let capturedArgs: any[] = [];
-    (dbQuery as jest.Mock).mockImplementation(async (fn: any) => {
-      const db = {
-        runAsync: jest.fn((sql: string, args: any[]) => {
-          if (sql.includes('DELETE FROM saved_reflections')) {
-            capturedSql = sql;
-            capturedArgs = args;
-          }
-          return Promise.resolve();
-        }),
-      };
-      return fn(db);
+    await act(async () => {
+      await result.current.handleSave(0); // save (bookmark on)
     });
 
+    expect(saveMarker).toHaveBeenCalledWith(expect.stringMatching(/^c1_a1_/), 'c1', 'a1', 'Calm');
+    expect(deleteMarker).not.toHaveBeenCalled();
+  });
+
+  it('unsaving a bookmark only deletes the empty-reflection marker, not a written reflection', async () => {
     const { result } = render('Calm', jest.fn());
 
     await act(async () => {
@@ -356,7 +356,10 @@ describe('useGuidanceLogic — handleSave bookmark cleanup', () => {
       await result.current.handleSave(0); // unsave (bookmark off)
     });
 
-    expect(capturedSql).toContain("reflection = ''");
-    expect(capturedArgs).toEqual([experience.content.id, experience.angle.id]);
+    // The `reflection = ''` guard lives inside ReflectionRepository — its own
+    // test asserts the SQL. The hook must ask for the marker delete with the
+    // right identity and also clean up any legacy bv_guidance_* reader row.
+    expect(deleteMarker).toHaveBeenCalledWith('c1', 'a1');
+    expect(deleteLegacy).toHaveBeenCalledWith('');
   });
 });

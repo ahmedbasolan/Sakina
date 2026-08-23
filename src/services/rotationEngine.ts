@@ -13,7 +13,7 @@
  */
 
 import { Mood, GuidanceExperience, ContentAngle, PrayerContext, Content } from '../types';
-import { getDatabase } from '../database/schema';
+import { getDatabase } from '../database/connection';
 import { SupabaseDataService } from './supabaseDataService';
 import { ContentRepository } from './contentRepository';
 import { SunnahEnricher } from './sunnahEnricher';
