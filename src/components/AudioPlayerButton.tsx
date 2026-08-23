@@ -152,6 +152,13 @@ function AudioPlayerButtonInternal({
 
   const [fallbackIndex, setFallbackIndex] = useState(0);
   const [currentVerseIndex, setCurrentVerseIndex] = useState(0);
+  // True once every fallback reciter has errored out for this verse. All
+  // entries in RECITER_FALLBACKS live on the same host (everyayah.com), so
+  // exhausting them usually means the HOST is unreachable, not that one
+  // reciter is missing a file — cycling reciters further won't help, and
+  // leaving the button silently inert with no error and no way to retry is
+  // its own bug independent of whatever made the connection fail.
+  const [loadFailed, setLoadFailed] = useState(false);
 
   // This component isn't remounted (no `key={verseKey}` at any call site), so
   // when the caller swaps to a different verse/range the fallback reciter and
@@ -160,6 +167,7 @@ function AudioPlayerButtonInternal({
   useEffect(() => {
     setFallbackIndex(0);
     setCurrentVerseIndex(0);
+    setLoadFailed(false);
   }, [verseKey]);
 
   // Get audio URLs (could be one or many for a range). Memoized so the effect
@@ -261,10 +269,12 @@ function AudioPlayerButtonInternal({
           console.log(`Falling back to reciter: ${RECITER_FALLBACKS[prev + 1].name}`);
           return prev + 1;
         }
+        console.warn('AudioPlayerButton: all reciter fallbacks failed for', verseKey);
+        setLoadFailed(true);
         return prev;
       });
     }
-  }, [status?.error]);
+  }, [status?.error, verseKey]);
 
   // Update immediately when fallback changes
   useEffect(() => {
@@ -351,6 +361,19 @@ function AudioPlayerButtonInternal({
   const handlePress = async () => {
     if (isLocked) return;
     try {
+      if (loadFailed) {
+        // Start over from the first reciter rather than resuming the
+        // exhausted fallback chain — whatever failed may well have been a
+        // transient connection problem, worth a genuinely fresh attempt.
+        setLoadFailed(false);
+        setFallbackIndex(0);
+        setCurrentVerseIndex(0);
+        const retryUrl = getAudioUrls(verseKey, RECITER_FALLBACKS[0])[0];
+        const uri = await resolveAudioSource(retryUrl);
+        player.replace({ uri });
+        player.play();
+        return;
+      }
       if (isPlaying) {
         player.pause();
       } else {
@@ -381,9 +404,11 @@ function AudioPlayerButtonInternal({
       accessibilityLabel={
         isLocked
           ? 'Premium feature: Audio recitation'
-          : isPlaying
-            ? 'Pause recitation'
-            : 'Play recitation'
+          : loadFailed
+            ? 'Recitation audio could not load. Tap to retry.'
+            : isPlaying
+              ? 'Pause recitation'
+              : 'Play recitation'
       }
       accessibilityRole="button"
     >
@@ -411,8 +436,12 @@ function AudioPlayerButtonInternal({
               width: size,
               height: size,
               borderRadius: size / 2,
-              borderColor: isPlaying ? `${color}55` : Colors.glass.border,
-              backgroundColor: isPlaying ? `${color}12` : Colors.glass.light,
+              borderColor: loadFailed
+                ? `${Colors.status.error}55`
+                : isPlaying ? `${color}55` : Colors.glass.border,
+              backgroundColor: loadFailed
+                ? `${Colors.status.error}12`
+                : isPlaying ? `${color}12` : Colors.glass.light,
             },
             containerStyle,
           ]}
@@ -422,6 +451,8 @@ function AudioPlayerButtonInternal({
           ) : isPlaying ? (
             // Wave bars replace the pause icon for a calm, visual audio cue
             <WaveBars height={iconPx} color={displayColor} />
+          ) : loadFailed ? (
+            <Ionicons name="refresh" size={iconPx} color={Colors.status.error} />
           ) : (
             <Ionicons
               name="volume-medium"
@@ -434,15 +465,22 @@ function AudioPlayerButtonInternal({
 
       {showLabel && (
         <Text
-          style={[styles.label, isPlaying && { color }, isLocked && { color: Colors.text.muted }]}
+          style={[
+            styles.label,
+            isPlaying && { color },
+            isLocked && { color: Colors.text.muted },
+            loadFailed && { color: Colors.status.error },
+          ]}
         >
           {isBuffering
             ? 'Loading...'
             : isLocked
               ? 'Listen to Recitation (Premium)'
-              : isPlaying
-                ? 'Playing'
-                : 'Listen to Recitation'}
+              : loadFailed
+                ? "Couldn't load — tap to retry"
+                : isPlaying
+                  ? 'Playing'
+                  : 'Listen to Recitation'}
         </Text>
       )}
     </TouchableOpacity>
