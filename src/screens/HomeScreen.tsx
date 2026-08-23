@@ -40,28 +40,40 @@ import { useHomeData } from '../hooks/useHomeData';
 // Card content (labels, Arabic terms, icons). All colour fields derive from
 // MoodColors in DesignSystem.ts — the single source of truth — so the accent a
 // user taps on the card always matches the immersive background it opens.
-const MOOD_CARD_CONTENT: { id: Mood; label: string; sublabel: string; iconName: string }[] = [
-  { id: 'Grateful',    label: 'GRATEFUL',    sublabel: 'Shukr',   iconName: 'heart' },
-  { id: 'Hopeful',     label: 'HOPEFUL',     sublabel: 'Amal',    iconName: 'sunny' },
-  { id: 'Calm',        label: 'PEACEFUL',    sublabel: 'Sukoon',  iconName: 'water' },
-  { id: 'Overwhelmed', label: 'OVERWHELMED', sublabel: 'Ghamm',   iconName: 'layers' },
-  { id: 'Tired',       label: 'TIRED',       sublabel: "Ta'ab",   iconName: 'moon' },
-  { id: 'Lonely',      label: 'LONELY',      sublabel: 'Wahshah', iconName: 'person' },
-  { id: 'Sad',         label: 'SAD',         sublabel: 'Huzn',    iconName: 'rainy' },
-  { id: 'Angry',       label: 'ANGRY',       sublabel: 'Ghadab',  iconName: 'flame' },
+// `arabic` is kept literally identical to MoodCheckInModal's GRID_MOODS /
+// TAWBAH_MOOD (not moodData.ts's MOOD_VISUALS, which disagrees with the modal
+// on a couple of words) so the Home grid and the check-in modal read as the
+// same vocabulary rather than two different translations of the same mood.
+const MOOD_CARD_CONTENT: { id: Mood; label: string; sublabel: string; arabic: string; iconName: string }[] = [
+  { id: 'Grateful',    label: 'GRATEFUL',    sublabel: 'Shukr',   arabic: 'شُكْر',    iconName: 'heart' },
+  { id: 'Hopeful',     label: 'HOPEFUL',     sublabel: 'Amal',    arabic: 'أَمَل',     iconName: 'sunny' },
+  // Sublabel matches the Arabic transliteration, not a synonym: 'Sukoon' (سُكُون,
+  // stillness) was paired with سَكِينَة (Sakeenah, the heart's tranquility — the
+  // app's own name) — a different word. 'Ghamm' (غَمّ, distress/grief) was paired
+  // with إِرْهَاق (Irhaq, exhaustion) — also a different word.
+  { id: 'Calm',        label: 'PEACEFUL',    sublabel: 'Sakeenah', arabic: 'سَكِينَة',  iconName: 'water' },
+  { id: 'Overwhelmed', label: 'OVERWHELMED', sublabel: 'Irhaq',    arabic: 'إِرْهَاق',  iconName: 'layers' },
+  { id: 'Tired',       label: 'TIRED',       sublabel: "Ta'ab",   arabic: 'تَعَب',     iconName: 'moon' },
+  { id: 'Lonely',      label: 'LONELY',      sublabel: 'Wahshah', arabic: 'وَحْشَة',   iconName: 'person' },
+  { id: 'Sad',         label: 'SAD',         sublabel: 'Huzn',    arabic: 'حُزْن',     iconName: 'rainy' },
+  { id: 'Angry',       label: 'ANGRY',       sublabel: 'Ghadab',  arabic: 'غَضَب',     iconName: 'flame' },
   // Guilty was defined in the Mood type, had MoodColors, had angles written for
   // it — and was missing from this array, so the only route to it was one deep
   // link out of the mood calendar. constants/index.ts calls tawbah "sacred;
   // never gate repentance"; omitting the card gated it.
-  { id: 'Guilty',      label: 'GUILTY',      sublabel: 'Nadam',   iconName: 'refresh-circle' },
+  // Arabic is the single word 'تَوْبَة' rather than the modal's wide-card
+  // 'نَدَم · تَوْبَة' compound — this tile is the compact grid format, which the
+  // modal itself only ever pairs with single words.
+  { id: 'Guilty',      label: 'GUILTY',      sublabel: 'Nadam',   arabic: 'تَوْبَة',   iconName: 'refresh-circle' },
 ];
 
-const moodConfigs: MoodConfig[] = MOOD_CARD_CONTENT.map(({ id, label, sublabel, iconName }) => {
+const moodConfigs: MoodConfig[] = MOOD_CARD_CONTENT.map(({ id, label, sublabel, arabic, iconName }) => {
   const mc = MoodColors[id];
   return {
     id,
     label,
     sublabel,
+    arabic,
     iconName,
     color: mc.accent,
     bgColor: mc.bgFill,

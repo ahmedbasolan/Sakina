@@ -3,7 +3,7 @@ import { Mood } from '../types';
 
 /**
  * Canonical display names for internal Mood ids. The stored id 'Calm' renders
- * as "Peaceful" (paired with Sukoon) everywhere in the UI — never show the
+ * as "Peaceful" (paired with Sakeenah) everywhere in the UI — never show the
  * raw id to users. Keep stored ids untouched: they live in user history rows.
  */
 const MOOD_LABELS: Record<Mood, string> = {
