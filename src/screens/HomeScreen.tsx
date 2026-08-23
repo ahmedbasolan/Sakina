@@ -32,8 +32,10 @@ import {
   CheckInBanner,
   SmartMoodGrid,
   StreakMilestoneBanner,
+  MoodCheckInModal,
 } from '../components/home';
 import { useHomeData } from '../hooks/useHomeData';
+import MoodCheckinPromptService, { CheckInWindow, getCurrentCheckInWindow } from '../services/moodCheckinPromptService';
 
 /* ─── Constants ──────────────────────────────────────────────── */
 
@@ -123,12 +125,13 @@ const QuillIcon = React.memo(function QuillIcon({ size, color }: { size: number;
    MAIN HOME SCREEN — rendering + navigation only
    ═══════════════════════════════════════════════════════════════ */
 
-export default function HomeScreen({ navigation }: { navigation: any }) {
+export default function HomeScreen({ navigation, route }: { navigation: any; route?: any }) {
   const { setSelectedMood, rotationEngine, setStreakCount, timeFormat } = useAppContext();
   const insets = useSafeAreaInsets();
 
   // ── All data loading delegated to useHomeData ─────────────────
   const {
+    prayerTimings,
     prayerContext,
     nextPrayer,
     showLocationModal, setShowLocationModal,
@@ -153,6 +156,38 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
     now,
   } = useHomeData({ setStreakCount });
 
+  // ── Twice-Daily Mood Check-In Prompt State ────────────────────
+  const [checkInWindow, setCheckInWindow] = useState<CheckInWindow | null>(null);
+
+  const checkMoodPrompt = useCallback(async () => {
+    try {
+      const promptService = MoodCheckinPromptService.getInstance();
+      const enabled = await promptService.isEnabled();
+      if (!enabled) return;
+      const window = await promptService.shouldShowPrompt(prayerTimings);
+      if (window) {
+        setCheckInWindow(window);
+      }
+    } catch {
+      // Non-fatal
+    }
+  }, [prayerTimings]);
+
+  // Check prompt on mount & when prayerTimings become available
+  useEffect(() => {
+    checkMoodPrompt();
+  }, [checkMoodPrompt]);
+
+  // Handle openCheckIn parameter from notification tap
+  useEffect(() => {
+    if (route?.params?.openCheckIn) {
+      const window: CheckInWindow =
+        route.params.window === 'night' ? 'night' : getCurrentCheckInWindow(prayerTimings);
+      setCheckInWindow(window);
+      navigation.setParams({ openCheckIn: undefined, window: undefined });
+    }
+  }, [route?.params?.openCheckIn, route?.params?.window, prayerTimings, navigation]);
+
   // ── View-layer animations (stay here — not data concerns) ─────
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const slideAnim = useRef(new Animated.Value(30)).current;
@@ -173,9 +208,10 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
       if (!hasMountedRef.current) { hasMountedRef.current = true; return; }
       loadStreakData();
       checkTodayMood();
+      checkMoodPrompt();
     });
     return unsub;
-  }, [navigation, loadStreakData, checkTodayMood]);
+  }, [navigation, loadStreakData, checkTodayMood, checkMoodPrompt]);
 
   // Reload prayer data when returning from PrayerTimesScreen (location may have changed).
   // hasPrayerFocusedRef skips the first focus (mount) — useHomeData already loads on bootstrap.
@@ -251,6 +287,18 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
       isHandlingTap.current = false;
     }
   }, [navigation, fetchWindowGuidance, setSelectedMood, setLocalSelectedMood, setCheckedInToday]);
+
+  const handleCheckInSelectMood = useCallback(
+    async (moodId: Mood) => {
+      setCheckInWindow(null);
+      await handleMoodTap(moodId);
+    },
+    [handleMoodTap],
+  );
+
+  const handleCheckInDismiss = useCallback(() => {
+    setCheckInWindow(null);
+  }, []);
 
   // Friday overrides the time-of-day window entirely with Surah Al-Kahf —
   // "whoever reads it on Friday will have light shining for him between the
@@ -617,6 +665,13 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
           currentLocation={{ city: currentCity, country: currentCountry }}
           onClose={() => setShowLocationModal(false)}
           onLocationSelected={() => loadPrayerData()}
+        />
+
+        <MoodCheckInModal
+          visible={checkInWindow !== null}
+          window={checkInWindow || 'morning'}
+          onSelectMood={handleCheckInSelectMood}
+          onDismiss={handleCheckInDismiss}
         />
       </LinearGradient>
     </View>

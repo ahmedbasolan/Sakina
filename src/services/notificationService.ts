@@ -5,13 +5,16 @@ import { PrayerTimings } from './prayerTimesService';
 import { logServiceError } from './errorLoggingService';
 import type { SpiritualWindow } from './dailyVerseService';
 import { buildWindowContent, loadLockscreenPrefs } from './lockscreenVerseService';
+import { getDailyGuidanceContent } from './dailyGuidanceContent';
 
 const REMINDER_SETTINGS_KEY = '@daily_reminder_settings';
 const DAILY_REMINDER_IDS_KEY = '@notif_ids/daily_reminder';
 const PRAYER_NOTIF_IDS_KEY = '@notif_ids/prayer';
 const SPIRITUAL_NOTIF_IDS_KEY = '@notif_ids/spiritual';
+const MOOD_CHECKIN_NOTIF_IDS_KEY = '@notif_ids/mood_checkin';
 const PRAYER_ENABLED_KEY = '@notif_settings/prayer';
 const SPIRITUAL_ENABLED_KEY = '@notif_settings/spiritual';
+const MOOD_CHECKIN_ENABLED_KEY = '@notif_settings/mood_checkin';
 
 // Android notification channels. On Android 8+ a scheduled notification only
 // shows with sound / heads-up if it targets a channel; without one the OS
@@ -21,6 +24,7 @@ const SPIRITUAL_ENABLED_KEY = '@notif_settings/spiritual';
 const CH_DAILY = 'daily-reminders';
 const CH_PRAYER = 'prayer-times';
 const CH_SPIRITUAL = 'spiritual-windows';
+const CH_MOOD_CHECKIN = 'mood-checkins';
 
 // iOS silently drops any local notification scheduled past this many
 // pending — no error, no callback, the OS just never delivers it. Android
@@ -142,6 +146,13 @@ class NotificationService {
           name: 'Spiritual Windows',
           importance: Notifications.AndroidImportance.DEFAULT,
           sound: 'default',
+          lightColor: '#D4AF37',
+        }),
+        Notifications.setNotificationChannelAsync(CH_MOOD_CHECKIN, {
+          name: 'Heart Check-Ins',
+          importance: Notifications.AndroidImportance.HIGH,
+          sound: 'default',
+          vibrationPattern: [0, 250, 250, 250],
           lightColor: '#D4AF37',
         }),
       ]);
@@ -323,6 +334,7 @@ class NotificationService {
           body: `It's time for the ${prayer} prayer in ${cityName}.`,
           sound: true,
           priority: Notifications.AndroidNotificationPriority.HIGH,
+          data: { action: 'prayer_times' },
         }, CH_PRAYER);
       }),
     );
@@ -392,10 +404,10 @@ class NotificationService {
     // Static copy shipped before lock screen verses existed. It remains the
     // payload whenever the feature is off or a window is opted out, so this
     // category never goes silent.
-    const staticCopy: Record<SpiritualWindow, { title: string; body: string }> = {
-      tahajjud: { title: 'The Silent Hour', body: 'It is the time of Tahajjud. A moment for deep reflection and conversation with your Lord.' },
-      morning: { title: 'Start with Light', body: 'The sun is rising. Remember Allah with the morning adhkars to protect your day.' },
-      evening: { title: 'Closing the Day', body: 'The day is ending. Find peace in the evening remembrance before the night sets in.' },
+    const staticCopy: Record<SpiritualWindow, { title: string; body: string; data: { action: string; window: string } }> = {
+      tahajjud: { title: 'The Silent Hour', body: 'It is the time of Tahajjud. A moment for deep reflection and conversation with your Lord.', data: { action: 'spiritual_window', window: 'tahajjud' } },
+      morning: { title: 'Start with Light', body: 'The sun is rising. Remember Allah with the morning adhkars to protect your day.', data: { action: 'spiritual_window', window: 'morning' } },
+      evening: { title: 'Closing the Day', body: 'The day is ending. Find peace in the evening remembrance before the night sets in.', data: { action: 'spiritual_window', window: 'evening' } },
     };
 
     // Read preferences once, not per notification — 21 reads of the same key
@@ -421,6 +433,83 @@ class NotificationService {
 
     await setTrackedIds(SPIRITUAL_NOTIF_IDS_KEY, [...tahajjudIds, ...morningIds, ...eveningIds]);
     await this.warnIfNearPendingCap('scheduleSpiritualReminders');
+  }
+
+  /**
+   * Schedules twice-daily heart check-in notifications (after Fajr and after Isha).
+   */
+  public async scheduleMoodCheckinNotifications(timings: PrayerTimings | PrayerTimings[]): Promise<void> {
+    return this.withLock(MOOD_CHECKIN_NOTIF_IDS_KEY, () => this.doScheduleMoodCheckinNotifications(timings));
+  }
+
+  private async doScheduleMoodCheckinNotifications(timings: PrayerTimings | PrayerTimings[]): Promise<void> {
+    const enabled = await this.getMoodCheckinEnabled();
+    if (!enabled) { await cancelTrackedCategory(MOOD_CHECKIN_NOTIF_IDS_KEY); return; }
+
+    const hasPermission = await this.requestPermissions();
+    if (!hasPermission) return;
+
+    const weekly = this.toWeekly(timings);
+    if (weekly.length === 0) return;
+
+    await cancelTrackedCategory(MOOD_CHECKIN_NOTIF_IDS_KEY);
+
+    const toHM = (mins: number) => ({ hour: Math.floor(mins / 60), minute: mins % 60 });
+
+    // Morning checkin: 30 mins after Fajr
+    // Night checkin: 30 mins after Isha
+    const perDay = weekly.map((day) => {
+      const fajrTime = this.parseTime(day.Fajr);
+      const ishaTime = this.parseTime(day.Isha);
+      const fajrValid = Number.isFinite(fajrTime.hours) && Number.isFinite(fajrTime.minutes);
+      const ishaValid = Number.isFinite(ishaTime.hours) && Number.isFinite(ishaTime.minutes);
+      const fajrMins = fajrTime.hours * 60 + fajrTime.minutes;
+      const ishaMins = ishaTime.hours * 60 + ishaTime.minutes;
+
+      return {
+        morningCheckin: fajrValid ? toHM((fajrMins + 30) % 1440) : null,
+        nightCheckin: ishaValid ? toHM((ishaMins + 30) % 1440) : null,
+      };
+    });
+
+    const [morningIds, nightIds] = await Promise.all([
+      this.scheduleWeeklyTrigger(
+        perDay.map((d) => d.morningCheckin),
+        {
+          title: 'Morning Light · Fajr Reflection',
+          body: 'How does your heart feel as this new day begins?',
+          sound: true,
+          data: { action: 'mood_checkin', window: 'morning' },
+        },
+        CH_MOOD_CHECKIN,
+      ),
+      this.scheduleWeeklyTrigger(
+        perDay.map((d) => d.nightCheckin),
+        {
+          title: 'Night Peace · Isha Remembrance',
+          body: 'Take a quiet moment before sleep. How does your soul feel tonight?',
+          sound: true,
+          data: { action: 'mood_checkin', window: 'night' },
+        },
+        CH_MOOD_CHECKIN,
+      ),
+    ]);
+
+    const scheduled = [...morningIds, ...nightIds];
+    await setTrackedIds(MOOD_CHECKIN_NOTIF_IDS_KEY, scheduled);
+    await this.warnIfNearPendingCap('scheduleMoodCheckinNotifications');
+  }
+
+  public async getMoodCheckinEnabled(): Promise<boolean> {
+    try {
+      const raw = await AsyncStorage.getItem(MOOD_CHECKIN_ENABLED_KEY);
+      return raw === null ? true : JSON.parse(raw);
+    } catch { return true; }
+  }
+
+  public async setMoodCheckinEnabled(value: boolean): Promise<void> {
+    await AsyncStorage.setItem(MOOD_CHECKIN_ENABLED_KEY, JSON.stringify(value));
+    if (!value) await this.withLock(MOOD_CHECKIN_NOTIF_IDS_KEY, () => cancelTrackedCategory(MOOD_CHECKIN_NOTIF_IDS_KEY));
   }
 
   public async getPrayerEnabled(): Promise<boolean> {
@@ -451,7 +540,7 @@ class NotificationService {
   }
 
   /**
-   * Cancels only prayer and spiritual notification categories.
+   * Cancels prayer, spiritual, and mood checkin notification categories.
    * Use in error paths where scheduling partially failed — preserves the
    * user's custom daily reminder which lives in a separate category.
    */
@@ -459,6 +548,7 @@ class NotificationService {
     await Promise.all([
       this.withLock(PRAYER_NOTIF_IDS_KEY, () => cancelTrackedCategory(PRAYER_NOTIF_IDS_KEY)),
       this.withLock(SPIRITUAL_NOTIF_IDS_KEY, () => cancelTrackedCategory(SPIRITUAL_NOTIF_IDS_KEY)),
+      this.withLock(MOOD_CHECKIN_NOTIF_IDS_KEY, () => cancelTrackedCategory(MOOD_CHECKIN_NOTIF_IDS_KEY)),
     ]);
   }
 
@@ -473,6 +563,7 @@ class NotificationService {
       setTrackedIds(DAILY_REMINDER_IDS_KEY, []),
       this.withLock(PRAYER_NOTIF_IDS_KEY, () => setTrackedIds(PRAYER_NOTIF_IDS_KEY, [])),
       this.withLock(SPIRITUAL_NOTIF_IDS_KEY, () => setTrackedIds(SPIRITUAL_NOTIF_IDS_KEY, [])),
+      this.withLock(MOOD_CHECKIN_NOTIF_IDS_KEY, () => setTrackedIds(MOOD_CHECKIN_NOTIF_IDS_KEY, [])),
     ]);
   }
 
@@ -514,16 +605,25 @@ class NotificationService {
     // Cancel existing daily reminder only — do NOT touch prayer/spiritual notifs.
     await cancelTrackedCategory(DAILY_REMINDER_IDS_KEY);
 
-    const id = await Notifications.scheduleNotificationAsync({
-      content: {
-        // Kept in the same voice as the prayer-window notifications above
-        // ("The Silent Hour", "Start with Light", "Closing the Day") — this
-        // one had drifted into app-store filler, and it is the reminder most
-        // users see most often.
+    // Smart rotation: each day's notification surfaces a different feature
+    // (mood check-in, mood calendar, journeys, Quran) so the single daily
+    // reminder drives discovery without adding extra notification categories.
+    // Best-effort — falls back to static content if the async lookup fails.
+    let content: Notifications.NotificationContentInput;
+    try {
+      const rotated = await getDailyGuidanceContent();
+      content = { ...rotated, sound: true };
+    } catch {
+      content = {
         title: 'A Quiet Minute',
         body: 'However today has gone so far, it is worth a minute with it.',
         sound: true,
-      },
+        data: { action: 'daily_guidance' },
+      };
+    }
+
+    const id = await Notifications.scheduleNotificationAsync({
+      content,
       // CALENDAR triggers are iOS-only in expo-notifications (see
       // CalendarTriggerInput's `@platform ios` in Notifications.types.d.ts) —
       // using it here threw "Trigger of type: calendar is not supported on

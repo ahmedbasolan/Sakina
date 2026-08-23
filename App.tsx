@@ -19,7 +19,7 @@ import { PostHogProvider } from 'posthog-react-native';
 import MainNavigator from './src/navigation/MainNavigator';
 import { useReduceMotion } from './src/hooks/useReduceMotion';
 import ErrorBoundary from './src/components/ErrorBoundary';
-import { initializeDatabase } from './src/database/schema';
+import { initializeDatabase } from './src/database/operations';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { NavigationContainer } from '@react-navigation/native';
 import { AppProvider } from './src/context/AppContext';
@@ -30,6 +30,7 @@ import { redactPII } from './src/services/errorLoggingService';
 // Side-effect import: defines the notification top-up background task at
 // module scope so headless OS launches (no React tree) can execute it.
 import { registerNotificationTopUpTask } from './src/services/notificationTopUpTask';
+import { navigationRef, setupNotificationRouter } from './src/services/notificationRouter';
 
 // ── Global error handlers ─────────────────────────────────────────────────
 // Capture unhandled JS errors and promise rejections before they silently vanish.
@@ -63,6 +64,15 @@ if (typeof (global as any).HermesInternal !== 'undefined') {
 
 function AppContent() {
   const { isDark } = useTheme();
+
+  // Set up the centralized notification tap router at the app root level.
+  // This catches taps regardless of which screen is mounted, and handles
+  // cold-start taps via getLastNotificationResponseAsync.
+  useEffect(() => {
+    const cleanup = setupNotificationRouter();
+    return cleanup;
+  }, []);
+
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaProvider>
@@ -197,7 +207,7 @@ export default function App() {
     <ThemeProvider>
       <AppProvider>
         <AuthProvider>
-          <NavigationContainer>
+          <NavigationContainer ref={navigationRef}>
             <PostHogProvider client={posthog} autocapture={{ captureScreens: false }}>
               <AppContent />
             </PostHogProvider>

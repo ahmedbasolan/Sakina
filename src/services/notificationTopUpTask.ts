@@ -43,11 +43,12 @@ export async function topUpScheduledNotifications(): Promise<boolean> {
   const { status } = await Notifications.getPermissionsAsync();
   if (status !== 'granted') return false;
 
-  const [prayerEnabled, spiritualEnabled] = await Promise.all([
+  const [prayerEnabled, spiritualEnabled, moodCheckinEnabled] = await Promise.all([
     notifications.getPrayerEnabled(),
     notifications.getSpiritualEnabled(),
+    notifications.getMoodCheckinEnabled(),
   ]);
-  if (!prayerEnabled && !spiritualEnabled) return false;
+  if (!prayerEnabled && !spiritualEnabled && !moodCheckinEnabled) return false;
 
   const prayerService = PrayerTimesService.getInstance();
   const savedLocation = await getUserLocation();
@@ -72,6 +73,7 @@ export async function topUpScheduledNotifications(): Promise<boolean> {
   // its own category, so one failing never wipes the other.
   await notifications.scheduleSpiritualReminders(timings);
   await notifications.schedulePrayerNotifications(timings, city);
+  await notifications.scheduleMoodCheckinNotifications(timings);
   return true;
 }
 
