@@ -10,8 +10,6 @@ export type Mood =
   | 'Hopeful'
   | 'Guilty'
   | 'Calm';
-export type Intensity = 'Low' | 'Medium' | 'High';
-export type Duration = 'Just now' | 'All day' | 'Long time';
 export type SubscriptionTier = 'free' | 'premium';
 export type SubscriptionType = 'monthly' | 'yearly' | 'trial';
 
@@ -118,25 +116,6 @@ export interface GuidanceExperience {
   content: Content;
   angle: ContentAngle;
 }
-
-export interface UserHistory {
-  id: string;
-  contentId: string;
-  angleId: string;
-  mood: Mood;
-  timestamp: number;
-}
-
-export interface SavedReflection {
-  id: string;
-  contentId: string;
-  angleId: string;
-  mood: Mood;
-  reflection: string;
-  timestamp: number;
-  isFavorite?: boolean; // Premium feature
-}
-
 
 export interface UserSession {
   id: string;
@@ -256,17 +235,6 @@ export interface UserPathProgress {
   completedDays: number[];
   isCompleted: boolean;
   completedAt?: number;
-}
-
-export interface AudioContent {
-  id: string;
-  type: 'quran' | 'dua';
-  contentId: string;
-  audioUrl: string;
-  reciter: string;
-  duration: number;
-  arabicText: string;
-  translation?: string;
 }
 
 export type LanguagePreference = 'english' | 'arabic';
