@@ -59,11 +59,6 @@ const SmartMoodCard = memo(function SmartMoodCard({
     } else {
       glowAnim.setValue(0);
     }
-    // isLoading is read in the condition above but was missing here, so when
-    // a mood tap's guidance fetch finished (isLoading true -> false) with
-    // isChecked already true and unchanged, this effect never re-ran — the
-    // "checked" glow that's supposed to start once loading settles never
-    // played on the normal success path.
   }, [isChecked, isLoading, reduceMotion]);
 
   const handlePress = useCallback(() => {
@@ -90,21 +85,20 @@ const SmartMoodCard = memo(function SmartMoodCard({
         accessibilityHint="Tap to receive guidance for this mood"
       >
         <LinearGradient
-          colors={mood.gradientColors}
+          // Same formula as the check-in modal's cards: the mood's own dark
+          // fill blending into a fixed neutral navy, NOT the brighter
+          // `card.gradient` (that one is tuned for a different, more
+          // saturated surface — using it here read far more vivid than the
+          // modal's muted glass-and-color wash it was meant to match).
+          colors={
+            isChecked
+              ? [mood.color + '35', mood.color + '15']
+              : [mood.bgColor + 'F0', '#0B1626D0']
+          }
           style={[styles.card, { borderColor: isChecked ? mood.color : mood.borderColor }]}
           start={{ x: 0, y: 0 }}
-          end={{ x: 0, y: 1 }}
+          end={{ x: 1, y: 1 }}
         >
-          {/* Top sheen — accent backlight fading to transparent, same treatment
-              as the mood cards in onboarding's HeartCheckInScreen and the
-              check-in modal, so all three surfaces read as one family. */}
-          <LinearGradient
-            colors={[mood.color + '26', 'transparent']}
-            start={{ x: 0.5, y: 0 }}
-            end={{ x: 0.5, y: 0.6 }}
-            style={StyleSheet.absoluteFill}
-            pointerEvents="none"
-          />
           {/* Checked glow overlay */}
           <Animated.View
             style={[
@@ -112,7 +106,11 @@ const SmartMoodCard = memo(function SmartMoodCard({
               { borderRadius: 15, backgroundColor: mood.color, opacity: glowOpacity },
             ]}
           />
-          <View style={styles.cardRow}>
+          {/* Top row: icon + Arabic, bookending the card like the check-in
+              modal — squeezing these onto one row with the English label
+              truncated the longer words ("Sakeenah", "Wahshah") under
+              ellipsis. Two rows gives everything room to breathe. */}
+          <View style={styles.cardTopRow}>
             <View style={[
               styles.iconCircle,
               isChecked
@@ -124,29 +122,10 @@ const SmartMoodCard = memo(function SmartMoodCard({
               ) : (
                 <Ionicons
                   name={mood.iconName as any}
-                  size={20}
+                  size={18}
                   color={isChecked ? Colors.background.primary : mood.color}
                 />
               )}
-            </View>
-            <View style={styles.cardText}>
-              <Text
-                style={[styles.cardLabel, { color: '#FFFFFF' }]}
-                numberOfLines={1}
-                adjustsFontSizeToFit
-                minimumFontScale={0.86}
-              >
-                {mood.label.charAt(0) + mood.label.slice(1).toLowerCase()}
-              </Text>
-              <Text
-                style={[
-                  styles.cardSublabel,
-                  { color: 'rgba(255,255,255,0.75)', opacity: isChecked ? 0.9 : 0.7 },
-                ]}
-                numberOfLines={1}
-              >
-                {mood.sublabel}
-              </Text>
             </View>
             <Text
               style={[styles.arabicText, { color: mood.color }]}
@@ -155,6 +134,25 @@ const SmartMoodCard = memo(function SmartMoodCard({
               importantForAccessibility="no"
             >
               {mood.arabic}
+            </Text>
+          </View>
+          <View style={styles.cardBottom}>
+            <Text
+              style={[styles.cardLabel, { color: '#FFFFFF' }]}
+              numberOfLines={1}
+              adjustsFontSizeToFit
+              minimumFontScale={0.86}
+            >
+              {mood.label.charAt(0) + mood.label.slice(1).toLowerCase()}
+            </Text>
+            <Text
+              style={[
+                styles.cardSublabel,
+                { color: 'rgba(255,255,255,0.75)', opacity: isChecked ? 0.9 : 0.7 },
+              ]}
+              numberOfLines={1}
+            >
+              {mood.sublabel}
             </Text>
           </View>
         </LinearGradient>
@@ -241,26 +239,26 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     padding: 14,
     borderWidth: 1.5,
-    minHeight: 80,
+    minHeight: 94,
     position: 'relative',
     overflow: 'hidden',
-    justifyContent: 'center',
+    justifyContent: 'space-between',
   },
-  cardRow: {
+  cardTopRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
+    justifyContent: 'space-between',
   },
   iconCircle: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
+    width: 32,
+    height: 32,
+    borderRadius: 16,
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 1,
   },
-  cardText: {
-    flex: 1,
+  cardBottom: {
+    gap: 1,
   },
   cardLabel: {
     fontSize: 14,
@@ -275,7 +273,7 @@ const styles = StyleSheet.create({
   },
   arabicText: {
     fontFamily: Typography.fonts.arabic,
-    fontSize: 15,
+    fontSize: 14,
     fontWeight: '600',
     opacity: 0.95,
   },
