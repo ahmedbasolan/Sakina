@@ -83,6 +83,11 @@ export const STORAGE_KEYS = {
   dailyVerse: '@daily_verse',
   dailyHadith: '@daily_hadith',
   backgroundTheme: '@quietheart_background_theme',
+
+  // Crisis helpline banner — stores the local "YYYY-MM-DD" it was last shown,
+  // so it surfaces at most once per day instead of on every Sad/Overwhelmed
+  // visit (see CrisisResourceLine.tsx).
+  crisisLineLastShown: '@quietheart_crisis_line_last_shown',
 } as const;
 
 export const FREEMIUM_LIMITS = {

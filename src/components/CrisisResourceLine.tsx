@@ -1,8 +1,11 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Linking } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Colors, Spacing, Typography, BorderRadius } from '../theme/DesignSystem';
 import { Mood } from '../types';
+import { formatDateYMD } from '../utils/date';
+import { STORAGE_KEYS } from '../constants';
 
 /**
  * Moods where the app's own content already reaches for crisis-adjacent
@@ -31,15 +34,42 @@ interface CrisisResourceLineProps {
 
 /**
  * A quiet, dismissible line pointing to a real, free, confidential resource.
- * Not a modal, does not block the verse, and is deliberately NOT rate-limited
- * or "seen once and never again" — it reappears on every qualifying mood tap,
- * including this same mood again later, because a safety net isn't something
- * to nag-suppress the way a marketing prompt would be. Dismissing it only
- * clears it for this screen instance.
+ * Not a modal, does not block the verse. It surfaces at most once per local
+ * calendar day for a qualifying mood tap (a safety net shouldn't nag on every
+ * visit, but it also shouldn't be suppressed forever the way a marketing
+ * prompt would be). The "last shown" date is persisted in AsyncStorage, so a
+ * fresh app launch the same day does not re-show it; the next day it returns.
  */
 export function CrisisResourceLine({ mood }: CrisisResourceLineProps) {
   const [dismissed, setDismissed] = useState(false);
-  if (dismissed || !CRISIS_ELIGIBLE_MOODS.has(mood)) return null;
+  const [loaded, setLoaded] = useState(false);
+  const eligible = CRISIS_ELIGIBLE_MOODS.has(mood);
+
+  useEffect(() => {
+    if (!eligible) return;
+    let mounted = true;
+    (async () => {
+      const today = formatDateYMD();
+      const stored = await AsyncStorage.getItem(STORAGE_KEYS.crisisLineLastShown);
+      if (!mounted) return;
+      if (stored === today) {
+        setDismissed(true);
+      } else {
+        await AsyncStorage.setItem(STORAGE_KEYS.crisisLineLastShown, today);
+      }
+      setLoaded(true);
+    })();
+    return () => {
+      mounted = false;
+    };
+  }, [eligible]);
+
+  const handleDismiss = () => {
+    setDismissed(true);
+    AsyncStorage.setItem(STORAGE_KEYS.crisisLineLastShown, formatDateYMD()).catch(() => {});
+  };
+
+  if (dismissed || !eligible || !loaded) return null;
 
   return (
     <View style={styles.row}>
@@ -57,7 +87,7 @@ export function CrisisResourceLine({ mood }: CrisisResourceLineProps) {
         </Text>
       </TouchableOpacity>
       <TouchableOpacity
-        onPress={() => setDismissed(true)}
+        onPress={handleDismiss}
         hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
         accessibilityRole="button"
         accessibilityLabel="Dismiss"
