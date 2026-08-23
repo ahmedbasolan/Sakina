@@ -392,11 +392,20 @@ const ShareSheet = ({ isVisible, onClose, isPremium, onUpgrade, content }: Share
                   // instead of covering the card, leaving bare strips at the
                   // sides. A directly absoluteFill'd Image has no such
                   // proxy step and reliably covers the card's real box.
+                  //
+                  // The themes are mostly landscape photos (1.5–1.78:1) but
+                  // the card is a portrait box whose height grows with the
+                  // verse, so `cover` scales the photo to card width and
+                  // crops away most of it vertically — only a center strip
+                  // shows. `contain` scales the photo to fit the box whole,
+                  // adapting to any card size; the card's solid dark
+                  // backgroundColor (below) fills the letterbox bands so the
+                  // exported PNG never carries transparent gaps.
                   <View style={styles.previewCard}>
                     <Image
                       source={background.imageSource}
                       style={StyleSheet.absoluteFillObject}
-                      resizeMode="cover"
+                      resizeMode="contain"
                     />
                     <LinearGradient
                       colors={['transparent', 'rgba(0,0,0,0.65)']}
@@ -706,6 +715,10 @@ const styles = StyleSheet.create({
   previewCard: {
     width: '100%',
     minHeight: 300,
+    // Solid ground behind `contain`-fitted photo backgrounds — the
+    // letterbox bands inherit this instead of exporting as transparent
+    // PNG gaps. The gradient branch paints over it entirely.
+    backgroundColor: Colors.background.primary,
     borderRadius: BorderRadius.xxl,
     overflow: 'hidden',
     paddingHorizontal: Spacing.xl,
