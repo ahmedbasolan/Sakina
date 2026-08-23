@@ -18,12 +18,19 @@ import { Ionicons } from '@expo/vector-icons';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Svg, { Path } from 'react-native-svg';
 import { Colors, Spacing, BorderRadius, Typography, Animations } from '../theme/DesignSystem';
-import { dbQuery } from '../database/schema';
 import {
   getCachedSurah,
   fetchAndCacheSurah,
   QuranVerse,
 } from '../services/quranService';
+import {
+  ReadingProgress,
+  loadReadingProgress,
+  saveProgress,
+  loadBookmarksForSurah,
+  addBookmark,
+  removeBookmark,
+} from '../services/readerRepository';
 import { CornerFrame } from '../components/CornerFrame';
 import ArabicText from '../components/ArabicText';
 import AudioPlayerButton from '../components/AudioPlayerButton';
@@ -40,16 +47,8 @@ import { isolateBidiRuns } from '../utils/bidiText';
 
 type Verse = QuranVerse;
 
-export interface ReadingProgress {
-  surahNumber: number;
-  verseIndex: number;
-  surahName: string;
-  timestamp: number;
-}
-
 // ─── constants ────────────────────────────────────────────────────────────────
 
-const PROGRESS_KEY = 'quran_reading_progress';
 const GOLD = Colors.accent.primary;
 const HIT_SLOP = { top: 8, bottom: 8, left: 8, right: 8 };
 
@@ -63,63 +62,6 @@ interface TafsirEntry {
 // Module-level tafsir cache — null = "fetched but no clean content" (sentinel to
 // prevent repeated network calls for dense-isnad verses).
 const tafsirCache = new Map<string, TafsirEntry | null>();
-
-// ─── DB helpers ───────────────────────────────────────────────────────────────
-
-export async function loadReadingProgress(): Promise<ReadingProgress | null> {
-  return dbQuery(async (db) => {
-    const row = await db.getFirstAsync<{ value: string }>(
-      'SELECT value FROM kv_store WHERE key = ?',
-      [PROGRESS_KEY],
-    );
-    if (!row) return null;
-    try { return JSON.parse(row.value) as ReadingProgress; } catch { return null; }
-  });
-}
-
-async function saveProgress(progress: ReadingProgress): Promise<void> {
-  await dbQuery(async (db) => {
-    await db.runAsync(
-      'INSERT OR REPLACE INTO kv_store (key, value) VALUES (?, ?)',
-      [PROGRESS_KEY, JSON.stringify(progress)],
-    );
-  });
-}
-
-async function loadBookmarksForSurah(surahNumber: number): Promise<Set<number>> {
-  return dbQuery(async (db) => {
-    const rows = await db.getAllAsync<{ verseNumber: number }>(
-      'SELECT verseNumber FROM bookmarked_verses WHERE surahNumber = ?',
-      [surahNumber],
-    );
-    return new Set(rows.map((r) => r.verseNumber));
-  });
-}
-
-async function addBookmark(
-  verse: Verse,
-  surahNumber: number,
-  surahName: string,
-): Promise<void> {
-  await dbQuery(async (db) => {
-    const id = `bv_${surahNumber}_${verse.numberInSurah}_${Date.now()}`;
-    await db.runAsync(
-      `INSERT OR IGNORE INTO bookmarked_verses
-        (id, surahNumber, verseNumber, arabicText, translation, surahName, bookmarkedAt)
-       VALUES (?, ?, ?, ?, ?, ?, ?)`,
-      [id, surahNumber, verse.numberInSurah, verse.arabic, verse.translation, surahName, Date.now()],
-    );
-  });
-}
-
-async function removeBookmark(surahNumber: number, verseNumber: number): Promise<void> {
-  await dbQuery(async (db) => {
-    await db.runAsync(
-      'DELETE FROM bookmarked_verses WHERE surahNumber = ? AND verseNumber = ?',
-      [surahNumber, verseNumber],
-    );
-  });
-}
 
 // Patterns that mark a sentence as a hadith chain / attribution — not insight.
 // A sentence matching any of these is dropped entirely.

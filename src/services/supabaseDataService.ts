@@ -9,7 +9,8 @@
  */
 
 import { supabase } from '../config/supabaseClient';
-import { dbQuery, clearAllLocalUserData, LOCAL_DATA_OWNER_KEY } from '../database/schema';
+import { dbQuery } from '../database/connection';
+import { clearAllLocalUserData, LOCAL_DATA_OWNER_KEY } from '../database/operations';
 import { Mood, PrayerContext } from '../types';
 import { withTimeout } from '../utils';
 

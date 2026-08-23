@@ -24,7 +24,10 @@ import { FrostedSurface } from '../components/FrostedSurface';
 import { MaterialCommunityIcons, Ionicons } from '@expo/vector-icons';
 import { AnimatedMandala } from '../components/AnimatedMandala';
 import { TwinklingStar } from '../components/TwinklingStar';
-import { dbQuery } from '../database/schema';
+import {
+  getFreeformReflections,
+  insertFreeformReflection,
+} from '../services/reflectionRepository';
 import { RotationEngine } from '../services/rotationEngine';
 import { useReduceMotion } from '../hooks/useReduceMotion';
 import { MOOD_ICON } from '../constants/moodIcons';
@@ -462,12 +465,7 @@ export default function ReflectionHistoryScreen() {
   const loadReflections = async () => {
     try {
       const [freeform, saved] = await Promise.all([
-        dbQuery(async (db) => {
-          const rows = await db.getAllAsync(
-            `SELECT id, title, content, mood, createdAt FROM reflections ORDER BY createdAt DESC LIMIT 50`
-          );
-          return rows as any[];
-        }),
+        getFreeformReflections(),
         RotationEngine.getInstance().getSavedReflections(),
       ]);
 
@@ -508,12 +506,7 @@ export default function ReflectionHistoryScreen() {
   const handleSaveReflection = async (text: string, title: string, mood?: string) => {
     try {
       const id = `reflection_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
-      await dbQuery(async (db) => {
-        await db.runAsync(
-          `INSERT INTO reflections (id, title, content, mood, createdAt) VALUES (?, ?, ?, ?, ?)`,
-          [id, title || 'Reflection', text, mood || null, Date.now()]
-        );
-      });
+      await insertFreeformReflection(id, title, text, mood);
       await loadReflections();
     } catch (e) {
       logServiceError('ReflectionHistoryScreen', 'saveReflection', e instanceof Error ? e : new Error(String(e)));

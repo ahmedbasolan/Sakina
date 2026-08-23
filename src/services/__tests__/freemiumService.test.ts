@@ -5,7 +5,7 @@ jest.mock('../../data/staticPaths', () => ({
   SPECIAL_EDITION_BUNDLES: [{ id: 'bundle-1', includesPremiumTrial: true }],
 }));
 
-jest.mock('../../database/schema', () => ({
+jest.mock('../../database/connection', () => ({
   getDatabase: jest.fn(),
   dbQuery: jest.fn((op) =>
     op({
@@ -59,7 +59,6 @@ jest.mock('../../constants', () => ({
     maxSavedItems: 30,
     rotationHistoryDays: 30,
   },
-  isMercyMood: jest.fn(() => false),
   UPGRADE_ASK_COOLDOWN_MS: 3 * 24 * 60 * 60 * 1000, // 3 days
   // No SUBSCRIPTION_PRICING — prices come only from the store. See the note in
   // src/constants/index.ts for why a hardcoded fallback was removed.
@@ -301,7 +300,7 @@ describe('FreemiumService', () => {
 
     it('allows saving for free users under the cap', async () => {
       mockSubscriptionService.isPremium.mockReturnValue(false);
-      const { dbQuery } = require('../../database/schema');
+      const { dbQuery } = require('../../database/connection');
       dbQuery.mockImplementationOnce((op: any) =>
         op({ getFirstAsync: jest.fn().mockResolvedValue({ n: 5 }) }),
       );
@@ -310,7 +309,7 @@ describe('FreemiumService', () => {
 
     it('blocks saving for free users at the cap', async () => {
       mockSubscriptionService.isPremium.mockReturnValue(false);
-      const { dbQuery } = require('../../database/schema');
+      const { dbQuery } = require('../../database/connection');
       dbQuery.mockImplementationOnce((op: any) =>
         op({ getFirstAsync: jest.fn().mockResolvedValue({ n: 30 }) }),
       );

@@ -4,22 +4,8 @@ import { HapticsService } from '../services/hapticsService';
 import { FreemiumService } from '../services/freemiumService';
 import { PreferencesService } from '../services/preferencesService';
 import { GuidanceExperience, Mood, UserPreferences } from '../types';
-import { dbQuery } from '../database/schema';
-
-// ─── Helper: parse "Surah Al-Baqarah 2:255" → surah metadata ─────────────────
-// Only needed to clean up legacy `bv_guidance_*` bookmarked_verses rows written
-// by older builds (see handleSave's unsave branch below) — new saves never
-// create these rows anymore.
-function parseQuranSource(
-  source: string,
-): { surahNumber: number; verseNumber: number } | null {
-  const m = source.match(/^Surah\s+(.+?)\s+(\d+):(\d+)/);
-  if (!m) return null;
-  return {
-    surahNumber: parseInt(m[2], 10),
-    verseNumber: parseInt(m[3], 10),
-  };
-}
+import { saveBookmarkMarker, deleteBookmarkMarker } from '../services/reflectionRepository';
+import { deleteLegacyGuidanceBookmark } from '../services/readerRepository';
 
 export const useGuidanceLogic = (
   experience: GuidanceExperience,
@@ -152,33 +138,16 @@ export const useGuidanceLogic = (
     try {
       if (newSaved) {
         const id = `${experience.content.id}_${experience.angle.id}_${Date.now()}`;
-        await dbQuery(async (db) => {
-          await db.runAsync(
-            `INSERT OR REPLACE INTO saved_reflections (id, contentId, angleId, mood, reflection, timestamp)
-                         VALUES (?, ?, ?, ?, ?, ?)`,
-            [id, experience.content.id, experience.angle.id, mood, '', Date.now()],
-          );
-          return null;
-        });
+        await saveBookmarkMarker(id, experience.content.id, experience.angle.id, mood);
       } else {
+        // Only the empty-reflection bookmark-marker row created by the
+        // `newSaved` branch above — a real written reflection (non-empty
+        // text) at the same contentId/angleId must survive an un-bookmark.
+        await deleteBookmarkMarker(experience.content.id, experience.angle.id);
         // Also clean up a legacy `bv_guidance_*` bookmarked_verses row if one
         // exists from before the mirror-write was removed — otherwise a verse
         // saved on an older build could never be un-bookmarked again.
-        const quranInfo = parseQuranSource(experience.content.source || '');
-        await dbQuery(async (db) => {
-          // Only the empty-reflection bookmark-marker row created by the
-          // `newSaved` branch above — a real written reflection (non-empty
-          // text) at the same contentId/angleId must survive an un-bookmark.
-          await db.runAsync(
-            `DELETE FROM saved_reflections WHERE contentId = ? AND angleId = ? AND reflection = ''`,
-            [experience.content.id, experience.angle.id],
-          );
-          if (quranInfo) {
-            const bmId = `bv_guidance_${quranInfo.surahNumber}_${quranInfo.verseNumber}`;
-            await db.runAsync(`DELETE FROM bookmarked_verses WHERE id = ?`, [bmId]);
-          }
-          return null;
-        });
+        await deleteLegacyGuidanceBookmark(experience.content.source || '');
       }
     } catch (error) {
       console.error('Error saving guidance:', error);
