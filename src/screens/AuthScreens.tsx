@@ -486,12 +486,16 @@ export function SignUpScreen({ navigation }: AuthScreenProps) {
     setIsLoading(true);
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     try {
-      await authService.signUpWithEmail(trimmedEmail, password, trimmedName);
-      Alert.alert(
-        'Success',
-        'Your account has been created. Please check your email for verification.',
-        [{ text: 'OK', onPress: () => navigation.navigate('Login') }],
-      );
+      const data = await authService.signUpWithEmail(trimmedEmail, password, trimmedName);
+      if (data?.session) {
+        goToMain(navigation, completePasswordRecovery);
+      } else {
+        Alert.alert(
+          'Account Created',
+          'Please check your email to verify your account before signing in.',
+          [{ text: 'OK', onPress: () => navigation.navigate('Login') }],
+        );
+      }
     } catch (error: any) {
       Alert.alert('Sign Up Failed', error.message || 'We could not create your account. Please try again in a moment.');
     } finally {
