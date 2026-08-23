@@ -170,6 +170,7 @@ export async function buildWindowContent(
     title: WINDOW_TITLES[window],
     body: buildVerseBody(verse, prefs.showTransliteration),
     sound: true,
+    data: { action: 'spiritual_window', window },
   };
 
   // Attachments are genuinely iOS-only, confirmed by reading the native

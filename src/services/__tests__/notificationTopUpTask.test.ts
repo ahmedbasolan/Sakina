@@ -21,8 +21,10 @@ jest.mock('../notificationService', () => {
   const instance = {
     getPrayerEnabled: jest.fn(),
     getSpiritualEnabled: jest.fn(),
+    getMoodCheckinEnabled: jest.fn(),
     scheduleSpiritualReminders: jest.fn().mockResolvedValue(undefined),
     schedulePrayerNotifications: jest.fn().mockResolvedValue(undefined),
+    scheduleMoodCheckinNotifications: jest.fn().mockResolvedValue(undefined),
   };
   return { __esModule: true, default: { getInstance: () => instance }, __instance: instance };
 });
@@ -76,15 +78,17 @@ beforeEach(() => {
   mockGetPermissions.mockResolvedValue({ status: 'granted' });
   mockNotificationInstance.getPrayerEnabled.mockResolvedValue(true);
   mockNotificationInstance.getSpiritualEnabled.mockResolvedValue(true);
+  mockNotificationInstance.getMoodCheckinEnabled.mockResolvedValue(true);
   mockNotificationInstance.scheduleSpiritualReminders.mockResolvedValue(undefined);
   mockNotificationInstance.schedulePrayerNotifications.mockResolvedValue(undefined);
+  mockNotificationInstance.scheduleMoodCheckinNotifications.mockResolvedValue(undefined);
   mockPrayerInstance.getTimingsByCity.mockResolvedValue({ timings: TIMINGS });
   mockPrayerInstance.getWeeklyLocalTimings.mockReturnValue(WEEKLY_TIMINGS);
   mockRegisterTaskAsync.mockResolvedValue(undefined);
 });
 
 describe('topUpScheduledNotifications', () => {
-  it('re-schedules both categories from on-device weekly timings when coordinates are saved', async () => {
+  it('re-schedules all categories from on-device weekly timings when coordinates are saved', async () => {
     mockGetUserLocation.mockResolvedValue({
       city: 'Dubai', country: 'AE', latitude: 25.2, longitude: 55.3,
     });
@@ -98,6 +102,7 @@ describe('topUpScheduledNotifications', () => {
     expect(mockPrayerInstance.getTimingsByCity).not.toHaveBeenCalled();
     expect(mockNotificationInstance.scheduleSpiritualReminders).toHaveBeenCalledWith(WEEKLY_TIMINGS);
     expect(mockNotificationInstance.schedulePrayerNotifications).toHaveBeenCalledWith(WEEKLY_TIMINGS, 'Dubai');
+    expect(mockNotificationInstance.scheduleMoodCheckinNotifications).toHaveBeenCalledWith(WEEKLY_TIMINGS);
   });
 
   it('falls back to city lookup (Dubai default) when no location is saved', async () => {
@@ -109,6 +114,7 @@ describe('topUpScheduledNotifications', () => {
     expect(mockPrayerInstance.getTimingsByCity).toHaveBeenCalledWith('Dubai', 'UAE');
     expect(mockPrayerInstance.getWeeklyLocalTimings).not.toHaveBeenCalled();
     expect(mockNotificationInstance.scheduleSpiritualReminders).toHaveBeenCalledWith(TIMINGS);
+    expect(mockNotificationInstance.scheduleMoodCheckinNotifications).toHaveBeenCalledWith(TIMINGS);
   });
 
   it('does nothing without notification permission (never prompts headless)', async () => {
@@ -121,9 +127,10 @@ describe('topUpScheduledNotifications', () => {
     expect(mockNotificationInstance.schedulePrayerNotifications).not.toHaveBeenCalled();
   });
 
-  it('does nothing when both reminder categories are disabled', async () => {
+  it('does nothing when all reminder categories are disabled', async () => {
     mockNotificationInstance.getPrayerEnabled.mockResolvedValue(false);
     mockNotificationInstance.getSpiritualEnabled.mockResolvedValue(false);
+    mockNotificationInstance.getMoodCheckinEnabled.mockResolvedValue(false);
 
     const ran = await topUpScheduledNotifications();
 
