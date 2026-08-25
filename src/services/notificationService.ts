@@ -6,12 +6,20 @@ import { logServiceError } from './errorLoggingService';
 import type { SpiritualWindow } from './dailyVerseService';
 import { buildWindowContent, loadLockscreenPrefs } from './lockscreenVerseService';
 import { getDailyGuidanceContent } from './dailyGuidanceContent';
+import { getPrayerMotivationBody, Salah } from './prayerMotivationContent';
 
 const REMINDER_SETTINGS_KEY = '@daily_reminder_settings';
-const DAILY_REMINDER_IDS_KEY = '@notif_ids/daily_reminder';
-const PRAYER_NOTIF_IDS_KEY = '@notif_ids/prayer';
-const SPIRITUAL_NOTIF_IDS_KEY = '@notif_ids/spiritual';
-const MOOD_CHECKIN_NOTIF_IDS_KEY = '@notif_ids/mood_checkin';
+
+// Stable per-category tag, written into every scheduled notification's
+// `content.data.category` and used both as the withLock() map key and as
+// the filter for cancelByCategory() below. One set of constants drives both,
+// instead of a separate AsyncStorage key per category — see the removal
+// note above cancelByCategory for why the AsyncStorage-tracked-id version
+// of this was a real bug, not just extra code.
+const CATEGORY_DAILY_REMINDER = 'daily_reminder';
+const CATEGORY_PRAYER = 'prayer';
+const CATEGORY_SPIRITUAL = 'spiritual';
+const CATEGORY_MOOD_CHECKIN = 'mood_checkin';
 const PRAYER_ENABLED_KEY = '@notif_settings/prayer';
 const SPIRITUAL_ENABLED_KEY = '@notif_settings/spiritual';
 const MOOD_CHECKIN_ENABLED_KEY = '@notif_settings/mood_checkin';
@@ -43,40 +51,38 @@ interface ReminderSettings {
   enabled: boolean;
 }
 
-// ── Per-category scheduled-id tracking ─────────────────────────────
+// ── Per-category cancellation ────────────────────────────────────────
 // We deliberately avoid `cancelAllScheduledNotificationsAsync` because it
 // would nuke other categories (e.g. scheduling a daily reminder would kill
-// prayer notifications). Each category stores its own array of notification
-// IDs in AsyncStorage, which we cancel individually.
-async function getTrackedIds(key: string): Promise<string[]> {
-  try {
-    const raw = await AsyncStorage.getItem(key);
-    if (!raw) return [];
-    const parsed = JSON.parse(raw);
-    return Array.isArray(parsed) ? parsed.filter((x) => typeof x === 'string') : [];
-  } catch {
-    return [];
-  }
-}
-
-async function setTrackedIds(key: string, ids: string[]): Promise<void> {
-  try {
-    await AsyncStorage.setItem(key, JSON.stringify(ids));
-  } catch (e) {
-    console.warn(`[NotificationService] Failed to persist ids for ${key}:`, e);
-  }
-}
-
-async function cancelTrackedCategory(key: string): Promise<void> {
-  const ids = await getTrackedIds(key);
+// prayer notifications).
+//
+// This used to track each category's notification IDs in AsyncStorage and
+// cancel exactly that list. That broke across processes: the background
+// top-up task (notificationTopUpTask.ts) runs as a HEADLESS task — a
+// separate JS instance with its own NotificationService singleton and its
+// own in-memory `schedulingLocks` — so `withLock` below can only serialize
+// calls within one process, never a foreground call racing the background
+// task. Two such calls could each read the same AsyncStorage id list before
+// either wrote back, both schedule a fresh batch, and the second write
+// silently overwrote the first's ids — leaving the first batch still
+// scheduled with the OS but no longer tracked, so no future cancel could
+// ever reach it. Symptom: duplicate spiritual-window/prayer notifications at
+// the same slot, one stale and one fresh, that never got cleaned up.
+//
+// Querying the OS's actual pending list instead of an app-level mirror of it
+// closes that gap — `getAllScheduledNotificationsAsync()` is shared,
+// authoritative state, not a per-process cache that can go stale.
+async function cancelByCategory(category: string): Promise<void> {
+  const pending = await Notifications.getAllScheduledNotificationsAsync();
   await Promise.all(
-    ids.map((id) =>
-      Notifications.cancelScheduledNotificationAsync(id).catch(() => {
-        /* already cancelled / unknown id — safe to ignore */
-      }),
-    ),
+    pending
+      .filter((n) => (n.content?.data as Record<string, unknown> | undefined)?.category === category)
+      .map((n) =>
+        Notifications.cancelScheduledNotificationAsync(n.identifier).catch(() => {
+          /* already cancelled / unknown id — safe to ignore */
+        }),
+      ),
   );
-  await setTrackedIds(key, []);
 }
 
 // Configure notification behavior
@@ -290,17 +296,15 @@ class NotificationService {
 
   public async schedulePrayerNotifications(
     timings: PrayerTimings | PrayerTimings[],
-    cityName: string,
   ): Promise<void> {
-    return this.withLock(PRAYER_NOTIF_IDS_KEY, () => this.doSchedulePrayerNotifications(timings, cityName));
+    return this.withLock(CATEGORY_PRAYER, () => this.doSchedulePrayerNotifications(timings));
   }
 
   private async doSchedulePrayerNotifications(
     timings: PrayerTimings | PrayerTimings[],
-    cityName: string,
   ): Promise<void> {
     const enabled = await this.getPrayerEnabled();
-    if (!enabled) { await cancelTrackedCategory(PRAYER_NOTIF_IDS_KEY); return; }
+    if (!enabled) { await cancelByCategory(CATEGORY_PRAYER); return; }
 
     const hasPermission = await this.requestPermissions();
     if (!hasPermission) return;
@@ -311,12 +315,12 @@ class NotificationService {
     if (weekly.length === 0) return;
 
     // Clear existing PRAYER notifications only — don't touch other categories.
-    await cancelTrackedCategory(PRAYER_NOTIF_IDS_KEY);
+    await cancelByCategory(CATEGORY_PRAYER);
 
     // Explicit salah list — avoids Object.keys picking up extra Aladhan API
     // fields (Imsak, Midnight, Firstthird, Lastthird, Sunset) that are present
     // at runtime despite not being in the PrayerTimings interface.
-    const SALAH: Array<keyof PrayerTimings> = ['Fajr', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'];
+    const SALAH: Salah[] = ['Fajr', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'];
 
     const batches = await Promise.all(
       SALAH.map((prayer) => {
@@ -329,18 +333,21 @@ class NotificationService {
             : null;
         });
         if (times.every((t) => t === null)) return Promise.resolve([]);
-        return this.scheduleWeeklyTrigger(times, {
-          title: `Time for ${prayer}`,
-          body: `It's time for the ${prayer} prayer in ${cityName}.`,
+        // Title is just the bare prayer name (matches the spiritual-window
+        // notifications' short-title style); the body rotates through
+        // per-prayer motivational copy keyed off each scheduled date, the
+        // same content-factory pattern scheduleSpiritualReminders uses below.
+        return this.scheduleWeeklyTrigger(times, async (date) => ({
+          title: prayer,
+          body: getPrayerMotivationBody(prayer, date),
           sound: true,
           priority: Notifications.AndroidNotificationPriority.HIGH,
-          data: { action: 'prayer_times' },
-        }, CH_PRAYER);
+          data: { action: 'prayer_times', category: CATEGORY_PRAYER },
+        }), CH_PRAYER);
       }),
     );
 
     const scheduled = batches.flat();
-    await setTrackedIds(PRAYER_NOTIF_IDS_KEY, scheduled);
     // Weekly data was valid (we didn't bail out above) but nothing got
     // scheduled — every SALAH entry either had unparseable times or every
     // scheduleNotificationAsync call failed. Surface this distinctly from
@@ -360,12 +367,12 @@ class NotificationService {
    * Schedules proactive reminders for spiritual windows.
    */
   public async scheduleSpiritualReminders(timings: PrayerTimings | PrayerTimings[]): Promise<void> {
-    return this.withLock(SPIRITUAL_NOTIF_IDS_KEY, () => this.doScheduleSpiritualReminders(timings));
+    return this.withLock(CATEGORY_SPIRITUAL, () => this.doScheduleSpiritualReminders(timings));
   }
 
   private async doScheduleSpiritualReminders(timings: PrayerTimings | PrayerTimings[]): Promise<void> {
     const enabled = await this.getSpiritualEnabled();
-    if (!enabled) { await cancelTrackedCategory(SPIRITUAL_NOTIF_IDS_KEY); return; }
+    if (!enabled) { await cancelByCategory(CATEGORY_SPIRITUAL); return; }
 
     const hasPermission = await this.requestPermissions();
     if (!hasPermission) return;
@@ -376,7 +383,7 @@ class NotificationService {
     if (weekly.length === 0) return;
 
     // Clear existing SPIRITUAL notifications only — don't touch other categories.
-    await cancelTrackedCategory(SPIRITUAL_NOTIF_IDS_KEY);
+    await cancelByCategory(CATEGORY_SPIRITUAL);
 
     const toHM = (mins: number) => ({ hour: Math.floor(mins / 60), minute: mins % 60 });
 
@@ -404,10 +411,10 @@ class NotificationService {
     // Static copy shipped before lock screen verses existed. It remains the
     // payload whenever the feature is off or a window is opted out, so this
     // category never goes silent.
-    const staticCopy: Record<SpiritualWindow, { title: string; body: string; data: { action: string; window: string } }> = {
-      tahajjud: { title: 'The Silent Hour', body: 'It is the time of Tahajjud. A moment for deep reflection and conversation with your Lord.', data: { action: 'spiritual_window', window: 'tahajjud' } },
-      morning: { title: 'Start with Light', body: 'The sun is rising. Remember Allah with the morning adhkars to protect your day.', data: { action: 'spiritual_window', window: 'morning' } },
-      evening: { title: 'Closing the Day', body: 'The day is ending. Find peace in the evening remembrance before the night sets in.', data: { action: 'spiritual_window', window: 'evening' } },
+    const staticCopy: Record<SpiritualWindow, { title: string; body: string; data: { action: string; window: string; category: string } }> = {
+      tahajjud: { title: 'The Silent Hour', body: 'It is the time of Tahajjud. A moment for deep reflection and conversation with your Lord.', data: { action: 'spiritual_window', window: 'tahajjud', category: CATEGORY_SPIRITUAL } },
+      morning: { title: 'Start with Light', body: 'The sun is rising. Remember Allah with the morning adhkars to protect your day.', data: { action: 'spiritual_window', window: 'morning', category: CATEGORY_SPIRITUAL } },
+      evening: { title: 'Closing the Day', body: 'The day is ending. Find peace in the evening remembrance before the night sets in.', data: { action: 'spiritual_window', window: 'evening', category: CATEGORY_SPIRITUAL } },
     };
 
     // Read preferences once, not per notification — 21 reads of the same key
@@ -425,13 +432,12 @@ class NotificationService {
       async (date: Date): Promise<Notifications.NotificationContentInput> =>
         (await buildWindowContent(window, date, prefs)) ?? { ...staticCopy[window], sound: true };
 
-    const [tahajjudIds, morningIds, eveningIds] = await Promise.all([
+    await Promise.all([
       this.scheduleWeeklyTrigger(perDay.map((d) => d.tahajjud), contentFor('tahajjud'), CH_SPIRITUAL),
       this.scheduleWeeklyTrigger(perDay.map((d) => d.morning), contentFor('morning'), CH_SPIRITUAL),
       this.scheduleWeeklyTrigger(perDay.map((d) => d.evening), contentFor('evening'), CH_SPIRITUAL),
     ]);
 
-    await setTrackedIds(SPIRITUAL_NOTIF_IDS_KEY, [...tahajjudIds, ...morningIds, ...eveningIds]);
     await this.warnIfNearPendingCap('scheduleSpiritualReminders');
   }
 
@@ -439,12 +445,12 @@ class NotificationService {
    * Schedules twice-daily heart check-in notifications (after Fajr and after Isha).
    */
   public async scheduleMoodCheckinNotifications(timings: PrayerTimings | PrayerTimings[]): Promise<void> {
-    return this.withLock(MOOD_CHECKIN_NOTIF_IDS_KEY, () => this.doScheduleMoodCheckinNotifications(timings));
+    return this.withLock(CATEGORY_MOOD_CHECKIN, () => this.doScheduleMoodCheckinNotifications(timings));
   }
 
   private async doScheduleMoodCheckinNotifications(timings: PrayerTimings | PrayerTimings[]): Promise<void> {
     const enabled = await this.getMoodCheckinEnabled();
-    if (!enabled) { await cancelTrackedCategory(MOOD_CHECKIN_NOTIF_IDS_KEY); return; }
+    if (!enabled) { await cancelByCategory(CATEGORY_MOOD_CHECKIN); return; }
 
     const hasPermission = await this.requestPermissions();
     if (!hasPermission) return;
@@ -452,7 +458,7 @@ class NotificationService {
     const weekly = this.toWeekly(timings);
     if (weekly.length === 0) return;
 
-    await cancelTrackedCategory(MOOD_CHECKIN_NOTIF_IDS_KEY);
+    await cancelByCategory(CATEGORY_MOOD_CHECKIN);
 
     const toHM = (mins: number) => ({ hour: Math.floor(mins / 60), minute: mins % 60 });
 
@@ -472,14 +478,14 @@ class NotificationService {
       };
     });
 
-    const [morningIds, nightIds] = await Promise.all([
+    await Promise.all([
       this.scheduleWeeklyTrigger(
         perDay.map((d) => d.morningCheckin),
         {
           title: 'Morning Light · Fajr Reflection',
           body: 'How does your heart feel as this new day begins?',
           sound: true,
-          data: { action: 'mood_checkin', window: 'morning' },
+          data: { action: 'mood_checkin', window: 'morning', category: CATEGORY_MOOD_CHECKIN },
         },
         CH_MOOD_CHECKIN,
       ),
@@ -489,14 +495,12 @@ class NotificationService {
           title: 'Night Peace · Isha Remembrance',
           body: 'Take a quiet moment before sleep. How does your soul feel tonight?',
           sound: true,
-          data: { action: 'mood_checkin', window: 'night' },
+          data: { action: 'mood_checkin', window: 'night', category: CATEGORY_MOOD_CHECKIN },
         },
         CH_MOOD_CHECKIN,
       ),
     ]);
 
-    const scheduled = [...morningIds, ...nightIds];
-    await setTrackedIds(MOOD_CHECKIN_NOTIF_IDS_KEY, scheduled);
     await this.warnIfNearPendingCap('scheduleMoodCheckinNotifications');
   }
 
@@ -509,7 +513,7 @@ class NotificationService {
 
   public async setMoodCheckinEnabled(value: boolean): Promise<void> {
     await AsyncStorage.setItem(MOOD_CHECKIN_ENABLED_KEY, JSON.stringify(value));
-    if (!value) await this.withLock(MOOD_CHECKIN_NOTIF_IDS_KEY, () => cancelTrackedCategory(MOOD_CHECKIN_NOTIF_IDS_KEY));
+    if (!value) await this.withLock(CATEGORY_MOOD_CHECKIN, () => cancelByCategory(CATEGORY_MOOD_CHECKIN));
   }
 
   public async getPrayerEnabled(): Promise<boolean> {
@@ -522,9 +526,9 @@ class NotificationService {
   public async setPrayerEnabled(value: boolean): Promise<void> {
     await AsyncStorage.setItem(PRAYER_ENABLED_KEY, JSON.stringify(value));
     // Routed through the same lock as schedulePrayerNotifications — without
-    // it, disabling while a schedule call is mid-flight can race on
-    // PRAYER_NOTIF_IDS_KEY and resurrect the notifications just turned off.
-    if (!value) await this.withLock(PRAYER_NOTIF_IDS_KEY, () => cancelTrackedCategory(PRAYER_NOTIF_IDS_KEY));
+    // it, disabling while a schedule call is mid-flight can race and
+    // resurrect the notifications just turned off.
+    if (!value) await this.withLock(CATEGORY_PRAYER, () => cancelByCategory(CATEGORY_PRAYER));
   }
 
   public async getSpiritualEnabled(): Promise<boolean> {
@@ -536,7 +540,7 @@ class NotificationService {
 
   public async setSpiritualEnabled(value: boolean): Promise<void> {
     await AsyncStorage.setItem(SPIRITUAL_ENABLED_KEY, JSON.stringify(value));
-    if (!value) await this.withLock(SPIRITUAL_NOTIF_IDS_KEY, () => cancelTrackedCategory(SPIRITUAL_NOTIF_IDS_KEY));
+    if (!value) await this.withLock(CATEGORY_SPIRITUAL, () => cancelByCategory(CATEGORY_SPIRITUAL));
   }
 
   /**
@@ -546,25 +550,21 @@ class NotificationService {
    */
   public async cancelPrayerAndSpiritual(): Promise<void> {
     await Promise.all([
-      this.withLock(PRAYER_NOTIF_IDS_KEY, () => cancelTrackedCategory(PRAYER_NOTIF_IDS_KEY)),
-      this.withLock(SPIRITUAL_NOTIF_IDS_KEY, () => cancelTrackedCategory(SPIRITUAL_NOTIF_IDS_KEY)),
-      this.withLock(MOOD_CHECKIN_NOTIF_IDS_KEY, () => cancelTrackedCategory(MOOD_CHECKIN_NOTIF_IDS_KEY)),
+      this.withLock(CATEGORY_PRAYER, () => cancelByCategory(CATEGORY_PRAYER)),
+      this.withLock(CATEGORY_SPIRITUAL, () => cancelByCategory(CATEGORY_SPIRITUAL)),
+      this.withLock(CATEGORY_MOOD_CHECKIN, () => cancelByCategory(CATEGORY_MOOD_CHECKIN)),
     ]);
   }
 
   /**
    * Cancels every scheduled notification across all categories. Call this
    * explicitly from settings/"clear all" flows — normal re-scheduling should
-   * use category-scoped cancels instead.
+   * use category-scoped cancels instead. No per-category AsyncStorage state
+   * to clean up any more (see cancelByCategory above) — the OS-level call
+   * already removes everything.
    */
   public async cancelAll(): Promise<void> {
     await Notifications.cancelAllScheduledNotificationsAsync();
-    await Promise.all([
-      setTrackedIds(DAILY_REMINDER_IDS_KEY, []),
-      this.withLock(PRAYER_NOTIF_IDS_KEY, () => setTrackedIds(PRAYER_NOTIF_IDS_KEY, [])),
-      this.withLock(SPIRITUAL_NOTIF_IDS_KEY, () => setTrackedIds(SPIRITUAL_NOTIF_IDS_KEY, [])),
-      this.withLock(MOOD_CHECKIN_NOTIF_IDS_KEY, () => setTrackedIds(MOOD_CHECKIN_NOTIF_IDS_KEY, [])),
-    ]);
   }
 
   // --- Daily Reminder Methods (used by DailyRemindersScreen) ---
@@ -595,7 +595,7 @@ class NotificationService {
   }
 
   public async scheduleReminder(hour24: number, minute: number): Promise<boolean> {
-    return this.withLock(DAILY_REMINDER_IDS_KEY, () => this.doScheduleReminder(hour24, minute));
+    return this.withLock(CATEGORY_DAILY_REMINDER, () => this.doScheduleReminder(hour24, minute));
   }
 
   private async doScheduleReminder(hour24: number, minute: number): Promise<boolean> {
@@ -603,26 +603,33 @@ class NotificationService {
     if (!hasPermission) return false;
 
     // Cancel existing daily reminder only — do NOT touch prayer/spiritual notifs.
-    await cancelTrackedCategory(DAILY_REMINDER_IDS_KEY);
+    await cancelByCategory(CATEGORY_DAILY_REMINDER);
 
     // Smart rotation: each day's notification surfaces a different feature
     // (mood check-in, mood calendar, journeys, Quran) so the single daily
     // reminder drives discovery without adding extra notification categories.
     // Best-effort — falls back to static content if the async lookup fails.
+    // `action` varies by rotation variant (mood_calendar, quran_verse, ...),
+    // so cancelByCategory needs the separate, stable `category` field to
+    // find this notification again regardless of which variant is showing.
     let content: Notifications.NotificationContentInput;
     try {
       const rotated = await getDailyGuidanceContent();
-      content = { ...rotated, sound: true };
+      content = {
+        ...rotated,
+        data: { ...rotated.data, category: CATEGORY_DAILY_REMINDER },
+        sound: true,
+      };
     } catch {
       content = {
         title: 'A Quiet Minute',
         body: 'However today has gone so far, it is worth a minute with it.',
         sound: true,
-        data: { action: 'daily_guidance' },
+        data: { action: 'daily_guidance', category: CATEGORY_DAILY_REMINDER },
       };
     }
 
-    const id = await Notifications.scheduleNotificationAsync({
+    await Notifications.scheduleNotificationAsync({
       content,
       // CALENDAR triggers are iOS-only in expo-notifications (see
       // CalendarTriggerInput's `@platform ios` in Notifications.types.d.ts) —
@@ -638,8 +645,6 @@ class NotificationService {
       },
     });
 
-    await setTrackedIds(DAILY_REMINDER_IDS_KEY, [id]);
-
     // Save settings
     await AsyncStorage.setItem(
       REMINDER_SETTINGS_KEY,
@@ -651,13 +656,13 @@ class NotificationService {
   }
 
   public async cancelReminder(): Promise<void> {
-    return this.withLock(DAILY_REMINDER_IDS_KEY, () => this.doCancelReminder());
+    return this.withLock(CATEGORY_DAILY_REMINDER, () => this.doCancelReminder());
   }
 
   private async doCancelReminder(): Promise<void> {
     // Cancel ONLY the daily reminder. Prayer and spiritual-window notifs
     // are tracked separately and must survive this call.
-    await cancelTrackedCategory(DAILY_REMINDER_IDS_KEY);
+    await cancelByCategory(CATEGORY_DAILY_REMINDER);
     try {
       const raw = await AsyncStorage.getItem(REMINDER_SETTINGS_KEY);
       if (raw) {

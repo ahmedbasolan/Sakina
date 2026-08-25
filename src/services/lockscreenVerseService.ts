@@ -170,7 +170,12 @@ export async function buildWindowContent(
     title: WINDOW_TITLES[window],
     body: buildVerseBody(verse, prefs.showTransliteration),
     sound: true,
-    data: { action: 'spiritual_window', window },
+    // 'spiritual' must match notificationService.ts's CATEGORY_SPIRITUAL —
+    // duplicated as a literal rather than imported to avoid a circular
+    // import (notificationService.ts already imports buildWindowContent
+    // from this file). cancelByCategory() there filters pending
+    // notifications on this exact field before rescheduling the category.
+    data: { action: 'spiritual_window', window, category: 'spiritual' },
   };
 
   // Attachments are genuinely iOS-only, confirmed by reading the native

@@ -101,7 +101,7 @@ describe('topUpScheduledNotifications', () => {
     // the least reliable place to depend on it.
     expect(mockPrayerInstance.getTimingsByCity).not.toHaveBeenCalled();
     expect(mockNotificationInstance.scheduleSpiritualReminders).toHaveBeenCalledWith(WEEKLY_TIMINGS);
-    expect(mockNotificationInstance.schedulePrayerNotifications).toHaveBeenCalledWith(WEEKLY_TIMINGS, 'Dubai');
+    expect(mockNotificationInstance.schedulePrayerNotifications).toHaveBeenCalledWith(WEEKLY_TIMINGS);
     expect(mockNotificationInstance.scheduleMoodCheckinNotifications).toHaveBeenCalledWith(WEEKLY_TIMINGS);
   });
 

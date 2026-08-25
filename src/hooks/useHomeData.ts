@@ -149,7 +149,7 @@ export function useHomeData({ setStreakCount }: UseHomeDataOptions) {
           : data.timings;
       const notifications = NotificationService.getInstance();
       notifications.scheduleSpiritualReminders(schedulingTimings)
-        .then(() => notifications.schedulePrayerNotifications(schedulingTimings, city))
+        .then(() => notifications.schedulePrayerNotifications(schedulingTimings))
         .then(() => notifications.scheduleMoodCheckinNotifications(schedulingTimings))
         .catch((error) => logServiceError(
           'useHomeData',
