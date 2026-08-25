@@ -33,6 +33,7 @@ import { useReduceMotion } from '../hooks/useReduceMotion';
 import { FreemiumService } from '../services/freemiumService';
 import { HapticsService } from '../services/hapticsService';
 import { revenueCat } from '../services/revenueCatService';
+import { logServiceError } from '../services/errorLoggingService';
 import { BACKGROUND_THEMES } from '../services/backgroundThemeService';
 
 // A handful of visually distinct themes to preview on the paywall — one per
@@ -256,7 +257,20 @@ const SupportSakinaScreen: React.FC<Props> = ({ embedded = false, onDone }) => {
       }
       // ok === false covers both user-cancel (no message needed) and a quiet
       // RC failure; the button simply re-enables so they can try again.
-    } catch {
+    } catch (error) {
+      // This alert's generic text was the ONLY trace of a purchase failure —
+      // revenueCatService.purchasePackage() throws for at least three
+      // distinct reasons (no offering fetched, package not found in the
+      // offering, or the store purchase call itself failing) and none of
+      // them were ever logged anywhere. That's how an App Review rejection
+      // for "purchase didn't complete" showed up with zero diagnostic trail
+      // to say which of those three actually fired.
+      logServiceError(
+        'SupportSakinaScreen',
+        'handleContinue',
+        error instanceof Error ? error : new Error(String(error)),
+        { selectedPlan },
+      );
       Alert.alert(
         'Purchase didn’t complete',
         'Something went wrong reaching the store. Please try again in a moment.',
@@ -282,7 +296,12 @@ const SupportSakinaScreen: React.FC<Props> = ({ embedded = false, onDone }) => {
           'We couldn’t find an active subscription on this account.',
         );
       }
-    } catch {
+    } catch (error) {
+      logServiceError(
+        'SupportSakinaScreen',
+        'handleRestore',
+        error instanceof Error ? error : new Error(String(error)),
+      );
       Alert.alert('Restore failed', 'Please check your connection and try again.');
     } finally {
       setLoading(false);
