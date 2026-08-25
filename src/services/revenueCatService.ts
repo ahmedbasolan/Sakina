@@ -18,6 +18,7 @@ import Purchases, {
   LOG_LEVEL,
   PACKAGE_TYPE,
   INTRO_ELIGIBILITY_STATUS,
+  PERIOD_UNIT,
 } from 'react-native-purchases';
 import { Platform } from 'react-native';
 import { REVENUECAT_ANDROID_API_KEY, REVENUECAT_IOS_API_KEY } from '@env';
@@ -41,6 +42,21 @@ export interface RCPricing {
   monthlyPriceAmount: number; // 4.99
   yearlyPriceAmount: number; // 39.99
   trialDays: number; // 7
+}
+
+/** Convert a store intro-offer period (e.g. 1 × WEEK) into a day count for display. */
+function introOfferPeriodToDays(numberOfUnits: number, unit: string): number {
+  switch (unit) {
+    case PERIOD_UNIT.WEEK:
+      return numberOfUnits * 7;
+    case PERIOD_UNIT.MONTH:
+      return numberOfUnits * 30;
+    case PERIOD_UNIT.YEAR:
+      return numberOfUnits * 365;
+    case PERIOD_UNIT.DAY:
+    default:
+      return numberOfUnits;
+  }
 }
 
 class RevenueCatService {
@@ -187,7 +203,13 @@ class RevenueCatService {
       yearlyPrice: yearly.product.priceString,
       monthlyPriceAmount: monthly.product.price,
       yearlyPriceAmount: yearly.product.price,
-      trialDays: introOffer?.periodNumberOfUnits ?? 7,
+      // periodNumberOfUnits is a count in periodUnit's terms (e.g. "1" for a
+      // 1-WEEK intro offer) — it was being used directly as a day count,
+      // which turned the store's "Free, 1 Week" offer into a UI that told
+      // App Review "Start 1-day free trial".
+      trialDays: introOffer
+        ? introOfferPeriodToDays(introOffer.periodNumberOfUnits, introOffer.periodUnit)
+        : 7,
     };
   }
 
