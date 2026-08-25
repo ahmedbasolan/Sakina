@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useEffect, useState, useRef } from 'react';
+import { Linking } from 'react-native';
 import { Session, User } from '@supabase/supabase-js';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { AuthService } from '../services/authService';
@@ -15,6 +16,23 @@ interface AuthContextType {
   onboardingComplete: boolean;
   signOut: () => Promise<void>;
   enterGuestMode: (didCompleteOnboarding?: boolean) => Promise<void>;
+  /**
+   * True from the moment a tapped password-recovery email link has been
+   * exchanged for a session until the user either finishes changing their
+   * password or cancels. MainNavigator reads this to show ONLY the
+   * password-reset screen — Supabase's own `setSession` call from that link
+   * is otherwise indistinguishable from a normal sign-in, so without this
+   * flag a stale recovery link would drop the user straight into the app
+   * signed in, with their old (compromised/forgotten) password still valid
+   * and nothing having actually been reset.
+   */
+  isPasswordRecovery: boolean;
+  /** Ends the recovery session and returns to a normal signed-out state. */
+  cancelPasswordRecovery: () => Promise<void>;
+  /** Clears the recovery gate once a new password is set, or once the user
+   *  signs in normally instead of finishing the reset — see the Cancel path
+   *  on ResetPasswordScreen for why sign-in also needs to call this. */
+  completePasswordRecovery: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -39,8 +57,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [isGuest, setIsGuest] = useState(false);
   const [loading, setLoading] = useState(true);
   const [onboardingComplete, setOnboardingComplete] = useState(false);
+  const [isPasswordRecovery, setIsPasswordRecovery] = useState(false);
   const authService = AuthService.getInstance();
-  const hasMigrated = useRef(false);
+  // Guards the once-per-process local-data claim below. A ref, so it resets on
+  // app restart — which is precisely why the claim has to re-derive ownership
+  // from storage rather than assume the data belongs to whoever signs in.
+  const hasClaimedLocalData = useRef(false);
 
   useEffect(() => {
     // Initial session check
@@ -57,6 +79,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           // SIGNED_IN listener below only fires on a fresh sign-in transition,
           // not on the INITIAL_SESSION read, so cold boot needs its own resync.
           SubscriptionService.getInstance().resync(currentSession.user.email).catch(() => {});
+          // Cold boot with a session never passes through the SIGNED_IN claim
+          // below, so installs predating the ownership marker would otherwise
+          // never get one — and their queued offline rows would never sync.
+          // No-ops when a marker already exists.
+          SupabaseDataService.getInstance()
+            .ensureLocalDataOwnerStamp(currentSession.user.id)
+            .catch((err) => console.error('[Auth] Owner stamp error:', err));
         } else {
           // No Supabase session — check AsyncStorage flags set during onboarding.
           // `onboarding` = completed onboarding at least once (never show it again).
@@ -109,17 +138,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         // account's premium/free status until an app restart.
         syncEntitlementAfter(revenueCat.logIn(currentSession.user.id), currentSession.user.email);
 
-        // One-time migration: sync guest data to Supabase on first sign-in
-        if (!hasMigrated.current) {
-          hasMigrated.current = true;
+        // Decide what the on-device rows are before touching them: this user's
+        // own queued writes, unowned guest data to migrate, or another
+        // account's leftovers to wipe. Must stay claimLocalDataForUser and not
+        // migrateGuestDataToSupabase — the bare migration uploads whatever is
+        // on the device under whoever just signed in, which is how account A's
+        // history ended up in account B on a shared device.
+        if (!hasClaimedLocalData.current) {
+          hasClaimedLocalData.current = true;
           SupabaseDataService.getInstance()
-            .migrateGuestDataToSupabase()
-            .then(({ migratedCount }) => {
-              if (migratedCount > 0) {
+            .claimLocalDataForUser(currentSession.user.id)
+            .then(({ migratedCount, wipedForeignData }) => {
+              if (wipedForeignData) {
+                console.log('[Auth] Cleared another account\'s local data before sign-in');
+              } else if (migratedCount > 0) {
                 console.log(`[Auth] Migrated ${migratedCount} guest history entries to Supabase`);
               }
             })
-            .catch((err) => console.error('[Auth] Guest migration error:', err));
+            .catch((err) => console.error('[Auth] Local data claim error:', err));
         }
       } else {
         // SIGNED_OUT — token expiry, account deletion, or explicit sign-out.
@@ -138,6 +174,45 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       subscription.unsubscribe();
     };
   }, []);
+
+  // Deep-link listener for auth redirects that arrive OUTSIDE any in-app
+  // browser session — specifically, a password-recovery link tapped in the
+  // user's email app. Google OAuth doesn't need this: it captures its
+  // redirect directly via WebBrowser.openAuthSessionAsync's own return value
+  // (see signInWithGoogle). A recovery link has no such capture point — the
+  // OS hands the URL to Sakina however the app happens to be at that moment,
+  // running (the 'url' event) or not (getInitialURL, for a cold start).
+  useEffect(() => {
+    const handleUrl = async (url: string) => {
+      try {
+        const { session: recoverySession, type } = await authService.completeDeepLink(url);
+        if (recoverySession && type === 'recovery') {
+          setIsPasswordRecovery(true);
+        }
+        // A non-recovery deep link (or none at all) needs no action here —
+        // completeDeepLink's own setSession call, if it made one, already
+        // let the onAuthStateChange listener above pick up the new session
+        // through its normal SIGNED_IN handling.
+      } catch (error) {
+        console.error('[Auth] Failed to process deep link:', error);
+      }
+    };
+
+    Linking.getInitialURL().then((url) => {
+      if (url) handleUrl(url);
+    });
+    const subscription = Linking.addEventListener('url', ({ url }) => handleUrl(url));
+    return () => subscription.remove();
+  }, []);
+
+  const cancelPasswordRecovery = async () => {
+    await authService.cancelPasswordRecovery();
+    setIsPasswordRecovery(false);
+  };
+
+  const completePasswordRecovery = () => {
+    setIsPasswordRecovery(false);
+  };
 
   const signOut = async () => {
     setLoading(true);
@@ -171,7 +246,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, session, isGuest, loading, onboardingComplete, signOut, enterGuestMode }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        session,
+        isGuest,
+        loading,
+        onboardingComplete,
+        signOut,
+        enterGuestMode,
+        isPasswordRecovery,
+        cancelPasswordRecovery,
+        completePasswordRecovery,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );

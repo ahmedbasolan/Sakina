@@ -23,13 +23,15 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { BlurView } from 'expo-blur';
+import { FrostedSurface } from '../components/FrostedSurface';
 import { MaterialCommunityIcons, Ionicons } from '@expo/vector-icons';
-import { dbQuery } from '../database/schema';
 import { AnimatedMandala } from '../components/AnimatedMandala';
 import { TwinklingStar } from '../components/TwinklingStar';
-import { loadReadingProgress } from './SurahReaderScreen';
-import type { ReadingProgress } from './SurahReaderScreen';
+import {
+  loadReadingProgress,
+  getAllBookmarks,
+  type ReadingProgress,
+} from '../services/readerRepository';
 import {
   getDownloadProgress,
   prefetchAllSurahs,
@@ -387,13 +389,7 @@ export default function LibraryScreen({ navigation }: any) {
   const loadSavedVerses = async () => {
     try {
       const [bookmarked, savedReflections] = await Promise.all([
-        dbQuery(async (db) =>
-          db.getAllAsync<any>(`
-            SELECT id, surahNumber, verseNumber, arabicText, translation, surahName, bookmarkedAt
-            FROM bookmarked_verses
-            ORDER BY bookmarkedAt DESC
-          `),
-        ),
+        getAllBookmarks(),
         ReflectionRepository.getInstance().getAll(),
       ]);
 
@@ -536,12 +532,13 @@ export default function LibraryScreen({ navigation }: any) {
         style={[styles.header, { paddingTop: insets.top + Spacing.lg, opacity: headerOpacity }]}
       >
         {/* Search — frosted so the mandala backdrop blends instead of showing a
-            hard-edged tint. experimentalBlurMethod is the Android blur fix
-            already applied to the tab bar in MainNavigator. */}
-        <BlurView
+            hard-edged tint. This header sits above two FlatLists, so on
+            Android the old dimezisBlurView re-blurred the whole screen on
+            every scroll frame; the glass wash below carries it instead.
+            See FrostedSurface. */}
+        <FrostedSurface
           intensity={14}
-          tint="dark"
-          experimentalBlurMethod="dimezisBlurView"
+          androidFill="rgba(255, 255, 255, 0.065)"
           style={styles.searchBar}
         >
           <MaterialCommunityIcons
@@ -571,15 +568,14 @@ export default function LibraryScreen({ navigation }: any) {
               />
             </TouchableOpacity>
           )}
-        </BlurView>
+        </FrostedSurface>
 
         {/* Tab switcher — same frosted treatment as the bottom nav pill,
-            which means the same experimentalBlurMethod fix: without it this
-            claim was false on Android and it rendered as a flat fill. */}
-        <BlurView
+            which now means the same platform split: real blur on iOS, a
+            tuned glass wash on Android. See FrostedSurface. */}
+        <FrostedSurface
           intensity={14}
-          tint="dark"
-          experimentalBlurMethod="dimezisBlurView"
+          androidFill="rgba(255, 255, 255, 0.055)"
           style={styles.tabSwitcher}
         >
           <Animated.View style={[styles.tabIndicator, { left: indicatorLeft }]} />
@@ -605,7 +601,7 @@ export default function LibraryScreen({ navigation }: any) {
               ALL SURAHS
             </Text>
           </TouchableOpacity>
-        </BlurView>
+        </FrostedSurface>
       </Animated.View>
 
       {/* ── Content ─────────────────────────────────────────────── */}

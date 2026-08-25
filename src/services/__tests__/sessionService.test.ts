@@ -1,6 +1,6 @@
 import { SessionService } from '../sessionService';
 
-jest.mock('../../database/schema', () => ({
+jest.mock('../../database/connection', () => ({
   dbQuery: jest.fn((op) =>
     op({
       getFirstAsync: jest.fn().mockResolvedValue(null),

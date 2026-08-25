@@ -11,7 +11,7 @@
  *     CACHE_FORMAT_VERSION bump (a real content/shape change on our side).
  *  4. Download progress is persisted to `kv_store` so progress survives app restarts.
  */
-import { dbQuery } from '../database/schema';
+import { dbQuery } from '../database/connection';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 

@@ -12,19 +12,14 @@ import {
 } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import * as Font from 'expo-font';
-import { Amiri_400Regular, Amiri_700Bold } from '@expo-google-fonts/amiri';
 import { AmiriQuran_400Regular } from '@expo-google-fonts/amiri-quran';
-import {
-  ScheherazadeNew_400Regular,
-  ScheherazadeNew_700Bold,
-} from '@expo-google-fonts/scheherazade-new';
 import { MaterialCommunityIcons as MCIIcons, Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { PostHogProvider } from 'posthog-react-native';
 import MainNavigator from './src/navigation/MainNavigator';
 import { useReduceMotion } from './src/hooks/useReduceMotion';
 import ErrorBoundary from './src/components/ErrorBoundary';
-import { initializeDatabase } from './src/database/schema';
+import { initializeDatabase } from './src/database/operations';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { NavigationContainer } from '@react-navigation/native';
 import { AppProvider } from './src/context/AppContext';
@@ -35,6 +30,7 @@ import { redactPII } from './src/services/errorLoggingService';
 // Side-effect import: defines the notification top-up background task at
 // module scope so headless OS launches (no React tree) can execute it.
 import { registerNotificationTopUpTask } from './src/services/notificationTopUpTask';
+import { navigationRef, setupNotificationRouter } from './src/services/notificationRouter';
 
 // ── Global error handlers ─────────────────────────────────────────────────
 // Capture unhandled JS errors and promise rejections before they silently vanish.
@@ -68,6 +64,15 @@ if (typeof (global as any).HermesInternal !== 'undefined') {
 
 function AppContent() {
   const { isDark } = useTheme();
+
+  // Set up the centralized notification tap router at the app root level.
+  // This catches taps regardless of which screen is mounted, and handles
+  // cold-start taps via getLastNotificationResponseAsync.
+  useEffect(() => {
+    const cleanup = setupNotificationRouter();
+    return cleanup;
+  }, []);
+
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaProvider>
@@ -147,12 +152,18 @@ export default function App() {
   useEffect(() => {
     const loadFonts = async () => {
       try {
+        // Amiri-Quran is the ONLY custom family the app actually renders — it
+        // is what Typography.fonts.arabic resolves to, and every `fontFamily`
+        // value in src/ is a static string, so nothing can reach a family that
+        // isn't named here. 'Amiri-Regular', 'Amiri-Bold',
+        // 'ScheherazadeNew-Regular' and 'ScheherazadeNew-Bold' were also being
+        // loaded and were referenced by exactly nothing: ~1.7 MB of TTF
+        // (411 + 395 + 319 + 575 KB) parsed on every cold start, awaited
+        // before `setFontsLoaded` lets the app render at all. Amiri-Quran
+        // itself is 133 KB. If a second Arabic face is ever wanted, add it
+        // back here together with the Typography token that selects it.
         await Font.loadAsync({
-          'Amiri-Regular': Amiri_400Regular,
-          'Amiri-Bold': Amiri_700Bold,
           'Amiri-Quran': AmiriQuran_400Regular,
-          'ScheherazadeNew-Regular': ScheherazadeNew_400Regular,
-          'ScheherazadeNew-Bold': ScheherazadeNew_700Bold,
           ...MCIIcons.font,
           ...Ionicons.font,
         });
@@ -196,7 +207,7 @@ export default function App() {
     <ThemeProvider>
       <AppProvider>
         <AuthProvider>
-          <NavigationContainer>
+          <NavigationContainer ref={navigationRef}>
             <PostHogProvider client={posthog} autocapture={{ captureScreens: false }}>
               <AppContent />
             </PostHogProvider>

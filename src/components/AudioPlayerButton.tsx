@@ -55,8 +55,20 @@ export default function AudioPlayerButton(props: AudioPlayerButtonProps) {
 
 // ── Sound wave bars — replaces the old icon when playing ─────────────────────
 // Three bars with different heights and cycle durations give an organic,
-// calm feel. Heights animate on the JS thread (useNativeDriver: false) but
-// the update rate is slow so it stays smooth without frame drops.
+// calm feel.
+//
+// These animate `scaleY` on a fixed-height bar, anchored to the bottom via
+// `transformOrigin`, NOT `height`. Animating `height` is a layout property:
+// it cannot use the native driver, so every frame crossed to JS and forced a
+// Yoga re-layout plus a measure/layout pass, three bars at once, for the whole
+// time audio was playing — which is exactly when the user is scrolling the
+// verse they're listening to. That also broke the project's own rule
+// (CLAUDE.md: animate transform/opacity only, never layout). The old comment
+// here claimed the slow update rate kept it smooth; the *value* moves slowly,
+// but the animation still ticks every frame.
+//
+// The Animated.Values are now scale ratios (0–1), so they no longer depend on
+// the pixel height and the loops don't restart when `height` changes.
 const WaveBars = React.memo(function WaveBars({
   height,
   color,
@@ -68,30 +80,30 @@ const WaveBars = React.memo(function WaveBars({
   const barW    = Math.max(2.5, height * 0.22);
   const reduceMotion = useReduceMotion();
 
-  const b1 = useRef(new Animated.Value(barMaxH * 0.28)).current;
-  const b2 = useRef(new Animated.Value(barMaxH * 0.72)).current;
-  const b3 = useRef(new Animated.Value(barMaxH * 0.48)).current;
+  const b1 = useRef(new Animated.Value(0.28)).current;
+  const b2 = useRef(new Animated.Value(0.72)).current;
+  const b3 = useRef(new Animated.Value(0.48)).current;
 
   useEffect(() => {
     if (reduceMotion) return;
     const loop = (anim: Animated.Value, lo: number, hi: number, dur: number) =>
       Animated.loop(
         Animated.sequence([
-          Animated.timing(anim, { toValue: hi, duration: dur, useNativeDriver: false }),
-          Animated.timing(anim, { toValue: lo, duration: dur, useNativeDriver: false }),
+          Animated.timing(anim, { toValue: hi, duration: dur, useNativeDriver: true }),
+          Animated.timing(anim, { toValue: lo, duration: dur, useNativeDriver: true }),
         ]),
       );
 
-    const a1 = loop(b1, barMaxH * 0.18, barMaxH,        740);
-    const a2 = loop(b2, barMaxH * 0.42, barMaxH,        1010);
-    const a3 = loop(b3, barMaxH * 0.18, barMaxH * 0.88, 630);
+    const a1 = loop(b1, 0.18, 1,    740);
+    const a2 = loop(b2, 0.42, 1,    1010);
+    const a3 = loop(b3, 0.18, 0.88, 630);
 
     a1.start();
     a2.start();
     a3.start();
 
     return () => { a1.stop(); a2.stop(); a3.stop(); };
-  }, [barMaxH, reduceMotion]);
+  }, [reduceMotion]);
 
   return (
     <View
@@ -105,12 +117,16 @@ const WaveBars = React.memo(function WaveBars({
       {([b1, b2, b3] as Animated.Value[]).map((anim, i) => (
         <Animated.View
           key={i}
-          style={{
-            width: barW,
-            height: anim,
-            borderRadius: barW / 2,
-            backgroundColor: color,
-          }}
+          style={[
+            styles.waveBar,
+            {
+              width: barW,
+              height: barMaxH,
+              borderRadius: barW / 2,
+              backgroundColor: color,
+              transform: [{ scaleY: anim }],
+            },
+          ]}
         />
       ))}
     </View>
@@ -136,6 +152,13 @@ function AudioPlayerButtonInternal({
 
   const [fallbackIndex, setFallbackIndex] = useState(0);
   const [currentVerseIndex, setCurrentVerseIndex] = useState(0);
+  // True once every fallback reciter has errored out for this verse. All
+  // entries in RECITER_FALLBACKS live on the same host (everyayah.com), so
+  // exhausting them usually means the HOST is unreachable, not that one
+  // reciter is missing a file — cycling reciters further won't help, and
+  // leaving the button silently inert with no error and no way to retry is
+  // its own bug independent of whatever made the connection fail.
+  const [loadFailed, setLoadFailed] = useState(false);
 
   // This component isn't remounted (no `key={verseKey}` at any call site), so
   // when the caller swaps to a different verse/range the fallback reciter and
@@ -144,6 +167,7 @@ function AudioPlayerButtonInternal({
   useEffect(() => {
     setFallbackIndex(0);
     setCurrentVerseIndex(0);
+    setLoadFailed(false);
   }, [verseKey]);
 
   // Get audio URLs (could be one or many for a range). Memoized so the effect
@@ -245,10 +269,12 @@ function AudioPlayerButtonInternal({
           console.log(`Falling back to reciter: ${RECITER_FALLBACKS[prev + 1].name}`);
           return prev + 1;
         }
+        console.warn('AudioPlayerButton: all reciter fallbacks failed for', verseKey);
+        setLoadFailed(true);
         return prev;
       });
     }
-  }, [status?.error]);
+  }, [status?.error, verseKey]);
 
   // Update immediately when fallback changes
   useEffect(() => {
@@ -335,6 +361,19 @@ function AudioPlayerButtonInternal({
   const handlePress = async () => {
     if (isLocked) return;
     try {
+      if (loadFailed) {
+        // Start over from the first reciter rather than resuming the
+        // exhausted fallback chain — whatever failed may well have been a
+        // transient connection problem, worth a genuinely fresh attempt.
+        setLoadFailed(false);
+        setFallbackIndex(0);
+        setCurrentVerseIndex(0);
+        const retryUrl = getAudioUrls(verseKey, RECITER_FALLBACKS[0])[0];
+        const uri = await resolveAudioSource(retryUrl);
+        player.replace({ uri });
+        player.play();
+        return;
+      }
       if (isPlaying) {
         player.pause();
       } else {
@@ -365,9 +404,11 @@ function AudioPlayerButtonInternal({
       accessibilityLabel={
         isLocked
           ? 'Premium feature: Audio recitation'
-          : isPlaying
-            ? 'Pause recitation'
-            : 'Play recitation'
+          : loadFailed
+            ? 'Recitation audio could not load. Tap to retry.'
+            : isPlaying
+              ? 'Pause recitation'
+              : 'Play recitation'
       }
       accessibilityRole="button"
     >
@@ -395,8 +436,12 @@ function AudioPlayerButtonInternal({
               width: size,
               height: size,
               borderRadius: size / 2,
-              borderColor: isPlaying ? `${color}55` : Colors.glass.border,
-              backgroundColor: isPlaying ? `${color}12` : Colors.glass.light,
+              borderColor: loadFailed
+                ? `${Colors.status.error}55`
+                : isPlaying ? `${color}55` : Colors.glass.border,
+              backgroundColor: loadFailed
+                ? `${Colors.status.error}12`
+                : isPlaying ? `${color}12` : Colors.glass.light,
             },
             containerStyle,
           ]}
@@ -406,6 +451,8 @@ function AudioPlayerButtonInternal({
           ) : isPlaying ? (
             // Wave bars replace the pause icon for a calm, visual audio cue
             <WaveBars height={iconPx} color={displayColor} />
+          ) : loadFailed ? (
+            <Ionicons name="refresh" size={iconPx} color={Colors.status.error} />
           ) : (
             <Ionicons
               name="volume-medium"
@@ -418,15 +465,22 @@ function AudioPlayerButtonInternal({
 
       {showLabel && (
         <Text
-          style={[styles.label, isPlaying && { color }, isLocked && { color: Colors.text.muted }]}
+          style={[
+            styles.label,
+            isPlaying && { color },
+            isLocked && { color: Colors.text.muted },
+            loadFailed && { color: Colors.status.error },
+          ]}
         >
           {isBuffering
             ? 'Loading...'
             : isLocked
               ? 'Listen to Recitation (Premium)'
-              : isPlaying
-                ? 'Playing'
-                : 'Listen to Recitation'}
+              : loadFailed
+                ? "Couldn't load — tap to retry"
+                : isPlaying
+                  ? 'Playing'
+                  : 'Listen to Recitation'}
         </Text>
       )}
     </TouchableOpacity>
@@ -437,6 +491,13 @@ const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
     marginVertical: Spacing.md,
+  },
+  // Anchors WaveBars' scaleY to each bar's base so it grows upward out of the
+  // baseline, the way a level meter reads — the default centred origin would
+  // make the bars bloom symmetrically from the middle instead. The rest of a
+  // bar's style depends on props, so only this static piece lives here.
+  waveBar: {
+    transformOrigin: 'bottom',
   },
   buttonContainer: {
     flexDirection: 'row',

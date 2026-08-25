@@ -47,7 +47,7 @@ const mockRunAsync = jest.fn((sql: string, args?: any[]) => {
 
 const mockWithTransactionAsync = jest.fn((fn: () => Promise<void>) => fn());
 
-jest.mock('../../database/schema', () => ({
+jest.mock('../../database/connection', () => ({
   dbQuery: jest.fn((op: any) =>
     op({
       getFirstAsync: mockGetFirstAsync,

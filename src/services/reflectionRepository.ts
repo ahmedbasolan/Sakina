@@ -9,7 +9,7 @@
  * never synced to Supabase.
  */
 
-import { dbQuery } from '../database/schema';
+import { dbQuery } from '../database/connection';
 import { Mood } from '../types';
 
 // Re-export the canonical type from src/types so callers only need one import.
@@ -103,4 +103,79 @@ export class ReflectionRepository {
       return result as SavedReflection[];
     });
   }
+}
+
+// ── Freeform reflections (ReflectionHistoryScreen) ────────────────────────
+// The `reflections` table is the user's own free-writing journal — no verse
+// link, no angle. Previously queried inline by ReflectionHistoryScreen.
+
+export interface FreeformReflection {
+  id: string;
+  title: string;
+  content: string;
+  mood: string | null;
+  createdAt: number;
+}
+
+export async function getFreeformReflections(limit = 50): Promise<FreeformReflection[]> {
+  return dbQuery(async (db) => {
+    const rows = await db.getAllAsync(
+      `SELECT id, title, content, mood, createdAt FROM reflections ORDER BY createdAt DESC LIMIT ?`,
+      [limit],
+    );
+    return rows as FreeformReflection[];
+  });
+}
+
+export async function insertFreeformReflection(
+  id: string,
+  title: string,
+  content: string,
+  mood?: string,
+): Promise<void> {
+  await dbQuery(async (db) => {
+    await db.runAsync(
+      `INSERT INTO reflections (id, title, content, mood, createdAt) VALUES (?, ?, ?, ?, ?)`,
+      [id, title || 'Reflection', content, mood || null, Date.now()],
+    );
+  });
+}
+
+// ── Bookmark-marker rows (useGuidanceLogic bookmark toggle) ───────────────
+// An empty-reflection saved_reflections row marks a verse as bookmarked from
+// Guidance/a Journey. Its lifecycle is owned by the bookmark toggle, never by
+// `save()` — which deliberately excludes `reflection = ''` rows so it can
+// never repurpose one. LibraryScreen's Saved Verses tab merges these rows
+// with the reader's own bookmarked_verses at read time.
+
+/**
+ * Insert the empty-reflection row that marks a verse as bookmarked.
+ */
+export async function saveBookmarkMarker(
+  id: string,
+  contentId: string,
+  angleId: string,
+  mood: Mood,
+): Promise<void> {
+  await dbQuery(async (db) => {
+    await db.runAsync(
+      `INSERT OR REPLACE INTO saved_reflections (id, contentId, angleId, mood, reflection, timestamp)
+       VALUES (?, ?, ?, ?, '', ?)`,
+      [id, contentId, angleId, mood, Date.now()],
+    );
+  });
+}
+
+/**
+ * Remove only the empty-reflection bookmark-marker row for a verse+angle.
+ * A real written reflection (non-empty text) at the same contentId/angleId
+ * must survive an un-bookmark.
+ */
+export async function deleteBookmarkMarker(contentId: string, angleId: string): Promise<void> {
+  await dbQuery(async (db) => {
+    await db.runAsync(
+      `DELETE FROM saved_reflections WHERE contentId = ? AND angleId = ? AND reflection = ''`,
+      [contentId, angleId],
+    );
+  });
 }

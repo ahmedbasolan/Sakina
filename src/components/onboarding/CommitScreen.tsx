@@ -406,7 +406,7 @@ export default function CommitScreen({ isActive, onCommit }: Props) {
         <Animated.View style={[styles.completionWrap, { opacity: completionOpacity, transform: [{ translateY: completionSlide }] }]}>
           <Text style={styles.completionText}>Bismillah.</Text>
           <Text style={styles.completionSub}>Your intention is sealed.</Text>
-          <Text style={styles.completionHint}>Your first verse awaits</Text>
+          <Text style={styles.completionHint}>Just one more step</Text>
         </Animated.View>
       )}
 

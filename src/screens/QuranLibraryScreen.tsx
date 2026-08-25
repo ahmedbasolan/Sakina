@@ -14,7 +14,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Svg, { Path } from 'react-native-svg';
 import { Colors, Spacing, BorderRadius, Typography, MoodColors } from '../theme/DesignSystem';
 import { Content, Mood } from '../types';
-import { dbQuery } from '../database/schema';
+import { ContentRepository } from '../services/contentRepository';
 import { AnimatedMandala } from '../components/AnimatedMandala';
 import { TwinklingStar } from '../components/TwinklingStar';
 
@@ -36,18 +36,6 @@ const ALL_MOODS: Mood[] = [
 const MOOD_COLORS: Record<Mood, string> = Object.fromEntries(
   ALL_MOODS.map((m) => [m, MoodColors[m].accent]),
 ) as Record<Mood, string>;
-
-interface QuranRow {
-  id: string;
-  type: string;
-  primaryText: string;
-  arabicText: string | null;
-  transliteration: string | null;
-  englishTranslation: string;
-  source: string;
-  whyThis: string;
-  moods_csv: string;
-}
 
 function MoodChip({
   mood,
@@ -169,31 +157,8 @@ export default function QuranLibraryScreen({ navigation }: { navigation: any }) 
   useEffect(() => {
     Animated.timing(fadeAnim, { toValue: 1, duration: 600, useNativeDriver: true }).start();
 
-    dbQuery(async (db) => {
-      const rows = await db.getAllAsync<QuranRow>(`
-        SELECT
-          c.id, c.type, c.primaryText, c.arabicText, c.transliteration,
-          c.englishTranslation, c.source, c.whyThis,
-          GROUP_CONCAT(cm.mood, ',') AS moods_csv
-        FROM content c
-        INNER JOIN content_moods cm ON c.id = cm.contentId
-        WHERE c.type = 'Quran'
-        GROUP BY c.id
-        ORDER BY c.source ASC
-      `);
-
-      return rows.map((row): Content => ({
-        id: row.id,
-        type: row.type as Content['type'],
-        primaryText: row.primaryText,
-        arabicText: row.arabicText ?? undefined,
-        transliteration: row.transliteration ?? undefined,
-        englishTranslation: row.englishTranslation,
-        source: row.source,
-        whyThis: row.whyThis,
-        moods: row.moods_csv ? (row.moods_csv.split(',') as Mood[]) : [],
-      }));
-    })
+    ContentRepository.getInstance()
+      .getQuranVerses()
       .then(setQuranVerses)
       .catch((err) => console.error('[QuranLibrary] Failed to load from SQLite:', err))
       .finally(() => setLoading(false));
@@ -304,6 +269,13 @@ export default function QuranLibraryScreen({ navigation }: { navigation: any }) 
           keyExtractor={(item) => item.surah}
           contentContainerStyle={[styles.listContent, { paddingBottom: insets.bottom + Spacing.xxxl }]}
           showsVerticalScrollIndicator={false}
+          // Saved verses are unbounded user data, and each group renders a
+          // card per verse, so a row here can be far taller than one screen.
+          // Bounded for the same reason as PathsScreen (which also documents
+          // why removeClippedSubviews stays off).
+          initialNumToRender={6}
+          maxToRenderPerBatch={6}
+          windowSize={7}
           // Scrolls away; the back arrow and the mood rail above it do not.
           // FlatList still renders this with zero rows, so a filter that
           // matches nothing keeps its title.

@@ -4,7 +4,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { BlurView } from 'expo-blur';
+import { FrostedSurface } from '../components/FrostedSurface';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Colors, Spacing, BorderRadius } from '../theme/DesignSystem';
 import { useAuth } from '../context/AuthContext';
@@ -15,7 +15,7 @@ import { RootStackParamList, MainTabParamList } from './types';
 
 // Screens
 import OnboardingScreen from '../screens/OnboardingScreen';
-import { LoginScreen, SignUpScreen } from '../screens/AuthScreens';
+import { LoginScreen, SignUpScreen, ResetPasswordScreen } from '../screens/AuthScreens';
 import HomeScreen from '../screens/HomeScreen';
 import PathsScreen from '../screens/PathsScreen';
 import ReflectionHistoryScreen from '../screens/ReflectionHistoryScreen';
@@ -27,6 +27,7 @@ import PrayerTimesScreen from '../screens/PrayerTimesScreen';
 import QuranLibraryScreen from '../screens/QuranLibraryScreen';
 import MoodHistoryCalendarScreen from '../screens/MoodHistoryCalendarScreen';
 import DailyRemindersScreen from '../screens/DailyRemindersScreen';
+import LockscreenVersesScreen from '../screens/LockscreenVersesScreen';
 import MoodSelectionScreen from '../screens/MoodSelectionScreen';
 import LibraryScreen from '../screens/LibraryScreen';
 import SurahReaderScreen from '../screens/SurahReaderScreen';
@@ -122,16 +123,19 @@ function CustomTabBar({ state, navigation }: BottomTabBarProps) {
     <View style={[styles.tabBarOuter, { bottom: bottomEdge }]} pointerEvents="box-none">
       <View style={styles.pill}>
         {/* Frosted-glass surface — clipped to the pill's rounded shape. Sits
-            behind the tab items; the floating labels still overflow the pill. */}
-        {/* `experimentalBlurMethod` is what makes this actually blur on
-            Android — without it expo-blur falls back to a flat translucent
-            fill there, which is why the pill read as a dim rectangle over
-            scrolling content instead of frosted glass. iOS ignores the prop
-            and uses its native blur either way. */}
-        <BlurView
+            behind the tab items; the floating labels still overflow the pill.
+
+            This used to pass `experimentalBlurMethod="dimezisBlurView"` to get
+            a real blur on Android. It did — at the price of re-blurring the
+            whole screen on every frame the content behind it changed, on all
+            five tabs, forever, because this pill is mounted for the entire
+            session and always sits over scrolling content. See FrostedSurface
+            for the mechanism. The pill's own fill is already ~76% opaque navy
+            once `pill` and this layer composite, so the blur was contributing
+            almost nothing visible for that cost. */}
+        <FrostedSurface
           intensity={48}
-          tint="dark"
-          experimentalBlurMethod="dimezisBlurView"
+          androidFill="rgba(7, 15, 26, 0.62)"
           style={styles.pillBlur}
           pointerEvents="none"
         />
@@ -165,7 +169,14 @@ function CustomTabBar({ state, navigation }: BottomTabBarProps) {
 function MainTabNavigator() {
   return (
     <Tab.Navigator
-      screenOptions={{ headerShown: false }}
+      // `freezeOnBlur` suspends a tab's React tree while it isn't the focused
+      // one (via react-freeze, already a react-native-screens dependency).
+      // Tabs stay mounted after their first visit, so without this every
+      // screen you have ever opened keeps re-rendering behind the one you are
+      // looking at — the 60-second clock tick in useHomeData, the mandala
+      // rotations, the twinkling stars, all of it, all at once. Screens
+      // re-render on focus, so nothing goes stale.
+      screenOptions={{ headerShown: false, freezeOnBlur: true }}
       tabBar={(props) => <CustomTabBar {...props} />}
     >
       <Tab.Screen name="Home" component={HomeScreen} />
@@ -179,13 +190,40 @@ function MainTabNavigator() {
 
 // ── Root navigator ────────────────────────────────────────────────────
 export default function MainNavigator() {
-  const { user, isGuest, loading } = useAuth();
+  const { user, isGuest, loading, isPasswordRecovery } = useAuth();
 
   if (loading) return <View style={{ flex: 1, backgroundColor: Colors.background.primary }} />;
 
+  // Checked BEFORE the user/guest branch, and deliberately its own isolated
+  // stack rather than a screen slotted into the normal one: tapping a
+  // password-recovery email link calls supabase.auth.setSession(), which is
+  // indistinguishable from a normal sign-in to everything else in the app —
+  // without this branch a stale reset link would drop the user straight into
+  // Main, signed in, with their old password untouched and nothing reset.
+  // Login/SignUp are included here (not just ResetPassword) so the Cancel
+  // button has somewhere to send the user without falling through to this
+  // same branch's normal `!user && !isGuest` case, which is Onboarding —
+  // wrong for someone who already has an account and just wants back in.
+  if (isPasswordRecovery) {
+    return (
+      <RootStack.Navigator screenOptions={{ headerShown: false }} initialRouteName="ResetPassword">
+        <RootStack.Screen name="ResetPassword" component={ResetPasswordScreen} />
+        <RootStack.Screen name="Login" component={LoginScreen} />
+        <RootStack.Screen name="SignUp" component={SignUpScreen} />
+      </RootStack.Navigator>
+    );
+  }
+
   return (
     <RootStack.Navigator
-      screenOptions={{ headerShown: false }}
+      // Same reasoning as the tab navigator below, and it matters more here:
+      // a pushed screen leaves the one underneath mounted, so opening Support
+      // from Guidance left GuidanceScreen's whole immersive scene — the
+      // rotating mandala, six twinkling stars, six golden motes, the verse
+      // reveal — animating behind an opaque screen the user cannot see.
+      // Freezing is React-level only, so native playback (expo-audio) is
+      // unaffected, and screens re-render on focus.
+      screenOptions={{ headerShown: false, freezeOnBlur: true }}
       initialRouteName={!user && !isGuest ? 'Onboarding' : 'Main'}
     >
       {!user && !isGuest ? (
@@ -201,6 +239,7 @@ export default function MainNavigator() {
           <RootStack.Screen name="QuranLibrary" component={QuranLibraryScreen} />
           <RootStack.Screen name="MoodHistory" component={MoodHistoryCalendarScreen} />
           <RootStack.Screen name="DailyReminders" component={DailyRemindersScreen} />
+          <RootStack.Screen name="LockscreenVerses" component={LockscreenVersesScreen} />
           <RootStack.Screen name="Settings" component={SettingsScreen} />
           <RootStack.Screen name="SurahReader" component={SurahReaderScreen} />
           <RootStack.Screen name="Support" component={SupportSakinaScreen} />

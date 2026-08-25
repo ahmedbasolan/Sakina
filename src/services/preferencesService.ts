@@ -1,4 +1,4 @@
-import { dbQuery } from '../database/schema';
+import { dbQuery } from '../database/connection';
 import { UserPreferences, LanguagePreference } from '../types';
 
 export class PreferencesService {

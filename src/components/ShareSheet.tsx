@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState, useCallback, useMemo } from 'react';
 import {
   StyleSheet,
   View,
@@ -21,10 +21,30 @@ import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Colors, BorderRadius, Spacing, Typography } from '../theme/DesignSystem';
+import { loadLockscreenPrefs, saveLockscreenPrefs } from '../services/lockscreenVerseService';
+import { topUpScheduledNotifications } from '../services/notificationTopUpTask';
 import { BackgroundTheme } from '../types';
 import { BACKGROUND_THEMES } from '../services/backgroundThemeService';
 import BackgroundThemePicker from './BackgroundThemePicker';
-import { resolveCardBackground, buildShareText, CardTheme } from '../utils/shareCard';
+import {
+  resolveCardBackground,
+  buildShareText,
+  pickShareCardTextTier,
+  CardTheme,
+  ShareCardTextTier,
+} from '../utils/shareCard';
+
+// previewCard's target shape — see the sizing comment at its computation
+// below in ShareSheet for why this is a target rather than a hard cap.
+// Closer to an actual phone screenshot (~9:16-9:20) than a square-ish social
+// post crop (4:5) — the whole point is "looks like a screenshot of the verse
+// screen", and the extra height also buys real room for text before tiering
+// has to shrink it.
+const CARD_ASPECT_RATIO = 0.62; // width / height, portrait
+// Header ("Sakina app") + footer (surah name + ref) + inter-block gaps —
+// short, roughly-constant-length strings that don't scale with the verse,
+// budgeted once here rather than re-measured per render.
+const NON_SCALING_CONTENT_HEIGHT = 90;
 
 interface ShareSheetProps {
   isVisible: boolean;
@@ -75,15 +95,20 @@ interface CardContentProps {
   showArabic: boolean;
   showTransliteration: boolean;
   showEnglish: boolean;
+  tier: ShareCardTextTier;
 }
 
 /** The card's text layer — identical whether it sits over a gradient or a
  *  premium photo background, so both branches in ShareSheet render it.
- *  No numberOfLines/adjustsFontSizeToFit here (CLAUDE.md's Quran-quoting
- *  rules, §4): a clamp with no expand affordance silently ellipsis-clips
- *  the ayah, which is never acceptable. The card only has a minHeight and
- *  sits in a ScrollView, so a long verse (e.g. Ayat al-Kursi) just makes
- *  the preview taller instead of losing text. */
+ *  No numberOfLines/ellipsis anywhere here (CLAUDE.md's Quran-quoting rules,
+ *  §4) — a clamp with no expand affordance silently cuts the ayah, which is
+ *  never acceptable regardless of length. Instead the Arabic/transliteration/
+ *  English blocks scale down via `tier` (picked in ShareSheet from the
+ *  card's fixed target size and the verse's actual length — the *other*
+ *  §4-sanctioned option, "font-size scaling, tiered by length", instead of
+ *  letting the card grow freely) so a longer verse shrinks its own text
+ *  rather than pushing the card — and therefore the photo background —
+ *  taller. */
 const CardContent = ({
   textColor,
   subTextColor,
@@ -93,6 +118,7 @@ const CardContent = ({
   showArabic,
   showTransliteration,
   showEnglish,
+  tier,
 }: CardContentProps) => (
   <>
     <View style={styles.cardHeader}>
@@ -107,10 +133,26 @@ const CardContent = ({
 
     <View style={styles.quoteContainer}>
       {showArabic && content.arabicText && (
-        <Text style={[styles.previewArabic, { color: textColor }]}>{content.arabicText}</Text>
+        <Text
+          style={[
+            styles.previewArabic,
+            { color: textColor, fontSize: tier.arabicFontSize, lineHeight: tier.arabicLineHeight },
+          ]}
+        >
+          {content.arabicText}
+        </Text>
       )}
       {showTransliteration && content.transliteration && (
-        <Text style={[styles.previewTransliteration, { color: subTextColor }]}>
+        <Text
+          style={[
+            styles.previewTransliteration,
+            {
+              color: subTextColor,
+              fontSize: tier.translitFontSize,
+              lineHeight: tier.translitLineHeight,
+            },
+          ]}
+        >
           {content.transliteration}
         </Text>
       )}
@@ -122,6 +164,8 @@ const CardContent = ({
               color: textColor,
               fontFamily: selectedFont.family,
               fontStyle: selectedFont.id === 'serif' ? 'italic' : 'normal',
+              fontSize: tier.quoteFontSize,
+              lineHeight: tier.quoteLineHeight,
             },
           ]}
         >
@@ -142,7 +186,7 @@ const CardContent = ({
 );
 
 const ShareSheet = ({ isVisible, onClose, isPremium, onUpgrade, content }: ShareSheetProps) => {
-  const { height: screenHeight } = useWindowDimensions();
+  const { height: screenHeight, width: screenWidth } = useWindowDimensions();
   const insets = useSafeAreaInsets();
   const slideAnim = useRef(new Animated.Value(screenHeight)).current;
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -159,6 +203,40 @@ const ShareSheet = ({ isVisible, onClose, isPremium, onUpgrade, content }: Share
   useEffect(() => {
     if (!isPremium) setSelectedPhotoTheme(null);
   }, [isPremium]);
+
+  // Reflects whether the currently selected photo is already the lock screen
+  // background, so the checkbox shows real state rather than always starting
+  // unchecked.
+  const [useOnLockScreen, setUseOnLockScreen] = useState(false);
+  useEffect(() => {
+    let active = true;
+    loadLockscreenPrefs().then((prefs) => {
+      if (!active) return;
+      setUseOnLockScreen(
+        !!selectedPhotoTheme && prefs.enabled && prefs.themeId === selectedPhotoTheme.id,
+      );
+    });
+    return () => {
+      active = false;
+    };
+  }, [selectedPhotoTheme]);
+
+  const handleUseOnLockScreen = useCallback(async () => {
+    if (!selectedPhotoTheme) return;
+    const next = !useOnLockScreen;
+    setUseOnLockScreen(next);
+    // Turning it on both selects this theme and enables the feature — a user
+    // ticking this box has expressed the whole intent, and leaving them to also
+    // find the Settings screen would make the box do nothing visible.
+    // Turning it off only clears the theme override; it does not disable lock
+    // screen verses, which the user may have set up deliberately elsewhere.
+    await saveLockscreenPrefs(
+      next ? { enabled: true, themeId: selectedPhotoTheme.id } : { themeId: null },
+    );
+    topUpScheduledNotifications().catch(() => {
+      /* scheduling is best-effort here; the setup screen surfaces failures */
+    });
+  }, [selectedPhotoTheme, useOnLockScreen]);
 
   // Content Filtering State
   const [showArabic, setShowArabic] = useState(!!content.arabicText);
@@ -306,6 +384,38 @@ const ShareSheet = ({ isVisible, onClose, isPremium, onUpgrade, content }: Share
 
   const parsedSource = parseSource(content.source);
 
+  // Target size for previewCard — a `minHeight`, not a hard `height`/
+  // `aspectRatio`, so the card renders at this exact size for the common
+  // case (full photo background always visible, per the "like a screenshot"
+  // brief) while still being able to grow for the rare verse whose text
+  // doesn't fit even at the smallest tier below. `cardWidth` mirrors
+  // previewCard's actual rendered width: screen width minus sheetContainer's
+  // own paddingHorizontal (Spacing.xl on each side).
+  const cardWidth = screenWidth - Spacing.xl * 2;
+  const cardTargetHeight = cardWidth / CARD_ASPECT_RATIO;
+
+  // Conservative (i.e. narrower) than either branch's real available width —
+  // the photo branch additionally insets by glassPanel's own horizontal
+  // padding, so using that narrower figure for both branches only ever
+  // causes the gradient branch to pick an equal-or-smaller tier than it
+  // strictly needs, never a larger one that could overflow.
+  const textWidth = cardWidth - Spacing.xl * 2 - Spacing.lg * 2 - Spacing.md;
+  const heightBudget = cardTargetHeight - Spacing.xxl * 2 - Spacing.xl * 2 - NON_SCALING_CONTENT_HEIGHT;
+
+  const tier = useMemo(
+    () =>
+      pickShareCardTextTier(
+        {
+          arabicText: showArabic ? content.arabicText : undefined,
+          transliteration: showTransliteration ? content.transliteration : undefined,
+          englishText: showEnglish ? content.text : undefined,
+        },
+        textWidth,
+        heightBudget,
+      ),
+    [showArabic, showTransliteration, showEnglish, content.arabicText, content.transliteration, content.text, textWidth, heightBudget],
+  );
+
   return (
     <Modal visible={isVisible} transparent animationType="none" onRequestClose={onClose}>
       <View style={styles.overlay}>
@@ -346,43 +456,61 @@ const ShareSheet = ({ isVisible, onClose, isPremium, onUpgrade, content }: Share
               <ViewShot ref={viewShotRef} options={{ format: 'png', quality: 1 }}>
                 {background.kind === 'photo' ? (
                   // Plain View + absolutely-positioned Image instead of
-                  // ImageBackground: previewCard's height is content-driven
-                  // (minHeight, no fixed height), and ImageBackground's own
-                  // implementation re-proxies width/height from the outer
-                  // style onto its inner <Image> (see its "Temporary
-                  // Workaround" comment in react-native/Libraries/Image/
-                  // ImageBackground.js) — with no resolved height to proxy,
-                  // the image fell back to its own intrinsic aspect ratio
-                  // instead of covering the card, leaving bare strips at the
-                  // sides. A directly absoluteFill'd Image has no such
-                  // proxy step and reliably covers the card's real box.
-                  <View style={styles.previewCard}>
+                  // ImageBackground: previewCard's height is set explicitly
+                  // below (a computed `minHeight`, not the stylesheet's own
+                  // fixed value), and ImageBackground's own implementation
+                  // re-proxies width/height from the outer style onto its
+                  // inner <Image> (see its "Temporary Workaround" comment in
+                  // react-native/Libraries/Image/ImageBackground.js) — with
+                  // no resolved height to proxy, the image fell back to its
+                  // own intrinsic aspect ratio instead of covering the card,
+                  // leaving bare strips at the sides. A directly
+                  // absoluteFill'd Image has no such proxy step and reliably
+                  // covers the card's real box.
+                  //
+                  // `cover` (not `contain`) for the same full-bleed,
+                  // immersive look as the lock screen preview's NotifCard
+                  // (LockscreenVersesScreen.tsx) — `contain` technically
+                  // shows every pixel, but letterboxes and shrinks the photo
+                  // enough that its most vivid region typically lands
+                  // directly behind the centered quote text, which reads as
+                  // "the photo barely shows" even though nothing is being
+                  // cropped. Matching NotifCard's actual fix instead: keep
+                  // the photo full-bleed, and give the text its own opaque
+                  // panel (glassPanel below) rather than relying on the
+                  // photo darkening enough on its own to stay legible.
+                  <View
+                    style={[styles.previewCard, styles.previewCardPhoto, { minHeight: cardTargetHeight }]}
+                  >
                     <Image
                       source={background.imageSource}
                       style={StyleSheet.absoluteFillObject}
                       resizeMode="cover"
                     />
                     <LinearGradient
-                      colors={['transparent', 'rgba(0,0,0,0.65)']}
+                      colors={['rgba(7,17,30,0.15)', 'rgba(7,17,30,0.85)']}
                       style={StyleSheet.absoluteFillObject}
                     />
-                    <CardContent
-                      textColor={textColor}
-                      subTextColor={subTextColor}
-                      content={content}
-                      parsedSource={parsedSource}
-                      selectedFont={selectedFont}
-                      showArabic={showArabic}
-                      showTransliteration={showTransliteration}
-                      showEnglish={showEnglish}
-                    />
+                    <View style={styles.glassPanel}>
+                      <CardContent
+                        textColor={textColor}
+                        subTextColor={subTextColor}
+                        content={content}
+                        parsedSource={parsedSource}
+                        selectedFont={selectedFont}
+                        showArabic={showArabic}
+                        showTransliteration={showTransliteration}
+                        showEnglish={showEnglish}
+                        tier={tier}
+                      />
+                    </View>
                   </View>
                 ) : (
                   <LinearGradient
                     colors={background.colors}
                     start={{ x: 0, y: 0 }}
                     end={{ x: 1, y: 1 }}
-                    style={styles.previewCard}
+                    style={[styles.previewCard, { minHeight: cardTargetHeight }]}
                   >
                     <CardContent
                       textColor={textColor}
@@ -393,6 +521,7 @@ const ShareSheet = ({ isVisible, onClose, isPremium, onUpgrade, content }: Share
                       showArabic={showArabic}
                       showTransliteration={showTransliteration}
                       showEnglish={showEnglish}
+                      tier={tier}
                     />
                   </LinearGradient>
                 )}
@@ -509,6 +638,27 @@ const ShareSheet = ({ isVisible, onClose, isPremium, onUpgrade, content }: Share
                   </View>
                 </TouchableOpacity>
               </ScrollView>
+
+              {/* Carries the photo the user just picked straight over to lock
+                  screen verses, so choosing a background twice is unnecessary.
+                  Only offered once a photo theme is actually selected — there
+                  is nothing to carry over otherwise. */}
+              {isPremium && selectedPhotoTheme && (
+                <TouchableOpacity
+                  style={styles.lockscreenRow}
+                  onPress={handleUseOnLockScreen}
+                  accessibilityRole="switch"
+                  accessibilityLabel="Also use on lock screen"
+                  accessibilityState={{ checked: useOnLockScreen }}
+                >
+                  <Ionicons
+                    name={useOnLockScreen ? 'checkbox-outline' : 'square-outline'}
+                    size={18}
+                    color={useOnLockScreen ? Colors.accent.primary : Colors.text.secondary}
+                  />
+                  <Text style={styles.lockscreenLabel}>Also use on Lock Screen</Text>
+                </TouchableOpacity>
+              )}
 
               {/* PERSONALIZE - FONTS */}
               <View style={styles.fontSelector}>
@@ -648,13 +798,37 @@ const styles = StyleSheet.create({
   },
   previewCard: {
     width: '100%',
-    minHeight: 300,
+    // minHeight is set inline per-render (a computed target from the card's
+    // 4:5 aspect ratio) — not fixed here, since it depends on screen width.
+    backgroundColor: Colors.background.primary,
     borderRadius: BorderRadius.xxl,
     overflow: 'hidden',
     paddingHorizontal: Spacing.xl,
     paddingVertical: Spacing.xxl,
     alignItems: 'center',
     justifyContent: 'space-between',
+  },
+  // Photo backgrounds hold a single content panel instead of spreading
+  // header/quote/footer across the full card height — centering it here
+  // (rather than the gradient branch's space-between) is what leaves photo
+  // visible above and below the panel instead of the panel's own edges
+  // touching the card's edges.
+  previewCardPhoto: {
+    justifyContent: 'center',
+  },
+  // Text's own opaque backing over a photo — matches NotifCard's treatment
+  // in LockscreenVersesScreen.tsx (rgba(12,26,46,0.72)) rather than the
+  // generic warm-tinted Colors.glass tokens, which are tuned for panels on
+  // this app's dark screens, not for sitting over a bright nature photo.
+  glassPanel: {
+    width: '100%',
+    backgroundColor: 'rgba(12,26,46,0.72)',
+    borderRadius: BorderRadius.xl,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.12)',
+    paddingHorizontal: Spacing.lg,
+    paddingVertical: Spacing.xl,
+    alignItems: 'center',
   },
   cardHeader: {
     width: '100%',
@@ -750,6 +924,18 @@ const styles = StyleSheet.create({
   themeCircle: {
     flex: 1,
     borderRadius: 22,
+  },
+  lockscreenRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: Spacing.md,
+    paddingHorizontal: Spacing.xs,
+  },
+  lockscreenLabel: {
+    marginLeft: Spacing.sm,
+    fontFamily: Typography.fonts.latin,
+    fontSize: Typography.sizes.small,
+    color: Colors.text.secondary,
   },
   photoThemeCircle: {
     flex: 1,

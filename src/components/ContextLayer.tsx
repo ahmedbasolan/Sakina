@@ -75,11 +75,25 @@ function splitIntoSections(text: string): { understand: string; matters: string 
   return { understand: text, matters: '' };
 }
 
-function extractSourceLabel(text: string, fallbackSource: string): string {
+export function extractSourceLabel(text: string, fallbackSource: string): string {
   const match = text.match(/\[Tafsir\s+[^\]]+\]/);
   if (match) return match[0].replace(/[[\]]/g, '');
   if (fallbackSource && fallbackSource !== 'Quran') return fallbackSource;
   return 'Islamic Scholarship';
+}
+
+// Strips the `[Tafsir ...]` / `[Sahih ...]` / etc. citation tags this layer's
+// text carries inline. Plain-text only — no bidi isolation — so it's also
+// safe for contexts that aren't React Native Text rendering, like a native
+// share sheet, which would otherwise carry invisible bidi control characters
+// into whatever app receives the shared text.
+export function stripCitationTags(t: string): string {
+  return t
+    .replace(
+      /\s*\[(?:Tafsir[^\]]*|Sahih[^\]]*|At-Tirmidhi[^\]]*|Abu Dawud[^\]]*|Musnad[^\]]*|Ibn[^\]]*|An-Nasa[^\]]*|Al-[^\]]*)\]\s*/g,
+      ' ',
+    )
+    .trim();
 }
 
 function extractPropheticQuote(text: string): { before: string; quote: string; after: string } | null {
@@ -169,15 +183,7 @@ const ContextLayer: React.FC<ContextLayerProps> = ({
     }).start();
   }, [reflectionStatus, saveButtonOpacity]);
 
-  const cleanText = (t: string) =>
-    isolateBidiRuns(
-      t
-        .replace(
-          /\s*\[(?:Tafsir[^\]]*|Sahih[^\]]*|At-Tirmidhi[^\]]*|Abu Dawud[^\]]*|Musnad[^\]]*|Ibn[^\]]*|An-Nasa[^\]]*|Al-[^\]]*)\]\s*/g,
-          ' ',
-        )
-        .trim(),
-    );
+  const cleanText = (t: string) => isolateBidiRuns(stripCitationTags(t));
 
   const renderMattersContent = () => {
     if (!propheticQuote) {

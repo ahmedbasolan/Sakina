@@ -17,6 +17,7 @@ import { AppState } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { formatDateYMD, subtractDays } from '../utils/date';
 import { Colors } from '../theme/DesignSystem';
+import { getPathVisual } from '../constants/pathVisuals';
 import { Mood, PrayerContext } from '../types';
 import PrayerTimesService, { PrayerTimings, PrayerTimesData } from '../services/prayerTimesService';
 import { getUserLocation } from '../services/locationStorage';
@@ -30,12 +31,19 @@ import { STREAK_MILESTONES } from '../constants';
 // ── Types ─────────────────────────────────────────────────────────────────
 
 export interface ActivePath {
+  /** Lets the Home card open this journey directly instead of the list. */
+  pathId: string;
   pathLabel: string;
   stepTitle: string;
   stepFocus?: string;
   currentDay: number;
   totalDays: number;
+  // Both come from getPathVisual(pathId) — the same registry PathsScreen and
+  // PathDetailScreen use — so this card matches the journey's identity
+  // everywhere else it appears instead of showing a fixed brown/gold wheat
+  // icon for every journey regardless of which one is actually active.
   color: string;
+  icon: ReturnType<typeof getPathVisual>['icon'];
 }
 
 export interface LastCheckin {
@@ -141,7 +149,8 @@ export function useHomeData({ setStreakCount }: UseHomeDataOptions) {
           : data.timings;
       const notifications = NotificationService.getInstance();
       notifications.scheduleSpiritualReminders(schedulingTimings)
-        .then(() => notifications.schedulePrayerNotifications(schedulingTimings, city))
+        .then(() => notifications.schedulePrayerNotifications(schedulingTimings))
+        .then(() => notifications.scheduleMoodCheckinNotifications(schedulingTimings))
         .catch((error) => logServiceError(
           'useHomeData',
           'scheduleNotifications',
@@ -238,10 +247,15 @@ export function useHomeData({ setStreakCount }: UseHomeDataOptions) {
       // Supabase), so `allProgress[0]` was whichever journey happened to be
       // started FIRST — including an already-finished one — and stayed
       // pinned there for the life of the app regardless of what the user
-      // was actually working through. UserPathProgress carries no
-      // last-touched timestamp, so `startDate` descending, filtered to
-      // unfinished journeys, is the closest available proxy for "the one
-      // the user is currently on."
+      // was actually working through.
+      //
+      // `startDate` descending replaced that, but "most recently STARTED" is
+      // still not "the one I'm working through": a user partway through Rizq
+      // who then began a newer journey saw the card pinned to the newer one,
+      // and completing a Rizq day changed nothing on Home. PathsService now
+      // records the last journey whose day was actually opened; that pointer
+      // wins, and startDate ordering remains the fallback for a fresh install
+      // or a pointer aimed at a finished/removed journey.
       const inProgress = allProgress
         .filter((p) => !p.isCompleted)
         .sort((a, b) => b.startDate - a.startDate);
@@ -251,19 +265,29 @@ export function useHomeData({ setStreakCount }: UseHomeDataOptions) {
         return;
       }
 
-      const latest = inProgress[0];
+      const lastOpenedId = await pathsService.getLastOpenedPath();
+      const latest =
+        inProgress.find((p) => p.pathId === lastOpenedId) ?? inProgress[0];
       const path = pathsService.getPathById(latest.pathId);
       if (!path) return;
 
       const currentStep =
         path.dailySteps.find((s: any) => s.day === latest.currentDay) || path.dailySteps[0];
+      // getPathVisual is the "Single source of truth" (its own doc comment)
+      // for a journey's color+icon, used by PathsScreen and PathDetailScreen.
+      // This card used to hardcode Colors.accent.primary and a barley icon —
+      // both happen to match Rizq Revolution's own visual, which is exactly
+      // why every OTHER active journey silently rendered as gold wheat here.
+      const visual = getPathVisual(path.id);
       setActivePath({
+        pathId: path.id,
         pathLabel: `${path.duration}-DAY PATH`,
         stepTitle: currentStep?.title || path.title,
         stepFocus: currentStep?.focus || path.description,
         currentDay: latest.currentDay,
         totalDays: path.duration,
-        color: Colors.accent.primary,
+        color: visual.color,
+        icon: visual.icon,
       });
     } catch (error) {
       logServiceError('useHomeData', 'loadActivePath', error instanceof Error ? error : new Error(String(error)));
@@ -347,6 +371,7 @@ export function useHomeData({ setStreakCount }: UseHomeDataOptions) {
 
   return {
     // Prayer
+    prayerTimings,
     prayerContext,
     nextPrayer,
     loadingPrayers,
@@ -356,6 +381,10 @@ export function useHomeData({ setStreakCount }: UseHomeDataOptions) {
     showLocationModal,
     setShowLocationModal,
     loadPrayerData,
+    // Exposed so HomeScreen can refresh the Sacred Journey card on focus.
+    // Without it the card reloaded only on mount, app-foreground and
+    // pull-to-refresh, so returning from a journey day left it stale.
+    loadActivePath,
 
     // Streak / mood
     streakDays,

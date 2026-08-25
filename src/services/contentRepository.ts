@@ -8,7 +8,7 @@
  */
 
 import { Mood, ContentAngle, Content, ContentType, PrayerContext } from '../types';
-import { dbQuery } from '../database/schema';
+import { dbQuery } from '../database/connection';
 import { SupabaseDataService } from './supabaseDataService';
 import { logServiceError } from './errorLoggingService';
 
@@ -29,7 +29,7 @@ import { logServiceError } from './errorLoggingService';
  *
  * A new journey only needs its prefix added here.
  */
-export const JOURNEY_ANGLE_PREFIXES = ['rizq', 'salah', 'results', 'study', 'imam', 'crisis'];
+export const JOURNEY_ANGLE_PREFIXES = ['rizq', 'salah', 'results', 'study', 'imam', 'crisis', 'marriage'];
 
 const JOURNEY_ID_GLOBS = JOURNEY_ANGLE_PREFIXES.map((p) => `q_angle_${p}_*`);
 
@@ -355,5 +355,36 @@ export class ContentRepository {
       optionalReflection: row.optionalReflection,
       moods: [],
     };
+  }
+
+  /**
+   * Fetch all Quran-type content rows with their mood tags, for the Quran
+   * Library screen. Moods are grouped per verse via GROUP_CONCAT.
+   */
+  async getQuranVerses(): Promise<Content[]> {
+    return dbQuery(async (db) => {
+      const rows = await db.getAllAsync<any>(`
+        SELECT
+          c.id, c.type, c.primaryText, c.arabicText, c.transliteration,
+          c.englishTranslation, c.source, c.whyThis,
+          GROUP_CONCAT(cm.mood, ',') AS moods_csv
+        FROM content c
+        INNER JOIN content_moods cm ON c.id = cm.contentId
+        WHERE c.type = 'Quran'
+        GROUP BY c.id
+        ORDER BY c.source ASC
+      `);
+      return rows.map((row): Content => ({
+        id: row.id,
+        type: row.type as ContentType,
+        primaryText: row.primaryText,
+        arabicText: row.arabicText ?? undefined,
+        transliteration: row.transliteration ?? undefined,
+        englishTranslation: row.englishTranslation,
+        source: row.source,
+        whyThis: row.whyThis,
+        moods: row.moods_csv ? (row.moods_csv.split(',') as Mood[]) : [],
+      }));
+    });
   }
 }
