@@ -55,3 +55,19 @@ export function formatDateDMY(date: Date = new Date()): string {
   const y = date.getFullYear();
   return `${d}-${m}-${y}`;
 }
+
+/**
+ * Return `date`'s 1-indexed day of the year (Jan 1 = 1).
+ *
+ * Reads only the local calendar fields (year/month/date) and diffs them as
+ * UTC midnights, rather than dividing a raw local-time millisecond gap by
+ * 86400000 — UTC has no DST, so this can't be thrown off by a transition
+ * between Jan 1 and `date`. Used for deterministic day-based rotation
+ * (content that should pick a different variant each calendar day); not
+ * meant for anything requiring calendar-accurate leap-year day counts.
+ */
+export function dayOfYear(date: Date): number {
+  const utcDate = Date.UTC(date.getFullYear(), date.getMonth(), date.getDate());
+  const utcStartOfYear = Date.UTC(date.getFullYear(), 0, 1);
+  return Math.floor((utcDate - utcStartOfYear) / (1000 * 60 * 60 * 24)) + 1;
+}

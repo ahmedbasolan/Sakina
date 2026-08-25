@@ -72,7 +72,7 @@ export async function topUpScheduledNotifications(): Promise<boolean> {
   // Sequential like useHomeData — each call cancels-then-reschedules only
   // its own category, so one failing never wipes the other.
   await notifications.scheduleSpiritualReminders(timings);
-  await notifications.schedulePrayerNotifications(timings, city);
+  await notifications.schedulePrayerNotifications(timings);
   await notifications.scheduleMoodCheckinNotifications(timings);
   return true;
 }

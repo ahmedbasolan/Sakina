@@ -12,6 +12,7 @@
  *   gets an extra slot in the rotation to be more relevant.
  */
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { dayOfYear } from '../utils/date';
 
 const ACTIVE_PATH_KEY = '@user_path_progress';
 
@@ -98,12 +99,7 @@ export async function getDailyGuidanceContent(): Promise<{
   }
 
   // Day-of-year modulo for deterministic rotation
-  const now = new Date();
-  const startOfYear = new Date(now.getFullYear(), 0, 0);
-  const dayOfYear = Math.floor(
-    (now.getTime() - startOfYear.getTime()) / (1000 * 60 * 60 * 24),
-  );
-  const variant = pool[dayOfYear % pool.length];
+  const variant = pool[dayOfYear(new Date()) % pool.length];
 
   return {
     title: variant.title,
