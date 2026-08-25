@@ -5,10 +5,10 @@
  * Arabic, divider, translation) + Context accordion →
  * fixed bottom pill (Save · Share · Audio) + prev/next navigation.
  */
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import {
   View, Text, StyleSheet, TouchableOpacity,
-  ActivityIndicator, Animated, FlatList,
+  ActivityIndicator, Animated, ScrollView, useWindowDimensions,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { FrostedSurface } from '../components/FrostedSurface';
@@ -53,6 +53,86 @@ const GOLD = Colors.accent.primary;
 const HIT_SLOP = { top: 8, bottom: 8, left: 8, right: 8 };
 
 type ViewMode = 'single' | 'page';
+
+// ─── Mushaf page pagination ─────────────────────────────────────────────────
+// We don't have real Mushaf line-break data, so a "page" is approximated:
+// estimate each verse's line count from its Uthmani character length and
+// pack verses greedily until a per-device line budget is filled. Not
+// pixel-perfect, but it gives page turns a proportionate, book-like cadence
+// instead of one verse — or twenty — per page.
+//
+// Both the chars-per-line and lines-per-page budgets are computed from the
+// actual window size (see usePageBudget below) rather than fixed constants —
+// a budget tuned by eye on one screen reliably overflowed shorter/narrower
+// Android viewports before the whole page could be seen without scrolling.
+// These stay as the shared ceiling/reference values so the pagination math
+// and the leaf's own text style never drift apart.
+const MUSHAF_ARABIC_FONT_SIZE = 21;
+const MUSHAF_ARABIC_LINE_HEIGHT = 46;
+// Average Amiri-Quran glyph advance as a fraction of font size — Arabic
+// joining forms vary in width, so this errs conservative (undercounts how
+// much fits per line) rather than risk lines wrapping past the budget used
+// to decide where a page breaks.
+const ARABIC_GLYPH_WIDTH_RATIO = 0.62;
+// Horizontal padding the leaf's Arabic text sits inside: leafWrap's
+// paddingHorizontal (Spacing.lg, both sides) + leaf's own (Spacing.xl, both
+// sides). Kept in sync with the styles below by hand — there are only two.
+const MUSHAF_LEAF_HORIZONTAL_CHROME = 2 * Spacing.lg + 2 * Spacing.xl;
+// Vertical space the leaf's Arabic block does NOT get to use: the screen
+// header, the fixed bottom nav row, the leaf's own padding/footer, and
+// (worst case, page 1) a framed Bismillah — everything in this file's layout
+// that isn't the text itself. Approximate by construction, and deliberately
+// generous so pages fit rather than border on overflowing.
+const MUSHAF_LEAF_VERTICAL_CHROME = 380;
+const MUSHAF_IDEAL_LINES_PER_PAGE = 15; // real Mushaf density — a ceiling, not a target
+const MUSHAF_MIN_LINES_PER_PAGE = 6;
+
+const ARABIC_INDIC_DIGITS = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
+function toArabicIndicNumeral(n: number): string {
+  return String(n).split('').map((d) => ARABIC_INDIC_DIGITS[Number(d)] ?? d).join('');
+}
+
+interface PageBudget {
+  charsPerLine: number;
+  linesPerPage: number;
+}
+
+function computePageBudget(windowWidth: number, windowHeight: number, insetTop: number, insetBottom: number): PageBudget {
+  const leafTextWidth = windowWidth - MUSHAF_LEAF_HORIZONTAL_CHROME;
+  const charsPerLine = Math.max(
+    12,
+    Math.floor(leafTextWidth / (MUSHAF_ARABIC_FONT_SIZE * ARABIC_GLYPH_WIDTH_RATIO)),
+  );
+
+  const availableHeight = windowHeight - insetTop - insetBottom - MUSHAF_LEAF_VERTICAL_CHROME;
+  const heightLines = Math.floor(availableHeight / MUSHAF_ARABIC_LINE_HEIGHT);
+  const linesPerPage = Math.max(MUSHAF_MIN_LINES_PER_PAGE, Math.min(MUSHAF_IDEAL_LINES_PER_PAGE, heightLines));
+
+  return { charsPerLine, linesPerPage };
+}
+
+function paginateVerseIndices(verses: Verse[], budget: PageBudget): number[][] {
+  const pages: number[][] = [];
+  let current: number[] = [];
+  let lines = 0;
+  verses.forEach((v, i) => {
+    const verseLines = Math.max(1, Math.ceil(v.arabic.length / budget.charsPerLine));
+    if (current.length > 0 && lines + verseLines > budget.linesPerPage) {
+      pages.push(current);
+      current = [];
+      lines = 0;
+    }
+    current.push(i);
+    lines += verseLines;
+  });
+  if (current.length) pages.push(current);
+  return pages;
+}
+
+function pageIndexForVerseIndex(pages: number[][], verseIndex: number): number {
+  const found = pages.findIndex((p) => p.includes(verseIndex));
+  return found === -1 ? 0 : found;
+}
 
 interface TafsirEntry {
   text: string;
@@ -235,154 +315,6 @@ async function fetchTafsir(surahNumber: number, verseNumber: number): Promise<Ta
   }
 }
 
-// ─── Whole-page row ─────────────────────────────────────────────────────────
-// One verse's worth of the single-verse card, compacted for a scrolling list.
-// Audio only mounts a real player once the user asks to hear it — mounting
-// one per row up front would silently prefetch audio for every visible verse.
-
-interface VerseRowProps {
-  verse: Verse;
-  surahNumber: number;
-  surahName: string;
-  isBookmarked: boolean;
-  showTranslit: boolean;
-  onToggleBookmark: (verse: Verse) => void;
-  onShare: (verse: Verse) => void;
-}
-
-const VerseRow = React.memo(function VerseRow({
-  verse, surahNumber, surahName, isBookmarked, showTranslit, onToggleBookmark, onShare,
-}: VerseRowProps) {
-  const [contextOpen, setContextOpen] = useState(false);
-  const [tafsirEntry, setTafsirEntry] = useState<TafsirEntry | null>(null);
-  const [tafsirLoading, setTafsirLoading] = useState(false);
-  const [audioActive, setAudioActive] = useState(false);
-
-  const toggleContext = useCallback(async () => {
-    const next = !contextOpen;
-    setContextOpen(next);
-    HapticsService.impactAsync('LIGHT');
-    if (next && !tafsirEntry) {
-      setTafsirLoading(true);
-      const entry = await fetchTafsir(surahNumber, verse.numberInSurah);
-      setTafsirLoading(false);
-      setTafsirEntry(entry);
-    }
-  }, [contextOpen, tafsirEntry, surahNumber, verse.numberInSurah]);
-
-  const audioKey = `${surahNumber}:${verse.numberInSurah}`;
-
-  return (
-    <View style={styles.rowCard}>
-      <LinearGradient colors={[Colors.background.secondary, Colors.background.primary]} style={StyleSheet.absoluteFill} />
-      <LinearGradient
-        colors={[`${GOLD}1F`, `${GOLD}05`]}
-        style={StyleSheet.absoluteFill}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 1 }}
-        pointerEvents="none"
-      />
-      <Text style={styles.rowRef}>{surahName} · {surahNumber}:{verse.numberInSurah}</Text>
-
-      <ArabicText text={verse.arabic} style={styles.rowArabic} />
-
-      {showTranslit && verse.transliteration ? (
-        <Text style={styles.rowTranslit}>{verse.transliteration}</Text>
-      ) : null}
-
-      <View style={styles.rowDivider}>
-        <View style={styles.rowDividerLine} />
-        <View style={styles.dividerDot} />
-        <View style={styles.rowDividerLine} />
-      </View>
-
-      <Text style={styles.rowTranslation}>&quot;{verse.translation}&quot;</Text>
-
-      <View style={styles.rowActions}>
-        <TouchableOpacity
-          onPress={() => onToggleBookmark(verse)}
-          hitSlop={HIT_SLOP}
-          accessibilityRole="button"
-          accessibilityLabel={isBookmarked ? 'Remove bookmark' : 'Save verse'}
-          accessibilityState={{ selected: isBookmarked }}
-        >
-          <Ionicons
-            name={isBookmarked ? 'bookmark' : 'bookmark-outline'}
-            size={18}
-            color={isBookmarked ? GOLD : `${Colors.text.primary}80`}
-          />
-        </TouchableOpacity>
-
-        {audioActive ? (
-          <AudioPlayerButton
-            verseKey={audioKey}
-            size={26}
-            iconSize={16}
-            autoPlay
-            color={`${Colors.text.primary}80`}
-            showLabel={false}
-            containerStyle={styles.rowAudioCtr}
-            style={styles.rowAudioWrap}
-          />
-        ) : (
-          <TouchableOpacity
-            onPress={() => setAudioActive(true)}
-            hitSlop={HIT_SLOP}
-            accessibilityRole="button"
-            accessibilityLabel="Play recitation"
-          >
-            <Ionicons name="volume-medium-outline" size={18} color={`${Colors.text.primary}80`} />
-          </TouchableOpacity>
-        )}
-
-        <TouchableOpacity
-          onPress={() => onShare(verse)}
-          hitSlop={HIT_SLOP}
-          accessibilityRole="button"
-          accessibilityLabel="Share verse"
-        >
-          <Ionicons name="share-outline" size={18} color={`${Colors.text.primary}80`} />
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          onPress={toggleContext}
-          style={styles.rowContextToggle}
-          hitSlop={HIT_SLOP}
-          accessibilityRole="button"
-          accessibilityLabel="Context"
-          accessibilityState={{ expanded: contextOpen }}
-        >
-          <Text style={styles.rowContextLabel}>Context</Text>
-          <Ionicons
-            name={contextOpen ? 'chevron-up' : 'chevron-down'}
-            size={14}
-            color="rgba(212,175,55,0.55)"
-          />
-        </TouchableOpacity>
-      </View>
-
-      {contextOpen && (
-        <View style={styles.rowContextBody}>
-          {tafsirLoading ? (
-            <ActivityIndicator size="small" color={GOLD} />
-          ) : tafsirEntry ? (
-            <>
-              <Text style={styles.rowContextText}>{isolateBidiRuns(tafsirEntry.text)}</Text>
-              <Text style={styles.rowContextSource}>{tafsirEntry.source}</Text>
-            </>
-          ) : (
-            // No commentary for this specific verse — most often because a
-            // shared block's sentences were fully claimed by its neighbors.
-            // The translation is already shown above; repeating it here was
-            // the other half of the duplication this fixes.
-            <Text style={styles.rowContextEmpty}>No additional commentary for this verse.</Text>
-          )}
-        </View>
-      )}
-    </View>
-  );
-});
-
 // ─── SurahReaderScreen ────────────────────────────────────────────────────────
 
 type Props = StackScreenProps<RootStackParamList, 'SurahReader'>;
@@ -402,27 +334,113 @@ export default function SurahReaderScreen({ route, navigation }: Props) {
   const toggleTranslit = useCallback(() => setShowTranslit((v) => !v), []);
   const [settingsVisible, setSettingsVisible] = useState(false);
 
-  // Whole-page list
-  const flatListRef = useRef<FlatList<Verse>>(null);
-  const viewabilityConfig = useRef({ itemVisiblePercentThreshold: 60 }).current;
-  const onViewableItemsChanged = useRef(
-    ({ viewableItems }: { viewableItems: Array<{ index: number | null }> }) => {
-      const idx = viewableItems[0]?.index;
-      if (idx !== null && idx !== undefined) currentIndexRef.current = idx;
-    },
-  ).current;
-  const handleScrollToIndexFailed = useCallback(
-    (info: { index: number; averageItemLength: number }) => {
-      flatListRef.current?.scrollToOffset({
-        offset: info.averageItemLength * info.index,
-        animated: false,
-      });
-      setTimeout(() => {
-        flatListRef.current?.scrollToIndex({ index: info.index, animated: true });
-      }, 100);
-    },
-    [],
+  // ── Mushaf page mode ──
+  const { width: windowWidth, height: windowHeight } = useWindowDimensions();
+  const pageBudget = useMemo(
+    () => computePageBudget(windowWidth, windowHeight, insets.top, insets.bottom),
+    [windowWidth, windowHeight, insets.top, insets.bottom],
   );
+  const pages = useMemo(() => paginateVerseIndices(verses, pageBudget), [verses, pageBudget]);
+  const [currentPageIndex, setCurrentPageIndex] = useState(0);
+  const currentPageIndexRef = useRef(currentPageIndex);
+  useEffect(() => { currentPageIndexRef.current = currentPageIndex; }, [currentPageIndex]);
+
+  // Tap-to-reveal footnote drawer — the page itself stays pure Arabic until a
+  // verse is tapped, then this surfaces translation/transliteration/audio/context.
+  const [selectedVerseIndex, setSelectedVerseIndex] = useState<number | null>(null);
+  const [drawerVisible, setDrawerVisible] = useState(false);
+  const [drawerAudioActive, setDrawerAudioActive] = useState(false);
+  const [drawerContextOpen, setDrawerContextOpen] = useState(false);
+  const [drawerTafsir, setDrawerTafsir] = useState<TafsirEntry | null>(null);
+  const [drawerTafsirLoading, setDrawerTafsirLoading] = useState(false);
+  const drawerAnim = useRef(new Animated.Value(0)).current;
+  const drawerAnimRef = useRef<Animated.CompositeAnimation | null>(null);
+
+  // Each newly selected verse starts its companion panel fresh — otherwise
+  // tapping verse B while verse A's tafsir/audio was open would carry A's
+  // state over onto B's reference.
+  useEffect(() => {
+    setDrawerAudioActive(false);
+    setDrawerContextOpen(false);
+    setDrawerTafsir(null);
+    setDrawerTafsirLoading(false);
+  }, [selectedVerseIndex]);
+
+  const openVerseDrawer = useCallback((idx: number) => {
+    HapticsService.impactAsync('LIGHT');
+    setSelectedVerseIndex(idx);
+    setDrawerVisible(true);
+    drawerAnimRef.current?.stop();
+    const anim = Animated.timing(drawerAnim, {
+      toValue: 1,
+      duration: Animations.timing.normal,
+      useNativeDriver: true,
+    });
+    drawerAnimRef.current = anim;
+    anim.start();
+  }, [drawerAnim]);
+
+  const closeDrawer = useCallback(() => {
+    drawerAnimRef.current?.stop();
+    const anim = Animated.timing(drawerAnim, {
+      toValue: 0,
+      duration: Animations.timing.fast,
+      useNativeDriver: true,
+    });
+    drawerAnimRef.current = anim;
+    anim.start(({ finished }) => {
+      if (finished) {
+        setDrawerVisible(false);
+        setSelectedVerseIndex(null);
+      }
+    });
+  }, [drawerAnim]);
+
+  const handleVersePress = useCallback((idx: number) => {
+    if (drawerVisible && selectedVerseIndex === idx) {
+      closeDrawer();
+    } else {
+      openVerseDrawer(idx);
+    }
+  }, [drawerVisible, selectedVerseIndex, openVerseDrawer, closeDrawer]);
+
+  // Page turns swap the whole leaf, so there's no verse left for the drawer
+  // to refer to — drop it instantly rather than animate a close mid-turn.
+  const resetDrawerForPageTurn = useCallback(() => {
+    drawerAnimRef.current?.stop();
+    drawerAnim.setValue(0);
+    setDrawerVisible(false);
+    setSelectedVerseIndex(null);
+  }, [drawerAnim]);
+
+  const handlePrevPage = useCallback(() => {
+    if (currentPageIndex > 0) {
+      HapticsService.impactAsync('LIGHT');
+      resetDrawerForPageTurn();
+      setCurrentPageIndex((p) => p - 1);
+    }
+  }, [currentPageIndex, resetDrawerForPageTurn]);
+
+  const handleNextPage = useCallback(() => {
+    if (currentPageIndex < pages.length - 1) {
+      HapticsService.impactAsync('LIGHT');
+      resetDrawerForPageTurn();
+      setCurrentPageIndex((p) => p + 1);
+    }
+  }, [currentPageIndex, pages.length, resetDrawerForPageTurn]);
+
+  const toggleDrawerContext = useCallback(async () => {
+    if (selectedVerseIndex === null) return;
+    const next = !drawerContextOpen;
+    setDrawerContextOpen(next);
+    HapticsService.impactAsync('LIGHT');
+    if (next && !drawerTafsir) {
+      setDrawerTafsirLoading(true);
+      const entry = await fetchTafsir(surahNumber, verses[selectedVerseIndex].numberInSurah);
+      setDrawerTafsirLoading(false);
+      setDrawerTafsir(entry);
+    }
+  }, [selectedVerseIndex, drawerContextOpen, drawerTafsir, surahNumber, verses]);
 
   // Reflection accordion
   const [reflectionOpen, setReflectionOpen] = useState(false);
@@ -466,15 +484,18 @@ export default function SurahReaderScreen({ route, navigation }: Props) {
   useEffect(() => {
     if (verses.length === 0) return () => {};
     const timer = setInterval(() => {
+      const verseIndex = viewMode === 'page'
+        ? (pages[currentPageIndexRef.current]?.[0] ?? currentIndexRef.current)
+        : currentIndexRef.current;
       saveProgress({
         surahNumber,
-        verseIndex: currentIndexRef.current,
+        verseIndex,
         surahName,
         timestamp: Date.now(),
       }).catch(() => {});
     }, 3000);
     return () => clearInterval(timer);
-  }, [verses.length, surahNumber, surahName]);
+  }, [verses.length, surahNumber, surahName, viewMode, pages]);
 
   // Animate card in + reset reflection state on each verse change
   useEffect(() => {
@@ -568,13 +589,13 @@ export default function SurahReaderScreen({ route, navigation }: Props) {
   const handleResume = useCallback(() => {
     if (resumeIndex !== null) {
       if (viewMode === 'page') {
-        flatListRef.current?.scrollToIndex({ index: resumeIndex, animated: true });
+        setCurrentPageIndex(pageIndexForVerseIndex(pages, resumeIndex));
       } else {
         setCurrentIndex(resumeIndex);
       }
     }
     setResumeIndex(null);
-  }, [resumeIndex, viewMode]);
+  }, [resumeIndex, viewMode, pages]);
 
   const handlePrev = useCallback(() => {
     if (currentIndex > 0) {
@@ -872,9 +893,10 @@ export default function SurahReaderScreen({ route, navigation }: Props) {
                     </View>
                   </>
                 ) : (
-                  // No commentary for this specific verse — see VerseRow's
-                  // matching branch above for why this no longer repeats the
-                  // translation that's already shown higher on this card.
+                  // No commentary for this specific verse — most often because
+                  // a shared tafsir block's sentences were fully claimed by
+                  // its neighbors. The translation is already shown above, so
+                  // this doesn't repeat it as filler.
                   <Text style={styles.reflectionEmpty}>No additional commentary for this verse.</Text>
                 )}
               </Animated.View>
@@ -883,38 +905,63 @@ export default function SurahReaderScreen({ route, navigation }: Props) {
         </Animated.ScrollView>
       )}
 
-      {/* ── Whole-page mode ──────────────────────────────────────────── */}
-      {viewMode === 'page' && !loading && !error && verses.length > 0 && (
-        <FlatList
-          ref={flatListRef}
-          data={verses}
-          keyExtractor={(v) => String(v.numberInSurah)}
-          renderItem={({ item }) => (
-            <VerseRow
-              verse={item}
-              surahNumber={surahNumber}
-              surahName={surahName}
-              isBookmarked={bookmarkedSet.has(item.numberInSurah)}
-              showTranslit={showTranslit}
-              onToggleBookmark={toggleBookmarkFor}
-              onShare={shareVerse}
-            />
-          )}
-          ListHeaderComponent={
-            surahNumber !== 9 && surahNumber !== 1 ? (
-              <View style={styles.bismillahRow}>
-                <Text style={styles.bismillahText}>بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ</Text>
-              </View>
-            ) : null
-          }
-          contentContainerStyle={[styles.pageListContent, { paddingBottom: insets.bottom + Spacing.xxl }]}
+      {/* ── Mushaf page mode ──────────────────────────────────────────── */}
+      {viewMode === 'page' && !loading && !error && pages.length > 0 && (
+        <ScrollView
+          style={styles.pageScroll}
+          contentContainerStyle={[styles.pageScrollContent, { paddingBottom: insets.bottom + 180 }]}
           showsVerticalScrollIndicator={false}
-          onViewableItemsChanged={onViewableItemsChanged}
-          viewabilityConfig={viewabilityConfig}
-          onScrollToIndexFailed={handleScrollToIndexFailed}
-          initialNumToRender={8}
-          windowSize={7}
-        />
+        >
+          <View style={styles.leafWrap}>
+            {/* Stacked-leaf shadows peeking from behind — sells "one page in
+                a book" without any native shadow (see CLAUDE.md render-hazards
+                on elevation + overflow:hidden). */}
+            <View style={styles.leafStackBack} pointerEvents="none" />
+            <View style={styles.leafStackMid} pointerEvents="none" />
+
+            <View style={styles.leaf}>
+              <View style={styles.leafGlow} pointerEvents="none" />
+              <View style={styles.leafInnerBorder} pointerEvents="none" />
+              <CornerFrame color={GOLD} size={14} thickness={1} offset={6} />
+
+              {currentPageIndex === 0 && surahNumber !== 9 && surahNumber !== 1 && (
+                <View style={styles.bismillahRow}>
+                  <Text style={styles.bismillahText}>بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ</Text>
+                </View>
+              )}
+
+              {/* One continuous justified block, not per-verse cards — each
+                  verse is its own tappable inline run, closed by a small
+                  ornamental ayah marker (also tappable), matching how a
+                  printed Mushaf page actually reads. */}
+              <Text style={styles.leafArabic}>
+                {(pages[currentPageIndex] ?? []).map((globalIdx) => {
+                  const v = verses[globalIdx];
+                  const isSelected = selectedVerseIndex === globalIdx;
+                  return (
+                    <Text key={v.numberInSurah}>
+                      <Text
+                        onPress={() => handleVersePress(globalIdx)}
+                        style={isSelected ? styles.leafVerseSelected : undefined}
+                      >
+                        {v.arabic}
+                      </Text>
+                      <Text onPress={() => handleVersePress(globalIdx)} style={styles.leafAyahMarker}>
+                        {` ﴿${toArabicIndicNumeral(v.numberInSurah)}﴾ `}
+                      </Text>
+                    </Text>
+                  );
+                })}
+              </Text>
+
+              <View style={styles.leafFooter}>
+                <MaterialCommunityIcons name="star-four-points" size={8} color={GOLD} style={{ opacity: 0.5 }} />
+                <Text style={styles.leafFooterText}>{currentPageIndex + 1}</Text>
+                <MaterialCommunityIcons name="star-four-points" size={8} color={GOLD} style={{ opacity: 0.5 }} />
+              </View>
+            </View>
+          </View>
+        </ScrollView>
       )}
 
       {/* ── Fixed bottom: action pill + navigation ─────────────────── */}
@@ -1022,6 +1069,168 @@ export default function SurahReaderScreen({ route, navigation }: Props) {
             </TouchableOpacity>
           </View>
 
+        </View>
+      )}
+
+      {/* ── Mushaf page mode: footnote drawer + page nav ─────────────── */}
+      {viewMode === 'page' && !loading && !error && pages.length > 0 && (
+        <View style={[styles.bottomArea, { paddingBottom: insets.bottom + Spacing.md }]}>
+          {drawerVisible && selectedVerseIndex !== null && verses[selectedVerseIndex] && (
+            <Animated.View
+              style={[
+                styles.drawer,
+                {
+                  opacity: drawerAnim,
+                  transform: [{
+                    translateY: drawerAnim.interpolate({ inputRange: [0, 1], outputRange: [30, 0] }),
+                  }],
+                },
+              ]}
+            >
+              <FrostedSurface intensity={70} androidFill="transparent" style={styles.drawerInner}>
+                <View style={styles.drawerBacking} />
+                <View style={styles.drawerHandle} />
+
+                <View style={styles.drawerHeader}>
+                  <Text style={styles.drawerRef}>
+                    {surahName} · {surahNumber}:{verses[selectedVerseIndex].numberInSurah}
+                  </Text>
+                  <TouchableOpacity
+                    onPress={closeDrawer}
+                    hitSlop={HIT_SLOP}
+                    accessibilityRole="button"
+                    accessibilityLabel="Close"
+                  >
+                    <Ionicons name="close" size={18} color={`${Colors.text.primary}80`} />
+                  </TouchableOpacity>
+                </View>
+
+                {showTranslit && verses[selectedVerseIndex].transliteration ? (
+                  <Text style={styles.drawerTranslit}>{verses[selectedVerseIndex].transliteration}</Text>
+                ) : null}
+
+                <Text style={styles.drawerTranslation}>
+                  &quot;{verses[selectedVerseIndex].translation}&quot;
+                </Text>
+
+                <View style={styles.rowActions}>
+                  <TouchableOpacity
+                    onPress={() => toggleBookmarkFor(verses[selectedVerseIndex])}
+                    hitSlop={HIT_SLOP}
+                    accessibilityRole="button"
+                    accessibilityLabel={bookmarkedSet.has(verses[selectedVerseIndex].numberInSurah) ? 'Remove bookmark' : 'Save verse'}
+                    accessibilityState={{ selected: bookmarkedSet.has(verses[selectedVerseIndex].numberInSurah) }}
+                  >
+                    <Ionicons
+                      name={bookmarkedSet.has(verses[selectedVerseIndex].numberInSurah) ? 'bookmark' : 'bookmark-outline'}
+                      size={18}
+                      color={bookmarkedSet.has(verses[selectedVerseIndex].numberInSurah) ? GOLD : `${Colors.text.primary}80`}
+                    />
+                  </TouchableOpacity>
+
+                  {drawerAudioActive ? (
+                    <AudioPlayerButton
+                      verseKey={`${surahNumber}:${verses[selectedVerseIndex].numberInSurah}`}
+                      size={26}
+                      iconSize={16}
+                      autoPlay
+                      color={`${Colors.text.primary}80`}
+                      showLabel={false}
+                      containerStyle={styles.rowAudioCtr}
+                      style={styles.rowAudioWrap}
+                    />
+                  ) : (
+                    <TouchableOpacity
+                      onPress={() => setDrawerAudioActive(true)}
+                      hitSlop={HIT_SLOP}
+                      accessibilityRole="button"
+                      accessibilityLabel="Play recitation"
+                    >
+                      <Ionicons name="volume-medium-outline" size={18} color={`${Colors.text.primary}80`} />
+                    </TouchableOpacity>
+                  )}
+
+                  <TouchableOpacity
+                    onPress={() => shareVerse(verses[selectedVerseIndex])}
+                    hitSlop={HIT_SLOP}
+                    accessibilityRole="button"
+                    accessibilityLabel="Share verse"
+                  >
+                    <Ionicons name="share-outline" size={18} color={`${Colors.text.primary}80`} />
+                  </TouchableOpacity>
+
+                  <TouchableOpacity
+                    onPress={toggleDrawerContext}
+                    style={styles.rowContextToggle}
+                    hitSlop={HIT_SLOP}
+                    accessibilityRole="button"
+                    accessibilityLabel="Context"
+                    accessibilityState={{ expanded: drawerContextOpen }}
+                  >
+                    <Text style={styles.rowContextLabel}>Context</Text>
+                    <Ionicons
+                      name={drawerContextOpen ? 'chevron-up' : 'chevron-down'}
+                      size={14}
+                      color="rgba(212,175,55,0.55)"
+                    />
+                  </TouchableOpacity>
+                </View>
+
+                {drawerContextOpen && (
+                  <View style={styles.rowContextBody}>
+                    {drawerTafsirLoading ? (
+                      <ActivityIndicator size="small" color={GOLD} />
+                    ) : drawerTafsir ? (
+                      <>
+                        <Text style={styles.rowContextText}>{isolateBidiRuns(drawerTafsir.text)}</Text>
+                        <Text style={styles.rowContextSource}>{drawerTafsir.source}</Text>
+                      </>
+                    ) : (
+                      <Text style={styles.rowContextEmpty}>No additional commentary for this verse.</Text>
+                    )}
+                  </View>
+                )}
+              </FrostedSurface>
+            </Animated.View>
+          )}
+
+          <View style={styles.navRow}>
+            <TouchableOpacity
+              onPress={handlePrevPage}
+              disabled={currentPageIndex === 0}
+              style={[styles.navBtn, currentPageIndex === 0 && styles.navBtnOff]}
+              hitSlop={{ top: 8, bottom: 8, left: 16, right: 16 }}
+              accessibilityRole="button"
+              accessibilityLabel="Previous page"
+              accessibilityState={{ disabled: currentPageIndex === 0 }}
+            >
+              <Ionicons
+                name="chevron-back"
+                size={20}
+                color={currentPageIndex === 0 ? 'rgba(212,175,55,0.25)' : GOLD}
+              />
+            </TouchableOpacity>
+
+            <Text style={styles.navCounter}>
+              Page {currentPageIndex + 1} / {pages.length}
+            </Text>
+
+            <TouchableOpacity
+              onPress={handleNextPage}
+              disabled={currentPageIndex >= pages.length - 1}
+              style={[styles.navBtn, currentPageIndex >= pages.length - 1 && styles.navBtnOff]}
+              hitSlop={{ top: 8, bottom: 8, left: 16, right: 16 }}
+              accessibilityRole="button"
+              accessibilityLabel="Next page"
+              accessibilityState={{ disabled: currentPageIndex >= pages.length - 1 }}
+            >
+              <Ionicons
+                name="chevron-forward"
+                size={20}
+                color={currentPageIndex >= pages.length - 1 ? 'rgba(212,175,55,0.25)' : GOLD}
+              />
+            </TouchableOpacity>
+          </View>
         </View>
       )}
 
@@ -1425,66 +1634,152 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
 
-  // ── Whole-page mode ──
-  pageListContent: {
-    paddingHorizontal: Spacing.xl,
+  // ── Mushaf page mode ──
+  pageScroll: { flex: 1 },
+  pageScrollContent: {
     paddingTop: Spacing.lg,
-    gap: Spacing.lg,
   },
-  rowCard: {
-    borderRadius: BorderRadius.xl,
-    overflow: 'hidden',
-    borderWidth: 1,
-    borderColor: 'rgba(212,175,55,0.4)',
+  leafWrap: {
     paddingHorizontal: Spacing.lg,
-    paddingVertical: Spacing.xl,
-    alignItems: 'center',
   },
-  rowRef: {
-    fontSize: 11,
-    fontWeight: '600',
-    color: GOLD,
-    letterSpacing: 1.4,
-    opacity: 0.8,
-    marginBottom: Spacing.lg,
+  // Two offset panels peeking from behind the leaf — reads as pages stacked
+  // underneath. Plain fills, not shadows, so it stays clean on Android too.
+  leafStackBack: {
+    position: 'absolute',
+    top: 10,
+    left: Spacing.lg + 10,
+    right: Spacing.lg - 6,
+    bottom: -6,
+    backgroundColor: Colors.background.tertiary,
+    borderRadius: BorderRadius.lg,
+    borderWidth: 1,
+    borderColor: 'rgba(212,175,55,0.10)',
   },
-  rowArabic: {
-    fontSize: 22,
-    lineHeight: 46,
+  leafStackMid: {
+    position: 'absolute',
+    top: 5,
+    left: Spacing.lg + 5,
+    right: Spacing.lg - 3,
+    bottom: -3,
+    backgroundColor: Colors.background.secondary,
+    borderRadius: BorderRadius.lg,
+    borderWidth: 1,
+    borderColor: 'rgba(212,175,55,0.16)',
+  },
+  leaf: {
+    borderRadius: BorderRadius.lg,
+    borderWidth: 1.5,
+    borderColor: 'rgba(212,175,55,0.5)',
+    backgroundColor: Colors.background.secondary,
+    paddingHorizontal: Spacing.xl,
+    paddingVertical: Spacing.xxl,
+    overflow: 'hidden',
+  },
+  // Faint warm glow standing in for "parchment" without leaving the cool
+  // celestial palette — same glowOrb formula as QuranLibraryScreen.
+  leafGlow: {
+    position: 'absolute',
+    width: 220,
+    height: 220,
+    borderRadius: 110,
+    backgroundColor: Colors.accent.glow,
+    alignSelf: 'center',
+    top: '35%',
+  },
+  leafInnerBorder: {
+    position: 'absolute',
+    top: 7,
+    left: 7,
+    right: 7,
+    bottom: 7,
+    borderWidth: 1,
+    borderColor: 'rgba(212,175,55,0.2)',
+    borderRadius: BorderRadius.md,
+  },
+  leafArabic: {
+    fontFamily: Typography.fonts.arabic,
+    fontSize: MUSHAF_ARABIC_FONT_SIZE,
+    lineHeight: MUSHAF_ARABIC_LINE_HEIGHT,
     color: '#EDD9A3',
-    textAlign: 'center',
+    textAlign: 'justify',
+    writingDirection: 'rtl',
   },
-  rowTranslit: {
-    fontFamily: Typography.fonts.serif,
-    fontSize: 12,
-    lineHeight: 19,
-    color: `${Colors.text.primary}73`,
-    textAlign: 'center',
-    fontStyle: 'italic',
-    marginTop: Spacing.sm,
-    paddingHorizontal: Spacing.sm,
+  leafVerseSelected: {
+    backgroundColor: 'rgba(212,175,55,0.16)',
   },
-  rowDivider: {
+  leafAyahMarker: {
+    fontFamily: Typography.fonts.arabic,
+    fontSize: 15,
+    color: GOLD,
+    opacity: 0.85,
+  },
+  leafFooter: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
     gap: Spacing.sm,
-    marginTop: Spacing.md,
-    width: '60%',
+    marginTop: Spacing.xl,
   },
-  rowDividerLine: {
-    flex: 1,
-    height: StyleSheet.hairlineWidth,
-    backgroundColor: `${Colors.text.primary}1F`,
-  },
-  rowTranslation: {
+  leafFooterText: {
     fontFamily: Typography.fonts.serif,
-    fontSize: 14,
-    lineHeight: 24,
-    color: `${Colors.text.primary}B3`,
-    textAlign: 'center',
+    fontSize: 12,
+    fontWeight: '700',
+    color: GOLD,
+    letterSpacing: 1,
+  },
+
+  // Footnote drawer — tap-to-reveal companion panel, same frosted-pill
+  // language as the single-mode action pill below.
+  drawer: {
+    borderRadius: BorderRadius.lg,
+    overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: 'rgba(212,175,55,0.3)',
+    marginBottom: Spacing.md,
+  },
+  drawerInner: {
+    paddingHorizontal: Spacing.lg,
+    paddingTop: Spacing.md,
+    paddingBottom: Spacing.lg,
+    gap: Spacing.sm,
+  },
+  drawerBacking: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(8,14,23,0.92)',
+  },
+  drawerHandle: {
+    width: 36,
+    height: 4,
+    borderRadius: 2,
+    backgroundColor: 'rgba(212,175,55,0.3)',
+    alignSelf: 'center',
+    marginBottom: Spacing.xs,
+  },
+  drawerHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  drawerRef: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: GOLD,
+    letterSpacing: 1.2,
+    opacity: 0.9,
+  },
+  drawerTranslit: {
+    fontFamily: Typography.fonts.serif,
+    fontSize: 13,
+    lineHeight: 20,
+    color: `${Colors.text.primary}73`,
     fontStyle: 'italic',
-    marginTop: Spacing.md,
-    paddingHorizontal: Spacing.sm,
+  },
+  drawerTranslation: {
+    fontFamily: Typography.fonts.serif,
+    fontSize: 15,
+    lineHeight: 24,
+    color: `${Colors.text.primary}D0`,
+    fontStyle: 'italic',
   },
   rowActions: {
     flexDirection: 'row',
