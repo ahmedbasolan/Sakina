@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { formatDateYMD } from '../utils/date';
-import { Colors, BorderRadius, Spacing, Typography } from '../theme/DesignSystem';
+import { Colors, BorderRadius, Spacing, Typography, MoodColors } from '../theme/DesignSystem';
 import { AnimatedMandala } from '../components/AnimatedMandala';
 import {
   View,
@@ -43,20 +43,37 @@ interface MoodVisual {
   icon: keyof typeof MaterialCommunityIcons.glyphMap;
 }
 
-// bg + text aligned to the canonical MoodColors accents (DesignSystem) so a
-// mood reads as the same colour here as on the Home grid and everywhere else.
+// Only the icon is calendar-specific; the colour is DERIVED from the canonical
+// MoodColors accent rather than copied, so a mood reads as the same colour here
+// as on the Home grid and everywhere else.
+//
+// It used to be a hardcoded copy carrying that same claim in a comment, and
+// three of the nine had silently drifted off it: Sad #94A3B8 (canonical
+// #7BA3D0), Tired #D6D3D1 (#C99A93) and Guilty #A3A3A3 (#C4708C). All three
+// drifted the same way — toward neutral grey — so on the calendar they were
+// indistinguishable from each other and nearly invisible on the dark card,
+// while the six that matched stayed clearly separable. DesignSystem's own note
+// on this palette says each mood owns a distinct hue "spread far enough apart
+// to stay separable"; the copy is what broke that, so there is no copy now.
 // (`light` is currently unused; left in place for the interface.)
-const MOOD_VISUALS: Record<Mood, MoodVisual> = {
-  Overwhelmed: { bg: '#818CF8', light: '#EEF2FF', text: '#818CF8', icon: 'weather-windy' },
-  Sad: { bg: '#94A3B8', light: '#EFF6FF', text: '#94A3B8', icon: 'weather-pouring' },
-  Angry: { bg: '#FB923C', light: '#FEF2F2', text: '#FB923C', icon: 'fire' },
-  Tired: { bg: '#D6D3D1', light: '#F9FAFB', text: '#D6D3D1', icon: 'power-sleep' },
-  Lonely: { bg: '#C084FC', light: '#F0FDFA', text: '#C084FC', icon: 'heart-half-full' },
-  Grateful: { bg: '#FBBF24', light: '#F0FDF4', text: '#FBBF24', icon: 'hand-heart' },
-  Hopeful: { bg: '#22D3EE', light: '#FFFBEB', text: '#22D3EE', icon: 'white-balance-sunny' },
-  Calm: { bg: '#34D399', light: '#ECFDF5', text: '#34D399', icon: 'leaf' },
-  Guilty: { bg: '#A3A3A3', light: '#EEF2FF', text: '#A3A3A3', icon: 'refresh' },
+const MOOD_ICONS: Record<Mood, MoodVisual['icon']> = {
+  Overwhelmed: 'weather-windy',
+  Sad: 'weather-pouring',
+  Angry: 'fire',
+  Tired: 'power-sleep',
+  Lonely: 'heart-half-full',
+  Grateful: 'hand-heart',
+  Hopeful: 'white-balance-sunny',
+  Calm: 'leaf',
+  Guilty: 'refresh',
 };
+
+const MOOD_VISUALS: Record<Mood, MoodVisual> = Object.fromEntries(
+  (Object.keys(MOOD_ICONS) as Mood[]).map((mood) => {
+    const accent = MoodColors[mood].accent;
+    return [mood, { bg: accent, light: accent, text: accent, icon: MOOD_ICONS[mood] }];
+  }),
+) as Record<Mood, MoodVisual>;
 
 const getMoodVisual = (mood: string): MoodVisual => MOOD_VISUALS[mood as Mood] || MOOD_VISUALS.Calm;
 
@@ -564,13 +581,7 @@ export default function MoodHistoryCalendarScreen({ onBack }: MoodHistoryCalenda
                 return (
                   <TouchableOpacity
                     key={`day-${day}`}
-                    style={[
-                      styles.calendarCell,
-                      entry && { backgroundColor: visual!.bg + '33' },
-                      entry && { borderWidth: 1, borderColor: visual!.bg + '66' },
-                      isSelected && styles.calendarCellSelected,
-                      isToday && !entry && styles.calendarCellToday,
-                    ]}
+                    style={styles.calendarCell}
                     onPress={() => handleDayPress(dateStr)}
                     activeOpacity={entry ? 0.7 : 1}
                     disabled={!entry}
@@ -578,16 +589,31 @@ export default function MoodHistoryCalendarScreen({ onBack }: MoodHistoryCalenda
                     accessibilityLabel={`${MONTH_NAMES[currentMonth.month]} ${day}${entry ? `, ${moodLabel(entry.mood)}` : ''}${isToday ? ', today' : ''}`}
                     accessibilityState={{ disabled: !entry, selected: isSelected }}
                   >
-                    <Text
+                    <View
                       style={[
-                        styles.calendarDayText,
-                        entry && { color: visual!.text, fontWeight: '700' },
-                        !entry && { color: Colors.text.muted },
-                        isToday && !entry && { color: Colors.accent.primary, fontWeight: '700' },
+                        styles.calendarCellFill,
+                        // Was bg+'33' (20%) with a bg+'66' border — on the dark
+                        // card that reads as a barely-there smudge, which is
+                        // why a logged day didn't feel like an achievement.
+                        entry && { backgroundColor: visual!.bg + '4D' },
+                        entry && { borderWidth: 1.5, borderColor: visual!.bg + 'B3' },
+                        isSelected && styles.calendarCellSelected,
+                        isToday && !entry && styles.calendarCellToday,
                       ]}
                     >
-                      {day}
-                    </Text>
+                      <Text
+                        style={[
+                          styles.calendarDayText,
+                          // Full-strength mood colour, not the 100%-alpha accent
+                          // over a near-invisible fill.
+                          entry && { color: visual!.text, fontWeight: '700' },
+                          !entry && { color: Colors.text.muted },
+                          isToday && !entry && { color: Colors.accent.primary, fontWeight: '700' },
+                        ]}
+                      >
+                        {day}
+                      </Text>
+                    </View>
                   </TouchableOpacity>
                 );
               })}
@@ -1115,12 +1141,27 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
   },
   calendarCell: {
+    // 14.28% is exactly 1/7, so highlighted cells on consecutive days touched
+    // edge to edge and ran together into one blob (a Thu/Fri/Sat streak read as
+    // a single bar, not three check-ins). Inset each cell instead of shrinking
+    // the basis, so the seven columns still align under the weekday letters.
     flexBasis: '14.28%',
     aspectRatio: 1,
     borderRadius: 12,
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 4,
+    marginBottom: Spacing.xs,
+    paddingHorizontal: 3,
+  },
+  // The visible pill lives inside the cell, so the gap between two highlighted
+  // days comes from the cell's padding rather than from a margin that would
+  // break the 1/7 column maths.
+  calendarCellFill: {
+    width: '100%',
+    height: '100%',
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   calendarCellSelected: {
     borderWidth: 2,

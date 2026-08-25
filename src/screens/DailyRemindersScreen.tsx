@@ -47,6 +47,7 @@ export default function DailyRemindersScreen({ onBack }: DailyRemindersScreenPro
   const [isEnabled, setIsEnabled] = useState(false);
   const [prayerEnabled, setPrayerEnabled] = useState(true);
   const [spiritualEnabled, setSpiritualEnabled] = useState(true);
+  const [moodCheckinEnabled, setMoodCheckinEnabled] = useState(true);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
@@ -61,6 +62,7 @@ export default function DailyRemindersScreen({ onBack }: DailyRemindersScreenPro
   const isToggling = useRef(false);
   const isPrayerToggling = useRef(false);
   const isSpiritualToggling = useRef(false);
+  const isMoodCheckinToggling = useRef(false);
   const reduceMotion = useReduceMotion();
 
   // Twinkling constellation refs (8 dim dots)
@@ -148,10 +150,11 @@ export default function DailyRemindersScreen({ onBack }: DailyRemindersScreenPro
 
   const loadSettings = async () => {
     try {
-      const [settings, prayerOn, spiritualOn] = await Promise.all([
+      const [settings, prayerOn, spiritualOn, moodCheckinOn] = await Promise.all([
         notificationService.getSettings(),
         notificationService.getPrayerEnabled(),
         notificationService.getSpiritualEnabled(),
+        notificationService.getMoodCheckinEnabled(),
       ]);
       const { time, period: savedPeriod } = notificationService.formatTime(
         settings.hour,
@@ -164,6 +167,7 @@ export default function DailyRemindersScreen({ onBack }: DailyRemindersScreenPro
       setIsEnabled(settings.enabled);
       setPrayerEnabled(prayerOn);
       setSpiritualEnabled(spiritualOn);
+      setMoodCheckinEnabled(moodCheckinOn);
       if (settings.enabled) {
         setSavedTime(`${time} ${savedPeriod}`);
       }
@@ -378,6 +382,31 @@ export default function DailyRemindersScreen({ onBack }: DailyRemindersScreenPro
       }
     } finally {
       isSpiritualToggling.current = false;
+    }
+  };
+
+  const handleMoodCheckinToggle = async () => {
+    if (isMoodCheckinToggling.current) return;
+    isMoodCheckinToggling.current = true;
+    try {
+      const newValue = !moodCheckinEnabled;
+      if (newValue && !(await notificationService.requestPermissions())) {
+        showPermissionAlert();
+        return;
+      }
+      setMoodCheckinEnabled(newValue);
+      await notificationService.setMoodCheckinEnabled(newValue);
+      if (newValue) {
+        topUpScheduledNotifications().catch((error) =>
+          logServiceError(
+            'DailyRemindersScreen',
+            'moodCheckinToggleTopUp',
+            error instanceof Error ? error : new Error(String(error)),
+          ),
+        );
+      }
+    } finally {
+      isMoodCheckinToggling.current = false;
     }
   };
 
@@ -733,6 +762,26 @@ export default function DailyRemindersScreen({ onBack }: DailyRemindersScreenPro
               accessibilityState={{ checked: spiritualEnabled }}
             >
               <Animated.View style={[styles.toggleKnob, spiritualEnabled && styles.toggleKnobActive]} />
+            </TouchableOpacity>
+          </View>
+
+          {/* Twice-Daily Heart Check-In Toggle */}
+          <View style={[styles.glassPanel, { marginTop: Spacing.sm }]}>
+            <View style={styles.toggleContent}>
+              <Text style={styles.toggleTitle}>Heart Check-Ins</Text>
+              <Text style={styles.toggleSubtitle}>
+                Gentle mood reflections after Fajr and after Isha.
+              </Text>
+            </View>
+            <TouchableOpacity
+              style={[styles.toggleSwitch, moodCheckinEnabled && styles.toggleSwitchActive]}
+              onPress={handleMoodCheckinToggle}
+              activeOpacity={0.8}
+              accessibilityRole="switch"
+              accessibilityLabel="Heart check-ins"
+              accessibilityState={{ checked: moodCheckinEnabled }}
+            >
+              <Animated.View style={[styles.toggleKnob, moodCheckinEnabled && styles.toggleKnobActive]} />
             </TouchableOpacity>
           </View>
 

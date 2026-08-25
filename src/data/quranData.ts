@@ -3454,6 +3454,139 @@ const quranContentData: Content[] = [
       'Al-Sa’di notes that every clause here reports something Allah did — carriage, provision, preference — and none of it is offered as a reward for performance. The honouring of the children of Adam is stated as already accomplished, which places a person’s worth outside their own assessment of it.',
     moods: ['Sad', 'Lonely'],
   },
+  {
+    id: 'quran_49_13',
+    type: 'Quran',
+    primaryText:
+      "yā ayyuhā l-nāsu innā khalaqnākum min dhakarin wa-unthā wajaʿalnākum shuʿūban waqabāila litaʿārafū inna akramakum ʿinda l-lahi atqākum inna l-laha ʿalīmun khabīrun",
+    arabicText:
+      'يَٰٓأَيُّهَا ٱلنَّاسُ إِنَّا خَلَقْنَـٰكُم مِّن ذَكَرٍۢ وَأُنثَىٰ وَجَعَلْنَـٰكُمْ شُعُوبًۭا وَقَبَآئِلَ لِتَعَارَفُوٓا۟ ۚ إِنَّ أَكْرَمَكُمْ عِندَ ٱللَّهِ أَتْقَىٰكُمْ ۚ إِنَّ ٱللَّهَ عَلِيمٌ خَبِيرٌۭ ﴿١٣﴾',
+    transliteration:
+      "yā ayyuhā l-nāsu innā khalaqnākum min dhakarin wa-unthā wajaʿalnākum shuʿūban waqabāila litaʿārafū inna akramakum ʿinda l-lahi atqākum inna l-laha ʿalīmun khabīrun",
+    englishTranslation:
+      'O mankind, indeed We have created you from male and female and made you peoples and tribes that you may know one another. Indeed, the most noble of you in the sight of Allah is the most righteous of you. Indeed, Allah is Knowing and Acquainted.',
+    source: 'Surah Al-Hujurat 49:13',
+    audioKey: '49:13',
+    whyThis:
+      "Revealed to settle who counted as noble among the believers regardless of tribe — the ranking Allah names is taqwa, not lineage, wealth, or status.",
+    moods: ['Hopeful'],
+  },
+  {
+    id: 'quran_17_32',
+    type: 'Quran',
+    primaryText: "walā taqrabū l-zinā innahu kāna fāḥishatan wasāa sabīlan",
+    arabicText: 'وَلَا تَقْرَبُوا۟ ٱلزِّنَىٰٓ ۖ إِنَّهُۥ كَانَ فَـٰحِشَةًۭ وَسَآءَ سَبِيلًۭا ﴿٣٢﴾',
+    transliteration: "walā taqrabū l-zinā innahu kāna fāḥishatan wasāa sabīlan",
+    englishTranslation:
+      'And do not approach unlawful sexual intercourse. Indeed, it is ever an immorality and is evil as a way.',
+    source: 'Surah Al-Isra 17:32',
+    audioKey: '17:32',
+    whyThis:
+      "The verse says 'do not approach' rather than 'do not commit' — it closes off the path toward the act, not only the act itself.",
+    moods: ['Hopeful'],
+  },
+  {
+    id: 'quran_24_32',
+    type: 'Quran',
+    primaryText:
+      "wa-ankiḥū l-ayāmā minkum wal-ṣāliḥīna min ʿibādikum wa-imāikum in yakūnū fuqarāa yughnihimu l-lahu min faḍlihi wal-lahu wāsiʿun ʿalīmun",
+    arabicText:
+      'وَأَنكِحُوا۟ ٱلْأَيَـٰمَىٰ مِنكُمْ وَٱلصَّـٰلِحِينَ مِنْ عِبَادِكُمْ وَإِمَآئِكُمْ ۚ إِن يَكُونُوا۟ فُقَرَآءَ يُغْنِهِمُ ٱللَّهُ مِن فَضْلِهِۦ ۗ وَٱللَّهُ وَٰسِعٌ عَلِيمٌۭ ﴿٣٢﴾',
+    transliteration:
+      "wa-ankiḥū l-ayāmā minkum wal-ṣāliḥīna min ʿibādikum wa-imāikum in yakūnū fuqarāa yughnihimu l-lahu min faḍlihi wal-lahu wāsiʿun ʿalīmun",
+    englishTranslation:
+      'And marry the unmarried among you and the righteous among your male slaves and female slaves. If they should be poor, Allah will enrich them from His bounty, and Allah is all-Encompassing and Knowing.',
+    source: 'Surah An-Nur 24:32',
+    audioKey: '24:32',
+    whyThis:
+      "Poverty is named directly as the reason people were delaying marriage, and the verse answers it with a promise about Allah's bounty rather than a plan for saving first.",
+    moods: ['Hopeful'],
+  },
+  {
+    id: 'quran_25_74',
+    type: 'Quran',
+    primaryText:
+      "wa-alladhīna yaqūlūna rabbanā hab lanā min azwājinā wadhurriyyātinā qurrata aʿyunin wajʿalnā lil-muttaqīna imāman",
+    arabicText:
+      'وَٱلَّذِينَ يَقُولُونَ رَبَّنَا هَبْ لَنَا مِنْ أَزْوَٰجِنَا وَذُرِّيَّـٰتِنَا قُرَّةَ أَعْيُنٍۢ وَٱجْعَلْنَا لِلْمُتَّقِينَ إِمَامًا ﴿٧٤﴾',
+    transliteration:
+      "wa-alladhīna yaqūlūna rabbanā hab lanā min azwājinā wadhurriyyātinā qurrata aʿyunin wajʿalnā lil-muttaqīna imāman",
+    englishTranslation:
+      'And those who say, "Our Lord, grant us from among our wives and offspring comfort to our eyes and make us an example for the righteous."',
+    source: 'Surah Al-Furqan 25:74',
+    audioKey: '25:74',
+    whyThis:
+      "Listed among the qualities of 'the servants of the Most Merciful' (ʿibad ar-Rahman) in the closing verses of the surah — a good spouse is named as something the righteous specifically ask Allah for, not something they simply find.",
+    moods: ['Hopeful'],
+  },
+  {
+    id: 'quran_4_1',
+    type: 'Quran',
+    primaryText:
+      "yā ayyuhā l-nāsu ittaqū rabbakumu alladhī khalaqakum min nafsin wāḥidatin wakhalaqa minhā zawjahā wabathha minhumā rijālan kathīran wanisāan wa-ittaqū l-laha alladhī tasāalūna bihi wal-arḥāma inna l-laha kāna ʿalaykum raqīban",
+    arabicText:
+      'بِسْمِ ٱللَّهِ ٱلرَّحْمَـٰنِ ٱلرَّحِيمِ يَـٰٓأَيُّهَا ٱلنَّاسُ ٱتَّقُوا۟ رَبَّكُمُ ٱلَّذِى خَلَقَكُم مِّن نَّفْسٍۢ وَٰحِدَةٍۢ وَخَلَقَ مِنْهَا زَوْجَهَا وَبَثَّ مِنْهُمَا رِجَالًۭا كَثِيرًۭا وَنِسَآءًۭ ۚ وَٱتَّقُوا۟ ٱللَّهَ ٱلَّذِى تَسَآءَلُونَ بِهِۦ وَٱلْأَرْحَامَ ۚ إِنَّ ٱللَّهَ كَانَ عَلَيْكُمْ رَقِيبًۭا ﴿١﴾',
+    transliteration:
+      "bismillāhi l-raḥmāni l-raḥīmi yā ayyuhā l-nāsu ittaqū rabbakumu alladhī khalaqakum min nafsin wāḥidatin wakhalaqa minhā zawjahā wabathha minhumā rijālan kathīran wanisāan wa-ittaqū l-laha alladhī tasāalūna bihi wal-arḥāma inna l-laha kāna ʿalaykum raqīban",
+    englishTranslation:
+      'O mankind, fear your Lord, who created you from one soul and created from it its mate and dispersed from both of them many men and women. And fear Allah, through whom you ask one another, and the wombs. Indeed Allah is ever, over you, an Observer.',
+    source: 'Surah An-Nisa 4:1',
+    audioKey: '4:1',
+    whyThis:
+      "The opening verse of a surah largely concerned with family and marriage rights — it grounds every rule that follows in a single shared origin between spouses, not two separate categories of people.",
+    moods: ['Hopeful'],
+  },
+  {
+    id: 'quran_20_131',
+    type: 'Quran',
+    primaryText:
+      "walā tamuddanna ʿaynayka ilā mā mattaʿnā bihi azwājan minhum zahrata l-ḥayāti l-dunyā linaftinahum fīhi warizqu rabbika khayrun waabqā",
+    arabicText:
+      'وَلَا تَمُدَّنَّ عَيْنَيْكَ إِلَىٰ مَا مَتَّعْنَا بِهِۦٓ أَزْوَٰجًۭا مِّنْهُمْ زَهْرَةَ ٱلْحَيَوٰةِ ٱلدُّنْيَا لِنَفْتِنَهُمْ فِيهِ ۚ وَرِزْقُ رَبِّكَ خَيْرٌۭ وَأَبْقَىٰ ﴿١٣١﴾',
+    transliteration:
+      "walā tamuddanna ʿaynayka ilā mā mattaʿnā bihi azwājan minhum zahrata l-ḥayāti l-dunyā linaftinahum fīhi warizqu rabbika khayrun waabqā",
+    englishTranslation:
+      'And do not extend your eyes toward that by which We have given enjoyment to [some] categories of them, [its being but] the splendor of worldly life by which We test them. And the provision of your Lord is better and more enduring.',
+    source: 'Surah Ta-Ha 20:131',
+    audioKey: '20:131',
+    whyThis:
+      "Addressed to the Prophet ﷺ himself, about not measuring his own provision against what wealthier people around him displayed — the comparison it forbids is named as a test, not a benign glance.",
+    moods: ['Hopeful'],
+  },
+  {
+    id: 'quran_98_5',
+    type: 'Quran',
+    primaryText:
+      "wamā umirū illā liyaʿbudū l-laha mukhliṣīna lahu l-dīna ḥunafāa wayuqīmū l-ṣalāta wayutū l-zakāta wadhālika dīnu l-qayyimati",
+    arabicText:
+      'وَمَآ أُمِرُوٓا۟ إِلَّا لِيَعْبُدُوا۟ ٱللَّهَ مُخْلِصِينَ لَهُ ٱلدِّينَ حُنَفَآءَ وَيُقِيمُوا۟ ٱلصَّلَوٰةَ وَيُؤْتُوا۟ ٱلزَّكَوٰةَ ۚ وَذَٰلِكَ دِينُ ٱلْقَيِّمَةِ ﴿٥﴾',
+    transliteration:
+      "wamā umirū illā liyaʿbudū l-laha mukhliṣīna lahu l-dīna ḥunafāa wayuqīmū l-ṣalāta wayutū l-zakāta wadhālika dīnu l-qayyimati",
+    englishTranslation:
+      'And they were not commanded except to worship Allah, [being] sincere to Him in religion, inclining to truth, and to establish prayer and to give zakah. And that is the correct religion.',
+    source: 'Surah Al-Bayyinah 98:5',
+    audioKey: '98:5',
+    whyThis:
+      "Names ikhlas (sincerity) as the condition attached to every act of worship, not an optional refinement of it — an act done for the wrong reason is described as missing what it was commanded for.",
+    moods: ['Hopeful'],
+  },
+  {
+    id: 'quran_33_21',
+    type: 'Quran',
+    primaryText:
+      "laqad kāna lakum fī rasūli l-lahi uswatun ḥasanatun liman kāna yarjū l-laha wal-yawma l-ākhira wadhakara l-laha kathīran",
+    arabicText:
+      'لَّقَدْ كَانَ لَكُمْ فِى رَسُولِ ٱللَّهِ أُسْوَةٌ حَسَنَةٌۭ لِّمَن كَانَ يَرْجُوا۟ ٱللَّهَ وَٱلْيَوْمَ ٱلْـَٔاخِرَ وَذَكَرَ ٱللَّهَ كَثِيرًۭا ﴿٢١﴾',
+    transliteration:
+      "laqad kāna lakum fī rasūli l-lahi uswatun ḥasanatun liman kāna yarjū l-laha wal-yawma l-ākhira wadhakara l-laha kathīran",
+    englishTranslation:
+      'There has certainly been for you in the Messenger of Allah an excellent pattern for anyone whose hope is in Allah and the Last Day and [who] remembers Allah often.',
+    source: 'Surah Al-Ahzab 33:21',
+    audioKey: '33:21',
+    whyThis:
+      "Revealed in the context of the Battle of the Trench, but stated as a general principle: the Prophet's ﷺ conduct — in hardship and at home alike — is the standard, not just his words.",
+    moods: ['Hopeful'],
+  },
 ];
 
 const quranContent: Content[] = quranContentData;
@@ -16885,6 +17018,509 @@ const quranContentAnglesData: ContentAngle[] = [
     ]),
     reflection:
       'What is the smallest daily practice you could genuinely keep on your worst day — and who will know if you stop?',
+  },
+  {
+    id: 'q_angle_marriage_day1',
+    contentId: 'quran_30_21',
+    mood: 'Hopeful',
+    angle:
+      "[Tafsir Ibn Kathir on 30:21] Ibn Kathir reads this ayah as one of the clearest signs of Allah's power and mercy together: He did not leave people to find comfort in strangers, but drew the mate \"from yourselves\" — from the same nature, so real closeness is possible at all. The ayah names three things Allah placed between spouses, in this order: sakan (tranquility), then mawaddah (love), then rahmah (mercy). Al-Qurtubi notes that mawaddah and rahmah are described as things Allah ja'ala — placed — not things a couple manufactures from nothing; the capacity for this closeness is built into the arrangement itself. The verse closes by calling this a sign \"for a people who reflect,\" which is an instruction, not a compliment. When you feel the pull toward marriage, that is not a distraction from worship — it is one of the things the Qur'an itself asks you to think about, not push down.",
+    practiceSteps: JSON.stringify([
+      {
+        type: 'mindset',
+        icon: 'light-bulb',
+        title: 'Notice the order the ayah lists',
+        instruction:
+          "Sakan comes first, before mawaddah. Tranquility — the sense of being safe and steady with someone — is named before romantic love, not after it. If you are searching for the feeling before you have found the safety, you are looking for the second thing before the first.",
+        source: 'Tafsir Ibn Kathir on 30:21',
+      },
+      {
+        type: 'physical',
+        icon: 'pen',
+        title: 'Name what rest would actually look like',
+        instruction:
+          "Write down what \"sakan\" — rest, tranquility — would concretely look like for you, separate from a list of preferences about looks or career. What does being at rest with someone actually feel like, and who in your life has ever given you a version of that feeling?",
+        source: "Reflects the sakan named in 30:21",
+      },
+      {
+        type: 'mindset',
+        icon: 'heart',
+        title: 'Mawaddah is placed, not performed',
+        instruction:
+          "Al-Qurtubi's reading removes a specific kind of pressure: love and mercy between spouses are described as something Allah placed into the relationship, not a chemistry either person has to manufacture and prove on a first meeting. It is allowed to grow.",
+        source: 'Tafsir Al-Qurtubi on 30:21',
+      },
+    ]),
+    reflection:
+      "Of the three — sakan, mawaddah, rahmah — which one do you actually feel is missing right now: rest, love, or mercy? Naming the right one changes what you are actually praying for.",
+  },
+  {
+    id: 'q_angle_marriage_day2',
+    contentId: 'quran_49_13',
+    mood: 'Hopeful',
+    angle:
+      "[Tafsir Ibn Kathir on 49:13] This ayah was revealed to settle an argument about tribe and lineage among the early Muslims — Ibn Kathir records it answering those who still measured a person's worth by their family name. The ranking the ayah gives instead is taqwa: consciousness of Allah, not status. The same principle is not left abstract. The Prophet ﷺ said: \"A woman is married for four things: her wealth, her family status, her beauty, and her religion. So you should marry the religious woman, otherwise you will be a loser.\" [Bukhari 5090] Commentators read this less as a permission to weigh all four equally and more as a diagnosis — most people, then and now, sort by the first three before they think about the fourth, and the Prophet ﷺ named that pattern in order to interrupt it. Wealth, beauty, and family status are not condemned here. They are simply ranked correctly: after the one thing the other ayah already named as the real measure of a person.",
+    practiceSteps: JSON.stringify([
+      {
+        type: 'mindset',
+        icon: 'compass',
+        title: 'Which of the four came first for you',
+        instruction:
+          "Be honest about the order you actually rank things in when you consider someone — not the order you would say out loud. The hadith does not condemn wanting stability or attraction; it names the trap of letting them outrank religion without ever noticing you did.",
+        source: 'Bukhari 5090',
+      },
+      {
+        type: 'physical',
+        icon: 'pen',
+        title: 'Write three concrete signs, not a label',
+        instruction:
+          "\"Religious\" is not a checkbox. Write down three specific, observable things — how someone treats people who can do nothing for them, how they behave when they are wrong, how they speak about their own parents — that would actually tell you something true.",
+        source: 'Reflects Bukhari 5090',
+      },
+      {
+        type: 'mindset',
+        icon: 'target',
+        title: 'Taqwa outranks the family name',
+        instruction:
+          "49:13 was revealed to end an argument about lineage. If a family's name, wealth, or reputation is doing work in your decision that character is not doing, that is exactly the ranking this ayah corrects.",
+        source: 'Tafsir Ibn Kathir on 49:13',
+      },
+    ]),
+    reflection:
+      "If you could not see anyone's income, appearance, or family name — only how they treated people who could do nothing for them — would your current standard survive unchanged?",
+  },
+  {
+    id: 'q_angle_marriage_day3',
+    contentId: 'quran_17_32',
+    mood: 'Hopeful',
+    angle:
+      "[Tafsir Ibn Kathir on 17:32] The ayah does not say \"do not commit zina\" — it says \"do not approach it,\" lā taqrabū. Ibn Kathir points to that verb specifically: the prohibition covers the path toward the act, not only the act itself, because whatever reliably leads somewhere is treated as part of that destination. The Prophet ﷺ named how far that path can start: \"Allah fixed the very portion of adultery which a man will indulge in. There would be no escape from it. The adultery of the eye is the lustful look and the adultery of the ears is listening to voluptuous talk and the adultery of the tongue is licentious speech and the adultery of the hand is the lustful grip and the adultery of the feet is to walk to the place where he intends to commit adultery, and the heart yearns and desires, which he may or may not put into effect.\" [Muslim 2658a]. When you read this against a search for marriage specifically, it is not a rule about restriction for its own sake. It is a description of how a halal search quietly turns into something else — one look, one message, one meeting held past the point it needed sincerity to justify it.",
+    practiceSteps: JSON.stringify([
+      {
+        type: 'mindset',
+        icon: 'shield',
+        title: '"Approach" is the actual word',
+        instruction:
+          "The ayah forbids approaching, not only committing. Before you justify a conversation, a photo, or a late-night message as harmless because it \"isn't that,\" ask honestly whether it is on the path the ayah is naming.",
+        source: 'Tafsir Ibn Kathir on 17:32',
+      },
+      {
+        type: 'mindset',
+        icon: 'eye',
+        title: 'Five doors, named specifically',
+        instruction:
+          "The hadith lists the eye, the ear, the tongue, the hand, and the feet — five separate doors, not one big line you either cross or don't. Which of the five is actually the one you have been leaving open?",
+        source: 'Muslim 2658a',
+      },
+      {
+        type: 'physical',
+        icon: 'pen',
+        title: 'Set one boundary you can name out loud',
+        instruction:
+          "Pick one concrete rule for how you are conducting the search — a person you keep informed, a limit on messaging hours, a place you will and won't meet. A boundary you cannot say out loud to someone you trust is usually the one that needs setting.",
+        source: 'Reflects the approach warned against in 17:32',
+      },
+    ]),
+    reflection:
+      "Is there a conversation or habit right now that you would be uncomfortable describing plainly to someone you respect? That discomfort is usually not a coincidence.",
+  },
+  {
+    id: 'q_angle_marriage_day4',
+    contentId: 'quran_2_216',
+    mood: 'Hopeful',
+    angle:
+      "[Tafsir Ibn Kathir on 2:216] This ayah was revealed about the hardship of fighting, but the sentence it closes on is stated as a general fact, not a comment limited to war: \"perhaps you hate a thing and it is good for you, and perhaps you love a thing and it is bad for you, and Allah knows and you do not know.\" Al-Sa'di reads this as a direct correction of how certain people feel about their own judgment — the ayah does not say your preferences are wrong, only that they are not reliable enough to be the final word. This is exactly why the Prophet ﷺ taught istikharah as a standing practice, not a special-occasion prayer: \"The Prophet ﷺ used to teach us the Istikhara for each and every matter, as he taught us the Suras from the Holy Qur'an. He used to say: If anyone of you intends to do something, he should offer a two-rak'at prayer other than the obligatory prayer, and then say the du'a of istikharah, mentioning his matter (need) at the end of it.\" [Bukhari 6382]. When you pray it, istikharah is not a mechanism for getting a feeling or a sign. It is an admission, made on purpose, that you are asking Allah to know what you cannot.",
+    practiceSteps: JSON.stringify([
+      {
+        type: 'mindset',
+        icon: 'light-bulb',
+        title: 'Your certainty is not the measure',
+        instruction:
+          "2:216 does not criticize having a preference. It says plainly that loving or hating a direction is not proof of whether it is good for you. Feeling completely sure about someone is not the same thing as being right about them.",
+        source: 'Quran 2:216',
+      },
+      {
+        type: 'verbal',
+        icon: 'hands-prayer',
+        title: 'Pray istikharah before the next real step',
+        instruction:
+          "Before your next serious step forward with someone — not after you've already decided — pray two rak'ahs and make this du'a, naming the actual matter at the point marked [...].",
+        arabicText:
+          'اللَّهُمَّ إِنِّي أَسْتَخِيرُكَ بِعِلْمِكَ وَأَسْتَقْدِرُكَ بِقُدْرَتِكَ وَأَسْأَلُكَ مِنْ فَضْلِكَ الْعَظِيمِ فَإِنَّكَ تَقْدِرُ وَلاَ أَقْدِرُ وَتَعْلَمُ وَلاَ أَعْلَمُ وَأَنْتَ عَلاَّمُ الْغُيُوبِ',
+          transliteration:
+            "Allahumma inni astakhiruka bi'ilmika, wa astaqdiruka biqudratika, wa as'aluka min fadlika-l-'azim, fa innaka taqdiru wala aqdiru, wa ta'lamu wala a'lamu, wa anta 'allamu-l-ghuyub",
+          translation:
+            'O Allah, I seek Your guidance through Your knowledge, and I seek ability through Your power, and I ask You from Your great bounty, for You have power and I have none, and You know and I do not, and You are the Knower of the unseen.',
+        source: 'Bukhari 6382',
+        sourceType: 'prophetic_dua',
+      },
+      {
+        type: 'mindset',
+        icon: 'compass',
+        title: 'Istikharah is not fortune-telling',
+        instruction:
+          "It is common to pray istikharah expecting a dream or a sudden feeling. The Prophet ﷺ taught it as words and an admission, not a sign-generating ritual. Ease, and the removal of obstacles as you move forward sincerely, is the answer to look for — not a vision.",
+        source: 'Reflects Bukhari 6382',
+      },
+    ]),
+    reflection:
+      "Have you actually prayed istikharah about this, in words, before deciding — or have you been waiting for a feeling to arrive and calling that the answer?",
+  },
+  {
+    id: 'q_angle_marriage_day5',
+    contentId: 'quran_24_32',
+    mood: 'Hopeful',
+    angle:
+      "[Tafsir Ibn Kathir on 24:32] Ibn Kathir notes that this ayah addresses a real, named worry directly: people delaying marriage out of fear of poverty. The verse does not answer with a savings plan. It answers with a promise — \"if they should be poor, Allah will enrich them from His bounty\" — attached to the instruction to marry, not placed as a condition to satisfy first. Al-Qurtubi points out that the ayah does not say Allah will enrich those who first prove they can afford it; the promise sits directly beside the command. When you feel that fear specifically, this is not a statement that money stops mattering. It is a statement about where the fear should sit — entrusted to Allah's bounty, rather than something you are expected to fully resolve alone before you are allowed to begin.",
+    practiceSteps: JSON.stringify([
+      {
+        type: 'mindset',
+        icon: 'compass',
+        title: 'Name the financial fear specifically',
+        instruction:
+          "Vague financial anxiety keeps a decision permanently \"not yet.\" Write down the actual number or milestone you have been privately waiting to hit before you would feel ready, and ask honestly whether that line keeps moving.",
+        source: 'Reflects 24:32',
+      },
+      {
+        type: 'physical',
+        icon: 'target',
+        title: "Separate 'ready' from 'certain'",
+        instruction:
+          "Readiness is a reasonable, responsible standard — having work, being able to support a household modestly. Certainty that nothing will ever go wrong financially is not a standard Allah asked for here; He asked for reliance on His bounty alongside honest effort.",
+        source: 'Tafsir Ibn Kathir on 24:32',
+      },
+      {
+        type: 'mindset',
+        icon: 'heart',
+        title: 'The promise is not conditional on proof',
+        instruction:
+          "Al-Qurtubi reads the enrichment as attached to the marrying, not to first demonstrating you can afford it. That does not remove the responsibility to be genuinely capable — it removes the requirement to be certain before you are allowed to try.",
+        source: 'Tafsir Al-Qurtubi on 24:32',
+      },
+    ]),
+    reflection:
+      "What is the actual number or milestone you have set as your private threshold for 'ready' — and has it moved at least once already?",
+  },
+  {
+    id: 'q_angle_marriage_day6',
+    contentId: 'quran_25_74',
+    mood: 'Hopeful',
+    angle:
+      "[Tafsir Ibn Kathir on 25:74] This du'a is listed among the qualities of \"the servants of the Most Merciful\" (ʿibad ar-Rahman) that close Surah Al-Furqan — a short list of what marks out the sincere. A good spouse and a settled household are named here as something the righteous specifically ask Allah for by name, not simply something they happen to find through effort and luck. Ibn Kathir notes the phrase qurrata aʿyun — \"comfort of the eyes\" — describes a rest so complete the eyes stop searching, the opposite of restlessness. When you make this du'a, notice its unexpected turn: after asking for a good family, it asks to be made \"an example for the righteous\" — tying a peaceful household to a wider purpose, not treating it as a private comfort with no bearing on anything beyond itself.",
+    practiceSteps: JSON.stringify([
+      {
+        type: 'verbal',
+        icon: 'hands-prayer',
+        title: 'Make this your standing du\'a',
+        instruction:
+          "This is a Qur'anic supplication, listed among the qualities of the righteous — make it your own request, by name, rather than treating a good spouse as something you should only pursue by effort.",
+        arabicText: 'رَبَّنَا هَبْ لَنَا مِنْ أَزْوَٰجِنَا وَذُرِّيَّٰتِنَا قُرَّةَ أَعْيُنٍ وَٱجْعَلْنَا لِلْمُتَّقِينَ إِمَامًا',
+        transliteration: "Rabbana hab lana min azwajina wa dhurriyyatina qurrata a'yunin waj'alna lil-muttaqina imama",
+        translation:
+          'Our Lord, grant us from among our wives and offspring comfort to our eyes and make us an example for the righteous.',
+        source: 'Quran 25:74',
+        sourceType: 'quran_dua',
+      },
+      {
+        type: 'mindset',
+        icon: 'light-bulb',
+        title: 'Comfort of the eyes, not just of the moment',
+        instruction:
+          "\"Qurrata aʿyun\" describes a rest so complete the eyes stop searching elsewhere. That is a different thing from excitement or attraction, and it is worth noticing which one you have actually been asking for.",
+        source: 'Tafsir Ibn Kathir on 25:74',
+      },
+      {
+        type: 'mindset',
+        icon: 'gift',
+        title: 'A household with a purpose beyond itself',
+        instruction:
+          "The du'a does not stop at personal comfort — it closes by asking to become an example for the righteous. What you are building is asked to matter beyond the two of you.",
+        source: 'Quran 25:74',
+      },
+    ]),
+    reflection:
+      "Have you actually asked Allah for this by name, in these words, or have you only been hoping and searching without ever making the du'a?",
+  },
+  {
+    id: 'q_angle_marriage_day7',
+    contentId: 'quran_3_159',
+    mood: 'Hopeful',
+    angle:
+      "[Tafsir Ibn Kathir on 3:159] This ayah was revealed after Uhud, praising the Prophet ﷺ for his gentleness and instructing him to keep consulting his companions even after a costly mistake in following earlier advice. Ibn Kathir notes the sequence the ayah sets: pardon, seek forgiveness for them, consult them — and only after that, once you have decided, place your trust in Allah. Consultation is placed before the decision, not offered afterward as a courtesy. When you are facing a decision this significant, the principle is direct: bringing in someone with no stake in flattering you — a parent, a trusted friend, someone who has known you a long time — is not a lack of confidence in your own judgment. It is the step the ayah places immediately before tawakkul, not in competition with it.",
+    practiceSteps: JSON.stringify([
+      {
+        type: 'physical',
+        icon: 'chat',
+        title: 'Name one person to actually consult',
+        instruction:
+          "Not someone who will simply agree with you — someone who has known you long enough to tell you something you don't want to hear. Ask them directly what they notice about this decision that you might be too close to see.",
+        source: 'Reflects the shura in 3:159',
+      },
+      {
+        type: 'mindset',
+        icon: 'compass',
+        title: 'Consultation comes before tawakkul, not after',
+        instruction:
+          "The ayah's order matters: shawirhum (consult them) comes before fa-idha 'azamta fatawakkal (once you have decided, trust Allah). Seeking counsel is not a failure to trust Allah — it is one of the steps the ayah places on the way there.",
+        source: 'Tafsir Ibn Kathir on 3:159',
+      },
+      {
+        type: 'mindset',
+        icon: 'heart',
+        title: 'This was revealed after a mistake, not before one',
+        instruction:
+          "Allah instructed continued consultation even after following earlier advice had gone badly at Uhud. One imperfect outcome from listening to others is not a reason to stop asking — it is exactly the moment the ayah addresses.",
+        source: 'Quran 3:159',
+      },
+    ]),
+    reflection:
+      "Who is the one person whose honest opinion on this you have been avoiding asking for — and what do you think they would actually say?",
+  },
+  {
+    id: 'q_angle_marriage_day8',
+    contentId: 'quran_4_1',
+    mood: 'Hopeful',
+    angle:
+      "[Tafsir Ibn Kathir on 4:1] The surah concerned most directly with marriage and family rights opens by grounding spouses in one shared origin — \"created from one soul, and created from it its mate\" — before a single ruling about marriage is stated. Ibn Kathir reads this as establishing that a spouse is not a separate category of person to be evaluated from a safe distance, but drawn from the same nature as you. That grounding is exactly why the Prophet ﷺ told Al-Mughirah ibn Shu'bah, who had just proposed to a woman, not to skip the step of actually seeing her: \"Look at her, for indeed that is more likely to make things better between the two of you.\" [Tirmidhi 1087, graded sahih] Choosing based on a description, a photo, or a family's account of someone is a different act from seeing clearly for yourself. When you have the chance to see someone directly, the Prophet ﷺ treated that clarity as protective, not improper — something that makes a marriage more likely to go well, not less appropriate to seek.",
+    practiceSteps: JSON.stringify([
+      {
+        type: 'mindset',
+        icon: 'eye',
+        title: 'See for yourself, not only through others',
+        instruction:
+          "The Prophet ﷺ told al-Mughirah directly to go see her himself rather than rely on what he had been told. If your entire impression of someone currently rests on descriptions from other people, that is the gap this hadith is asking you to close.",
+        source: 'Tirmidhi 1087',
+      },
+      {
+        type: 'mindset',
+        icon: 'compass',
+        title: 'The reason given is compatibility, not romance',
+        instruction:
+          "The Prophet ﷺ's stated reason was that it makes things \"better between the two of you\" — a compatibility argument, not a permission for indulgence. Let that shape what you are actually looking for in seeing someone clearly: whether you fit, not just attraction.",
+        source: 'Tirmidhi 1087',
+      },
+      {
+        type: 'physical',
+        icon: 'chat',
+        title: 'Ask the question you have been avoiding',
+        instruction:
+          "Write down one specific question about them you have been putting off asking because you are afraid of the answer. Seeing clearly includes hearing clearly — the hadith does not stop at appearance.",
+        source: "Reflects the hadith's principle of clarity before committing",
+      },
+    ]),
+    reflection:
+      "Is there a question about this person you have avoided asking because you are worried the honest answer would change your mind?",
+  },
+  {
+    id: 'q_angle_marriage_day9',
+    contentId: 'quran_2_153',
+    mood: 'Hopeful',
+    angle:
+      "[Tafsir Ibn Kathir on 2:153] Allah pairs two specific tools for hard seasons here: sabr (patience) and salah (prayer) — not patience alone, and not prayer alone. Ibn Kathir notes that sabr in the Qur'an is rarely passive; it describes active endurance, holding a course rather than simply waiting for time to pass. That is exactly the practical instruction the Prophet ﷺ gave young, unmarried companions who had no means to marry yet: \"O young people! Whoever among you can marry, should marry, because it helps him lower his gaze and guard his modesty, and whoever is not able to marry, should fast, as fasting diminishes his desire.\" [Bukhari 5066]. When you are stuck waiting, fasting here is not a consolation prize. It is named directly as a protection — an active practice for the waiting period, not a placeholder until the real preparation begins.",
+    practiceSteps: JSON.stringify([
+      {
+        type: 'mindset',
+        icon: 'shield',
+        title: 'Sabr is active, not passive',
+        instruction:
+          "Patience in the Qur'an is closer to steady endurance than to simply enduring silently. Waiting well means continuing to build — character, skills, deen — not putting life on pause until a spouse appears.",
+        source: 'Tafsir Ibn Kathir on 2:153',
+      },
+      {
+        type: 'physical',
+        icon: 'moon',
+        title: 'Try the practice the Prophet ﷺ named',
+        instruction:
+          "If self-control has been difficult while you wait, fast one voluntary day this week — Monday or Thursday. The Prophet ﷺ named this specifically, not as a punishment, but as something that genuinely diminishes the pressure.",
+        source: 'Bukhari 5066',
+        sourceType: 'sunnah_action',
+      },
+      {
+        type: 'mindset',
+        icon: 'compass',
+        title: 'The instruction was for people with nothing yet',
+        instruction:
+          "This hadith was addressed to companions with no income and no prospects in sight — not to people who already had everything arranged. Wherever you are in the process right now, this instruction was written for exactly that stage.",
+        source: 'Reflects Bukhari 5066',
+      },
+    ]),
+    reflection:
+      "What does 'actively waiting' look like for you this week, specifically — one concrete thing, not a general resolution to be patient?",
+  },
+  {
+    id: 'q_angle_marriage_day10',
+    contentId: 'quran_20_131',
+    mood: 'Hopeful',
+    angle:
+      "[Tafsir Ibn Kathir on 20:131] This ayah was addressed to the Prophet ﷺ himself, instructing him not to measure his own situation against the wealth and comfort displayed by people around him who had rejected the message. Ibn Kathir reads \"do not extend your eyes\" as naming comparison itself as the danger, not the other person's blessings — the verse calls what they had \"the splendor of worldly life,\" something Allah says He gave them specifically \"to test them,\" not to reward them. Al-Sa'di adds that the closing line, \"the provision of your Lord is better and more enduring,\" is not a consolation for missing out. When you compare your timeline to someone else's, it is a claim instead that what is measured and unseen from Allah outlasts whatever looks complete from the outside.",
+    practiceSteps: JSON.stringify([
+      {
+        type: 'mindset',
+        icon: 'eye',
+        title: "What you're comparing is a highlight reel",
+        instruction:
+          "The wealth the ayah warns against comparing yourself to was a \"test,\" not a reward — and what you see of someone else's engagement, wedding, or relationship is almost always the same kind of curated display, not the full picture.",
+        source: 'Tafsir Ibn Kathir on 20:131',
+      },
+      {
+        type: 'physical',
+        icon: 'compass',
+        title: 'Name the specific comparison, then set it down',
+        instruction:
+          "Name the one person or feed you compare your situation to most. Consider muting or limiting it for a week, not out of resentment toward them, but to remove the specific trigger for the comparison this ayah names.",
+        source: 'Reflects 20:131',
+      },
+      {
+        type: 'mindset',
+        icon: 'star',
+        title: "'Better and more enduring' is a claim, not a comfort phrase",
+        instruction:
+          "Al-Sa'di reads this closing line as a real claim about what lasts, not a soft consolation. Your timeline being different from someone else's is not evidence that you have been given less.",
+        source: "Tafsir Al-Sa'di on 20:131",
+      },
+    ]),
+    reflection:
+      "Whose timeline have you been quietly measuring yours against — and what would change if you genuinely stopped watching it for a week?",
+  },
+  {
+    id: 'q_angle_marriage_day11',
+    contentId: 'quran_98_5',
+    mood: 'Hopeful',
+    angle:
+      "[Tafsir Ibn Kathir on 98:5] This ayah names ikhlas — sincerity — as the condition attached to worship itself, not an optional refinement of an act already valid without it. Ibn Kathir notes that the verse pairs sincerity directly with the most basic acts of the religion, prayer and zakah, meaning even the clearest obligations are described as incomplete in intention if the sincerity is missing. When you apply this to seeking marriage, the same test applies: marrying to escape loneliness, family pressure, or boredom is not forbidden, but it is a different starting point than marrying as a deliberate act of worship, undertaken for Allah's sake. The outward step can look identical either way. What the ayah asks about is what it was for.",
+    practiceSteps: JSON.stringify([
+      {
+        type: 'mindset',
+        icon: 'light-bulb',
+        title: 'Name the actual reason, honestly',
+        instruction:
+          "Loneliness, family pressure, and a genuine desire to complete your deen can all be present at once. Write down, honestly, which one is currently doing the most work in pushing you forward — not which one sounds best.",
+        source: 'Reflects 98:5',
+      },
+      {
+        type: 'mindset',
+        icon: 'crescent',
+        title: 'An escape and an act of worship can look identical',
+        instruction:
+          "98:5 measures sincerity, not appearance — the outward step of marrying looks the same whether the intention is escape or worship. Renewing your niyyah does not require changing your plans, only being honest about what is driving them.",
+        source: 'Tafsir Ibn Kathir on 98:5',
+      },
+      {
+        type: 'physical',
+        icon: 'pen',
+        title: 'Renew the intention in writing',
+        instruction:
+          "Write one sentence naming why, specifically, you want this to be for Allah's sake and not only your own comfort. Keep it somewhere you will see it again during the process.",
+        source: 'Reflects the ikhlas named in 98:5',
+      },
+    ]),
+    reflection:
+      "If loneliness or pressure disappeared completely tomorrow, would you still want this for the same reasons?",
+  },
+  {
+    id: 'q_angle_marriage_day12',
+    contentId: 'quran_33_21',
+    mood: 'Hopeful',
+    angle:
+      "[Tafsir Ibn Kathir on 33:21] Revealed in the context of the Battle of the Trench, this ayah names the Prophet's ﷺ conduct as \"an excellent pattern\" in general terms — not limited to the battlefield it was revealed about. Ibn Kathir extends the principle to every part of his life, including his home. On that specifically, the Prophet ﷺ said of himself: \"The best of you is the best to his wives, and I am the best of you to my wives, and when your companion dies, leave him alone.\" [Tirmidhi 3895, graded sahih] He did not point to a companion as the model for how to treat a spouse — he named himself, directly, as the standard to measure against. When you prepare your character for this, it is not only about becoming someone worth choosing. It is about deciding, in advance, what kind of spouse you intend to be once the search is over.",
+    practiceSteps: JSON.stringify([
+      {
+        type: 'mindset',
+        icon: 'star',
+        title: 'The Prophet ﷺ named himself the standard',
+        instruction:
+          "He did not say \"the best of you defers to a scholar\" — he said \"I am the best of you to my wives,\" pointing to his own example directly. That is a specific, checkable standard, not a vague aspiration.",
+        source: 'Tirmidhi 3895',
+      },
+      {
+        type: 'physical',
+        icon: 'pen',
+        title: 'Write down what you are actually preparing to give',
+        instruction:
+          "Most of this journey has been about what you are looking for. Write three specific things about how you intend to treat a spouse — not vague kindness, but concrete habits: how you'll handle disagreement, how you'll speak about them to others, how you'll show up on an ordinary day.",
+        source: 'Reflects Tirmidhi 3895',
+      },
+      {
+        type: 'mindset',
+        icon: 'heart',
+        title: 'The pattern is uswa hasana, not uswa kamila',
+        instruction:
+          "\"Excellent pattern\" (uswa hasana), not a perfect, unreachable one. The Prophet ﷺ's example in his household is described as something to genuinely follow, not admire from a distance as unattainable.",
+        source: 'Quran 33:21',
+      },
+    ]),
+    reflection:
+      "If your future spouse described you the way the Prophet ﷺ described himself — 'the best to his wives' — what specific evidence would they be pointing to?",
+  },
+  {
+    id: 'q_angle_marriage_day13',
+    contentId: 'quran_94_6',
+    mood: 'Hopeful',
+    angle:
+      "[Tafsir Ibn Kathir on 94:6] The ayah is stated as a fact in the present tense — \"with the hardship is ease\" — not as a promise of ease arriving afterward. Ibn Kathir and several commentators note the ayah repeats almost word for word as 94:5, and read the repetition as emphasis: the ease is not a separate event waiting at the far end of the difficulty, but something attached to it, present within it, from the start. When your search has taken longer than expected, this reframes the waiting itself. The relief this ayah names is not necessarily the wedding at the end of the road. It may already be present in what the waiting has built — patience, clarity about what actually matters, a closeness to Allah that came specifically from needing Him during this stretch.",
+    practiceSteps: JSON.stringify([
+      {
+        type: 'mindset',
+        icon: 'sunrise',
+        title: '"With", not "after"',
+        instruction:
+          "The Arabic preposition is maʿa — with — not baʿda — after. The ayah is not promising ease once this ends. It is naming ease that exists inside the difficulty right now, if you look for it.",
+        source: 'Tafsir Ibn Kathir on 94:6',
+      },
+      {
+        type: 'physical',
+        icon: 'pen',
+        title: 'Name one thing the wait has already given you',
+        instruction:
+          "Write down one real thing — not a forced positive — that this waiting period has actually built in you: a habit, a clarity, a closeness to Allah you would not have if this had been easy or quick.",
+        source: 'Reflects the ease named in 94:6',
+      },
+      {
+        type: 'mindset',
+        icon: 'light-bulb',
+        title: 'The repetition is not accidental',
+        instruction:
+          "94:5 and 94:6 say almost the same thing twice in a row. Commentators read that repetition as deliberate emphasis, not filler — as if the point needed saying twice to actually land.",
+        source: 'Quran 94:5-6',
+      },
+    ]),
+    reflection:
+      "What has this waiting period already given you that a faster path would not have?",
+  },
+  {
+    id: 'q_angle_marriage_day14',
+    contentId: 'quran_39_10',
+    mood: 'Hopeful',
+    angle:
+      "[Tafsir Ibn Kathir on 39:10] The ayah promises the patient their reward \"without account\" — bighayri ḥisāb — a phrase Ibn Kathir reads as meaning the reward is not measured out portion by portion against the effort spent, but given in a way that exceeds ordinary reckoning entirely. When you look at whatever these fourteen days have actually resolved — whether it ends with clarity about someone specific, a decision to keep waiting, or simply a steadier heart than it started with — the ayah is not addressed only to people whose search has just concluded. It is addressed to whoever kept showing up through it with sabr. A journey like this one does not have a finish line where the patience is graded and the account closes. It has a next ordinary day, met the same way the ones before it were.",
+    practiceSteps: JSON.stringify([
+      {
+        type: 'mindset',
+        icon: 'star',
+        title: '"Without account" is the specific promise',
+        instruction:
+          "Ibn Kathir reads bighayri hisab as reward beyond ordinary measure — not a proportional payout for exactly how patient you were. Whatever this process has cost you does not need to be perfectly patient to count.",
+        source: 'Tafsir Ibn Kathir on 39:10',
+      },
+      {
+        type: 'physical',
+        icon: 'pen',
+        title: 'Write where you actually are, honestly',
+        instruction:
+          "Not where you hoped to be after fourteen days — where you actually are. Clarity about someone, a decision to keep waiting, or simply steadier than when you started are all real, valid places to be.",
+        source: 'Reflects the journey as a whole',
+      },
+      {
+        type: 'mindset',
+        icon: 'door',
+        title: 'There is no finish line, only the next day',
+        instruction:
+          "This journey ends here, but the search or the marriage it leads to does not come with a point where sabr stops mattering. Carry forward whichever single practice from these fourteen days actually helped, and let the rest go.",
+        source: 'Reflects the sabr named throughout this journey',
+      },
+    ]),
+    reflection:
+      "Which single practice from these fourteen days do you actually want to keep, starting tomorrow — not all of them, just the one that genuinely helped?",
   },
 ];
 

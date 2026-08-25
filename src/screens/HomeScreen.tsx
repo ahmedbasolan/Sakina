@@ -32,36 +32,50 @@ import {
   CheckInBanner,
   SmartMoodGrid,
   StreakMilestoneBanner,
+  MoodCheckInModal,
 } from '../components/home';
 import { useHomeData } from '../hooks/useHomeData';
+import MoodCheckinPromptService, { CheckInWindow, getCurrentCheckInWindow } from '../services/moodCheckinPromptService';
 
 /* ─── Constants ──────────────────────────────────────────────── */
 
 // Card content (labels, Arabic terms, icons). All colour fields derive from
 // MoodColors in DesignSystem.ts — the single source of truth — so the accent a
 // user taps on the card always matches the immersive background it opens.
-const MOOD_CARD_CONTENT: { id: Mood; label: string; sublabel: string; iconName: string }[] = [
-  { id: 'Grateful',    label: 'GRATEFUL',    sublabel: 'Shukr',   iconName: 'heart' },
-  { id: 'Hopeful',     label: 'HOPEFUL',     sublabel: 'Amal',    iconName: 'sunny' },
-  { id: 'Calm',        label: 'PEACEFUL',    sublabel: 'Sukoon',  iconName: 'water' },
-  { id: 'Overwhelmed', label: 'OVERWHELMED', sublabel: 'Ghamm',   iconName: 'layers' },
-  { id: 'Tired',       label: 'TIRED',       sublabel: "Ta'ab",   iconName: 'moon' },
-  { id: 'Lonely',      label: 'LONELY',      sublabel: 'Wahshah', iconName: 'person' },
-  { id: 'Sad',         label: 'SAD',         sublabel: 'Huzn',    iconName: 'rainy' },
-  { id: 'Angry',       label: 'ANGRY',       sublabel: 'Ghadab',  iconName: 'flame' },
+// `arabic` is kept literally identical to MoodCheckInModal's GRID_MOODS /
+// TAWBAH_MOOD (not moodData.ts's MOOD_VISUALS, which disagrees with the modal
+// on a couple of words) so the Home grid and the check-in modal read as the
+// same vocabulary rather than two different translations of the same mood.
+const MOOD_CARD_CONTENT: { id: Mood; label: string; sublabel: string; arabic: string; iconName: string }[] = [
+  { id: 'Grateful',    label: 'GRATEFUL',    sublabel: 'Shukr',   arabic: 'شُكْر',    iconName: 'heart' },
+  { id: 'Hopeful',     label: 'HOPEFUL',     sublabel: 'Amal',    arabic: 'أَمَل',     iconName: 'sunny' },
+  // Sublabel matches the Arabic transliteration, not a synonym: 'Sukoon' (سُكُون,
+  // stillness) was paired with سَكِينَة (Sakeenah, the heart's tranquility — the
+  // app's own name) — a different word. 'Ghamm' (غَمّ, distress/grief) was paired
+  // with إِرْهَاق (Irhaq, exhaustion) — also a different word.
+  { id: 'Calm',        label: 'PEACEFUL',    sublabel: 'Sakeenah', arabic: 'سَكِينَة',  iconName: 'water' },
+  { id: 'Overwhelmed', label: 'OVERWHELMED', sublabel: 'Irhaq',    arabic: 'إِرْهَاق',  iconName: 'layers' },
+  { id: 'Tired',       label: 'TIRED',       sublabel: "Ta'ab",   arabic: 'تَعَب',     iconName: 'moon' },
+  { id: 'Lonely',      label: 'LONELY',      sublabel: 'Wahshah', arabic: 'وَحْشَة',   iconName: 'person' },
+  { id: 'Sad',         label: 'SAD',         sublabel: 'Huzn',    arabic: 'حُزْن',     iconName: 'rainy' },
+  { id: 'Angry',       label: 'ANGRY',       sublabel: 'Ghadab',  arabic: 'غَضَب',     iconName: 'flame' },
   // Guilty was defined in the Mood type, had MoodColors, had angles written for
   // it — and was missing from this array, so the only route to it was one deep
   // link out of the mood calendar. constants/index.ts calls tawbah "sacred;
   // never gate repentance"; omitting the card gated it.
-  { id: 'Guilty',      label: 'GUILTY',      sublabel: 'Nadam',   iconName: 'refresh-circle' },
+  // Arabic is the single word 'تَوْبَة' rather than the modal's wide-card
+  // 'نَدَم · تَوْبَة' compound — this tile is the compact grid format, which the
+  // modal itself only ever pairs with single words.
+  { id: 'Guilty',      label: 'GUILTY',      sublabel: 'Nadam',   arabic: 'تَوْبَة',   iconName: 'refresh-circle' },
 ];
 
-const moodConfigs: MoodConfig[] = MOOD_CARD_CONTENT.map(({ id, label, sublabel, iconName }) => {
+const moodConfigs: MoodConfig[] = MOOD_CARD_CONTENT.map(({ id, label, sublabel, arabic, iconName }) => {
   const mc = MoodColors[id];
   return {
     id,
     label,
     sublabel,
+    arabic,
     iconName,
     color: mc.accent,
     bgColor: mc.bgFill,
@@ -111,16 +125,18 @@ const QuillIcon = React.memo(function QuillIcon({ size, color }: { size: number;
    MAIN HOME SCREEN — rendering + navigation only
    ═══════════════════════════════════════════════════════════════ */
 
-export default function HomeScreen({ navigation }: { navigation: any }) {
+export default function HomeScreen({ navigation, route }: { navigation: any; route?: any }) {
   const { setSelectedMood, rotationEngine, setStreakCount, timeFormat } = useAppContext();
   const insets = useSafeAreaInsets();
 
   // ── All data loading delegated to useHomeData ─────────────────
   const {
+    prayerTimings,
     prayerContext,
     nextPrayer,
     showLocationModal, setShowLocationModal,
     loadPrayerData,
+    loadActivePath,
     currentCity,
     currentCountry,
     streakDays,
@@ -139,6 +155,38 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
     handleRefresh,
     now,
   } = useHomeData({ setStreakCount });
+
+  // ── Twice-Daily Mood Check-In Prompt State ────────────────────
+  const [checkInWindow, setCheckInWindow] = useState<CheckInWindow | null>(null);
+
+  const checkMoodPrompt = useCallback(async () => {
+    try {
+      const promptService = MoodCheckinPromptService.getInstance();
+      const enabled = await promptService.isEnabled();
+      if (!enabled) return;
+      const window = await promptService.shouldShowPrompt(prayerTimings);
+      if (window) {
+        setCheckInWindow(window);
+      }
+    } catch {
+      // Non-fatal
+    }
+  }, [prayerTimings]);
+
+  // Check prompt on mount & when prayerTimings become available
+  useEffect(() => {
+    checkMoodPrompt();
+  }, [checkMoodPrompt]);
+
+  // Handle openCheckIn parameter from notification tap
+  useEffect(() => {
+    if (route?.params?.openCheckIn) {
+      const window: CheckInWindow =
+        route.params.window === 'night' ? 'night' : getCurrentCheckInWindow(prayerTimings);
+      setCheckInWindow(window);
+      navigation.setParams({ openCheckIn: undefined, window: undefined });
+    }
+  }, [route?.params?.openCheckIn, route?.params?.window, prayerTimings, navigation]);
 
   // ── View-layer animations (stay here — not data concerns) ─────
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -160,9 +208,10 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
       if (!hasMountedRef.current) { hasMountedRef.current = true; return; }
       loadStreakData();
       checkTodayMood();
+      checkMoodPrompt();
     });
     return unsub;
-  }, [navigation, loadStreakData, checkTodayMood]);
+  }, [navigation, loadStreakData, checkTodayMood, checkMoodPrompt]);
 
   // Reload prayer data when returning from PrayerTimesScreen (location may have changed).
   // hasPrayerFocusedRef skips the first focus (mount) — useHomeData already loads on bootstrap.
@@ -170,7 +219,12 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
   useFocusEffect(useCallback(() => {
     if (!hasPrayerFocusedRef.current) { hasPrayerFocusedRef.current = true; return; }
     loadPrayerData();
-  }, [loadPrayerData]));
+    // Also refresh the Sacred Journey card. Completing a day and backing out
+    // to Home is the single most likely way to reach this screen with stale
+    // journey state, and it was the one thing focus did not reload — the card
+    // kept its old path/day until the app was backgrounded or pulled to refresh.
+    loadActivePath();
+  }, [loadPrayerData, loadActivePath]));
 
   const scrollContentStyle = useMemo(
     () => [styles.scrollContent, { paddingBottom: insets.bottom + Layout.tabBarClearance }],
@@ -233,6 +287,18 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
       isHandlingTap.current = false;
     }
   }, [navigation, fetchWindowGuidance, setSelectedMood, setLocalSelectedMood, setCheckedInToday]);
+
+  const handleCheckInSelectMood = useCallback(
+    async (moodId: Mood) => {
+      setCheckInWindow(null);
+      await handleMoodTap(moodId);
+    },
+    [handleMoodTap],
+  );
+
+  const handleCheckInDismiss = useCallback(() => {
+    setCheckInWindow(null);
+  }, []);
 
   // Friday overrides the time-of-day window entirely with Surah Al-Kahf —
   // "whoever reads it on Friday will have light shining for him between the
@@ -475,7 +541,14 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
                 </TouchableOpacity>
               </View>
 
-              <TouchableOpacity activeOpacity={0.9} onPress={() => navigation.navigate('Journeys')}>
+              {/* Opens the journey itself. This used to go to the Journeys
+                  list, so the one card showing "Day 2 of 14" of a specific
+                  path dropped the user on a catalogue and made them find it
+                  again. "All paths" above is the route to the list. */}
+              <TouchableOpacity
+                activeOpacity={0.9}
+                onPress={() => navigation.navigate('PathDetail', { pathId: activePath.pathId })}
+              >
                 {/* Shadow on a plain outer View — see ShareSheet.tsx's previewCardShadow
                     for why elevation can't share a view with overflow:'hidden'+borderRadius
                     on Android (shadow's rounded-rect backing shows through the clip). */}
@@ -501,7 +574,7 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
                   <View style={styles.journeyCardTop}>
                     <View style={styles.journeyCardTopLeft}>
                       <View style={[styles.journeyIcon, { backgroundColor: activePath.color + '15', borderColor: activePath.color + '25' }]}>
-                        <MaterialCommunityIcons name="barley" size={20} color={activePath.color} />
+                        <MaterialCommunityIcons name={activePath.icon} size={20} color={activePath.color} />
                       </View>
                       <View style={styles.journeyInfo}>
                         <Text style={[styles.journeyPathLabel, { color: activePath.color }]}>{activePath.pathLabel}</Text>
@@ -592,6 +665,13 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
           currentLocation={{ city: currentCity, country: currentCountry }}
           onClose={() => setShowLocationModal(false)}
           onLocationSelected={() => loadPrayerData()}
+        />
+
+        <MoodCheckInModal
+          visible={checkInWindow !== null}
+          window={checkInWindow || 'morning'}
+          onSelectMood={handleCheckInSelectMood}
+          onDismiss={handleCheckInDismiss}
         />
       </LinearGradient>
     </View>

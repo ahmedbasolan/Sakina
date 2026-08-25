@@ -9,7 +9,8 @@
  */
 
 import { supabase } from '../config/supabaseClient';
-import { dbQuery } from '../database/schema';
+import { dbQuery } from '../database/connection';
+import { clearAllLocalUserData, LOCAL_DATA_OWNER_KEY } from '../database/operations';
 import { Mood, PrayerContext } from '../types';
 import { withTimeout } from '../utils';
 
@@ -202,6 +203,19 @@ export class SupabaseDataService {
         try {
             const userId = await this.getUserId();
             if (!userId) return;
+
+            // Pending rows are only ever written for a SIGNED-IN user, so they
+            // belong to whoever wrote them — upload them only to that account.
+            // Requiring a positive ownership match (rather than merely "not
+            // someone else") also covers pre-marker installs, where the rows
+            // came from some signed-in session we can no longer identify.
+            //
+            // This closes the window between a SIGNED_IN transition and
+            // claimLocalDataForUser finishing: recordHistory calls this
+            // opportunistically on every successful write, and dbQuery is a
+            // serialized queue, so at app start the claim can sit behind the
+            // Quran prefetch while the user is already recording guidance.
+            if ((await this.getLocalDataOwner()) !== userId) return;
 
             // 1. Read up to SYNC_BATCH_SIZE queued rows.
             //    A LIMIT prevents fetching hundreds of rows into memory and
@@ -452,10 +466,139 @@ export class SupabaseDataService {
     }
 
     // ══════════════════════════════════════════════════════════════════
+    // LOCAL DATA OWNERSHIP
+    // ══════════════════════════════════════════════════════════════════
+
+    private async getLocalDataOwner(): Promise<string | null> {
+        const row = await dbQuery(async (db) =>
+            db.getFirstAsync<{ value: string }>('SELECT value FROM kv_store WHERE key = ?', [
+                LOCAL_DATA_OWNER_KEY,
+            ]),
+        );
+        return row?.value ?? null;
+    }
+
+    private async setLocalDataOwner(userId: string): Promise<void> {
+        await dbQuery(async (db) => {
+            await db.runAsync('INSERT OR REPLACE INTO kv_store (key, value) VALUES (?, ?)', [
+                LOCAL_DATA_OWNER_KEY,
+                userId,
+            ]);
+        });
+    }
+
+    /**
+     * True when local history contains rows that provably came from a
+     * SIGNED-IN session rather than guest use: `pending_sync = 1` is only ever
+     * written by recordHistory's offline fallback for a logged-in user (guest
+     * writes are always 0). Used to protect installs that predate the owner
+     * marker, where `getLocalDataOwner()` returns null but the rows are not
+     * actually guest data.
+     */
+    private async hasSignedInOriginRows(): Promise<boolean> {
+        const row = await dbQuery(async (db) =>
+            db.getFirstAsync<{ n: number }>(
+                'SELECT 1 AS n FROM user_history WHERE pending_sync = 1 LIMIT 1',
+            ),
+        );
+        return !!row;
+    }
+
+    /**
+     * Stamp ownership on a cold boot that already has a session, for installs
+     * created before the marker existed. Without it those devices never get a
+     * marker until the user happens to sign out and back in, and
+     * `syncPendingHistory` — which now requires a positive ownership match —
+     * would leave their queued offline rows stranded on the device forever.
+     *
+     * Only stamps when nothing is awaiting guest migration (`pending_sync = 0`
+     * rows). Claiming those for the current user would strand them the other
+     * way: `claimLocalDataForUser` would then see an owner and never migrate
+     * them. That state (signed in, with a previously failed migration) resolves
+     * itself at the next sign-in instead.
+     *
+     * Never overwrites an existing marker — this is not a way to take ownership
+     * of another account's data.
+     */
+    async ensureLocalDataOwnerStamp(userId: string): Promise<void> {
+        if ((await this.getLocalDataOwner()) !== null) return;
+
+        const awaitingMigration = await dbQuery(async (db) =>
+            db.getFirstAsync<{ n: number }>(
+                'SELECT 1 AS n FROM user_history WHERE pending_sync = 0 LIMIT 1',
+            ),
+        );
+        if (awaitingMigration) return;
+
+        await this.setLocalDataOwner(userId);
+    }
+
+    /**
+     * Decide what happens to the on-device rows when `userId` signs in, then do
+     * it. Call this instead of `migrateGuestDataToSupabase()` — it is the guard
+     * that decides whether migrating is even legitimate.
+     *
+     * Without it, signing out of account A and into account B on the same
+     * device uploaded A's leftover history and journey progress under B's
+     * user_id: `hasClaimedLocalData` in AuthContext is a ref that resets on app
+     * restart, and the migration unconditionally swept every local row.
+     *
+     * Three outcomes:
+     *  - owner === userId  → their own device. Flush pending rows to their
+     *    account; never migrate (migration is for unowned data only).
+     *  - owner is someone else, or absent but the rows are provably from some
+     *    signed-in session → foreign data. Wipe it. Nothing is uploaded.
+     *  - owner absent and the rows look like genuine guest use → migrate, the
+     *    original intended behaviour.
+     *
+     * Either way the device ends up stamped with `userId`.
+     *
+     * What this does NOT catch: an install created before the owner marker
+     * existed, where a signed-in user's *path progress* fell back to local but
+     * their *history* never did (so there is no pending_sync=1 row to give them
+     * away), and the device then changes hands before that user signs in again.
+     * `user_path_progress` has no pending flag, so there is no signal to read.
+     * The window closes permanently after the first sign-in on the new build,
+     * which stamps the marker.
+     */
+    async claimLocalDataForUser(
+        userId: string,
+    ): Promise<{ migratedCount: number; wipedForeignData: boolean }> {
+        const owner = await this.getLocalDataOwner();
+
+        if (owner === userId) {
+            // Returning to their own device — their queued offline rows are
+            // still theirs. Push them up rather than leaving them stranded.
+            await this.syncPendingHistory();
+            return { migratedCount: 0, wipedForeignData: false };
+        }
+
+        if (owner !== null || (await this.hasSignedInOriginRows())) {
+            // Belongs to a different account. Note this also discards any guest
+            // rows created after that account signed out — they share the same
+            // tables with no way to tell them apart, and over-deleting is the
+            // only safe direction when the alternative is filing one person's
+            // spiritual history under another person's name.
+            await clearAllLocalUserData();
+            await this.setLocalDataOwner(userId);
+            return { migratedCount: 0, wipedForeignData: true };
+        }
+
+        const { migratedCount } = await this.migrateGuestDataToSupabase();
+        await this.setLocalDataOwner(userId);
+        return { migratedCount, wipedForeignData: false };
+    }
+
+    // ══════════════════════════════════════════════════════════════════
     // GUEST → USER MIGRATION
     // ══════════════════════════════════════════════════════════════════
 
     /**
+     * Do NOT call this directly from a sign-in path — go through
+     * `claimLocalDataForUser()`, which decides whether these rows are actually
+     * unowned guest data. Called unguarded, this uploads whatever is on the
+     * device under whoever just signed in.
+     *
      * Sync all local SQLite history and path progress to Supabase on first sign-in.
      * Idempotent: uses upsert + ignoreDuplicates for history (backed by the
      * unique_user_history_entry DB constraint) so partial re-runs skip rows

@@ -640,4 +640,131 @@ export const hadithContent: Content[] = [
     },
     moods: [],
   },
+  {
+    id: 'hadith_marriage_2',
+    type: 'Hadith',
+    primaryText:
+      'A woman is married for four things: her wealth, her family status, her beauty, and her religion. So you should marry the religious woman, otherwise you will be a loser.',
+    arabicText:
+      'تُنْكَحُ الْمَرْأَةُ لِأَرْبَعٍ لِمَالِهَا وَلِحَسَبِهَا وَجَمَالِهَا وَلِدِينِهَا فَاظْفَرْ بِذَاتِ الدِّينِ تَرِبَتْ يَدَاكَ',
+    translation:
+      'A woman is married for four things: her wealth, her family status, her beauty, and her religion. So you should marry the religious woman, otherwise you will be a loser.',
+    englishTranslation:
+      'A woman is married for four things: her wealth, her family status, her beauty, and her religion. So you should marry the religious woman, otherwise you will be a loser.',
+    source: 'Sahih al-Bukhari 5090',
+    transliteration: "Tunkahu al-mar'atu li-arba'in: limaliha, wa lihasabiha, wa jamaliha, wa lidiniha, fazfar bidhati ad-din taribat yadak",
+    whyThis:
+      "Abu Huraira narrated this from the Prophet ﷺ, naming the four reasons people commonly marry, in the order most people actually rank them — and then correcting the order directly.",
+    propheticPractice: {
+      description: 'Weigh religion and character first when evaluating a prospective spouse, ahead of wealth, beauty, or family status',
+      source: 'Sahih al-Bukhari 5090',
+      grading: 'sahih',
+    },
+    moods: [],
+  },
+  {
+    id: 'hadith_marriage_3',
+    type: 'Hadith',
+    primaryText:
+      "Allah has written for the son of Adam his portion of adultery, which he will inevitably meet. The adultery of the eye is the look, the adultery of the ear is listening, the adultery of the tongue is speech, the adultery of the hand is the touch, and the adultery of the feet are the steps he walks — and the heart wishes and desires, and the private parts confirm that or deny it.",
+    arabicText:
+      'كُتِبَ عَلَى ابْنِ آدَمَ نَصِيبُهُ مِنَ الزِّنَا مُدْرِكٌ ذَلِكَ لاَ مَحَالَةَ فَزِنَا الْعَيْنِ النَّظَرُ وَزِنَا اللِّسَانِ الْمَنْطِقُ وَالنَّفْسُ تَمَنَّى وَتَشْتَهِى وَالْفَرْجُ يُصَدِّقُ ذَلِكَ كُلَّهُ أَوْ يُكَذِّبُهُ',
+    translation:
+      "Allah fixed the very portion of adultery which a man will indulge in. There would be no escape from it. The adultery of the eye is the lustful look and the adultery of the ears is listening to voluptuous talk and the adultery of the tongue is licentious speech and the adultery of the hand is the lustful grip and the adultery of the feet is to walk to the place where he intends to commit adultery, and the heart yearns and desires, which he may or may not put into effect.",
+    englishTranslation:
+      "Allah fixed the very portion of adultery which a man will indulge in. There would be no escape from it. The adultery of the eye is the lustful look and the adultery of the ears is listening to voluptuous talk and the adultery of the tongue is licentious speech and the adultery of the hand is the lustful grip and the adultery of the feet is to walk to the place where he intends to commit adultery, and the heart yearns and desires, which he may or may not put into effect.",
+    source: 'Sahih Muslim 2658a',
+    transliteration: "Kutiba 'ala ibni Adama nasibuhu min az-zina, mudrikun dhalika la mahalata, fazina al-'ayni an-nazar, wa zina al-lisani al-mantiq, wan-nafsu tatamanna wa tashtahi, wal-farju yusaddiqu dhalika kullahu aw yukadhdhibuhu",
+    whyThis:
+      "Abu Huraira reported this from the Prophet ﷺ, describing how a search for a spouse can drift into what it was never meant to be — one look, one exchange, one meeting — long before anything is decided.",
+    propheticPractice: {
+      description: 'Set a concrete, nameable boundary for how the search is conducted, and keep someone informed of it',
+      source: 'Sahih Muslim 2658a',
+      grading: 'sahih',
+    },
+    moods: [],
+  },
+  {
+    id: 'hadith_marriage_4',
+    type: 'Hadith',
+    primaryText:
+      "The Prophet ﷺ used to teach us the istikharah for every matter, just as he taught us a surah from the Qur'an: \"If any of you intends to do something, let him pray two rak'ahs other than the obligatory prayer, then say: O Allah, I seek Your guidance through Your knowledge, and I seek ability through Your power, and I ask You from Your great bounty, for You have power and I have none, and You know and I do not, and You are the Knower of the unseen...\"",
+    arabicText:
+      'كَانَ رَسُولُ اللَّهِ صَلَّى اللَّهُ عَلَيْهِ وَسَلَّمَ يُعَلِّمُنَا الاِسْتِخَارَةَ فِي الأُمُورِ كُلِّهَا كَالسُّورَةِ مِنَ الْقُرْآنِ يَقُولُ إِذَا هَمَّ أَحَدُكُمْ بِالأَمْرِ فَلْيَرْكَعْ رَكْعَتَيْنِ مِنْ غَيْرِ الْفَرِيضَةِ ثُمَّ لِيَقُلِ اللَّهُمَّ إِنِّي أَسْتَخِيرُكَ بِعِلْمِكَ وَأَسْتَقْدِرُكَ بِقُدْرَتِكَ وَأَسْأَلُكَ مِنْ فَضْلِكَ الْعَظِيمِ فَإِنَّكَ تَقْدِرُ وَلاَ أَقْدِرُ وَتَعْلَمُ وَلاَ أَعْلَمُ وَأَنْتَ عَلاَّمُ الْغُيُوبِ',
+    translation:
+      "The Prophet (ﷺ) used to teach us the Istikhara for each and every matter, as he taught us the Suras from the Holy Qur'an. He used to say: If anyone of you intends to do something, he should offer a two-rak'at prayer other than the obligatory prayer, and then say the du'a of istikharah, mentioning his matter (need) at the end of it.",
+    englishTranslation:
+      "The Prophet (ﷺ) used to teach us the Istikhara for each and every matter, as he taught us the Suras from the Holy Qur'an. He used to say: If anyone of you intends to do something, he should offer a two-rak'at prayer other than the obligatory prayer, and then say the du'a of istikharah, mentioning his matter (need) at the end of it.",
+    source: 'Sahih al-Bukhari 6382',
+    transliteration: "Kana Rasulullahi (ﷺ) yu'allimuna al-istikharata fil-umuri kulliha kas-surati minal-Qur'an",
+    whyThis:
+      "Jabir ibn Abdullah narrated that the Prophet ﷺ taught istikharah as a standing practice for every significant decision, not a special-occasion prayer reserved for major life events alone.",
+    propheticPractice: {
+      description: "Pray two voluntary rak'ahs and make the du'a of istikharah before your next serious step forward in the search",
+      source: 'Sahih al-Bukhari 6382',
+      grading: 'sahih',
+    },
+    moods: [],
+  },
+  {
+    id: 'hadith_marriage_8',
+    type: 'Hadith',
+    primaryText: "Al-Mughirah ibn Shu'bah proposed to a woman, so the Prophet ﷺ said: \"Look at her, for indeed that is more likely to make things lasting between the two of you.\"",
+    arabicText: 'أَنَّ الْمُغِيرَةَ بْنَ شُعْبَةَ خَطَبَ امْرَأَةً فَقَالَ لَهُ النَّبِيُّ صَلَّى اللَّهُ عَلَيْهِ وَسَلَّمَ انْظُرْ إِلَيْهَا فَإِنَّهُ أَحْرَى أَنْ يُؤْدَمَ بَيْنَكُمَا',
+    translation:
+      "Bakr bin Abdullah Al-Muzani narrated that Al-Mughirah bin Shu'bah proposed to a woman, so the Prophet said: \"Look at her, for indeed that is more likely to make things better between the two of you.\"",
+    englishTranslation:
+      "Bakr bin Abdullah Al-Muzani narrated that Al-Mughirah bin Shu'bah proposed to a woman, so the Prophet said: \"Look at her, for indeed that is more likely to make things better between the two of you.\"",
+    source: 'Jami at-Tirmidhi 1087',
+    transliteration: "Anna al-Mughirata bna Shu'batin khataba imra'atan faqala lahu an-Nabiyyu (ﷺ): unzur ilayha fa-innahu ahra an yu'dama baynakuma",
+    whyThis:
+      "Narrated by Bakr ibn Abdullah al-Muzani, this hadith records the Prophet ﷺ directing a companion to see his prospective wife for himself rather than decide from a description alone — graded sahih by Al-Albani, Ahmad Shakir, and Zubair Ali Zai.",
+    propheticPractice: {
+      description: 'See the person clearly for yourself before committing, rather than deciding from descriptions alone',
+      source: 'Jami at-Tirmidhi 1087',
+      grading: 'sahih',
+    },
+    moods: [],
+  },
+  {
+    id: 'hadith_marriage_9',
+    type: 'Hadith',
+    primaryText:
+      "O young people, whoever among you can marry, should marry, for it helps him lower his gaze and guard his chastity. And whoever cannot, let him fast, for it will be a shield for him.",
+    arabicText: 'يَا مَعْشَرَ الشَّبَابِ مَنِ اسْتَطَاعَ مِنْكُمُ الْبَاءَةَ فَلْيَتَزَوَّجْ فَإِنَّهُ أَغَضُّ لِلْبَصَرِ وَأَحْصَنُ لِلْفَرْجِ وَمَنْ لَمْ يَسْتَطِعْ فَعَلَيْهِ بِالصَّوْمِ فَإِنَّهُ لَهُ وِجَاءٌ',
+    translation:
+      "We were with the Prophet (ﷺ) while we were young and had no wealth. So Allah's Messenger (ﷺ) said, \"O young people! Whoever among you can marry, should marry, because it helps him lower his gaze and guard his modesty, and whoever is not able to marry, should fast, as fasting diminishes his desire.\"",
+    englishTranslation:
+      "We were with the Prophet (ﷺ) while we were young and had no wealth. So Allah's Messenger (ﷺ) said, \"O young people! Whoever among you can marry, should marry, because it helps him lower his gaze and guard his modesty, and whoever is not able to marry, should fast, as fasting diminishes his desire.\"",
+    source: 'Sahih al-Bukhari 5066',
+    transliteration: "Ya ma'shara ash-shabab, man istata'a minkumul-ba'ata falyatazawwaj, fa-innahu aghaddu lil-basari wa ahsanu lil-farji, wa man lam yastati' fa'alayhi bis-sawmi fa-innahu lahu wija'",
+    whyThis:
+      "Abdullah ibn Mas'ud narrated this, recalling the Prophet ﷺ addressing young companions who had no wealth yet — this instruction was given to people in exactly that stage of waiting, not to people who already had everything arranged.",
+    propheticPractice: {
+      description: 'If self-control is difficult while waiting, fast a voluntary day this week as the shield the Prophet ﷺ named',
+      source: 'Sahih al-Bukhari 5066',
+      grading: 'sahih',
+    },
+    moods: [],
+  },
+  {
+    id: 'hadith_marriage_12',
+    type: 'Hadith',
+    primaryText: "The best of you is the best to his wives, and I am the best of you to my wives.",
+    arabicText: 'خِيَارُكُمْ خِيَارُكُمْ لِنِسَائِهِمْ وَأَنَا خَيْرُكُمْ لِأَهْلِي',
+    translation:
+      "The best of you is the best to his wives, and I am the best of you to my wives, and when your companion dies, leave him alone.",
+    englishTranslation:
+      "The best of you is the best to his wives, and I am the best of you to my wives, and when your companion dies, leave him alone.",
+    source: 'Jami at-Tirmidhi 3895',
+    transliteration: "Khiyarukum khiyarukum linisa'ihim, wa ana khayrukum li-ahli",
+    whyThis:
+      "Narrated by Aisha (may Allah be pleased with her), who lived this treatment directly — the Prophet ﷺ named himself, not a companion, as the standard for how a spouse should be treated. Graded sahih/hasan sahih across multiple gradings.",
+    propheticPractice: {
+      description: 'Write down three specific, concrete habits you intend to practice in how you will treat a spouse',
+      source: 'Jami at-Tirmidhi 3895',
+      grading: 'sahih',
+    },
+    moods: [],
+  },
 ];

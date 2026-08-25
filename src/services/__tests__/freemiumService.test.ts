@@ -5,7 +5,7 @@ jest.mock('../../data/staticPaths', () => ({
   SPECIAL_EDITION_BUNDLES: [{ id: 'bundle-1', includesPremiumTrial: true }],
 }));
 
-jest.mock('../../database/schema', () => ({
+jest.mock('../../database/connection', () => ({
   getDatabase: jest.fn(),
   dbQuery: jest.fn((op) =>
     op({
@@ -59,9 +59,9 @@ jest.mock('../../constants', () => ({
     maxSavedItems: 30,
     rotationHistoryDays: 30,
   },
-  isMercyMood: jest.fn(() => false),
   UPGRADE_ASK_COOLDOWN_MS: 3 * 24 * 60 * 60 * 1000, // 3 days
-  SUBSCRIPTION_PRICING: { monthlyUSD: 4.99, yearlyUSD: 39.99, trialDays: 7 },
+  // No SUBSCRIPTION_PRICING — prices come only from the store. See the note in
+  // src/constants/index.ts for why a hardcoded fallback was removed.
 }));
 
 jest.mock('../upgradeAskStore', () => ({
@@ -300,7 +300,7 @@ describe('FreemiumService', () => {
 
     it('allows saving for free users under the cap', async () => {
       mockSubscriptionService.isPremium.mockReturnValue(false);
-      const { dbQuery } = require('../../database/schema');
+      const { dbQuery } = require('../../database/connection');
       dbQuery.mockImplementationOnce((op: any) =>
         op({ getFirstAsync: jest.fn().mockResolvedValue({ n: 5 }) }),
       );
@@ -309,7 +309,7 @@ describe('FreemiumService', () => {
 
     it('blocks saving for free users at the cap', async () => {
       mockSubscriptionService.isPremium.mockReturnValue(false);
-      const { dbQuery } = require('../../database/schema');
+      const { dbQuery } = require('../../database/connection');
       dbQuery.mockImplementationOnce((op: any) =>
         op({ getFirstAsync: jest.fn().mockResolvedValue({ n: 30 }) }),
       );
@@ -328,12 +328,38 @@ describe('FreemiumService', () => {
     });
   });
 
-  describe('Pricing (single display source — spec §7)', () => {
-    it('exposes positive monthly/yearly prices and a trial length', () => {
-      const pricing = service.getPricing();
-      expect(pricing.monthlyUSD).toBeGreaterThan(0);
-      expect(pricing.yearlyUSD).toBeGreaterThan(0);
-      expect(pricing.trialDays).toBeGreaterThan(0);
+  describe('Pricing (store-localized only — never fabricated)', () => {
+    it('returns null when RevenueCat has not supplied store pricing', () => {
+      // The revenueCat mock resolves null, i.e. no offering could be read.
+      // Returning hardcoded USD amounts here would print "$39.99" to a user
+      // whose real charge is AUD 59.99 or EUR 44.99 — both verified as live
+      // App Store Connect prices on 2026-08-16. A price we cannot source from
+      // the store must not be displayed at all.
+      expect(service.getPricing()).toBeNull();
+    });
+
+    it('returns the store-localized values verbatim once RevenueCat supplies them', async () => {
+      const { revenueCat } = require('../revenueCatService');
+      revenueCat.getPricing.mockResolvedValueOnce({
+        monthlyPrice: 'AU$7.99',
+        yearlyPrice: 'AU$59.99',
+        monthlyPriceAmount: 7.99,
+        yearlyPriceAmount: 59.99,
+        trialDays: 7,
+      });
+
+      (FreemiumService as any).instance = null;
+      const fresh = FreemiumService.getInstance();
+      await fresh.initialize();
+      await Promise.resolve(); // let the fire-and-forget pricing .then() settle
+
+      expect(fresh.getPricing()).toEqual({
+        monthlyUSD: 7.99,
+        yearlyUSD: 59.99,
+        monthlyPrice: 'AU$7.99',
+        yearlyPrice: 'AU$59.99',
+        trialDays: 7,
+      });
     });
   });
 

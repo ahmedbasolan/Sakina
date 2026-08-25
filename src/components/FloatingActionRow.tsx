@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
-import { BlurView } from 'expo-blur';
+import { FrostedSurface } from './FrostedSurface';
 import { Colors, Spacing, BorderRadius } from '../theme/DesignSystem';
 import { Ionicons } from '@expo/vector-icons';
 import { HapticsService } from '../services/hapticsService';
@@ -33,7 +33,6 @@ const FloatingActionRow: React.FC<FloatingActionRowProps> = ({
   const renderSecondaryAction = () => {
     switch (layerType) {
       case 'verse':
-      case 'context':
         return (
           <TouchableOpacity
             style={styles.actionButton}
@@ -86,12 +85,13 @@ const FloatingActionRow: React.FC<FloatingActionRowProps> = ({
 
   return (
     <View style={styles.container}>
-      {/* Frosted-glass surface, clipped to the pill */}
-      {/* experimentalBlurMethod — same Android blur fix as the tab bar. */}
-      <BlurView
+      {/* Frosted-glass surface, clipped to the pill. Android gets a warm-dark
+          fill rather than a live blur — this row floats over the scrolling
+          layer content, which is the case where the Android blur costs a
+          whole-screen re-render per frame. See FrostedSurface. */}
+      <FrostedSurface
         intensity={45}
-        tint="dark"
-        experimentalBlurMethod="dimezisBlurView"
+        androidFill="rgba(28, 22, 18, 0.58)"
         style={styles.blurFill}
         pointerEvents="none"
       />

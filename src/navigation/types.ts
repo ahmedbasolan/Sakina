@@ -5,6 +5,10 @@ export type RootStackParamList = {
   Main: undefined;
   Login: undefined;
   SignUp: undefined;
+  /** Only ever pushed by MainNavigator's isolated password-recovery stack —
+   *  see AuthContext's `isPasswordRecovery`. Not reachable from anywhere in
+   *  the normal signed-in/guest navigation graph. */
+  ResetPassword: undefined;
   Guidance: {
     experience?: GuidanceExperience;
     mood: Mood;
@@ -23,6 +27,7 @@ export type RootStackParamList = {
     guidanceExperience: GuidanceExperience;
   };
   DailyReminders: undefined;
+  LockscreenVerses: undefined;
   MoodHistory: undefined;
   MoodSelection: undefined;
   PrayerTimes: undefined;

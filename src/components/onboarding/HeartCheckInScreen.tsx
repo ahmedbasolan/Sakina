@@ -75,7 +75,10 @@ const MOODS: MoodOption[] = [
   {
     id: 'Calm',
     label: 'PEACEFUL',
-    sublabel: 'Sukoon',
+    // Was 'Sukoon' (سُكُون, stillness) — a different word from Sakeenah
+    // (سَكِينَة, the heart's tranquility, the app's own name), which is what
+    // HomeScreen and the mood check-in modal actually pair with this mood.
+    sublabel: 'Sakeenah',
     giving: 'Sakina descends — this is how you make room for it',
     color: '#34D399',
     bgColor: '#064E3B',
@@ -85,7 +88,9 @@ const MOODS: MoodOption[] = [
   {
     id: 'Overwhelmed',
     label: 'OVERWHELMED',
-    sublabel: 'Ghamm',
+    // Was 'Ghamm' (غَمّ, distress/grief) — HomeScreen and the mood check-in
+    // modal both pair this mood with Irhaq (إِرْهَاق, exhaustion) instead.
+    sublabel: 'Irhaq',
     giving: 'He does not burden a soul beyond what it can bear',
     color: '#818CF8',
     bgColor: '#0F172A',

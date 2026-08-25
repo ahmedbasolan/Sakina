@@ -370,7 +370,11 @@ const styles = StyleSheet.create({
   ctaWrap: { width: '100%' },
   ctaBtn: {
     borderRadius: 28,
-    overflow: 'hidden',
+    // No `overflow: 'hidden'` — combined with `elevation` and a radius on one
+    // view it triggers the Android shadow-through-clip artifact documented in
+    // ShareSheet.tsx, which on a gold `shadowColor` button reads as a squared
+    // halo behind the pill. It was redundant regardless: ctaBtnGradient, the
+    // only child, carries the same borderRadius: 28 and rounds itself.
     shadowColor: '#C9A84C',
     shadowOffset: { width: 0, height: 6 },
     shadowOpacity: 0.5,

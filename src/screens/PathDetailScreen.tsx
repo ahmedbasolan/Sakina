@@ -149,6 +149,12 @@ export const PathDetailScreen: React.FC = () => {
       setUserProgress(progress);
     }
 
+    // Mark this as the journey the user is actually working through, so Home's
+    // Sacred Journey card follows their activity instead of whichever journey
+    // happened to be started most recently. Awaited before navigating so the
+    // card is already correct if they immediately back out to Home.
+    await pathsService.setLastOpenedPath(path.id);
+
     const [experience, hadithContent] = await Promise.all([
       rotationEngine.getGuidanceForStep(step.contentId, step.angleId),
       step.hadithContentId

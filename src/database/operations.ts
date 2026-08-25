@@ -76,6 +76,74 @@ export const resetDatabase = async (): Promise<void> => {
 };
 
 /**
+ * kv_store key recording which account the local user-data tables belong to.
+ * Absent = the rows were written in guest mode and are eligible to migrate to
+ * the first account that signs in. Set = they belong to that user id and must
+ * never be uploaded under a different one.
+ *
+ * Lives here because `clearAllLocalUserData` has to clear it; the read/write
+ * logic is in supabaseDataService.claimLocalDataForUser.
+ */
+export const LOCAL_DATA_OWNER_KEY = 'local_data_owner';
+
+/**
+ * Wipe every local table that holds data belonging to the signed-in person,
+ * leaving seeded app content (verses, angles, paths, hadith, Quran cache) and
+ * device-level config intact. Called from `AuthService.deleteAccount()` after
+ * the server-side delete confirms.
+ *
+ * Why this exists: deleting the account used to clear Supabase and nothing
+ * else. The local rows survived, and `hasMigrated` in AuthContext is a `useRef`
+ * that resets on app restart — so the next sign-in on that device, with ANY
+ * account, ran `migrateGuestDataToSupabase()` and uploaded the deleted user's
+ * mood history and journey progress under the new user_id. The Settings
+ * confirmation ("deleted forever") was also simply untrue on-device.
+ *
+ * Deliberately NOT cleared, so nobody reads this as a full device wipe:
+ *  - `user_preferences` — transliteration / audio / Asr madhab are device
+ *    config with no personal content; resetting them would silently change a
+ *    shared device's prayer times for no privacy gain.
+ *  - `quran_cache` and kv_store's `quran_cache_format_version` — downloaded
+ *    scripture, identical for every user.
+ *  - `collections` — listed in `resetDatabase` but has no reader or writer
+ *    anywhere in src/. If that table ever gains writes, add it here.
+ *  - AsyncStorage — `STORAGE_KEYS.moodHistory`, `onboardingMood` and
+ *    `onboardingGoal` are declared but unused; the rest is session/onboarding
+ *    state that the SIGNED_OUT handler already clears.
+ */
+export const clearAllLocalUserData = async (): Promise<void> => {
+  await dbQuery(async (db) => {
+    // One transaction: a partial wipe is the case that re-uploads a subset of
+    // the deleted account's rows into the next account, which is the exact
+    // failure this function exists to prevent.
+    await db.withTransactionAsync(async () => {
+      for (const table of [
+        'user_history',
+        'saved_reflections',
+        'reflections',
+        'user_path_progress',
+        'bookmarked_verses',
+        'user_sessions',
+        'user_subscription',
+      ]) {
+        await db.execAsync(`DELETE FROM ${table}`);
+      }
+
+      // kv_store is mixed: the reading position, the last-opened journey and
+      // the data-owner marker are personal, the cache-format version is not.
+      // Delete by key rather than emptying the table. Dropping the owner marker
+      // is what returns the device to a clean "no account has claimed this"
+      // state after a delete.
+      await db.runAsync('DELETE FROM kv_store WHERE key IN (?, ?, ?)', [
+        'quran_reading_progress',
+        'last_opened_path',
+        LOCAL_DATA_OWNER_KEY,
+      ]);
+    });
+  });
+};
+
+/**
  * Schema migrations run automatically on every `initializeDatabase()` call
  * (via `runInitializationSteps`). You do NOT normally need to call this —
  * it's kept as an explicit trigger for tests / recovery paths.

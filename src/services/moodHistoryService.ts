@@ -1,4 +1,4 @@
-import { dbQuery } from '../database/schema';
+import { dbQuery } from '../database/connection';
 import { Mood } from '../types';
 import { SupabaseDataService } from './supabaseDataService';
 import { formatDateYMD, subtractDays } from '../utils/date';

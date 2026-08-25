@@ -6,9 +6,9 @@ import {
   ActivityIndicator,
   StatusBar,
   Animated,
-  PanResponder,
   ImageSourcePropType,
 } from 'react-native';
+import { GestureDetector } from 'react-native-gesture-handler';
 import { HapticsService } from '../services/hapticsService';
 import ImmersiveBackground from '../components/ImmersiveBackground';
 import { GoldenMotes } from '../components/GoldenMotes';
@@ -22,6 +22,7 @@ import { backgroundThemeService } from '../services/backgroundThemeService';
 import LayerContainer from '../components/LayerContainer';
 import LayerPager from '../components/LayerPager';
 import RestingPoint from '../components/RestingPoint';
+import { CrisisResourceLine } from '../components/CrisisResourceLine';
 import { useSwipeGesture } from '../hooks/useSwipeGesture';
 import SwipeNextOverlay from '../components/SwipeNextOverlay';
 import { useGuidanceLogic } from '../hooks/useGuidanceLogic';
@@ -147,14 +148,14 @@ const GuidanceScreen: React.FC = () => {
   const scrollY = useRef(new Animated.Value(0)).current;
   const [currentLayer, setCurrentLayer] = useState(0);
 
-  // Ref so the PanResponder (created once) can read the latest layer index
+  // Ref so the swipe gesture (created once) can read the latest layer index
   const currentLayerRef = useRef(currentLayer);
   useEffect(() => {
     currentLayerRef.current = currentLayer;
   }, [currentLayer]);
 
   // Ref to the hook's gated advance fn, kept fresh so the once-created
-  // PanResponder always calls the current closure (mirrors currentLayerRef).
+  // swipe gesture always calls the current closure (mirrors currentLayerRef).
   const requestNextRef = useRef<() => void>(() => {});
 
   // Tracks focus on the Context layer's reflection TextInput so the swipe-
@@ -168,14 +169,14 @@ const GuidanceScreen: React.FC = () => {
   // every focus/blur. On Android that re-render landed at the exact moment
   // the OS was showing the soft keyboard for the newly-focused TextInput and
   // reliably swallowed it — tapping the reflection input focused it (cursor
-  // visible) but no keyboard ever appeared. useSwipeGesture's PanResponder
-  // reads this ref directly instead, so flipping it costs zero renders.
+  // visible) but no keyboard ever appeared. useSwipeGesture's gesture reads
+  // this ref directly instead, so flipping it costs zero renders.
   const isReflectionInputFocusedRef = useRef(false);
 
   // Swipe left → next verse.
   // Uses a horizontal-dominant threshold so it never conflicts with
   // LayerContainer's vertical-swipe gesture or the ScrollView inside VerseLayer.
-  const { panHandlers: swipePanHandlers, swipeAnim: swipeOverlayAnim } = useSwipeGesture({
+  const { gesture: swipeGesture, swipeAnim: swipeOverlayAnim } = useSwipeGesture({
     onNext: () => {
       requestNextRef.current();
     },
@@ -263,7 +264,7 @@ const GuidanceScreen: React.FC = () => {
     }
   }, [hasKahfQueue, kahfQueue, requestNext, navigation, scrollY]);
 
-  // Keep the PanResponder's ref pointed at the latest gated advance fn.
+  // Keep the swipe gesture's ref pointed at the latest gated advance fn.
   useEffect(() => {
     requestNextRef.current = advanceGuidance;
   }, [advanceGuidance]);
@@ -337,7 +338,7 @@ const GuidanceScreen: React.FC = () => {
       imageSource={selectedThemeSource ?? undefined}
       selfManageTheme={false}
     >
-      <GoldenMotes />
+      <GoldenMotes color={(MoodColors[mood] || MoodColors.Calm).accent} />
       <StatusBar barStyle="light-content" translucent backgroundColor="transparent" />
 
       {/* Header in the flex flow (same pattern as PathTopBar in PathStepScreen).
@@ -356,65 +357,67 @@ const GuidanceScreen: React.FC = () => {
       />
 
       {/* Layer content — wrapped in swipe-left detector for "next verse" gesture */}
-      <View style={styles.gestureWrap} {...swipePanHandlers}>
-        <SwipeNextOverlay
-          animValue={swipeOverlayAnim}
-          accentColor={(MoodColors[mood] || MoodColors.Calm).accent}
-          label="NEXT AYAH"
-        />
-        <LayerContainer
-          currentLayer={currentLayer}
-          totalLayers={totalLayers}
-          onLayerChange={(layerIndex) => {
-            scrollY.setValue(0);
-            setCurrentLayer(layerIndex);
-            if (layerIndex >= totalLayers) {
-              advanceGuidance();
-            }
-          }}
-        >
-          {currentLayer === 0 && (
-            <VerseLayer
-              arabic={experience.content.arabicText || ''}
-              translation={experience.content.translation || experience.content.englishTranslation}
-              reference={experience.content.source || ''}
-              transliteration={experience.content.transliteration}
-              showTransliteration={preferences.showTransliteration}
-              autoPlayAudio={preferences.autoPlayAudio}
-              primaryLanguage={preferences.primaryLanguage}
-              scrollY={scrollY}
-              accentColor={(MoodColors[mood] || MoodColors.Calm).accent}
-              hasContext={hasContext}
-              onNextVerse={canAdvance ? advanceGuidance : undefined}
-              onShare={handleShareVerse}
-              onSave={() => handleSave(0)}
-              isSaved={!!savedStates[0]}
-              audioKey={extractVerseKey(experience.content.source)}
-            />
-          )}
+      <GestureDetector gesture={swipeGesture}>
+        <View style={styles.gestureWrap}>
+          <SwipeNextOverlay
+            animValue={swipeOverlayAnim}
+            accentColor={(MoodColors[mood] || MoodColors.Calm).accent}
+            label="NEXT AYAH"
+          />
+          <LayerContainer
+            currentLayer={currentLayer}
+            totalLayers={totalLayers}
+            onLayerChange={(layerIndex) => {
+              scrollY.setValue(0);
+              setCurrentLayer(layerIndex);
+              if (layerIndex >= totalLayers) {
+                advanceGuidance();
+              }
+            }}
+          >
+            {currentLayer === 0 && (
+              <VerseLayer
+                arabic={experience.content.arabicText || ''}
+                translation={experience.content.translation || experience.content.englishTranslation}
+                reference={experience.content.source || ''}
+                transliteration={experience.content.transliteration}
+                showTransliteration={preferences.showTransliteration}
+                autoPlayAudio={preferences.autoPlayAudio}
+                primaryLanguage={preferences.primaryLanguage}
+                scrollY={scrollY}
+                accentColor={(MoodColors[mood] || MoodColors.Calm).accent}
+                hasContext={hasContext}
+                onNextVerse={canAdvance ? advanceGuidance : undefined}
+                onShare={handleShareVerse}
+                onSave={() => handleSave(0)}
+                isSaved={!!savedStates[0]}
+                audioKey={extractVerseKey(experience.content.source)}
+              />
+            )}
 
-          {currentLayer === 1 && hasContext && (
-            <ContextLayer
-              attribution={experience.angle?.angleSource || 'Scholarly Context'}
-              text={experience.content.whyThis || ''}
-              source={experience.content.source || ''}
-              angle={experience.angle?.angle}
-              angleSource={experience.angle?.angleSource}
-              scrollY={scrollY}
-              topInset={Spacing.lg}
-              accentColor={(MoodColors[mood] || MoodColors.Calm).accent}
-              reflectionPrompt={reflectionPrompt}
-              reflectionValue={reflectionText}
-              onReflectionChange={setReflectionText}
-              reflectionStatus={reflectionStatus}
-              onSaveReflectionPress={saveReflection}
-              onReflectionFocusChange={(focused) => {
-                isReflectionInputFocusedRef.current = focused;
-              }}
-            />
-          )}
-        </LayerContainer>
-      </View>
+            {currentLayer === 1 && hasContext && (
+              <ContextLayer
+                attribution={experience.angle?.angleSource || 'Scholarly Context'}
+                text={experience.content.whyThis || ''}
+                source={experience.content.source || ''}
+                angle={experience.angle?.angle}
+                angleSource={experience.angle?.angleSource}
+                scrollY={scrollY}
+                topInset={Spacing.lg}
+                accentColor={(MoodColors[mood] || MoodColors.Calm).accent}
+                reflectionPrompt={reflectionPrompt}
+                reflectionValue={reflectionText}
+                onReflectionChange={setReflectionText}
+                reflectionStatus={reflectionStatus}
+                onSaveReflectionPress={saveReflection}
+                onReflectionFocusChange={(focused) => {
+                  isReflectionInputFocusedRef.current = focused;
+                }}
+              />
+            )}
+          </LayerContainer>
+        </View>
+      </GestureDetector>
 
       {/* Window budget — three quiet dots that dim as refreshes are spent, so
           the resting point arrives expected rather than as a wall. Hidden for
@@ -440,6 +443,8 @@ const GuidanceScreen: React.FC = () => {
           ))}
         </View>
       )}
+
+      <CrisisResourceLine mood={mood} />
 
       {/* Tappable layer nav — prev/next buttons + dot track. Replaces the old
           purely-decorative swipe hint so users can navigate without swiping. */}

@@ -1,4 +1,4 @@
-import { dbQuery } from '../database/schema';
+import { dbQuery } from '../database/connection';
 import { UserSession } from '../types';
 import { FREEMIUM_LIMITS } from '../constants';
 import PrayerTimesService from './prayerTimesService';

@@ -1,4 +1,4 @@
-import { resolveCardBackground, buildShareText, CardTheme } from '../shareCard';
+import { resolveCardBackground, buildShareText, pickShareCardTextTier, CardTheme } from '../shareCard';
 import { BackgroundTheme } from '../../types';
 
 const purpleTheme: CardTheme = { id: 'purple', colors: ['#C4B5FD', '#8B5CF6'], label: 'Royal' };
@@ -46,6 +46,53 @@ describe('resolveCardBackground', () => {
   it('falls back to the gradient for a non-premium user even with a photo theme selected', () => {
     const result = resolveCardBackground(purpleTheme, photoTheme, false);
     expect(result.kind).toBe('gradient');
+  });
+});
+
+describe('pickShareCardTextTier', () => {
+  // Mirrors ShareSheet's own formula at a representative ~390dp-wide phone
+  // (cardWidth 342, CARD_ASPECT_RATIO 0.62 -> cardTargetHeight ~552):
+  // textWidth = cardWidth - Spacing.xl*2 - Spacing.lg*2 - Spacing.md
+  // heightBudget = cardTargetHeight - Spacing.xxl*2 - Spacing.xl*2 - 90
+  const TEXT_WIDTH = 250;
+  const HEIGHT_BUDGET = 350;
+
+  it('picks the largest tier for a short ayah (e.g. 32:16, ~190 chars English)', () => {
+    const tier = pickShareCardTextTier(
+      {
+        arabicText: 'تَتَجَافَىٰ جُنُوبُهُمْ عَنِ ٱلْمَضَاجِعِ يَدْعُونَ رَبَّهُمْ خَوْفًا وَطَمَعًا وَمِمَّا رَزَقْنَٰهُمْ يُنفِقُونَ',
+        englishText:
+          'Their sides forsake their beds; they call upon their Lord in fear and hope, and from what We have provided them, they spend.',
+      },
+      TEXT_WIDTH,
+      HEIGHT_BUDGET,
+    );
+    expect(tier.arabicFontSize).toBe(24);
+  });
+
+  it('picks a smaller tier for a medium-length ayah than for a short one', () => {
+    const shortTier = pickShareCardTextTier({ englishText: 'a'.repeat(100) }, TEXT_WIDTH, HEIGHT_BUDGET);
+    const mediumTier = pickShareCardTextTier({ englishText: 'a'.repeat(500) }, TEXT_WIDTH, HEIGHT_BUDGET);
+    expect(mediumTier.quoteFontSize).toBeLessThanOrEqual(shortTier.quoteFontSize);
+  });
+
+  it('falls back to the smallest tier rather than throwing for the longest ayah in the Quran (2:282, ~1300 chars each)', () => {
+    const arabic2_282 = 'ا'.repeat(1213); // real length; content doesn't affect wrapping math
+    const english2_282 = 'a'.repeat(1334);
+    const tier = pickShareCardTextTier(
+      { arabicText: arabic2_282, transliteration: 'x'.repeat(900), englishText: english2_282 },
+      TEXT_WIDTH,
+      HEIGHT_BUDGET,
+    );
+    // Smallest tier is still returned (never throws / never returns undefined) —
+    // this is the "card grows past its target height" case, handled by the
+    // caller, not by hiding any of the text.
+    expect(tier.arabicFontSize).toBe(13);
+  });
+
+  it('never divides by zero or picks an undefined tier when nothing is visible', () => {
+    const tier = pickShareCardTextTier({}, TEXT_WIDTH, HEIGHT_BUDGET);
+    expect(tier.arabicFontSize).toBe(24);
   });
 });
 

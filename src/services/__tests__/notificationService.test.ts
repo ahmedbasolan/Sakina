@@ -42,6 +42,14 @@ jest.mock('../errorLoggingService', () => ({
   logServiceError: jest.fn(),
 }));
 
+// Pulled in transitively via lockscreenVerseService, which the spiritual
+// scheduler consults for verse payloads.
+jest.mock('expo-asset', () => ({
+  Asset: {
+    fromModule: () => ({ localUri: 'file:///themes/sky.jpg', downloadAsync: jest.fn() }),
+  },
+}));
+
 import { Platform } from 'react-native';
 import * as Notifications from 'expo-notifications';
 import NotificationService from '../notificationService';
@@ -50,6 +58,7 @@ import { logServiceError } from '../errorLoggingService';
 
 const mockSchedule = Notifications.scheduleNotificationAsync as jest.Mock;
 const mockGetAllScheduled = Notifications.getAllScheduledNotificationsAsync as jest.Mock;
+const mockCancelScheduled = Notifications.cancelScheduledNotificationAsync as jest.Mock;
 const mockLogServiceError = logServiceError as jest.Mock;
 
 const TIMINGS: PrayerTimings = {
@@ -137,11 +146,11 @@ describe('schedulePrayerNotifications — per-day accuracy', () => {
       Fajr: `05:0${i}`,
     }));
 
-    await service.schedulePrayerNotifications(weekly, 'Dubai');
+    await service.schedulePrayerNotifications(weekly);
 
     // Day 0's Fajr (05:00) is already past at the mocked 08:00, so offsets
     // 1..6 remain — each at its own drifted minute.
-    const fajrDates = scheduledDatesFor('Time for Fajr');
+    const fajrDates = scheduledDatesFor('Fajr');
     expect(fajrDates).toHaveLength(6);
     fajrDates.forEach((d, idx) => {
       const dayOffset = idx + 1;
@@ -151,9 +160,9 @@ describe('schedulePrayerNotifications — per-day accuracy', () => {
   });
 
   it('still accepts a single day’s timings (city-lookup path) and repeats them across the week', async () => {
-    await service.schedulePrayerNotifications(TIMINGS, 'Dubai');
+    await service.schedulePrayerNotifications(TIMINGS);
 
-    const maghribDates = scheduledDatesFor('Time for Maghrib');
+    const maghribDates = scheduledDatesFor('Maghrib');
     expect(maghribDates).toHaveLength(7);
     for (const d of maghribDates) {
       expect(`${d.getHours()}:${d.getMinutes()}`).toBe('19:0');
@@ -164,7 +173,7 @@ describe('schedulePrayerNotifications — per-day accuracy', () => {
     (Notifications.getPermissionsAsync as jest.Mock).mockResolvedValueOnce({ status: 'denied' });
     (Notifications.requestPermissionsAsync as jest.Mock).mockResolvedValueOnce({ status: 'denied' });
 
-    await service.schedulePrayerNotifications(TIMINGS, 'Dubai');
+    await service.schedulePrayerNotifications(TIMINGS);
 
     expect(mockSchedule).not.toHaveBeenCalled();
   });
@@ -172,13 +181,63 @@ describe('schedulePrayerNotifications — per-day accuracy', () => {
   it('pads a short weekly array with its last day instead of dropping days', async () => {
     const twoDays: PrayerTimings[] = [TIMINGS, { ...TIMINGS, Maghrib: '19:05' }];
 
-    await service.schedulePrayerNotifications(twoDays, 'Dubai');
+    await service.schedulePrayerNotifications(twoDays);
 
-    const maghribDates = scheduledDatesFor('Time for Maghrib');
+    const maghribDates = scheduledDatesFor('Maghrib');
     expect(maghribDates).toHaveLength(7);
     // Day 0 at 19:00, days 1-6 padded from the last provided day (19:05).
     expect(maghribDates[0].getMinutes()).toBe(0);
     maghribDates.slice(1).forEach((d) => expect(d.getMinutes()).toBe(5));
+  });
+});
+
+describe('cancelByCategory — cross-process-safe cancellation', () => {
+  // Regression coverage for the duplicate-notification bug: cancellation
+  // used to work off an AsyncStorage-tracked id list, which is a
+  // per-process cache. The foreground app and the headless background
+  // top-up task (notificationTopUpTask.ts) are separate JS processes, each
+  // with their own copy — a schedule call from one could never see, and
+  // therefore never cancel, a batch scheduled by the other. Two duplicate
+  // notifications (one stale, one fresh) for the same slot was the visible
+  // symptom. Cancellation now queries the OS's actual pending list, which
+  // both processes share, instead of a local cache either can go stale.
+  it('cancels only the target category, leaving other categories untouched', async () => {
+    mockGetAllScheduled.mockResolvedValue([
+      { identifier: 'old-prayer-1', content: { data: { action: 'prayer_times', category: 'prayer' } } },
+      { identifier: 'old-spiritual-1', content: { data: { action: 'spiritual_window', category: 'spiritual' } } },
+      { identifier: 'old-moodcheckin-1', content: { data: { action: 'mood_checkin', category: 'mood_checkin' } } },
+    ]);
+
+    await service.schedulePrayerNotifications(TIMINGS);
+
+    expect(mockCancelScheduled).toHaveBeenCalledWith('old-prayer-1');
+    expect(mockCancelScheduled).not.toHaveBeenCalledWith('old-spiritual-1');
+    expect(mockCancelScheduled).not.toHaveBeenCalledWith('old-moodcheckin-1');
+  });
+
+  it('cancels a batch the OS has scheduled even with zero local bookkeeping of it — the exact orphan case from the cross-process race', async () => {
+    // Simulates a notification the OS actually has pending (e.g. left behind
+    // by a headless background-task run this process never knew about),
+    // with no corresponding AsyncStorage state to have "tracked" it.
+    mockGetAllScheduled.mockResolvedValue([
+      { identifier: 'orphaned-from-other-process', content: { data: { action: 'prayer_times', category: 'prayer' } } },
+    ]);
+
+    await service.schedulePrayerNotifications(TIMINGS);
+
+    expect(mockCancelScheduled).toHaveBeenCalledWith('orphaned-from-other-process');
+  });
+
+  it('tags the daily reminder with a stable category independent of its rotating action', async () => {
+    // Daily reminder content rotates by day-of-year (action can be
+    // daily_guidance, mood_calendar, quran_verse, journey_continue) — the
+    // category field must stay constant regardless of which variant shows,
+    // or a future re-schedule could only ever find and cancel one variant.
+    await service.scheduleReminder(5, 30);
+
+    const lastCall = mockSchedule.mock.calls[mockSchedule.mock.calls.length - 1];
+    const [{ content }] = lastCall;
+    expect(content.data.category).toBe('daily_reminder');
   });
 });
 
@@ -190,12 +249,57 @@ describe('iOS pending-notification budget', () => {
   it('both categories together stay well under the 64-pending iOS cap', async () => {
     const weekly: PrayerTimings[] = Array(7).fill(TIMINGS);
 
-    await service.schedulePrayerNotifications(weekly, 'Dubai');
+    await service.schedulePrayerNotifications(weekly);
     await service.scheduleSpiritualReminders(weekly);
 
     const scheduled = mockSchedule.mock.calls.length;
     expect(scheduled).toBeGreaterThan(0);
     expect(scheduled).toBeLessThanOrEqual(63); // leaves room for the daily reminder
+  });
+
+  // The check above runs with lock screen verses OFF, which is the default —
+  // so on its own it says nothing about the feature's cost. Lock screen verses
+  // are meant to change the PAYLOAD of the three spiritual reminders, not add
+  // any, and this pins that. If someone later schedules verses as a fourth
+  // category instead, the count jumps from 56 to 77 and this fails.
+  it('costs no extra notification slots when lock screen verses are on', async () => {
+    const weekly: PrayerTimings[] = Array(7).fill(TIMINGS);
+
+    await service.schedulePrayerNotifications(weekly);
+    await service.scheduleSpiritualReminders(weekly);
+    const withFeatureOff = mockSchedule.mock.calls.length;
+
+    mockSchedule.mockClear();
+    mockStore['@lockscreen_verses'] = JSON.stringify({
+      enabled: true,
+      windows: { tahajjud: true, morning: true, evening: true },
+      themeId: null,
+      showTransliteration: false,
+    });
+
+    await service.schedulePrayerNotifications(weekly);
+    await service.scheduleSpiritualReminders(weekly);
+    const withFeatureOn = mockSchedule.mock.calls.length;
+
+    expect(withFeatureOn).toBe(withFeatureOff);
+    expect(withFeatureOn).toBeLessThanOrEqual(63);
+  });
+
+  it('puts verse text in the spiritual payload once enabled', async () => {
+    mockStore['@lockscreen_verses'] = JSON.stringify({
+      enabled: true,
+      windows: { tahajjud: true, morning: true, evening: true },
+      themeId: null,
+      showTransliteration: false,
+    });
+
+    await service.scheduleSpiritualReminders(Array(7).fill(TIMINGS));
+
+    const bodies = mockSchedule.mock.calls.map((c) => c[0]?.content?.body ?? '');
+    // The shipped static copy must be gone, replaced by ayah text carrying a
+    // surah:ayah citation.
+    expect(bodies.some((b: string) => b.includes('It is the time of Tahajjud'))).toBe(false);
+    expect(bodies.every((b: string) => /\d+:\d+/.test(b))).toBe(true);
   });
 });
 
@@ -207,7 +311,7 @@ describe('iOS pending-notification guard (runtime check)', () => {
   it('does not warn when the real pending count stays well under the cap', async () => {
     mockGetAllScheduled.mockResolvedValue(new Array(10).fill({}));
 
-    await service.schedulePrayerNotifications(TIMINGS, 'Dubai');
+    await service.schedulePrayerNotifications(TIMINGS);
 
     expect(mockLogServiceError).not.toHaveBeenCalled();
   });
@@ -215,7 +319,7 @@ describe('iOS pending-notification guard (runtime check)', () => {
   it('warns via logServiceError when the pending count nears the 64-notification iOS cap, naming the triggering scheduler', async () => {
     mockGetAllScheduled.mockResolvedValue(new Array(60).fill({}));
 
-    await service.schedulePrayerNotifications(TIMINGS, 'Dubai');
+    await service.schedulePrayerNotifications(TIMINGS);
 
     expect(mockLogServiceError).toHaveBeenCalledTimes(1);
     const [serviceName, operation, error] = mockLogServiceError.mock.calls[0];
@@ -228,13 +332,18 @@ describe('iOS pending-notification guard (runtime check)', () => {
     expect((error as Error).message).toContain('60');
   });
 
-  it('skips the check on Android, which has no such cap', async () => {
+  it('skips the iOS cap warning on Android, which has no such cap', async () => {
     Platform.OS = 'android';
     mockGetAllScheduled.mockResolvedValue(new Array(60).fill({}));
 
-    await service.schedulePrayerNotifications(TIMINGS, 'Dubai');
+    await service.schedulePrayerNotifications(TIMINGS);
 
-    expect(mockGetAllScheduled).not.toHaveBeenCalled();
+    // getAllScheduledNotificationsAsync is still called once here — by
+    // cancelByCategory, which queries the OS's live pending list on every
+    // platform to find this category's old notifications before
+    // rescheduling (see the comment above cancelByCategory). Only the
+    // iOS-only cap warning itself is platform-gated.
+    expect(mockGetAllScheduled).toHaveBeenCalledTimes(1);
     expect(mockLogServiceError).not.toHaveBeenCalled();
   });
 
