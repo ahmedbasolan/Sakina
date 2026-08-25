@@ -338,7 +338,7 @@ const GuidanceScreen: React.FC = () => {
       imageSource={selectedThemeSource ?? undefined}
       selfManageTheme={false}
     >
-      <GoldenMotes />
+      <GoldenMotes color={(MoodColors[mood] || MoodColors.Calm).accent} />
       <StatusBar barStyle="light-content" translucent backgroundColor="transparent" />
 
       {/* Header in the flex flow (same pattern as PathTopBar in PathStepScreen).
