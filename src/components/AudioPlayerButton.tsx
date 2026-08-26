@@ -39,6 +39,12 @@ interface AudioPlayerButtonProps {
    *  rendering many verses (e.g. SurahLayer) know which one is currently
    *  reciting, without lifting the player itself out of this component. */
   onPlayingChange?: (playing: boolean) => void;
+  /** For a multi-verse range key (`chapter:start-end`), reports which verse
+   *  of that range is loaded as it advances — 0-based within the range, NOT
+   *  an ayah number. Lets a Mushaf page highlight the ayah being recited
+   *  without lifting the player out of this component. Never fires for a
+   *  single-verse key beyond its initial 0. */
+  onRangeIndexChange?: (index: number) => void;
 }
 
 import { BuildService } from '../services/buildService';
@@ -144,6 +150,7 @@ function AudioPlayerButtonInternal({
   style,
   containerStyle,
   onPlayingChange,
+  onRangeIndexChange,
 }: AudioPlayerButtonProps) {
   // Visual glyph height — explicit iconSize wins, else the historical 45% of size.
   const iconPx = iconSize ?? size * 0.45;
@@ -212,6 +219,14 @@ function AudioPlayerButtonInternal({
     onPlayingChange?.(isPlaying);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isPlaying]);
+
+  // Range position, same one-way reporting as isPlaying above. Fires on the
+  // reset-to-0 that follows a verseKey change too, so a parent tracking this
+  // never keeps a stale index from the previous range.
+  useEffect(() => {
+    onRangeIndexChange?.(currentVerseIndex);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentVerseIndex]);
 
   // Also report "stopped" on unmount — otherwise swapping verseKey via a
   // remount (a caller using `key={verseKey}`) would leave the parent

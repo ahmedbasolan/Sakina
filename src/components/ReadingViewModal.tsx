@@ -20,6 +20,11 @@ interface ReadingViewModalProps {
   onChangeViewMode: (mode: ReaderViewMode) => void;
   showTranslit: boolean;
   onToggleTranslit: () => void;
+  /** Page mode only — mirrors the bottom bar's translation panel toggle.
+   *  Omitted in verse mode, where the translation is always on the card and
+   *  there is nothing to toggle. */
+  showTranslation?: boolean;
+  onToggleTranslation?: () => void;
 }
 
 const Toggle: React.FC<{ value: boolean; onPress: () => void; label?: string }> = ({ value, onPress, label }) => (
@@ -44,6 +49,8 @@ const ReadingViewModal: React.FC<ReadingViewModalProps> = ({
   onChangeViewMode,
   showTranslit,
   onToggleTranslit,
+  showTranslation,
+  onToggleTranslation,
 }) => {
   const insets = useSafeAreaInsets();
 
@@ -103,6 +110,26 @@ const ReadingViewModal: React.FC<ReadingViewModalProps> = ({
                   </TouchableOpacity>
                 </View>
               </View>
+
+              {/* Page mode keeps the leaf pure Arabic and puts the English in
+                  a slide-up panel, so "show translation" is a real setting
+                  there. In verse mode the translation is always on the card,
+                  so the row is omitted rather than shown inert. */}
+              {onToggleTranslation && (
+                <View style={styles.section}>
+                  <View style={styles.switchRow}>
+                    <View style={styles.switchLabelWrap}>
+                      <Text style={[styles.sectionTitle, styles.switchTitle]}>TRANSLATION</Text>
+                      <Text style={styles.sectionSubtitle}>Show the English for every verse on the page</Text>
+                    </View>
+                    <Toggle
+                      value={!!showTranslation}
+                      onPress={onToggleTranslation}
+                      label="Translation"
+                    />
+                  </View>
+                </View>
+              )}
 
               <View style={styles.section}>
                 <View style={styles.switchRow}>

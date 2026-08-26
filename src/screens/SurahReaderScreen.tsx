@@ -5,15 +5,16 @@
  * Arabic, divider, translation) + Context accordion →
  * fixed bottom pill (Save · Share · Audio) + prev/next navigation.
  */
-import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
+import React, { useState, useEffect, useLayoutEffect, useCallback, useMemo, useRef } from 'react';
 import {
   View, Text, StyleSheet, TouchableOpacity,
-  ActivityIndicator, Animated, ScrollView, useWindowDimensions,
+  ActivityIndicator, Animated, Easing, ScrollView, useWindowDimensions,
+  LayoutChangeEvent,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { FrostedSurface } from '../components/FrostedSurface';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useFocusEffect } from '@react-navigation/native';
+import { useFocusEffect, useIsFocused } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Svg, { Path } from 'react-native-svg';
@@ -42,6 +43,16 @@ import { FreemiumService } from '../services/freemiumService';
 import { StackScreenProps } from '@react-navigation/stack';
 import { RootStackParamList } from '../navigation/types';
 import { isolateBidiRuns } from '../utils/bidiText';
+import { useReduceMotion } from '../hooks/useReduceMotion';
+import {
+  buildWordIndex,
+  paginateFrom,
+  pageIndexForWord,
+  retargetPageEnd,
+  linesForHeight,
+  MUSHAF_INITIAL_CHARS_PER_LINE,
+  MAX_CORRECTION_PASSES_PER_PAGE,
+} from '../utils/mushafPagination';
 
 // ─── types ────────────────────────────────────────────────────────────────────
 
@@ -54,86 +65,63 @@ const HIT_SLOP = { top: 8, bottom: 8, left: 8, right: 8 };
 
 type ViewMode = 'single' | 'page';
 
-// ─── Mushaf page pagination ─────────────────────────────────────────────────
-// We don't have real Mushaf line-break data, so a "page" is approximated:
-// estimate each verse's line count from its Uthmani character length and
-// pack verses greedily until a per-device line budget is filled. Not
-// pixel-perfect, but it gives page turns a proportionate, book-like cadence
-// instead of one verse — or twenty — per page.
-//
-// Both the chars-per-line and lines-per-page budgets are computed from the
-// actual window size (see usePageBudget below) rather than fixed constants —
-// a budget tuned by eye on one screen reliably overflowed shorter/narrower
-// Android viewports before the whole page could be seen without scrolling.
-// These stay as the shared ceiling/reference values so the pagination math
-// and the leaf's own text style never drift apart.
-const MUSHAF_ARABIC_FONT_SIZE = 21;
-const MUSHAF_ARABIC_LINE_HEIGHT = 46;
-// Average Amiri-Quran glyph advance as a fraction of font size — Arabic
-// joining forms vary in width, so this errs conservative (undercounts how
-// much fits per line) rather than risk lines wrapping past the budget used
-// to decide where a page breaks.
-const ARABIC_GLYPH_WIDTH_RATIO = 0.62;
-// Horizontal padding the leaf's Arabic text sits inside: leafWrap's
-// paddingHorizontal (Spacing.lg, both sides) + leaf's own (Spacing.xl, both
-// sides). Kept in sync with the styles below by hand — there are only two.
-const MUSHAF_LEAF_HORIZONTAL_CHROME = 2 * Spacing.lg + 2 * Spacing.xl;
-// Vertical space the leaf's Arabic block does NOT get to use: the screen
-// header, the fixed bottom nav row, the leaf's own padding/footer, and
-// (worst case, page 1) a framed Bismillah — everything in this file's layout
-// that isn't the text itself. Approximate by construction, and deliberately
-// generous so pages fit rather than border on overflowing.
-const MUSHAF_LEAF_VERTICAL_CHROME = 380;
-const MUSHAF_IDEAL_LINES_PER_PAGE = 15; // real Mushaf density — a ceiling, not a target
-const MUSHAF_MIN_LINES_PER_PAGE = 6;
+// ─── Mushaf page mode ───────────────────────────────────
+// Pages break at WORD boundaries so a leaf can be genuinely FULL, the way a
+// printed Mushaf page is — a verse that runs out of room continues onto the
+// next page, exactly as a paragraph does in any other book. The algorithm,
+// and the reasoning for why verse-granular pagination could never do this,
+// live in src/utils/mushafPagination.ts, which is unit-tested against a
+// simulated text renderer. This screen owns only the React bookkeeping
+// around it: measuring the viewport, counting correction passes, and
+// holding the breaks in state.
+const MUSHAF_ARABIC_FONT_SIZE = 20;
+const MUSHAF_ARABIC_LINE_HEIGHT = 44;
+// Stands in for the text viewport's height for the one frame before its
+// onLayout arrives. Only needs to be sane, not accurate — measurement
+// replaces it on the very next frame.
+const MUSHAF_FALLBACK_TEXT_HEIGHT_RATIO = 0.5;
+// Height the fixed bottom bar (page nav + audio + translation toggle) takes
+// out of the leaf, on top of the safe-area inset.
+const PAGE_BOTTOM_BAR_HEIGHT = 60;
+
+// -- Page turn ----------------------------------------------------------
+// The leaf pivots about its RIGHT edge because that is where a mushaf is
+// bound, and a forward turn sweeps it rightward toward that spine. The tilt
+// is deliberately shallow: enough to read as a sheet with a near edge and a
+// far one, not so much that the justified Arabic visibly skews on its way out.
+const PAGE_TURN_SHIFT_RATIO = 0.22; // of window width, at full swing
+const PAGE_TURN_TILT_DEG = 14;
+const PAGE_TURN_PERSPECTIVE = 900;
 
 const ARABIC_INDIC_DIGITS = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
 function toArabicIndicNumeral(n: number): string {
   return String(n).split('').map((d) => ARABIC_INDIC_DIGITS[Number(d)] ?? d).join('');
 }
 
-interface PageBudget {
-  charsPerLine: number;
-  linesPerPage: number;
-}
+// Cap on the drawer's height so a long tafsir can never grow it into the
+// header — DRAWER_HEADER_CLEARANCE is a hard floor under the header's own
+// height regardless of the ratio, so a short viewport (landscape, a short
+// split-screen pane) can't reach into it the way a flat windowHeight * 0.5
+// could.
+const DRAWER_MAX_HEIGHT_RATIO = 0.5;
+const DRAWER_HEADER_CLEARANCE = 90;
+// The whole-page translation panel is primary content when open (a reading
+// companion, not a quick footnote), so it gets more room than the per-verse
+// drawer — same header-clearance floor either way.
+const PAGE_TRANSLATION_MAX_HEIGHT_RATIO = 0.7;
 
-function computePageBudget(windowWidth: number, windowHeight: number, insetTop: number, insetBottom: number): PageBudget {
-  const leafTextWidth = windowWidth - MUSHAF_LEAF_HORIZONTAL_CHROME;
-  const charsPerLine = Math.max(
-    12,
-    Math.floor(leafTextWidth / (MUSHAF_ARABIC_FONT_SIZE * ARABIC_GLYPH_WIDTH_RATIO)),
-  );
-
-  const availableHeight = windowHeight - insetTop - insetBottom - MUSHAF_LEAF_VERTICAL_CHROME;
-  const heightLines = Math.floor(availableHeight / MUSHAF_ARABIC_LINE_HEIGHT);
-  const linesPerPage = Math.max(MUSHAF_MIN_LINES_PER_PAGE, Math.min(MUSHAF_IDEAL_LINES_PER_PAGE, heightLines));
-
-  return { charsPerLine, linesPerPage };
-}
-
-function paginateVerseIndices(verses: Verse[], budget: PageBudget): number[][] {
-  const pages: number[][] = [];
-  let current: number[] = [];
-  let lines = 0;
-  verses.forEach((v, i) => {
-    const verseLines = Math.max(1, Math.ceil(v.arabic.length / budget.charsPerLine));
-    if (current.length > 0 && lines + verseLines > budget.linesPerPage) {
-      pages.push(current);
-      current = [];
-      lines = 0;
-    }
-    current.push(i);
-    lines += verseLines;
-  });
-  if (current.length) pages.push(current);
-  return pages;
-}
-
-function pageIndexForVerseIndex(pages: number[][], verseIndex: number): number {
-  const found = pages.findIndex((p) => p.includes(verseIndex));
-  return found === -1 ? 0 : found;
-}
-
+// Vertical space a slide-up panel spends on everything that is NOT its
+// scrollable body: the grab handle and its margin, the header row, the gaps
+// between them, and the panel's own top/bottom padding. Subtracted from the
+// panel's cap to give the ScrollView inside it a real bounded height.
+//
+// The ScrollView is capped rather than the container because a container cap
+// does not work: 'flex: 1' resolves to 'flexBasis: 0', so inside an
+// auto-height parent (bottomArea is absolutely positioned with no height) the
+// panel measured to ~nothing and overflow:'hidden' clipped everything below
+// the handle. Both panels shipped that way and rendered as a bare pill.
+const PANEL_CHROME_HEIGHT = 76;
+const PANEL_MIN_SCROLL_HEIGHT = 120;
 interface TafsirEntry {
   text: string;
   source: string;
@@ -321,6 +309,12 @@ type Props = StackScreenProps<RootStackParamList, 'SurahReader'>;
 
 export default function SurahReaderScreen({ route, navigation }: Props) {
   const insets = useSafeAreaInsets();
+  // Page recitation is unmounted when this screen is not focused, which
+  // releases its native player. AudioPlayerButton owns its player privately —
+  // a parent cannot pause it — so unmounting is the only way to guarantee the
+  // recitation stops when the reader navigates away instead of following them
+  // to the next screen.
+  const isFocused = useIsFocused();
   const { surahNumber, surahName, surahArabic, verseCount } = route.params;
 
   const [verses, setVerses] = useState<Verse[]>([]);
@@ -336,14 +330,351 @@ export default function SurahReaderScreen({ route, navigation }: Props) {
 
   // ── Mushaf page mode ──
   const { width: windowWidth, height: windowHeight } = useWindowDimensions();
-  const pageBudget = useMemo(
-    () => computePageBudget(windowWidth, windowHeight, insets.top, insets.bottom),
-    [windowWidth, windowHeight, insets.top, insets.bottom],
+  // Real height of the leaf's Arabic text viewport, measured by onLayout.
+  // Two layouts exist and they are not the same size: page 1 carries the
+  // surah banner and Bismillah above the text, every later page does not.
+  // Each is filled in when its own layout first renders; until then the
+  // other one stands in, adjusted by the banner block's measured height, so
+  // the first page turn does not have to re-seed the whole surah just to
+  // learn the taller number.
+  const [measuredTextHeights, setMeasuredTextHeights] = useState<{ first: number; rest: number }>(
+    { first: 0, rest: 0 },
   );
-  const pages = useMemo(() => paginateVerseIndices(verses, pageBudget), [verses, pageBudget]);
+  const [bannerBlockHeight, setBannerBlockHeight] = useState(0);
+
+  const fallbackTextHeight = windowHeight * MUSHAF_FALLBACK_TEXT_HEIGHT_RATIO;
+  const restTextHeight =
+    measuredTextHeights.rest ||
+    (measuredTextHeights.first ? measuredTextHeights.first + bannerBlockHeight : fallbackTextHeight);
+  const firstTextHeight =
+    measuredTextHeights.first ||
+    (measuredTextHeights.rest
+      ? Math.max(1, measuredTextHeights.rest - bannerBlockHeight)
+      : fallbackTextHeight);
+
+  const maxLinesFirstPage = useMemo(
+    () => linesForHeight(firstTextHeight, MUSHAF_ARABIC_LINE_HEIGHT),
+    [firstTextHeight],
+  );
+  const maxLinesLaterPage = useMemo(
+    () => linesForHeight(restTextHeight, MUSHAF_ARABIC_LINE_HEIGHT),
+    [restTextHeight],
+  );
+  const maxLinesForPage = useCallback(
+    (pageIdx: number) => (pageIdx === 0 ? maxLinesFirstPage : maxLinesLaterPage),
+    [maxLinesFirstPage, maxLinesLaterPage],
+  );
+
+  // The viewport height arrives from the page currently on screen, so which
+  // slot it belongs to is bound at render time (see the call site) rather
+  // than read from a ref when the event fires — the same staleness hazard
+  // handleLeafTextLayout documents below.
+  const handleLeafViewportLayout = useCallback(
+    (pageIdx: number, e: LayoutChangeEvent) => {
+      const h = e.nativeEvent.layout.height;
+      if (h <= 0) return;
+      const slot = pageIdx === 0 ? 'first' : 'rest';
+      // Sub-pixel layout jitter would otherwise write a new object every
+      // frame and re-run everything downstream of it.
+      setMeasuredTextHeights((prev) =>
+        Math.abs(prev[slot] - h) < 1 ? prev : { ...prev, [slot]: h },
+      );
+    },
+    [],
+  );
+
+  const handleBannerBlockLayout = useCallback((e: LayoutChangeEvent) => {
+    const h = e.nativeEvent.layout.height;
+    if (h <= 0) return;
+    setBannerBlockHeight((prev) => (Math.abs(prev - h) < 1 ? prev : h));
+  }, []);
+
+  // The surah as one flat word list — the thing pages are actually cut out
+  // of. Rebuilt only when the verses themselves change.
+  const wordIndex = useMemo(() => buildWordIndex(verses), [verses]);
+
+  // Running estimate of how many visual characters fit on a rendered line,
+  // recalibrated from every page that lays out. A ref rather than state:
+  // it feeds the NEXT calculation, and nothing should re-render because it
+  // moved a fraction.
+  const charsPerLineRef = useRef(MUSHAF_INITIAL_CHARS_PER_LINE);
+
+  // Word index each page begins at. Page i spans
+  // [pageStarts[i], pageStarts[i + 1] ... or the end of the surah), so
+  // pageStarts.length IS the page count — no separate estimate needed.
+  const [pageStarts, setPageStarts] = useState<number[]>(() =>
+    paginateFrom(wordIndex, 0, 0, [], MUSHAF_INITIAL_CHARS_PER_LINE, maxLinesForPage),
+  );
+
+  // Correction passes spent on each page index, and the hard upper bound a
+  // page's end word has been proven not to exceed (set the first time that
+  // page overflows). Together they make repeated corrections close in on a
+  // fit monotonically rather than hunt around it.
+  const correctionAttemptsRef = useRef<Map<number, number>>(new Map());
+  const pageEndCapRef = useRef<Map<number, number>>(new Map());
+  // Pages whose break is final, keyed to the exact range that settled. Without
+  // this, EVERY re-render re-enters the correction path via onTextLayout — and
+  // page recitation re-renders the leaf once per ayah to move the highlight,
+  // so a reciting page was continuously re-measuring and recalibrating
+  // underneath the player. Skipping settled pages keeps the leaf inert while
+  // audio is running.
+  const settledPagesRef = useRef<Map<number, string>>(new Map());
+
+  // Correcting page N re-derives every page after it, so their recorded
+  // attempts and caps describe ranges that no longer exist — drop them.
+  const invalidatePagesAfter = useCallback((pageIdx: number) => {
+    [correctionAttemptsRef, pageEndCapRef, settledPagesRef].forEach((ref) => {
+      Array.from(ref.current.keys()).forEach((k) => {
+        if (k > pageIdx) ref.current.delete(k);
+      });
+    });
+  }, []);
+
+  // A fresh surah re-paginates during render (not in a useEffect) so its
+  // verses and its page breaks land in the SAME committed frame — an
+  // effect-based sync left one real painted frame per surah open where the
+  // verses had loaded but the breaks were still the previous surah's.
+  const prevWordIndexRef = useRef(wordIndex);
+  if (prevWordIndexRef.current !== wordIndex) {
+    prevWordIndexRef.current = wordIndex;
+    correctionAttemptsRef.current.clear();
+    pageEndCapRef.current.clear();
+    settledPagesRef.current.clear();
+    charsPerLineRef.current = MUSHAF_INITIAL_CHARS_PER_LINE;
+    setPageStarts(
+      paginateFrom(wordIndex, 0, 0, [], MUSHAF_INITIAL_CHARS_PER_LINE, maxLinesForPage),
+    );
+  }
+
+  // Mirrors pageStarts for the handlers and the autosave interval, so they
+  // can read the latest breaks without depending on the array itself — every
+  // correction gives it a new identity, and depending on it directly
+  // restarted the 3-second save interval on each one.
+  const pageStartsRef = useRef(pageStarts);
+  useEffect(() => { pageStartsRef.current = pageStarts; }, [pageStarts]);
+
   const [currentPageIndex, setCurrentPageIndex] = useState(0);
   const currentPageIndexRef = useRef(currentPageIndex);
-  useEffect(() => { currentPageIndexRef.current = currentPageIndex; }, [currentPageIndex]);
+  // Declared up here, away from the rest of the page-turn state, because
+  // handleLeafTextLayout is defined below them and has to know whether a turn
+  // is currently in the air before it re-paginates anything.
+  const turnRef = useRef<Animated.CompositeAnimation | null>(null);
+  const deferredLeafLayoutRef = useRef<
+    { pageIdx: number; lines: number; range: string } | null
+  >(null);
+  // The page a turn is heading to, written synchronously the moment one is
+  // scheduled. currentPageIndex only catches up when React commits, and its
+  // ref lags by a further effect, so neither can bound a tap that lands while
+  // a turn is still in the air -- see runPageTurn.
+  const turnTargetRef = useRef(currentPageIndex);
+  useEffect(() => {
+    currentPageIndexRef.current = currentPageIndex;
+    turnTargetRef.current = currentPageIndex;
+  }, [currentPageIndex]);
+
+  const pageIndexForVerse = useCallback(
+    (starts: number[], verseIdx: number) =>
+      pageIndexForWord(starts, wordIndex.firstWordOfVerse[verseIdx] ?? 0),
+    [wordIndex],
+  );
+
+  // Set while a resume-jump or a re-seed is in flight: the verse index this
+  // effect should keep following forward as the breaks settle, until it
+  // lands on the page that actually contains it.
+  const resumeTargetRef = useRef<number | null>(null);
+  useEffect(() => {
+    const target = resumeTargetRef.current;
+    if (target === null) return;
+    const containingPage = pageIndexForVerse(pageStarts, target);
+    if (containingPage === currentPageIndex) {
+      resumeTargetRef.current = null;
+    } else if (containingPage > currentPageIndex) {
+      setCurrentPageIndex(containingPage);
+    }
+  }, [pageStarts, currentPageIndex, pageIndexForVerse]);
+
+  // A viewport that grows (rotation, exiting split-screen, unfolding, or the
+  // resume banner being dismissed) leaves every page holding less than it now
+  // has room for. Re-paginate and let the chase effect above carry the reader
+  // back to the verse they were on, rather than resyncing silently and losing
+  // their place.
+  //
+  // This also fires once on a normal cold open: the first frame paginates
+  // against MUSHAF_FALLBACK_TEXT_HEIGHT_RATIO, then the viewport's real
+  // onLayout arrives and reports more room than the fallback assumed.
+  const prevMaxLinesRef = useRef({ first: maxLinesFirstPage, rest: maxLinesLaterPage });
+  useEffect(() => {
+    const grew =
+      maxLinesFirstPage > prevMaxLinesRef.current.first ||
+      maxLinesLaterPage > prevMaxLinesRef.current.rest;
+    if (grew) {
+      const anchorWord = pageStartsRef.current[currentPageIndexRef.current];
+      if (anchorWord !== undefined) {
+        resumeTargetRef.current = wordIndex.verseOf[anchorWord] ?? 0;
+        correctionAttemptsRef.current.clear();
+        pageEndCapRef.current.clear();
+        settledPagesRef.current.clear();
+        setPageStarts(
+          paginateFrom(wordIndex, 0, 0, [], charsPerLineRef.current, maxLinesForPage),
+        );
+      }
+    }
+    prevMaxLinesRef.current = { first: maxLinesFirstPage, rest: maxLinesLaterPage };
+  }, [maxLinesFirstPage, maxLinesLaterPage, wordIndex, maxLinesForPage]);
+
+  // The leaf's Arabic block reports how many lines it really rendered to.
+  // Re-target this page's break so it hits the ceiling exactly, then re-seed
+  // every later page from the new break. Unlike the verse-granular version
+  // this replaced, the break can land mid-verse, which is the whole reason a
+  // page can now be filled rather than merely not-overflowing.
+  //
+  // Takes the page index as a parameter bound at render time (see its call
+  // site below) rather than reading currentPageIndexRef inside the handler:
+  // onTextLayout is bridged back from native measurement asynchronously, and
+  // reading a mutable "current page" ref at event-fire time risked a stale
+  // event (measured against page N) correcting whatever page the ref had
+  // since advanced to after a fast page-turn.
+  const applyLeafMeasurement = useCallback(
+    (pageIdx: number, measuredLines: number) => {
+      const starts = pageStartsRef.current;
+      // Identity of the exact range being measured. A settled page re-reports
+      // the same layout on every unrelated re-render (the recitation
+      // highlight, a drawer opening); there is nothing to recompute for it.
+      const signature = `${starts[pageIdx]}:${starts[pageIdx + 1] ?? wordIndex.total}`;
+      if (settledPagesRef.current.get(pageIdx) === signature) return;
+
+      const outcome = retargetPageEnd({
+        wordIndex,
+        starts,
+        pageIdx,
+        measuredLines,
+        lineCeiling: maxLinesForPage(pageIdx),
+        endCap: pageEndCapRef.current.get(pageIdx),
+      });
+
+      // Recalibrate from this real render, blended so one oddly-shaped page
+      // (a lot of short words, an unusual run of markers) cannot yank the
+      // estimate every later page is seeded from.
+      if (outcome.observedCharsPerLine !== null) {
+        charsPerLineRef.current =
+          charsPerLineRef.current * 0.5 + outcome.observedCharsPerLine * 0.5;
+      }
+      if (outcome.provenCap !== undefined) {
+        pageEndCapRef.current.set(pageIdx, outcome.provenCap);
+      }
+      if (outcome.newEnd === null) {
+        settledPagesRef.current.set(pageIdx, signature);
+        return;
+      }
+
+      const attempts = (correctionAttemptsRef.current.get(pageIdx) ?? 0) + 1;
+      if (attempts > MAX_CORRECTION_PASSES_PER_PAGE) return;
+      correctionAttemptsRef.current.set(pageIdx, attempts);
+      invalidatePagesAfter(pageIdx);
+
+      if (outcome.newEnd >= wordIndex.total) {
+        // Everything left fits here — this is now the last page.
+        setPageStarts((prev) => prev.slice(0, pageIdx + 1));
+        return;
+      }
+      const nextEnd = outcome.newEnd;
+      setPageStarts((prev) =>
+        paginateFrom(wordIndex, nextEnd, pageIdx + 1, prev, charsPerLineRef.current, maxLinesForPage),
+      );
+    },
+    [wordIndex, maxLinesForPage, invalidatePagesAfter],
+  );
+
+  // Measuring is free; ACTING on the measurement is not. A correction re-runs
+  // paginateFrom across the rest of the surah and re-renders the whole
+  // justified block, and landing on an unvisited page fires this immediately
+  // after the page swap -- squarely in the middle of a turn. That JS work is
+  // the hitch felt at the midpoint of a flip. Hold the measurement and replay
+  // it once the leaf is down: the page it describes has not changed in the
+  // meantime, so the deferred correction is the same correction.
+  const handleLeafTextLayout = useCallback(
+    (pageIdx: number, ev: { nativeEvent: { lines: unknown[] } }) => {
+      const measuredLines = ev.nativeEvent.lines.length;
+      if (turnRef.current) {
+        const starts = pageStartsRef.current;
+        deferredLeafLayoutRef.current = {
+          pageIdx,
+          lines: measuredLines,
+          range: `${starts[pageIdx]}:${starts[pageIdx + 1] ?? wordIndex.total}`,
+        };
+        return;
+      }
+      applyLeafMeasurement(pageIdx, measuredLines);
+    },
+    [applyLeafMeasurement, wordIndex.total],
+  );
+
+  const flushDeferredLeafLayout = useCallback(() => {
+    const held = deferredLeafLayoutRef.current;
+    deferredLeafLayoutRef.current = null;
+    if (!held) return;
+    // A line count only describes the range it was measured against. If the
+    // breaks moved while the leaf was in the air -- another page's correction
+    // landing, the viewport growing -- replaying it would retarget the new
+    // range using the old page's height. Drop it instead: the range changed,
+    // so the block re-rendered, so a fresh onTextLayout is already coming.
+    const starts = pageStartsRef.current;
+    const range = `${starts[held.pageIdx]}:${starts[held.pageIdx + 1] ?? wordIndex.total}`;
+    if (range !== held.range) return;
+    applyLeafMeasurement(held.pageIdx, held.lines);
+  }, [applyLeafMeasurement, wordIndex.total]);
+  // The current page's words, regrouped into one run per verse. A run is a
+  // contiguous slice of ONE verse; `endsVerse` says whether it reaches that
+  // verse's final word, which is the only place an ayah marker is drawn.
+  //
+  // Only the last run on a page can be partial — a run stops early only when
+  // it hits the page's end word — so a verse continued from the previous page
+  // opens the leaf, and a verse continuing onto the next one closes it,
+  // markerless, exactly as a printed Mushaf sets it.
+  const pageRuns = useMemo(() => {
+    const start = pageStarts[currentPageIndex];
+    if (start === undefined) return [];
+    const end = pageStarts[currentPageIndex + 1] ?? wordIndex.total;
+    const runs: { verseIdx: number; text: string; endsVerse: boolean }[] = [];
+    let i = start;
+    while (i < end) {
+      const verseIdx = wordIndex.verseOf[i];
+      let j = i;
+      while (j < end && wordIndex.verseOf[j] === verseIdx) j += 1;
+      runs.push({
+        verseIdx,
+        text: wordIndex.words.slice(i, j).join(' '),
+        endsVerse: wordIndex.endsVerse[j - 1] === true,
+      });
+      i = j;
+    }
+    return runs;
+  }, [pageStarts, currentPageIndex, wordIndex]);
+
+  // Distinct verses touched by this page, in order — what the translation
+  // panel lists and what the page's recitation range spans. A verse split
+  // across a page boundary appears in full on both, which is right: the
+  // reader needs its whole meaning on either page.
+  const pageVerseIndices = useMemo(() => {
+    const out: number[] = [];
+    pageRuns.forEach((r) => {
+      if (out[out.length - 1] !== r.verseIdx) out.push(r.verseIdx);
+    });
+    return out;
+  }, [pageRuns]);
+
+  // Height cap for a slide-up panel's scrollable body. Applied to the
+  // ScrollView itself rather than the panel box — see PANEL_CHROME_HEIGHT for
+  // why capping the container silently collapsed both panels instead.
+  const panelScrollMaxHeight = useCallback(
+    (ratio: number) =>
+      Math.max(
+        PANEL_MIN_SCROLL_HEIGHT,
+        Math.min(windowHeight * ratio, windowHeight - insets.top - DRAWER_HEADER_CLEARANCE) -
+          PANEL_CHROME_HEIGHT,
+      ),
+    [windowHeight, insets.top],
+  );
 
   // Tap-to-reveal footnote drawer — the page itself stays pure Arabic until a
   // verse is tapped, then this surfaces translation/transliteration/audio/context.
@@ -355,15 +686,21 @@ export default function SurahReaderScreen({ route, navigation }: Props) {
   const [drawerTafsirLoading, setDrawerTafsirLoading] = useState(false);
   const drawerAnim = useRef(new Animated.Value(0)).current;
   const drawerAnimRef = useRef<Animated.CompositeAnimation | null>(null);
+  const drawerScrollRef = useRef<ScrollView>(null);
 
   // Each newly selected verse starts its companion panel fresh — otherwise
   // tapping verse B while verse A's tafsir/audio was open would carry A's
-  // state over onto B's reference.
+  // state over onto B's reference. Includes the scroll position: switching
+  // verses without closing the drawer (handleVersePress just swaps
+  // selectedVerseIndex) never unmounts this ScrollView, so without an
+  // explicit reset it kept whatever offset the previous verse's tafsir had
+  // been scrolled to, making the new verse's drawer look empty/truncated.
   useEffect(() => {
     setDrawerAudioActive(false);
     setDrawerContextOpen(false);
     setDrawerTafsir(null);
     setDrawerTafsirLoading(false);
+    drawerScrollRef.current?.scrollTo({ y: 0, animated: false });
   }, [selectedVerseIndex]);
 
   const openVerseDrawer = useCallback((idx: number) => {
@@ -404,6 +741,85 @@ export default function SurahReaderScreen({ route, navigation }: Props) {
     }
   }, [drawerVisible, selectedVerseIndex, openVerseDrawer, closeDrawer]);
 
+  // Whole-page translation panel — a persistent companion (toggled from the
+  // header's language icon, page mode only) showing every verse on the
+  // CURRENT page's translation at once, distinct from the per-verse
+  // tap-to-reveal drawer above. Content is derived directly from
+  // pages[currentPageIndex] rather than a frozen snapshot, so it stays open
+  // and updates on its own as the reader turns pages — see the render below.
+  const [pageTranslationVisible, setPageTranslationVisible] = useState(false);
+  const pageTranslationAnim = useRef(new Animated.Value(0)).current;
+  const pageTranslationAnimRef = useRef<Animated.CompositeAnimation | null>(null);
+
+  const closePageTranslation = useCallback(() => {
+    pageTranslationAnimRef.current?.stop();
+    const anim = Animated.timing(pageTranslationAnim, {
+      toValue: 0,
+      duration: Animations.timing.fast,
+      useNativeDriver: true,
+    });
+    pageTranslationAnimRef.current = anim;
+    anim.start(({ finished }) => {
+      if (finished) setPageTranslationVisible(false);
+    });
+  }, [pageTranslationAnim]);
+
+  const togglePageTranslation = useCallback(() => {
+    if (pageTranslationVisible) {
+      closePageTranslation();
+      return;
+    }
+    HapticsService.impactAsync('LIGHT');
+    if (drawerVisible) closeDrawer(); // the two bottom panels don't coexist
+    setPageTranslationVisible(true);
+    pageTranslationAnimRef.current?.stop();
+    const anim = Animated.timing(pageTranslationAnim, {
+      toValue: 1,
+      duration: Animations.timing.normal,
+      useNativeDriver: true,
+    });
+    pageTranslationAnimRef.current = anim;
+    anim.start();
+  }, [pageTranslationVisible, closePageTranslation, drawerVisible, closeDrawer, pageTranslationAnim]);
+
+  // The reverse direction of the mutual-exclusion above: if the per-verse
+  // drawer opens through any path other than togglePageTranslation's own
+  // check (e.g. tapping a verse on the leaf), close this panel too.
+  useEffect(() => {
+    if (drawerVisible && pageTranslationVisible) closePageTranslation();
+  }, [drawerVisible, pageTranslationVisible, closePageTranslation]);
+
+  // If handleLeafTextLayout's correction moves the drawer's selected verse to
+  // a different page, the drawer would otherwise keep showing a verse no
+  // longer visible anywhere on the current leaf — close it instead.
+  useEffect(() => {
+    if (!drawerVisible || selectedVerseIndex === null) return;
+    if (!pageVerseIndices.includes(selectedVerseIndex)) closeDrawer();
+  }, [pageVerseIndices, drawerVisible, selectedVerseIndex, closeDrawer]);
+
+  // Page recitation — one AudioPlayerButton in the bottom bar, handed the
+  // whole current page as a RANGE key (`chapter:first-last`, which
+  // getAudioUrls expands into one url per ayah), so it recites straight
+  // through the leaf instead of one verse at a time. It reports which ayah of
+  // that range it has reached, which is what lets the page mark it as it goes.
+  const [pageAudioPlaying, setPageAudioPlaying] = useState(false);
+  const [pageAudioRangeIndex, setPageAudioRangeIndex] = useState(0);
+  // Memoised so the key is one stable string per page. AudioPlayerButton
+  // rebuilds its native player whenever verseKey changes, so an unnecessarily
+  // new value here would tear down playback mid-ayah.
+  const pageAudioKey = useMemo(() => {
+    if (pageVerseIndices.length === 0) return undefined;
+    const first = verses[pageVerseIndices[0]]?.numberInSurah;
+    const last = verses[pageVerseIndices[pageVerseIndices.length - 1]]?.numberInSurah;
+    if (first === undefined || last === undefined) return undefined;
+    return `${surahNumber}:${first}-${last}`;
+  }, [pageVerseIndices, verses, surahNumber]);
+  // Global verse index currently being recited, or null when idle. Guarded on
+  // pageAudioPlaying so a paused player doesn't leave an ayah lit up.
+  const recitingVerseIndex = pageAudioPlaying
+    ? pageVerseIndices[pageAudioRangeIndex] ?? null
+    : null;
+
   // Page turns swap the whole leaf, so there's no verse left for the drawer
   // to refer to — drop it instantly rather than animate a close mid-turn.
   const resetDrawerForPageTurn = useCallback(() => {
@@ -413,21 +829,220 @@ export default function SurahReaderScreen({ route, navigation }: Props) {
     setSelectedVerseIndex(null);
   }, [drawerAnim]);
 
-  const handlePrevPage = useCallback(() => {
-    if (currentPageIndex > 0) {
-      HapticsService.impactAsync('LIGHT');
-      resetDrawerForPageTurn();
-      setCurrentPageIndex((p) => p - 1);
-    }
-  }, [currentPageIndex, resetDrawerForPageTurn]);
+  // -- Page turn --------------------------------------------------------
+  // One signed value carries the whole turn: 0 is the leaf lying flat, +1 is
+  // fully swung off to the right, -1 fully off to the left. A forward turn
+  // runs 0 -> +1, swaps the page there, then brings it -1 -> 0. Going back
+  // mirrors it. Reading direction decides the sign, so forward sends the leaf
+  // toward the spine on the right, the way a hand carries a mushaf leaf over.
+  //
+  // The swing is SYMMETRIC, and that is load-bearing rather than tidy. Both
+  // ends of it sit at opacity 0, so the jump from +1 to -1 that carries the
+  // page swap is the one moment nothing is on screen to see it. The first
+  // version swung out to 1 and back in from only -0.45, which is a point the
+  // opacity curve puts at 0.625 -- so the new page appeared at two-thirds
+  // opacity, half a swing off-centre, in a single frame. That flash was the
+  // "not smooth" in the flip; it was never the animation dropping frames.
+  //
+  // Only transform and opacity move -- never layout -- and `turning` gates the
+  // entire animated style, so a settled leaf renders plain numbers with no
+  // Animated node in it at all. That is what makes an interrupted turn safe:
+  // it cannot strand the page half-rotated or invisible the way VerseLayer's
+  // skipReveal once did (CLAUDE.md, Motion).
+  const turnAnim = useRef(new Animated.Value(0)).current;
+  const pendingTurnSwapRef = useRef<(() => void) | null>(null);
+  // The turn that has been set up but not yet started, handed to the layout
+  // effect below. See runPageTurn for why it cannot start on the spot.
+  const pendingTurnRef = useRef<{ exit: 1 | -1; commit: () => void } | null>(null);
+  const [turning, setTurning] = useState(false);
+  // Bumped once per turn. `turning` alone cannot key the start effect: an
+  // interrupting tap sets it false then true again inside one batch, so it
+  // never changes and the replacement turn would never start.
+  const [turnNonce, setTurnNonce] = useState(0);
+  // Same trick for the second half of the turn, which cannot begin until the
+  // render carrying the NEW page has actually committed.
+  const pendingSettleRef = useRef<1 | -1 | null>(null);
+  const [settleNonce, setSettleNonce] = useState(0);
+  const reduceMotion = useReduceMotion();
 
-  const handleNextPage = useCallback(() => {
-    if (currentPageIndex < pages.length - 1) {
+  // Stop whatever is in flight and land the leaf flat, committing the page
+  // change if the turn was cut short before its own swap. Every exit from a
+  // turn routes through here -- a second tap, leaving page mode, unmount --
+  // so one place is responsible for a flat, opaque, correctly-numbered leaf.
+  const settlePageTurn = useCallback(() => {
+    turnRef.current?.stop();
+    turnRef.current = null;
+    pendingTurnRef.current = null;
+    pendingSettleRef.current = null;
+    const pending = pendingTurnSwapRef.current;
+    pendingTurnSwapRef.current = null;
+    pending?.();
+    turnAnim.setValue(0);
+    setTurning(false);
+    // Whatever the leaf reported while it was moving still needs acting on.
+    flushDeferredLeafLayout();
+  }, [turnAnim, flushDeferredLeafLayout]);
+
+  const runPageTurn = useCallback(
+    (delta: 1 | -1) => {
+      // Bound against the page this turn is heading to, not the one on
+      // screen. A second tap arrives before React has committed the first
+      // turn's index, so testing currentPageIndex here would read the page
+      // before last as "not the last page" and walk the reader off the end of
+      // the surah onto a blank leaf numbered one past the count.
+      const target = turnTargetRef.current + delta;
+      if (target < 0 || target > pageStarts.length - 1) return;
+
+      // A tap landing mid-turn commits the turn already running and starts a
+      // fresh one, so paging quickly moves page by page instead of queueing
+      // turns or swallowing the tap.
+      if (turnRef.current) settlePageTurn();
+
       HapticsService.impactAsync('LIGHT');
       resetDrawerForPageTurn();
-      setCurrentPageIndex((p) => p + 1);
-    }
-  }, [currentPageIndex, pages.length, resetDrawerForPageTurn]);
+      turnTargetRef.current = target;
+      // Absolute, not a p => p + delta updater: the target is already fixed,
+      // and an absolute set stays correct however many times it is applied.
+      const commit = () => setCurrentPageIndex(target);
+
+      if (reduceMotion) {
+        commit();
+        return;
+      }
+
+      // +1 (forward) exits right toward the spine; -1 (back) exits left.
+      turnAnim.setValue(0);
+      pendingTurnSwapRef.current = commit;
+      // Set up, but do NOT start here. leafTurnStyle only reaches the leaf on
+      // the render that setTurning(true) schedules, and starting the timing
+      // now would run its first frames against a view the animated node is
+      // not attached to yet -- the leaf then snaps to wherever the value had
+      // already travelled the moment the style landed on it. The layout
+      // effect below starts it once that render has actually committed.
+      pendingTurnRef.current = { exit: delta, commit };
+      setTurning(true);
+      setTurnNonce((n) => n + 1);
+    },
+    [pageStarts.length, reduceMotion, resetDrawerForPageTurn, settlePageTurn, turnAnim],
+  );
+
+  // Runs after the commit that attached leafTurnStyle to the leaf, so the
+  // sweep's first frame is the first frame the leaf can actually show.
+  useLayoutEffect(() => {
+    const spec = pendingTurnRef.current;
+    if (!spec) return;
+    pendingTurnRef.current = null;
+    const { exit, commit } = spec;
+
+    const away = Animated.timing(turnAnim, {
+      toValue: exit,
+      duration: Animations.timing.fast,
+      easing: Easing.in(Easing.cubic),
+      useNativeDriver: true,
+    });
+    turnRef.current = away;
+    away.start(({ finished }) => {
+      if (!finished) return;
+      // The leaf is swung off and fully faded by now, so the content swap
+      // itself is never seen -- only its result, arriving from the far edge.
+      pendingTurnSwapRef.current = null;
+      commit();
+      // -exit, not a fraction of it: opacity is 0 at both extremes, so this
+      // reposition is invisible. Any shorter and it is a visible pop.
+      turnAnim.setValue(-exit);
+      // Hand the second half to the effect below rather than starting it
+      // here. commit() has only SCHEDULED the new page; starting the settle
+      // now races the render, and the leaf fades back in carrying whichever
+      // page won. Waiting costs an invisible frame or two at opacity 0 and
+      // guarantees the page that rises is the page that was asked for.
+      pendingSettleRef.current = exit;
+      setSettleNonce((n) => n + 1);
+    });
+    // turnNonce is the trigger; nothing else here should restart a turn.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [turnNonce]);
+
+  // Runs after the commit carrying the new page, so the leaf that settles
+  // back into view already holds the content it is settling to.
+  useLayoutEffect(() => {
+    const exit = pendingSettleRef.current;
+    if (exit === null) return;
+    pendingSettleRef.current = null;
+
+    const settle = Animated.timing(turnAnim, {
+      toValue: 0,
+      duration: Animations.timing.fast,
+      easing: Easing.out(Easing.cubic),
+      useNativeDriver: true,
+    });
+    turnRef.current = settle;
+    settle.start(({ finished: landed }) => {
+      if (!landed) return;
+      turnRef.current = null;
+      turnAnim.setValue(0);
+      setTurning(false);
+      // The leaf is down. Anything it measured on the way in can be acted on
+      // now without stealing frames from the motion.
+      flushDeferredLeafLayout();
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [settleNonce]);
+
+  // No bounds check here on purpose -- runPageTurn owns it, and owns it
+  // against the pending page rather than the rendered one. A second guard
+  // reading currentPageIndex would only reintroduce the stale-index hole.
+  const handlePrevPage = useCallback(() => runPageTurn(-1), [runPageTurn]);
+  const handleNextPage = useCallback(() => runPageTurn(1), [runPageTurn]);
+
+  // A turn never survives the leaf it belongs to. Switching to single-verse
+  // mode or unmounting lands it rather than freezing turnAnim wherever it
+  // stopped, which would render the leaf mid-rotation on the way back in.
+  useEffect(() => {
+    if (viewMode !== 'page') settlePageTurn();
+  }, [viewMode, settlePageTurn]);
+  useEffect(() => () => { turnRef.current?.stop(); }, []);
+
+  // Hinged at the right edge -- the spine -- so the leaf pivots where a
+  // mushaf is actually bound instead of tumbling about its own middle.
+  // `perspective` has to lead the transform array or the rotation renders
+  // dead flat.
+  const leafTurnStyle = useMemo(
+    () => ({
+      transformOrigin: '100% 50%',
+      // Linear in the swing, but the swing itself is eased in on the way out
+      // and out on the way in, so the leaf holds near-full opacity for most of
+      // its travel and only collapses at the very end -- the blank moment at
+      // the crossover lasts a frame or two rather than a visible blink.
+      opacity: turnAnim.interpolate({
+        inputRange: [-1, 0, 1],
+        outputRange: [0, 1, 0],
+      }),
+      transform: [
+        { perspective: PAGE_TURN_PERSPECTIVE },
+        {
+          translateX: turnAnim.interpolate({
+            inputRange: [-1, 0, 1],
+            outputRange: [
+              -windowWidth * PAGE_TURN_SHIFT_RATIO,
+              0,
+              windowWidth * PAGE_TURN_SHIFT_RATIO,
+            ],
+          }),
+        },
+        {
+          rotateY: turnAnim.interpolate({
+            inputRange: [-1, 0, 1],
+            outputRange: [
+              `${PAGE_TURN_TILT_DEG}deg`,
+              '0deg',
+              `-${PAGE_TURN_TILT_DEG}deg`,
+            ],
+          }),
+        },
+      ],
+    }),
+    [turnAnim, windowWidth],
+  );
 
   const toggleDrawerContext = useCallback(async () => {
     if (selectedVerseIndex === null) return;
@@ -480,12 +1095,16 @@ export default function SurahReaderScreen({ route, navigation }: Props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Auto-save progress every 3 s
+  // Auto-save progress every 3 s. Reads pageStartsRef rather than depending on
+  // `pageStarts` directly — every correction pass gives it a new array
+  // identity, and depending on it here restarted this interval (resetting the
+  // 3-second countdown) on each one.
   useEffect(() => {
     if (verses.length === 0) return () => {};
     const timer = setInterval(() => {
       const verseIndex = viewMode === 'page'
-        ? (pages[currentPageIndexRef.current]?.[0] ?? currentIndexRef.current)
+        ? (wordIndex.verseOf[pageStartsRef.current[currentPageIndexRef.current] ?? 0]
+            ?? currentIndexRef.current)
         : currentIndexRef.current;
       saveProgress({
         surahNumber,
@@ -495,7 +1114,7 @@ export default function SurahReaderScreen({ route, navigation }: Props) {
       }).catch(() => {});
     }, 3000);
     return () => clearInterval(timer);
-  }, [verses.length, surahNumber, surahName, viewMode, pages]);
+  }, [verses.length, surahNumber, surahName, viewMode]);
 
   // Animate card in + reset reflection state on each verse change
   useEffect(() => {
@@ -589,13 +1208,18 @@ export default function SurahReaderScreen({ route, navigation }: Props) {
   const handleResume = useCallback(() => {
     if (resumeIndex !== null) {
       if (viewMode === 'page') {
-        setCurrentPageIndex(pageIndexForVerseIndex(pages, resumeIndex));
+        // The target page may still be an un-converged seed grouping if it
+        // hasn't been visited yet — this is a best-guess starting point, and
+        // the chase effect above keeps following resumeIndex forward as
+        // the breaks correct themselves until it actually lands there.
+        resumeTargetRef.current = resumeIndex;
+        setCurrentPageIndex(pageIndexForVerse(pageStarts, resumeIndex));
       } else {
         setCurrentIndex(resumeIndex);
       }
     }
     setResumeIndex(null);
-  }, [resumeIndex, viewMode, pages]);
+  }, [resumeIndex, viewMode, pageStarts, pageIndexForVerse]);
 
   const handlePrev = useCallback(() => {
     if (currentIndex > 0) {
@@ -704,6 +1328,9 @@ export default function SurahReaderScreen({ route, navigation }: Props) {
           </Text>
         </View>
 
+        {/* The page-translation toggle lives in the bottom bar, not here —
+            it belongs beside the page nav and the recitation control it works
+            with, and the header stays down to back / title / options. */}
         <TouchableOpacity
           onPress={() => setSettingsVisible(true)}
           style={styles.iconButton}
@@ -905,65 +1532,108 @@ export default function SurahReaderScreen({ route, navigation }: Props) {
         </Animated.ScrollView>
       )}
 
-      {/* ── Mushaf page mode ──────────────────────────────────────────── */}
-      {viewMode === 'page' && !loading && !error && pages.length > 0 && (
-        <ScrollView
-          style={styles.pageScroll}
-          contentContainerStyle={[styles.pageScrollContent, { paddingBottom: insets.bottom + 180 }]}
-          showsVerticalScrollIndicator={false}
+      {/* ── Mushaf leaf (page mode) ────────────────────── */}
+      {/* The leaf FILLS the space between the header and the bottom bar
+          rather than sitting in it as a card. That is the whole difference
+          between "a page of a book" and "a card floating in a void": a real
+          Mushaf page has no margin of nothing beneath it. flex:1 here, and
+          flex:1 again on the text viewport inside, is what guarantees the
+          frame reaches the bottom bar no matter how few ayahs the page holds
+          — and it is also what gives handleLeafViewportLayout a stable,
+          content-independent height to paginate against. */}
+      {viewMode === 'page' && !loading && !error && pageStarts.length > 0 && (
+        <Animated.View
+          style={[
+            styles.leaf,
+            { marginBottom: insets.bottom + PAGE_BOTTOM_BAR_HEIGHT },
+            // Only while a turn is running. A settled leaf gets none of it.
+            turning ? leafTurnStyle : null,
+          ]}
         >
-          <View style={styles.leafWrap}>
-            {/* Stacked-leaf shadows peeking from behind — sells "one page in
-                a book" without any native shadow (see CLAUDE.md render-hazards
-                on elevation + overflow:hidden). */}
-            <View style={styles.leafStackBack} pointerEvents="none" />
-            <View style={styles.leafStackMid} pointerEvents="none" />
+          {/* Second rule of the classic Mushaf double frame. */}
+          <View style={styles.leafRule} pointerEvents="none" />
 
-            <View style={styles.leaf}>
-              <View style={styles.leafGlow} pointerEvents="none" />
-              <View style={styles.leafInnerBorder} pointerEvents="none" />
-              <CornerFrame color={GOLD} size={14} thickness={1} offset={6} />
-
-              {currentPageIndex === 0 && surahNumber !== 9 && surahNumber !== 1 && (
-                <View style={styles.bismillahRow}>
-                  <Text style={styles.bismillahText}>بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ</Text>
-                </View>
+          {currentPageIndex === 0 && (
+            <View style={styles.leafHead} onLayout={handleBannerBlockLayout}>
+              <View style={styles.surahBanner}>
+                <View style={styles.bannerRule} />
+                <Text style={styles.surahBannerText}>{surahArabic}</Text>
+                <View style={styles.bannerRule} />
+              </View>
+              {surahNumber !== 9 && surahNumber !== 1 && (
+                <Text style={styles.leafBismillah}>بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ</Text>
               )}
+            </View>
+          )}
 
-              {/* One continuous justified block, not per-verse cards — each
-                  verse is its own tappable inline run, closed by a small
-                  ornamental ayah marker (also tappable), matching how a
-                  printed Mushaf page actually reads. */}
-              <Text style={styles.leafArabic}>
-                {(pages[currentPageIndex] ?? []).map((globalIdx) => {
-                  const v = verses[globalIdx];
-                  const isSelected = selectedVerseIndex === globalIdx;
-                  return (
-                    <Text key={v.numberInSurah}>
+          {/* Scrollable purely as a transient guard. Word-level breaking can
+              always cut a page down to fit — even a lone ayah longer than the
+              screen, which the old verse-level model had no way to split — so
+              a settled page never scrolls. This only absorbs the frame or two
+              between a page first rendering and its break being corrected,
+              which would otherwise show as clipped text. */}
+          <ScrollView
+            style={styles.leafTextViewport}
+            contentContainerStyle={styles.leafTextContent}
+            showsVerticalScrollIndicator={false}
+            onLayout={(ev) => handleLeafViewportLayout(currentPageIndex, ev)}
+          >
+            {/* One continuous justified block, not per-verse cards. Each run is
+                a tappable slice of ONE verse; only a run that reaches its
+                verse's final word gets an ayah marker, so a verse continued
+                onto the next page closes the leaf markerless — the way a
+                printed Mushaf sets it. */}
+            <Text
+              style={styles.leafArabic}
+              onTextLayout={(ev) => handleLeafTextLayout(currentPageIndex, ev)}
+            >
+              {pageRuns.map((run, runIdx) => {
+                const v = verses[run.verseIdx];
+                if (!v) return null;
+                const isSelected = selectedVerseIndex === run.verseIdx;
+                const isReciting = recitingVerseIndex === run.verseIdx;
+                // Marked by COLOUR, never a background box. A backgroundColor
+                // on a nested Text run is painted per line-fragment, so on a
+                // justified RTL block it renders as ragged slabs straddling
+                // the line boxes (it shipped that way once). Colour shifts the
+                // glyphs themselves and stays invisible to layout.
+                const runStyle = isReciting
+                  ? styles.leafVerseReciting
+                  : isSelected
+                    ? styles.leafVerseSelected
+                    : undefined;
+                return (
+                  <Text key={`${run.verseIdx}-${runIdx}`}>
+                    <Text onPress={() => handleVersePress(run.verseIdx)} style={runStyle}>
+                      {run.text}
+                    </Text>
+                    {/* No marker when the verse continues onto the next page —
+                        the number belongs at the ayah's real end, not at a
+                        page break. */}
+                    {run.endsVerse ? (
                       <Text
-                        onPress={() => handleVersePress(globalIdx)}
-                        style={isSelected ? styles.leafVerseSelected : undefined}
+                        onPress={() => handleVersePress(run.verseIdx)}
+                        style={styles.leafAyahMarker}
                       >
-                        {v.arabic}
-                      </Text>
-                      <Text onPress={() => handleVersePress(globalIdx)} style={styles.leafAyahMarker}>
                         {` ﴿${toArabicIndicNumeral(v.numberInSurah)}﴾ `}
                       </Text>
-                    </Text>
-                  );
-                })}
-              </Text>
+                    ) : null}
+                  </Text>
+                );
+              })}
+            </Text>
+          </ScrollView>
 
-              <View style={styles.leafFooter}>
-                <MaterialCommunityIcons name="star-four-points" size={8} color={GOLD} style={{ opacity: 0.5 }} />
-                <Text style={styles.leafFooterText}>{currentPageIndex + 1}</Text>
-                <MaterialCommunityIcons name="star-four-points" size={8} color={GOLD} style={{ opacity: 0.5 }} />
-              </View>
-            </View>
+          {/* Folio number, in Arabic-Indic numerals like the printed page.
+              The Latin "Page 9 / 22" in the bottom bar is the navigational
+              readout; this one belongs to the book. */}
+          <View style={styles.leafFooter}>
+            <View style={styles.footerRule} />
+            <Text style={styles.leafFolio}>{toArabicIndicNumeral(currentPageIndex + 1)}</Text>
+            <View style={styles.footerRule} />
           </View>
-        </ScrollView>
+        </Animated.View>
       )}
-
       {/* ── Fixed bottom: action pill + navigation ─────────────────── */}
       {viewMode === 'single' && !loading && !error && !!verse && (
         <View style={[styles.bottomArea, { paddingBottom: insets.bottom + Spacing.md }]}>
@@ -1073,12 +1743,19 @@ export default function SurahReaderScreen({ route, navigation }: Props) {
       )}
 
       {/* ── Mushaf page mode: footnote drawer + page nav ─────────────── */}
-      {viewMode === 'page' && !loading && !error && pages.length > 0 && (
+      {viewMode === 'page' && !loading && !error && pageStarts.length > 0 && (
         <View style={[styles.bottomArea, { paddingBottom: insets.bottom + Spacing.md }]}>
           {drawerVisible && selectedVerseIndex !== null && verses[selectedVerseIndex] && (
             <Animated.View
               style={[
                 styles.drawer,
+                // The height cap lives on the ScrollView inside (see
+                // panelScrollMaxHeight), not here. A cap on this box is what a
+                // long Ibn Kathir tafsir needs to stop it covering the header,
+                // but capping the CONTAINER only clips — the ScrollView never
+                // learns it is bounded, so it does not scroll. Capping the
+                // scroll area itself bounds the panel and makes the overflow
+                // reachable, and one cap cannot fight the other.
                 {
                   opacity: drawerAnim,
                   transform: [{
@@ -1095,141 +1772,291 @@ export default function SurahReaderScreen({ route, navigation }: Props) {
                   <Text style={styles.drawerRef}>
                     {surahName} · {surahNumber}:{verses[selectedVerseIndex].numberInSurah}
                   </Text>
-                  <TouchableOpacity
-                    onPress={closeDrawer}
-                    hitSlop={HIT_SLOP}
-                    accessibilityRole="button"
-                    accessibilityLabel="Close"
-                  >
-                    <Ionicons name="close" size={18} color={`${Colors.text.primary}80`} />
-                  </TouchableOpacity>
-                </View>
-
-                {showTranslit && verses[selectedVerseIndex].transliteration ? (
-                  <Text style={styles.drawerTranslit}>{verses[selectedVerseIndex].transliteration}</Text>
-                ) : null}
-
-                <Text style={styles.drawerTranslation}>
-                  &quot;{verses[selectedVerseIndex].translation}&quot;
-                </Text>
-
-                <View style={styles.rowActions}>
-                  <TouchableOpacity
-                    onPress={() => toggleBookmarkFor(verses[selectedVerseIndex])}
-                    hitSlop={HIT_SLOP}
-                    accessibilityRole="button"
-                    accessibilityLabel={bookmarkedSet.has(verses[selectedVerseIndex].numberInSurah) ? 'Remove bookmark' : 'Save verse'}
-                    accessibilityState={{ selected: bookmarkedSet.has(verses[selectedVerseIndex].numberInSurah) }}
-                  >
-                    <Ionicons
-                      name={bookmarkedSet.has(verses[selectedVerseIndex].numberInSurah) ? 'bookmark' : 'bookmark-outline'}
-                      size={18}
-                      color={bookmarkedSet.has(verses[selectedVerseIndex].numberInSurah) ? GOLD : `${Colors.text.primary}80`}
-                    />
-                  </TouchableOpacity>
-
-                  {drawerAudioActive ? (
-                    <AudioPlayerButton
-                      verseKey={`${surahNumber}:${verses[selectedVerseIndex].numberInSurah}`}
-                      size={26}
-                      iconSize={16}
-                      autoPlay
-                      color={`${Colors.text.primary}80`}
-                      showLabel={false}
-                      containerStyle={styles.rowAudioCtr}
-                      style={styles.rowAudioWrap}
-                    />
-                  ) : (
+                  <View style={styles.drawerHeaderActions}>
+                    {/* Same global showTranslit the reading-options modal owns —
+                        surfaced here because this panel is where transliteration
+                        actually renders, and it was otherwise buried a modal deep. */}
                     <TouchableOpacity
-                      onPress={() => setDrawerAudioActive(true)}
+                      onPress={toggleTranslit}
+                      style={[styles.translitChip, showTranslit && styles.translitChipOn]}
                       hitSlop={HIT_SLOP}
                       accessibilityRole="button"
-                      accessibilityLabel="Play recitation"
+                      accessibilityLabel="Show transliteration"
+                      accessibilityState={{ selected: showTranslit }}
                     >
-                      <Ionicons name="volume-medium-outline" size={18} color={`${Colors.text.primary}80`} />
+                      <Text style={[styles.translitChipText, showTranslit && styles.translitChipTextOn]}>
+                        Aa
+                      </Text>
                     </TouchableOpacity>
-                  )}
-
-                  <TouchableOpacity
-                    onPress={() => shareVerse(verses[selectedVerseIndex])}
-                    hitSlop={HIT_SLOP}
-                    accessibilityRole="button"
-                    accessibilityLabel="Share verse"
-                  >
-                    <Ionicons name="share-outline" size={18} color={`${Colors.text.primary}80`} />
-                  </TouchableOpacity>
-
-                  <TouchableOpacity
-                    onPress={toggleDrawerContext}
-                    style={styles.rowContextToggle}
-                    hitSlop={HIT_SLOP}
-                    accessibilityRole="button"
-                    accessibilityLabel="Context"
-                    accessibilityState={{ expanded: drawerContextOpen }}
-                  >
-                    <Text style={styles.rowContextLabel}>Context</Text>
-                    <Ionicons
-                      name={drawerContextOpen ? 'chevron-up' : 'chevron-down'}
-                      size={14}
-                      color="rgba(212,175,55,0.55)"
-                    />
-                  </TouchableOpacity>
+                    <TouchableOpacity
+                      onPress={closeDrawer}
+                      hitSlop={HIT_SLOP}
+                      accessibilityRole="button"
+                      accessibilityLabel="Close"
+                    >
+                      <Ionicons name="close" size={18} color={`${Colors.text.primary}80`} />
+                    </TouchableOpacity>
+                  </View>
                 </View>
 
-                {drawerContextOpen && (
-                  <View style={styles.rowContextBody}>
-                    {drawerTafsirLoading ? (
-                      <ActivityIndicator size="small" color={GOLD} />
-                    ) : drawerTafsir ? (
-                      <>
-                        <Text style={styles.rowContextText}>{isolateBidiRuns(drawerTafsir.text)}</Text>
-                        <Text style={styles.rowContextSource}>{drawerTafsir.source}</Text>
-                      </>
+                <ScrollView
+                  ref={drawerScrollRef}
+                  style={[
+                    styles.drawerScroll,
+                    { maxHeight: panelScrollMaxHeight(DRAWER_MAX_HEIGHT_RATIO) },
+                  ]}
+                  contentContainerStyle={styles.drawerScrollContent}
+                  showsVerticalScrollIndicator={false}
+                >
+                  {showTranslit && verses[selectedVerseIndex].transliteration ? (
+                    <Text style={styles.drawerTranslit}>{verses[selectedVerseIndex].transliteration}</Text>
+                  ) : null}
+
+                  <Text style={styles.drawerTranslation}>
+                    &quot;{verses[selectedVerseIndex].translation}&quot;
+                  </Text>
+
+                  <View style={styles.rowActions}>
+                    <TouchableOpacity
+                      onPress={() => toggleBookmarkFor(verses[selectedVerseIndex])}
+                      hitSlop={HIT_SLOP}
+                      accessibilityRole="button"
+                      accessibilityLabel={bookmarkedSet.has(verses[selectedVerseIndex].numberInSurah) ? 'Remove bookmark' : 'Save verse'}
+                      accessibilityState={{ selected: bookmarkedSet.has(verses[selectedVerseIndex].numberInSurah) }}
+                    >
+                      <Ionicons
+                        name={bookmarkedSet.has(verses[selectedVerseIndex].numberInSurah) ? 'bookmark' : 'bookmark-outline'}
+                        size={18}
+                        color={bookmarkedSet.has(verses[selectedVerseIndex].numberInSurah) ? GOLD : `${Colors.text.primary}80`}
+                      />
+                    </TouchableOpacity>
+
+                    {drawerAudioActive ? (
+                      <AudioPlayerButton
+                        verseKey={`${surahNumber}:${verses[selectedVerseIndex].numberInSurah}`}
+                        size={26}
+                        iconSize={16}
+                        autoPlay
+                        color={`${Colors.text.primary}80`}
+                        showLabel={false}
+                        containerStyle={styles.rowAudioCtr}
+                        style={styles.rowAudioWrap}
+                      />
                     ) : (
-                      <Text style={styles.rowContextEmpty}>No additional commentary for this verse.</Text>
+                      <TouchableOpacity
+                        onPress={() => setDrawerAudioActive(true)}
+                        hitSlop={HIT_SLOP}
+                        accessibilityRole="button"
+                        accessibilityLabel="Play recitation"
+                      >
+                        <Ionicons name="volume-medium-outline" size={18} color={`${Colors.text.primary}80`} />
+                      </TouchableOpacity>
                     )}
+
+                    <TouchableOpacity
+                      onPress={() => shareVerse(verses[selectedVerseIndex])}
+                      hitSlop={HIT_SLOP}
+                      accessibilityRole="button"
+                      accessibilityLabel="Share verse"
+                    >
+                      <Ionicons name="share-outline" size={18} color={`${Colors.text.primary}80`} />
+                    </TouchableOpacity>
+
+                    <TouchableOpacity
+                      onPress={toggleDrawerContext}
+                      style={styles.rowContextToggle}
+                      hitSlop={HIT_SLOP}
+                      accessibilityRole="button"
+                      accessibilityLabel="Context"
+                      accessibilityState={{ expanded: drawerContextOpen }}
+                    >
+                      <Text style={styles.rowContextLabel}>Context</Text>
+                      <Ionicons
+                        name={drawerContextOpen ? 'chevron-up' : 'chevron-down'}
+                        size={14}
+                        color="rgba(212,175,55,0.55)"
+                      />
+                    </TouchableOpacity>
                   </View>
-                )}
+
+                  {drawerContextOpen && (
+                    <View style={styles.rowContextBody}>
+                      {drawerTafsirLoading ? (
+                        <ActivityIndicator size="small" color={GOLD} />
+                      ) : drawerTafsir ? (
+                        <>
+                          <Text style={styles.rowContextText}>{isolateBidiRuns(drawerTafsir.text)}</Text>
+                          <Text style={styles.rowContextSource}>{drawerTafsir.source}</Text>
+                        </>
+                      ) : (
+                        <Text style={styles.rowContextEmpty}>No additional commentary for this verse.</Text>
+                      )}
+                    </View>
+                  )}
+                </ScrollView>
               </FrostedSurface>
             </Animated.View>
           )}
 
-          <View style={styles.navRow}>
-            <TouchableOpacity
-              onPress={handlePrevPage}
-              disabled={currentPageIndex === 0}
-              style={[styles.navBtn, currentPageIndex === 0 && styles.navBtnOff]}
-              hitSlop={{ top: 8, bottom: 8, left: 16, right: 16 }}
-              accessibilityRole="button"
-              accessibilityLabel="Previous page"
-              accessibilityState={{ disabled: currentPageIndex === 0 }}
+          {pageTranslationVisible && (
+            <Animated.View
+              style={[
+                styles.drawer,
+                // Capped on its ScrollView, same as the drawer above.
+                {
+                  opacity: pageTranslationAnim,
+                  transform: [{
+                    translateY: pageTranslationAnim.interpolate({ inputRange: [0, 1], outputRange: [30, 0] }),
+                  }],
+                },
+              ]}
             >
-              <Ionicons
-                name="chevron-back"
-                size={20}
-                color={currentPageIndex === 0 ? 'rgba(212,175,55,0.25)' : GOLD}
-              />
-            </TouchableOpacity>
+              <FrostedSurface intensity={70} androidFill="transparent" style={styles.drawerInner}>
+                <View style={styles.drawerBacking} />
+                <View style={styles.drawerHandle} />
 
-            <Text style={styles.navCounter}>
-              Page {currentPageIndex + 1} / {pages.length}
-            </Text>
+                <View style={styles.drawerHeader}>
+                  <Text style={styles.drawerRef}>
+                    {surahName} · Page {currentPageIndex + 1}
+                  </Text>
+                  <View style={styles.drawerHeaderActions}>
+                    <TouchableOpacity
+                      onPress={toggleTranslit}
+                      style={[styles.translitChip, showTranslit && styles.translitChipOn]}
+                      hitSlop={HIT_SLOP}
+                      accessibilityRole="button"
+                      accessibilityLabel="Show transliteration"
+                      accessibilityState={{ selected: showTranslit }}
+                    >
+                      <Text style={[styles.translitChipText, showTranslit && styles.translitChipTextOn]}>
+                        Aa
+                      </Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      onPress={closePageTranslation}
+                      hitSlop={HIT_SLOP}
+                      accessibilityRole="button"
+                      accessibilityLabel="Close"
+                    >
+                      <Ionicons name="close" size={18} color={`${Colors.text.primary}80`} />
+                    </TouchableOpacity>
+                  </View>
+                </View>
 
-            <TouchableOpacity
-              onPress={handleNextPage}
-              disabled={currentPageIndex >= pages.length - 1}
-              style={[styles.navBtn, currentPageIndex >= pages.length - 1 && styles.navBtnOff]}
-              hitSlop={{ top: 8, bottom: 8, left: 16, right: 16 }}
-              accessibilityRole="button"
-              accessibilityLabel="Next page"
-              accessibilityState={{ disabled: currentPageIndex >= pages.length - 1 }}
-            >
-              <Ionicons
-                name="chevron-forward"
-                size={20}
-                color={currentPageIndex >= pages.length - 1 ? 'rgba(212,175,55,0.25)' : GOLD}
-              />
-            </TouchableOpacity>
+                <ScrollView
+                  style={[
+                    styles.drawerScroll,
+                    { maxHeight: panelScrollMaxHeight(PAGE_TRANSLATION_MAX_HEIGHT_RATIO) },
+                  ]}
+                  contentContainerStyle={styles.pageTranslationList}
+                  showsVerticalScrollIndicator={false}
+                >
+                  {pageVerseIndices.map((idx) => {
+                    const v = verses[idx];
+                    if (!v) return null;
+                    return (
+                      <View key={v.numberInSurah} style={styles.pageTranslationRow}>
+                        <Text style={styles.pageTranslationRef}>{surahNumber}:{v.numberInSurah}</Text>
+                        {showTranslit && v.transliteration ? (
+                          <Text style={styles.drawerTranslit}>{v.transliteration}</Text>
+                        ) : null}
+                        <Text style={styles.drawerTranslation}>&quot;{v.translation}&quot;</Text>
+                      </View>
+                    );
+                  })}
+                </ScrollView>
+              </FrostedSurface>
+            </Animated.View>
+          )}
+
+          {/* Bottom bar: recitation · page nav · translation. Three zones, no
+              chrome — the sides are fixed-width so the page readout stays
+              optically centred whatever the side controls are doing. */}
+          <View style={styles.pageBar}>
+            {/* Unmounted while the per-verse drawer's own player is active.
+                Each AudioPlayerButton owns a private player that a parent
+                cannot pause, so leaving both mounted lets page recitation and
+                a single-ayah replay talk over each other. Unmounting releases
+                this one's player, which is the only way to stop it from here —
+                and the user pressing play in the drawer is an unambiguous
+                request for that ayah instead of the page. */}
+            <View style={styles.pageBarSide}>
+              {pageAudioKey && !drawerAudioActive && isFocused ? (
+                <AudioPlayerButton
+                  verseKey={pageAudioKey}
+                  size={34}
+                  iconSize={19}
+                  color={GOLD}
+                  showLabel={false}
+                  containerStyle={styles.pageBarAudioCtr}
+                  style={styles.pageBarAudioWrap}
+                  onPlayingChange={setPageAudioPlaying}
+                  onRangeIndexChange={setPageAudioRangeIndex}
+                />
+              ) : null}
+            </View>
+
+            {/* RTL page turn. A mushaf is bound on the right and the text
+                advances leftward, so the arrows are mirrored from the Latin
+                convention: the LEFT chevron goes forward to the next page and
+                the RIGHT chevron goes back. Reading direction, not screen
+                direction, decides which way a leaf turns — matching what the
+                hand does with a physical mushaf. The handlers themselves are
+                unchanged; only which side each one sits on. */}
+            <View style={styles.pageBarNav}>
+              <TouchableOpacity
+                onPress={handleNextPage}
+                disabled={currentPageIndex >= pageStarts.length - 1}
+                style={[styles.navBtn, currentPageIndex >= pageStarts.length - 1 && styles.navBtnOff]}
+                hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                accessibilityRole="button"
+                accessibilityLabel="Next page"
+                accessibilityState={{ disabled: currentPageIndex >= pageStarts.length - 1 }}
+              >
+                <Ionicons
+                  name="chevron-back"
+                  size={20}
+                  color={currentPageIndex >= pageStarts.length - 1 ? 'rgba(212,175,55,0.25)' : GOLD}
+                />
+              </TouchableOpacity>
+
+              <Text style={styles.navCounter}>
+                Page {currentPageIndex + 1} / {pageStarts.length}
+              </Text>
+
+              <TouchableOpacity
+                onPress={handlePrevPage}
+                disabled={currentPageIndex === 0}
+                style={[styles.navBtn, currentPageIndex === 0 && styles.navBtnOff]}
+                hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                accessibilityRole="button"
+                accessibilityLabel="Previous page"
+                accessibilityState={{ disabled: currentPageIndex === 0 }}
+              >
+                <Ionicons
+                  name="chevron-forward"
+                  size={20}
+                  color={currentPageIndex === 0 ? 'rgba(212,175,55,0.25)' : GOLD}
+                />
+              </TouchableOpacity>
+            </View>
+
+            <View style={styles.pageBarSide}>
+              <TouchableOpacity
+                onPress={togglePageTranslation}
+                style={styles.pageBarIconBtn}
+                hitSlop={{ top: 10, right: 10, bottom: 10, left: 10 }}
+                accessibilityRole="button"
+                accessibilityLabel="Page translation"
+                accessibilityState={{ selected: pageTranslationVisible }}
+              >
+                <Ionicons
+                  name={pageTranslationVisible ? 'language' : 'language-outline'}
+                  size={21}
+                  color={pageTranslationVisible ? GOLD : `${Colors.text.primary}8C`}
+                />
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
       )}
@@ -1257,6 +2084,8 @@ export default function SurahReaderScreen({ route, navigation }: Props) {
         onChangeViewMode={setViewMode}
         showTranslit={showTranslit}
         onToggleTranslit={toggleTranslit}
+        showTranslation={pageTranslationVisible}
+        onToggleTranslation={viewMode === 'page' ? togglePageTranslation : undefined}
       />
     </View>
   );
@@ -1634,100 +2463,167 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
 
-  // ── Mushaf page mode ──
-  pageScroll: { flex: 1 },
-  pageScrollContent: {
-    paddingTop: Spacing.lg,
-  },
-  leafWrap: {
-    paddingHorizontal: Spacing.lg,
-  },
-  // Two offset panels peeking from behind the leaf — reads as pages stacked
-  // underneath. Plain fills, not shadows, so it stays clean on Android too.
-  leafStackBack: {
-    position: 'absolute',
-    top: 10,
-    left: Spacing.lg + 10,
-    right: Spacing.lg - 6,
-    bottom: -6,
-    backgroundColor: Colors.background.tertiary,
-    borderRadius: BorderRadius.lg,
-    borderWidth: 1,
-    borderColor: 'rgba(212,175,55,0.10)',
-  },
-  leafStackMid: {
-    position: 'absolute',
-    top: 5,
-    left: Spacing.lg + 5,
-    right: Spacing.lg - 3,
-    bottom: -3,
-    backgroundColor: Colors.background.secondary,
-    borderRadius: BorderRadius.lg,
-    borderWidth: 1,
-    borderColor: 'rgba(212,175,55,0.16)',
-  },
+  // ── Mushaf leaf ──
+  // The page itself. flex:1 (not a height, not a card in a ScrollView) is
+  // the load-bearing part: it makes the frame reach the bottom bar on every
+  // page, including a last page holding two ayahs, and gives the text
+  // viewport inside it a content-independent height to paginate against.
   leaf: {
-    borderRadius: BorderRadius.lg,
-    borderWidth: 1.5,
-    borderColor: 'rgba(212,175,55,0.5)',
-    backgroundColor: Colors.background.secondary,
-    paddingHorizontal: Spacing.xl,
-    paddingVertical: Spacing.xxl,
+    flex: 1,
+    marginHorizontal: Spacing.md,
+    marginTop: Spacing.xs,
+    borderRadius: BorderRadius.md,
+    borderWidth: 1,
+    borderColor: 'rgba(212,175,55,0.30)',
+    backgroundColor: 'rgba(12,26,46,0.5)',
+    paddingHorizontal: Spacing.lg,
+    paddingTop: Spacing.lg,
+    paddingBottom: Spacing.md,
     overflow: 'hidden',
   },
-  // Faint warm glow standing in for "parchment" without leaving the cool
-  // celestial palette — same glowOrb formula as QuranLibraryScreen.
-  leafGlow: {
+  // Second rule of the classic Mushaf double frame. A hairline inset a few
+  // px from the border reads as printed ruling; anything heavier reads as a
+  // UI card, which is what the previous version looked like.
+  leafRule: {
     position: 'absolute',
-    width: 220,
-    height: 220,
-    borderRadius: 110,
-    backgroundColor: Colors.accent.glow,
-    alignSelf: 'center',
-    top: '35%',
+    top: 5,
+    left: 5,
+    right: 5,
+    bottom: 5,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: 'rgba(212,175,55,0.16)',
+    borderRadius: BorderRadius.sm,
   },
-  leafInnerBorder: {
-    position: 'absolute',
-    top: 7,
-    left: 7,
-    right: 7,
-    bottom: 7,
-    borderWidth: 1,
-    borderColor: 'rgba(212,175,55,0.2)',
-    borderRadius: BorderRadius.md,
+
+  // Chapter opening, page 1 only. Rules flanking the name instead of a
+  // filled box — a printed Mushaf sets the surah name in an illuminated
+  // band, and a solid gold-tinted rectangle was the least book-like way to
+  // suggest one.
+  leafHead: {
+    alignItems: 'center',
+    marginBottom: Spacing.md,
+  },
+  surahBanner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    alignSelf: 'stretch',
+    justifyContent: 'center',
+    gap: Spacing.md,
+  },
+  bannerRule: {
+    flex: 1,
+    height: StyleSheet.hairlineWidth,
+    backgroundColor: 'rgba(212,175,55,0.35)',
+  },
+  surahBannerText: {
+    fontFamily: Typography.fonts.arabic,
+    fontSize: Typography.sizes.h1,
+    // Amiri-Quran hangs harakat well above and below the baseline; a line
+    // box under ~2x the font size clips them (same rule the Bismillah and
+    // the main ayah styles follow).
+    lineHeight: 50,
+    color: GOLD,
+    textAlign: 'center',
+  },
+  leafBismillah: {
+    fontFamily: Typography.fonts.arabic,
+    fontSize: 19,
+    lineHeight: 42,
+    color: 'rgba(237,217,163,0.82)',
+    textAlign: 'center',
+  },
+
+  // The measured region. Its height is what linesForHeight() converts into
+  // this layout's line ceiling, so it must stay driven by flex, never by
+  // its own content.
+  leafTextViewport: {
+    flex: 1,
+  },
+  leafTextContent: {
+    flexGrow: 1,
   },
   leafArabic: {
     fontFamily: Typography.fonts.arabic,
     fontSize: MUSHAF_ARABIC_FONT_SIZE,
     lineHeight: MUSHAF_ARABIC_LINE_HEIGHT,
-    color: '#EDD9A3',
+    color: '#E8D5A8',
     textAlign: 'justify',
     writingDirection: 'rtl',
   },
+  // Selection and recitation are marked by COLOUR only — no background box.
+  // A backgroundColor on a nested Text run is painted per line-fragment, so
+  // on a justified RTL block it renders as ragged slabs straddling the line
+  // boxes; that is exactly what shipped and what looked broken on Android.
   leafVerseSelected: {
-    backgroundColor: 'rgba(212,175,55,0.16)',
+    color: '#FFF3D2',
+  },
+  leafVerseReciting: {
+    color: Colors.accent.light,
   },
   leafAyahMarker: {
     fontFamily: Typography.fonts.arabic,
-    fontSize: 15,
+    fontSize: 16,
     color: GOLD,
-    opacity: 0.85,
+    opacity: 0.9,
   },
+
+  // Folio number — hairline, numeral, hairline.
   leafFooter: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: Spacing.sm,
-    marginTop: Spacing.xl,
+    gap: Spacing.md,
+    marginTop: Spacing.sm,
   },
-  leafFooterText: {
-    fontFamily: Typography.fonts.serif,
-    fontSize: 12,
-    fontWeight: '700',
+  footerRule: {
+    width: 26,
+    height: StyleSheet.hairlineWidth,
+    backgroundColor: 'rgba(212,175,55,0.30)',
+  },
+  leafFolio: {
+    fontFamily: Typography.fonts.arabic,
+    fontSize: 14,
+    lineHeight: 28,
     color: GOLD,
-    letterSpacing: 1,
+    opacity: 0.75,
   },
 
+  // ── Page bottom bar: recitation · page nav · translation ──
+  pageBar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  // Fixed-width sides keep the page readout optically centred regardless of
+  // what the side controls render (the audio button swaps between an icon
+  // and three wave bars).
+  pageBarSide: {
+    width: 44,
+    height: 44,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  pageBarNav: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: Spacing.lg,
+  },
+  pageBarIconBtn: {
+    width: 44,
+    height: 44,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  // Strips AudioPlayerButton's own circle so it reads as a bare icon beside
+  // the bare chevrons, per CLAUDE.md's no-circles-on-nav-icons rule.
+  pageBarAudioCtr: {
+    backgroundColor: 'transparent',
+    borderWidth: 0,
+  },
+  pageBarAudioWrap: {
+    marginVertical: 0,
+  },
   // Footnote drawer — tap-to-reveal companion panel, same frosted-pill
   // language as the single-mode action pill below.
   drawer: {
@@ -1738,6 +2634,8 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.md,
   },
   drawerInner: {
+    // Deliberately NOT flex:1 — see PANEL_CHROME_HEIGHT. This box sizes to its
+    // own content; the ScrollView inside it carries the height cap.
     paddingHorizontal: Spacing.lg,
     paddingTop: Spacing.md,
     paddingBottom: Spacing.lg,
@@ -1759,6 +2657,60 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+  },
+  drawerHeaderActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.lg,
+  },
+  // "Aa" transliteration toggle. A chip rather than a bare icon because it is
+  // a persistent on/off state, not an action — the filled state has to be
+  // readable at a glance from across the panel header.
+  translitChip: {
+    paddingHorizontal: Spacing.sm,
+    paddingVertical: 2,
+    borderRadius: BorderRadius.sm,
+    borderWidth: 1,
+    borderColor: 'rgba(255,235,210,0.16)',
+  },
+  translitChipOn: {
+    borderColor: 'rgba(212,175,55,0.5)',
+    backgroundColor: 'rgba(212,175,55,0.14)',
+  },
+  translitChipText: {
+    fontFamily: Typography.fonts.serif,
+    fontSize: 12,
+    fontWeight: '700',
+    letterSpacing: 0.5,
+    color: `${Colors.text.primary}80`,
+  },
+  translitChipTextOn: {
+    color: GOLD,
+  },
+  // The scrollable region of a panel — everything except the fixed
+  // handle/header above it. It carries the height cap itself (applied inline,
+  // since it depends on the window), which is what makes short content size
+  // naturally and long content scroll instead of being clipped.
+  drawerScroll: {},
+  drawerScrollContent: {
+    gap: Spacing.sm,
+  },
+  // Whole-page translation panel — one row per verse on the current page.
+  pageTranslationList: {
+    gap: Spacing.lg,
+  },
+  pageTranslationRow: {
+    gap: Spacing.xs,
+    paddingBottom: Spacing.lg,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: 'rgba(255,255,255,0.08)',
+  },
+  pageTranslationRef: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: GOLD,
+    letterSpacing: 1,
+    opacity: 0.8,
   },
   drawerRef: {
     fontSize: 12,
