@@ -1,7 +1,7 @@
 # Lifetime Plan — External Platform Configuration
 
 **Date:** 2026-08-26
-**Status:** App code complete and verified. iOS + RevenueCat (App Store side) CONFIGURED 2026-08-26. Remaining: (a) the ASC review screenshot + submission with a build, (b) all of Android, which is blocked on a Google Payments merchant account and a Play service-account key — both owner-only.
+**Status:** App code complete and verified. **iOS, Android and RevenueCat all CONFIGURED** (2026-08-26/27). Remaining: (a) the ASC review screenshot + submission with a build, (b) rotate the Play service-account key, (c) device verification.
 **Companion to:** [2026-08-16-onboarding-trial-offer-platform-config.md](2026-08-16-onboarding-trial-offer-platform-config.md)
 
 ## What the app code now does
@@ -96,60 +96,117 @@ includes this code runs against the now-configured offering. Note iOS 1.2 is
 already "Waiting for Review", so this IAP rides along with the *next* version
 after that, not the in-flight one.
 
-## 2. Google Play Console (Android) — BLOCKED, and not on anything code-side
+## 2. Google Play Console (Android) — IN PROGRESS
 
-Inspected directly 2026-08-26 with owner access (developer account **FlyingSloth**,
-ID `6888748922183534243`; app **Sakina** `com.lelahmed.sakina`, ID
-`4972277785251473915`, status **Draft**).
+Developer account **FlyingSloth** (`6888748922183534243`), app **Sakina**
+`com.lelahmed.sakina` (`4972277785251473915`), status Draft.
 
-Two hard prerequisites are missing. **Both require the account owner** — they
-involve banking details and private keys, which is why they cannot be delegated:
+### 2a. Google Payments merchant account — ✅ DONE by the owner, 2026-08-26
 
-### 2a. Google Payments merchant account — blocks everything
+Both product pages previously returned *"Missing requirements for accessing
+this page — You need to set up a Google Payments merchant account"*. That gate
+is cleared; both pages now load.
 
-*Monetize with Play* shows "To monetize this app, set up a merchant account",
-and both product pages return:
+### 2b. Bundle uploaded — ✅ DONE 2026-08-27
 
-> **Missing requirements for accessing this page** — You need to set up a
-> Google Payments merchant account to access this page
+`eas submit` pushed build `5b45e474` (versionCode 3) to the **internal** track
+via the Play API. Two dead ends worth recording:
 
-Verified on **One-time products** *and* **Subscriptions** separately; it is not
-a lifetime-specific gate. Until this exists, **zero** in-app products of any
-kind can be created. Setting it up requires legal identity, tax information and
-a **bank account for payouts**.
+- **`eas submit --key <path>` does not exist** in eas-cli 22.4. That flag is what
+  two manual attempts used, and it fails with `Nonexistent flag: --key`. The key
+  path belongs in `eas.json` under `submit.<profile>.android.serviceAccountKeyPath`,
+  now set to `../keys/sakina-501416-153ce82ddd0a.json` (relative to the project
+  root, so it is not machine-specific and no secret enters the repo).
+- **Browser upload is impossible for this file.** The Claude-in-Chrome bridge caps
+  transfers at 10 MB; the AAB is 91 MB. Two manual drag-and-drop attempts produced
+  a *saved draft release with an empty bundle box* — Play persists the draft even
+  when the upload has not finished, which looks identical to success. Always verify
+  via **Add from library** or the bundle explorer, never by the form appearing to
+  show a version.
 
-### 2b. RevenueCat has no Play service account credentials
+**The BILLING permission was never the problem.** Confirmed by unzipping the built
+AAB's own `base/manifest/AndroidManifest.xml`: it contains
+`com.android.vending.BILLING`, inherited from
+`purchases-hybrid-common` → `com.android.billingclient:billing:8.3.0`.
+`react-native-purchases` does not declare it, so grepping `node_modules` is
+misleading. Play's message was about the absent upload.
 
-`Sakina (Play Store)` (`appfbd8557113`) has an **empty** *Service Account
-Credentials JSON* field. RevenueCat cannot validate a single Android
-transaction without it. Producing it means creating a Google Cloud service
-account, granting it Play Console access, and downloading its **private key**.
+### 2c. The Google service account key blocks TWO things, not one
 
-### Then, and only then, the products
+`Sakina (Play Store)` (`appfbd8557113`) still has an empty *Service Account
+Credentials JSON*. Separately, `eas.json`'s `submit` block configures **iOS
+only** — there is no Android submit config and no service account key anywhere
+in the repo, so `eas submit --platform android` cannot upload either.
 
-1. **One-time products** → Create → id `sakina_pro_lifetime`, **AED 400**, Activate.
-2. **Subscriptions** → `sakina_pro_monthly` and `sakina_pro_yearly`, prices
-   mirroring iOS, plus a 7-day free trial on the yearly base plan to match the
-   `sakina_pro_yearly` intro offer that is already live in all 175 Apple regions.
-3. A Play product left as a **draft** is invisible to the SDK. Activate all three.
+One key, created once, unblocks both: RevenueCat validating Android purchases
+(non-optional — without it no Android purchase is ever verified) and automated
+Play uploads forever after. It requires a Google Cloud service account and a
+**private key download**, so it is owner-only.
 
-**Why all three, not just lifetime.** `revenueCatService.getPricing()` returns
-`null` unless a MONTHLY **and** an ANNUAL package both resolve, and the paywall
-withholds every card and the CTA when pricing is null. So a lifetime-only Play
-setup would render an Android paywall with *nothing on it* — not a lifetime
-card. Android needs the full set before any of it shows.
+Until it exists, this first bundle must be uploaded by hand through the Play
+Console UI.
 
-### Do NOT pre-wire RevenueCat ahead of these
+### 2d. Play products
 
-It is tempting to create the three Play products in RevenueCat now so it is
-"ready". Don't. That is precisely how the dangling `$rc_lifetime` package this
-document opens with came to exist: RC config created ahead of real store
-products, left pointing at nothing, and three months later it had quietly
-become a hazard that a code change turned live. Create the Play products
-first, then wire RevenueCat in one pass where every entry points at something
-real. (Play subscriptions also need a `productId:basePlanId` identifier in RC,
-and the base plan ids do not exist until step 2 above — so pre-wiring the two
-subscriptions would be guessing, not preparation.)
+**`sakina_pro_lifetime` — ✅ CREATED AND ACTIVE 2026-08-27.**
+Purchase option `sakina-pro-lifetime` (hyphens — Play forbids underscores in
+purchase option ids, unlike product ids), type **Buy**, all regions.
+Base AED 400 → Play **charm-priced UAE to AED 399.99** (Apple has exactly
+400.00). One fils apart across platforms; left as-is since charming is Play's
+convention. Play also converts differently from Apple elsewhere — e.g. Albania
+USD 130.68 on Play vs $119.99 on Apple. Expect small cross-platform deltas.
+
+**Subscriptions — ✅ CREATED AND ACTIVE 2026-08-27**, mirroring iOS exactly:
+
+| | Product id | Base plan id | Base price | Offer |
+|---|---|---|---|---|
+| Yearly | `sakina_pro_yearly` | `yearly` | **USD 39.99** (UAE AED 144.99) | `free-trial-7d`, **1 week free**, New customer acquisition — **Active** |
+| Monthly | `sakina_pro_monthly` | `monthly` | **USD 4.99** (UAE AED 17.99) | none, matching iOS |
+
+**RevenueCat addresses Play subscriptions as `productId:basePlanId`** — so the
+RC identifiers are `sakina_pro_yearly:yearly` and `sakina_pro_monthly:monthly`.
+That is why the base plan ids were chosen as plain `yearly`/`monthly`.
+
+Gotchas hit while creating these:
+- The billing period on a new base plan defaults to **Monthly** — it must be
+  changed to Yearly on the yearly plan or you silently ship a monthly product
+  under a yearly name.
+- A free-trial phase defaults to **1 Months**, not 1 week. Apple's offer is
+  "Free for the first week", so the unit must be switched to Weeks.
+- Purchase option / base plan / offer ids allow **hyphens only, no underscores**
+  (product ids allow underscores). Hence `sakina-pro-lifetime`, `free-trial-7d`.
+- Base plans and offers save as **Draft** and each needs a separate **Activate**.
+
+Note the ASC price tables are **virtualised** — scraping `document.body.innerText`
+returns only ~185 rendered lines and will not contain a given country. Read the
+base tier from the first rows instead of hunting one storefront.
+
+**Why all three are required.** `getPricing()` returns `null` unless MONTHLY
+**and** ANNUAL both resolve, and the paywall then withholds every card and the
+CTA. Lifetime alone renders an empty Android paywall.
+
+### 2e. RevenueCat Android wiring — ✅ DONE 2026-08-27
+
+Owner saved the service-account JSON in RC (`Valid credentials`), after which
+RC's **Import Products** pulled all three straight from Play — safer than
+hand-typing ids. All three attached to `Sakina Pro` and into the packages:
+
+| Package | Test Store | App Store | Play Store |
+|---|---|---|---|
+| `$rc_monthly` | `monthly` | `sakina_pro_monthly` | `sakina_pro_monthly:monthly` |
+| `$rc_annual` | `yearly` | `sakina_pro_yearly` | `sakina_pro_yearly:yearly` |
+| `$rc_lifetime` | `lifetime` | `sakina_pro_lifetime` | `sakina_pro_lifetime` |
+
+**The RC offering editor lazily mounts one package at a time.** Setting all
+three Play dropdowns in one pass and hitting Save silently discarded every
+selection — the saved page came back showing only Test Store + App Store. It
+only persisted when each package was set and **saved individually**, and the
+Save had to be clicked **by element ref**, not coordinates (the RC layout
+renders into a cramped region that makes coordinate clicks miss).
+
+That is the third silent non-save in this project's RC dashboard, after the
+stale entitlement table and the credentials field. **Never trust an RC save;
+always reload the page and confirm the value came back.**
 
 ## 3. RevenueCat — DONE (App Store side)
 
