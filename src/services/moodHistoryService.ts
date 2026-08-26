@@ -4,7 +4,6 @@ import { SupabaseDataService } from './supabaseDataService';
 import { formatDateYMD, subtractDays } from '../utils/date';
 import {
   computeInsights,
-  INSIGHT_WINDOW_DAYS,
   LIGHT_MOODS,
   MoodInsight,
 } from './moodInsights';
@@ -126,6 +125,80 @@ export function computeStreaks(
   longestStreak = Math.max(longestStreak, currentStreak);
 
   return { currentStreak, longestStreak };
+}
+
+/**
+ * Reduce raw mood-history rows to the MoodStats the Streak screen renders.
+ * Exported pure for direct unit testing (see `__tests__/moodHistoryService.test.ts`).
+ *
+ * `rows` arrive newest-first from `getMoodHistory`.
+ */
+export function computeStats(
+  rows: Array<{ mood: string; created_at: string | number }>,
+  now: Date = new Date(),
+): MoodStats {
+  if (rows.length === 0) {
+    return {
+      totalDaysTracked: 0,
+      currentStreak: 0,
+      longestStreak: 0,
+      mostCommonMood: null,
+      positivePercentage: 0,
+      moodCounts: {},
+    };
+  }
+
+  const uniqueDays = new Set<string>();
+  const dayMoods: Record<string, Mood> = {};
+
+  // Process ASC to let later entries win for dayMoods
+  for (let i = rows.length - 1; i >= 0; i--) {
+    const row = rows[i];
+    const dateStr = formatDateYMD(new Date(row.created_at));
+    uniqueDays.add(dateStr);
+    dayMoods[dateStr] = row.mood as Mood; // last entry wins
+  }
+
+  // Count DAYS, not rows. `recordHistory` fires on every `getGuidance` call
+  // (rotationEngine.ts) — including refreshes, which Pro makes unlimited — so
+  // counting rows let eight refreshes on one angry afternoon read as eight
+  // Angry days. That fed both the free "Top Mood" stat and the paid Mood
+  // Distribution bars, while the paid Insights already deduped to one mood per
+  // day (see computeInsights' precision contract), so the two halves of the
+  // Streak screen could contradict each other — and the distortion grew with
+  // the very feature the user had paid for. Deriving from `dayMoods` also
+  // guarantees the bars sum to totalDaysTracked, which is what makes the
+  // chart's percentages honest shares rather than shares of taps.
+  const moodCounts: Record<string, number> = {};
+  for (const mood of Object.values(dayMoods)) {
+    moodCounts[mood] = (moodCounts[mood] || 0) + 1;
+  }
+
+  const totalDaysTracked = uniqueDays.size;
+
+  // Streak calculation — one mercy day per streak (see computeStreaks).
+  const { currentStreak, longestStreak } = computeStreaks(uniqueDays, now);
+
+  const sortedMoods = Object.entries(moodCounts).sort((a, b) => b[1] - a[1]);
+  const mostCommonMood = sortedMoods.length > 0 ? (sortedMoods[0][0] as Mood) : null;
+
+  let positiveDays = 0;
+  for (const dateStr of Object.keys(dayMoods)) {
+    if (POSITIVE_MOODS.includes(dayMoods[dateStr])) {
+      positiveDays++;
+    }
+  }
+  const positivePercentage =
+    totalDaysTracked > 0 ? Math.round((positiveDays / totalDaysTracked) * 100) : 0;
+
+  return {
+    totalDaysTracked,
+    currentStreak,
+    longestStreak,
+    mostCommonMood,
+    positivePercentage,
+    moodCounts,
+  };
 }
 
 // ── Service ─────────────────────────────────────────────────────────
@@ -255,76 +328,48 @@ class MoodHistoryService {
 
     const history = await this.supabaseData.getMoodHistory(startDate, endDate);
 
-    if (history.length === 0) {
-      return {
-        totalDaysTracked: 0,
-        currentStreak: 0,
-        longestStreak: 0,
-        mostCommonMood: null,
-        positivePercentage: 0,
-        moodCounts: {},
-      };
-    }
-
-    const uniqueDays = new Set<string>();
-    const dayMoods: Record<string, Mood> = {};
-    const moodCounts: Record<string, number> = {};
-
-    // Process ASC to let later entries win for dayMoods
-    for (let i = history.length - 1; i >= 0; i--) {
-      const row = history[i];
-      const dateStr = formatDateYMD(new Date(row.created_at));
-      uniqueDays.add(dateStr);
-      dayMoods[dateStr] = row.mood as Mood; // last entry wins
-      moodCounts[row.mood] = (moodCounts[row.mood] || 0) + 1;
-    }
-
-    const totalDaysTracked = uniqueDays.size;
-
-    // Streak calculation — one mercy day per streak (see computeStreaks).
-    const { currentStreak, longestStreak } = computeStreaks(uniqueDays);
-
-    const sortedMoods = Object.entries(moodCounts).sort((a, b) => b[1] - a[1]);
-    const mostCommonMood = sortedMoods.length > 0 ? (sortedMoods[0][0] as Mood) : null;
-
-    let positiveDays = 0;
-    for (const dateStr of Object.keys(dayMoods)) {
-      if (POSITIVE_MOODS.includes(dayMoods[dateStr])) {
-        positiveDays++;
-      }
-    }
-    const positivePercentage =
-      totalDaysTracked > 0 ? Math.round((positiveDays / totalDaysTracked) * 100) : 0;
-
-    return {
-      totalDaysTracked,
-      currentStreak,
-      longestStreak,
-      mostCommonMood,
-      positivePercentage,
-      moodCounts,
-    };
+    return computeStats(history);
   }
 
   /**
-   * Generate insights based on mood history patterns.
+   * Stats AND insights from a SINGLE history read — what the Streak screen
+   * should call.
+   *
+   * It used to call getStats() and getInsights() side by side in a Promise.all,
+   * and getInsights() then awaited getStats() again internally because nothing
+   * ever passed its `precomputedStats` argument: three reads per screen open,
+   * two of them the identical full-range query, on the most-opened tab.
+   *
+   * Handing the full-range rows to computeInsights is safe ONLY because it
+   * applies its own INSIGHT_WINDOW_DAYS filter instead of trusting its caller
+   * ("the 30-day claim is self-enforced" in moodInsights.test.ts). If that ever
+   * changes, this method starts making 30-day copy speak for a year of data.
    */
-  async getInsights(precomputedStats?: MoodStats): Promise<MoodInsight[]> {
+  /**
+   * @param insightWindowDays How far back insights may analyse. The caller
+   *   passes the tier history window so a subscriber's insights cover the same
+   *   span their calendar opens; omitted, computeInsights uses its own default.
+   */
+  async getStatsAndInsights(
+    insightWindowDays?: number,
+  ): Promise<{ stats: MoodStats; insights: MoodInsight[] }> {
     const now = new Date();
-    // Extend the window by a day on each side so entries near local midnight
-    // aren't clipped by the UTC boundary; computeInsights re-buckets by local
-    // calendar day. Mirrors getStats().
+    // Same padded full-range window getStats uses; see there for the ±1 day.
     const endDate = new Date(now.getTime() + 86400000).toISOString();
-    const startDate = new Date(now.getTime() - INSIGHT_WINDOW_DAYS * 86400000).toISOString();
+    const startDate = new Date(now.getTime() - 366 * 86400000).toISOString();
 
     const history = await this.supabaseData.getMoodHistory(startDate, endDate);
 
-    // Reuse pre-computed stats if the caller already has them to avoid a
-    // redundant full-table Supabase fetch for the streak figure.
-    const stats = precomputedStats ?? await this.getStats();
-
-    return computeInsights(history, stats.currentStreak, now);
+    const stats = computeStats(history, now);
+    const insights = computeInsights(history, stats.currentStreak, now, insightWindowDays);
+    return { stats, insights };
   }
+
+  // There is deliberately no standalone getInsights(). It existed with an
+  // optional `precomputedStats` argument that no caller ever passed, so every
+  // call silently ran a second full-range read on top of its own — the triple
+  // fetch getStatsAndInsights now replaces. Anything needing insights should
+  // take them from getStatsAndInsights rather than reintroduce that shape.
 }
 
 export const moodHistoryService = new MoodHistoryService();

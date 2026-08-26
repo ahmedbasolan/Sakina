@@ -27,10 +27,18 @@ import { revenueCat } from './revenueCatService';
 import { dbQuery } from '../database/connection';
 import { loadUpgradeAsk, saveUpgradeAsk, UpgradeAskState } from './upgradeAskStore';
 
+/**
+ * How far back Pro may browse its own history, in days. Exported because the
+ * paywall line ("Unlock 90 days") and the Pro feature bullet both name this
+ * number, and a screen hardcoding 90 would drift the moment it changed.
+ * The free counterpart is `FREEMIUM_LIMITS.historyWindowDays` in constants.
+ */
+export const PREMIUM_HISTORY_WINDOW_DAYS = 90;
+
 const PREMIUM_LIMITS: FreemiumLimits = {
   refreshesPerPrayerWindow: Infinity,
   maxSavedItems: Infinity,
-  rotationHistoryDays: 90,
+  historyWindowDays: PREMIUM_HISTORY_WINDOW_DAYS,
 };
 
 export class FreemiumService {

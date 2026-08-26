@@ -92,14 +92,23 @@ export class ReflectionRepository {
     });
   }
 
-  async getAll(): Promise<SavedReflection[]> {
+  /**
+   * @param sinceTimestamp Lower bound (epoch ms) from the tier history window —
+   *   see `src/utils/historyWindow.ts`. Defaults to 0, i.e. no bound, so callers
+   *   that are not tier-gated keep their full-range behaviour. This clamps the
+   *   READ only; rows outside the window stay in SQLite and return the moment
+   *   the window widens.
+   */
+  async getAll(sinceTimestamp = 0): Promise<SavedReflection[]> {
     return dbQuery(async (db) => {
-      const result = await db.getAllAsync(`
-        SELECT sr.*, c.primaryText, c.englishTranslation, c.arabicText, c.source
-        FROM saved_reflections sr
-        JOIN content c ON sr.contentId = c.id
-        ORDER BY sr.timestamp DESC
-      `);
+      const result = await db.getAllAsync(
+        `SELECT sr.*, c.primaryText, c.englishTranslation, c.arabicText, c.source
+         FROM saved_reflections sr
+         JOIN content c ON sr.contentId = c.id
+         WHERE sr.timestamp >= ?
+         ORDER BY sr.timestamp DESC`,
+        [sinceTimestamp],
+      );
       return result as SavedReflection[];
     });
   }
@@ -117,11 +126,19 @@ export interface FreeformReflection {
   createdAt: number;
 }
 
-export async function getFreeformReflections(limit = 50): Promise<FreeformReflection[]> {
+/**
+ * @param sinceTimestamp Lower bound (epoch ms) from the tier history window —
+ *   see `src/utils/historyWindow.ts`. Defaults to 0 (no bound). Clamps the READ
+ *   only; nothing is deleted, so widening the window restores every entry.
+ */
+export async function getFreeformReflections(
+  limit = 50,
+  sinceTimestamp = 0,
+): Promise<FreeformReflection[]> {
   return dbQuery(async (db) => {
     const rows = await db.getAllAsync(
-      `SELECT id, title, content, mood, createdAt FROM reflections ORDER BY createdAt DESC LIMIT ?`,
-      [limit],
+      `SELECT id, title, content, mood, createdAt FROM reflections WHERE createdAt >= ? ORDER BY createdAt DESC LIMIT ?`,
+      [sinceTimestamp, limit],
     );
     return rows as FreeformReflection[];
   });

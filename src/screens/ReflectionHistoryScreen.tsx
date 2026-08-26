@@ -32,6 +32,10 @@ import { RotationEngine } from '../services/rotationEngine';
 import { useReduceMotion } from '../hooks/useReduceMotion';
 import { MOOD_ICON } from '../constants/moodIcons';
 import { Mood } from '../types';
+import { useNavigation } from '@react-navigation/native';
+import { FreemiumService, PREMIUM_HISTORY_WINDOW_DAYS } from '../services/freemiumService';
+import { HistoryWindowNotice } from '../components/HistoryWindowNotice';
+import { earliestVisibleTimestamp } from '../utils/historyWindow';
 
 // Legacy-architecture Android requires this opt-in for LayoutAnimation
 // (used below for the mood capsule's icon-to-label expand); a no-op if the
@@ -442,7 +446,13 @@ function NewReflectionModal({ visible, onClose, onSave }: {
 // ── Screen ───────────────────────────────────────────────────────────
 export default function ReflectionHistoryScreen() {
   const insets = useSafeAreaInsets();
+  const navigation = useNavigation<any>();
   const [reflections, setReflections] = useState<JournalEntry[]>([]);
+  // How far back this tier may browse. Read once per load rather than per
+  // render so the list and its footer can never disagree about the boundary.
+  const [windowDays, setWindowDays] = useState(
+    () => FreemiumService.getInstance().getCurrentLimits().historyWindowDays,
+  );
   const [showModal, setShowModal] = useState(false);
   const [selectedEntry, setSelectedEntry] = useState<JournalEntry | null>(null);
   const headerOpacity = useRef(new Animated.Value(0)).current;
@@ -464,9 +474,14 @@ export default function ReflectionHistoryScreen() {
 
   const loadReflections = async () => {
     try {
+      // Re-read the tier here, not just at mount: a purchase completed in this
+      // session must widen the journal without an app restart.
+      const days = FreemiumService.getInstance().getCurrentLimits().historyWindowDays;
+      setWindowDays(days);
+      const since = earliestVisibleTimestamp(days);
       const [freeform, saved] = await Promise.all([
-        getFreeformReflections(),
-        RotationEngine.getInstance().getSavedReflections(),
+        getFreeformReflections(50, since),
+        RotationEngine.getInstance().getSavedReflections(since),
       ]);
 
       const freeformEntries: JournalEntry[] = freeform.map((r) => ({
@@ -558,6 +573,19 @@ export default function ReflectionHistoryScreen() {
         contentContainerStyle={[styles.listContent, { paddingBottom: insets.bottom + Layout.tabBarClearance }]}
         showsVerticalScrollIndicator={false}
         ItemSeparatorComponent={EntrySeparator}
+        // Only when there is something above it — a window notice under an
+        // empty journal explains a boundary the user has not reached.
+        ListFooterComponent={
+          reflections.length > 0 ? (
+            <HistoryWindowNotice
+              windowDays={windowDays}
+              isPremium={FreemiumService.getInstance().isPremium()}
+              premiumWindowDays={PREMIUM_HISTORY_WINDOW_DAYS}
+              noun="reflections"
+              onUpgrade={() => navigation.navigate('Support')}
+            />
+          ) : null
+        }
         ListEmptyComponent={
           <View style={styles.emptyState}>
             <MaterialCommunityIcons name="notebook-heart-outline" size={52} color={`${Colors.accent.primary}40`} />

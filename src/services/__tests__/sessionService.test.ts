@@ -10,7 +10,7 @@ jest.mock('../../database/connection', () => ({
 }));
 
 jest.mock('../../constants', () => ({
-  FREEMIUM_LIMITS: { refreshesPerPrayerWindow: 3, maxSavedItems: 30, rotationHistoryDays: 30 },
+  FREEMIUM_LIMITS: { refreshesPerPrayerWindow: 3, maxSavedItems: 30, historyWindowDays: 30 },
 }));
 
 const mockGetContext = jest.fn().mockResolvedValue('dhuhr');

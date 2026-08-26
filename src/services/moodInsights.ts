@@ -12,7 +12,12 @@ export interface MoodInsight {
   type: 'pattern' | 'trend' | 'streak' | 'tip';
   title: string;
   description: string;
-  icon: string; // emoji
+  /**
+   * MaterialCommunityIcons glyph name — NOT an emoji. Emoji rendered through
+   * a <Text> render per-platform and clashed with the app's icon set; the
+   * insight cards are the one place they had survived.
+   */
+  icon: string;
 }
 
 // ── Mood classification ─────────────────────────────────────────────
@@ -39,7 +44,38 @@ const EMOTIONAL_AWARENESS_MIN_MOODS = 5;
 const GRATITUDE_MIN_DAYS = 3;
 const STREAK_MIN_DAYS = 3;
 
+// Low-sample gates. The weekday pattern needs ~3 weeks of history and the
+// trend ~4, which left a brand-new subscriber with nothing but restatements.
+// These two are honest at 5 days — still gated, because firing early is
+// worthless if the claim is noise.
+const MIN_TIME_OF_DAY_DAYS = 5; // below this, when you check in is not a habit yet
+const MIN_TIME_BAND_DAYS = 3; // the winning band must rest on ≥3 real days
+const TIME_BAND_SHARE = 0.4; // and hold ≥40% of them, well clear of an even 25% spread
+const MIN_RECOVERY_PAIRS = 3; // heavy day + next calendar day both logged
+const MIN_RECOVERY_LIFTED = 2;
+const RECOVERY_SHARE = 0.5;
+
+// At most this many cards. Was 4, which dropped Shukr Champion — the warmest
+// card — first whenever everything qualified.
+const MAX_CARDS = 5;
+
 const DAY_NAMES = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+
+// Coarse enough that a check-in an hour either side lands in the same band.
+// `night` wraps midnight, which is why this is a function and not a range map.
+function bandOfHour(hour: number): string {
+  if (hour >= 5 && hour <= 11) return 'morning';
+  if (hour >= 12 && hour <= 16) return 'afternoon';
+  if (hour >= 17 && hour <= 20) return 'evening';
+  return 'night';
+}
+
+/** The local calendar day after `dateStr` (YYYY-MM-DD). */
+function nextDay(dateStr: string): string {
+  const d = new Date(dateStr + 'T00:00:00');
+  d.setDate(d.getDate() + 1);
+  return formatDateYMD(d);
+}
 
 /** Whole local calendar days between `dateStr` (YYYY-MM-DD) and today. */
 function dayAge(dateStr: string, now: Date): number {
@@ -65,29 +101,42 @@ export function computeInsights(
   rows: Array<{ mood: string; created_at: string | number }>,
   currentStreak: number,
   now: Date = new Date(),
+  /**
+   * How many days back to analyse. Defaults to INSIGHT_WINDOW_DAYS; a paid
+   * caller passes its wider browse window so the insights speak for the same
+   * span the calendar will actually open. Non-finite falls back to the
+   * default — "the last Infinity days" is not a sentence, and an unbounded
+   * window would silently let a year of data answer a "lately" question.
+   */
+  windowDays: number = INSIGHT_WINDOW_DAYS,
 ): MoodInsight[] {
+  const window = Number.isFinite(windowDays) ? windowDays : INSIGHT_WINDOW_DAYS;
   // 1. Dedup to one representative mood per LOCAL day. getMoodHistory returns
   //    DESC (newest first); walking it in reverse lets the latest entry of a
   //    day win, matching getStats/getMoodCalendar.
-  const dayMood = new Map<string, Mood>();
+  // Keeps the representative row itself, not just its mood: the time-of-day
+  // card needs that day’s hour, and it must be the SAME entry the mood came
+  // from or the two would describe different check-ins.
+  const dayMood = new Map<string, { mood: Mood; at: string | number }>();
   for (let i = rows.length - 1; i >= 0; i--) {
     const dateStr = formatDateYMD(new Date(rows[i].created_at));
-    dayMood.set(dateStr, rows[i].mood as Mood);
+    dayMood.set(dateStr, { mood: rows[i].mood as Mood, at: rows[i].created_at });
   }
 
-  // Apply the window HERE rather than trusting the caller. Every string below
-  // says "in the last 30 days", so the filter that makes that true has to live
+  // Apply the window HERE rather than trusting the caller. The weekday string
+  // below names `window` explicitly, so the filter that makes it true has to live
   // next to the claim — `moodHistoryService` deliberately over-fetches by a day
   // on each side to survive the UTC boundary, and a future-dated row (ageDays
   // < 0) would otherwise inflate totalDays and could enter a weekday pattern.
   const days = Array.from(dayMood.entries())
-    .map(([dateStr, mood]) => ({
+    .map(([dateStr, entry]) => ({
       dateStr,
-      mood,
+      mood: entry.mood,
       dow: new Date(dateStr + 'T00:00:00').getDay(),
+      hour: new Date(entry.at).getHours(),
       ageDays: dayAge(dateStr, now),
     }))
-    .filter((d) => d.ageDays >= 0 && d.ageDays < INSIGHT_WINDOW_DAYS);
+    .filter((d) => d.ageDays >= 0 && d.ageDays < window);
   const totalDays = days.length;
 
   if (totalDays === 0) {
@@ -96,7 +145,7 @@ export function computeInsights(
       title: 'Start Your Journey',
       description:
         'Choose a mood on the home screen to begin. Sakina reads your own patterns back to you — the more days you log, the sharper it sees.',
-      icon: '✦',
+      icon: 'star-outline',
     }];
   }
 
@@ -140,13 +189,78 @@ export function computeInsights(
       insights.push({
         type: 'pattern',
         title: 'Pattern Detected',
-        description: `On ${best.heavy} of your ${best.total} ${dayName}s in the last 30 days you logged a heavier mood — more often than on your other days. A little extra rest or dhikr on ${dayName}s may help.`,
-        icon: '🔍',
+        description: `On ${best.heavy} of your ${best.total} ${dayName}s in the last ${window} days you logged a heavier mood — more often than on your other days. A little extra rest or dhikr on ${dayName}s may help.`,
+        icon: 'calendar',
       });
     }
   }
 
+  // ── Recovery: did a heavy day lift the next day? (low sample) ──────
+  // Deliberately ONE-DIRECTIONAL. The mirror claim — "your hard days rarely
+  // lift" — is a verdict, not an insight, and this screen is opened by people
+  // having a bad week. Silence is the correct output there; the trend card
+  // above already carries the gentle version of bad news.
+  //
+  // Pairs are CONSECUTIVE CALENDAR DAYS, not "the next day you happened to log".
+  // A heavy Monday followed by a logged Friday says nothing about recovery, and
+  // counting it would let sparse logging manufacture the pattern.
+  {
+    const moodByDay = new Map(days.map((d) => [d.dateStr, d.mood]));
+    let pairs = 0;
+    let lifted = 0;
+    for (const day of days) {
+      if (!isHeavy(day.mood)) continue;
+      const after = moodByDay.get(nextDay(day.dateStr));
+      if (!after) continue;
+      pairs++;
+      if (isLight(after)) lifted++;
+    }
+    if (
+      pairs >= MIN_RECOVERY_PAIRS &&
+      lifted >= MIN_RECOVERY_LIFTED &&
+      lifted / pairs >= RECOVERY_SHARE
+    ) {
+      insights.push({
+        type: 'trend',
+        title: 'After the Heavy Days',
+        description: `${lifted} of the ${pairs} times you logged a heavy day and checked in again the next day, that next day was lighter. Allah says: "For indeed, with hardship will be ease. Indeed, with hardship will be ease." [Surah Ash-Sharh 94:5-6]`,
+        icon: 'white-balance-sunny',
+      });
+    }
+  }
+
+  // ── Time of day (low sample) ───────────────────────────────────────
+  // Rate-based against a 4-band spread, same discipline as the weekday check:
+  // the winning band must hold ≥40% of days, so an even spread across bands
+  // (~25% each) never reads as a habit.
+  if (totalDays >= MIN_TIME_OF_DAY_DAYS) {
+    const perBand: Record<string, number> = {};
+    for (const day of days) {
+      const band = bandOfHour(day.hour);
+      perBand[band] = (perBand[band] || 0) + 1;
+    }
+    let top: { band: string; count: number } | null = null;
+    for (const [band, count] of Object.entries(perBand)) {
+      if (top === null || count > top.count) top = { band, count };
+    }
+    if (
+      top &&
+      top.count >= MIN_TIME_BAND_DAYS &&
+      top.count / totalDays >= TIME_BAND_SHARE
+    ) {
+      insights.push({
+        type: 'pattern',
+        title: 'When You Check In',
+        description: `${top.count} of your ${totalDays} check-ins came in the ${top.band}. That is when you reach for this most — worth keeping a quiet moment there.`,
+        icon: 'clock-outline',
+      });
+    }
+  }
   // ── Recent-vs-prior trend on light days (gated, raw-count copy) ────
+  // TREND_HALF_DAYS is deliberately NOT derived from `window`. "Lately" has to
+  // keep meaning lately: widening the analysis window to 90 must not stretch
+  // this into 45-day halves, which would be a different claim wearing the same
+  // words ("your last two weeks").
   if (totalDays >= MIN_DAYS_FOR_PATTERNS) {
     const recent = days.filter((d) => d.ageDays >= 0 && d.ageDays < TREND_HALF_DAYS);
     const prior = days.filter((d) => d.ageDays >= TREND_HALF_DAYS && d.ageDays < TREND_HALF_DAYS * 2);
@@ -161,39 +275,20 @@ export function computeInsights(
           type: 'trend',
           title: 'Lighter Lately',
           description: `Lighter moods rose from ${priorLight} of ${prior.length} days two weeks ago to ${recentLight} of ${recent.length} days recently. Whatever you're leaning on — hold onto it.`,
-          icon: '📈',
+          icon: 'trending-up',
         });
       } else if (priorRate >= recentRate + TREND_MARGIN) {
         insights.push({
           type: 'trend',
           title: 'Be Gentle With Yourself',
           description: `Your last two weeks carried more heavy days (${recent.length - recentLight} of ${recent.length}) than the two before (${prior.length - priorLight} of ${prior.length}). Tests are how Allah raises us — stay close to your dhikr.`,
-          icon: '🤲',
+          icon: 'heart-half-full',
         });
       }
     }
   }
 
-  // ── Streak (from computed stats, honest consistency claim) ────────
-  if (currentStreak >= STREAK_MIN_DAYS) {
-    insights.push({
-      type: 'streak',
-      title: `${currentStreak}-Day Streak`,
-      description: `You've checked in ${currentStreak} days running. The Prophet ﷺ was asked which deeds Allah loves most; he said: "The most regular constant deeds even though they may be few." [Bukhari 6465]`,
-      icon: '🔥',
-    });
-  }
 
-  // ── Emotional awareness (factual, any tier) ───────────────────────
-  const uniqueMoods = new Set(days.map((d) => d.mood));
-  if (uniqueMoods.size >= EMOTIONAL_AWARENESS_MIN_MOODS) {
-    insights.push({
-      type: 'tip',
-      title: 'Emotional Awareness',
-      description: `You've named ${uniqueMoods.size} different feelings across ${totalDays} days. Knowing your own heart is itself a mercy — the first step to tending it.`,
-      icon: '💡',
-    });
-  }
 
   // ── Gratitude, counted by DAYS not taps (factual, any tier) ───────
   const gratefulDays = days.filter((d) => d.mood === 'Grateful').length;
@@ -209,10 +304,34 @@ export function computeInsights(
       // the verse is swapped rather than cut: 2:152 is complete here, is short
       // enough for a card, and is already the app's own `quran_2_152` wording.
       description: `Of the ${totalDays} days you checked in, you met ${gratefulDays} with gratitude. Allah says: "So remember Me; I will remember you. And be grateful to Me, and do not be ungrateful to Me." [Surah Al-Baqarah 2:152]`,
-      icon: '✨',
+      icon: 'hand-heart',
     });
   }
 
+  // ── Emotional awareness (factual, any tier) ───────────────────────
+  const uniqueMoods = new Set(days.map((d) => d.mood));
+  if (uniqueMoods.size >= EMOTIONAL_AWARENESS_MIN_MOODS) {
+    insights.push({
+      type: 'tip',
+      title: 'Emotional Awareness',
+      description: `You've named ${uniqueMoods.size} different feelings across ${totalDays} days. Knowing your own heart is itself a mercy — the first step to tending it.`,
+      icon: 'lightbulb-on-outline',
+    });
+  }
+  // ── Streak — LAST on purpose ──────────────────────────────────────
+  // The hero card at the top of this same screen already shows the streak
+  // number, for free. This card therefore earns its slot only when nothing
+  // more specific qualified, which is exactly what ranking it last achieves:
+  // with MAX_CARDS cards to fill, a user with real patterns never sees the
+  // restatement, and a user with none gets it instead of an empty section.
+  if (currentStreak >= STREAK_MIN_DAYS) {
+    insights.push({
+      type: 'streak',
+      title: `${currentStreak}-Day Streak`,
+      description: `You've checked in ${currentStreak} days running. The Prophet ﷺ was asked which deeds Allah loves most; he said: "The most regular constant deeds even though they may be few." [Bukhari 6465]`,
+      icon: 'fire',
+    });
+  }
   // Never render an empty screen: reflect the real day count and set an
   // honest expectation rather than a canned platitude.
   if (insights.length === 0) {
@@ -220,9 +339,9 @@ export function computeInsights(
       type: 'tip',
       title: 'Building Your Picture',
       description: `You've logged ${totalDays} ${totalDays === 1 ? 'day' : 'days'} so far. A few more and Sakina can show real patterns in how your heart moves — not guesses.`,
-      icon: '✦',
+      icon: 'star-outline',
     });
   }
 
-  return insights.slice(0, 4);
+  return insights.slice(0, MAX_CARDS);
 }

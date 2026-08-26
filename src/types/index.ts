@@ -129,7 +129,7 @@ export interface UserSession {
 export interface FreemiumLimits {
   refreshesPerPrayerWindow: number;
   maxSavedItems: number;
-  rotationHistoryDays: number;
+  historyWindowDays: number;
 }
 
 export interface PaywallType {

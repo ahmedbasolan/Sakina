@@ -57,7 +57,7 @@ jest.mock('../../constants', () => ({
   FREEMIUM_LIMITS: {
     refreshesPerPrayerWindow: 3,
     maxSavedItems: 30,
-    rotationHistoryDays: 30,
+    historyWindowDays: 30,
   },
   UPGRADE_ASK_COOLDOWN_MS: 3 * 24 * 60 * 60 * 1000, // 3 days
   // No SUBSCRIPTION_PRICING — prices come only from the store. See the note in
@@ -233,7 +233,7 @@ describe('FreemiumService', () => {
       const limits = service.getCurrentLimits();
       expect(limits.refreshesPerPrayerWindow).toBe(3);
       expect(limits.maxSavedItems).toBe(30);
-      expect(limits.rotationHistoryDays).toBe(30);
+      expect(limits.historyWindowDays).toBe(30);
     });
 
     it('returns unlimited limits for premium', () => {
@@ -241,7 +241,7 @@ describe('FreemiumService', () => {
       const limits = service.getCurrentLimits();
       expect(limits.refreshesPerPrayerWindow).toBe(Infinity);
       expect(limits.maxSavedItems).toBe(Infinity);
-      expect(limits.rotationHistoryDays).toBe(90);
+      expect(limits.historyWindowDays).toBe(90);
     });
   });
 
