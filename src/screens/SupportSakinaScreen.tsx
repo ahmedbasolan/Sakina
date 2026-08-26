@@ -65,6 +65,15 @@ function perMonthFromYearly(yearlyPriceString: string, yearlyAmount: number): st
   return yearlyPriceString.trim().endsWith(symbol) ? `${perMonth} ${symbol}` : `${symbol}${perMonth}`;
 }
 
+// Every entry must name something the code actually gates behind Pro. The "90
+// days of history" bullet below was briefly removed because it gated nothing —
+// `historyWindowDays` (30 free / 90 Pro) had no consumers, so free users could
+// page back forever and subscribers paid for a limit enforced on nobody. It is
+// back because the window is now real: see src/utils/historyWindow.ts and its
+// callers in MoodHistoryCalendarScreen and ReflectionHistoryScreen. Same
+// discipline as the platform-conditional lock-screen description below: the
+// paywall must not promise what the app does not deliver. Before adding a
+// bullet, find the code that enforces it.
 const FEATURES: {
   icon: keyof typeof Ionicons.glyphMap;
   title: string;
@@ -103,7 +112,7 @@ const FEATURES: {
   {
     icon: 'time-outline',
     title: '90 days of history',
-    description: 'Look back further across your mood and reflection journey',
+    description: 'Look back across three months of moods and reflections, not just the last 30 days',
   },
   {
     icon: 'pie-chart-outline',

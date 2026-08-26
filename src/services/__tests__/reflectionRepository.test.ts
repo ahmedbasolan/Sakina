@@ -109,8 +109,8 @@ describe('getFreeformReflections / insertFreeformReflection', () => {
     const rows = await getFreeformReflections();
 
     expect(mockGetAllAsync).toHaveBeenCalledWith(
-      expect.stringContaining('FROM reflections ORDER BY createdAt DESC LIMIT ?'),
-      [50],
+      expect.stringContaining('FROM reflections WHERE createdAt >= ? ORDER BY createdAt DESC LIMIT ?'),
+      [0, 50],
     );
     expect(rows).toEqual([
       { id: 'r1', title: 'Morning', content: 'text', mood: 'Calm', createdAt: 5 },
@@ -124,5 +124,48 @@ describe('getFreeformReflections / insertFreeformReflection', () => {
     const [sql, args] = mockRunAsync.mock.calls[0];
     expect(sql).toContain('INSERT INTO reflections');
     expect(args).toEqual(['r1', 'Reflection', 'My journal entry', null, expect.any(Number)]);
+  });
+});
+
+// ── History-window clamp ────────────────────────────────────────────
+// The journal is capped at 30 days for free users and 90 for Pro
+// (src/utils/historyWindow.ts). The cap is a lower bound on the READ, never a
+// delete: rows outside the window stay in SQLite untouched and reappear the
+// moment the window widens. `sinceTimestamp` defaults to 0 so every existing
+// caller keeps its full-range behaviour and one query shape serves both tiers.
+describe('history-window clamp', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    mockGetAllAsync.mockResolvedValue([]);
+  });
+
+  it('bounds freeform reflections below by the window boundary', async () => {
+    await getFreeformReflections(50, 1_750_000_000_000);
+
+    const [sql, args] = mockGetAllAsync.mock.calls[0];
+    expect(sql).toContain('WHERE createdAt >= ?');
+    expect(args).toEqual([1_750_000_000_000, 50]);
+  });
+
+  it('applies no lower bound when no boundary is given', async () => {
+    await getFreeformReflections();
+
+    const [, args] = mockGetAllAsync.mock.calls[0];
+    expect(args).toEqual([0, 50]);
+  });
+
+  it('bounds verse reflections below by the window boundary', async () => {
+    await ReflectionRepository.getInstance().getAll(1_750_000_000_000);
+
+    const [sql, args] = mockGetAllAsync.mock.calls[0];
+    expect(sql).toContain('WHERE sr.timestamp >= ?');
+    expect(args).toEqual([1_750_000_000_000]);
+  });
+
+  it('keeps verse reflections newest-first so the cap trims the OLDEST', async () => {
+    await ReflectionRepository.getInstance().getAll(0);
+
+    const [sql] = mockGetAllAsync.mock.calls[0];
+    expect(sql).toContain('ORDER BY sr.timestamp DESC');
   });
 });

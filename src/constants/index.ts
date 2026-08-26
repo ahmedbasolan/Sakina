@@ -51,7 +51,7 @@ export const STORAGE_KEYS = {
 export const FREEMIUM_LIMITS = {
   refreshesPerPrayerWindow: 3,
   maxSavedItems: 30,
-  rotationHistoryDays: 30,
+  historyWindowDays: 30,
 } as const;
 
 // Upgrade-ask cooldown (spec §8): at most one peak ask per this window, so the

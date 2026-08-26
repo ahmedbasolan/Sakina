@@ -161,8 +161,17 @@ export class RotationEngine {
     await this.reflectionRepo.save(contentId, angleId, mood, reflection);
   }
 
-  async getSavedReflections(): Promise<SavedReflection[]> {
-    return this.reflectionRepo.getAll();
+  /**
+   * Written reflections for the Journal screen, bounded below by the tier
+   * history window (`src/utils/historyWindow.ts`); 0 means no bound.
+   *
+   * NOTE the same `getAll` also backs the Library's Saved Verses tab, which
+   * passes nothing and must keep passing nothing: an empty-reflection row there
+   * is a BOOKMARK, not history, and a bookmark must never age out of view.
+   * Saved items are limited by `maxSavedItems`, not by this window.
+   */
+  async getSavedReflections(sinceTimestamp = 0): Promise<SavedReflection[]> {
+    return this.reflectionRepo.getAll(sinceTimestamp);
   }
 
   // ── Private: scoring + selection ────────────────────────────────────────

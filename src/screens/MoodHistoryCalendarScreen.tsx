@@ -32,6 +32,9 @@ import { HapticsService } from '../services/hapticsService';
 import { NoReflections } from '../components/EmptyStates';
 import { logServiceError } from '../services/errorLoggingService';
 import { useReduceMotion } from '../hooks/useReduceMotion';
+import { FreemiumService, PREMIUM_HISTORY_WINDOW_DAYS } from '../services/freemiumService';
+import { HistoryWindowNotice } from '../components/HistoryWindowNotice';
+import { isDayVisible, isMonthBrowsable } from '../utils/historyWindow';
 
 const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 
@@ -248,10 +251,16 @@ export default function MoodHistoryCalendarScreen({ onBack }: MoodHistoryCalenda
   const bottomInset = insets?.bottom ?? 0;
 
   const [isPremium, setIsPremium] = useState(() => SubscriptionService.getInstance().isPremium());
+  // How far back this tier may browse. Kept in state alongside isPremium so a
+  // purchase widens the calendar on the next focus without an app restart.
+  const [windowDays, setWindowDays] = useState(
+    () => FreemiumService.getInstance().getCurrentLimits().historyWindowDays,
+  );
 
   useFocusEffect(
     useCallback(() => {
       setIsPremium(SubscriptionService.getInstance().isPremium());
+      setWindowDays(FreemiumService.getInstance().getCurrentLimits().historyWindowDays);
     }, [])
   );
 
@@ -278,14 +287,20 @@ export default function MoodHistoryCalendarScreen({ onBack }: MoodHistoryCalenda
 
   const loadData = useCallback(async () => {
     try {
-      const [calendar, statsData, insightsData] = await Promise.all([
+      // getStatsAndInsights is ONE history read. This used to be three: stats
+      // and insights side by side here, plus getInsights re-fetching stats
+      // internally because nothing passed its precomputedStats argument.
+      // Insights analyse the same span the tier can browse: a subscriber who
+      // can open 90 days of calendar should not be told about 30. Read fresh
+      // rather than from state so a purchase this session widens both at once.
+      const insightWindow = FreemiumService.getInstance().getCurrentLimits().historyWindowDays;
+      const [calendar, derived] = await Promise.all([
         moodHistoryService.getMoodCalendar(currentMonth.year, currentMonth.month),
-        moodHistoryService.getStats(),
-        moodHistoryService.getInsights(),
+        moodHistoryService.getStatsAndInsights(insightWindow),
       ]);
       setMoodData(calendar);
-      setStats(statsData);
-      setInsights(insightsData);
+      setStats(derived.stats);
+      setInsights(derived.insights);
     } catch (error) {
       logServiceError('MoodHistoryCalendarScreen', 'loadData', error instanceof Error ? error : new Error(String(error)));
     } finally {
@@ -334,27 +349,34 @@ export default function MoodHistoryCalendarScreen({ onBack }: MoodHistoryCalenda
     loadData();
   }, [loadData]);
 
+  // Where the arrows stop. Backwards: the tier window. Forwards: today —
+  // paging into next year was possible and showed empty grids forever.
+  const stepMonth = (delta: number) => {
+    let month = currentMonth.month + delta;
+    let year = currentMonth.year;
+    if (month > 11) { month = 0; year++; }
+    if (month < 0) { month = 11; year--; }
+    return { year, month };
+  };
+  const prevTarget = stepMonth(-1);
+  const nextTarget = stepMonth(1);
+  const canGoBack = isMonthBrowsable(prevTarget.year, prevTarget.month, windowDays);
+  const canGoForward = isMonthBrowsable(nextTarget.year, nextTarget.month, windowDays);
+
   const handleMonthChange = (delta: number) => {
+    const target = delta < 0 ? prevTarget : nextTarget;
+    if (!isMonthBrowsable(target.year, target.month, windowDays)) return;
     HapticsService.impactAsync('LIGHT');
     setSelectedDay(null);
     setDayDetail(null);
-    setCurrentMonth((prev) => {
-      let newMonth = prev.month + delta;
-      let newYear = prev.year;
-      if (newMonth > 11) {
-        newMonth = 0;
-        newYear++;
-      }
-      if (newMonth < 0) {
-        newMonth = 11;
-        newYear--;
-      }
-      return { year: newYear, month: newMonth };
-    });
+    setCurrentMonth(target);
   };
 
   const handleDayPress = async (dateStr: string) => {
     if (!moodData[dateStr]) return;
+    // Belt and braces: the cell is already disabled, but a day outside the
+    // window must never reach getDayDetail and render its verse.
+    if (!isDayVisible(dateStr, windowDays)) return;
     HapticsService.impactAsync('LIGHT');
 
     if (selectedDay === dateStr) {
@@ -461,9 +483,14 @@ export default function MoodHistoryCalendarScreen({ onBack }: MoodHistoryCalenda
         >
           {/* Hero Streak Card */}
           {stats && (() => {
-            const progressPercent = stats.currentStreak > 0
-              ? Math.min(((stats.currentStreak % 30) / 30) * 100, 100)
+            // The ring tracks progress through a 30-day cycle. A plain `% 30`
+            // sent day 30 (and 60, and 90) back to an EMPTY ring — reaching the
+            // milestone looked like losing the streak. Shifting by one keeps day
+            // 30 at a full ring and starts the next cycle on day 31.
+            const cycleDay = stats.currentStreak > 0
+              ? ((stats.currentStreak - 1) % 30) + 1
               : 0;
+            const progressPercent = (cycleDay / 30) * 100;
             const { title, subtitle } = getStreakInfo(stats.currentStreak);
             return (
               <View style={styles.heroCard}>
@@ -472,7 +499,7 @@ export default function MoodHistoryCalendarScreen({ onBack }: MoodHistoryCalenda
                   style={[StyleSheet.absoluteFill, { borderRadius: BorderRadius.xl }]}
                 />
                 <LinearGradient
-                  colors={['rgba(251,146,60,0.12)', 'rgba(251,146,60,0.03)']}
+                  colors={[`${Colors.accent.primary}1F`, `${Colors.accent.primary}08`]}
                   style={[StyleSheet.absoluteFill, { borderRadius: BorderRadius.xl }]}
                   start={{ x: 0, y: 0 }}
                   end={{ x: 1, y: 1 }}
@@ -480,7 +507,11 @@ export default function MoodHistoryCalendarScreen({ onBack }: MoodHistoryCalenda
                 />
                 <View style={styles.heroInner}>
                   {/* Ring */}
-                  <View style={styles.ringContainer}>
+                  <View
+                    style={styles.ringContainer}
+                    accessibilityRole="progressbar"
+                    accessibilityLabel={`${stats.currentStreak} day streak, day ${cycleDay} of a 30 day cycle`}
+                  >
                     <ProgressRing progress={progressPercent} size={110} strokeWidth={6} />
                     <View style={styles.ringCenter}>
                       <Text style={styles.ringValue}>{stats.currentStreak}</Text>
@@ -492,6 +523,11 @@ export default function MoodHistoryCalendarScreen({ onBack }: MoodHistoryCalenda
                   <View style={styles.heroRight}>
                     <Text style={styles.heroTitle}>{title}</Text>
                     <Text style={styles.heroSubtitle}>{subtitle}</Text>
+                    {/* These three are all-time, while the Insights below speak
+                        for the last 30 days and the calendar shows only what the
+                        tier window allows. Three different spans on one screen,
+                        so each says which it is. */}
+                    <Text style={styles.heroStatsScope}>ALL TIME</Text>
                     <View style={styles.heroStats}>
                       <View style={styles.heroStatRow}>
                         <Text style={styles.heroStatLabel}>Total Days</Text>
@@ -501,8 +537,25 @@ export default function MoodHistoryCalendarScreen({ onBack }: MoodHistoryCalenda
                       </View>
                       <View style={styles.heroStatRow}>
                         <Text style={styles.heroStatLabel}>Top Mood</Text>
-                        <Text style={[styles.heroStatValue, { color: '#7DD3FC' }]} numberOfLines={1}>
-                          {stats.mostCommonMood ? moodLabel(stats.mostCommonMood).substring(0, 9) : '—'}
+                        {/* No substring: slicing to 9 chars rendered "Overwhelmed"
+                            as "Overwhelm" with no ellipsis. numberOfLines already
+                            bounds this, and flexShrink lets it ellipsize properly
+                            on a narrow screen instead of clipping mid-word. */}
+                        {/* The mood is coloured with its OWN canonical accent from
+                            MoodColors, so "Grateful" here is the same amber as the
+                            Home grid and the calendar cell. It used to be #7DD3FC,
+                            one of the four invented families removed below. */}
+                        <Text
+                          style={[
+                            styles.heroStatValue,
+                            styles.heroStatValueMood,
+                            stats.mostCommonMood
+                              ? { color: getMoodVisual(stats.mostCommonMood).bg }
+                              : { color: Colors.text.muted },
+                          ]}
+                          numberOfLines={1}
+                        >
+                          {stats.mostCommonMood ? moodLabel(stats.mostCommonMood) : '—'}
                         </Text>
                       </View>
                       <View style={styles.heroStatRow}>
@@ -519,10 +572,19 @@ export default function MoodHistoryCalendarScreen({ onBack }: MoodHistoryCalenda
                 <View style={styles.heroDivider} />
 
                 {/* Hadith quote */}
+                {/* Verbatim first sentence of Bukhari 39, which stands alone as a
+                    complete statement. It replaced an uncited paraphrase of the
+                    "most beloved deeds are the most regular" hadith — that had no
+                    collection or number (CLAUDE.md requires both for anything in
+                    quotation marks), AND the Insights streak card below already
+                    quotes it properly as Bukhari 6465, so citing it here would
+                    have printed one hadith twice on a single screen. This one is
+                    a better fit for a streak card anyway: it warns against
+                    overburdening rather than urging more. */}
                 <Text style={styles.quoteText}>
-                  &quot;The most beloved deeds to Allah are those done consistently, even if they are small.&quot;
+                  &quot;Religion is very easy and whoever overburdens himself in his religion will not be able to continue in that way.&quot;
                 </Text>
-                <Text style={styles.quoteAttrib}>— Prophet Muhammad ﷺ</Text>
+                <Text style={styles.quoteAttrib}>— Prophet Muhammad ﷺ · Sahih al-Bukhari 39</Text>
               </View>
             );
           })()}
@@ -535,10 +597,23 @@ export default function MoodHistoryCalendarScreen({ onBack }: MoodHistoryCalenda
                 style={styles.monthArrow}
                 onPress={() => handleMonthChange(-1)}
                 activeOpacity={0.7}
+                disabled={!canGoBack}
                 accessibilityRole="button"
-                accessibilityLabel="Previous month"
+                accessibilityLabel={
+                  canGoBack
+                    ? 'Previous month'
+                    : `Earlier months need Sakina Pro — you can browse ${windowDays} days`
+                }
+                accessibilityState={{ disabled: !canGoBack }}
               >
-                <MaterialCommunityIcons name="chevron-left" size={24} color="#6A90B0" />
+                {/* Disabled nav icons dim the ICON and never change the container
+                    shape — the nav rule in CLAUDE.md. */}
+                <MaterialCommunityIcons
+                  name="chevron-left"
+                  size={24}
+                  color={canGoBack ? '#6A90B0' : Colors.text.muted}
+                  style={{ opacity: canGoBack ? 1 : 0.35 }}
+                />
               </TouchableOpacity>
 
               <Text style={styles.monthTitle}>
@@ -549,10 +624,17 @@ export default function MoodHistoryCalendarScreen({ onBack }: MoodHistoryCalenda
                 style={styles.monthArrow}
                 onPress={() => handleMonthChange(1)}
                 activeOpacity={0.7}
+                disabled={!canGoForward}
                 accessibilityRole="button"
                 accessibilityLabel="Next month"
+                accessibilityState={{ disabled: !canGoForward }}
               >
-                <MaterialCommunityIcons name="chevron-right" size={24} color="#6A90B0" />
+                <MaterialCommunityIcons
+                  name="chevron-right"
+                  size={24}
+                  color={canGoForward ? '#6A90B0' : Colors.text.muted}
+                  style={{ opacity: canGoForward ? 1 : 0.35 }}
+                />
               </TouchableOpacity>
             </View>
 
@@ -576,18 +658,27 @@ export default function MoodHistoryCalendarScreen({ onBack }: MoodHistoryCalenda
                 const entry = moodData[dateStr];
                 const isSelected = selectedDay === dateStr;
                 const isToday = dateStr === todayStr;
-                const visual = entry ? getMoodVisual(entry.mood) : null;
+                // A day outside the tier window is LOCKED, which is a different
+                // state from "you did not check in". Rendering it blank would tell
+                // the user their history is gone; it is not, it is behind the
+                // window. Locked therefore wins over entry styling below.
+                const isLocked = !isDayVisible(dateStr, windowDays);
+                const visual = entry && !isLocked ? getMoodVisual(entry.mood) : null;
 
                 return (
                   <TouchableOpacity
                     key={`day-${day}`}
                     style={styles.calendarCell}
                     onPress={() => handleDayPress(dateStr)}
-                    activeOpacity={entry ? 0.7 : 1}
-                    disabled={!entry}
+                    activeOpacity={entry && !isLocked ? 0.7 : 1}
+                    disabled={!entry || isLocked}
                     accessibilityRole="button"
-                    accessibilityLabel={`${MONTH_NAMES[currentMonth.month]} ${day}${entry ? `, ${moodLabel(entry.mood)}` : ''}${isToday ? ', today' : ''}`}
-                    accessibilityState={{ disabled: !entry, selected: isSelected }}
+                    accessibilityLabel={
+                      isLocked
+                        ? `${MONTH_NAMES[currentMonth.month]} ${day}, locked — needs Sakina Pro`
+                        : `${MONTH_NAMES[currentMonth.month]} ${day}${entry ? `, ${moodLabel(entry.mood)}` : ''}${isToday ? ', today' : ''}`
+                    }
+                    accessibilityState={{ disabled: !entry || isLocked, selected: isSelected }}
                   >
                     <View
                       style={[
@@ -595,8 +686,9 @@ export default function MoodHistoryCalendarScreen({ onBack }: MoodHistoryCalenda
                         // Was bg+'33' (20%) with a bg+'66' border — on the dark
                         // card that reads as a barely-there smudge, which is
                         // why a logged day didn't feel like an achievement.
-                        entry && { backgroundColor: visual!.bg + '4D' },
-                        entry && { borderWidth: 1.5, borderColor: visual!.bg + 'B3' },
+                        entry && !isLocked && { backgroundColor: visual!.bg + '4D' },
+                        entry && !isLocked && { borderWidth: 1.5, borderColor: visual!.bg + 'B3' },
+                        isLocked && styles.calendarCellLocked,
                         isSelected && styles.calendarCellSelected,
                         isToday && !entry && styles.calendarCellToday,
                       ]}
@@ -606,8 +698,9 @@ export default function MoodHistoryCalendarScreen({ onBack }: MoodHistoryCalenda
                           styles.calendarDayText,
                           // Full-strength mood colour, not the 100%-alpha accent
                           // over a near-invisible fill.
-                          entry && { color: visual!.text, fontWeight: '700' },
-                          !entry && { color: Colors.text.muted },
+                          entry && !isLocked && { color: visual!.text, fontWeight: '700' },
+                          (!entry || isLocked) && { color: Colors.text.muted },
+                          isLocked && { opacity: 0.45 },
                           isToday && !entry && { color: Colors.accent.primary, fontWeight: '700' },
                         ]}
                       >
@@ -618,6 +711,17 @@ export default function MoodHistoryCalendarScreen({ onBack }: MoodHistoryCalenda
                 );
               })}
             </View>
+
+            <HistoryWindowNotice
+              windowDays={windowDays}
+              isPremium={isPremium}
+              premiumWindowDays={PREMIUM_HISTORY_WINDOW_DAYS}
+              noun="check-ins"
+              onUpgrade={() => {
+                HapticsService.impactAsync('MEDIUM');
+                navigation.navigate('Support');
+              }}
+            />
 
             {/* Legend */}
             <View style={styles.legend}>
@@ -749,8 +853,21 @@ export default function MoodHistoryCalendarScreen({ onBack }: MoodHistoryCalenda
             </CardSurface>
           )}
 
+          {/* Empty state comes BEFORE the analytics block, not after it. A user
+              with no check-ins used to meet an upsell for analysing data they
+              did not have, and only then the invitation to start. */}
+          {stats && stats.totalDaysTracked === 0 && (
+            <NoReflections
+              onStartReflecting={() => {
+                HapticsService.impactAsync('LIGHT');
+                // Begin reflecting by choosing today’s mood → guidance → reflection.
+                navigation.navigate('MoodSelection');
+              }}
+            />
+          )}
+
           {/* Premium Gated Analytics & Insights Teaser / Paid Access */}
-          {!isPremium ? (
+          {stats && stats.totalDaysTracked > 0 && (!isPremium ? (
             <CardSurface style={styles.premiumTeaserCard}>
               <View style={styles.premiumTeaserHeader}>
                 <View style={styles.premiumTeaserIconCircle}>
@@ -762,8 +879,16 @@ export default function MoodHistoryCalendarScreen({ onBack }: MoodHistoryCalenda
                 </View>
               </View>
 
+              {/* Only promise what computeInsights can actually deliver. It is
+                  handed `{ mood, created_at }` rows and nothing else — your written
+                  reflections never enter the pipeline, so this card must not sell
+                  "guidance based on your journal reflections" (it did, and that was
+                  a paid-feature claim the code does not implement). The two things
+                  named below are real: the weekday heavy-mood pattern and the
+                  recent-vs-prior 14-day trend. If insights ever do read reflections,
+                  change computeInsights' signature first and this copy second. */}
               <Text style={styles.premiumTeaserDesc}>
-                Deepen your self-awareness. Support Sakina to unlock detailed emotional patterns, trends, and personalized guidance based on your journal reflections.
+                Deepen your self-awareness. Support Sakina to see the patterns in the moods you log — which days tend to weigh heaviest, and how these two weeks compare to the two before.
               </Text>
 
               <View style={styles.premiumTeaserFeatures}>
@@ -804,12 +929,19 @@ export default function MoodHistoryCalendarScreen({ onBack }: MoodHistoryCalenda
               {/* Mood Distribution */}
               {stats && Object.keys(stats.moodCounts).length > 0 && (
                 <CardSurface style={styles.card}>
-                  <Text style={styles.cardTitle}>Mood Distribution</Text>
+                  <Text style={styles.cardTitleTight}>Mood Distribution</Text>
+                  <Text style={styles.cardSubtitle}>
+                    Across all {stats.totalDaysTracked} days you have checked in
+                  </Text>
+                  {/* `moodCounts` is one entry per DAY (computeStats), so `total`
+                      equals stats.totalDaysTracked and every bar is a share of
+                      days checked in — never of taps. The unit is spelled out
+                      because the same card used to render session counts. */}
                   {Object.entries(stats.moodCounts)
                     .sort((a, b) => b[1] - a[1])
-                    .map(([mood, count]) => {
+                    .map(([mood, days]) => {
                       const total = Object.values(stats.moodCounts).reduce((s, c) => s + c, 0);
-                      const percentage = Math.round((count / total) * 100);
+                      const percentage = Math.round((days / total) * 100);
                       const visual = getMoodVisual(mood);
                       return (
                         <View key={mood} style={styles.distRow}>
@@ -817,7 +949,7 @@ export default function MoodHistoryCalendarScreen({ onBack }: MoodHistoryCalenda
                             <View style={[styles.distDot, { backgroundColor: visual.bg }]} />
                             <Text style={styles.distMood}>{moodLabel(mood)}</Text>
                             <Text style={[styles.distCount, { color: visual.text }]}>
-                              {count} ({percentage}%)
+                              {days} {days === 1 ? 'day' : 'days'} ({percentage}%)
                             </Text>
                           </View>
                           <View style={styles.distBarBg}>
@@ -844,18 +976,7 @@ export default function MoodHistoryCalendarScreen({ onBack }: MoodHistoryCalenda
                 </View>
               )}
             </>
-          )}
-
-          {/* Empty State */}
-          {stats && stats.totalDaysTracked === 0 && (
-            <NoReflections
-              onStartReflecting={() => {
-                HapticsService.impactAsync('LIGHT');
-                // Begin reflecting by choosing today's mood → guidance → reflection.
-                navigation.navigate('MoodSelection');
-              }}
-            />
-          )}
+          ))}
         </ScrollView>
       </Animated.View>
     </View>
@@ -863,42 +984,27 @@ export default function MoodHistoryCalendarScreen({ onBack }: MoodHistoryCalenda
 }
 
 // ── Sub-components ──────────────────────────────────────────────────
+// The paid section used to be the least on-brand surface in the app: four
+// invented colour families (indigo #818CF8, emerald, amber #FBBF24, sky) that
+// exist nowhere in DesignSystem, plus emoji rendered through a <Text>. On the
+// Celestial Night palette that read as a generic analytics dashboard bolted
+// onto a lantern-lit app — and it was the surface asking for money.
+//
+// Now: the single gold accent does the accent work (CLAUDE.md), surfaces come
+// from Colors.glass.*, and the DIFFERENCE between insight types is carried by
+// the icon, which is what an icon is for. Nothing here invents a colour.
 function InsightCard({ insight }: { insight: MoodInsight }) {
-  const colorMap: Record<string, { bg: string; border: string; iconBg: string; text: string }> = {
-    pattern: {
-      bg: 'rgba(99,102,241,0.08)',
-      border: 'rgba(99,102,241,0.22)',
-      iconBg: 'rgba(99,102,241,0.14)',
-      text: '#818CF8',
-    },
-    trend: {
-      bg: 'rgba(16,185,129,0.08)',
-      border: 'rgba(16,185,129,0.22)',
-      iconBg: 'rgba(16,185,129,0.14)',
-      text: Colors.status.success,
-    },
-    streak: {
-      bg: 'rgba(245,158,11,0.08)',
-      border: 'rgba(245,158,11,0.22)',
-      iconBg: 'rgba(245,158,11,0.14)',
-      text: '#FBBF24',
-    },
-    tip: {
-      bg: 'rgba(59,130,246,0.08)',
-      border: 'rgba(59,130,246,0.22)',
-      iconBg: 'rgba(59,130,246,0.14)',
-      text: '#7DD3FC',
-    },
-  };
-  const colors = colorMap[insight.type] || colorMap.tip;
-
   return (
-    <View style={[styles.insightCard, { backgroundColor: colors.bg, borderColor: colors.border }]}>
-      <View style={[styles.insightIcon, { backgroundColor: colors.iconBg }]}>
-        <Text style={{ fontSize: 18 }}>{insight.icon}</Text>
+    <View style={styles.insightCard}>
+      <View style={styles.insightIcon}>
+        <MaterialCommunityIcons
+          name={insight.icon as keyof typeof MaterialCommunityIcons.glyphMap}
+          size={18}
+          color={Colors.accent.primary}
+        />
       </View>
       <View style={styles.insightContent}>
-        <Text style={[styles.insightTitle, { color: colors.text }]}>{insight.title}</Text>
+        <Text style={styles.insightTitle}>{insight.title}</Text>
         <Text style={styles.insightDesc}>{insight.description}</Text>
       </View>
     </View>
@@ -989,7 +1095,7 @@ const styles = StyleSheet.create({
     borderRadius: BorderRadius.xl,
     padding: 18,
     borderWidth: 1,
-    borderColor: 'rgba(251,146,60,0.2)',
+    borderColor: Colors.accent.muted,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.35,
@@ -1041,8 +1147,24 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     lineHeight: 17,
   },
+  // Micro-label in the same letterspaced-uppercase idiom as headerPretitle and
+  // ringLabel, marking which span the three stats below cover.
+  heroStatsScope: {
+    fontSize: 9,
+    fontWeight: '700',
+    color: Colors.text.muted,
+    letterSpacing: 1.5,
+    marginBottom: 5,
+  },
   heroStats: {
     gap: 5,
+  },
+  // Shrinks before the label does, so a long mood ellipsizes rather than
+  // pushing "Top Mood" off the row.
+  heroStatValueMood: {
+    flexShrink: 1,
+    marginLeft: Spacing.sm,
+    textAlign: 'right',
   },
   heroStatRow: {
     flexDirection: 'row',
@@ -1059,7 +1181,7 @@ const styles = StyleSheet.create({
   },
   heroDivider: {
     height: 1,
-    backgroundColor: 'rgba(251,146,60,0.12)',
+    backgroundColor: Colors.accent.glow,
     marginVertical: 14,
   },
   quoteText: {
@@ -1095,6 +1217,19 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '700',
     color: Colors.text.primary,
+    marginBottom: 14,
+  },
+  // Same title, tightened because a subtitle now sits under it and carries
+  // the gap instead.
+  cardTitleTight: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: Colors.text.primary,
+    marginBottom: 2,
+  },
+  cardSubtitle: {
+    fontSize: Typography.sizes.detail,
+    color: Colors.text.muted,
     marginBottom: 14,
   },
 
@@ -1162,6 +1297,14 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  // Deliberately flat: a faint dashed outline that reads as "not yours to
+  // open yet" rather than as an empty day. No fill, so it never competes with
+  // a real mood cell, and no accent colour, so it does not look tappable.
+  calendarCellLocked: {
+    borderWidth: 1,
+    borderColor: Colors.glass.border,
+    borderStyle: 'dashed',
   },
   calendarCellSelected: {
     borderWidth: 2,
@@ -1362,13 +1505,16 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     borderRadius: BorderRadius.lg,
     padding: 14,
-    borderWidth: 1.5,
+    borderWidth: 1,
+    backgroundColor: Colors.glass.light,
+    borderColor: Colors.glass.border,
     gap: 12,
   },
   insightIcon: {
     width: 36,
     height: 36,
     borderRadius: BorderRadius.sm,
+    backgroundColor: Colors.accent.glow,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -1379,7 +1525,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '700',
     marginBottom: 3,
-    color: Colors.text.primary,
+    color: Colors.accent.primary,
   },
   insightDesc: {
     fontSize: 12,
