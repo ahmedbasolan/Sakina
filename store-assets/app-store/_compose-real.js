@@ -121,13 +121,13 @@ const STANDARD_CROP = { top: 120, bottom: 2940 }; // 1440-wide native device cap
 const COMPACT_CROP = { top: 80, bottom: 1905 }; // 932-wide captures (chat-attachment resolution)
 
 const JOBS = [
-  { out: '01-find-verse.png', verb: 'FIND', desc: 'A VERSE FOR HOW YOU FEEL', src: 'real-screenshots/MOODS.jpg', crop: STANDARD_CROP },
-  { out: '02-ease-overwhelm.png', verb: 'EASE', desc: 'OVERWHELM, ONE VERSE AT A TIME', src: 'real-screenshots/VERSE.jpg', crop: STANDARD_CROP },
-  { out: '03-build-habit.png', verb: 'BUILD', desc: 'A DAILY HABIT THAT STICKS', src: 'real-screenshots/HISTORY.jpg', crop: null },
+  { out: '01-find-verse.png', verb: 'FIND', desc: 'A VERSE FOR HOW YOU FEEL', src: 'real-screenshots/FIND-v2.jpg', crop: STANDARD_CROP },
+  { out: '02-ease-overwhelm.png', verb: 'EASE', desc: 'OVERWHELM, ONE VERSE AT A TIME', src: 'real-screenshots/EASE-v2.jpg', crop: STANDARD_CROP },
+  { out: '03-build-habit.png', verb: 'BUILD', desc: 'A DAILY HABIT THAT STICKS', src: 'real-screenshots/BUILD-v2.jpg', crop: STANDARD_CROP },
   { out: '04-keep-private.png', verb: 'KEEP', desc: 'YOUR REFLECTIONS COMPLETELY PRIVATE', src: 'real-screenshots/REFLECTION.jpg', crop: STANDARD_CROP },
   { out: '05-begin-journey.png', verb: 'BEGIN', desc: 'YOUR JOURNEY TO SAKINA', src: 'real-screenshots/BEGIN.jpg', crop: STANDARD_CROP },
   { out: '06-grow-journeys.png', verb: 'GROW', desc: 'THROUGH GUIDED SPIRITUAL JOURNEYS', src: 'real-screenshots/JOURNEYS.jpg', crop: COMPACT_CROP },
-  { out: '07-read-quran.png', verb: 'READ', desc: 'THE COMPLETE QURAN, BEAUTIFULLY', src: 'real-screenshots/SURAH.jpg', crop: COMPACT_CROP },
+  { out: '07-read-quran.png', verb: 'READ', desc: 'THE COMPLETE QURAN, BEAUTIFULLY', src: 'real-screenshots/READ-v2.jpg', crop: STANDARD_CROP },
   { out: '08-save-verses.png', verb: 'SAVE', desc: 'EVERY VERSE THAT SPEAKS TO YOU', src: 'real-screenshots/SAVE.jpg', crop: COMPACT_CROP },
 ];
 
