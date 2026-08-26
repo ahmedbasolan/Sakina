@@ -22,6 +22,10 @@ export interface DisplayPricing {
   monthlyPrice: string;
   yearlyPrice: string;
   trialDays: number;
+  // null whenever the store/offering has no lifetime package — see RCPricing.
+  // Consumers render the lifetime card only when both are non-null.
+  lifetimePrice: string | null;
+  lifetimeUSD: number | null;
 }
 import { revenueCat } from './revenueCatService';
 import { dbQuery } from '../database/connection';
@@ -59,13 +63,7 @@ export class FreemiumService {
   // `monthlyPrice`/`yearlyPrice` are the display strings ("$4.99", "€4,99")
   // carrying the correct currency symbol; the *USD numbers are kept for math
   // (savings %, per-month equivalent).
-  private rcPricing: {
-    monthlyUSD: number;
-    yearlyUSD: number;
-    monthlyPrice: string;
-    yearlyPrice: string;
-    trialDays: number;
-  } | null = null;
+  private rcPricing: DisplayPricing | null = null;
 
   static getInstance(): FreemiumService {
     if (!FreemiumService.instance) {
@@ -94,6 +92,8 @@ export class FreemiumService {
             monthlyPrice: p.monthlyPrice,
             yearlyPrice: p.yearlyPrice,
             trialDays: p.trialDays,
+            lifetimePrice: p.lifetimePrice,
+            lifetimeUSD: p.lifetimePriceAmount,
           };
         }
       }).catch(() => {});
@@ -253,7 +253,7 @@ export class FreemiumService {
     return success;
   }
 
-  async activatePremium(type: 'monthly' | 'yearly'): Promise<boolean> {
+  async activatePremium(type: 'monthly' | 'yearly' | 'lifetime'): Promise<boolean> {
     const success = await this.subscriptionService.activatePremium(type);
     if (success) {
       const s = this.sessionService.getCurrentSession();

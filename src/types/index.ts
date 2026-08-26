@@ -11,7 +11,12 @@ export type Mood =
   | 'Guilty'
   | 'Calm';
 export type SubscriptionTier = 'free' | 'premium';
-export type SubscriptionType = 'monthly' | 'yearly' | 'trial';
+// 'lifetime' is a one-time non-consumable purchase, not a subscription: it
+// grants the same `Sakina Pro` entitlement but never renews and has no
+// expiry date. Anything branching on this type must treat it as permanently
+// active — see subscriptionService.syncFromCustomerInfo, which detects it
+// from a null entitlement expirationDate rather than from the product id.
+export type SubscriptionType = 'monthly' | 'yearly' | 'trial' | 'lifetime';
 
 export type ContentType = 'Quran' | 'Hadith' | 'Dua' | 'Sunnah Practice' | 'Dhikr';
 
