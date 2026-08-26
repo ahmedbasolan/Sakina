@@ -21,6 +21,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Colors, BorderRadius, Spacing, Typography } from '../theme/DesignSystem';
+import { SakinaLantern } from './SakinaLantern';
 import { loadLockscreenPrefs, saveLockscreenPrefs } from '../services/lockscreenVerseService';
 import { topUpScheduledNotifications } from '../services/notificationTopUpTask';
 import { BackgroundTheme } from '../types';
@@ -122,13 +123,13 @@ const CardContent = ({
 }: CardContentProps) => (
   <>
     <View style={styles.cardHeader}>
-      <Ionicons
-        name="moon-outline"
-        size={11}
-        color={subTextColor}
-        style={{ opacity: 0.65, marginRight: 5 }}
-      />
-      <Text style={[styles.moodLabel, { color: subTextColor }]}>Sakina app</Text>
+      {/* The actual brand mark (the fanoos from the app icon), not a generic
+          moon glyph — a shared verse is the one piece of the app most likely
+          to be seen by someone who has never opened it, so this mark is doing
+          real recognition work. Static: a breathing flame is imperceptible
+          at this scale and this image is captured as a still. */}
+      <SakinaLantern size={16} animated={false} />
+      <Text style={[styles.moodLabel, { color: subTextColor, marginLeft: 4 }]}>Sakina app</Text>
     </View>
 
     <View style={styles.quoteContainer}>
