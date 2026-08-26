@@ -192,12 +192,16 @@ function ProgressRing({ progress, size = 110, strokeWidth = 6 }: {
 
   return (
     <Svg width={size} height={size} style={{ transform: [{ rotate: '-90deg' }] }}>
+      {/* Track colour matches distBarBg below (Colors.glass.medium) — this
+          ring and the Mood Distribution bars are the same shape, an unfilled
+          track behind an accent-coloured fill, and now share one token
+          instead of the ring inventing its own navy (#1E3A5F). */}
       <Circle
         cx={size / 2}
         cy={size / 2}
         r={r}
         fill="none"
-        stroke="#1E3A5F"
+        stroke={Colors.glass.medium}
         strokeWidth={strokeWidth}
       />
       <AnimatedCircle
@@ -453,7 +457,11 @@ export default function MoodHistoryCalendarScreen({ onBack }: MoodHistoryCalenda
           accessibilityRole="button"
           accessibilityLabel="Go back"
         >
-          <MaterialCommunityIcons name="arrow-left" size={22} color="#F0E6D3" />
+          {/* Was a hand-typed near-duplicate of Colors.text.primary (#F0E6D3 vs
+              #F5EDE3) — the same hardcoded-copy drift the mood palette was
+              burned by. backText two lines down already uses the real token;
+              the icon now matches it exactly instead of eyeballing it. */}
+          <MaterialCommunityIcons name="arrow-left" size={22} color={Colors.text.primary} />
           <Text style={styles.backText}>Back</Text>
         </TouchableOpacity>
 
@@ -608,10 +616,13 @@ export default function MoodHistoryCalendarScreen({ onBack }: MoodHistoryCalenda
               >
                 {/* Disabled nav icons dim the ICON and never change the container
                     shape — the nav rule in CLAUDE.md. */}
+                {/* #6A90B0 was a hand-typed near-duplicate of Colors.text.steel
+                    (#6B8EAE) — the token DesignSystem documents by name for
+                    exactly this ("captions/chevrons on celestial surfaces"). */}
                 <MaterialCommunityIcons
                   name="chevron-left"
                   size={24}
-                  color={canGoBack ? '#6A90B0' : Colors.text.muted}
+                  color={canGoBack ? Colors.text.steel : Colors.text.muted}
                   style={{ opacity: canGoBack ? 1 : 0.35 }}
                 />
               </TouchableOpacity>
@@ -632,7 +643,7 @@ export default function MoodHistoryCalendarScreen({ onBack }: MoodHistoryCalenda
                 <MaterialCommunityIcons
                   name="chevron-right"
                   size={24}
-                  color={canGoForward ? '#6A90B0' : Colors.text.muted}
+                  color={canGoForward ? Colors.text.steel : Colors.text.muted}
                   style={{ opacity: canGoForward ? 1 : 0.35 }}
                 />
               </TouchableOpacity>
