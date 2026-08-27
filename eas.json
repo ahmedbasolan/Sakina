@@ -46,7 +46,7 @@
         "ascAppId": "6801511292"
       },
       "android": {
-        "serviceAccountKeyPath": "../keys/sakina-501416-153ce82ddd0a.json",
+        "serviceAccountKeyPath": "../keys/sakina-501416-76689ea4be3c.json",
         "track": "internal"
       }
     }
