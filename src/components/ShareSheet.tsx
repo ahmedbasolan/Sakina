@@ -309,7 +309,15 @@ const ShareSheet = ({ isVisible, onClose, isPremium, onUpgrade, content }: Share
 
       if (action === 'save_image') {
         const uri = await captureCardImage();
-        const permission = await MediaLibrary.requestPermissionsAsync();
+        // `true` = writeOnly. Sakina only ever ADDS a card to the library; it
+        // never reads the user's photos. Asking for full access would make
+        // Android grant (and Play demand a declaration for) READ_MEDIA_IMAGES
+        // and friends, which is a broader claim than the app can justify —
+        // see the matching `granularPermissions: []` and blockedPermissions
+        // in app.json. Keep all three in step: dropping the manifest
+        // permissions while still requesting full access here would make this
+        // call fail at runtime rather than degrade to write-only.
+        const permission = await MediaLibrary.requestPermissionsAsync(true);
         if (permission.granted) {
           await MediaLibrary.saveToLibraryAsync(uri);
         }
