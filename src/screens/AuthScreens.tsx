@@ -32,6 +32,7 @@ import { RootStackParamList } from '../navigation/types';
 import { LEGAL_URLS } from '../constants';
 import { isValidEmail, isValidPassword } from '../utils';
 import * as Haptics from 'expo-haptics';
+import * as AppleAuthentication from 'expo-apple-authentication';
 
 type AuthNavigation = StackNavigationProp<RootStackParamList, 'Login' | 'SignUp' | 'ResetPassword'>;
 
@@ -214,6 +215,54 @@ function useAppleSignIn(
   }, [authService, setIsLoading, navigation, completePasswordRecovery]);
 }
 
+// Apple's Sign in with Apple HIG is prescriptive: its own mark, one of three
+// sanctioned appearances (black / white / white-outline), one of three
+// sanctioned labels, and no recolouring. A Celestial-Night glass tile reading
+// "Apple" met none of that. AppleAuthenticationButton IS the compliant button —
+// do not swap it back for a custom tile to match the palette. WHITE is the
+// appearance Apple specifies for dark backgrounds like ours.
+function useAppleSignInAvailable(authService: AuthService) {
+  const [available, setAvailable] = useState(false);
+  useEffect(() => {
+    let cancelled = false;
+    authService
+      .isAppleSignInAvailable()
+      .then((ok) => {
+        if (!cancelled) setAvailable(ok);
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, [authService]);
+  return available;
+}
+
+function AppleAuthButton({
+  type,
+  onPress,
+  disabled,
+}: {
+  type: AppleAuthentication.AppleAuthenticationButtonType;
+  onPress: () => void;
+  disabled: boolean;
+}) {
+  return (
+    // Gated with pointerEvents rather than opacity: Apple forbids altering the
+    // button's appearance, and the shared isLoading spinner on the primary CTA
+    // already signals that a request is in flight.
+    <View pointerEvents={disabled ? 'none' : 'auto'}>
+      <AppleAuthentication.AppleAuthenticationButton
+        buttonType={type}
+        buttonStyle={AppleAuthentication.AppleAuthenticationButtonStyle.WHITE}
+        cornerRadius={BorderRadius.md}
+        style={styles.appleBtn}
+        onPress={onPress}
+      />
+    </View>
+  );
+}
+
 // ==================== LOGIN SCREEN ====================
 export function LoginScreen({ navigation }: AuthScreenProps) {
   const [email, setEmail] = useState('');
@@ -290,6 +339,7 @@ export function LoginScreen({ navigation }: AuthScreenProps) {
   };
 
   const handleAppleAuth = useAppleSignIn(authService, setIsLoading, navigation);
+  const appleAvailable = useAppleSignInAvailable(authService);
 
   return (
     <KeyboardAvoidingView
@@ -387,7 +437,17 @@ export function LoginScreen({ navigation }: AuthScreenProps) {
 
             <GoldDivider text="Or continue with" />
 
-            <View style={styles.socialRow}>
+            {/* Apple sits above Google and matches its width: App Store
+                Guideline 4.8 requires Sign in with Apple to be offered at least
+                as prominently as any other third-party sign-in. */}
+            <View style={styles.socialStack}>
+              {appleAvailable && (
+                <AppleAuthButton
+                  type={AppleAuthentication.AppleAuthenticationButtonType.SIGN_IN}
+                  onPress={handleAppleAuth}
+                  disabled={isLoading}
+                />
+              )}
               <TouchableOpacity
                 style={styles.socialBtn}
                 activeOpacity={0.8}
@@ -399,23 +459,8 @@ export function LoginScreen({ navigation }: AuthScreenProps) {
               >
                 <TintWash radius={BorderRadius.md} />
                 <GoogleIcon size={18} />
-                <Text style={styles.socialBtnText}>Google</Text>
+                <Text style={styles.socialBtnText}>Continue with Google</Text>
               </TouchableOpacity>
-              {Platform.OS === 'ios' && (
-                <TouchableOpacity
-                  style={styles.socialBtn}
-                  activeOpacity={0.8}
-                  onPress={handleAppleAuth}
-                  disabled={isLoading}
-                  accessibilityRole="button"
-                  accessibilityLabel="Continue with Apple"
-                  accessibilityState={{ disabled: isLoading }}
-                >
-                  <TintWash radius={BorderRadius.md} />
-                  <AppleIcon size={18} fill={Colors.text.primary} />
-                  <Text style={styles.socialBtnText}>Apple</Text>
-                </TouchableOpacity>
-              )}
             </View>
 
             <TouchableOpacity
@@ -520,6 +565,7 @@ export function SignUpScreen({ navigation }: AuthScreenProps) {
   };
 
   const handleAppleAuth = useAppleSignIn(authService, setIsLoading, navigation);
+  const appleAvailable = useAppleSignInAvailable(authService);
 
   const canSubmit = agreeTerms && !isLoading;
 
@@ -650,7 +696,14 @@ export function SignUpScreen({ navigation }: AuthScreenProps) {
 
             <GoldDivider text="Or sign up with" />
 
-            <View style={styles.socialRow}>
+            <View style={styles.socialStack}>
+              {appleAvailable && (
+                <AppleAuthButton
+                  type={AppleAuthentication.AppleAuthenticationButtonType.SIGN_UP}
+                  onPress={handleAppleAuth}
+                  disabled={isLoading}
+                />
+              )}
               <TouchableOpacity
                 style={styles.socialBtn}
                 activeOpacity={0.8}
@@ -662,23 +715,8 @@ export function SignUpScreen({ navigation }: AuthScreenProps) {
               >
                 <TintWash radius={BorderRadius.md} />
                 <GoogleIcon size={18} />
-                <Text style={styles.socialBtnText}>Google</Text>
+                <Text style={styles.socialBtnText}>Sign up with Google</Text>
               </TouchableOpacity>
-              {Platform.OS === 'ios' && (
-                <TouchableOpacity
-                  style={styles.socialBtn}
-                  activeOpacity={0.8}
-                  onPress={handleAppleAuth}
-                  disabled={isLoading}
-                  accessibilityRole="button"
-                  accessibilityLabel="Sign up with Apple"
-                  accessibilityState={{ disabled: isLoading }}
-                >
-                  <TintWash radius={BorderRadius.md} />
-                  <AppleIcon size={18} fill={Colors.text.primary} />
-                  <Text style={styles.socialBtnText}>Apple</Text>
-                </TouchableOpacity>
-              )}
             </View>
 
             <TouchableOpacity
@@ -937,17 +975,6 @@ function GoogleIcon({ size }: { size: number }) {
   );
 }
 
-function AppleIcon({ size, fill = '#000' }: { size: number; fill?: string }) {
-  return (
-    <Svg width={size} height={size} viewBox="0 0 24 24">
-      <Path
-        fill={fill}
-        d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09l.01-.01zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"
-      />
-    </Svg>
-  );
-}
-
 // ==================== STYLES ====================
 const styles = StyleSheet.create({
   container: {
@@ -1094,9 +1121,12 @@ const styles = StyleSheet.create({
     letterSpacing: 0.4,
   },
   // --- Social buttons ---
-  socialRow: {
-    flexDirection: 'row',
+  socialStack: {
     gap: Spacing.md,
+  },
+  appleBtn: {
+    width: '100%',
+    height: 48,
   },
   socialBtn: {
     flex: 1,
