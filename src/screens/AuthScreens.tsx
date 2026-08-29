@@ -32,7 +32,6 @@ import { RootStackParamList } from '../navigation/types';
 import { LEGAL_URLS } from '../constants';
 import { isValidEmail, isValidPassword } from '../utils';
 import * as Haptics from 'expo-haptics';
-import * as AppleAuthentication from 'expo-apple-authentication';
 
 type AuthNavigation = StackNavigationProp<RootStackParamList, 'Login' | 'SignUp' | 'ResetPassword'>;
 
@@ -82,20 +81,6 @@ function TintWash({ radius }: { radius: number }) {
         pointerEvents="none"
       />
     </>
-  );
-}
-
-function GoldDivider({ text }: { text: string }) {
-  return (
-    <View style={styles.divider}>
-      <View style={styles.dividerLine} />
-      <View style={styles.dividerCenter}>
-        <View style={styles.dividerDiamond} />
-        <Text style={styles.dividerText}>{text}</Text>
-        <View style={styles.dividerDiamond} />
-      </View>
-      <View style={styles.dividerLine} />
-    </View>
   );
 }
 
@@ -215,12 +200,23 @@ function useAppleSignIn(
   }, [authService, setIsLoading, navigation, completePasswordRecovery]);
 }
 
-// Apple's Sign in with Apple HIG is prescriptive: its own mark, one of three
-// sanctioned appearances (black / white / white-outline), one of three
-// sanctioned labels, and no recolouring. A Celestial-Night glass tile reading
-// "Apple" met none of that. AppleAuthenticationButton IS the compliant button —
-// do not swap it back for a custom tile to match the palette. WHITE is the
-// appearance Apple specifies for dark backgrounds like ours.
+// Apple's HIG permits a CUSTOM Sign in with Apple button, and explicitly permits
+// a logo-only one ("logo-only buttons can be circular or rectangular"), which is
+// what this screen uses. The rules it has to keep, straight from the HIG:
+//   - "Use only the logo artwork downloaded from Apple Design Resources; never
+//     create a custom Apple logo." assets/sign-in-with-apple/ holds Apple's own
+//     44/88/132pt "Black Logo Square" art, byte-for-byte from their .dmg. The
+//     hand-drawn SVG mark this screen used to ship was exactly that violation.
+//   - Logo and background must be black or white. No tint, no glass. Apple
+//     prescribes white on dark backgrounds and forbids black on them.
+//   - "Match the height of the logo file to the height of the button", don't
+//     crop it, don't add vertical padding — hence a 44pt button for 44pt art,
+//     which is also the iOS minimum touch target.
+//   - "Make a Sign in with Apple button no smaller than other sign-in buttons"
+//     (and Guideline 4.8): the Google button is the same 44pt circle.
+// Corner radius is the one attribute Apple invites you to match to your own UI.
+// "App Review evaluates all custom Sign in with Apple buttons" — so do not
+// restyle these from the palette without re-reading the HIG first.
 function useAppleSignInAvailable(authService: AuthService) {
   const [available, setAvailable] = useState(false);
   useEffect(() => {
@@ -238,27 +234,73 @@ function useAppleSignInAvailable(authService: AuthService) {
   return available;
 }
 
-function AppleAuthButton({
-  type,
+// Apple ships the logo-only art with its background already baked in (white
+// square, black mark), so this renders the file at the button's exact size and
+// lets the circular clip do the rest — nothing recoloured, nothing padded.
+const APPLE_LOGO_BUTTON = require('../../assets/sign-in-with-apple/apple-logo-button.png');
+
+function SocialIconButton({
   onPress,
   disabled,
+  accessibilityLabel,
+  children,
 }: {
-  type: AppleAuthentication.AppleAuthenticationButtonType;
   onPress: () => void;
   disabled: boolean;
+  accessibilityLabel: string;
+  children: React.ReactNode;
 }) {
   return (
-    // Gated with pointerEvents rather than opacity: Apple forbids altering the
-    // button's appearance, and the shared isLoading spinner on the primary CTA
-    // already signals that a request is in flight.
-    <View pointerEvents={disabled ? 'none' : 'auto'}>
-      <AppleAuthentication.AppleAuthenticationButton
-        buttonType={type}
-        buttonStyle={AppleAuthentication.AppleAuthenticationButtonStyle.WHITE}
-        cornerRadius={BorderRadius.md}
-        style={styles.appleBtn}
-        onPress={onPress}
-      />
+    <TouchableOpacity
+      style={styles.socialIconBtn}
+      activeOpacity={0.8}
+      onPress={onPress}
+      disabled={disabled}
+      hitSlop={{ top: 12, right: 12, bottom: 12, left: 12 }}
+      accessibilityRole="button"
+      accessibilityLabel={accessibilityLabel}
+      accessibilityState={{ disabled }}
+    >
+      {children}
+    </TouchableOpacity>
+  );
+}
+
+// Both auth screens render the same row, so the Apple/Google sizing stays
+// locked together — the HIG's "no smaller than other sign-in buttons" rule is
+// only true by construction if there is exactly one place that sets it.
+function SocialIconRow({
+  appleAvailable,
+  onApple,
+  onGoogle,
+  disabled,
+  mode,
+}: {
+  appleAvailable: boolean;
+  onApple: () => void;
+  onGoogle: () => void;
+  disabled: boolean;
+  mode: 'signIn' | 'signUp';
+}) {
+  const isSignUp = mode === 'signUp';
+  return (
+    <View style={styles.socialIconRow}>
+      {appleAvailable && (
+        <SocialIconButton
+          onPress={onApple}
+          disabled={disabled}
+          accessibilityLabel={isSignUp ? 'Sign up with Apple' : 'Sign in with Apple'}
+        >
+          <Image source={APPLE_LOGO_BUTTON} style={styles.appleLogo} resizeMode="contain" />
+        </SocialIconButton>
+      )}
+      <SocialIconButton
+        onPress={onGoogle}
+        disabled={disabled}
+        accessibilityLabel={isSignUp ? 'Sign up with Google' : 'Continue with Google'}
+      >
+        <GoogleIcon size={22} />
+      </SocialIconButton>
     </View>
   );
 }
@@ -418,6 +460,14 @@ export function LoginScreen({ navigation }: AuthScreenProps) {
               <Text style={styles.forgotText}>Forgot password?</Text>
             </TouchableOpacity>
 
+            <SocialIconRow
+              appleAvailable={appleAvailable}
+              onApple={handleAppleAuth}
+              onGoogle={handleGoogleAuth}
+              disabled={isLoading}
+              mode="signIn"
+            />
+
             <TouchableOpacity
               activeOpacity={0.85}
               onPress={handleSignIn}
@@ -434,34 +484,6 @@ export function LoginScreen({ navigation }: AuthScreenProps) {
                 )}
               </LinearGradient>
             </TouchableOpacity>
-
-            <GoldDivider text="Or continue with" />
-
-            {/* Apple sits above Google and matches its width: App Store
-                Guideline 4.8 requires Sign in with Apple to be offered at least
-                as prominently as any other third-party sign-in. */}
-            <View style={styles.socialStack}>
-              {appleAvailable && (
-                <AppleAuthButton
-                  type={AppleAuthentication.AppleAuthenticationButtonType.SIGN_IN}
-                  onPress={handleAppleAuth}
-                  disabled={isLoading}
-                />
-              )}
-              <TouchableOpacity
-                style={styles.socialBtn}
-                activeOpacity={0.8}
-                onPress={handleGoogleAuth}
-                disabled={isLoading}
-                accessibilityRole="button"
-                accessibilityLabel="Continue with Google"
-                accessibilityState={{ disabled: isLoading }}
-              >
-                <TintWash radius={BorderRadius.md} />
-                <GoogleIcon size={18} />
-                <Text style={styles.socialBtnText}>Continue with Google</Text>
-              </TouchableOpacity>
-            </View>
 
             <TouchableOpacity
               style={styles.guestBtn}
@@ -672,6 +694,14 @@ export function SignUpScreen({ navigation }: AuthScreenProps) {
               </Text>
             </TouchableOpacity>
 
+            <SocialIconRow
+              appleAvailable={appleAvailable}
+              onApple={handleAppleAuth}
+              onGoogle={handleGoogleAuth}
+              disabled={isLoading}
+              mode="signUp"
+            />
+
             <TouchableOpacity
               activeOpacity={0.85}
               disabled={!canSubmit}
@@ -693,31 +723,6 @@ export function SignUpScreen({ navigation }: AuthScreenProps) {
                 )}
               </LinearGradient>
             </TouchableOpacity>
-
-            <GoldDivider text="Or sign up with" />
-
-            <View style={styles.socialStack}>
-              {appleAvailable && (
-                <AppleAuthButton
-                  type={AppleAuthentication.AppleAuthenticationButtonType.SIGN_UP}
-                  onPress={handleAppleAuth}
-                  disabled={isLoading}
-                />
-              )}
-              <TouchableOpacity
-                style={styles.socialBtn}
-                activeOpacity={0.8}
-                onPress={handleGoogleAuth}
-                disabled={isLoading}
-                accessibilityRole="button"
-                accessibilityLabel="Sign up with Google"
-                accessibilityState={{ disabled: isLoading }}
-              >
-                <TintWash radius={BorderRadius.md} />
-                <GoogleIcon size={18} />
-                <Text style={styles.socialBtnText}>Sign up with Google</Text>
-              </TouchableOpacity>
-            </View>
 
             <TouchableOpacity
               style={styles.guestBtn}
@@ -1092,59 +1097,29 @@ const styles = StyleSheet.create({
   primaryBtnTextDisabled: {
     color: `${Colors.text.primary}4D`,
   },
-  // --- Divider ---
-  divider: {
+  // --- Social icon buttons ---
+  socialIconRow: {
     flexDirection: 'row',
-    alignItems: 'center',
-    marginVertical: Spacing.xl,
+    justifyContent: 'center',
+    gap: Spacing.lg,
+    marginBottom: Spacing.xl,
   },
-  dividerLine: {
-    flex: 1,
-    height: 1,
-    backgroundColor: 'rgba(212, 175, 55, 0.12)',
-  },
-  dividerCenter: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: Spacing.lg,
-    gap: Spacing.sm,
-  },
-  dividerDiamond: {
-    width: 4,
-    height: 4,
-    backgroundColor: 'rgba(212, 175, 55, 0.4)',
-    transform: [{ rotate: '45deg' }],
-  },
-  dividerText: {
-    fontSize: Typography.sizes.detail,
-    color: `${Colors.text.primary}59`,
-    letterSpacing: 0.4,
-  },
-  // --- Social buttons ---
-  socialStack: {
-    gap: Spacing.md,
-  },
-  appleBtn: {
-    width: '100%',
-    height: 48,
-  },
-  socialBtn: {
-    flex: 1,
-    flexDirection: 'row',
+  socialIconBtn: {
+    // 44pt is Apple's own logo-only art size AND the iOS minimum touch target.
+    width: 44,
+    height: 44,
+    borderRadius: BorderRadius.full,
+    // Mandated, not a palette choice: the HIG allows only black or white here,
+    // and forbids black on a dark background. Google's mark also needs a light
+    // field to stay legible. This is why it isn't a Colors token.
+    backgroundColor: '#FFFFFF',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: Spacing.sm,
-    height: 48,
-    borderRadius: BorderRadius.md,
-    borderWidth: 1,
-    borderColor: `${Colors.text.primary}29`,
     overflow: 'hidden',
   },
-  socialBtnText: {
-    fontSize: Typography.sizes.small,
-    fontWeight: '600',
-    color: Colors.text.secondary,
-    letterSpacing: 0.3,
+  appleLogo: {
+    width: 44,
+    height: 44,
   },
   // --- Guest button ---
   guestBtn: {
