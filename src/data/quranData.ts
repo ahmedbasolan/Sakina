@@ -3620,6 +3620,22 @@ const quranContentData: Content[] = [
       'Sleep and death are placed under one verb here — yatawaffa. Classical tafsir calls sleep al-wafat al-sughra, the minor death: a nightly handing-over of the soul, released each morning to a term one day shorter.',
     moods: [],
   },
+  {
+    id: 'quran_63_10',
+    type: 'Quran',
+    primaryText:
+      'wa-anfiqū min mā razaqnākum min qabli an yaʾtiya aḥadakumu l-mawtu fa-yaqūla rabbi lawlā akhkhartanī ilā ajalin qarībin fa-aṣṣaddaqa wa-akun mina ṣ-ṣāliḥīna',
+    arabicText: 'وَأَنفِقُوا۟ مِن مَّا رَزَقْنَٰكُم مِّن قَبْلِ أَن يَأْتِىَ أَحَدَكُمُ ٱلْمَوْتُ فَيَقُولَ رَبِّ لَوْلَآ أَخَّرْتَنِىٓ إِلَىٰٓ أَجَلٍۢ قَرِيبٍۢ فَأَصَّدَّقَ وَأَكُن مِّنَ ٱلصَّٰلِحِينَ ﴿10﴾',
+    transliteration:
+      'wa-anfiqū min mā razaqnākum min qabli an yaʾtiya aḥadakumu l-mawtu fa-yaqūla rabbi lawlā akhkhartanī ilā ajalin qarībin fa-aṣṣaddaqa wa-akun mina ṣ-ṣāliḥīna',
+    englishTranslation:
+      'And spend from what We have provided you before death comes to one of you and he says, "My Lord, if only You would delay me for a brief term so I could give charity and be among the righteous."',
+    source: 'Surah Al-Munafiqun 63:10',
+    audioKey: '63:10',
+    whyThis:
+      'Ibn Abbas and al-Hasan note that the wish recorded here is always for more time to give sadaqa — not more prayer or fasting. It is the regret of the person who kept meaning to.',
+    moods: [],
+  },
 ];
 
 const quranContent: Content[] = quranContentData;
@@ -17814,6 +17830,62 @@ const quranContentAnglesData: ContentAngle[] = [
     ]),
     reflection:
       'You were handed today back. What will you do with it that you would not bother doing if you assumed a thousand more were coming?',
+  },
+  {
+    id: 'q_angle_death_day5',
+    contentId: 'quran_63_10',
+    mood: 'Hopeful',
+    angle:
+      "[Tafsir Ibn Kathir on 63:10] The ayah records the one wish the dying actually make. Ibn Kathir, citing Ibn Abbas and al-Hasan, notes it is never ‘if only I had prayed more’ or ‘fasted more’ — it is ‘if only You would delay me so I could give charity.’ The lesson is not that this world is worthless. Islam has no monasticism — la rahbaniyya fi al-islam — and wealth is the field you plant for the next life. The lesson is grip. The Prophet ﷺ took Ibn Umar by the shoulder and told him to be in this world as a stranger, or a traveler passing through; Ibn Umar added, in his own words, that if you reach the evening you should not wait for the morning, and that you should take from your life for your death. Your family, your wealth, and your deeds walk with you toward the grave — and at the edge two of them turn back, and only the deeds go in. If the thought of leaving all this ever shifts from ‘I am a traveler here’ to ‘I want the trip to be over,’ that is a different weight, and the Hope journey and the in-app help line are there for it — this day is not asking you to want to go.",
+    practiceSteps: JSON.stringify([
+      {
+        type: 'physical',
+        icon: 'gift',
+        title: 'Answer the dying wish now',
+        instruction:
+          'Give one sadaqa today, however small, while you still can — the ayah is the regret of the person who kept meaning to. Do it before you finish this step.',
+        source: 'Quran 63:10',
+      },
+      {
+        type: 'physical',
+        icon: 'pen',
+        title: 'Write the will',
+        instruction:
+          'The Prophet ﷺ said it is not right for a Muslim with something to bequeath to pass two nights without a written will. Draft or update yours this week. Do not assign inheritance shares yourself — that is madhhab-specific; name an executor and your wishes, and take it to someone qualified.',
+        source: 'Sahih al-Bukhari 2738 / Sahih Muslim 1627',
+        sourceType: 'sunnah_action',
+      },
+      {
+        type: 'mindset',
+        icon: 'compass',
+        title: 'Stranger, not renouncer',
+        instruction:
+          'Name one thing you own that owns you back — that you would panic to lose. The work is loosening the grip, not discarding the thing.',
+        source: 'Sahih al-Bukhari 6416',
+      },
+      {
+        type: 'mindset',
+        icon: 'arrow-right',
+        title: 'Only one of the three goes in',
+        instruction:
+          'The Prophet ﷺ said the dead are followed by three — family, wealth, deeds — and only the deeds go into the grave with you. Name one deed you can send ahead today.',
+        source: 'Sahih al-Bukhari 6514',
+      },
+      {
+        type: 'verbal',
+        icon: 'hands-prayer',
+        title: 'The words said at the trench',
+        instruction:
+          'The Prophet ﷺ said this while digging in hardship. Use it when this world feels too heavy to hold loosely.',
+        arabicText: 'اللَّهُمَّ لاَ عَيْشَ إِلاَّ عَيْشُ الآخِرَة',
+        transliteration: 'Allāhumma lā ʿaysha illā ʿayshu l-ākhirah',
+        translation: 'O Allah, there is no life except the life of the Hereafter.',
+        source: 'Sahih al-Bukhari 6413',
+        sourceType: 'prophetic_dhikr',
+      },
+    ]),
+    reflection:
+      'Of the three that follow you to the grave — family, wealth, deeds — only the deeds go in. What did you add to that pile this week?',
   },
 ];
 

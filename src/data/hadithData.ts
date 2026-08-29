@@ -977,4 +977,24 @@ export const hadithContent: Content[] = [
     },
     moods: [],
   },
+  {
+    id: 'hadith_death_5',
+    type: 'Hadith',
+    primaryText: 'Be in this world as if you were a stranger or a traveler.',
+    arabicText: 'كُنْ فِي الدُّنْيَا كَأَنَّكَ غَرِيبٌ، أَوْ عَابِرُ سَبِيلٍ',
+    translation:
+      "Allah's Messenger ﷺ took hold of my shoulder and said, 'Be in this world as if you were a stranger or a traveler.'",
+    englishTranslation:
+      "Allah's Messenger ﷺ took hold of my shoulder and said, 'Be in this world as if you were a stranger or a traveler.'",
+    source: 'Sahih al-Bukhari 6416',
+    transliteration: 'Kun fī d-dunyā ka-annaka gharībun aw ʿābiru sabīl',
+    whyThis:
+      'Ibn Umar reported it. The lines that often follow — "if you reach the evening do not wait for the morning… take from your health for your sickness and from your life for your death" — are Ibn Umar\'s own words, not the Prophet\'s ﷺ; the hadith itself marks the change of speaker. The instruction is grip, not withdrawal: hold this world the way a traveler holds a bag.',
+    propheticPractice: {
+      description: 'Name one thing you own that owns you back, and practise holding it more loosely',
+      source: 'Sahih al-Bukhari 6416',
+      grading: 'sahih',
+    },
+    moods: [],
+  },
 ];
