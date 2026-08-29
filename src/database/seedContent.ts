@@ -215,7 +215,16 @@ import type { Content, ContentAngle } from '../types';
 //      unreachable, and its `theme` said 'Sad' where the Mood union has
 //      'Guilty'; both are corrected in staticPaths.ts. Unlocked in
 //      AVAILABLE_PATHS and staged behind Sakina Pro the same commit.
-const SEED_VERSION = 35;
+// v36: new content — Death Awareness (path_death_awareness), 7 days, Sakina
+//      Pro exclusive. Adds 5 Content verses (quran_3_185, quran_39_42,
+//      quran_63_10, quran_36_12, quran_29_5 — quran_67_2 and quran_102_1_2
+//      reused), q_angle_death_day1..day7, and hadith_death_3..7 (days 1-2 are
+//      verse + tafsir led, no hadith row). staticPaths theme corrected
+//      'Overwhelmed' -> 'Hopeful' — dhikr al-mawt is a readiness posture, not a
+//      crisis one; see docs/superpowers/specs/2026-08-29-death-awareness-journey-design.md
+//      and its scholarly review. Path was a locked stub with dailySteps: [].
+//      Unlocked in AVAILABLE_PATHS and Pro-gated the same commit.
+const SEED_VERSION = 36;
 // Separate keys per content type — Quran and Hadith data change independently,
 // and each seeder used to write the SAME key at the end of its run. Since
 // initializeDatabase() awaits seedQuranContent() before seedHadithContent(),
