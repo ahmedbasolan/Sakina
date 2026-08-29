@@ -930,4 +930,28 @@ export const hadithContent: Content[] = [
     },
     moods: [],
   },
+  // === DEATH AWARENESS JOURNEY HADITH ===
+  // Referenced by step_death_3..7 in staticPaths.ts. Days 1-2 are verse +
+  // tafsir led and carry no hadith. Every Arabic matn below is fetched
+  // verbatim (mirror / sunnah.com) — see scripts and the design spec.
+  {
+    id: 'hadith_death_3',
+    type: 'Hadith',
+    primaryText: 'Remember often the destroyer of pleasures — meaning death.',
+    arabicText: 'أَكْثِرُوا ذِكْرَ هَاذِمِ اللَّذَّاتِ',
+    translation: 'Increase in remembrance of the severer of pleasures. Meaning death.',
+    englishTranslation:
+      'Increase in remembrance of the severer of pleasures. Meaning death.',
+    source: "Jami' at-Tirmidhi 2307",
+    transliteration: 'Akthirū dhikra hādhimi l-ladhdhāt (yaʿnī l-mawt)',
+    whyThis:
+      'Abu Hurayra narrated it. Tirmidhi graded it hasan gharib; al-Albani graded it hasan, and Ibn Majah and an-Nasa’i narrate it as well. The instruction is frequency, not intensity — a brief, repeated thought that resets your aim rather than a spiral you have to brace for.',
+    propheticPractice: {
+      description:
+        'Bring a short thought of death to mind several times a day, letting it reorder the decision in front of you',
+      source: "Jami' at-Tirmidhi 2307",
+      grading: 'hasan',
+    },
+    moods: [],
+  },
 ];

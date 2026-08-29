@@ -17708,6 +17708,53 @@ const quranContentAnglesData: ContentAngle[] = [
     reflection:
       'Which of your deeds are for Allah, and which are for how they look to others? Name one you could quietly move from the second column to the first.',
   },
+  {
+    id: 'q_angle_death_day3',
+    contentId: 'quran_102_1_2',
+    mood: 'Hopeful',
+    angle:
+      "[Tafsir Ibn Kathir on 102:1] Ibn Kathir titles this passage the result of loving the world and being heedless of the Hereafter. At-takāthur — the race to have more, and to out-count others — runs unbroken through a life until, in the ayah’s words, you visit the graves, meaning until you are buried. The sūrah names the disease and then keeps going, to a warning about the Fire; this journey stops at the diagnosis, but you should know the sūrah itself does not. The Prophet ﷺ said: increase your remembrance of the destroyer of pleasures, meaning death — which Tirmidhī records as ḥasan. That remembrance is not meant to flatten your mood; it works as a filter. Hold a decision up against it and the parts that only mattered inside the counting game fall away, and what is left is what actually deserves the day. The aim is to do this often and briefly, the way you glance at a compass, not to sink into it once.",
+    practiceSteps: JSON.stringify([
+      {
+        type: 'mindset',
+        icon: 'clock',
+        title: 'The graveyard test',
+        instruction:
+          'Take one decision on your plate today and ask: from inside the grave, would this have mattered? Let the honest answer reorder your afternoon.',
+        source: "Reflects Jami' at-Tirmidhi 2307",
+      },
+      {
+        type: 'physical',
+        icon: 'pen',
+        title: 'Look at what you sent ahead',
+        instruction:
+          'Tonight, before sleep, write the two best and two worst things you did today. Allah says: let every soul look to what it has put forth for tomorrow. This is that, in miniature.',
+        source: 'Quran 59:18',
+      },
+      {
+        type: 'mindset',
+        icon: 'eye',
+        title: 'Remember, do not dwell',
+        instruction:
+          'The Sunnah is frequent remembrance, brief each time — a passing thought that corrects your heading, not a session you have to steel yourself for. If it turns heavy, that is not the practice.',
+        source: "Jami' at-Tirmidhi 2307",
+      },
+      {
+        type: 'verbal',
+        icon: 'hands-prayer',
+        title: 'The du’a Mu’adh was told never to leave',
+        instruction:
+          'The Prophet ﷺ took Mu’adh by the hand, told him he loved him, and taught him to say this after every prayer.',
+        arabicText: 'اللَّهُمَّ أَعِنِّي عَلَى ذِكْرِكَ وَشُكْرِكَ وَحُسْنِ عِبَادَتِكَ',
+        transliteration: 'Allāhumma aʿinnī ʿalā dhikrika wa shukrika wa ḥusni ʿibādatik',
+        translation: 'O Allah, help me to remember You, to thank You, and to worship You well.',
+        source: 'Sunan Abi Dawud 1522',
+        sourceType: 'prophetic_dua',
+      },
+    ]),
+    reflection:
+      'Name one thing you spend real energy on that would not matter to you from the grave. Then name one thing that would.',
+  },
 ];
 
 export { quranContent, quranContentAnglesData as quranContentAngles };
