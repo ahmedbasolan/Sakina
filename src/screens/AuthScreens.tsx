@@ -285,7 +285,6 @@ function SocialIconRow({
   const isSignUp = mode === 'signUp';
   return (
     <View style={styles.socialBlock}>
-      <Text style={styles.socialLabel}>{isSignUp ? 'or sign up with' : 'or continue with'}</Text>
       <View style={styles.socialIconRow}>
         {appleAvailable && (
           <SocialIconButton
@@ -304,6 +303,7 @@ function SocialIconRow({
           <GoogleIcon size={22} />
         </SocialIconButton>
       </View>
+      <Text style={styles.socialLabel}>{isSignUp ? 'or sign up with' : 'or continue with'}</Text>
     </View>
   );
 }
@@ -1109,7 +1109,7 @@ const styles = StyleSheet.create({
     color: `${Colors.text.primary}59`,
     letterSpacing: 0.4,
     textAlign: 'center',
-    marginBottom: Spacing.md,
+    marginTop: Spacing.md,
   },
   socialIconRow: {
     flexDirection: 'row',
