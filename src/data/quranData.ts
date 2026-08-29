@@ -504,7 +504,7 @@ const quranContentData: Content[] = [
       'Say, "O My slaves who have transgressed against themselves, do not despair of the mercy of Allah. Indeed, Allah forgives all sins. Indeed, He is the Oft-Forgiving, the Most Merciful." And turn to your Lord and submit to Him before the punishment comes upon you; then you will not be helped.',
     source: 'Surah Az-Zumar 39:53-54',
     audioKey: '39:53-54',
-    whyThis: 'Ibn Abbas (RA) said this is the most hope-giving verse in the entire Quran. Allah addresses those who have "transgressed against themselves" — not minor sinners, but those who believe their sins are too great. The response is an unconditional declaration: "Indeed, Allah forgives all sins." No exception is listed. [Tafsir Ibn Kathir, Surah Az-Zumar]',
+    whyThis: 'Ibn Masud (RA) called this the ayah in the Quran that brings the most relief, and Ibn Kathir explains why: Allah addresses those who have "transgressed against themselves" — not minor sinners, but those who have already decided their record is past forgiving. No category of sinner is shut out of the call. What it asks in return stands in the very next line: "And turn to your Lord and submit to Him." [Tafsir Ibn Kathir on 39:53]',
     moods: ['Guilty'],
   },
 
@@ -7444,7 +7444,7 @@ const quranContentAnglesData: ContentAngle[] = [
     contentId: 'quran_89_27_30',
     mood: 'Calm',
     angle:
-      'Ibn Abbas explained that the "reassured soul" (Al-Nafs al-Mutma’innah) is the one that is tranquil and certain in its belief and its Lord, responding to every decree with pleasure. [Tafsir al-Baghawi]',
+      'Al-Baghawi collects what the early commentators said the "reassured soul" (al-nafs al-mutma’innah) actually is: Mujahid — the soul certain that Allah is its Lord, steadied for His command; al-Hasan — believing and sure; Atiyyah — pleased with Allah\'s decree. Not one of them describes a passing mood. They describe a settled relationship, which is why the ayah can address it directly. [Tafsir al-Baghawi on 89:27]',
     action: 'Return to your Lord in this moment by acknowledging His perfect care over you.',
     actionHowTo:
       'Repeat "Raditu billahi Rabba" (I am pleased with Allah as my Lord) until you feel stillness.',
@@ -10557,7 +10557,7 @@ const quranContentAnglesData: ContentAngle[] = [
     contentId: 'quran_25_63',
     mood: 'Grateful',
     angle:
-      'Al-Hasan al-Basri noted that the servants of the Most Merciful are humble people who do not behave with arrogance even when they are honored. Their contentment is reflected in their gentle dealings with others. [Tafsir al-Baghawi]',
+      'Al-Baghawi glosses "walking upon the earth hawnan" as moving with calm and dignity — humble, neither exultant nor boastful nor arrogant. On the next clause he records al-Hasan al-Basri: when an ignorant person is ignorant toward them, they meet it with forbearance and do not answer in kind. Contentment is not proved by how you carry good treatment. It is proved by how you answer bad. [Tafsir al-Baghawi on 25:63]',
     action: 'Practice responding to a difficulty today with peaceful words.',
     actionHowTo: 'Intentionaly use soft words even if the situation is tense.',
     actionReward:
@@ -10568,9 +10568,8 @@ const quranContentAnglesData: ContentAngle[] = [
         icon: 'leaf',
         title: 'Humble even when honored',
         instruction:
-          'The servants of the Most Merciful do not behave with arrogance even when honored. Their contentment is reflected in gentle dealings. True gratitude produces humility, not pride.',
+          'Al-Baghawi reads walking hawnan as calm and dignity — humble, neither exultant nor boastful nor arrogant. It describes how they move through an ordinary day, not how they behave once someone is watching. True gratitude produces that, not pride.',
         source: 'Tafsir al-Baghawi on 25:63',
-        sourceType: 'quran_dua',
       },
       {
         type: 'physical',
@@ -16739,7 +16738,7 @@ const quranContentAnglesData: ContentAngle[] = [
     contentId: 'quran_39_53',
     mood: 'Sad',
     angle:
-      '[Tafsir Ibn Kathir on 39:53] Ibn Abbas (may Allah be pleased with him) called this the most hope-giving ayah in the Quran, and the reason is who it addresses. Allah does not speak here to the careful or the nearly-good — He calls out to those who have transgressed against themselves, the people who have already concluded that what they have done or become is past repair. To exactly them He says la taqnatu: do not despair. Ibn Kathir notes that the ayah then closes the escape route despair always looks for, the private exception, because "Indeed, Allah forgives all sins" is stated with no list of what is excluded from it. Despair is therefore a claim about the limits of Allah’s mercy rather than a report about yourself, and it is precisely that claim the ayah refuses. The Prophet ﷺ said: "When Allah completed the creation, He wrote in His Book which is with Him on His Throne, ‘My Mercy overpowers My Anger.’" [Bukhari 3194] That was written before you existed, and it was not written conditionally.',
+      '[Tafsir Ibn Kathir on 39:53] Ibn Masud (may Allah be pleased with him) called this the ayah in the Quran that brings the most relief, and the reason is who it addresses. Allah does not speak here to the careful or the nearly-good — He calls out to those who have transgressed against themselves, the people who have already concluded that what they have done or become is past repair. To exactly them He says la taqnatu: do not despair. Ibn Kathir reads it as a call to every sinner, disbeliever or otherwise, to repent and turn back, and records Ibn Abbas saying that whoever makes the servants of Allah despair of His mercy after this ayah has rejected the Book of Allah. Despair is therefore a claim about the limits of Allah’s mercy rather than a report about yourself, and it is precisely that claim the ayah refuses. What the ayah asks in return is in its own next line — "And turn to your Lord and submit to Him" — so the invitation excludes no one, and repentance is how it is accepted. The Prophet ﷺ said: "When Allah completed the creation, He wrote in His Book which is with Him on His Throne, ‘My Mercy overpowers My Anger.’" [Bukhari 3194] That was written before you existed.',
     action:
       'Name the verdict you have passed on yourself, and put the ayah beside it.',
     actionSource: 'Quran 7:23 — the supplication of Adam (peace be upon him)',
@@ -16748,7 +16747,7 @@ const quranContentAnglesData: ContentAngle[] = [
         type: 'mindset',
         icon: 'light-bulb',
         title: 'Despair is a claim about Allah',
-        instruction: 'Read who the ayah is addressed to before you read what it says. It is not spoken to people with small mistakes; it is spoken to those who have wronged themselves and know it. The despair that says "not me, not this" is making a statement about how far Allah’s mercy reaches — and the ayah answers that statement without listing an exception.',
+        instruction: 'Read who the ayah is addressed to before you read what it says. It is not spoken to people with small mistakes; it is spoken to those who have wronged themselves and know it. The despair that says "not me, not this" is making a statement about how far Allah’s mercy reaches — and Ibn Kathir answers it plainly: the call goes out to every sinner, disbeliever or otherwise, to repent and turn back.',
         source: 'Tafsir Ibn Kathir on 39:53',
       },
       {
@@ -16923,7 +16922,7 @@ const quranContentAnglesData: ContentAngle[] = [
     contentId: 'quran_94_5',
     mood: 'Sad',
     angle:
-      '[Tafsir Ibn Kathir on 94:5-6] The preposition carries the whole lesson. Allah says maa al-usr — with the hardship — not baad, after it. Ibn Kathir records the grammatical observation the scholars drew from the repetition: "the hardship" takes the definite article both times, so it is one hardship, while "ease" is indefinite both times, so these are two different eases; from this Ibn Masud (may Allah be pleased with him) is reported to have said that one hardship cannot overcome two eases. Notice what the ayah does not promise, which is a date. It promises that relief is bound to this hardship rather than waiting on the far side of it — a different claim, and a more usable one when the far side is not visible from where you are standing. The Prophet ﷺ said: "No fatigue, nor disease, nor sorrow, nor sadness, nor hurt, nor distress befalls a Muslim, even if it were the prick he receives from a thorn, but that Allah expiates some of his sins for that." [Bukhari 5642] Sorrow and sadness are named there by name — not as evidence of a defect, but as conditions Allah is already responding to.',
+      '[Tafsir al-Qurtubi on 94:6] The preposition carries the whole lesson. Allah says maa al-usr — with the hardship — not baad, after it. Al-Qurtubi records the reading the grammarian Tha\'lab drew from the repetition: an Arabic noun repeated in the definite is the same one, while repeated in the indefinite it is another — so one hardship and two eases, put that way to make hope stronger and patience easier to reach. He also records Ibn Masud (may Allah be pleased with him) swearing that if hardship went into a rock, ease would follow it in, and that one hardship will never overcome two eases — though he preserves a scholar who rejected the grammar, so hold it as a reading rather than a ruling. The preposition itself is not disputed. Notice what the ayah does not promise, which is a date. It promises that relief is bound to this hardship rather than waiting on the far side of it — a different claim, and a more usable one when the far side is not visible from where you are standing. The Prophet ﷺ said: "No fatigue, nor disease, nor sorrow, nor sadness, nor hurt, nor distress befalls a Muslim, even if it were the prick he receives from a thorn, but that Allah expiates some of his sins for that." [Bukhari 5642] Sorrow and sadness are named there by name — not as evidence of a defect, but as conditions Allah is already responding to.',
     action:
       'Look for the ease attached to today, not the one waiting after it.',
     actionSource: 'Quran 3:173 — the words said when people gathered against them',

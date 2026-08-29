@@ -205,7 +205,59 @@ import type { Content, ContentAngle } from '../types';
 //      AVAILABLE_PATH_IDS as of this bump — wiring it into PathsScreen.tsx is
 //      a separate step, deferred because that file has unrelated in-flight
 //      changes from another session.
-const SEED_VERSION = 34;
+// v35: deliberately skipped. feat/tawbah-journey (a parallel session) already
+//      ships a different v35. The gate is `seededVersion >= SEED_VERSION`, so
+//      a gap costs nothing, while two branches shipping different content
+//      under one number means whichever 35 an install stored first
+//      permanently suppresses the other branch's re-seed.
+// v36: content correction — quran_39_53.whyThis and q_angle_crisis_day2 (Hope
+//      After Crisis day 2) both credited Ibn Abbas with calling 39:53 the
+//      most hope-giving ayah in the Quran. Al-Qurtubi on 39:53 records the
+//      opposite: Abdullah ibn Umar said it, and Ibn Abbas refuted them and
+//      named 13:6 instead. Reattributed to Ibn Masud, who is recorded saying
+//      it in Ibn Kathir's own entry on 39:53 (At-Tabarani, via Shutayr bin
+//      Shakal: "The Ayah in the Qur'an which brings the most relief is in
+//      Surat Az-Zumar"), so the [Tafsir Ibn Kathir …] tag above it now names
+//      a source that actually carries the claim. The same edit drops the
+//      "unconditional … no exception is listed" framing, which that entry
+//      explicitly denies ("This cannot be interpreted as meaning that sins
+//      will be forgiven without repentance") — what is unconditional is who
+//      is invited ("a call to all sinners, be they disbelievers or others"),
+//      not forgiveness without turning back, which is what 39:54 says in the
+//      same block this app already renders. Day 2's first practiceStep
+//      carried the same overclaim and is corrected with it. Content retagged
+//      from the bare "[Tafsir Ibn Kathir, Surah Az-Zumar]" to "[Tafsir Ibn
+//      Kathir on 39:53]" so verify-tafsir-tags.mjs can check it instead of
+//      counting it as an unverifiable bare tag. No Arabic, translation,
+//      Same pass, three more misattributions, found by sweeping every named
+//      companion/scholar claim in whyThis and angle text against its source:
+//      · q_angle_89_27_30_calm credited Ibn Abbas with a gloss on "the
+//        reassured soul". Its [Tafsir al-Baghawi] tag does not carry it —
+//        al-Baghawi on 89:27 never mentions Ibn Abbas, and the sentence is a
+//        composite of three glosses he does record (Mujahid, al-Hasan,
+//        Atiyyah), who are now named instead. Al-Qurtubi does have an Ibn
+//        Abbas gloss here but a narrower one, so it did not rescue it either.
+//      · q_angle_25_63_content credited al-Hasan al-Basri with the humility
+//        gloss, which is al-Baghawi's own wording; al-Hasan now carries what
+//        he actually said on the following clause. That angle's first
+//        practiceStep repeated the claim and also badged sourceType
+//        'quran_dua' (renders "Qur'anic") over a tafsir source line, in a
+//        step containing no Arabic at all. Badge dropped — a mindset step
+//        should claim nothing. NOTE: 233 steps corpus-wide carry that same
+//        quran_dua-over-a-tafsir-label shape; only this one is fixed here.
+//      · q_angle_crisis_day6 said "Ibn Kathir records" of a
+//        definite/indefinite grammar reading and an Ibn Masud report. The
+//        abridged Ibn Kathir has neither — it says only that Allah informs
+//        that with difficulty there is ease, and reaffirms it. Al-Qurtubi on
+//        94:6 has both, credits the reading to the grammarian Tha'lab, and
+//        then records al-Jurjani rejecting it. Retagged [Tafsir al-Qurtubi
+//        on 94:6], attributed to Tha'lab, and the dispute noted so a
+//        contested reading is no longer presented as settled. Ibn Masud is
+//        kept — that attribution was correct — with his own wording.
+//      Both al-Baghawi tags were bare and are now "on <surah>:<ayah>", so
+//      verify-tafsir-tags can check them instead of skipping them.
+//      verse or hadith citation changed.
+const SEED_VERSION = 36;
 // Separate keys per content type — Quran and Hadith data change independently,
 // and each seeder used to write the SAME key at the end of its run. Since
 // initializeDatabase() awaits seedQuranContent() before seedHadithContent(),
