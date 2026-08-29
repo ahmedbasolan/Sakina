@@ -17667,6 +17667,47 @@ const quranContentAnglesData: ContentAngle[] = [
     reflection:
       'If your account were closed today, which part of it would you most want more time to change? Name one thing you could begin this week.',
   },
+  {
+    id: 'q_angle_death_day2',
+    contentId: 'quran_67_2',
+    mood: 'Hopeful',
+    angle:
+      "[Tafsir Ibn Kathir on 67:2] The order of the words is deliberate — death is named before life. Ibn Kathir notes that some scholars read this as evidence that death is not mere nothingness but something Allah created, on purpose; either way it is presented as part of the design, and it is what makes the test real. On aḥsanu ʿamalan he quotes Muḥammad ibn ʿAjlān and adds his own remark: Allah did not say which of you does the most deeds, He said which of you is best in deed — the scale is quality, not volume. And the centre of that quality is sincerity. In his comment on the parallel ayah 18:110, Ibn Kathir records the hadith that on the Day of Resurrection a person who acted to be seen will be told to go and collect his reward from the one he was performing for. Notice what that does to the fear of dying with too little on the record: it shifts the question from how much did I do to how much of it was actually for Him. The ayah closes on two Names held together — al-ʿAzīz, strong enough to enforce the test, and al-Ghafūr, forgiving toward the one who keeps stumbling inside it.",
+    practiceSteps: JSON.stringify([
+      {
+        type: 'mindset',
+        icon: 'target',
+        title: 'Best, not most',
+        instruction:
+          'Pick one act of worship you do on autopilot — a rushed prayer, a distracted portion of Qur’an. Tomorrow, do that one thing with full attention and a clear intention. Quality is the thing the ayah is measuring.',
+        source: 'Tafsir Ibn Kathir on 67:2',
+      },
+      {
+        type: 'mindset',
+        icon: 'eye',
+        title: 'The riya check',
+        instruction:
+          'Ibn Kathir on 18:110: a deed done partly to be seen is handed back, on the Day of Resurrection, to the one you performed it for — go and seek its reward from them. Sincerity is not a bonus added to a deed; it is what makes it a deed at all. Name one thing you do that is half for Allah and half for how it looks.',
+        source: 'Tafsir Ibn Kathir on 18:110',
+      },
+      {
+        type: 'verbal',
+        icon: 'hands-prayer',
+        title: 'The du’a for accepted deeds',
+        instruction:
+          'Umm Salama reported that the Prophet ﷺ said this after the Fajr prayer, at the salam. Say it after one prayer tomorrow.',
+        arabicText: 'اللَّهُمَّ إِنِّي أَسْأَلُكَ عِلْمًا نَافِعًا، وَرِزْقًا طَيِّبًا، وَعَمَلاً مُتَقَبَّلاً',
+        transliteration:
+          'Allāhumma innī asʾaluka ʿilman nāfiʿan, wa rizqan ṭayyiban, wa ʿamalan mutaqabbalā',
+        translation:
+          'O Allah, I ask You for beneficial knowledge, goodly provision, and accepted deeds.',
+        source: 'Sunan Ibn Majah 925',
+        sourceType: 'prophetic_dua',
+      },
+    ]),
+    reflection:
+      'Which of your deeds are for Allah, and which are for how they look to others? Name one you could quietly move from the second column to the first.',
+  },
 ];
 
 export { quranContent, quranContentAnglesData as quranContentAngles };
