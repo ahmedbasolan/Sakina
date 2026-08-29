@@ -3652,6 +3652,22 @@ const quranContentData: Content[] = [
       'The occasion of revelation, al-Qurtubi reports, was a clan wanting to move nearer the mosque; the ayah told them their footsteps were being written down. "Traces" then widens to every effect a person leaves working after them.',
     moods: [],
   },
+  {
+    id: 'quran_29_5',
+    type: 'Quran',
+    primaryText:
+      'man kāna yarjū liqāʾa l-lahi fa-inna ajala l-lahi la-ātin wa-huwa s-samīʿu l-ʿalīmu',
+    arabicText: 'مَن كَانَ يَرْجُوا۟ لِقَآءَ ٱللَّهِ فَإِنَّ أَجَلَ ٱللَّهِ لَءَاتٍۢ ۚ وَهُوَ ٱلسَّمِيعُ ٱلْعَلِيمُ ﴿5﴾',
+    transliteration:
+      'man kāna yarjū liqāʾa l-lahi fa-inna ajala l-lahi la-ātin wa-huwa s-samīʿu l-ʿalīmu',
+    englishTranslation:
+      'Whoever hopes for the meeting with Allah — the term set by Allah is surely coming. And He is the All-Hearing, the All-Knowing.',
+    source: "Surah Al-'Ankabut 29:5",
+    audioKey: '29:5',
+    whyThis:
+      'Ibn Kathir ties the hope in this ayah to action: whoever hopes for the meeting and does righteous deeds, Allah will fulfil that hope. The hope is a driver, not a wait.',
+    moods: [],
+  },
 ];
 
 const quranContent: Content[] = quranContentData;
@@ -17953,6 +17969,55 @@ const quranContentAnglesData: ContentAngle[] = [
     ]),
     reflection:
       'If the traces you leave behind were read aloud tomorrow, what is on the list? Name one thing you could add before the year ends.',
+  },
+  {
+    id: 'q_angle_death_day7',
+    contentId: 'quran_29_5',
+    mood: 'Hopeful',
+    angle:
+      "[Tafsir Ibn Kathir on 29:5] The whole journey lands here. The term Allah has set is coming regardless — the only variable is whether you meet it hoping or dreading. Ibn Kathir is careful that the hope in this ayah is not passive: whoever hopes for the meeting with Allah and does righteous deeds, he says, will have that hope fulfilled. The Prophet ﷺ said: whoever loves to meet Allah, Allah loves to meet him — and when Aisha objected that they all dislike death, he answered that this is not what it means, but that when a believer’s death draws near they are shown Allah’s pleasure and honour, and at that point nothing is dearer to them than what lies ahead. So loving the meeting is not longing to die. He also forbade wishing for death outright: no one should wish for it because of a hardship, and if the wish comes anyway, the reply is a du’a that hands the timing back to Allah. What carried you through these seven days was returning, not intensity, so the plan you keep is the smallest version you can actually sustain. And if a day ever turns from ‘I hope to meet Him’ to ‘I want this to be over,’ the Hope journey and the in-app help line are the next step, not a private burden.",
+    practiceSteps: JSON.stringify([
+      {
+        type: 'mindset',
+        icon: 'sun',
+        title: 'Meeting, not ending',
+        instruction:
+          'Write one sentence describing death as a meeting — who you are meeting, and what you hope is said to you.',
+        source: 'Sahih al-Bukhari 6507',
+      },
+      {
+        type: 'mindset',
+        icon: 'shield',
+        title: 'Loving the meeting is not wishing to die',
+        instruction:
+          'The Prophet ﷺ forbade longing for death because of hardship. If today feels like too much, that is what the du’a below is for — and if the thought turns to not wanting to be alive, the Hope journey and the in-app help line are the next step, not something to carry alone.',
+        source: 'Sahih al-Bukhari 6351',
+      },
+      {
+        type: 'physical',
+        icon: 'candle',
+        title: 'The smallest keepable version',
+        instruction:
+          'Choose the one death-remembrance you will still be doing in a month — one line before sleep, one sadaqa a month, the waking du’a. Make it smaller until the honest answer is yes. Write it where you will see it.',
+        source: 'Reflects the arc of this journey',
+      },
+      {
+        type: 'verbal',
+        icon: 'hands-prayer',
+        title: 'The du’a that hands the timing back',
+        instruction:
+          'The Prophet ﷺ taught this for anyone who finds themselves wishing for death: do not name the outcome, ask for whichever is better.',
+        arabicText: 'اللَّهُمَّ أَحْيِنِي مَا كَانَتِ الْحَيَاةُ خَيْرًا لِي، وَتَوَفَّنِي إِذَا كَانَتِ الْوَفَاةُ خَيْرًا لِي',
+        transliteration:
+          'Allāhumma aḥyinī mā kānati l-ḥayātu khayran lī, wa tawaffanī idhā kānati l-wafātu khayran lī',
+        translation:
+          'O Allah, keep me alive as long as life is better for me, and take my life when death is better for me.',
+        source: 'Sahih al-Bukhari 6351',
+        sourceType: 'prophetic_dua',
+      },
+    ]),
+    reflection:
+      'What is the one practice from these seven days you will actually keep? Make it smaller until the answer is yes.',
   },
 ];
 
