@@ -284,23 +284,26 @@ function SocialIconRow({
 }) {
   const isSignUp = mode === 'signUp';
   return (
-    <View style={styles.socialIconRow}>
-      {appleAvailable && (
+    <View style={styles.socialBlock}>
+      <Text style={styles.socialLabel}>{isSignUp ? 'or sign up with' : 'or continue with'}</Text>
+      <View style={styles.socialIconRow}>
+        {appleAvailable && (
+          <SocialIconButton
+            onPress={onApple}
+            disabled={disabled}
+            accessibilityLabel={isSignUp ? 'Sign up with Apple' : 'Sign in with Apple'}
+          >
+            <Image source={APPLE_LOGO_BUTTON} style={styles.appleLogo} resizeMode="contain" />
+          </SocialIconButton>
+        )}
         <SocialIconButton
-          onPress={onApple}
+          onPress={onGoogle}
           disabled={disabled}
-          accessibilityLabel={isSignUp ? 'Sign up with Apple' : 'Sign in with Apple'}
+          accessibilityLabel={isSignUp ? 'Sign up with Google' : 'Continue with Google'}
         >
-          <Image source={APPLE_LOGO_BUTTON} style={styles.appleLogo} resizeMode="contain" />
+          <GoogleIcon size={22} />
         </SocialIconButton>
-      )}
-      <SocialIconButton
-        onPress={onGoogle}
-        disabled={disabled}
-        accessibilityLabel={isSignUp ? 'Sign up with Google' : 'Continue with Google'}
-      >
-        <GoogleIcon size={22} />
-      </SocialIconButton>
+      </View>
     </View>
   );
 }
@@ -1098,11 +1101,20 @@ const styles = StyleSheet.create({
     color: `${Colors.text.primary}4D`,
   },
   // --- Social icon buttons ---
+  socialBlock: {
+    marginBottom: Spacing.xl,
+  },
+  socialLabel: {
+    fontSize: Typography.sizes.detail,
+    color: `${Colors.text.primary}59`,
+    letterSpacing: 0.4,
+    textAlign: 'center',
+    marginBottom: Spacing.md,
+  },
   socialIconRow: {
     flexDirection: 'row',
     justifyContent: 'center',
     gap: Spacing.lg,
-    marginBottom: Spacing.xl,
   },
   socialIconBtn: {
     // 44pt is Apple's own logo-only art size AND the iOS minimum touch target.
