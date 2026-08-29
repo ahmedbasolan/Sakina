@@ -3636,6 +3636,22 @@ const quranContentData: Content[] = [
       'Ibn Abbas and al-Hasan note that the wish recorded here is always for more time to give sadaqa — not more prayer or fasting. It is the regret of the person who kept meaning to.',
     moods: [],
   },
+  {
+    id: 'quran_36_12',
+    type: 'Quran',
+    primaryText:
+      'innā naḥnu nuḥyi l-mawtā wa-naktubu mā qaddamū wa-āthārahum wa-kulla shayʾin aḥṣaynāhu fī imāmin mubīnin',
+    arabicText: 'إِنَّا نَحْنُ نُحْىِ ٱلْمَوْتَىٰ وَنَكْتُبُ مَا قَدَّمُوا۟ وَءَاثَٰرَهُمْ ۚ وَكُلَّ شَىْءٍ أَحْصَيْنَٰهُ فِىٓ إِمَامٍۢ مُّبِينٍۢ ﴿12﴾',
+    transliteration:
+      'innā naḥnu nuḥyi l-mawtā wa-naktubu mā qaddamū wa-āthārahum wa-kulla shayʾin aḥṣaynāhu fī imāmin mubīnin',
+    englishTranslation:
+      'It is We who bring the dead to life, and We record what they have sent ahead and the traces they leave behind. Everything We have counted in a clear register.',
+    source: 'Surah Ya-Sin 36:12',
+    audioKey: '36:12',
+    whyThis:
+      'The occasion of revelation, al-Qurtubi reports, was a clan wanting to move nearer the mosque; the ayah told them their footsteps were being written down. "Traces" then widens to every effect a person leaves working after them.',
+    moods: [],
+  },
 ];
 
 const quranContent: Content[] = quranContentData;
@@ -17886,6 +17902,57 @@ const quranContentAnglesData: ContentAngle[] = [
     ]),
     reflection:
       'Of the three that follow you to the grave — family, wealth, deeds — only the deeds go in. What did you add to that pile this week?',
+  },
+  {
+    id: 'q_angle_death_day6',
+    contentId: 'quran_36_12',
+    mood: 'Hopeful',
+    angle:
+      "[Tafsir al-Qurtubi on 36:12] Al-Qurtubi reads the ayah as naming two things that outlast you: ma qaddamu, what you sent ahead, and atharakum, your traces — the effects that keep working after you are gone. The occasion of revelation, he reports, was a clan who wanted to move their houses nearer the mosque, and the ayah told them their footsteps were already being written down, so they stayed where they were. The Prophet ﷺ drew the same line: when a person dies their deeds stop, except three — an ongoing charity, knowledge people keep benefiting from, and a righteous child who prays for them. This is three doors, not one. If you have no children, the ayah has closed nothing on you: the first two are wide open, and the hadith is an offer, not a bill. And when the day’s task is this small — pick one of the three and begin it, not plan it, begin it — the smallness is the point, because a trace that is actually started outlasts a plan that stays intended.",
+    practiceSteps: JSON.stringify([
+      {
+        type: 'physical',
+        icon: 'honey',
+        title: 'Start a sadaqa jariya today',
+        instruction:
+          'Set up one recurring gift — a monthly transfer, a share in a water project, a masjid or teaching fund. Small and automatic beats large and someday.',
+        source: 'Sahih Muslim 1631',
+        sourceType: 'sunnah_action',
+      },
+      {
+        type: 'physical',
+        icon: 'book-quran',
+        title: 'Teach one thing',
+        instruction:
+          'Pass on one beneficial thing you know — an ayah, a ruling, a skill — to one person this week. Knowledge that keeps being used keeps being written for you.',
+        source: 'Sahih Muslim 1631',
+        sourceType: 'sunnah_action',
+      },
+      {
+        type: 'mindset',
+        icon: 'heart',
+        title: 'The third door',
+        instruction:
+          'If you have children, the smallest brick is teaching them one line of du’a for you. If you do not, the first two doors are enough — the hadith names three so that everyone has a way in, not to leave anyone out.',
+        source: 'Sahih Muslim 1631',
+      },
+      {
+        type: 'verbal',
+        icon: 'hands-prayer',
+        title: 'The du’a of the servants of the Most Merciful',
+        instruction:
+          'This is how the servants of the Most Merciful ask for family in Surah al-Furqan — not for ease from them, but for them to be a coolness to the eye and a line of righteousness that continues.',
+        arabicText: 'رَبَّنَا هَبْ لَنَا مِنْ أَزْوَٰجِنَا وَذُرِّيَّٰتِنَا قُرَّةَ أَعْيُنٍۢ وَٱجْعَلْنَا لِلْمُتَّقِينَ إِمَامًا',
+        transliteration:
+          'Rabbanā hab lanā min azwājinā wa dhurriyyātinā qurrata aʿyunin wa-jʿalnā lil-muttaqīna imāmā',
+        translation:
+          'Our Lord, grant us from our spouses and offspring comfort of eyes, and make us a model for the righteous.',
+        source: 'Quran 25:74',
+        sourceType: 'quran_dua',
+      },
+    ]),
+    reflection:
+      'If the traces you leave behind were read aloud tomorrow, what is on the list? Name one thing you could add before the year ends.',
   },
 ];
 
