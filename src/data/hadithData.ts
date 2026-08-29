@@ -997,4 +997,26 @@ export const hadithContent: Content[] = [
     },
     moods: [],
   },
+  {
+    id: 'hadith_death_6',
+    type: 'Hadith',
+    primaryText:
+      'When a person dies, their deeds end except three: an ongoing charity, knowledge benefited from, or a righteous child who prays for them.',
+    arabicText: 'إِذَا مَاتَ الإِنْسَانُ انْقَطَعَ عَنْهُ عَمَلُهُ إِلاَّ مِنْ ثَلاَثَةٍ إِلاَّ مِنْ صَدَقَةٍ جَارِيَةٍ أَوْ عِلْمٍ يُنْتَفَعُ بِهِ أَوْ وَلَدٍ صَالِحٍ يَدْعُو لَهُ',
+    translation:
+      'When a man dies, his acts come to an end, but three: recurring charity, or knowledge (by which people) benefit, or a pious child, who prays for him (for the deceased).',
+    englishTranslation:
+      'When a man dies, his acts come to an end, but three: recurring charity, or knowledge (by which people) benefit, or a pious child, who prays for him (for the deceased).',
+    source: 'Sahih Muslim 1631',
+    transliteration:
+      'Idhā māta l-insānu nqaṭaʿa ʿanhu ʿamaluhu illā min thalāthah: illā min ṣadaqatin jāriyah, aw ʿilmin yuntafaʿu bih, aw waladin ṣāliḥin yadʿū lah',
+    whyThis:
+      'Abu Hurayra narrated it. The hadith names three doors, not one — recurring charity and beneficial knowledge are open to everyone, with or without children.',
+    propheticPractice: {
+      description: 'Start one of the three today — a recurring charity, teaching one beneficial thing, or a line of du’a taught to a child',
+      source: 'Sahih Muslim 1631',
+      grading: 'sahih',
+    },
+    moods: [],
+  },
 ];
