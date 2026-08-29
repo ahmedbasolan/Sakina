@@ -63,6 +63,7 @@ const AVAILABLE_PATHS: Record<string, string> = {
   path_prayer_leadership:    '2026-08-01',
   path_hope_after_crisis:    '2026-08-15',
   path_marriage_seeker:      '2026-08-18',
+  path_tawbah_intensive:     '2026-08-29',
 };
 
 const AVAILABLE_PATH_IDS = new Set(Object.keys(AVAILABLE_PATHS));
@@ -82,6 +83,7 @@ const AVAILABLE_PATH_IDS = new Set(Object.keys(AVAILABLE_PATHS));
 const PREMIUM_GATED_PATHS: Record<string, string> = {
   path_trusting_the_results: 'Free tier · 2 weeks',
   path_marriage_seeker: 'Sakina Pro exclusive',
+  path_tawbah_intensive: 'Sakina Pro exclusive',
 };
 
 // ── Star positions for the header backdrop ──────────────────────
