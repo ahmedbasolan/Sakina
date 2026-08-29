@@ -3633,7 +3633,7 @@ const quranContentData: Content[] = [
     source: 'Surah Al-Munafiqun 63:10',
     audioKey: '63:10',
     whyThis:
-      'Ibn Abbas and al-Hasan note that the wish recorded here is always for more time to give sadaqa — not more prayer or fasting. It is the regret of the person who kept meaning to.',
+      'The wish the ayah records is specifically for charity — fa-assaddaqa — and to become one of the righteous. Ibn Kathir notes that everyone who fell short asks, at death, for a little more time, and that the appointed term is never moved.',
     moods: [],
   },
   {
