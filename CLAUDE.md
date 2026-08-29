@@ -171,7 +171,14 @@ has nothing to do with the du'a printed above them.
 
 1. **Never write a hadith number from memory.** One was invented outright
    ("Al-Mu'jam al-Awsat 6026") and shipped. If you cannot fetch it, do not
-   cite it.
+   cite it. **This binds a proposal, a plan and a chat message exactly as
+   hard as it binds `hadithData.ts`.** A design table pitching a journey
+   arc listed eight hadith numbers from memory in the same message that
+   quoted this rule; seven happened to be right, which is luck, not method.
+   A number you have not fetched is not a weaker citation, it is not a
+   citation — and once it is written down it gets copied forward into the
+   data by whoever implements the plan. Fetch first, then write the number,
+   even in prose you think is throwaway.
 2. **A citation must be locatable: collection + number.** "The Increase Dua",
    "Authenticated in morning/evening adhkar", "Ibn al-Qayyim on Tawakkul" and
    a bare "[Tabarani]" are not sources. A named scholar's teaching is not a
@@ -205,6 +212,14 @@ has nothing to do with the du'a printed above them.
      al-Adab al-Mufrad, Hisn al-Muslim, Nawawi's Forty, Mishkat, Riyad
      as-Salihin. Check before declaring something unhostable — that claim was
      made about Ibn Hibban and was wrong.
+   - **Print the whole hadith, never a slice.** A `head -c 300` in the
+     shell is the same fault as the 420-char helper below, and it bites
+     hardest on the collections whose `text` opens with a long isnad:
+     Abu Dawud 1521's chain runs ~430 chars before the matn starts, so a
+     300-char probe shows only "I heard Ali say: I was a man…" and reads
+     as a totally unrelated hadith. Verifying a citation *against a
+     truncation* can mark a correct number wrong as easily as it marks a
+     wrong number right. Pipe the full `.text`.
    - **sunnah.com writes its class attributes unquoted.** The English lives in
      `<div class=hadith_narrated>` (the "X reported:" line) and
      `<div class=text_details>` (the matn); the Arabic is the one that *is*
@@ -545,6 +560,26 @@ Four scripts, none of which need a device:
   generated, and the generator shipped footnote markers glued to words on its
   first run — stripping `<sup>` tags without their contents leaves the digit.
   Needs network and `curl`.
+- `node scripts/verify-tafsir-tags.mjs` — checks the `[Tafsir <name> on
+  <surah>:<ayah>]` tags. `ContextLayer.extractSourceLabel` renders that tag as
+  the footnote the user reads, and the angle above it is written as though the
+  named scholar said those things — but nothing verified the named tafsir even
+  discusses that ayah. Al-Qurtubi's entry for 7:23 is 145 characters and
+  supported none of the day built on it. Fatal on an entry too short to support
+  a claim or a tag naming a tafsir it cannot resolve; **advisory** on low
+  ayah-word overlap, because these editions group ayat and an entry can discuss
+  one without quoting it (Ibn Kathir keyed to 22:77 scores 0% and is fine).
+  `TAFSIR_INJECT=1` is its negative mode; both modes exiting 0 is the green
+  state. **What it cannot do is tell you the angle's claim is what the tafsir
+  says** — that is the fault it was written for and it does not catch it. Read
+  the entry. Two faults it passed straight over: a day asserting "Ibn Kathir
+  draws out the huwa, the emphatic pronoun" over an entry with no grammatical
+  discussion at all, and a day crediting Ibn Abbas with calling 39:53 the most
+  hope-giving ayah when Al-Qurtubi records that as **Ibn Umar's** view and
+  records **Ibn Abbas refuting it** and naming 13:6 instead. The tafsirs are
+  fetchable (quran.com `api/v4/tafsirs`: Ibn Kathir 169 en, Qurtubi 90 ar,
+  Sa'di 91 ar, Baghawi 94, Tabari 15) — so there is no excuse for writing
+  "Ibn Kathir notes…" without reading the entry first.
 - `node scripts/verify-journey-selftest.mjs` — injects 14 known faults into a
   sandbox copy and asserts the verifier catches each. Run it after editing
   `verify-journey.mjs`; a checker that only ever prints "passed" is untested.
@@ -564,6 +599,40 @@ of which a typecheck can see.
 5. Verse and hadith source not already used by another day in the same journey.
 6. Each day's du'a is distinct from the other days'.
 7. `SEED_VERSION` bumped.
+8. `duration` equals `dailySteps.length`. This is load-bearing, not
+   cosmetic: `pathsService.ts`'s `isPathCompleted` is
+   `completedDays.length >= path.duration`, so a path declaring 14 with 10
+   authored days can never complete and its progress ring tops out at 71%.
+   Stub rows routinely disagree with their own copy — `path_tawbah_intensive`
+   shipped `duration: 14` under a description reading "A 10-day deep dive" —
+   so trust neither until you have counted the steps you actually wrote.
+9. The path `theme` is a real member of the `Mood` union in
+   `src/types/index.ts`, and is the *right* one. Item 2 forces all ten
+   angles to match it, so a wrong theme is a ten-file mistake made in one
+   line. Stub themes were written years before their content and are
+   guesses: `path_tawbah_intensive` was declared `'Sad'` when the union
+   contains `'Guilty'`, which `HomeScreen.tsx` already glosses as
+   **تَوْبَة** and which 30 existing angles use. Read the union, don't
+   inherit the stub.
+10. `JOURNEY_ANGLE_PREFIXES` in `src/services/contentRepository.ts` carries
+    the new journey's prefix. This is the easiest item to miss because
+    nothing fails without it. The mood-serving query excludes journey angles
+    by prefix, so an unlisted journey's angles are served to the **mood**
+    picker as though they were mood angles — tafsir voice in the
+    direct-address "For Your Heart" slot, visible `[Tafsir …]` tag and all.
+    Ten Tawbah angles would have leaked into `Guilty` exactly this way.
+    `verify-journey.mjs`'s universal borrowed-angle pass reads this same
+    array, so adding the prefix is also what lets that pass recognise the
+    journey rather than reporting every day as a borrowed mood angle.
+11. Generated entries follow the file's **single-quote** convention for
+    `id`. `verify-journey.mjs`'s `objectAt` finds every object with a
+    literal `indexOf("id: '" + id + "'")`. A generator that emits
+    everything through `JSON.stringify` — the right instinct for apostrophe
+    safety, and what the "Editing quranData.ts by script" section pushes you
+    toward — writes `id: "…"` and makes all of its output invisible to the
+    verifier. That surfaces as the angles being reported *missing* and the
+    days *borrowing mood angles*: 40 failures, one cause, and not one of the
+    messages naming it. Quote ids with `'`; keep `JSON.stringify` for prose.
 
 `staticPaths.ts` is **CRLF** and several `focus`/`title` strings contain escaped
 apostrophes (`Allah\'s`). A `/focus: '[^']*'/` style regex stops at the escape
@@ -575,6 +644,10 @@ the wrong one.
 ### 6. Journey availability is data, currently hardcoded in UI
 
 `AVAILABLE_PATH_IDS` lives in `PathsScreen.tsx` while
+`getPathVisual` in `src/constants/pathVisuals.ts`, by contrast, already
+covers every declared path id including the stubs — unlocking a journey needs
+no edit there.
+
 `PathsService.getAllPaths()` returns all 23 unfiltered. 16 paths have **zero**
 `dailySteps`. Any new surface that lists or deep-links journeys must check
 availability, or it will route users into an empty journey.

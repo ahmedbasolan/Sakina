@@ -205,7 +205,17 @@ import type { Content, ContentAngle } from '../types';
 //      AVAILABLE_PATH_IDS as of this bump — wiring it into PathsScreen.tsx is
 //      a separate step, deferred because that file has unrelated in-flight
 //      changes from another session.
-const SEED_VERSION = 34;
+// v35: new content — Tawbah Intensive (path_tawbah_intensive), 10 days. Adds
+//      q_angle_tawbah_day1..day10 and hadith_tawbah_1..10. NO new Content: all
+//      ten verses (39:53-54, 7:23, 20:82, 71:10, 3:135, 66:8, 24:22, 25:70,
+//      4:110, 9:104) already existed and are reused, so there is no new id to
+//      collide on. The path was a locked stub with dailySteps: [] — its
+//      `duration` also said 14 against a description reading "10-day", which
+//      would have made isPathCompleted (completedDays.length >= duration)
+//      unreachable, and its `theme` said 'Sad' where the Mood union has
+//      'Guilty'; both are corrected in staticPaths.ts. Unlocked in
+//      AVAILABLE_PATHS and staged behind Sakina Pro the same commit.
+const SEED_VERSION = 35;
 // Separate keys per content type — Quran and Hadith data change independently,
 // and each seeder used to write the SAME key at the end of its run. Since
 // initializeDatabase() awaits seedQuranContent() before seedHadithContent(),
