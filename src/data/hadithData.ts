@@ -954,4 +954,27 @@ export const hadithContent: Content[] = [
     },
     moods: [],
   },
+  {
+    id: 'hadith_death_4',
+    type: 'Hadith',
+    primaryText:
+      'On going to bed: "With Your name, O Allah, I die and I live." On waking: "All praise is for Allah who gave us life after causing us to die, and to Him is the resurrection."',
+    arabicText: 'بِاسْمِكَ اللَّهُمَّ أَمُوتُ وَأَحْيَا . وَإِذَا اسْتَيْقَظَ مِنْ مَنَامِهِ قَالَ الْحَمْدُ لِلَّهِ الَّذِي أَحْيَانَا بَعْدَ مَا أَمَاتَنَا، وَإِلَيْهِ النُّشُورُ',
+    translation:
+      'Whenever the Prophet ﷺ intended to go to bed, he would say, "Bismika Allahumma amutu wa ahya (With Your name, O Allah, I die and I live)." And when he woke up he would say, "Al-hamdu lillahi-lladhi ahyana ba’da ma amatana wa ilayhi n-nushur (All praise is for Allah who gave us life after causing us to die, and to Him is the resurrection)."',
+    englishTranslation:
+      'Whenever the Prophet ﷺ intended to go to bed, he would say, "With Your name, O Allah, I die and I live." And when he woke up he would say, "All praise is for Allah who gave us life after causing us to die, and to Him is the resurrection."',
+    source: 'Sahih al-Bukhari 6324',
+    transliteration:
+      'Bismika Allāhumma amūtu wa aḥyā — Al-ḥamdu lillāhi-lladhī aḥyānā baʿda mā amātanā wa ilayhi n-nushūr',
+    whyThis:
+      'Hudhayfa reported it. The waking words state the sleep–death link outright: ahyana ba’da ma amatana, "gave us life after having caused us to die." Both thresholds — sleeping and waking — are named as a death and a return.',
+    propheticPractice: {
+      description:
+        'Make these the literal last and first words of the day — phone down before the first, nothing reached for before the second',
+      source: 'Sahih al-Bukhari 6324',
+      grading: 'sahih',
+    },
+    moods: [],
+  },
 ];

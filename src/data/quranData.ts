@@ -3604,6 +3604,22 @@ const quranContentData: Content[] = [
       'Ibn Kathir calls this ayah a consolation to all of creation — every soul without exception will taste death, so no one is singled out. It also moves the reckoning: wages are paid in full only on the Day of Resurrection, not in this life.',
     moods: [],
   },
+  {
+    id: 'quran_39_42',
+    type: 'Quran',
+    primaryText:
+      'allāhu yatawaffā l-anfusa ḥīna mawtihā wallatī lam tamut fī manāmihā fa-yumsiku llatī qaḍā ʿalayhā l-mawta wa-yursilu l-ukhrā ilā ajalin musamman inna fī dhālika la-āyātin li-qawmin yatafakkarūna',
+    arabicText: 'ٱللَّهُ يَتَوَفَّى ٱلْأَنفُسَ حِينَ مَوْتِهَا وَٱلَّتِى لَمْ تَمُتْ فِى مَنَامِهَا ۖ فَيُمْسِكُ ٱلَّتِى قَضَىٰ عَلَيْهَا ٱلْمَوْتَ وَيُرْسِلُ ٱلْأُخْرَىٰٓ إِلَىٰٓ أَجَلٍۢ مُّسَمًّى ۚ إِنَّ فِى ذَٰلِكَ لَءَايَٰتٍۢ لِّقَوْمٍۢ يَتَفَكَّرُونَ ﴿42﴾',
+    transliteration:
+      'allāhu yatawaffā l-anfusa ḥīna mawtihā wallatī lam tamut fī manāmihā fa-yumsiku llatī qaḍā ʿalayhā l-mawta wa-yursilu l-ukhrā ilā ajalin musamman inna fī dhālika la-āyātin li-qawmin yatafakkarūna',
+    englishTranslation:
+      'Allah takes the souls at the time of their death, and the souls of the living during their sleep. He keeps those for whom He has decreed death and releases the rest until an appointed term. In that are signs for people who reflect.',
+    source: 'Surah Az-Zumar 39:42',
+    audioKey: '39:42',
+    whyThis:
+      'Sleep and death are placed under one verb here — yatawaffa. Classical tafsir calls sleep al-wafat al-sughra, the minor death: a nightly handing-over of the soul, released each morning to a term one day shorter.',
+    moods: [],
+  },
 ];
 
 const quranContent: Content[] = quranContentData;
@@ -17754,6 +17770,50 @@ const quranContentAnglesData: ContentAngle[] = [
     ]),
     reflection:
       'Name one thing you spend real energy on that would not matter to you from the grave. Then name one thing that would.',
+  },
+  {
+    id: 'q_angle_death_day4',
+    contentId: 'quran_39_42',
+    mood: 'Hopeful',
+    angle:
+      "[Tafsir al-Qurtubi on 39:42] Al-Qurtubi works through this ayah in four questions, and the first is the one that matters here: what does it mean that Allah takes the souls of those who have not yet died, during their sleep? His answer is that sleep is itself a wafāt, a taking — only a lesser one. The scholars call it al-wafāt al-ṣughrā, the minor death. Every night your soul is taken; every morning the ones not marked for death are sent back, to a fixed term that is now one day shorter. The tradition did not invent the parallel — the waking words the Prophet ﷺ used say it plainly: al-ḥamdu lillāhi alladhī aḥyānā baʿda mā amātanā, praise to the One who gave us life after causing us to die. When you treat the two thresholds — lying down, and waking up — as a rehearsal you already run every day, death stops being the one event you have had no practice for, and each morning arrives as something handed back rather than something owed.",
+    practiceSteps: JSON.stringify([
+      {
+        type: 'verbal',
+        icon: 'moon',
+        title: 'The last words before sleep',
+        instruction:
+          'Tonight, put the phone down first, then say this as the literal last thing before sleep.',
+        arabicText: 'بِاسْمِكَ اللَّهُمَّ أَمُوتُ وَأَحْيَا',
+        transliteration: 'Bismika Allāhumma amūtu wa aḥyā',
+        translation: 'With Your name, O Allah, I die and I live.',
+        source: 'Sahih al-Bukhari 6324',
+        sourceType: 'prophetic_dhikr',
+      },
+      {
+        type: 'verbal',
+        icon: 'sunrise',
+        title: 'The first words on waking',
+        instruction:
+          'Before you reach for anything, name the day as returned.',
+        arabicText: 'الْحَمْدُ لِلَّهِ الَّذِي أَحْيَانَا بَعْدَ مَا أَمَاتَنَا، وَإِلَيْهِ النُّشُورُ',
+        transliteration: 'Al-ḥamdu lillāhi-lladhī aḥyānā baʿda mā amātanā wa ilayhi n-nushūr',
+        translation:
+          'All praise is for Allah who gave us life after causing us to die, and to Him is the resurrection.',
+        source: 'Sahih al-Bukhari 6324',
+        sourceType: 'prophetic_dhikr',
+      },
+      {
+        type: 'mindset',
+        icon: 'clock',
+        title: 'One returned day',
+        instruction:
+          'On waking, ask one question: if this were the last day I am released for, what is the one thing I would not skip? Then do that thing first.',
+        source: 'Reflects Quran 39:42',
+      },
+    ]),
+    reflection:
+      'You were handed today back. What will you do with it that you would not bother doing if you assumed a thousand more were coming?',
   },
 ];
 
