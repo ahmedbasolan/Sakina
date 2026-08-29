@@ -3587,6 +3587,23 @@ const quranContentData: Content[] = [
       "Revealed in the context of the Battle of the Trench, but stated as a general principle: the Prophet's ﷺ conduct — in hardship and at home alike — is the standard, not just his words.",
     moods: ['Hopeful'],
   },
+  {
+    id: 'quran_3_185',
+    type: 'Quran',
+    primaryText:
+      'kullu nafsin dhāʾiqatu l-mawti wa-innamā tuwaffawna ujūrakum yawma l-qiyāmati faman zuḥziḥa ʿani l-nāri wa-udkhila l-jannata faqad fāza wa-mā l-ḥayātu l-dunyā illā matāʿu l-ghurūri',
+    arabicText:
+      'كُلُّ نَفْسٍۢ ذَآئِقَةُ ٱلْمَوْتِ ۗ وَإِنَّمَا تُوَفَّوْنَ أُجُورَكُمْ يَوْمَ ٱلْقِيَٰمَةِ ۖ فَمَن زُحْزِحَ عَنِ ٱلنَّارِ وَأُدْخِلَ ٱلْجَنَّةَ فَقَدْ فَازَ ۗ وَمَا ٱلْحَيَوٰةُ ٱلدُّنْيَآ إِلَّا مَتَٰعُ ٱلْغُرُورِ ﴿185﴾',
+    transliteration:
+      'kullu nafsin dhāʾiqatu l-mawti wa-innamā tuwaffawna ujūrakum yawma l-qiyāmati faman zuḥziḥa ʿani l-nāri wa-udkhila l-jannata faqad fāza wa-mā l-ḥayātu l-dunyā illā matāʿu l-ghurūri',
+    englishTranslation:
+      'Every soul will taste death, and you will be given your full compensation only on the Day of Resurrection. Whoever is drawn away from the Fire and admitted to Paradise has truly succeeded. The life of this world is only the enjoyment of delusion.',
+    source: "Surah Ali 'Imran 3:185",
+    audioKey: '3:185',
+    whyThis:
+      'Ibn Kathir calls this ayah a consolation to all of creation — every soul without exception will taste death, so no one is singled out. It also moves the reckoning: wages are paid in full only on the Day of Resurrection, not in this life.',
+    moods: [],
+  },
 ];
 
 const quranContent: Content[] = quranContentData;
@@ -17601,6 +17618,54 @@ const quranContentAnglesData: ContentAngle[] = [
     angle: "[Tafsir Ibn Kathir on 9:104] The ayah is phrased as a question its listeners are expected to already know the answer to — alam ya'lamu, do they not know — and Ibn Kathir reads it as encouragement toward two things at once: returning in repentance, and giving charity, because each of these, he says, erases and eradicates sins. The pairing is the ayah's own: it names Allah accepting tawbah and accepting sadaqat in a single breath, and Ibn Kathir attaches to it the hadith that Allah receives the charity in His Right Hand and develops it for the one who gave it until a single date becomes as large as Uhud. The ayah then closes on At-Tawwab, a Name built on the same root as tawbah and in the same intensive form, so the One being turned to is named by the turning. Nine days of this journey have been about returning after something went wrong. Your model for what the practice looks like when nothing has is the Prophet ﷺ himself, who said that some sort of shade would come upon his heart and that he sought Allah's forgiveness a hundred times a day — a man whose sins were forgiven, describing istighfar as the ordinary daily upkeep of a heart being kept clear.",
     practiceSteps: JSON.stringify([{"type":"verbal","icon":"sunrise","title":"The hundred-times du'a","instruction":"Ibn Umar said they would count the Prophet ﷺ saying this a hundred times in a single sitting. Use it as your default phrase from today — in the car, in a queue, between tasks.","arabicText":"رَبِّ اغْفِرْ لِي وَتُبْ عَلَىَّ إِنَّكَ أَنْتَ التَّوَّابُ الرَّحِيمُ","transliteration":"Rabbi ighfir li wa tub alayya innaka anta at-Tawwabu ar-Rahim","translation":"My Lord, forgive me and pardon me; You are the Pardoning and Forgiving One.","source":"Sunan Abi Dawud 1516","sourceType":"prophetic_dua"},{"type":"physical","icon":"clock","title":"Fix one time it happens every day","instruction":"Attach istighfar to something that already happens without your deciding — after Fajr, on the walk back from work, before you sleep. A practice tied to an existing moment survives; one tied to intention does not.","source":"Reflects the daily practice in Sahih Muslim 2702"},{"type":"mindset","icon":"crescent","title":"At-Tawwab is a Name, not an event","instruction":"The ayah ends by calling Allah At-Tawwab — the One who turns, repeatedly, toward those who turn. That is the ayah's own closing word, not a consolation added on top of it. What you have been asking for over nine days is not an exception being made.","source":"Surah At-Tawbah 9:104"},{"type":"physical","icon":"pen","title":"Keep one thing, not ten","instruction":"Look back over the nine days and choose the single practice that actually changed something — one du'a, one habit, one thing you removed. Write it down and keep only that. A journey that ends with ten resolutions ends with none.","source":"Reflects the sequence of this journey"}]),
     reflection: 'Which single practice from these ten days do you want to still be doing in a month — and what will remind you to?',
+  },
+  // === DEATH AWARENESS JOURNEY ANGLES ===
+  // Referenced by step_death_1..7. Prefix 'death' is registered in
+  // JOURNEY_ANGLE_PREFIXES so these never leak into the mood picker.
+  // Tafsir-voice (journey flow lands angle.angle in the Understand/Matters
+  // slot, no "For Your Heart" card). Every hadith/ayah verified against
+  // alquran.cloud / sunnah.com / the hadith mirror; see the design spec.
+  {
+    id: 'q_angle_death_day1',
+    contentId: 'quran_3_185',
+    mood: 'Hopeful',
+    angle:
+      "[Tafsir Ibn Kathir on 3:185] Ibn Kathir opens his comment by calling this ayah a consolation to all of creation: every soul, without exception, will taste death, so no one is being singled out, and nothing has gone wrong with you for feeling its weight. The Companions themselves disliked death, and the Prophet ﷺ said as much. What the ayah does with that certainty is move the payment date — your wages are settled in full only on the Day of Resurrection, not in this life, so a life that looks unfinished or unrewarded here is not the verdict on it. Ibn Kathir reads faman zuḥziḥa ʿani an-nār wa udkhila al-jannah, whoever is pulled back from the Fire and brought into the Garden, as the only outcome the ayah will call success, and cites the hadith that a place in Paradise the size of a whip outweighs the world and all that is in it; the rest, mataʿ al-ghurūr, is enjoyment that deceives. When you hold both halves at once — that death is certain, and that the account is just and not yet due — the fear stops being a dead end and turns into a direction: toward preparing for it, and toward thinking well of the One who will settle it.",
+    practiceSteps: JSON.stringify([
+      {
+        type: 'mindset',
+        icon: 'light-bulb',
+        title: 'Name the fear plainly',
+        instruction:
+          'Write down the specific thing about death that unsettles you — the unknown, leaving people behind, the account itself. Ibn Kathir notes the Companions also disliked death; naming the fear is not weak faith, it is the first move toward preparing for the thing you named.',
+        source: 'Tafsir Ibn Kathir on 3:185',
+      },
+      {
+        type: 'mindset',
+        icon: 'calm-face',
+        title: 'Instinct is not the problem',
+        instruction:
+          'The dislike of death is jibilli — built in. Scholars call blameworthy only the fear that grows from love of this world or from doubting Allah’s mercy, not the instinct itself. Ask which one is actually sitting in your chest.',
+        source: 'Reflects Tafsir Ibn Kathir on 3:185 and Sahih al-Bukhari 6507',
+      },
+      {
+        type: 'verbal',
+        icon: 'hands-prayer',
+        title: 'The du’a to be gathered with the righteous',
+        instruction:
+          'The people of understanding in Surah Ali ‘Imran close their supplication by asking not to be spared death but to be taken in good company. Make it yours today.',
+        arabicText:
+          'رَبَّنَا فَٱغْفِرْ لَنَا ذُنُوبَنَا وَكَفِّرْ عَنَّا سَيِّـَٔاتِنَا وَتَوَفَّنَا مَعَ ٱلْأَبْرَارِ',
+        transliteration:
+          'Rabbanā faghfir lanā dhunūbanā wa kaffir ʿannā sayyiʾātinā wa tawaffanā maʿa l-abrār',
+        translation:
+          'Our Lord, forgive us our sins and remove from us our misdeeds, and cause us to die with the righteous.',
+        source: 'Quran 3:193',
+        sourceType: 'quran_dua',
+      },
+    ]),
+    reflection:
+      'If your account were closed today, which part of it would you most want more time to change? Name one thing you could begin this week.',
   },
 ];
 
