@@ -1019,4 +1019,26 @@ export const hadithContent: Content[] = [
     },
     moods: [],
   },
+  {
+    id: 'hadith_death_7',
+    type: 'Hadith',
+    primaryText:
+      'Whoever loves to meet Allah, Allah loves to meet him. Aisha said, "But we dislike death." He said, "It is not that — rather, when a believer\'s death approaches, he is given the good news of Allah\'s pleasure and honour, so nothing is dearer to him than what lies ahead, and he loves to meet Allah and Allah loves to meet him."',
+    arabicText: 'مَنْ أَحَبَّ لِقَاءَ اللَّهِ أَحَبَّ اللَّهُ لِقَاءَهُ، وَمَنْ كَرِهَ لِقَاءَ اللَّهِ كَرِهَ اللَّهُ لِقَاءَهُ . قَالَتْ عَائِشَةُ أَوْ بَعْضُ أَزْوَاجِهِ إِنَّا لَنَكْرَهُ الْمَوْتَ. قَالَ لَيْسَ ذَاكَ، وَلَكِنَّ الْمُؤْمِنَ إِذَا حَضَرَهُ الْمَوْتُ بُشِّرَ بِرِضْوَانِ اللَّهِ وَكَرَامَتِهِ، فَلَيْسَ شَىْءٌ أَحَبَّ إِلَيْهِ مِمَّا أَمَامَهُ، فَأَحَبَّ لِقَاءَ اللَّهِ وَأَحَبَّ اللَّهُ لِقَاءَهُ، وَإِنَّ الْكَافِرَ إِذَا حُضِرَ بُشِّرَ بِعَذَابِ اللَّهِ وَعُقُوبَتِهِ، فَلَيْسَ شَىْءٌ أَكْرَهَ إِلَيْهِ مِمَّا أَمَامَهُ، كَرِهَ لِقَاءَ اللَّهِ وَكَرِهَ اللَّهُ لِقَاءَهُ',
+    translation:
+      'The Prophet ﷺ said, "Whoever loves to meet Allah, Allah loves to meet him; and whoever hates to meet Allah, Allah hates to meet him." Aisha, or some of the wives of the Prophet ﷺ, said, "But we dislike death." He said, "It is not like this. Rather, when the time of a believer\'s death approaches, he receives the good news of Allah\'s pleasure and His honour, so nothing is dearer to him than what is ahead of him. He therefore loves the meeting with Allah, and Allah loves the meeting with him."',
+    englishTranslation:
+      'The Prophet ﷺ said, "Whoever loves to meet Allah, Allah loves to meet him; and whoever hates to meet Allah, Allah hates to meet him." Aisha, or some of the wives of the Prophet ﷺ, said, "But we dislike death." He said, "It is not like this. Rather, when the time of a believer\'s death approaches, he receives the good news of Allah\'s pleasure and His honour, so nothing is dearer to him than what is ahead of him. He therefore loves the meeting with Allah, and Allah loves the meeting with him."',
+    source: 'Sahih al-Bukhari 6507',
+    transliteration:
+      'Man aḥabba liqāʾa llāhi aḥabba llāhu liqāʾah, wa man kariha liqāʾa llāhi kariha llāhu liqāʾah',
+    whyThis:
+      'Ubada ibn as-Samit narrated it. The clarification is the point: Aisha objected that they all dislike death, and the Prophet ﷺ answered that loving the meeting is not wanting to die — it is what the believer feels at the threshold itself, when Allah\'s pleasure is shown to them.',
+    propheticPractice: {
+      description: 'Reframe death as a meeting — name who you are meeting and what you hope is said to you',
+      source: 'Sahih al-Bukhari 6507',
+      grading: 'sahih',
+    },
+    moods: [],
+  },
 ];
