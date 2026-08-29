@@ -4,9 +4,9 @@
  * Filter tabs (Explore | Active | Done) partition the catalogue by state.
  * Available paths (real content, in AVAILABLE_PATH_IDS below): Rizq
  * Revolution, Salah Transformation, Study Journaling, Trusting the Results,
- * Prayer Leadership, Hope After Crisis, Marriage Seeker. All other paths are
- * stubs with no `dailySteps` yet and show a generic "Early Access · Premium"
- * locked state.
+ * Prayer Leadership, Hope After Crisis, Marriage Seeker, Tawbah Intensive,
+ * Death Awareness. All other paths are stubs with no `dailySteps` yet and
+ * show a generic "Early Access · Premium" locked state.
  *
  * A path can also be *available but staged behind Sakina Pro* — real content,
  * gated for free users — via PREMIUM_GATED_PATHS below. Its label doubles as
@@ -64,6 +64,7 @@ const AVAILABLE_PATHS: Record<string, string> = {
   path_hope_after_crisis:    '2026-08-15',
   path_marriage_seeker:      '2026-08-18',
   path_tawbah_intensive:     '2026-08-29',
+  path_death_awareness:      '2026-08-30',
 };
 
 const AVAILABLE_PATH_IDS = new Set(Object.keys(AVAILABLE_PATHS));
@@ -84,6 +85,7 @@ const PREMIUM_GATED_PATHS: Record<string, string> = {
   path_trusting_the_results: 'Free tier · 2 weeks',
   path_marriage_seeker: 'Sakina Pro exclusive',
   path_tawbah_intensive: 'Sakina Pro exclusive',
+  path_death_awareness: 'Sakina Pro exclusive',
 };
 
 // ── Star positions for the header backdrop ──────────────────────
