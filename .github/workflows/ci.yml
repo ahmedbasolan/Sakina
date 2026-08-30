@@ -66,7 +66,9 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          # EAS CLI `latest` requires Node >= 22 (@oclif/plugin-autocomplete).
+          # Only this job needs it — lint/test stays on the app's Node 20.
+          node-version: '22'
           cache: 'npm'
 
       - name: Install dependencies
