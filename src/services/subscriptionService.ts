@@ -86,9 +86,17 @@ export class SubscriptionService {
     return this.subscriptionState;
   }
 
-  /** Purchase the monthly or yearly subscription. Returns false on user-cancel; throws on store/config errors. */
+  /**
+   * Purchase the monthly / yearly subscription or the one-time lifetime
+   * unlock. Returns false on user-cancel; throws on store/config errors.
+   *
+   * `type` is the app-level SubscriptionType, which also carries 'trial' —
+   * that is a *phase* of the yearly product, not a package of its own, so it
+   * maps to 'yearly' along with the default branch.
+   */
   async activatePremium(type: SubscriptionType): Promise<boolean> {
-    const pkgType = type === 'yearly' ? 'yearly' : 'monthly';
+    const pkgType =
+      type === 'monthly' ? 'monthly' : type === 'lifetime' ? 'lifetime' : 'yearly';
     const { success, customerInfo } = await revenueCat.purchasePackage(pkgType);
     if (success && customerInfo) {
       await this.syncFromCustomerInfo(customerInfo);
@@ -166,10 +174,18 @@ export class SubscriptionService {
     const entitlement = revenueCat.getActiveEntitlement(info);
 
     const tier: SubscriptionTier = isActive ? 'premium' : 'free';
+    // A lifetime (non-consumable) entitlement has NO expiration date, which is
+    // the one signal that works everywhere: it needs no network call and no
+    // cached offering, so it stays correct offline and immediately after
+    // restorePurchases() — which, unlike purchasePackage(), never primes the
+    // offering cache that resolveDurationType() depends on.
+    const isLifetime = isActive && !!entitlement && !entitlement.expirationDate;
     const type: SubscriptionType | undefined = isActive
       ? entitlement?.periodType === 'trial'
         ? 'trial'
-        : await revenueCat.resolveDurationType(entitlement?.productIdentifier)
+        : isLifetime
+          ? 'lifetime'
+          : await revenueCat.resolveDurationType(entitlement?.productIdentifier)
       : undefined;
     const subscriptionEndDate = entitlement?.expirationDate
       ? new Date(entitlement.expirationDate).getTime()
@@ -197,11 +213,20 @@ export class SubscriptionService {
       type,
       subscriptionEndDate,
       isActive,
-      willRenew: isActive,
+      // Was `isActive`, which claimed every active entitlement auto-renews.
+      // That is wrong for a lifetime unlock (nothing to renew) and equally
+      // wrong for a subscription the user has already cancelled but is still
+      // inside the paid period. RC tracks this itself, so defer to it; fall
+      // back to false rather than true, since asserting a renewal that will
+      // not happen is the more harmful of the two errors.
+      willRenew: entitlement?.willRenew ?? false,
       unlockedBundleIds: currentBundles,
     };
 
-    // Persist to local cache.
+    // Persist to local cache. `willRenew` mirrors the in-memory value above
+    // rather than re-deriving from isActive, so the offline cache and the live
+    // state agree about a lifetime unlock (and about a cancelled subscription).
+    const willRenewFlag = this.subscriptionState.willRenew ? 1 : 0;
     await dbQuery(async (db) => {
       const existing = await db.getFirstAsync(
         `SELECT id FROM user_subscription WHERE id = 'user_subscription' LIMIT 1`,
@@ -211,13 +236,13 @@ export class SubscriptionService {
           `UPDATE user_subscription
            SET tier = ?, type = ?, subscriptionEndDate = ?, isActive = ?, willRenew = ?, updatedAt = ?
            WHERE id = 'user_subscription'`,
-          [tier, type ?? null, subscriptionEndDate ?? null, isActive ? 1 : 0, isActive ? 1 : 0, Date.now()],
+          [tier, type ?? null, subscriptionEndDate ?? null, isActive ? 1 : 0, willRenewFlag, Date.now()],
         );
       } else {
         await db.runAsync(
           `INSERT INTO user_subscription (id, tier, type, subscriptionEndDate, isActive, willRenew, createdAt, updatedAt)
            VALUES ('user_subscription', ?, ?, ?, ?, ?, ?, ?)`,
-          [tier, type ?? null, subscriptionEndDate ?? null, isActive ? 1 : 0, isActive ? 1 : 0, Date.now(), Date.now()],
+          [tier, type ?? null, subscriptionEndDate ?? null, isActive ? 1 : 0, willRenewFlag, Date.now(), Date.now()],
         );
       }
     }).catch(() => {});
@@ -250,7 +275,10 @@ export class SubscriptionService {
 
       if (row) {
         const validTiers: SubscriptionTier[] = ['free', 'premium'];
-        const validTypes: Array<SubscriptionType | undefined> = ['monthly', 'yearly', 'trial', undefined];
+        // 'lifetime' MUST be here: an unlisted value is coerced to undefined,
+        // so omitting it would silently downgrade a lifetime buyer's cached
+        // state to "premium, plan unknown" on every offline launch.
+        const validTypes: Array<SubscriptionType | undefined> = ['monthly', 'yearly', 'trial', 'lifetime', undefined];
         const tier: SubscriptionTier = validTiers.includes(row.tier) ? row.tier : 'free';
         const rawType: SubscriptionType | undefined = validTypes.includes(row.type) ? row.type : undefined;
         this.subscriptionState = {

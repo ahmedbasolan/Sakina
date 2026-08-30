@@ -346,6 +346,12 @@ describe('FreemiumService', () => {
         monthlyPriceAmount: 7.99,
         yearlyPriceAmount: 59.99,
         trialDays: 7,
+        // An offering with no lifetime package — the normal state before the
+        // non-consumable goes live. Spelled out as null rather than omitted:
+        // toEqual treats a missing key and an undefined value as equal, so an
+        // omitted field here would let a mapping bug through unnoticed.
+        lifetimePrice: null,
+        lifetimePriceAmount: null,
       });
 
       (FreemiumService as any).instance = null;
@@ -359,6 +365,34 @@ describe('FreemiumService', () => {
         monthlyPrice: 'AU$7.99',
         yearlyPrice: 'AU$59.99',
         trialDays: 7,
+        lifetimePrice: null,
+        lifetimeUSD: null,
+      });
+    });
+
+    it('passes the lifetime price through when the offering carries one', async () => {
+      const { revenueCat } = require('../revenueCatService');
+      revenueCat.getPricing.mockResolvedValueOnce({
+        monthlyPrice: 'AED 19.99',
+        yearlyPrice: 'AED 169.99',
+        monthlyPriceAmount: 19.99,
+        yearlyPriceAmount: 169.99,
+        trialDays: 7,
+        lifetimePrice: 'AED 400.00',
+        lifetimePriceAmount: 400,
+      });
+
+      (FreemiumService as any).instance = null;
+      const fresh = FreemiumService.getInstance();
+      await fresh.initialize();
+      await Promise.resolve();
+
+      // The paywall gates its lifetime card on lifetimePrice being non-null,
+      // so dropping either field in the mapping would silently hide a plan
+      // the store is ready to sell.
+      expect(fresh.getPricing()).toMatchObject({
+        lifetimePrice: 'AED 400.00',
+        lifetimeUSD: 400,
       });
     });
   });
@@ -451,6 +485,24 @@ describe('FreemiumService', () => {
 
       expect(result).toBe(true);
       expect(mockSubscriptionService.activatePremium).toHaveBeenCalledWith('yearly');
+    });
+
+    it('should activate the one-time lifetime unlock', async () => {
+      mockSubscriptionService.activatePremium.mockResolvedValue(true);
+      mockSessionService.getCurrentSession.mockReturnValue({
+        guidanceSessionsUsed: 1,
+        nextRefreshesRemaining: 3,
+      });
+
+      const result = await service.activatePremium('lifetime');
+
+      expect(result).toBe(true);
+      // Must forward 'lifetime' verbatim. subscriptionService maps anything
+      // that is not 'monthly'/'lifetime' onto the yearly package, so a
+      // mistyped or swallowed value here would silently charge a lifetime
+      // buyer for an annual subscription instead.
+      expect(mockSubscriptionService.activatePremium).toHaveBeenCalledWith('lifetime');
+      expect(mockSessionService.saveSession).toHaveBeenCalled();
     });
 
     it('should reset to free tier', async () => {

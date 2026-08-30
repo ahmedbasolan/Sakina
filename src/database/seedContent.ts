@@ -205,7 +205,26 @@ import type { Content, ContentAngle } from '../types';
 //      AVAILABLE_PATH_IDS as of this bump — wiring it into PathsScreen.tsx is
 //      a separate step, deferred because that file has unrelated in-flight
 //      changes from another session.
-const SEED_VERSION = 34;
+// v35: new content — Tawbah Intensive (path_tawbah_intensive), 10 days. Adds
+//      q_angle_tawbah_day1..day10 and hadith_tawbah_1..10. NO new Content: all
+//      ten verses (39:53-54, 7:23, 20:82, 71:10, 3:135, 66:8, 24:22, 25:70,
+//      4:110, 9:104) already existed and are reused, so there is no new id to
+//      collide on. The path was a locked stub with dailySteps: [] — its
+//      `duration` also said 14 against a description reading "10-day", which
+//      would have made isPathCompleted (completedDays.length >= duration)
+//      unreachable, and its `theme` said 'Sad' where the Mood union has
+//      'Guilty'; both are corrected in staticPaths.ts. Unlocked in
+//      AVAILABLE_PATHS and staged behind Sakina Pro the same commit.
+// v36: new content — Death Awareness (path_death_awareness), 7 days, Sakina
+//      Pro exclusive. Adds 5 Content verses (quran_3_185, quran_39_42,
+//      quran_63_10, quran_36_12, quran_29_5 — quran_67_2 and quran_102_1_2
+//      reused), q_angle_death_day1..day7, and hadith_death_3..7 (days 1-2 are
+//      verse + tafsir led, no hadith row). staticPaths theme corrected
+//      'Overwhelmed' -> 'Hopeful' — dhikr al-mawt is a readiness posture, not a
+//      crisis one; see docs/superpowers/specs/2026-08-29-death-awareness-journey-design.md
+//      and its scholarly review. Path was a locked stub with dailySteps: [].
+//      Unlocked in AVAILABLE_PATHS and Pro-gated the same commit.
+const SEED_VERSION = 36;
 // Separate keys per content type — Quran and Hadith data change independently,
 // and each seeder used to write the SAME key at the end of its run. Since
 // initializeDatabase() awaits seedQuranContent() before seedHadithContent(),
