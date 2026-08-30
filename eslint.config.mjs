@@ -7,7 +7,58 @@ import reactNativePlugin from 'eslint-plugin-react-native';
 import prettierPlugin from 'eslint-plugin-prettier';
 import prettierConfig from 'eslint-config-prettier';
 
+// ── Shared global sets ──────────────────────────────────────────────────────
+// Node/dev-tooling globals for scripts, config files, and image builders.
+const nodeGlobals = {
+  console: 'readonly',
+  process: 'readonly',
+  require: 'readonly',
+  module: 'writable',
+  exports: 'writable',
+  __dirname: 'readonly',
+  __filename: 'readonly',
+  Buffer: 'readonly',
+  global: 'readonly',
+  fetch: 'readonly',
+  setTimeout: 'readonly',
+  clearTimeout: 'readonly',
+  setInterval: 'readonly',
+  clearInterval: 'readonly',
+  URL: 'readonly',
+  URLSearchParams: 'readonly',
+  TextEncoder: 'readonly',
+  TextDecoder: 'readonly',
+};
+
+const jestGlobals = {
+  jest: 'readonly',
+  expect: 'readonly',
+  it: 'readonly',
+  describe: 'readonly',
+  beforeEach: 'readonly',
+  afterEach: 'readonly',
+  beforeAll: 'readonly',
+  afterAll: 'readonly',
+  test: 'readonly',
+};
+
 export default [
+  {
+    // Not app code: build output, native projects, parallel-session git
+    // worktrees under `.claude/`, and the Deno edge functions (own runtime +
+    // `deno lint` — linting them with the React Native config is meaningless).
+    ignores: [
+      'node_modules/',
+      'build/',
+      'dist/',
+      '.expo/',
+      'android/',
+      'ios/',
+      'coverage/',
+      '.claude/',
+      'supabase/functions/',
+    ],
+  },
   js.configs.recommended,
   {
     files: ['**/*.{js,jsx,ts,tsx}'],
@@ -45,6 +96,8 @@ export default [
         cancelAnimationFrame: 'readonly',
         alert: 'readonly',
         global: 'readonly',
+        // RN global used by App.tsx's top-level error boundary
+        ErrorUtils: 'readonly',
       },
     },
     settings: {
@@ -70,6 +123,10 @@ export default [
       // this codebase has none; prop validation is TypeScript's job. Only ever
       // fired 2 false positives on typed-but-not-PropTypes-declared props.
       'react/prop-types': 'off',
+      // A web/HTML rule. React Native `<Text>` renders a raw `'` or `"` fine,
+      // and this only ever fired on ordinary apostrophes in UI copy ("you'll",
+      // "don't") — escaping those to `&apos;` would be wrong here.
+      'react/no-unescaped-entities': 'off',
       // React Native's Metro bundler requires `require('./x.png')` for static
       // image assets — `import` doesn't resolve them the same way, so this
       // TypeScript-import-style rule is unusable here. Also flagged Jest's own
@@ -97,44 +154,58 @@ export default [
       // here, not an accident.
       'no-empty': ['error', { allowEmptyCatch: true }],
       ...prettierConfig.rules,
-      'prettier/prettier': 'error',
+      // `warn`, not `error`. This codebase predates the Prettier rule and was
+      // never run through `prettier --write`, so essentially every file drifts
+      // from Prettier's output (~4.8k findings). A blanket format pass would be
+      // a five-figure-line diff that collides with every in-flight branch and
+      // is explicitly banned on `src/data/quranData.ts` (CRLF + tri-lingual
+      // prose, not Prettier-clean by design — see CLAUDE.md). Keeping this as a
+      // warning surfaces drift in newly-touched code (editor format-on-save and
+      // `npm run format` still work) without turning CI into a wall. Promote
+      // back to `error` after a dedicated repo-wide format pass + a pre-commit
+      // hook land together.
+      'prettier/prettier': 'warn',
     },
   },
-  // Jest test files — add test globals
   {
-    files: ['**/__tests__/**/*.{js,jsx,ts,tsx}', '**/*.test.{js,jsx,ts,tsx}', '**/*.spec.{js,jsx,ts,tsx}'],
+    // Jest test, setup, and mock files — add the test globals plus Node
+    // globals (mocks and setup reach for `jest`, `process`, timers, etc.).
+    files: [
+      '**/__tests__/**/*.{js,jsx,ts,tsx}',
+      '**/__mocks__/**/*.{js,jsx,ts,tsx}',
+      '**/*.test.{js,jsx,ts,tsx}',
+      '**/*.spec.{js,jsx,ts,tsx}',
+      'jest.setup.{js,ts}',
+    ],
     languageOptions: {
-      globals: {
-        jest: 'readonly',
-        expect: 'readonly',
-        it: 'readonly',
-        describe: 'readonly',
-        beforeEach: 'readonly',
-        afterEach: 'readonly',
-        beforeAll: 'readonly',
-        afterAll: 'readonly',
-        test: 'readonly',
-      },
+      globals: { ...jestGlobals, ...nodeGlobals },
     },
   },
   {
-    // Node ESM dev tooling (scripts/*.mjs) — not React Native, and the main
-    // config's `files` glob only covers js/jsx/ts/tsx, so these would
-    // otherwise lint with no Node globals defined.
-    files: ['scripts/**/*.mjs'],
+    // Node ESM/CJS dev tooling: `scripts/` (both .js and .mjs) and the
+    // `store-assets/` image-compositing builders. Not React Native — the main
+    // config's `files` glob covers only js/jsx/ts/tsx, so `.mjs` here would
+    // otherwise lint with no Node globals at all.
+    files: ['scripts/**/*.{js,mjs}', 'store-assets/**/*.{js,mjs}'],
     languageOptions: {
       ecmaVersion: 2022,
       sourceType: 'module',
-      globals: {
-        console: 'readonly',
-        process: 'readonly',
-        require: 'readonly',
-        module: 'readonly',
-        __dirname: 'readonly',
-      },
+      globals: nodeGlobals,
+    },
+    rules: {
+      'no-unused-vars': ['warn', { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }],
+      // Dev-tooling regex idioms. CLAUDE.md flags the Arabic character classes
+      // in `verify-tafsir-tags.mjs` / `verify-citations.mjs` as trap-prone and
+      // hand-tuned — a lint rule must not force an edit there.
+      'no-misleading-character-class': 'warn',
     },
   },
   {
-    ignores: ['node_modules/', 'build/', 'dist/', '.expo/', 'android/', 'ios/', 'coverage/'],
+    // Root CommonJS config files (Babel, Metro, Jest).
+    files: ['*.config.{js,cjs}', 'babel.config.js', 'metro.config.js', 'react-native.config.js'],
+    languageOptions: {
+      sourceType: 'commonjs',
+      globals: nodeGlobals,
+    },
   },
 ];
