@@ -224,7 +224,56 @@ import type { Content, ContentAngle } from '../types';
 //      crisis one; see docs/superpowers/specs/2026-08-29-death-awareness-journey-design.md
 //      and its scholarly review. Path was a locked stub with dailySteps: [].
 //      Unlocked in AVAILABLE_PATHS and Pro-gated the same commit.
-const SEED_VERSION = 36;
+// v37: content correction — four misattributed scholar claims. Authored on
+//      claude/friendly-bohr-86d5af as a v36; renumbered to v37 on merge
+//      because main's v36 (Death Awareness) had already shipped under that
+//      number. Two different v36 payloads would mean whichever an install
+//      stored first permanently suppresses the other — the gate is
+//      `seededVersion >= SEED_VERSION`, so only a higher number re-seeds.
+//      · quran_39_53.whyThis and q_angle_39_53_sad both credited Ibn Abbas
+//        with calling 39:53 the most hope-giving ayah in the Quran.
+//        Al-Qurtubi on 39:53 records the opposite: Abdullah ibn Umar said
+//        it, and Ibn Abbas refuted them and named 13:6 instead.
+//        Reattributed to Ibn Masud, who Ibn Kathir's own entry on 39:53
+//        records saying it (At-Tabarani, via Shutayr bin Shakal), so the
+//        [Tafsir Ibn Kathir …] tag now names a source that carries the
+//        claim. Same edit drops the "unconditional … no exception is
+//        listed" framing, which that entry explicitly denies ("This cannot
+//        be interpreted as meaning that sins will be forgiven without
+//        repentance") — what is unconditional is who is invited, not
+//        forgiveness without turning back, which is what 39:54 says in the
+//        same block this app already renders. The angle's first
+//        practiceStep carried the same overclaim and is corrected with it.
+//        Retagged from the bare "[Tafsir Ibn Kathir, Surah Az-Zumar]" to
+//        "[Tafsir Ibn Kathir on 39:53]" so verify-tafsir-tags.mjs can check
+//        it instead of counting it as an unverifiable bare tag.
+//      · q_angle_89_27_30_calm credited Ibn Abbas with a gloss on "the
+//        reassured soul". Its [Tafsir al-Baghawi] tag does not carry it —
+//        al-Baghawi on 89:27 never mentions Ibn Abbas, and the sentence is a
+//        composite of three glosses he does record (Mujahid, al-Hasan,
+//        Atiyyah), who are now named instead. Al-Qurtubi does have an Ibn
+//        Abbas gloss here but a narrower one, so it did not rescue it either.
+//      · q_angle_25_63_content credited al-Hasan al-Basri with the humility
+//        gloss, which is al-Baghawi's own wording; al-Hasan now carries what
+//        he actually said on the following clause. That angle's first
+//        practiceStep repeated the claim and also badged sourceType
+//        'quran_dua' (renders "Qur'anic") over a tafsir source line, in a
+//        step containing no Arabic at all. Badge dropped — a mindset step
+//        should claim nothing. NOTE: 233 steps corpus-wide carry that same
+//        quran_dua-over-a-tafsir-label shape; only this one is fixed here.
+//      · q_angle_94_5_sad said "Ibn Kathir records" of a definite/indefinite
+//        grammar reading and an Ibn Masud report. The abridged Ibn Kathir
+//        has neither — it says only that Allah informs that with difficulty
+//        there is ease, and reaffirms it. Al-Qurtubi on 94:6 has both,
+//        credits the reading to the grammarian Tha'lab, and then records
+//        al-Jurjani rejecting it. Retagged [Tafsir al-Qurtubi on 94:6],
+//        attributed to Tha'lab, and the dispute noted so a contested
+//        reading is no longer presented as settled. Ibn Masud is kept —
+//        that attribution was correct — with his own wording.
+//      Both al-Baghawi tags were bare and are now "on <surah>:<ayah>", so
+//      verify-tafsir-tags can check them instead of skipping them. No
+//      Arabic, translation, verse or hadith citation changed.
+const SEED_VERSION = 37;
 // Separate keys per content type — Quran and Hadith data change independently,
 // and each seeder used to write the SAME key at the end of its run. Since
 // initializeDatabase() awaits seedQuranContent() before seedHadithContent(),
