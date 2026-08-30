@@ -125,9 +125,11 @@ describe('Quran verse text integrity', () => {
         const theirs = arabicSkeleton(row.remote);
         if (ours === theirs) return;
 
+        // An exemption must carry a real explanation. `expect(typeof x)` here
+        // would be a no-op that lets someone silence a red test with 'todo'.
         const accepted = ACCEPTED_SKELETON_DEVIATIONS[id];
         if (accepted) {
-          expect(typeof accepted).toBe('string');
+          expect(accepted.length).toBeGreaterThan(40);
           return;
         }
 
@@ -155,6 +157,23 @@ describe('Quran verse text integrity', () => {
    * alphabet. These cases run on every suite so the checks above cannot rot
    * into no-ops unnoticed.
    */
+  it('no ACCEPTED_SKELETON_DEVIATIONS entry is stale', () => {
+    // A stale exemption is a hole: it keeps exempting an id long after the
+    // data was fixed, so a future regression on that verse passes silently.
+    const stale = Object.keys(ACCEPTED_SKELETON_DEVIATIONS).filter((id) => {
+      const entry = verseEntries.find((e) => e.id === id);
+      const row = canonical[id];
+      if (!entry || !row) return true; // exemption for a verse that no longer exists
+      return arabicSkeleton(entry.arabicText) === arabicSkeleton(row.remote);
+    });
+    if (stale.length) {
+      throw new Error(
+        `These ids are exempted but no longer deviate (or no longer exist):\n  ${stale.join('\n  ')}\n\n` +
+          'Delete them from ACCEPTED_SKELETON_DEVIATIONS — a stale exemption hides the next regression.',
+      );
+    }
+  });
+
   describe('the checks above actually have teeth', () => {
     const sample = verseEntries.find((e) => canonical[e.id])!;
     const remote = canonical[sample.id].remote;

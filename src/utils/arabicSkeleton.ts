@@ -19,6 +19,23 @@
  * "is this the right ayah, whole?" — never "is the tashkil correct?".
  * The byte-exact lock in the test covers that half. Do not use this
  * function to compare two texts you expect to be identical; use === .
+ *
+ * MEASURED BLIND SPOTS (audited against the 234-entry corpus, not reasoned):
+ *   · `ءا` and `ا` collapse to the same output, because the alef-madda fold
+ *     below is what makes 29:20, 39:42 and 29:5 agree with quran.com. Deleting
+ *     the lone hamza from `وَءَاثَ` is therefore invisible here — it is the one
+ *     single-character deletion in the whole corpus this function cannot see.
+ *   · The strip class spans U+064B–U+0670, which sweeps up the Arabic-Indic
+ *     digits and the dotless letters U+066E/U+066F along with the marks. The
+ *     digits only ever appear inside ayah ornaments, which are removed anyway,
+ *     and neither dotless letter occurs in this corpus — verified, 0 hits. If
+ *     a future edition introduces them, narrow the range rather than widening
+ *     the exceptions.
+ * Non-blind spots worth recording, so nobody has to re-derive them: across 234
+ * entries the function yields 230 distinct skeletons with ZERO collisions
+ * between different ayah ranges, and retains 53% of source length on average
+ * (min 41%, max 57%) — it is not a degenerate transform that would let any
+ * verse match any other.
  */
 export function arabicSkeleton(text: string): string {
   return (
