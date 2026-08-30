@@ -3587,6 +3587,87 @@ const quranContentData: Content[] = [
       "Revealed in the context of the Battle of the Trench, but stated as a general principle: the Prophet's ﷺ conduct — in hardship and at home alike — is the standard, not just his words.",
     moods: ['Hopeful'],
   },
+  {
+    id: 'quran_3_185',
+    type: 'Quran',
+    primaryText:
+      'kullu nafsin dhāʾiqatu l-mawti wa-innamā tuwaffawna ujūrakum yawma l-qiyāmati faman zuḥziḥa ʿani l-nāri wa-udkhila l-jannata faqad fāza wa-mā l-ḥayātu l-dunyā illā matāʿu l-ghurūri',
+    arabicText:
+      'كُلُّ نَفْسٍۢ ذَآئِقَةُ ٱلْمَوْتِ ۗ وَإِنَّمَا تُوَفَّوْنَ أُجُورَكُمْ يَوْمَ ٱلْقِيَٰمَةِ ۖ فَمَن زُحْزِحَ عَنِ ٱلنَّارِ وَأُدْخِلَ ٱلْجَنَّةَ فَقَدْ فَازَ ۗ وَمَا ٱلْحَيَوٰةُ ٱلدُّنْيَآ إِلَّا مَتَٰعُ ٱلْغُرُورِ ﴿185﴾',
+    transliteration:
+      'kullu nafsin dhāʾiqatu l-mawti wa-innamā tuwaffawna ujūrakum yawma l-qiyāmati faman zuḥziḥa ʿani l-nāri wa-udkhila l-jannata faqad fāza wa-mā l-ḥayātu l-dunyā illā matāʿu l-ghurūri',
+    englishTranslation:
+      'Every soul will taste death, and you will be given your full compensation only on the Day of Resurrection. Whoever is drawn away from the Fire and admitted to Paradise has truly succeeded. The life of this world is only the enjoyment of delusion.',
+    source: "Surah Ali 'Imran 3:185",
+    audioKey: '3:185',
+    whyThis:
+      'Ibn Kathir calls this ayah a consolation to all of creation — every soul without exception will taste death, so no one is singled out. It also moves the reckoning: wages are paid in full only on the Day of Resurrection, not in this life.',
+    moods: [],
+  },
+  {
+    id: 'quran_39_42',
+    type: 'Quran',
+    primaryText:
+      'allāhu yatawaffā l-anfusa ḥīna mawtihā wallatī lam tamut fī manāmihā fa-yumsiku llatī qaḍā ʿalayhā l-mawta wa-yursilu l-ukhrā ilā ajalin musamman inna fī dhālika la-āyātin li-qawmin yatafakkarūna',
+    arabicText: 'ٱللَّهُ يَتَوَفَّى ٱلْأَنفُسَ حِينَ مَوْتِهَا وَٱلَّتِى لَمْ تَمُتْ فِى مَنَامِهَا ۖ فَيُمْسِكُ ٱلَّتِى قَضَىٰ عَلَيْهَا ٱلْمَوْتَ وَيُرْسِلُ ٱلْأُخْرَىٰٓ إِلَىٰٓ أَجَلٍۢ مُّسَمًّى ۚ إِنَّ فِى ذَٰلِكَ لَءَايَٰتٍۢ لِّقَوْمٍۢ يَتَفَكَّرُونَ ﴿42﴾',
+    transliteration:
+      'allāhu yatawaffā l-anfusa ḥīna mawtihā wallatī lam tamut fī manāmihā fa-yumsiku llatī qaḍā ʿalayhā l-mawta wa-yursilu l-ukhrā ilā ajalin musamman inna fī dhālika la-āyātin li-qawmin yatafakkarūna',
+    englishTranslation:
+      'Allah takes the souls at the time of their death, and the souls of the living during their sleep. He keeps those for whom He has decreed death and releases the rest until an appointed term. In that are signs for people who reflect.',
+    source: 'Surah Az-Zumar 39:42',
+    audioKey: '39:42',
+    whyThis:
+      'Sleep and death are placed under one verb here — yatawaffa. Classical tafsir calls sleep al-wafat al-sughra, the minor death: a nightly handing-over of the soul, released each morning to a term one day shorter.',
+    moods: [],
+  },
+  {
+    id: 'quran_63_10',
+    type: 'Quran',
+    primaryText:
+      'wa-anfiqū min mā razaqnākum min qabli an yaʾtiya aḥadakumu l-mawtu fa-yaqūla rabbi lawlā akhkhartanī ilā ajalin qarībin fa-aṣṣaddaqa wa-akun mina ṣ-ṣāliḥīna',
+    arabicText: 'وَأَنفِقُوا۟ مِن مَّا رَزَقْنَٰكُم مِّن قَبْلِ أَن يَأْتِىَ أَحَدَكُمُ ٱلْمَوْتُ فَيَقُولَ رَبِّ لَوْلَآ أَخَّرْتَنِىٓ إِلَىٰٓ أَجَلٍۢ قَرِيبٍۢ فَأَصَّدَّقَ وَأَكُن مِّنَ ٱلصَّٰلِحِينَ ﴿10﴾',
+    transliteration:
+      'wa-anfiqū min mā razaqnākum min qabli an yaʾtiya aḥadakumu l-mawtu fa-yaqūla rabbi lawlā akhkhartanī ilā ajalin qarībin fa-aṣṣaddaqa wa-akun mina ṣ-ṣāliḥīna',
+    englishTranslation:
+      'And spend from what We have provided you before death comes to one of you and he says, "My Lord, if only You would delay me for a brief term so I could give charity and be among the righteous."',
+    source: 'Surah Al-Munafiqun 63:10',
+    audioKey: '63:10',
+    whyThis:
+      'The wish the ayah records is specifically for charity — fa-assaddaqa — and to become one of the righteous. Ibn Kathir notes that everyone who fell short asks, at death, for a little more time, and that the appointed term is never moved.',
+    moods: [],
+  },
+  {
+    id: 'quran_36_12',
+    type: 'Quran',
+    primaryText:
+      'innā naḥnu nuḥyi l-mawtā wa-naktubu mā qaddamū wa-āthārahum wa-kulla shayʾin aḥṣaynāhu fī imāmin mubīnin',
+    arabicText: 'إِنَّا نَحْنُ نُحْىِ ٱلْمَوْتَىٰ وَنَكْتُبُ مَا قَدَّمُوا۟ وَءَاثَٰرَهُمْ ۚ وَكُلَّ شَىْءٍ أَحْصَيْنَٰهُ فِىٓ إِمَامٍۢ مُّبِينٍۢ ﴿12﴾',
+    transliteration:
+      'innā naḥnu nuḥyi l-mawtā wa-naktubu mā qaddamū wa-āthārahum wa-kulla shayʾin aḥṣaynāhu fī imāmin mubīnin',
+    englishTranslation:
+      'It is We who bring the dead to life, and We record what they have sent ahead and the traces they leave behind. Everything We have counted in a clear register.',
+    source: 'Surah Ya-Sin 36:12',
+    audioKey: '36:12',
+    whyThis:
+      'The occasion of revelation, al-Qurtubi reports, was a clan wanting to move nearer the mosque; the ayah told them their footsteps were being written down. "Traces" then widens to every effect a person leaves working after them.',
+    moods: [],
+  },
+  {
+    id: 'quran_29_5',
+    type: 'Quran',
+    primaryText:
+      'man kāna yarjū liqāʾa l-lahi fa-inna ajala l-lahi la-ātin wa-huwa s-samīʿu l-ʿalīmu',
+    arabicText: 'مَن كَانَ يَرْجُوا۟ لِقَآءَ ٱللَّهِ فَإِنَّ أَجَلَ ٱللَّهِ لَءَاتٍۢ ۚ وَهُوَ ٱلسَّمِيعُ ٱلْعَلِيمُ ﴿5﴾',
+    transliteration:
+      'man kāna yarjū liqāʾa l-lahi fa-inna ajala l-lahi la-ātin wa-huwa s-samīʿu l-ʿalīmu',
+    englishTranslation:
+      'Whoever hopes for the meeting with Allah — the term set by Allah is surely coming. And He is the All-Hearing, the All-Knowing.',
+    source: "Surah Al-'Ankabut 29:5",
+    audioKey: '29:5',
+    whyThis:
+      'Ibn Kathir ties the hope in this ayah to action: whoever hopes for the meeting and does righteous deeds, Allah will fulfil that hope. The hope is a driver, not a wait.',
+    moods: [],
+  },
 ];
 
 const quranContent: Content[] = quranContentData;
@@ -17601,6 +17682,342 @@ const quranContentAnglesData: ContentAngle[] = [
     angle: "[Tafsir Ibn Kathir on 9:104] The ayah is phrased as a question its listeners are expected to already know the answer to — alam ya'lamu, do they not know — and Ibn Kathir reads it as encouragement toward two things at once: returning in repentance, and giving charity, because each of these, he says, erases and eradicates sins. The pairing is the ayah's own: it names Allah accepting tawbah and accepting sadaqat in a single breath, and Ibn Kathir attaches to it the hadith that Allah receives the charity in His Right Hand and develops it for the one who gave it until a single date becomes as large as Uhud. The ayah then closes on At-Tawwab, a Name built on the same root as tawbah and in the same intensive form, so the One being turned to is named by the turning. Nine days of this journey have been about returning after something went wrong. Your model for what the practice looks like when nothing has is the Prophet ﷺ himself, who said that some sort of shade would come upon his heart and that he sought Allah's forgiveness a hundred times a day — a man whose sins were forgiven, describing istighfar as the ordinary daily upkeep of a heart being kept clear.",
     practiceSteps: JSON.stringify([{"type":"verbal","icon":"sunrise","title":"The hundred-times du'a","instruction":"Ibn Umar said they would count the Prophet ﷺ saying this a hundred times in a single sitting. Use it as your default phrase from today — in the car, in a queue, between tasks.","arabicText":"رَبِّ اغْفِرْ لِي وَتُبْ عَلَىَّ إِنَّكَ أَنْتَ التَّوَّابُ الرَّحِيمُ","transliteration":"Rabbi ighfir li wa tub alayya innaka anta at-Tawwabu ar-Rahim","translation":"My Lord, forgive me and pardon me; You are the Pardoning and Forgiving One.","source":"Sunan Abi Dawud 1516","sourceType":"prophetic_dua"},{"type":"physical","icon":"clock","title":"Fix one time it happens every day","instruction":"Attach istighfar to something that already happens without your deciding — after Fajr, on the walk back from work, before you sleep. A practice tied to an existing moment survives; one tied to intention does not.","source":"Reflects the daily practice in Sahih Muslim 2702"},{"type":"mindset","icon":"crescent","title":"At-Tawwab is a Name, not an event","instruction":"The ayah ends by calling Allah At-Tawwab — the One who turns, repeatedly, toward those who turn. That is the ayah's own closing word, not a consolation added on top of it. What you have been asking for over nine days is not an exception being made.","source":"Surah At-Tawbah 9:104"},{"type":"physical","icon":"pen","title":"Keep one thing, not ten","instruction":"Look back over the nine days and choose the single practice that actually changed something — one du'a, one habit, one thing you removed. Write it down and keep only that. A journey that ends with ten resolutions ends with none.","source":"Reflects the sequence of this journey"}]),
     reflection: 'Which single practice from these ten days do you want to still be doing in a month — and what will remind you to?',
+  },
+  // === DEATH AWARENESS JOURNEY ANGLES ===
+  // Referenced by step_death_1..7. Prefix 'death' is registered in
+  // JOURNEY_ANGLE_PREFIXES so these never leak into the mood picker.
+  // Tafsir-voice (journey flow lands angle.angle in the Understand/Matters
+  // slot, no "For Your Heart" card). Every hadith/ayah verified against
+  // alquran.cloud / sunnah.com / the hadith mirror; see the design spec.
+  {
+    id: 'q_angle_death_day1',
+    contentId: 'quran_3_185',
+    mood: 'Hopeful',
+    angle:
+      "[Tafsir Ibn Kathir on 3:185] Ibn Kathir opens his comment by calling this ayah a consolation to all of creation: every soul, without exception, will taste death, so no one is being singled out, and nothing has gone wrong with you for feeling its weight. The Companions themselves disliked death, and the Prophet ﷺ said as much. What the ayah does with that certainty is move the payment date — your wages are settled in full only on the Day of Resurrection, not in this life, so a life that looks unfinished or unrewarded here is not the verdict on it. Ibn Kathir reads faman zuḥziḥa ʿani an-nār wa udkhila al-jannah, whoever is pulled back from the Fire and brought into the Garden, as the only outcome the ayah will call success, and cites the hadith that a place in Paradise the size of a whip outweighs the world and all that is in it; the rest, mataʿ al-ghurūr, is enjoyment that deceives. When you hold both halves at once — that death is certain, and that the account is just and not yet due — the fear stops being a dead end and turns into a direction: toward preparing for it, and toward thinking well of the One who will settle it.",
+    practiceSteps: JSON.stringify([
+      {
+        type: 'mindset',
+        icon: 'light-bulb',
+        title: 'Name the fear plainly',
+        instruction:
+          'Write down the specific thing about death that unsettles you — the unknown, leaving people behind, the account itself. Ibn Kathir notes the Companions also disliked death; naming the fear is not weak faith, it is the first move toward preparing for the thing you named.',
+        source: 'Tafsir Ibn Kathir on 3:185',
+      },
+      {
+        type: 'mindset',
+        icon: 'calm-face',
+        title: 'Instinct is not the problem',
+        instruction:
+          'The dislike of death is jibilli — built in. Scholars call blameworthy only the fear that grows from love of this world or from doubting Allah’s mercy, not the instinct itself. Ask which one is actually sitting in your chest.',
+        source: 'Reflects Tafsir Ibn Kathir on 3:185 and Sahih al-Bukhari 6507',
+      },
+      {
+        type: 'verbal',
+        icon: 'hands-prayer',
+        title: 'The du’a to be gathered with the righteous',
+        instruction:
+          'The people of understanding in Surah Ali ‘Imran close their supplication by asking not to be spared death but to be taken in good company. Make it yours today.',
+        arabicText:
+          'رَبَّنَا فَٱغْفِرْ لَنَا ذُنُوبَنَا وَكَفِّرْ عَنَّا سَيِّـَٔاتِنَا وَتَوَفَّنَا مَعَ ٱلْأَبْرَارِ',
+        transliteration:
+          'Rabbanā faghfir lanā dhunūbanā wa kaffir ʿannā sayyiʾātinā wa tawaffanā maʿa l-abrār',
+        translation:
+          'Our Lord, forgive us our sins and remove from us our misdeeds, and cause us to die with the righteous.',
+        source: 'Quran 3:193',
+        sourceType: 'quran_dua',
+      },
+    ]),
+    reflection:
+      'If your account were closed today, which part of it would you most want more time to change? Name one thing you could begin this week.',
+  },
+  {
+    id: 'q_angle_death_day2',
+    contentId: 'quran_67_2',
+    mood: 'Hopeful',
+    angle:
+      "[Tafsir Ibn Kathir on 67:2] The order of the words is deliberate — death is named before life. Ibn Kathir notes that some scholars read this as evidence that death is not mere nothingness but something Allah created, on purpose; either way it is presented as part of the design, and it is what makes the test real. On aḥsanu ʿamalan he quotes Muḥammad ibn ʿAjlān and adds his own remark: Allah did not say which of you does the most deeds, He said which of you is best in deed — the scale is quality, not volume. And the centre of that quality is sincerity. In his comment on the parallel ayah 18:110, Ibn Kathir records the hadith that on the Day of Resurrection a person who acted to be seen will be told to go and collect his reward from the one he was performing for. When you see what that does to the fear of dying with too little on the record, the question shifts: from how much did I do, to how much of it was actually for Him. The ayah closes on two Names held together — al-ʿAzīz, strong enough to enforce the test, and al-Ghafūr, forgiving toward the one who keeps stumbling inside it.",
+    practiceSteps: JSON.stringify([
+      {
+        type: 'mindset',
+        icon: 'target',
+        title: 'Best, not most',
+        instruction:
+          'Pick one act of worship you do on autopilot — a rushed prayer, a distracted portion of Qur’an. Tomorrow, do that one thing with full attention and a clear intention. Quality is the thing the ayah is measuring.',
+        source: 'Tafsir Ibn Kathir on 67:2',
+      },
+      {
+        type: 'mindset',
+        icon: 'eye',
+        title: 'The riya check',
+        instruction:
+          'Ibn Kathir on 18:110: a deed done partly to be seen is handed back, on the Day of Resurrection, to the one you performed it for — go and seek its reward from them. Sincerity is not a bonus added to a deed; it is what makes it a deed at all. Name one thing you do that is half for Allah and half for how it looks.',
+        source: 'Tafsir Ibn Kathir on 18:110',
+      },
+      {
+        type: 'verbal',
+        icon: 'hands-prayer',
+        title: 'The du’a for accepted deeds',
+        instruction:
+          'Umm Salama reported that the Prophet ﷺ said this after the Fajr prayer, at the salam. Say it after one prayer tomorrow.',
+        arabicText: 'اللَّهُمَّ إِنِّي أَسْأَلُكَ عِلْمًا نَافِعًا، وَرِزْقًا طَيِّبًا، وَعَمَلاً مُتَقَبَّلاً',
+        transliteration:
+          'Allāhumma innī asʾaluka ʿilman nāfiʿan, wa rizqan ṭayyiban, wa ʿamalan mutaqabbalā',
+        translation:
+          'O Allah, I ask You for beneficial knowledge, goodly provision, and accepted deeds.',
+        source: 'Sunan Ibn Majah 925',
+        sourceType: 'prophetic_dua',
+      },
+    ]),
+    reflection:
+      'Which of your deeds are for Allah, and which are for how they look to others? Name one you could quietly move from the second column to the first.',
+  },
+  {
+    id: 'q_angle_death_day3',
+    contentId: 'quran_102_1_2',
+    mood: 'Hopeful',
+    angle:
+      "[Tafsir Ibn Kathir on 102:1] Ibn Kathir titles this passage the result of loving the world and being heedless of the Hereafter. At-takāthur — the race to have more, and to out-count others — runs unbroken through a life until, in the ayah’s words, you visit the graves, meaning until you are buried. The sūrah names the disease and then keeps going, to a warning about the Fire; this journey stops at the diagnosis, but you should know the sūrah itself does not. The Prophet ﷺ said: increase your remembrance of the destroyer of pleasures, meaning death — which Tirmidhī records as ḥasan. That remembrance is not meant to flatten your mood; it works as a filter. Hold a decision up against it and the parts that only mattered inside the counting game fall away, and what is left is what actually deserves the day. The aim is to do this often and briefly, the way you glance at a compass, not to sink into it once.",
+    practiceSteps: JSON.stringify([
+      {
+        type: 'mindset',
+        icon: 'clock',
+        title: 'The graveyard test',
+        instruction:
+          'Take one decision on your plate today and ask: from inside the grave, would this have mattered? Let the honest answer reorder your afternoon.',
+        source: "Reflects Jami' at-Tirmidhi 2307",
+      },
+      {
+        type: 'physical',
+        icon: 'pen',
+        title: 'Look at what you sent ahead',
+        instruction:
+          'Tonight, before sleep, write the two best and two worst things you did today. Allah says: let every soul look to what it has put forth for tomorrow. This is that, in miniature.',
+        source: 'Quran 59:18',
+      },
+      {
+        type: 'mindset',
+        icon: 'eye',
+        title: 'Remember, do not dwell',
+        instruction:
+          'The Sunnah is frequent remembrance, brief each time — a passing thought that corrects your heading, not a session you have to steel yourself for. If it turns heavy, that is not the practice.',
+        source: "Jami' at-Tirmidhi 2307",
+      },
+      {
+        type: 'verbal',
+        icon: 'hands-prayer',
+        title: 'The du’a Mu’adh was told never to leave',
+        instruction:
+          'The Prophet ﷺ took Mu’adh by the hand, told him he loved him, and taught him to say this after every prayer.',
+        arabicText: 'اللَّهُمَّ أَعِنِّي عَلَى ذِكْرِكَ وَشُكْرِكَ وَحُسْنِ عِبَادَتِكَ',
+        transliteration: 'Allāhumma aʿinnī ʿalā dhikrika wa shukrika wa ḥusni ʿibādatik',
+        translation: 'O Allah, help me to remember You, to thank You, and to worship You well.',
+        source: 'Sunan Abi Dawud 1522',
+        sourceType: 'prophetic_dua',
+      },
+    ]),
+    reflection:
+      'Name one thing you spend real energy on that would not matter to you from the grave. Then name one thing that would.',
+  },
+  {
+    id: 'q_angle_death_day4',
+    contentId: 'quran_39_42',
+    mood: 'Hopeful',
+    angle:
+      "[Tafsir al-Qurtubi on 39:42] Al-Qurtubi works through this ayah in four questions, and the first is the one that matters here: what does it mean that Allah takes the souls of those who have not yet died, during their sleep? His answer is that sleep is itself a wafāt, a taking — only a lesser one. The scholars call it al-wafāt al-ṣughrā, the minor death. Every night your soul is taken; every morning the ones not marked for death are sent back, to a fixed term that is now one day shorter. The tradition did not invent the parallel — the waking words the Prophet ﷺ used say it plainly: al-ḥamdu lillāhi alladhī aḥyānā baʿda mā amātanā, praise to the One who gave us life after causing us to die. When you treat the two thresholds — lying down, and waking up — as a rehearsal you already run every day, death stops being the one event you have had no practice for, and each morning arrives as something handed back rather than something owed.",
+    practiceSteps: JSON.stringify([
+      {
+        type: 'verbal',
+        icon: 'moon',
+        title: 'The last words before sleep',
+        instruction:
+          'Tonight, put the phone down first, then say this as the literal last thing before sleep.',
+        arabicText: 'بِاسْمِكَ اللَّهُمَّ أَمُوتُ وَأَحْيَا',
+        transliteration: 'Bismika Allāhumma amūtu wa aḥyā',
+        translation: 'With Your name, O Allah, I die and I live.',
+        source: 'Sahih al-Bukhari 6324',
+        sourceType: 'prophetic_dhikr',
+      },
+      {
+        type: 'verbal',
+        icon: 'sunrise',
+        title: 'The first words on waking',
+        instruction:
+          'Before you reach for anything, name the day as returned.',
+        arabicText: 'الْحَمْدُ لِلَّهِ الَّذِي أَحْيَانَا بَعْدَ مَا أَمَاتَنَا، وَإِلَيْهِ النُّشُورُ',
+        transliteration: 'Al-ḥamdu lillāhi-lladhī aḥyānā baʿda mā amātanā wa ilayhi n-nushūr',
+        translation:
+          'All praise is for Allah who gave us life after causing us to die, and to Him is the resurrection.',
+        source: 'Sahih al-Bukhari 6324',
+        sourceType: 'prophetic_dhikr',
+      },
+      {
+        type: 'mindset',
+        icon: 'clock',
+        title: 'One returned day',
+        instruction:
+          'On waking, ask one question: if this were the last day I am released for, what is the one thing I would not skip? Then do that thing first.',
+        source: 'Reflects Quran 39:42',
+      },
+    ]),
+    reflection:
+      'You were handed today back. What will you do with it that you would not bother doing if you assumed a thousand more were coming?',
+  },
+  {
+    id: 'q_angle_death_day5',
+    contentId: 'quran_63_10',
+    mood: 'Hopeful',
+    angle:
+      "[Tafsir Ibn Kathir on 63:10] Look at what the ayah has the dying person ask for: not more prayer, not more fasting, but fa-assaddaqa — ‘so I could give charity’ — and then ‘be among the righteous.’ Ibn Kathir’s comment is blunt: everyone who fell short will, at the point of death, beg for a little more time to make it up, and the reply is that the appointed term is not moved for anyone. The lesson is not that this world is worthless. Islam has no monasticism — la rahbaniyya fi al-islam — and wealth is the field you plant for the next life. The lesson is grip. The Prophet ﷺ took Ibn Umar by the shoulder and told him to be in this world as a stranger, or a traveler passing through; Ibn Umar added, in his own words, that if you reach the evening you should not wait for the morning, and that you should take from your life for your death. Your family, your wealth, and your deeds walk with you toward the grave — and at the edge two of them turn back, and only the deeds go in. If the thought of leaving all this ever shifts from ‘I am a traveler here’ to ‘I want the trip to be over,’ that is a different weight, and the Hope journey and the in-app help line are there for it — this day is not asking you to want to go.",
+    practiceSteps: JSON.stringify([
+      {
+        type: 'physical',
+        icon: 'gift',
+        title: 'Answer the dying wish now',
+        instruction:
+          'Give one sadaqa today, however small, while you still can — the ayah is the regret of the person who kept meaning to. Do it before you finish this step.',
+        source: 'Quran 63:10',
+      },
+      {
+        type: 'physical',
+        icon: 'pen',
+        title: 'Write the will',
+        instruction:
+          'The Prophet ﷺ said it is not right for a Muslim with something to bequeath to pass two nights without a written will. Draft or update yours this week. Do not assign inheritance shares yourself — that is madhhab-specific; name an executor and your wishes, and take it to someone qualified.',
+        source: 'Sahih al-Bukhari 2738 / Sahih Muslim 1627',
+        sourceType: 'sunnah_action',
+      },
+      {
+        type: 'mindset',
+        icon: 'compass',
+        title: 'Stranger, not renouncer',
+        instruction:
+          'Name one thing you own that owns you back — that you would panic to lose. The work is loosening the grip, not discarding the thing.',
+        source: 'Sahih al-Bukhari 6416',
+      },
+      {
+        type: 'mindset',
+        icon: 'arrow-right',
+        title: 'Only one of the three goes in',
+        instruction:
+          'The Prophet ﷺ said the dead are followed by three — family, wealth, deeds — and only the deeds go into the grave with you. Name one deed you can send ahead today.',
+        source: 'Sahih al-Bukhari 6514',
+      },
+      {
+        type: 'verbal',
+        icon: 'hands-prayer',
+        title: 'The words said at the trench',
+        instruction:
+          'The Prophet ﷺ said this while digging in hardship. Use it when this world feels too heavy to hold loosely.',
+        arabicText: 'اللَّهُمَّ لاَ عَيْشَ إِلاَّ عَيْشُ الآخِرَة',
+        transliteration: 'Allāhumma lā ʿaysha illā ʿayshu l-ākhirah',
+        translation: 'O Allah, there is no life except the life of the Hereafter.',
+        source: 'Sahih al-Bukhari 6413',
+        sourceType: 'prophetic_dhikr',
+      },
+    ]),
+    reflection:
+      'Of the three that follow you to the grave — family, wealth, deeds — only the deeds go in. What did you add to that pile this week?',
+  },
+  {
+    id: 'q_angle_death_day6',
+    contentId: 'quran_36_12',
+    mood: 'Hopeful',
+    angle:
+      "[Tafsir al-Qurtubi on 36:12] Al-Qurtubi reads the ayah as naming two things that outlast you: ma qaddamu, what you sent ahead, and atharakum, your traces — the effects that keep working after you are gone. The occasion of revelation, he reports, was a clan who wanted to move their houses nearer the mosque, and the ayah told them their footsteps were already being written down, so they stayed where they were. The Prophet ﷺ drew the same line: when a person dies their deeds stop, except three — an ongoing charity, knowledge people keep benefiting from, and a righteous child who prays for them. This is three doors, not one. If you have no children, the ayah has closed nothing on you: the first two are wide open, and the hadith is an offer, not a bill. When you make the day’s task this small — pick one of the three and begin it, not plan it, begin it — the smallness is the point, because a trace that is actually started outlasts a plan that stays intended. If a week of remembering death has tipped from sober toward heavy, toward not wanting to be here, that is the moment to open the Hope journey or the in-app help line rather than push through alone.",
+    practiceSteps: JSON.stringify([
+      {
+        type: 'physical',
+        icon: 'honey',
+        title: 'Start a sadaqa jariya today',
+        instruction:
+          'Set up one recurring gift — a monthly transfer, a share in a water project, a masjid or teaching fund. Small and automatic beats large and someday.',
+        source: 'Sahih Muslim 1631',
+        sourceType: 'sunnah_action',
+      },
+      {
+        type: 'physical',
+        icon: 'book-quran',
+        title: 'Teach one thing',
+        instruction:
+          'Pass on one beneficial thing you know — an ayah, a ruling, a skill — to one person this week. Knowledge that keeps being used keeps being written for you.',
+        source: 'Sahih Muslim 1631',
+        sourceType: 'sunnah_action',
+      },
+      {
+        type: 'mindset',
+        icon: 'heart',
+        title: 'The third door',
+        instruction:
+          'If you have children, the smallest brick is teaching them one line of du’a for you. If you do not, the first two doors are enough — the hadith names three so that everyone has a way in, not to leave anyone out.',
+        source: 'Sahih Muslim 1631',
+      },
+      {
+        type: 'verbal',
+        icon: 'hands-prayer',
+        title: 'The du’a of the servants of the Most Merciful',
+        instruction:
+          'This is how the servants of the Most Merciful ask for family in Surah al-Furqan — not for ease from them, but for them to be a coolness to the eye and a line of righteousness that continues.',
+        arabicText: 'رَبَّنَا هَبْ لَنَا مِنْ أَزْوَٰجِنَا وَذُرِّيَّٰتِنَا قُرَّةَ أَعْيُنٍۢ وَٱجْعَلْنَا لِلْمُتَّقِينَ إِمَامًا',
+        transliteration:
+          'Rabbanā hab lanā min azwājinā wa dhurriyyātinā qurrata aʿyunin wa-jʿalnā lil-muttaqīna imāmā',
+        translation:
+          'Our Lord, grant us from our spouses and offspring comfort of eyes, and make us a model for the righteous.',
+        source: 'Quran 25:74',
+        sourceType: 'quran_dua',
+      },
+    ]),
+    reflection:
+      'If the traces you leave behind were read aloud tomorrow, what is on the list? Name one thing you could add before the year ends.',
+  },
+  {
+    id: 'q_angle_death_day7',
+    contentId: 'quran_29_5',
+    mood: 'Hopeful',
+    angle:
+      "[Tafsir Ibn Kathir on 29:5] The whole journey lands here. The term Allah has set is coming regardless — the only variable is whether you meet it hoping or dreading. Ibn Kathir is careful that the hope in this ayah is not passive: whoever hopes for the meeting with Allah and does righteous deeds, he says, will have that hope fulfilled. The Prophet ﷺ said: whoever loves to meet Allah, Allah loves to meet him — and when Aisha objected that they all dislike death, he answered that this is not what it means, but that when a believer’s death draws near they are shown Allah’s pleasure and honour, and at that point nothing is dearer to them than what lies ahead. So loving the meeting is not longing to die. He also forbade wishing for death outright: no one should wish for it because of a hardship, and if the wish comes anyway, the reply is a du’a that hands the timing back to Allah. What carried you through these seven days was returning, not intensity, so the plan you keep is the smallest version you can actually sustain. And if a day ever turns from ‘I hope to meet Him’ to ‘I want this to be over,’ the Hope journey and the in-app help line are the next step, not a private burden.",
+    practiceSteps: JSON.stringify([
+      {
+        type: 'mindset',
+        icon: 'sun',
+        title: 'Meeting, not ending',
+        instruction:
+          'Write one sentence describing death as a meeting — who you are meeting, and what you hope is said to you.',
+        source: 'Sahih al-Bukhari 6507',
+      },
+      {
+        type: 'mindset',
+        icon: 'shield',
+        title: 'Loving the meeting is not wishing to die',
+        instruction:
+          'The Prophet ﷺ forbade longing for death because of hardship. If today feels like too much, that is what the du’a below is for — and if the thought turns to not wanting to be alive, the Hope journey and the in-app help line are the next step, not something to carry alone.',
+        source: 'Sahih al-Bukhari 6351',
+      },
+      {
+        type: 'physical',
+        icon: 'candle',
+        title: 'The smallest keepable version',
+        instruction:
+          'Choose the one death-remembrance you will still be doing in a month — one line before sleep, one sadaqa a month, the waking du’a. Make it smaller until the honest answer is yes. Write it where you will see it.',
+        source: 'Reflects the arc of this journey',
+      },
+      {
+        type: 'verbal',
+        icon: 'hands-prayer',
+        title: 'The du’a that hands the timing back',
+        instruction:
+          'The Prophet ﷺ taught this for anyone who finds themselves wishing for death: do not name the outcome, ask for whichever is better.',
+        arabicText: 'اللَّهُمَّ أَحْيِنِي مَا كَانَتِ الْحَيَاةُ خَيْرًا لِي، وَتَوَفَّنِي إِذَا كَانَتِ الْوَفَاةُ خَيْرًا لِي',
+        transliteration:
+          'Allāhumma aḥyinī mā kānati l-ḥayātu khayran lī, wa tawaffanī idhā kānati l-wafātu khayran lī',
+        translation:
+          'O Allah, keep me alive as long as life is better for me, and take my life when death is better for me.',
+        source: 'Sahih al-Bukhari 6351',
+        sourceType: 'prophetic_dua',
+      },
+    ]),
+    reflection:
+      'What is the one practice from these seven days you will actually keep? Make it smaller until the answer is yes.',
   },
 ];
 

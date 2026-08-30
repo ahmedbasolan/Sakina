@@ -930,4 +930,115 @@ export const hadithContent: Content[] = [
     },
     moods: [],
   },
+  // === DEATH AWARENESS JOURNEY HADITH ===
+  // Referenced by step_death_3..7 in staticPaths.ts. Days 1-2 are verse +
+  // tafsir led and carry no hadith. Every Arabic matn below is fetched
+  // verbatim (mirror / sunnah.com) — see scripts and the design spec.
+  {
+    id: 'hadith_death_3',
+    type: 'Hadith',
+    primaryText: 'Remember often the destroyer of pleasures — meaning death.',
+    arabicText: 'أَكْثِرُوا ذِكْرَ هَاذِمِ اللَّذَّاتِ',
+    translation: 'Increase in remembrance of the severer of pleasures. Meaning death.',
+    englishTranslation:
+      'Increase in remembrance of the severer of pleasures. Meaning death.',
+    source: "Jami' at-Tirmidhi 2307",
+    transliteration: 'Akthirū dhikra hādhimi l-ladhdhāt (yaʿnī l-mawt)',
+    whyThis:
+      'Abu Hurayra narrated it. Tirmidhi graded it hasan gharib; al-Albani graded it hasan, and Ibn Majah and an-Nasa’i narrate it as well. The instruction is frequency, not intensity — a brief, repeated thought that resets your aim rather than a spiral you have to brace for.',
+    propheticPractice: {
+      description:
+        'Bring a short thought of death to mind several times a day, letting it reorder the decision in front of you',
+      source: "Jami' at-Tirmidhi 2307",
+      grading: 'hasan',
+    },
+    moods: [],
+  },
+  {
+    id: 'hadith_death_4',
+    type: 'Hadith',
+    primaryText:
+      'On going to bed: "With Your name, O Allah, I die and I live." On waking: "All praise is for Allah who gave us life after causing us to die, and to Him is the resurrection."',
+    arabicText: 'بِاسْمِكَ اللَّهُمَّ أَمُوتُ وَأَحْيَا، وَإِذَا اسْتَيْقَظَ مِنْ مَنَامِهِ قَالَ الْحَمْدُ لِلَّهِ الَّذِي أَحْيَانَا بَعْدَ مَا أَمَاتَنَا، وَإِلَيْهِ النُّشُورُ',
+    translation:
+      'Whenever the Prophet ﷺ intended to go to bed, he would recite: "Bismika Allahumma amutu wa ahya (With Your name, O Allah, I die and I live)." And when he woke up from his sleep, he would say: "Al-hamdu lil-lahil-ladhi ahyana ba\'da ma amatana; wa ilaihi an-nushur (All the Praises are for Allah Who has made us alive after He made us die (sleep) and unto Him is the Resurrection)."',
+    englishTranslation:
+      'Whenever the Prophet ﷺ intended to go to bed, he would recite: "Bismika Allahumma amutu wa ahya (With Your name, O Allah, I die and I live)." And when he woke up from his sleep, he would say: "Al-hamdu lil-lahil-ladhi ahyana ba\'da ma amatana; wa ilaihi an-nushur (All the Praises are for Allah Who has made us alive after He made us die (sleep) and unto Him is the Resurrection)."',
+    source: 'Sahih al-Bukhari 6324',
+    transliteration:
+      'Bismika Allāhumma amūtu wa aḥyā — Al-ḥamdu lillāhi-lladhī aḥyānā baʿda mā amātanā wa ilayhi n-nushūr',
+    whyThis:
+      'Hudhayfa reported it. The waking words state the sleep–death link outright: ahyana ba’da ma amatana, "gave us life after having caused us to die." Both thresholds — sleeping and waking — are named as a death and a return.',
+    propheticPractice: {
+      description:
+        'Make these the literal last and first words of the day — phone down before the first, nothing reached for before the second',
+      source: 'Sahih al-Bukhari 6324',
+      grading: 'sahih',
+    },
+    moods: [],
+  },
+  {
+    id: 'hadith_death_5',
+    type: 'Hadith',
+    primaryText: 'Be in this world as if you were a stranger or a traveler.',
+    arabicText: 'كُنْ فِي الدُّنْيَا كَأَنَّكَ غَرِيبٌ، أَوْ عَابِرُ سَبِيلٍ',
+    translation:
+      "Allah's Messenger ﷺ took hold of my shoulder and said, 'Be in this world as if you were a stranger or a traveler.'",
+    englishTranslation:
+      "Allah's Messenger ﷺ took hold of my shoulder and said, 'Be in this world as if you were a stranger or a traveler.'",
+    source: 'Sahih al-Bukhari 6416',
+    transliteration: 'Kun fī d-dunyā ka-annaka gharībun aw ʿābiru sabīl',
+    whyThis:
+      'Ibn Umar reported it. The lines that often follow — "if you reach the evening do not wait for the morning… take from your health for your sickness and from your life for your death" — are Ibn Umar\'s own words, not the Prophet\'s ﷺ; the hadith itself marks the change of speaker. The instruction is grip, not withdrawal: hold this world the way a traveler holds a bag.',
+    propheticPractice: {
+      description: 'Name one thing you own that owns you back, and practise holding it more loosely',
+      source: 'Sahih al-Bukhari 6416',
+      grading: 'sahih',
+    },
+    moods: [],
+  },
+  {
+    id: 'hadith_death_6',
+    type: 'Hadith',
+    primaryText:
+      'When a person dies, their deeds end except three: an ongoing charity, knowledge benefited from, or a righteous child who prays for them.',
+    arabicText: 'إِذَا مَاتَ الإِنْسَانُ انْقَطَعَ عَنْهُ عَمَلُهُ إِلاَّ مِنْ ثَلاَثَةٍ إِلاَّ مِنْ صَدَقَةٍ جَارِيَةٍ أَوْ عِلْمٍ يُنْتَفَعُ بِهِ أَوْ وَلَدٍ صَالِحٍ يَدْعُو لَهُ',
+    translation:
+      'When a man dies, his acts come to an end, but three: recurring charity, or knowledge (by which people) benefit, or a pious child, who prays for him (for the deceased).',
+    englishTranslation:
+      'When a man dies, his acts come to an end, but three: recurring charity, or knowledge (by which people) benefit, or a pious child, who prays for him (for the deceased).',
+    source: 'Sahih Muslim 1631',
+    transliteration:
+      'Idhā māta l-insānu nqaṭaʿa ʿanhu ʿamaluhu illā min thalāthah: illā min ṣadaqatin jāriyah, aw ʿilmin yuntafaʿu bih, aw waladin ṣāliḥin yadʿū lah',
+    whyThis:
+      'Abu Hurayra narrated it. The hadith names three doors, not one — recurring charity and beneficial knowledge are open to everyone, with or without children.',
+    propheticPractice: {
+      description: 'Start one of the three today — a recurring charity, teaching one beneficial thing, or a line of du’a taught to a child',
+      source: 'Sahih Muslim 1631',
+      grading: 'sahih',
+    },
+    moods: [],
+  },
+  {
+    id: 'hadith_death_7',
+    type: 'Hadith',
+    primaryText:
+      'Loving to meet Allah is not the same as wanting to die: the Prophet ﷺ explained it is what the believer feels at the moment of death, when the good news of Allah\'s pleasure is shown to them.',
+    arabicText: 'مَنْ أَحَبَّ لِقَاءَ اللَّهِ أَحَبَّ اللَّهُ لِقَاءَهُ، وَمَنْ كَرِهَ لِقَاءَ اللَّهِ كَرِهَ اللَّهُ لِقَاءَهُ، قَالَتْ عَائِشَةُ أَوْ بَعْضُ أَزْوَاجِهِ إِنَّا لَنَكْرَهُ الْمَوْتَ، قَالَ لَيْسَ ذَاكَ، وَلَكِنَّ الْمُؤْمِنَ إِذَا حَضَرَهُ الْمَوْتُ بُشِّرَ بِرِضْوَانِ اللَّهِ وَكَرَامَتِهِ، فَلَيْسَ شَىْءٌ أَحَبَّ إِلَيْهِ مِمَّا أَمَامَهُ، فَأَحَبَّ لِقَاءَ اللَّهِ وَأَحَبَّ اللَّهُ لِقَاءَهُ، وَإِنَّ الْكَافِرَ إِذَا حُضِرَ بُشِّرَ بِعَذَابِ اللَّهِ وَعُقُوبَتِهِ، فَلَيْسَ شَىْءٌ أَكْرَهَ إِلَيْهِ مِمَّا أَمَامَهُ، كَرِهَ لِقَاءَ اللَّهِ وَكَرِهَ اللَّهُ لِقَاءَهُ',
+    translation:
+      'The Prophet ﷺ said, "Whoever loves to meet Allah, Allah (too) loves to meet him and whoever hates to meet Allah, Allah (too) hates to meet him". Aisha, or some of the wives of the Prophet ﷺ said, "But we dislike death." He said: It is not like this, but it is meant that when the time of the death of a believer approaches, he receives the good news of Allah\'s pleasure with him and His blessings upon him, and so at that time nothing is dearer to him than what is in front of him. He therefore loves the meeting with Allah, and Allah (too) loves the meeting with him. But when the time of the death of a disbeliever approaches, he receives the evil news of Allah\'s torment and His Requital, whereupon nothing is more hateful to him than what is before him. Therefore, he hates the meeting with Allah, and Allah too, hates the meeting with him.',
+    englishTranslation:
+      'The Prophet ﷺ said, "Whoever loves to meet Allah, Allah (too) loves to meet him and whoever hates to meet Allah, Allah (too) hates to meet him". Aisha, or some of the wives of the Prophet ﷺ said, "But we dislike death." He said: It is not like this, but it is meant that when the time of the death of a believer approaches, he receives the good news of Allah\'s pleasure with him and His blessings upon him, and so at that time nothing is dearer to him than what is in front of him. He therefore loves the meeting with Allah, and Allah (too) loves the meeting with him. But when the time of the death of a disbeliever approaches, he receives the evil news of Allah\'s torment and His Requital, whereupon nothing is more hateful to him than what is before him. Therefore, he hates the meeting with Allah, and Allah too, hates the meeting with him.',
+    source: 'Sahih al-Bukhari 6507',
+    transliteration:
+      'Man aḥabba liqāʾa llāhi aḥabba llāhu liqāʾah, wa man kariha liqāʾa llāhi kariha llāhu liqāʾah',
+    whyThis:
+      'Ubada ibn as-Samit narrated it. The clarification is the point: Aisha objected that they all dislike death, and the Prophet ﷺ answered that loving the meeting is not wanting to die — it is what the believer feels at the threshold itself, when Allah\'s pleasure is shown to them.',
+    propheticPractice: {
+      description: 'Reframe death as a meeting — name who you are meeting and what you hope is said to you',
+      source: 'Sahih al-Bukhari 6507',
+      grading: 'sahih',
+    },
+    moods: [],
+  },
 ];
