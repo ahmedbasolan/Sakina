@@ -54,7 +54,7 @@ const field = (b, name) => {
   return s;
 };
 const moodsOf = (b) =>
-  (b.match(/moods:\s*\[([^\]]*)\]/) || [, ''])[1]
+  (b.match(/moods:\s*\[([^\]]*)\]/) || ['', ''])[1]
     .replace(/'/g, '').split(',').map((x) => x.trim()).filter(Boolean);
 
 // Moods a user picks when they want consolation. A verse that threatens is not

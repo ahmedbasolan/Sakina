@@ -252,7 +252,7 @@ for (const pm of paths.matchAll(/id:\s*'(path_[a-zA-Z0-9_]+)'/g)) {
 const surahIds = (() => {
   const f = 'src/data/surahLessons.ts';
   if (!fs.existsSync(f)) return null;
-  return new Set([...fs.readFileSync(f, 'utf8').matchAll(/^  (surah_\d+): \{$/gm)].map((m) => m[1]));
+  return new Set([...fs.readFileSync(f, 'utf8').matchAll(/^ {2}(surah_\d+): \{$/gm)].map((m) => m[1]));
 })();
 if (!surahIds) {
   console.log('!! src/data/surahLessons.ts not found — surah layers cannot be checked');
