@@ -44,6 +44,10 @@
     "production": {
       "ios": {
         "ascAppId": "6801511292"
+      },
+      "android": {
+        "serviceAccountKeyPath": "../keys/sakina-501416-76689ea4be3c.json",
+        "track": "internal"
       }
     }
   }

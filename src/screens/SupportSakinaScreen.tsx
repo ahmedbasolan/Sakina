@@ -50,7 +50,10 @@ const THEME_PREVIEWS = THEME_PREVIEW_IDS.map((id) =>
   BACKGROUND_THEMES.find((t) => t.id === id),
 ).filter((t): t is NonNullable<typeof t> => !!t);
 
-type Plan = 'yearly' | 'monthly';
+// 'lifetime' is only ever selectable when the store actually returned a
+// lifetime package (pricing.lifetimePrice != null). Annual stays the default
+// selection so the free-trial entry point is untouched.
+type Plan = 'yearly' | 'monthly' | 'lifetime';
 
 /**
  * Derive a "/mo" equivalent from the annual price, reusing the currency symbol
@@ -181,6 +184,8 @@ const SupportSakinaScreen: React.FC<Props> = ({ embedded = false, onDone }) => {
             monthlyPrice: p.monthlyPrice,
             yearlyPrice: p.yearlyPrice,
             trialDays: p.trialDays,
+            lifetimePrice: p.lifetimePrice,
+            lifetimeUSD: p.lifetimePriceAmount,
           });
           setPricingStatus('ready');
         } else {
@@ -231,24 +236,45 @@ const SupportSakinaScreen: React.FC<Props> = ({ embedded = false, onDone }) => {
     : 0;
   const showSaveBadge = savePercent > 0;
 
+  // The lifetime card exists only when the store actually returned a lifetime
+  // package. Until the non-consumable is live in App Store Connect / Play
+  // Console AND attached to the RevenueCat offering, this is false and the
+  // paywall renders exactly as it did before — no card, no copy, no CTA path.
+  const hasLifetime = !!pricing?.lifetimePrice;
+
+  // Defensive: a pricing refresh that no longer carries a lifetime package
+  // (offering edited in the RC dashboard mid-session) would otherwise leave
+  // `selectedPlan` pointing at a card that is no longer rendered, stranding
+  // the CTA on a package purchasePackage() cannot find.
+  useEffect(() => {
+    if (selectedPlan === 'lifetime' && !hasLifetime) setSelectedPlan('yearly');
+  }, [selectedPlan, hasLifetime]);
+
   const ctaLabel = !pricing
     ? 'Subscribe'
-    : selectedPlan === 'yearly'
-      ? trialEligible
-        ? `Start ${pricing.trialDays}-day free trial`
-        : 'Subscribe yearly'
-      : 'Subscribe monthly';
+    : selectedPlan === 'lifetime'
+      ? 'Unlock Sakina for life'
+      : selectedPlan === 'yearly'
+        ? trialEligible
+          ? `Start ${pricing.trialDays}-day free trial`
+          : 'Subscribe yearly'
+        : 'Subscribe monthly';
 
   // Never rendered without `pricing` — the whole CTA block is withheld when
   // pricing is null, because App Store Guideline 3.1.2 requires the actual
   // price alongside the purchase control.
   const priceNote = !pricing
     ? ''
-    : selectedPlan === 'yearly'
-      ? trialEligible
-        ? `Then ${pricing.yearlyPrice}/year, auto-renews annually · cancel anytime`
-        : `${pricing.yearlyPrice}/year, auto-renews annually · cancel anytime`
-      : `${pricing.monthlyPrice}/month, auto-renews monthly · cancel anytime`;
+    : selectedPlan === 'lifetime'
+      ? // No "auto-renews" / "cancel anytime" here, and that is deliberate:
+        // this is a one-time non-consumable, so promising a cancellation path
+        // would describe a subscription the user is not buying.
+        `${pricing.lifetimePrice} once · never renews · restores on any device you sign in to`
+      : selectedPlan === 'yearly'
+        ? trialEligible
+          ? `Then ${pricing.yearlyPrice}/year, auto-renews annually · cancel anytime`
+          : `${pricing.yearlyPrice}/year, auto-renews annually · cancel anytime`
+        : `${pricing.monthlyPrice}/month, auto-renews monthly · cancel anytime`;
 
   const handleContinue = async () => {
     if (loading) return;
@@ -256,9 +282,11 @@ const SupportSakinaScreen: React.FC<Props> = ({ embedded = false, onDone }) => {
     HapticsService.impactAsync('LIGHT');
     try {
       const ok =
-        selectedPlan === 'yearly'
-          ? await freemium.startTrial()
-          : await freemium.activatePremium('monthly');
+        selectedPlan === 'lifetime'
+          ? await freemium.activatePremium('lifetime')
+          : selectedPlan === 'yearly'
+            ? await freemium.startTrial()
+            : await freemium.activatePremium('monthly');
       if (ok) {
         HapticsService.notificationAsync('SUCCESS');
         if (embedded) onDone?.();
@@ -423,6 +451,73 @@ const SupportSakinaScreen: React.FC<Props> = ({ embedded = false, onDone }) => {
                 {pricing.monthlyPrice}/month
               </Text>
             </TouchableOpacity>
+
+            {/* Lifetime — rendered only when the store returned a lifetime
+                package. Sits third and is never pre-selected, so the annual
+                free-trial funnel is unchanged for everyone who doesn't
+                deliberately choose to own it. */}
+            {hasLifetime && (
+              <TouchableOpacity
+                style={[
+                  styles.planCard,
+                  styles.planCardLifetime,
+                  selectedPlan === 'lifetime' && styles.planCardSelected,
+                ]}
+                onPress={() => {
+                  HapticsService.impactAsync('LIGHT');
+                  setSelectedPlan('lifetime');
+                }}
+                activeOpacity={0.8}
+                accessibilityRole="radio"
+                accessibilityState={{ checked: selectedPlan === 'lifetime' }}
+                accessibilityLabel={`Lifetime plan, ${pricing.lifetimePrice} one time payment, never renews`}
+              >
+                <View style={styles.planLeft}>
+                  <View style={[styles.radio, selectedPlan === 'lifetime' && styles.radioActive]}>
+                    {selectedPlan === 'lifetime' && <View style={styles.radioDot} />}
+                  </View>
+                  <View>
+                    <View style={styles.planLabelRow}>
+                      <Text style={styles.planName}>Lifetime</Text>
+                      <View style={styles.badge}>
+                        <Text style={styles.badgeText}>Pay once</Text>
+                      </View>
+                    </View>
+                    <Text style={styles.planNote}>Yours forever · never renews</Text>
+                  </View>
+                </View>
+                <Text
+                  style={[styles.planPrice, selectedPlan === 'lifetime' && styles.planPriceActive]}
+                >
+                  {pricing.lifetimePrice}
+                </Text>
+              </TouchableOpacity>
+            )}
+
+            {/* The case for lifetime, in the screen's own supporter voice.
+                Every clause is defensible: it never renews (non-consumable),
+                there is nothing to cancel, and the one-time payment genuinely
+                does fund the free tier. Deliberately no countdown, no "limited
+                spots" and no invented strikethrough price — false urgency
+                would be both an App Review risk and wrong for this app.
+                Lives inside `plans` so it picks up the card `gap` and sits
+                with the lifetime card, rather than the xxl block margin. */}
+            {hasLifetime && (
+              <View style={styles.lifetimePitch}>
+                <Ionicons
+                  name="infinite-outline"
+                  size={16}
+                  color={Colors.accent.primary}
+                  style={styles.lifetimePitchIcon}
+                />
+                <Text style={styles.lifetimePitchText}>
+                  One payment, and Sakina is simply yours — no renewal date, nothing to
+                  remember to cancel, no quiet charge years from now. A single gift that keeps
+                  the Qur&apos;an, the reminders and the journeys free for someone who cannot
+                  pay at all.
+                </Text>
+              </View>
+            )}
           </View>
           )}
 
@@ -648,6 +743,12 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.accent.muted,
     borderColor: Colors.accent.primary,
   },
+  // Unselected lifetime card carries a slightly warmer border than the other
+  // two so it reads as its own kind of offer without shouting. Listed BEFORE
+  // planCardSelected at every call site, so selecting it still wins the border.
+  planCardLifetime: {
+    borderColor: Colors.accent.muted,
+  },
   planLeft: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -816,6 +917,26 @@ const styles = StyleSheet.create({
     color: Colors.text.muted,
     textAlign: 'center',
     marginTop: Spacing.sm,
+  },
+  lifetimePitch: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: Spacing.sm,
+    paddingHorizontal: Spacing.sm,
+    paddingTop: Spacing.xs,
+  },
+  lifetimePitchIcon: {
+    // Nudges the glyph onto the first text line's optical centre. Ionicons
+    // sits high against a 12pt line box, and `alignItems: 'flex-start'` would
+    // otherwise leave it floating above the sentence it belongs to.
+    marginTop: 2,
+  },
+  lifetimePitchText: {
+    flex: 1,
+    fontFamily: Typography.fonts.latin,
+    fontSize: Typography.sizes.detail,
+    color: Colors.text.secondary,
+    lineHeight: Typography.sizes.detail * 1.5,
   },
   continueFreeNote: {
     fontFamily: Typography.fonts.latin,

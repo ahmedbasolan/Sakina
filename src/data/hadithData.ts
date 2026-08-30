@@ -767,4 +767,278 @@ export const hadithContent: Content[] = [
     },
     moods: [],
   },
+  {
+    id: 'hadith_tawbah_1',
+    type: 'Hadith',
+    primaryText: 'O son of Adam, as long as you called upon Me and hoped in Me, I forgave you — and I did not mind.',
+    arabicText: 'قَالَ اللَّهُ يَا ابْنَ آدَمَ إِنَّكَ مَا دَعَوْتَنِي وَرَجَوْتَنِي غَفَرْتُ لَكَ عَلَى مَا كَانَ فِيكَ وَلاَ أُبَالِي، يَا ابْنَ آدَمَ لَوْ بَلَغَتْ ذُنُوبُكَ عَنَانَ السَّمَاءِ ثُمَّ اسْتَغْفَرْتَنِي غَفَرْتُ لَكَ وَلاَ أُبَالِي، يَا ابْنَ آدَمَ إِنَّكَ لَوْ أَتَيْتَنِي بِقُرَابِ الأَرْضِ خَطَايَا ثُمَّ لَقِيتَنِي لاَ تُشْرِكُ بِي شَيْئًا لأَتَيْتُكَ بِقُرَابِهَا مَغْفِرَةً',
+    translation: "Allah, Blessed is He and Most High, said: 'O son of Adam! Verily as long as you called upon Me and hoped in Me, I forgave you, despite whatever may have occurred from you, and I did not mind. O son of Adam! Were your sins to reach the clouds of the sky, then you sought forgiveness from Me, I would forgive you, and I would not mind. So son of Adam! If you came to me with sins nearly as great as the earth, and then you met Me not associating anything with Me, I would come to you with forgiveness nearly as great as it.'",
+    englishTranslation: "Allah, Blessed is He and Most High, said: 'O son of Adam! Verily as long as you called upon Me and hoped in Me, I forgave you, despite whatever may have occurred from you, and I did not mind. O son of Adam! Were your sins to reach the clouds of the sky, then you sought forgiveness from Me, I would forgive you, and I would not mind. So son of Adam! If you came to me with sins nearly as great as the earth, and then you met Me not associating anything with Me, I would come to you with forgiveness nearly as great as it.'",
+    source: 'Jami at-Tirmidhi 3540',
+    whyThis: 'Anas ibn Malik narrated this as a hadith qudsi — Allah speaking in the first person. Three escalating cases are named, each larger than the last, and each answered with the same word: forgiveness. The clause carrying the weight is the repeated "and I did not mind" — the forgiving is not reluctant.',
+    propheticPractice: {
+      description: "Read the three cases in order and notice that the sin's size is never the variable — only whether you turned back",
+      source: 'Jami at-Tirmidhi 3540',
+    },
+    moods: [],
+  },
+  {
+    id: 'hadith_tawbah_2',
+    type: 'Hadith',
+    primaryText: 'Every son of Adam sins, and the best of the sinners are the repentant.',
+    arabicText: 'كُلُّ ابْنِ آدَمَ خَطَّاءٌ وَخَيْرُ الْخَطَّائِينَ التَّوَّابُونَ',
+    translation: 'Every son of Adam sins, and the best of the sinners are the repentant.',
+    englishTranslation: 'Every son of Adam sins, and the best of the sinners are the repentant.',
+    source: 'Jami at-Tirmidhi 2499',
+    transliteration: "Kullu ibni Adama khatta'un, wa khayru al-khatta'ina at-tawwabun",
+    whyThis: 'Anas narrated this from the Prophet ﷺ. It does not say the best people are those who never sin — it places the repentant at the top of a category everyone is already inside. Sinning is stated as the human baseline, not as disqualification.',
+    propheticPractice: {
+      description: "Say the sin's name to yourself plainly, without softening it and without adding a verdict about your worth",
+      source: 'Jami at-Tirmidhi 2499',
+    },
+    moods: [],
+  },
+  {
+    id: 'hadith_tawbah_3',
+    type: 'Hadith',
+    primaryText: 'Allah is more pleased with the repentance of His slave than a man who finds the lost camel he had given up on in the desert.',
+    arabicText: 'اللَّهُ أَفْرَحُ بِتَوْبَةِ عَبْدِهِ مِنْ أَحَدِكُمْ سَقَطَ عَلَى بَعِيرِهِ، وَقَدْ أَضَلَّهُ فِي أَرْضِ فَلاَةٍ',
+    translation: 'Allah is more pleased with the repentance of His slave than anyone of you is pleased with finding his camel which he had lost in the desert.',
+    englishTranslation: 'Allah is more pleased with the repentance of His slave than anyone of you is pleased with finding his camel which he had lost in the desert.',
+    source: 'Sahih al-Bukhari 6309',
+    transliteration: 'Allahu afrahu bi-tawbati abdihi min ahadikum saqata ala bairihi, wa qad adallahu fi ardin falatin',
+    whyThis: "Anas ibn Malik narrated this. The image is deliberate: in the desert that camel carried the man's water and provisions, so finding it is not mild relief — it is the moment he learns he will live. That is the emotion the hadith attaches to your return.",
+    propheticPractice: {
+      description: 'Approach the return expecting to be received rather than merely tolerated',
+      source: 'Sahih al-Bukhari 6309',
+      grading: 'Sahih',
+    },
+    moods: [],
+  },
+  {
+    id: 'hadith_tawbah_4',
+    type: 'Hadith',
+    primaryText: 'The most superior way of asking forgiveness from Allah is Sayyid al-Istighfar.',
+    arabicText: 'اللَّهُمَّ أَنْتَ رَبِّي، لاَ إِلَهَ إِلاَّ أَنْتَ، خَلَقْتَنِي وَأَنَا عَبْدُكَ، وَأَنَا عَلَى عَهْدِكَ وَوَعْدِكَ مَا اسْتَطَعْتُ، أَعُوذُ بِكَ مِنْ شَرِّ مَا صَنَعْتُ، أَبُوءُ لَكَ بِنِعْمَتِكَ عَلَىَّ وَأَبُوءُ لَكَ بِذَنْبِي، فَاغْفِرْ لِي، فَإِنَّهُ لاَ يَغْفِرُ الذُّنُوبَ إِلاَّ أَنْتَ',
+    translation: 'The most superior way of asking for forgiveness from Allah is: O Allah, You are my Lord, there is none worthy of worship except You. You have created me, and I am Your servant, and I am faithful to Your covenant and promise as much as I can. I seek refuge in You from the evil of what I have done. I acknowledge Your blessings upon me, and I admit my sins. So forgive me, for none forgives sins except You.',
+    englishTranslation: 'The most superior way of asking for forgiveness from Allah is: O Allah, You are my Lord, there is none worthy of worship except You. You have created me, and I am Your servant, and I am faithful to Your covenant and promise as much as I can. I seek refuge in You from the evil of what I have done. I acknowledge Your blessings upon me, and I admit my sins. So forgive me, for none forgives sins except You.',
+    source: 'Sahih al-Bukhari 6306',
+    transliteration: "Allahumma anta Rabbi la ilaha illa anta, khalaqtani wa ana abduka, wa ana ala ahdika wa wadika mastatatu, audhu bika min sharri ma sanatu, abu'u laka bi-nimatika alayya, wa abu'u laka bi-dhanbi, faghfir li fa-innahu la yaghfiru adh-dhunuba illa anta",
+    whyThis: 'Shaddad ibn Aws narrated it. The Prophet ﷺ named it sayyid al-istighfar — the master of asking forgiveness — and its wording is why: it opens by acknowledging Allah’s lordship, admits the covenant is kept only as much as one is able, and confesses the favour and the sin in the same breath before asking. The same hadith adds that whoever says it by day with certainty and dies before evening, or says it by night and dies before morning, is among the people of Paradise.',
+    propheticPractice: {
+      description: 'Recite Sayyid al-Istighfar once each morning and once each evening, with attention to its wording',
+      source: 'Sahih al-Bukhari 6306',
+      grading: 'Sahih',
+    },
+    moods: [],
+  },
+  {
+    id: 'hadith_tawbah_5',
+    type: 'Hadith',
+    primaryText: "When a servant commits a sin, performs ablution well, prays two rak'ahs and asks pardon of Allah, Allah pardons him.",
+    arabicText: 'مَا مِنْ عَبْدٍ يُذْنِبُ ذَنْبًا فَيُحْسِنُ الطُّهُورَ ثُمَّ يَقُومُ فَيُصَلِّي رَكْعَتَيْنِ ثُمَّ يَسْتَغْفِرُ اللَّهَ إِلاَّ غَفَرَ اللَّهُ لَهُ',
+    translation: "When a servant (of Allah) commits a sin, and he performs ablution well, and then stands and prays two rak'ahs, and asks pardon of Allah, Allah pardons him.",
+    englishTranslation: "When a servant (of Allah) commits a sin, and he performs ablution well, and then stands and prays two rak'ahs, and asks pardon of Allah, Allah pardons him.",
+    source: 'Sunan Abi Dawud 1521',
+    transliteration: 'Ma min abdin yudhnibu dhanban fa-yuhsinu at-tuhura thumma yaqumu fa-yusalli rakatayni thumma yastaghfiru Allaha illa ghafara Allahu lahu',
+    whyThis: 'Ali narrated it from Abu Bakr as-Siddiq, of whom he said that Abu Bakr narrated truthfully. This is the basis for salat al-tawbah. Abu Bakr adds that the Prophet ﷺ then recited Al Imran 3:135 — the same ayah this day is built on — so the hadith and the verse were joined by the Prophet ﷺ himself, not by a later editor.',
+    propheticPractice: {
+      description: "After a sin: make wudu carefully, pray two rak'ahs, then ask Allah's forgiveness",
+      source: 'Sunan Abi Dawud 1521',
+    },
+    moods: [],
+  },
+  {
+    id: 'hadith_tawbah_6',
+    type: 'Hadith',
+    primaryText: 'The one who repents from sin is like one who did not sin.',
+    arabicText: 'التَّائِبُ مِنَ الذَّنْبِ كَمَنْ لاَ ذَنْبَ لَهُ',
+    translation: 'The one who repents from sin is like one who did not sin.',
+    englishTranslation: 'The one who repents from sin is like one who did not sin.',
+    source: 'Sunan Ibn Majah 4250',
+    transliteration: "At-ta'ibu mina adh-dhanbi ka-man la dhanba lahu",
+    whyThis: "Narrated from Abdullah ibn Mas'ud. The comparison is to someone with no sin at all — not to someone whose sentence was reduced. It answers the question that keeps people from repenting sincerely: whether the record still shows it afterwards.",
+    propheticPractice: {
+      description: 'Stop re-prosecuting a sin you have already repented from',
+      source: 'Sunan Ibn Majah 4250',
+    },
+    moods: [],
+  },
+  {
+    id: 'hadith_tawbah_7',
+    type: 'Hadith',
+    primaryText: 'Whoever has wronged another in his reputation or anything else should seek his pardon today, before the Day when there is no money.',
+    arabicText: 'مَنْ كَانَتْ لَهُ مَظْلَمَةٌ لأَحَدٍ مِنْ عِرْضِهِ أَوْ شَىْءٍ فَلْيَتَحَلَّلْهُ مِنْهُ الْيَوْمَ، قَبْلَ أَنْ لاَ يَكُونَ دِينَارٌ وَلاَ دِرْهَمٌ، إِنْ كَانَ لَهُ عَمَلٌ صَالِحٌ أُخِذَ مِنْهُ بِقَدْرِ مَظْلَمَتِهِ، وَإِنْ لَمْ تَكُنْ لَهُ حَسَنَاتٌ أُخِذَ مِنْ سَيِّئَاتِ صَاحِبِهِ فَحُمِلَ عَلَيْهِ',
+    translation: 'Whoever has oppressed another person concerning his reputation or anything else, he should beg him to forgive him before the Day of Resurrection when there will be no money (to compensate for wrong deeds), but if he has good deeds, those good deeds will be taken from him according to his oppression which he has done, and if he has no good deeds, the sins of the oppressed person will be loaded on him.',
+    englishTranslation: 'Whoever has oppressed another person concerning his reputation or anything else, he should beg him to forgive him before the Day of Resurrection when there will be no money (to compensate for wrong deeds), but if he has good deeds, those good deeds will be taken from him according to his oppression which he has done, and if he has no good deeds, the sins of the oppressed person will be loaded on him.',
+    source: 'Sahih al-Bukhari 2449',
+    whyThis: 'Abu Huraira narrated it. The word the Prophet ﷺ used is al-yawma — today. The hadith describes a settlement that happens either now, in a currency you can still pay, or later in one you cannot.',
+    propheticPractice: {
+      description: 'Name one person you actually wronged, and settle it with them directly while settlement is still cheap',
+      source: 'Sahih al-Bukhari 2449',
+      grading: 'Sahih',
+    },
+    moods: [],
+  },
+  {
+    id: 'hadith_tawbah_8',
+    type: 'Hadith',
+    primaryText: 'Have taqwa of Allah wherever you are, and follow an evil deed with a good one to wipe it out.',
+    arabicText: 'اتَّقِ اللَّهَ حَيْثُمَا كُنْتَ وَأَتْبِعِ السَّيِّئَةَ الْحَسَنَةَ تَمْحُهَا وَخَالِقِ النَّاسَ بِخُلُقٍ حَسَنٍ',
+    translation: 'Have Taqwa of Allah wherever you are, and follow an evil deed with a good one to wipe it out, and treat the people with good behavior.',
+    englishTranslation: 'Have Taqwa of Allah wherever you are, and follow an evil deed with a good one to wipe it out, and treat the people with good behavior.',
+    source: 'Jami at-Tirmidhi 1987',
+    transliteration: "Ittaqi Allaha haythuma kunta, wa atbii as-sayyi'ata al-hasanata tamhuha, wa khaliqi an-nasa bi-khuluqin hasanin",
+    whyThis: 'Abu Dharr narrated this instruction, which the Prophet ﷺ addressed to him personally. Al-Tirmidhi records it as hasan sahih. Note the order: the good deed follows the bad one, so the instruction assumes the sin already happened and tells you what to do next rather than only what to avoid.',
+    propheticPractice: {
+      description: 'Immediately after a sin, do one specific good deed rather than only feeling bad about it',
+      source: 'Jami at-Tirmidhi 1987',
+      grading: 'Hasan sahih (as graded by al-Tirmidhi)',
+    },
+    moods: [],
+  },
+  {
+    id: 'hadith_tawbah_9',
+    type: 'Hadith',
+    primaryText: 'My slave has known that he has a Lord who forgives sins and punishes for them — I have forgiven My slave.',
+    arabicText: 'أَعَلِمَ عَبْدِي أَنَّ لَهُ رَبًّا يَغْفِرُ الذَّنْبَ وَيَأْخُذُ بِهِ غَفَرْتُ لِعَبْدِي',
+    translation: 'My slave has known that he has a Lord who forgives sins and punishes for it, I therefore have forgiven my slave (his sins).',
+    englishTranslation: 'My slave has known that he has a Lord who forgives sins and punishes for it, I therefore have forgiven my slave (his sins).',
+    source: 'Sahih al-Bukhari 7507',
+    whyThis: 'Abu Huraira narrated this hadith qudsi. The closing phrase — "he can do whatever he likes" — is not permission to sin. Ibn Hajar records in Fath al-Bari that it means: so long as he continues in this way, sinning and then returning and seeking forgiveness, Allah will continue to forgive him. The cycle described is sin, return, sin, return — and it is the returning, not the sinning, that is being licensed.',
+    propheticPractice: {
+      description: 'After a relapse, return the same way you returned the first time, without treating the repeat as disqualifying',
+      source: 'Sahih al-Bukhari 7507',
+      grading: 'Sahih',
+    },
+    moods: [],
+  },
+  {
+    id: 'hadith_tawbah_10',
+    type: 'Hadith',
+    primaryText: 'There is at times some sort of shade upon my heart, and I seek forgiveness from Allah a hundred times a day.',
+    arabicText: 'إِنَّهُ لَيُغَانُ عَلَى قَلْبِي وَإِنِّي لأَسْتَغْفِرُ اللَّهَ فِي الْيَوْمِ مِائَةَ مَرَّةٍ',
+    translation: 'There is (at times) some sort of shade upon my heart, and I seek forgiveness from Allah a hundred times a day.',
+    englishTranslation: 'There is (at times) some sort of shade upon my heart, and I seek forgiveness from Allah a hundred times a day.',
+    source: 'Sahih Muslim 2702',
+    transliteration: "Innahu la-yughanu ala qalbi, wa inni la-astaghfiru Allaha fi al-yawmi mi'ata marratin",
+    whyThis: 'Al-Agharr al-Muzani, a Companion, narrated it. The one saying this is the Prophet ﷺ, whose sins were forgiven. So istighfar here cannot be a penalty being served — it is the daily practice of a heart being kept clear, which is what makes a hundred times a day intelligible.',
+    propheticPractice: {
+      description: 'Make istighfar a daily fixed practice rather than something reserved for after a sin',
+      source: 'Sahih Muslim 2702',
+      grading: 'Sahih',
+    },
+    moods: [],
+  },
+  // === DEATH AWARENESS JOURNEY HADITH ===
+  // Referenced by step_death_3..7 in staticPaths.ts. Days 1-2 are verse +
+  // tafsir led and carry no hadith. Every Arabic matn below is fetched
+  // verbatim (mirror / sunnah.com) — see scripts and the design spec.
+  {
+    id: 'hadith_death_3',
+    type: 'Hadith',
+    primaryText: 'Remember often the destroyer of pleasures — meaning death.',
+    arabicText: 'أَكْثِرُوا ذِكْرَ هَاذِمِ اللَّذَّاتِ',
+    translation: 'Increase in remembrance of the severer of pleasures. Meaning death.',
+    englishTranslation:
+      'Increase in remembrance of the severer of pleasures. Meaning death.',
+    source: "Jami' at-Tirmidhi 2307",
+    transliteration: 'Akthirū dhikra hādhimi l-ladhdhāt (yaʿnī l-mawt)',
+    whyThis:
+      'Abu Hurayra narrated it. Tirmidhi graded it hasan gharib; al-Albani graded it hasan, and Ibn Majah and an-Nasa’i narrate it as well. The instruction is frequency, not intensity — a brief, repeated thought that resets your aim rather than a spiral you have to brace for.',
+    propheticPractice: {
+      description:
+        'Bring a short thought of death to mind several times a day, letting it reorder the decision in front of you',
+      source: "Jami' at-Tirmidhi 2307",
+      grading: 'hasan',
+    },
+    moods: [],
+  },
+  {
+    id: 'hadith_death_4',
+    type: 'Hadith',
+    primaryText:
+      'On going to bed: "With Your name, O Allah, I die and I live." On waking: "All praise is for Allah who gave us life after causing us to die, and to Him is the resurrection."',
+    arabicText: 'بِاسْمِكَ اللَّهُمَّ أَمُوتُ وَأَحْيَا، وَإِذَا اسْتَيْقَظَ مِنْ مَنَامِهِ قَالَ الْحَمْدُ لِلَّهِ الَّذِي أَحْيَانَا بَعْدَ مَا أَمَاتَنَا، وَإِلَيْهِ النُّشُورُ',
+    translation:
+      'Whenever the Prophet ﷺ intended to go to bed, he would recite: "Bismika Allahumma amutu wa ahya (With Your name, O Allah, I die and I live)." And when he woke up from his sleep, he would say: "Al-hamdu lil-lahil-ladhi ahyana ba\'da ma amatana; wa ilaihi an-nushur (All the Praises are for Allah Who has made us alive after He made us die (sleep) and unto Him is the Resurrection)."',
+    englishTranslation:
+      'Whenever the Prophet ﷺ intended to go to bed, he would recite: "Bismika Allahumma amutu wa ahya (With Your name, O Allah, I die and I live)." And when he woke up from his sleep, he would say: "Al-hamdu lil-lahil-ladhi ahyana ba\'da ma amatana; wa ilaihi an-nushur (All the Praises are for Allah Who has made us alive after He made us die (sleep) and unto Him is the Resurrection)."',
+    source: 'Sahih al-Bukhari 6324',
+    transliteration:
+      'Bismika Allāhumma amūtu wa aḥyā — Al-ḥamdu lillāhi-lladhī aḥyānā baʿda mā amātanā wa ilayhi n-nushūr',
+    whyThis:
+      'Hudhayfa reported it. The waking words state the sleep–death link outright: ahyana ba’da ma amatana, "gave us life after having caused us to die." Both thresholds — sleeping and waking — are named as a death and a return.',
+    propheticPractice: {
+      description:
+        'Make these the literal last and first words of the day — phone down before the first, nothing reached for before the second',
+      source: 'Sahih al-Bukhari 6324',
+      grading: 'sahih',
+    },
+    moods: [],
+  },
+  {
+    id: 'hadith_death_5',
+    type: 'Hadith',
+    primaryText: 'Be in this world as if you were a stranger or a traveler.',
+    arabicText: 'كُنْ فِي الدُّنْيَا كَأَنَّكَ غَرِيبٌ، أَوْ عَابِرُ سَبِيلٍ',
+    translation:
+      "Allah's Messenger ﷺ took hold of my shoulder and said, 'Be in this world as if you were a stranger or a traveler.'",
+    englishTranslation:
+      "Allah's Messenger ﷺ took hold of my shoulder and said, 'Be in this world as if you were a stranger or a traveler.'",
+    source: 'Sahih al-Bukhari 6416',
+    transliteration: 'Kun fī d-dunyā ka-annaka gharībun aw ʿābiru sabīl',
+    whyThis:
+      'Ibn Umar reported it. The lines that often follow — "if you reach the evening do not wait for the morning… take from your health for your sickness and from your life for your death" — are Ibn Umar\'s own words, not the Prophet\'s ﷺ; the hadith itself marks the change of speaker. The instruction is grip, not withdrawal: hold this world the way a traveler holds a bag.',
+    propheticPractice: {
+      description: 'Name one thing you own that owns you back, and practise holding it more loosely',
+      source: 'Sahih al-Bukhari 6416',
+      grading: 'sahih',
+    },
+    moods: [],
+  },
+  {
+    id: 'hadith_death_6',
+    type: 'Hadith',
+    primaryText:
+      'When a person dies, their deeds end except three: an ongoing charity, knowledge benefited from, or a righteous child who prays for them.',
+    arabicText: 'إِذَا مَاتَ الإِنْسَانُ انْقَطَعَ عَنْهُ عَمَلُهُ إِلاَّ مِنْ ثَلاَثَةٍ إِلاَّ مِنْ صَدَقَةٍ جَارِيَةٍ أَوْ عِلْمٍ يُنْتَفَعُ بِهِ أَوْ وَلَدٍ صَالِحٍ يَدْعُو لَهُ',
+    translation:
+      'When a man dies, his acts come to an end, but three: recurring charity, or knowledge (by which people) benefit, or a pious child, who prays for him (for the deceased).',
+    englishTranslation:
+      'When a man dies, his acts come to an end, but three: recurring charity, or knowledge (by which people) benefit, or a pious child, who prays for him (for the deceased).',
+    source: 'Sahih Muslim 1631',
+    transliteration:
+      'Idhā māta l-insānu nqaṭaʿa ʿanhu ʿamaluhu illā min thalāthah: illā min ṣadaqatin jāriyah, aw ʿilmin yuntafaʿu bih, aw waladin ṣāliḥin yadʿū lah',
+    whyThis:
+      'Abu Hurayra narrated it. The hadith names three doors, not one — recurring charity and beneficial knowledge are open to everyone, with or without children.',
+    propheticPractice: {
+      description: 'Start one of the three today — a recurring charity, teaching one beneficial thing, or a line of du’a taught to a child',
+      source: 'Sahih Muslim 1631',
+      grading: 'sahih',
+    },
+    moods: [],
+  },
+  {
+    id: 'hadith_death_7',
+    type: 'Hadith',
+    primaryText:
+      'Loving to meet Allah is not the same as wanting to die: the Prophet ﷺ explained it is what the believer feels at the moment of death, when the good news of Allah\'s pleasure is shown to them.',
+    arabicText: 'مَنْ أَحَبَّ لِقَاءَ اللَّهِ أَحَبَّ اللَّهُ لِقَاءَهُ، وَمَنْ كَرِهَ لِقَاءَ اللَّهِ كَرِهَ اللَّهُ لِقَاءَهُ، قَالَتْ عَائِشَةُ أَوْ بَعْضُ أَزْوَاجِهِ إِنَّا لَنَكْرَهُ الْمَوْتَ، قَالَ لَيْسَ ذَاكَ، وَلَكِنَّ الْمُؤْمِنَ إِذَا حَضَرَهُ الْمَوْتُ بُشِّرَ بِرِضْوَانِ اللَّهِ وَكَرَامَتِهِ، فَلَيْسَ شَىْءٌ أَحَبَّ إِلَيْهِ مِمَّا أَمَامَهُ، فَأَحَبَّ لِقَاءَ اللَّهِ وَأَحَبَّ اللَّهُ لِقَاءَهُ، وَإِنَّ الْكَافِرَ إِذَا حُضِرَ بُشِّرَ بِعَذَابِ اللَّهِ وَعُقُوبَتِهِ، فَلَيْسَ شَىْءٌ أَكْرَهَ إِلَيْهِ مِمَّا أَمَامَهُ، كَرِهَ لِقَاءَ اللَّهِ وَكَرِهَ اللَّهُ لِقَاءَهُ',
+    translation:
+      'The Prophet ﷺ said, "Whoever loves to meet Allah, Allah (too) loves to meet him and whoever hates to meet Allah, Allah (too) hates to meet him". Aisha, or some of the wives of the Prophet ﷺ said, "But we dislike death." He said: It is not like this, but it is meant that when the time of the death of a believer approaches, he receives the good news of Allah\'s pleasure with him and His blessings upon him, and so at that time nothing is dearer to him than what is in front of him. He therefore loves the meeting with Allah, and Allah (too) loves the meeting with him. But when the time of the death of a disbeliever approaches, he receives the evil news of Allah\'s torment and His Requital, whereupon nothing is more hateful to him than what is before him. Therefore, he hates the meeting with Allah, and Allah too, hates the meeting with him.',
+    englishTranslation:
+      'The Prophet ﷺ said, "Whoever loves to meet Allah, Allah (too) loves to meet him and whoever hates to meet Allah, Allah (too) hates to meet him". Aisha, or some of the wives of the Prophet ﷺ said, "But we dislike death." He said: It is not like this, but it is meant that when the time of the death of a believer approaches, he receives the good news of Allah\'s pleasure with him and His blessings upon him, and so at that time nothing is dearer to him than what is in front of him. He therefore loves the meeting with Allah, and Allah (too) loves the meeting with him. But when the time of the death of a disbeliever approaches, he receives the evil news of Allah\'s torment and His Requital, whereupon nothing is more hateful to him than what is before him. Therefore, he hates the meeting with Allah, and Allah too, hates the meeting with him.',
+    source: 'Sahih al-Bukhari 6507',
+    transliteration:
+      'Man aḥabba liqāʾa llāhi aḥabba llāhu liqāʾah, wa man kariha liqāʾa llāhi kariha llāhu liqāʾah',
+    whyThis:
+      'Ubada ibn as-Samit narrated it. The clarification is the point: Aisha objected that they all dislike death, and the Prophet ﷺ answered that loving the meeting is not wanting to die — it is what the believer feels at the threshold itself, when Allah\'s pleasure is shown to them.',
+    propheticPractice: {
+      description: 'Reframe death as a meeting — name who you are meeting and what you hope is said to you',
+      source: 'Sahih al-Bukhari 6507',
+      grading: 'sahih',
+    },
+    moods: [],
+  },
 ];

@@ -34,7 +34,7 @@ const ANDROID_API_KEY = REVENUECAT_ANDROID_API_KEY;
 // RC entitlement identifier — must match exactly what's in the RC dashboard.
 const RC_ENTITLEMENT_ID = 'Sakina Pro';
 
-export type RCPackageType = 'monthly' | 'yearly';
+export type RCPackageType = 'monthly' | 'yearly' | 'lifetime';
 
 export interface RCPricing {
   monthlyPrice: string; // "$4.99" — store-localized
@@ -42,6 +42,14 @@ export interface RCPricing {
   monthlyPriceAmount: number; // 4.99
   yearlyPriceAmount: number; // 39.99
   trialDays: number; // 7
+  // Lifetime is OPTIONAL and null whenever the current offering has no
+  // Lifetime package. That is the normal state until the non-consumable is
+  // live in App Store Connect / Play Console AND attached to the offering in
+  // RevenueCat, so every consumer must treat null as "this store has no
+  // lifetime plan" and simply not render it — never as an error, and never
+  // as a reason to withhold the monthly/annual cards that did load.
+  lifetimePrice: string | null; // "AED 400.00"
+  lifetimePriceAmount: number | null; // 400
 }
 
 /** Convert a store intro-offer period (e.g. 1 × WEEK) into a day count for display. */
@@ -123,7 +131,7 @@ class RevenueCatService {
    * phase (trial/normal), not the duration — this is the reliable source for
    * monthly-vs-yearly. Falls back to 'yearly' when the product can't be matched.
    */
-  async resolveDurationType(productIdentifier?: string): Promise<'monthly' | 'yearly'> {
+  async resolveDurationType(productIdentifier?: string): Promise<'monthly' | 'yearly' | 'lifetime'> {
     this.configure();
     if (!this.configured || !productIdentifier) return 'yearly';
     // getOffering() hits the network when nothing is cached yet (e.g. right
@@ -140,10 +148,23 @@ class RevenueCatService {
       console.warn('[RevenueCat] resolveDurationType: getOffering failed, defaulting to yearly:', error);
       return 'yearly';
     }
-    const monthly = offering?.availablePackages.find(
-      (p) => p.packageType === PACKAGE_TYPE.MONTHLY,
+    const matched = offering?.availablePackages.find(
+      (p) => p.product.identifier === productIdentifier,
     );
-    return monthly?.product.identifier === productIdentifier ? 'monthly' : 'yearly';
+    switch (matched?.packageType) {
+      case PACKAGE_TYPE.MONTHLY:
+        return 'monthly';
+      case PACKAGE_TYPE.LIFETIME:
+        return 'lifetime';
+      default:
+        // Unmatched products keep the long-standing 'yearly' fallback. Note
+        // this is a *secondary* path for lifetime: syncFromCustomerInfo
+        // identifies a lifetime entitlement from its null expirationDate
+        // before ever reaching here, which works offline and after a restore
+        // (when no offering is cached). This branch only matters if the
+        // entitlement somehow carries an expiry.
+        return 'yearly';
+    }
   }
 
   /**
@@ -193,6 +214,13 @@ class RevenueCatService {
     const yearly = offering.availablePackages.find(
       (p) => p.packageType === PACKAGE_TYPE.ANNUAL,
     );
+    // Deliberately NOT part of the guard below: a missing lifetime package
+    // must degrade to "no lifetime card", not to "no pricing at all". If this
+    // were required, shipping the lifetime UI before the store products were
+    // approved would blank the entire paywall — CTA included — for every user.
+    const lifetime = offering.availablePackages.find(
+      (p) => p.packageType === PACKAGE_TYPE.LIFETIME,
+    );
 
     if (!monthly || !yearly) return null;
 
@@ -210,10 +238,15 @@ class RevenueCatService {
       trialDays: introOffer
         ? introOfferPeriodToDays(introOffer.periodNumberOfUnits, introOffer.periodUnit)
         : 7,
+      lifetimePrice: lifetime?.product.priceString ?? null,
+      lifetimePriceAmount: lifetime?.product.price ?? null,
     };
   }
 
-  /** Purchase a subscription package. Returns false on user-cancel; throws on all other failures. */
+  /**
+   * Purchase a package — monthly/annual subscription or the one-time lifetime
+   * non-consumable. Returns false on user-cancel; throws on all other failures.
+   */
   async purchasePackage(type: RCPackageType): Promise<{
     success: boolean;
     customerInfo: CustomerInfo | null;
@@ -261,9 +294,13 @@ class RevenueCatService {
     offering: PurchasesOffering,
     type: RCPackageType,
   ): PurchasesPackage | undefined {
-    return offering.availablePackages.find((p) =>
-      type === 'monthly' ? p.packageType === PACKAGE_TYPE.MONTHLY : p.packageType === PACKAGE_TYPE.ANNUAL,
-    );
+    const wanted =
+      type === 'monthly'
+        ? PACKAGE_TYPE.MONTHLY
+        : type === 'lifetime'
+          ? PACKAGE_TYPE.LIFETIME
+          : PACKAGE_TYPE.ANNUAL;
+    return offering.availablePackages.find((p) => p.packageType === wanted);
   }
 }
 

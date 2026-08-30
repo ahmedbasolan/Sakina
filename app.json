@@ -32,7 +32,11 @@
         "android.permission.SCHEDULE_EXACT_ALARM"
       ],
       "blockedPermissions": [
-        "android.permission.ACCESS_FINE_LOCATION"
+        "android.permission.ACCESS_FINE_LOCATION",
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.READ_MEDIA_VISUAL_USER_SELECTED",
+        "android.permission.FOREGROUND_SERVICE",
+        "android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK"
       ],
       "package": "com.lelahmed.sakina"
     },
@@ -64,8 +68,9 @@
       [
         "expo-media-library",
         {
-          "photosPermission": "Sakina saves the verse cards you create to your photo library.",
-          "savePhotosPermission": "Sakina saves the verse cards you create to your photo library."
+          "photosPermission": false,
+          "savePhotosPermission": "Sakina saves the verse cards you create to your photo library.",
+          "granularPermissions": []
         }
       ]
     ],
