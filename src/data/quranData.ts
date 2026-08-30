@@ -2401,7 +2401,7 @@ const quranContentData: Content[] = [
     primaryText:
       'walanabluwannakum bishayin mina l-khawfi wal-jūʿi wanaqṣin mina l-amwāli wal-anfusi wal-thamarāti wabashiri l-ṣābirīna alladhīna idhā aṣābathum muṣībatun qālū innā lillahi wa-innā ilayhi rājiʿūna',
     arabicText:
-      'وَلَنَبْلُوَنَّكُم بِشَىْءٍۢ مِّنَ ٱلْخَوْفِ وَٱلْجُوعِ وَنَقْصٍۢ مِّنَ ٱلْأَمْوَٰلِ وَٱلْأَنفُسِ وَٱلثَّمَرَٰتِ ۗ وَبَشِّرِ ٱلصَّـٰبِرِينَ ﴿155﴾ ٱلَّذِينَ إِذَآ أَصَابَتْهُم مُّصِيبَةٌۭ قَالُوٓا۟ إِنَّا لِلَّهِ وَإِنَّآ إِلَيْهِ رَٰجِعُونَ ﴿156﴾',
+      'وَلَنَبْلُوَنَّكُم بِشَىْءٍۢ مِّنَ ٱلْخَوْفِ وَٱلْجُوعِ وَنَقْصٍۢ مِّنَ ٱلْأَمْوَٰلِ وَٱلْأَنفُسِ وَٱلثَّمَرَٰتِ ۗ وَبَشِّرِ ٱلصَّـٰبِرِينَ ﴿155﴾ ٱلَّذِينَ إِذَآ أَصَـٰبَتْهُم مُّصِيبَةٌۭ قَالُوٓا۟ إِنَّا لِلَّهِ وَإِنَّآ إِلَيْهِ رَٰجِعُونَ ﴿156﴾',
     transliteration:
       'walanabluwannakum bishayin mina l-khawfi wal-jūʿi wanaqṣin mina l-amwāli wal-anfusi wal-thamarāti wabashiri l-ṣābirīna alladhīna idhā aṣābathum muṣībatun qālū innā lillahi wa-innā ilayhi rājiʿūna',
     englishTranslation:

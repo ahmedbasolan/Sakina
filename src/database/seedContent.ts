@@ -273,7 +273,21 @@ import type { Content, ContentAngle } from '../types';
 //      Both al-Baghawi tags were bare and are now "on <surah>:<ayah>", so
 //      verify-tafsir-tags can check them instead of skipping them. No
 //      Arabic, translation, verse or hadith citation changed.
-const SEED_VERSION = 37;
+// v38: verse text correction — quran_2_155_156 spelled 2:156's أَصَـٰبَتْهُم
+//      with a full alef (أَصَابَتْهُم) instead of the Uthmani dagger alef.
+//      quran.com api/v4 text_uthmani, alquran.cloud quran-uthmani, and this
+//      app's own quran_2_155 (which cites the same ayah range) all use the
+//      dagger-alef form; this entry was the sole outlier. The replacement was
+//      copied byte-for-byte out of quran_2_155 rather than typed. One word,
+//      one entry, no meaning change — the two spellings are the same word in
+//      two orthographic conventions.
+//      Found by the new verse-integrity test (src/__tests__/
+//      quranArabicIntegrity.test.ts), which locks every verse against a
+//      committed snapshot and cross-checks its consonantal skeleton against
+//      quran.com. Regenerate the snapshot with
+//      `node scripts/refresh-quran-canonical.mjs` after ANY verse edit, or
+//      the LOCK check will fail on your own change.
+const SEED_VERSION = 38;
 // Separate keys per content type — Quran and Hadith data change independently,
 // and each seeder used to write the SAME key at the end of its run. Since
 // initializeDatabase() awaits seedQuranContent() before seedHadithContent(),
