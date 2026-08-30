@@ -48,6 +48,11 @@ jobs:
     # Only run on pushes to main/develop — skip on PRs to save build minutes
     if: github.event_name == 'push'
     needs: lint-and-test
+    # Fire-and-forget convenience build (`--no-wait`) — kicks an EAS build and
+    # returns immediately. It is NON-BLOCKING: it must never fail the workflow
+    # run or mark a commit red. If it breaks (expired token, EAS outage), that
+    # is not a reason to block merges or a release.
+    continue-on-error: true
 
     steps:
       - name: Checkout
@@ -62,16 +67,33 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      # Cleanly skip (green) when the EXPO_TOKEN repo secret is not configured,
+      # instead of erroring in "Setup EAS".
+      - name: Check for EXPO_TOKEN
+        id: eas_token
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+        run: |
+          if [ -n "$EXPO_TOKEN" ]; then
+            echo "present=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "present=false" >> "$GITHUB_OUTPUT"
+            echo "::notice title=EAS preview skipped::EXPO_TOKEN repo secret is not set. Add it (Settings → Secrets and variables → Actions) to enable the preview build."
+          fi
+
       - name: Install EAS CLI
+        if: steps.eas_token.outputs.present == 'true'
         run: npm install -g eas-cli
 
       - name: Setup EAS
+        if: steps.eas_token.outputs.present == 'true'
         uses: expo/expo-github-action@v8
         with:
           eas-version: latest
           token: ${{ secrets.EXPO_TOKEN }}
 
       - name: EAS Build (preview — non-blocking)
+        if: steps.eas_token.outputs.present == 'true'
         run: eas build --platform android --profile preview --non-interactive --no-wait
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
