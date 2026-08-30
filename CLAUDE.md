@@ -684,6 +684,28 @@ uploaded under an account that did not write them. Both shipped broken.
 ## Commands
 - Typecheck: `npx tsc --noEmit -p tsconfig.json`
 - Tests: `npx jest` (ownership rules: `src/services/__tests__/localDataOwnership.test.ts`)
+- **`npx jest quranArabicIntegrity`** — the only mechanical guard on verse text.
+  Offline. Three checks per verse: every entry has a snapshot row; `arabicText`
+  is byte-identical to `src/data/canonical/quranArabicCanonical.json` (catches
+  any drift, down to one haraka); and its consonantal skeleton matches
+  quran.com for that ayah range (catches truncation, a dropped clause, a
+  misnumbered ayah). **After adding or editing ANY verse, run
+  `node scripts/refresh-quran-canonical.mjs`** (network) or the lock will fail
+  on your own change — and read the diff it produces rather than regenerating
+  reflexively, because regenerating is also how you would launder a corruption
+  into the baseline.
+  Two things make this check trustworthy and are worth preserving: it compares
+  *skeletons*, not bytes, against quran.com, because this corpus is a richer
+  Uthmani edition (U+06ED in 73 verses, U+06E2 in 38, ayah ornaments
+  throughout) and a byte comparison reports 140 false faults; and the suite
+  carries its own negative controls (`describe('the checks above actually have
+  teeth')`) so it cannot rot into a no-op. It does **not** check the English
+  translation at all — this app deliberately smooths translator brackets and
+  writes "Allah" for "Allāh", so only 1 of 155 entries matches raw Sahih
+  International and an automated check would be 154 false alarms. It also
+  cannot tell you a verse is the *wrong verse for its slot*, and it never sees
+  a render-time `numberOfLines` clip. The full "what this does not catch" list
+  is in the test's header — read it before treating a green run as proof.
 - `node scripts/verify-render-hazards.mjs` — three static checks for render
   faults a typecheck and Jest cannot see, and that only show on a device
   (usually Android): `elevation` sharing a view with `overflow:'hidden'` + a
