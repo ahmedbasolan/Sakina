@@ -437,7 +437,7 @@ for (const r of sMismatch) console.log(`  ${r.id}  ·  ${r.title}  ·  ${r.ref} 
 // reference. Ellipsis inside a quotation is treated as truncation — if the
 // quote does not fit, shorten to a clause that is whole, do not elide.
 const svc = fs.readFileSync('src/services/pathsService.ts', 'utf8');
-const mBlock = svc.match(/const motivations: Record<string, string> = \{([\s\S]*?)\n    \};/);
+const mBlock = svc.match(/const motivations: Record<string, string> = \{([\s\S]*?)\n {4}\};/);
 if (!mBlock) {
   console.error('\ncould not locate the motivations map in pathsService.ts — refusing to pass');
   process.exit(1);

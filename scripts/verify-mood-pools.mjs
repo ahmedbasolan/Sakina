@@ -67,7 +67,7 @@ const field = (b, name) => {
   return s;
 };
 const moodsOf = (b) =>
-  (b.match(/moods:\s*\[([^\]]*)\]/) || [, ''])[1]
+  (b.match(/moods:\s*\[([^\]]*)\]/) || ['', ''])[1]
     .replace(/'/g, '').split(',').map((x) => x.trim()).filter(Boolean);
 
 const verseObjects = objects('quran_');
