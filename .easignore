@@ -1,0 +1,103 @@
+# Files excluded from the EAS Build upload archive.
+#
+# ⚠ IMPORTANT: when this file exists, EAS uses it INSTEAD of .gitignore — not
+# in addition to it. So this file must be a SUPERSET of .gitignore. If an entry
+# is dropped from here, it gets uploaded even though git ignores it, and
+# node_modules alone is ~1.1 GB. Keep the two in sync: anything added to
+# .gitignore belongs here too.
+#
+# Never exclude: assets/ (icon, splash, adaptive-icon, notification-icon and
+# fonts are resolved from app.json at build time), src/, app.json,
+# package.json, package-lock.json, eas.json, babel.config.js, tsconfig.json.
+
+# ─── everything .gitignore excludes ───────────────────────────────
+
+# dependencies
+node_modules/
+
+# Expo
+.expo/
+dist/
+web-build/
+expo-env.d.ts
+
+# Native
+.kotlin/
+*.orig.*
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+
+# Metro
+.metro-health-check*
+
+# debug
+npm-debug.*
+yarn-debug.*
+yarn-error.*
+
+# macOS
+.DS_Store
+*.pem
+
+# local env files
+.env
+.env.*
+.env*.local
+
+# typescript
+*.tsbuildinfo
+
+# generated native folders (EAS runs prebuild itself)
+/ios
+/android
+build/
+
+# Script output files
+scripts/output/
+
+# Local agent / editor tooling
+/skills/
+.claude/
+.agents/
+.agent/
+.claire/
+.codebuddy/
+.codex/
+.continue/
+.cursor/
+.gemini/
+.github/
+.kiro/
+.opencode/
+.qoder/
+.roo/
+.trae/
+.windsurf/
+.vscode/
+skills-lock.json
+
+# Test / coverage artifacts
+coverage/
+
+# Supabase CLI local link cache
+supabase/.temp/
+
+# ─── additionally excluded from builds only ───────────────────────
+# These ARE tracked in git but the native build never reads them.
+
+# Store listing artwork and screenshot compositors — 89 MB, and nothing in
+# app.json or eas.json references it. Biggest single win here.
+store-assets/
+
+# Specs, plans and design docs
+docs/
+
+# Editor/tooling scratch
+.fallow/
+
+# Repo-level docs that never reach the binary
+CLAUDE.md
+README.md
