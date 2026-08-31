@@ -91,6 +91,10 @@ export default [
         URL: 'readonly',
         FormData: 'readonly',
         AbortController: 'readonly',
+        // The bulk Quran download uses XHR rather than fetch: fetch in RN
+        // cannot report download progress, so it can only offer a flat abort
+        // across a multi-MB body. See DOWNLOAD_TUNING in quranService.ts.
+        XMLHttpRequest: 'readonly',
         Response: 'readonly',
         requestAnimationFrame: 'readonly',
         cancelAnimationFrame: 'readonly',
