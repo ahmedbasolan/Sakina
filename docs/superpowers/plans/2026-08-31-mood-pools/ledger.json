@@ -98,40 +98,54 @@
       "contentId": "quran_23_1",
       "mood": "Calm",
       "tier": "T1",
-      "status": "pending",
-      "citations": []
+      "status": "committed",
+      "citations": [
+        "Quran 23:1-2",
+        "Bukhari 50"
+      ]
     },
     {
       "angleId": "q_angle_7_31_calm",
       "contentId": "quran_7_31",
       "mood": "Calm",
       "tier": "T1",
-      "status": "pending",
-      "citations": []
+      "status": "committed",
+      "citations": [
+        "Quran 7:31",
+        "Tirmidhi 2380"
+      ]
     },
     {
       "angleId": "q_angle_29_45_calm",
       "contentId": "quran_29_45",
       "mood": "Calm",
       "tier": "T1",
-      "status": "pending",
-      "citations": []
+      "status": "committed",
+      "citations": [
+        "Quran 29:45",
+        "Bukhari 528"
+      ]
     },
     {
       "angleId": "q_angle_4_103_calm",
       "contentId": "quran_4_103",
       "mood": "Calm",
       "tier": "T1",
-      "status": "pending",
-      "citations": []
+      "status": "committed",
+      "citations": [
+        "Quran 4:103",
+        "Bukhari 843"
+      ]
     },
     {
       "angleId": "q_angle_14_40_calm",
       "contentId": "quran_14_40",
       "mood": "Calm",
       "tier": "T1",
-      "status": "pending",
-      "citations": []
+      "status": "committed",
+      "citations": [
+        "Quran 14:40"
+      ]
     },
     {
       "angleId": null,
