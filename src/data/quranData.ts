@@ -18034,6 +18034,46 @@ const quranContentAnglesData: ContentAngle[] = [
     reflection:
       'What is the one practice from these seven days you will actually keep? Make it smaller until the answer is yes.',
   },
+  {
+    id: 'q_angle_2_255_calm',
+    contentId: 'quran_2_255',
+    mood: 'Calm',
+    angle: "Nothing you are carrying tonight is being watched over by someone who might drift off. He calls Himself Al-Hayy and Al-Qayyum here — the Ever-Living, the One who holds everything upright — and then says plainly that neither drowsiness nor sleep touches Him. You will sleep tonight. He will not. Whatever you set down before you close your eyes is still being held when you open them.",
+    angleSource: "Surah Al-Baqarah 2:255",
+    action: "Recite Ayat al-Kursi as the last thing you say before you sleep.",
+    practiceSteps: JSON.stringify([{"type":"physical","icon":"moon","title":"Make it the last thing","instruction":"Lie down, then recite Ayat al-Kursi before anything else takes your attention.","source":"\"Allah will appoint a guard for you who will stay with you and no satan will come near you till morning.\" [Bukhari 2311]","sourceType":"sunnah_action","sourceGrading":"sahih"},{"type":"verbal","icon":"hands-prayer","title":"Say the words he said lying down","instruction":"Put your hand under your cheek, as the Prophet ﷺ did when he lay down, and say this.","arabicText":"اللَّهُمَّ بِاسْمِكَ أَمُوتُ وَأَحْيَا","transliteration":"Allahumma bismika amutu wa ahya","translation":"O Allah, in Your name I die and I live.","source":"Sahih al-Bukhari 6314","sourceType":"prophetic_dua","sourceGrading":"sahih"},{"type":"mindset","icon":"star","title":"Hand over one thing by name","instruction":"Name one thing you are still turning over, and leave it with the One who does not sleep.","source":"Surah Al-Baqarah 2:255 — Quran","sourceType":"quran_dua"}]),
+    reflection: "What are you still holding tonight that He is already holding?",
+  },
+  {
+    id: 'q_angle_22_77_calm',
+    contentId: 'quran_22_77',
+    mood: 'Calm',
+    angle: "Your forehead on the ground is the closest you will be to Him all day. The ayah gives the order plainly — bow, prostrate, worship your Lord, do good — and the Prophet ﷺ said the nearest a servant comes to his Lord is while prostrating, so ask there. You do not have to arrive calm in order to make sujud. Sujud is where the calm is kept.",
+    angleSource: "Surah Al-Hajj 22:77",
+    action: "In your next sujud, stay down a few breaths longer and ask for one thing.",
+    practiceSteps: JSON.stringify([{"type":"physical","icon":"mosque","title":"Stay down longer","instruction":"In your next prayer, hold the sujud a few breaths past your usual, without rushing up.","source":"Surah Al-Hajj 22:77 — Quran","sourceType":"quran_dua"},{"type":"verbal","icon":"hands-prayer","title":"Ask while you are closest","instruction":"While you are down, ask Allah for the one thing you most need, in your own words.","source":"\"The nearest a servant comes to his Lord is when he is prostrating himself, so make supplication (in this state).\" [Sahih Muslim 482]","sourceType":"sunnah_action","sourceGrading":"sahih"},{"type":"mindset","icon":"leaf","title":"Notice where the ayah ends","instruction":"It ends with doing good, not with feeling good. The calm sits downstream of the act, not as a condition for starting it.","source":"Surah Al-Hajj 22:77 — Quran","sourceType":"quran_dua"}]),
+    reflection: "What would you ask for, if you knew you were closest to Him right then?",
+  },
+  {
+    id: 'q_angle_2_45_calm',
+    contentId: 'quran_2_45',
+    mood: 'Calm',
+    angle: "Your two footholds are named in this ayah, and neither of them is a feeling: patience, and prayer. It concedes the weight in the same breath — difficult, except for the humbly submissive — so if it costs you something, that is the verse describing you accurately, not you failing it. When something distressed the Prophet ﷺ, he prayed. The prayer came while the distress was still there, not after it lifted.",
+    angleSource: "Surah Al-Baqarah 2:45",
+    action: "Pray two rak’ahs now, before the thing you are dreading is resolved.",
+    practiceSteps: JSON.stringify([{"type":"physical","icon":"hands-prayer","title":"Pray before it resolves","instruction":"Stand for two rak’ahs now, while the thing is still unresolved.","source":"\"When anything distressed the Prophet (ﷺ), he prayed.\" [Abu Dawud 1319]","sourceType":"sunnah_action"},{"type":"verbal","icon":"chat","title":"Say plainly what it is","instruction":"Before you begin, tell Allah what the difficulty actually is. No formula — name it.","sourceType":"composed_dua"},{"type":"mindset","icon":"shield","title":"Let it be difficult","instruction":"The ayah says it is heavy. You are not doing it wrong because it costs you something.","source":"Surah Al-Baqarah 2:45 — Quran","sourceType":"quran_dua"}]),
+    reflection: "What are you waiting to feel before you pray?",
+  },
+  {
+    id: 'q_angle_25_47_calm',
+    contentId: 'quran_25_47',
+    mood: 'Calm',
+    angle: "You were built to stop. The ayah calls the night a covering and sleep a rest, and then calls the morning a resurrection — so the stopping is not lost time, it is what makes the rising possible. He made a body that runs out, on purpose. Going to bed is not the day defeating you.",
+    angleSource: "Surah Al-Furqan 25:47",
+    action: "Do wudu before bed tonight and lie down on your right side.",
+    practiceSteps: JSON.stringify([{"type":"physical","icon":"water-drop","title":"Wudu, then your right side","instruction":"Perform wudu as you would for prayer, then lie down on your right side.","source":"\"Whenever you go to bed perform ablution like that for the prayer, lie on your right side...\" [Bukhari 247]","sourceType":"sunnah_action","sourceGrading":"sahih"},{"type":"verbal","icon":"hands-prayer","title":"Hand the day over","instruction":"Say this as the last thing you speak tonight.","arabicText":"اللَّهُمَّ أَسْلَمْتُ وَجْهِي إِلَيْكَ، وَفَوَّضْتُ أَمْرِي إِلَيْكَ، وَأَلْجَأْتُ ظَهْرِي إِلَيْكَ، رَغْبَةً وَرَهْبَةً إِلَيْكَ، لاَ مَلْجَأَ وَلاَ مَنْجَا مِنْكَ إِلاَّ إِلَيْكَ، اللَّهُمَّ آمَنْتُ بِكِتَابِكَ الَّذِي أَنْزَلْتَ، وَبِنَبِيِّكَ الَّذِي أَرْسَلْتَ","transliteration":"Allahumma aslamtu wajhi ilayk, wa fawwadtu amri ilayk, wa alja’tu zahri ilayk, raghbatan wa rahbatan ilayk, la malja’a wa la manja minka illa ilayk, Allahumma amantu bikitabika-lladhi anzalt, wa binabiyyika-lladhi arsalt","translation":"O Allah, I surrender to You, and entrust all my affairs to You, and depend upon You for Your blessings both with hope and fear of You. There is no fleeing from You, and there is no place of protection and safety except with You. O Allah, I believe in Your Book which You have revealed and in Your Prophet whom You have sent.","source":"Sahih al-Bukhari 247","sourceType":"prophetic_dua","sourceGrading":"sahih"},{"type":"mindset","icon":"sunrise","title":"Count the morning as a return","instruction":"The same ayah calls waking a resurrection. Treat tomorrow morning as something given back, not merely continued.","source":"Surah Al-Furqan 25:47 — Quran","sourceType":"quran_dua"}]),
+    reflection: "What changes if you treat sleep as something He made for you, rather than time you lost?",
+  },
 ];
 
 export { quranContent, quranContentAnglesData as quranContentAngles };
