@@ -19,7 +19,19 @@
  */
 import fs from 'fs';
 
-const MIN_POOL = 10;
+// MIN_POOL is FATAL and stays at 10: it catches a regression that guts a pool.
+//
+// It is deliberately NOT the project target. Raising it to 40 while the pool
+// expansion is in flight would make this script exit 1 for every under-floor
+// mood from the first tick — and the tick contract reverts on a red gate, so
+// every tick would revert its own work and the project could never finish.
+// The gate meant to prove progress would be the thing preventing it.
+//
+// TARGET_POOL is the progress readout and is never fatal. The 40 floor becomes
+// fatal only as the end-of-project acceptance test, via the env override:
+//   MOOD_FLOOR=40 node scripts/verify-mood-pools.mjs
+const MIN_POOL = Number(process.env.MOOD_FLOOR ?? 10);
+const TARGET_POOL = 40;
 const MOODS = [
   'Overwhelmed', 'Sad', 'Angry', 'Tired', 'Lonely',
   'Grateful', 'Hopeful', 'Guilty', 'Calm',
@@ -180,7 +192,11 @@ console.log('Reachable mood-picker pool (angle.mood joined against verse.moods)\
 const width = Math.max(...MOODS.map((m) => m.length));
 for (const m of MOODS) {
   const n = pool[m];
-  const flag = n < MIN_POOL ? `  << below floor of ${MIN_POOL}` : '';
+  const flag = n < MIN_POOL
+    ? `  << below floor of ${MIN_POOL}`
+    : n < TARGET_POOL
+      ? `  (${TARGET_POOL - n} to target)`
+      : '';
   console.log(`  ${m.padEnd(width)}  ${String(n).padStart(3)}${flag}`);
   if (n < MIN_POOL) errors.push(`${m} pool is ${n}, below the floor of ${MIN_POOL}`);
 }
