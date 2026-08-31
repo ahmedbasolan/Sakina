@@ -53,6 +53,7 @@ interface ContentAngleRow {
   audioKey?: string;
   whyThis?: string;
   propheticPractice?: string;
+  story?: string;
   optionalAction?: string;
   optionalReflection?: string;
   actionArabicText?: string;
@@ -75,6 +76,7 @@ interface ContentRow {
   audioKey?: string;
   whyThis?: string;
   propheticPractice?: string;
+  story?: string;
   optionalAction?: string;
   optionalReflection?: string;
 }
@@ -125,6 +127,15 @@ function mapCloudRow(row: any): ContentAngle {
                 } catch { return undefined; }
               })()
             : undefined,
+          story: row.content.story
+            ? (() => {
+                try {
+                  return typeof row.content.story === 'string'
+                    ? JSON.parse(row.content.story)
+                    : row.content.story;
+                } catch { return undefined; }
+              })()
+            : undefined,
           optionalAction: row.content.optional_action,
           optionalReflection: row.content.optional_reflection,
           audioKey: row.content.audio_key,
@@ -165,6 +176,7 @@ function mapLocalRow(row: ContentAngleRow): ContentAngle {
       whyThis: row.whyThis || '',
       prayerContext: (() => { try { return row.prayerContext ? JSON.parse(row.prayerContext) : []; } catch { return []; } })(),
       propheticPractice: (() => { try { return row.propheticPractice ? JSON.parse(row.propheticPractice) : undefined; } catch { return undefined; } })(),
+      story: (() => { try { return row.story ? JSON.parse(row.story) : undefined; } catch { return undefined; } })(),
       optionalAction: row.optionalAction,
       optionalReflection: row.optionalReflection,
       moods: [],
@@ -262,6 +274,7 @@ export class ContentRepository {
            c.audioKey        AS audioKey,
            c.whyThis         AS whyThis,
            c.propheticPractice  AS propheticPractice,
+           c.story           AS story,
            c.optionalAction  AS optionalAction,
            c.optionalReflection AS optionalReflection,
            c.prayerContext   AS prayerContext,
