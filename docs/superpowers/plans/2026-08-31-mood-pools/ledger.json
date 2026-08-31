@@ -469,64 +469,80 @@
       "contentId": "quran_17_70",
       "mood": "Lonely",
       "tier": "T1",
-      "status": "pending",
-      "citations": []
+      "status": "committed",
+      "citations": [
+        "Quran 17:70"
+      ]
     },
     {
-      "angleId": null,
-      "contentId": null,
+      "angleId": "q_angle_27_62_lonely",
+      "contentId": "quran_27_62",
       "mood": "Lonely",
       "tier": "T2",
-      "status": "pending",
-      "citations": []
+      "status": "committed",
+      "citations": [
+        "Quran 27:62"
+      ]
     },
     {
-      "angleId": null,
-      "contentId": null,
+      "angleId": "q_angle_40_44_lonely",
+      "contentId": "quran_40_44",
       "mood": "Lonely",
       "tier": "T2",
-      "status": "pending",
-      "citations": []
+      "status": "committed",
+      "citations": [
+        "Quran 40:44"
+      ]
     },
     {
-      "angleId": null,
-      "contentId": null,
+      "angleId": "q_angle_6_13_lonely",
+      "contentId": "quran_6_13",
       "mood": "Lonely",
       "tier": "T2",
-      "status": "pending",
-      "citations": []
+      "status": "committed",
+      "citations": [
+        "Quran 6:13"
+      ]
     },
     {
-      "angleId": null,
-      "contentId": null,
+      "angleId": "q_angle_112_1_4_lonely",
+      "contentId": "quran_112_1_4",
       "mood": "Lonely",
       "tier": "T2",
-      "status": "pending",
-      "citations": []
+      "status": "committed",
+      "citations": [
+        "Quran 112:1-4"
+      ]
     },
     {
-      "angleId": null,
-      "contentId": null,
+      "angleId": "q_angle_33_41_lonely",
+      "contentId": "quran_33_41",
       "mood": "Lonely",
       "tier": "T2",
-      "status": "pending",
-      "citations": []
+      "status": "committed",
+      "citations": [
+        "Quran 33:41"
+      ]
     },
     {
-      "angleId": null,
-      "contentId": null,
+      "angleId": "q_angle_54_17_lonely",
+      "contentId": "quran_54_17",
       "mood": "Lonely",
       "tier": "T2",
-      "status": "pending",
-      "citations": []
+      "status": "committed",
+      "citations": [
+        "Quran 54:17"
+      ]
     },
     {
-      "angleId": null,
-      "contentId": null,
+      "angleId": "q_angle_32_16_lonely",
+      "contentId": "quran_32_16",
       "mood": "Lonely",
       "tier": "T2",
-      "status": "pending",
-      "citations": []
+      "status": "committed",
+      "citations": [
+        "Quran 32:16"
+      ]
     },
     {
       "angleId": null,
