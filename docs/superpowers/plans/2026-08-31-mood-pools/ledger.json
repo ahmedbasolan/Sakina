@@ -1,0 +1,1000 @@
+{
+  "generatedAt": "2026-08-31",
+  "target": 40,
+  "totalUnits": 124,
+  "note": "T2 and T3 rows are intentionally unassigned — which verse fills them is a mood-fit judgement and a citation fetch, not arithmetic. A tick assigns contentId and angleId when it picks one up.",
+  "units": [
+    {
+      "angleId": "q_angle_2_255_calm",
+      "contentId": "quran_2_255",
+      "mood": "Calm",
+      "tier": "T1",
+      "status": "pending",
+      "citations": []
+    },
+    {
+      "angleId": "q_angle_22_77_calm",
+      "contentId": "quran_22_77",
+      "mood": "Calm",
+      "tier": "T1",
+      "status": "pending",
+      "citations": []
+    },
+    {
+      "angleId": "q_angle_2_45_calm",
+      "contentId": "quran_2_45",
+      "mood": "Calm",
+      "tier": "T1",
+      "status": "pending",
+      "citations": []
+    },
+    {
+      "angleId": "q_angle_25_47_calm",
+      "contentId": "quran_25_47",
+      "mood": "Calm",
+      "tier": "T1",
+      "status": "pending",
+      "citations": []
+    },
+    {
+      "angleId": "q_angle_78_9_calm",
+      "contentId": "quran_78_9",
+      "mood": "Calm",
+      "tier": "T1",
+      "status": "pending",
+      "citations": []
+    },
+    {
+      "angleId": "q_angle_30_23_calm",
+      "contentId": "quran_30_23",
+      "mood": "Calm",
+      "tier": "T1",
+      "status": "pending",
+      "citations": []
+    },
+    {
+      "angleId": "q_angle_6_13_calm",
+      "contentId": "quran_6_13",
+      "mood": "Calm",
+      "tier": "T1",
+      "status": "pending",
+      "citations": []
+    },
+    {
+      "angleId": "q_angle_20_130_calm",
+      "contentId": "quran_20_130",
+      "mood": "Calm",
+      "tier": "T1",
+      "status": "pending",
+      "citations": []
+    },
+    {
+      "angleId": "q_angle_23_1_calm",
+      "contentId": "quran_23_1",
+      "mood": "Calm",
+      "tier": "T1",
+      "status": "pending",
+      "citations": []
+    },
+    {
+      "angleId": "q_angle_7_31_calm",
+      "contentId": "quran_7_31",
+      "mood": "Calm",
+      "tier": "T1",
+      "status": "pending",
+      "citations": []
+    },
+    {
+      "angleId": "q_angle_29_45_calm",
+      "contentId": "quran_29_45",
+      "mood": "Calm",
+      "tier": "T1",
+      "status": "pending",
+      "citations": []
+    },
+    {
+      "angleId": "q_angle_4_103_calm",
+      "contentId": "quran_4_103",
+      "mood": "Calm",
+      "tier": "T1",
+      "status": "pending",
+      "citations": []
+    },
+    {
+      "angleId": "q_angle_14_40_calm",
+      "contentId": "quran_14_40",
+      "mood": "Calm",
+      "tier": "T1",
+      "status": "pending",
+      "citations": []
+    },
+    {
+      "angleId": null,
+      "contentId": null,
+      "mood": "Calm",
+      "tier": "T2",
+      "status": "pending",
+      "citations": []
+    },
+    {
+      "angleId": null,
+      "contentId": null,
+      "mood": "Calm",
+      "tier": "T2",
+      "status": "pending",
+      "citations": []
+    },
+    {
+      "angleId": null,
+      "contentId": null,
+      "mood": "Calm",
+      "tier": "T2",
+      "status": "pending",
+      "citations": []
+    },
+    {
+      "angleId": null,
+      "contentId": null,
+      "mood": "Calm",
+      "tier": "T2",
+      "status": "pending",
+      "citations": []
+    },
+    {
+      "angleId": null,
+      "contentId": null,
+      "mood": "Calm",
+      "tier": "T3",
+      "status": "pending",
+      "citations": []
+    },
+    {
+      "angleId": null,
+      "contentId": null,
+      "mood": "Calm",
+      "tier": "T3",
+      "status": "pending",
+      "citations": []
+    },
+    {
+      "angleId": null,
+      "contentId": null,
+      "mood": "Calm",
+      "tier": "T3",
+      "status": "pending",
+      "citations": []
+    },
+    {
+      "angleId": null,
+      "contentId": null,
+      "mood": "Calm",
+      "tier": "T3",
+      "status": "pending",
+      "citations": []
+    },
+    {
+      "angleId": null,
+      "contentId": null,
+      "mood": "Calm",
+      "tier": "T3",
+      "status": "pending",
+      "citations": []
+    },
+    {
+      "angleId": null,
+      "contentId": null,
+      "mood": "Calm",
+      "tier": "T3",
+      "status": "pending",
+      "citations": []
+    },
+    {
+      "angleId": null,
+      "contentId": null,
+      "mood": "Calm",
+      "tier": "T3",
+      "status": "pending",
+      "citations": []
+    },
+    {
+      "angleId": "q_angle_94_5_sad_sad",
+      "contentId": "quran_94_5_sad",
+      "mood": "Sad",
+      "tier": "T1",
+      "status": "pending",
+      "citations": []
+    },
+    {
+      "angleId": "q_angle_2_177_sad",
+      "contentId": "quran_2_177",
+      "mood": "Sad",
+      "tier": "T1",
+      "status": "pending",
+      "citations": []
+    },
+    {
+      "angleId": "q_angle_17_70_sad",
+      "contentId": "quran_17_70",
+      "mood": "Sad",
+      "tier": "T1",
+      "status": "pending",
+      "citations": []
+    },
+    {
+      "angleId": null,
+      "contentId": null,
+      "mood": "Sad",
+      "tier": "T2",
+      "status": "pending",
+      "citations": []
+    },
+    {
+      "angleId": null,
+      "contentId": null,
+      "mood": "Sad",
+      "tier": "T2",
+      "status": "pending",
+      "citations": []
+    },
+    {
+      "angleId": null,
+      "contentId": null,
+      "mood": "Sad",
+      "tier": "T2",
+      "status": "pending",
+      "citations": []
+    },
+    {
+      "angleId": null,
+      "contentId": null,
+      "mood": "Sad",
+      "tier": "T2",
+      "status": "pending",
+      "citations": []
+    },
+    {
+      "angleId": null,
+      "contentId": null,
+      "mood": "Sad",
+      "tier": "T2",
+      "status": "pending",
+      "citations": []
+    },
+    {
+      "angleId": null,
+      "contentId": null,
+      "mood": "Sad",
+      "tier": "T2",
+      "status": "pending",
+      "citations": []
+    },
+    {
+      "angleId": null,
+      "contentId": null,
+      "mood": "Sad",
+      "tier": "T2",
+      "status": "pending",
+      "citations": []
+    },
+    {
+      "angleId": null,
+      "contentId": null,
+      "mood": "Sad",
+      "tier": "T3",
+      "status": "pending",
+      "citations": []
+    },
+    {
+      "angleId": null,
+      "contentId": null,
+      "mood": "Sad",
+      "tier": "T3",
+      "status": "pending",
+      "citations": []
+    },
+    {
+      "angleId": null,
+      "contentId": null,
+      "mood": "Sad",
+      "tier": "T3",
+      "status": "pending",
+      "citations": []
+    },
+    {
+      "angleId": null,
+      "contentId": null,
+      "mood": "Sad",
+      "tier": "T3",
+      "status": "pending",
+      "citations": []
+    },
+    {
+      "angleId": null,
+      "contentId": null,
+      "mood": "Sad",
+      "tier": "T3",
+      "status": "pending",
+      "citations": []
+    },
+    {
+      "angleId": null,
+      "contentId": null,
+      "mood": "Sad",
+      "tier": "T3",
+      "status": "pending",
+      "citations": []
+    },
+    {
+      "angleId": null,
+      "contentId": null,
+      "mood": "Sad",
+      "tier": "T3",
+      "status": "pending",
+      "citations": []
+    },
+    {
+      "angleId": null,
+      "contentId": null,
+      "mood": "Sad",
+      "tier": "T3",
+      "status": "pending",
+      "citations": []
+    },
+    {
+      "angleId": null,
+      "contentId": null,
+      "mood": "Sad",
+      "tier": "T3",
+      "status": "pending",
+      "citations": []
+    },
+    {
+      "angleId": null,
+      "contentId": null,
+      "mood": "Sad",
+      "tier": "T3",
+      "status": "pending",
+      "citations": []
+    },
+    {
+      "angleId": "q_angle_17_70_lonely",
+      "contentId": "quran_17_70",
+      "mood": "Lonely",
+      "tier": "T1",
+      "status": "pending",
+      "citations": []
+    },
+    {
+      "angleId": null,
+      "contentId": null,
+      "mood": "Lonely",
+      "tier": "T2",
+      "status": "pending",
+      "citations": []
+    },
+    {
+      "angleId": null,
+      "contentId": null,
+      "mood": "Lonely",
+      "tier": "T2",
+      "status": "pending",
+      "citations": []
+    },
+    {
+      "angleId": null,
+      "contentId": null,
+      "mood": "Lonely",
+      "tier": "T2",
+      "status": "pending",
+      "citations": []
+    },
+    {
+      "angleId": null,
+      "contentId": null,
+      "mood": "Lonely",
+      "tier": "T2",
+      "status": "pending",
+      "citations": []
+    },
+    {
+      "angleId": null,
+      "contentId": null,
+      "mood": "Lonely",
+      "tier": "T2",
+      "status": "pending",
+      "citations": []
+    },
+    {
+      "angleId": null,
+      "contentId": null,
+      "mood": "Lonely",
+      "tier": "T2",
+      "status": "pending",
+      "citations": []
+    },
+    {
+      "angleId": null,
+      "contentId": null,
+      "mood": "Lonely",
+      "tier": "T2",
+      "status": "pending",
+      "citations": []
+    },
+    {
+      "angleId": null,
+      "contentId": null,
+      "mood": "Lonely",
+      "tier": "T3",
+      "status": "pending",
+      "citations": []
+    },
+    {
+      "angleId": null,
+      "contentId": null,
+      "mood": "Lonely",
+      "tier": "T3",
+      "status": "pending",
+      "citations": []
+    },
+    {
+      "angleId": null,
+      "contentId": null,
+      "mood": "Lonely",
+      "tier": "T3",
+      "status": "pending",
+      "citations": []
+    },
+    {
+      "angleId": null,
+      "contentId": null,
+      "mood": "Lonely",
+      "tier": "T3",
+      "status": "pending",
+      "citations": []
+    },
+    {
+      "angleId": null,
+      "contentId": null,
+      "mood": "Lonely",
+      "tier": "T3",
+      "status": "pending",
+      "citations": []
+    },
+    {
+      "angleId": null,
+      "contentId": null,
+      "mood": "Lonely",
+      "tier": "T3",
+      "status": "pending",
+      "citations": []
+    },
+    {
+      "angleId": null,
+      "contentId": null,
+      "mood": "Lonely",
+      "tier": "T3",
+      "status": "pending",
+      "citations": []
+    },
+    {
+      "angleId": null,
+      "contentId": null,
+      "mood": "Lonely",
+      "tier": "T3",
+      "status": "pending",
+      "citations": []
+    },
+    {
+      "angleId": null,
+      "contentId": null,
+      "mood": "Lonely",
+      "tier": "T3",
+      "status": "pending",
+      "citations": []
+    },
+    {
+      "angleId": null,
+      "contentId": null,
+      "mood": "Lonely",
+      "tier": "T3",
+      "status": "pending",
+      "citations": []
+    },
+    {
+      "angleId": "q_angle_12_87_hopeful",
+      "contentId": "quran_12_87",
+      "mood": "Hopeful",
+      "tier": "T1",
+      "status": "pending",
+      "citations": []
+    },
+    {
+      "angleId": "q_angle_65_7_hopeful",
+      "contentId": "quran_65_7",
+      "mood": "Hopeful",
+      "tier": "T1",
+      "status": "pending",
+      "citations": []
+    },
+    {
+      "angleId": "q_angle_14_7_hopeful",
+      "contentId": "quran_14_7",
+      "mood": "Hopeful",
+      "tier": "T1",
+      "status": "pending",
+      "citations": []
+    },
+    {
+      "angleId": "q_angle_73_1_4_hopeful",
+      "contentId": "quran_73_1_4",
+      "mood": "Hopeful",
+      "tier": "T1",
+      "status": "pending",
+      "citations": []
+    },
+    {
+      "angleId": "q_angle_17_79_hopeful",
+      "contentId": "quran_17_79",
+      "mood": "Hopeful",
+      "tier": "T1",
+      "status": "pending",
+      "citations": []
+    },
+    {
+      "angleId": "q_angle_23_1_hopeful",
+      "contentId": "quran_23_1",
+      "mood": "Hopeful",
+      "tier": "T1",
+      "status": "pending",
+      "citations": []
+    },
+    {
+      "angleId": "q_angle_29_45_hopeful",
+      "contentId": "quran_29_45",
+      "mood": "Hopeful",
+      "tier": "T1",
+      "status": "pending",
+      "citations": []
+    },
+    {
+      "angleId": "q_angle_14_40_hopeful",
+      "contentId": "quran_14_40",
+      "mood": "Hopeful",
+      "tier": "T1",
+      "status": "pending",
+      "citations": []
+    },
+    {
+      "angleId": "q_angle_2_168_hopeful",
+      "contentId": "quran_2_168",
+      "mood": "Hopeful",
+      "tier": "T1",
+      "status": "pending",
+      "citations": []
+    },
+    {
+      "angleId": "q_angle_7_96_hopeful",
+      "contentId": "quran_7_96",
+      "mood": "Hopeful",
+      "tier": "T1",
+      "status": "pending",
+      "citations": []
+    },
+    {
+      "angleId": "q_angle_2_261_hopeful",
+      "contentId": "quran_2_261",
+      "mood": "Hopeful",
+      "tier": "T1",
+      "status": "pending",
+      "citations": []
+    },
+    {
+      "angleId": "q_angle_67_15_hopeful",
+      "contentId": "quran_67_15",
+      "mood": "Hopeful",
+      "tier": "T1",
+      "status": "pending",
+      "citations": []
+    },
+    {
+      "angleId": "q_angle_14_37_hopeful",
+      "contentId": "quran_14_37",
+      "mood": "Hopeful",
+      "tier": "T1",
+      "status": "pending",
+      "citations": []
+    },
+    {
+      "angleId": "q_angle_49_13_hopeful",
+      "contentId": "quran_49_13",
+      "mood": "Hopeful",
+      "tier": "T1",
+      "status": "pending",
+      "citations": []
+    },
+    {
+      "angleId": "q_angle_17_32_hopeful",
+      "contentId": "quran_17_32",
+      "mood": "Hopeful",
+      "tier": "T1",
+      "status": "pending",
+      "citations": []
+    },
+    {
+      "angleId": "q_angle_24_32_hopeful",
+      "contentId": "quran_24_32",
+      "mood": "Hopeful",
+      "tier": "T1",
+      "status": "pending",
+      "citations": []
+    },
+    {
+      "angleId": "q_angle_2_261_tired",
+      "contentId": "quran_2_261",
+      "mood": "Tired",
+      "tier": "T1",
+      "status": "pending",
+      "citations": []
+    },
+    {
+      "angleId": "q_angle_67_15_tired",
+      "contentId": "quran_67_15",
+      "mood": "Tired",
+      "tier": "T1",
+      "status": "pending",
+      "citations": []
+    },
+    {
+      "angleId": null,
+      "contentId": null,
+      "mood": "Tired",
+      "tier": "T2",
+      "status": "pending",
+      "citations": []
+    },
+    {
+      "angleId": null,
+      "contentId": null,
+      "mood": "Tired",
+      "tier": "T2",
+      "status": "pending",
+      "citations": []
+    },
+    {
+      "angleId": null,
+      "contentId": null,
+      "mood": "Tired",
+      "tier": "T2",
+      "status": "pending",
+      "citations": []
+    },
+    {
+      "angleId": null,
+      "contentId": null,
+      "mood": "Tired",
+      "tier": "T2",
+      "status": "pending",
+      "citations": []
+    },
+    {
+      "angleId": null,
+      "contentId": null,
+      "mood": "Tired",
+      "tier": "T2",
+      "status": "pending",
+      "citations": []
+    },
+    {
+      "angleId": null,
+      "contentId": null,
+      "mood": "Tired",
+      "tier": "T2",
+      "status": "pending",
+      "citations": []
+    },
+    {
+      "angleId": null,
+      "contentId": null,
+      "mood": "Tired",
+      "tier": "T3",
+      "status": "pending",
+      "citations": []
+    },
+    {
+      "angleId": null,
+      "contentId": null,
+      "mood": "Tired",
+      "tier": "T3",
+      "status": "pending",
+      "citations": []
+    },
+    {
+      "angleId": null,
+      "contentId": null,
+      "mood": "Tired",
+      "tier": "T3",
+      "status": "pending",
+      "citations": []
+    },
+    {
+      "angleId": null,
+      "contentId": null,
+      "mood": "Tired",
+      "tier": "T3",
+      "status": "pending",
+      "citations": []
+    },
+    {
+      "angleId": null,
+      "contentId": null,
+      "mood": "Tired",
+      "tier": "T3",
+      "status": "pending",
+      "citations": []
+    },
+    {
+      "angleId": null,
+      "contentId": null,
+      "mood": "Tired",
+      "tier": "T3",
+      "status": "pending",
+      "citations": []
+    },
+    {
+      "angleId": null,
+      "contentId": null,
+      "mood": "Tired",
+      "tier": "T3",
+      "status": "pending",
+      "citations": []
+    },
+    {
+      "angleId": null,
+      "contentId": null,
+      "mood": "Tired",
+      "tier": "T3",
+      "status": "pending",
+      "citations": []
+    },
+    {
+      "angleId": null,
+      "contentId": null,
+      "mood": "Angry",
+      "tier": "T2",
+      "status": "pending",
+      "citations": []
+    },
+    {
+      "angleId": null,
+      "contentId": null,
+      "mood": "Angry",
+      "tier": "T2",
+      "status": "pending",
+      "citations": []
+    },
+    {
+      "angleId": null,
+      "contentId": null,
+      "mood": "Angry",
+      "tier": "T2",
+      "status": "pending",
+      "citations": []
+    },
+    {
+      "angleId": null,
+      "contentId": null,
+      "mood": "Angry",
+      "tier": "T2",
+      "status": "pending",
+      "citations": []
+    },
+    {
+      "angleId": null,
+      "contentId": null,
+      "mood": "Angry",
+      "tier": "T2",
+      "status": "pending",
+      "citations": []
+    },
+    {
+      "angleId": null,
+      "contentId": null,
+      "mood": "Angry",
+      "tier": "T2",
+      "status": "pending",
+      "citations": []
+    },
+    {
+      "angleId": null,
+      "contentId": null,
+      "mood": "Angry",
+      "tier": "T3",
+      "status": "pending",
+      "citations": []
+    },
+    {
+      "angleId": null,
+      "contentId": null,
+      "mood": "Angry",
+      "tier": "T3",
+      "status": "pending",
+      "citations": []
+    },
+    {
+      "angleId": null,
+      "contentId": null,
+      "mood": "Angry",
+      "tier": "T3",
+      "status": "pending",
+      "citations": []
+    },
+    {
+      "angleId": null,
+      "contentId": null,
+      "mood": "Angry",
+      "tier": "T3",
+      "status": "pending",
+      "citations": []
+    },
+    {
+      "angleId": null,
+      "contentId": null,
+      "mood": "Angry",
+      "tier": "T3",
+      "status": "pending",
+      "citations": []
+    },
+    {
+      "angleId": null,
+      "contentId": null,
+      "mood": "Angry",
+      "tier": "T3",
+      "status": "pending",
+      "citations": []
+    },
+    {
+      "angleId": null,
+      "contentId": null,
+      "mood": "Angry",
+      "tier": "T3",
+      "status": "pending",
+      "citations": []
+    },
+    {
+      "angleId": null,
+      "contentId": null,
+      "mood": "Angry",
+      "tier": "T3",
+      "status": "pending",
+      "citations": []
+    },
+    {
+      "angleId": null,
+      "contentId": null,
+      "mood": "Angry",
+      "tier": "T3",
+      "status": "pending",
+      "citations": []
+    },
+    {
+      "angleId": null,
+      "contentId": null,
+      "mood": "Guilty",
+      "tier": "T2",
+      "status": "pending",
+      "citations": []
+    },
+    {
+      "angleId": null,
+      "contentId": null,
+      "mood": "Guilty",
+      "tier": "T2",
+      "status": "pending",
+      "citations": []
+    },
+    {
+      "angleId": null,
+      "contentId": null,
+      "mood": "Guilty",
+      "tier": "T2",
+      "status": "pending",
+      "citations": []
+    },
+    {
+      "angleId": null,
+      "contentId": null,
+      "mood": "Guilty",
+      "tier": "T2",
+      "status": "pending",
+      "citations": []
+    },
+    {
+      "angleId": null,
+      "contentId": null,
+      "mood": "Guilty",
+      "tier": "T3",
+      "status": "pending",
+      "citations": []
+    },
+    {
+      "angleId": null,
+      "contentId": null,
+      "mood": "Guilty",
+      "tier": "T3",
+      "status": "pending",
+      "citations": []
+    },
+    {
+      "angleId": null,
+      "contentId": null,
+      "mood": "Guilty",
+      "tier": "T3",
+      "status": "pending",
+      "citations": []
+    },
+    {
+      "angleId": null,
+      "contentId": null,
+      "mood": "Guilty",
+      "tier": "T3",
+      "status": "pending",
+      "citations": []
+    },
+    {
+      "angleId": null,
+      "contentId": null,
+      "mood": "Guilty",
+      "tier": "T3",
+      "status": "pending",
+      "citations": []
+    },
+    {
+      "angleId": null,
+      "contentId": null,
+      "mood": "Guilty",
+      "tier": "T3",
+      "status": "pending",
+      "citations": []
+    },
+    {
+      "angleId": "q_angle_22_77_grateful",
+      "contentId": "quran_22_77",
+      "mood": "Grateful",
+      "tier": "T1",
+      "status": "pending",
+      "citations": []
+    },
+    {
+      "angleId": "q_angle_20_130_grateful",
+      "contentId": "quran_20_130",
+      "mood": "Grateful",
+      "tier": "T1",
+      "status": "pending",
+      "citations": []
+    },
+    {
+      "angleId": "q_angle_11_6_grateful",
+      "contentId": "quran_11_6",
+      "mood": "Grateful",
+      "tier": "T1",
+      "status": "pending",
+      "citations": []
+    },
+    {
+      "angleId": "q_angle_7_96_grateful",
+      "contentId": "quran_7_96",
+      "mood": "Grateful",
+      "tier": "T1",
+      "status": "pending",
+      "citations": []
+    },
+    {
+      "angleId": "q_angle_24_38_grateful",
+      "contentId": "quran_24_38",
+      "mood": "Grateful",
+      "tier": "T1",
+      "status": "pending",
+      "citations": []
+    }
+  ]
+}
