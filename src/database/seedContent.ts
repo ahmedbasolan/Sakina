@@ -287,7 +287,11 @@ import type { Content, ContentAngle } from '../types';
 //      quran.com. Regenerate the snapshot with
 //      `node scripts/refresh-quran-canonical.mjs` after ANY verse edit, or
 //      the LOCK check will fail on your own change.
-const SEED_VERSION = 38;
+// v39: schema — Content.story added (see the 2026-08-31 stories spec), plus
+//      the first story, on quran_12_87. Existing installs re-seed;
+//      CURRENT_DB_VERSION 12 recreates the content tables so the new column
+//      exists to seed into.
+const SEED_VERSION = 39;
 // Separate keys per content type — Quran and Hadith data change independently,
 // and each seeder used to write the SAME key at the end of its run. Since
 // initializeDatabase() awaits seedQuranContent() before seedHadithContent(),
