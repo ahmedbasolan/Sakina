@@ -233,7 +233,13 @@ pattern. Every site it touches, `story` must touch:
 | `src/services/contentRepository.ts` `mapCloudRow` | `row.content.story` |
 | `src/services/supabaseDataService.ts:961` | serialise on upload |
 | `supabase/migrations/006_content_story.sql` | `ALTER TABLE public.content ADD COLUMN IF NOT EXISTS story JSONB;` |
-| `scripts/verify-journey-roundtrip.mjs` | replays the DDL and seeder column list |
+| `scripts/verify-stories.mjs` | new — owns the story seed/read roundtrip |
+
+`scripts/verify-journey-roundtrip.mjs` is **not** on that list, contrary to an
+earlier draft of this spec: it builds only a `content_angles` table
+(`verify-journey-roundtrip.mjs:47`) and never touches `content`, so a column
+added to `content` cannot affect it. The story seed-and-read roundtrip is
+`verify-stories.mjs`'s job instead.
 
 **Two hazards, both load-bearing.**
 
