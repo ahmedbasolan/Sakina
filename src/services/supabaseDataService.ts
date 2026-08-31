@@ -959,6 +959,7 @@ export class SupabaseDataService {
             audio_key: c.audioKey,
             why_this: c.whyThis,
             prophetic_practice: c.propheticPractice ? JSON.stringify(c.propheticPractice) : null,
+            story: c.story ? JSON.stringify(c.story) : null,
             optional_action: c.optionalAction,
             optional_reflection: c.optionalReflection,
             prayer_context: c.prayerContext || []
