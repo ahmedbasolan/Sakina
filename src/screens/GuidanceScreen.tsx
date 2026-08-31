@@ -15,6 +15,7 @@ import { GoldenMotes } from '../components/GoldenMotes';
 import GuidanceHeader from '../components/GuidanceHeader';
 import VerseLayer from '../components/VerseLayer';
 import ContextLayer from '../components/ContextLayer';
+import StoryLayer from '../components/StoryLayer';
 import ShareSheet from '../components/ShareSheet';
 import DisplayPreferencesModal from '../components/DisplayPreferencesModal';
 import BackgroundThemePicker from '../components/BackgroundThemePicker';
@@ -190,6 +191,29 @@ const GuidanceScreen: React.FC = () => {
     scrollY.setValue(0);
   }, [experience?.content?.id]);
 
+  const hasContext = !!(experience?.content?.whyThis || experience?.angle?.angle);
+  const hasStory = !!experience?.content?.story;
+  const LAYER_TYPES: Array<'verse' | 'context' | 'story'> = [
+    'verse',
+    ...(hasContext ? (['context'] as const) : []),
+    ...(hasStory ? (['story'] as const) : []),
+  ];
+
+  // Layers are addressed by computed index, never a literal. Story is appended
+  // rather than inserted so an absent context cannot shift it, and so adding a
+  // fourth layer later cannot silently retarget the reflection-focus guard
+  // below — whose failure mode, per its own comment, is swipe-to-next-verse
+  // dying with no visible cause.
+  //
+  // This block sits ABOVE that effect deliberately: contextIndex appears in
+  // its dependency array, which is evaluated during render, so declaring it
+  // afterwards would be a temporal-dead-zone ReferenceError rather than a
+  // stale-closure bug.
+  const contextIndex = LAYER_TYPES.indexOf('context');
+  const storyIndex = LAYER_TYPES.indexOf('story');
+
+  const totalLayers = LAYER_TYPES.length;
+
   // Belt-and-suspenders reset: React Native doesn't reliably fire a focused
   // TextInput's onBlur when it unmounts (e.g. advancing past the Context
   // layer while the reflection input is still focused), so relying on
@@ -197,13 +221,8 @@ const GuidanceScreen: React.FC = () => {
   // silently kill swipe-to-next-verse. Clearing it whenever the context
   // layer isn't active covers every exit path, not just a clean blur.
   useEffect(() => {
-    if (currentLayer !== 1) isReflectionInputFocusedRef.current = false;
-  }, [currentLayer]);
-
-  const hasContext = !!(experience?.content?.whyThis || experience?.angle?.angle);
-  const LAYER_TYPES: Array<'verse' | 'context'> = hasContext ? ['verse', 'context'] : ['verse'];
-
-  const totalLayers = LAYER_TYPES.length;
+    if (currentLayer !== contextIndex) isReflectionInputFocusedRef.current = false;
+  }, [currentLayer, contextIndex]);
 
   const {
     savedStates,
@@ -395,7 +414,7 @@ const GuidanceScreen: React.FC = () => {
               />
             )}
 
-            {currentLayer === 1 && hasContext && (
+            {currentLayer === contextIndex && hasContext && (
               <ContextLayer
                 attribution={experience.angle?.angleSource || 'Scholarly Context'}
                 text={experience.content.whyThis || ''}
@@ -413,6 +432,14 @@ const GuidanceScreen: React.FC = () => {
                 onReflectionFocusChange={(focused) => {
                   isReflectionInputFocusedRef.current = focused;
                 }}
+              />
+            )}
+
+            {currentLayer === storyIndex && experience?.content?.story && (
+              <StoryLayer
+                story={experience.content.story}
+                accentColor={(MoodColors[mood] || MoodColors.Calm).accent}
+                topInset={Spacing.lg}
               />
             )}
           </LayerContainer>
@@ -451,7 +478,9 @@ const GuidanceScreen: React.FC = () => {
       <LayerPager
         total={totalLayers}
         current={currentLayer}
-        labels={LAYER_TYPES.map((t) => (t === 'verse' ? 'Verse' : t === 'context' ? 'Context' : t))}
+        labels={LAYER_TYPES.map((t) =>
+          t === 'verse' ? 'Verse' : t === 'context' ? 'Context' : t === 'story' ? 'Story' : t,
+        )}
         accentColor={(MoodColors[mood] || MoodColors.Calm).accent}
         onLayerChange={(idx) => {
           scrollY.setValue(0);
