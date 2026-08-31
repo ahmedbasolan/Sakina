@@ -10,6 +10,21 @@
 # fonts are resolved from app.json at build time), src/, app.json,
 # package.json, package-lock.json, eas.json, babel.config.js, tsconfig.json.
 
+# .git MUST be listed here, and it is the single biggest win in this file.
+# eas-cli does not build the archive from the working tree alone: it first runs
+# `git clone --no-checkout --depth 1` into the upload directory, then copies the
+# working tree over it (vcs/clients/git.ts -> makeShallowCopyAsync). The clone's
+# .git is left in place UNLESS .easignore explicitly ignores `.git` — eas-cli
+# special-cases it precisely because `git ls-files` never reports .git as
+# ignored, and its comment is "we don't want to ignore anything by default".
+#
+# So every entry below only shrinks the working-tree half. The clone carries the
+# committed contents of HEAD regardless — including store-assets/, all 82.9 MB
+# of it across 78 tracked files. Measured 2026-08-31: working tree after these
+# rules 21.40 MB, shallow clone's .git 92 MB, actual upload 109 MB. Without this
+# line, excluding store-assets/ below buys nothing at all.
+.git
+
 # ─── everything .gitignore excludes ───────────────────────────────
 
 # dependencies
