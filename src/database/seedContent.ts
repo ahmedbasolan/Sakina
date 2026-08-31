@@ -297,7 +297,11 @@ import type { Content, ContentAngle } from '../types';
 // v41: Sad pool 20 -> 40. 20 new mood angles — 3 on verses already tagged
 //      Sad, 7 re-tagging existing verses, and 10 on new Content entries
 //      (57:23, 93:5, 13:24, 12:64, 42:28, 28:13, 94:1, 29:2, 64:11, 10:57).
-const SEED_VERSION = 41;
+// v42: no new content — rendering fix. 23 markdown emphasis pairs removed
+//      from angle, reflection, whyThis and practiceStep instruction text
+//      across 19 fields. React Native Text has no markdown renderer, so
+//      "*with*" reached the user as literal asterisks. Words unchanged.
+const SEED_VERSION = 42;
 // Separate keys per content type — Quran and Hadith data change independently,
 // and each seeder used to write the SAME key at the end of its run. Since
 // initializeDatabase() awaits seedQuranContent() before seedHadithContent(),
