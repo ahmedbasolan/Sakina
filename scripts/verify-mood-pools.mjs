@@ -67,14 +67,36 @@ function objects(prefix) {
   return out;
 }
 
+// Quote-agnostic and concatenation-following. Both matter, and neither did
+// while this only read short values like `mood` and `contentId`:
+//
+//   - Values whose text contains an apostrophe are DOUBLE quoted
+//     (source: "Surah Al-A'raf 7:199"). A `name: '` matcher returns null for
+//     31 sources in this file, and null-compares-equal-to-null then reports
+//     them all as mutual duplicates.
+//   - Long prose is written as 'a' + 'b' + 'c'. A reader stopping at the
+//     first closing quote checks the opening clause and passes the rest,
+//     which reports green on text it never read.
 const field = (b, name) => {
-  const m = b.match(new RegExp(`\\b${name}:\\s*'`));
+  const m = b.match(new RegExp(`\\b${name}:\\s*`));
   if (!m) return null;
-  let i = m.index + m[0].length, s = '';
-  for (; i < b.length; i++) {
-    if (b[i] === '\\') { s += b[i + 1]; i++; continue; }
-    if (b[i] === "'") break;
-    s += b[i];
+  let i = m.index + m[0].length, s = '', first = true;
+  while (i < b.length) {
+    const q = b[i];
+    if (q !== "'" && q !== '"') { if (first) return null; break; }
+    first = false;
+    let k = i + 1;
+    for (; k < b.length; k++) {
+      if (b[k] === '\\') { s += b[k + 1]; k++; continue; }
+      if (b[k] === q) break;
+      s += b[k];
+    }
+    let j = k + 1;
+    while (j < b.length && /\s/.test(b[j])) j++;
+    if (b[j] !== '+') break;
+    j++;
+    while (j < b.length && /\s/.test(b[j])) j++;
+    i = j;
   }
   return s;
 };
@@ -200,6 +222,55 @@ for (const m of MOODS) {
   console.log(`  ${m.padEnd(width)}  ${String(n).padStart(3)}${flag}`);
   if (n < MIN_POOL) errors.push(`${m} pool is ${n}, below the floor of ${MIN_POOL}`);
 }
+// ── monotonicity ──────────────────────────────────────────────────────────
+// A tick may fail to ADD to a pool; it must never leave one smaller. This is
+// the check with teeth during the expansion, because MIN_POOL stays at 10 and
+// TARGET_POOL is only a readout — without this, a tick that deleted an angle
+// would be reported green.
+const BASELINE = 'docs/superpowers/plans/2026-08-31-mood-pools/baseline.json';
+if (fs.existsSync(BASELINE)) {
+  const base = JSON.parse(fs.readFileSync(BASELINE, 'utf8')).pools || {};
+  for (const m of MOODS) {
+    if (base[m] === undefined) continue;
+    if (pool[m] < base[m])
+      errors.push(`${m} pool fell to ${pool[m]}, below its recorded baseline of ${base[m]}`);
+  }
+} else {
+  console.log(`\n  ! no baseline at ${BASELINE} — monotonicity NOT checked`);
+}
+
+// ── voice (ledger-scoped) ─────────────────────────────────────────────────
+// New angles follow the For Your Heart rule: direct address, no [Tafsir ...]
+// tag. Applied ONLY to ids this project created — the 161 legacy tafsir-voice
+// angles are exempt per CLAUDE.md, and failing them would make the gate
+// permanently red and therefore useless.
+//
+// WHAT THIS DOES NOT CATCH: copy that is second-person and tag-free but still
+// narrates the reader's day back to them ("you walked past two of these
+// today"). That is the failure that required a same-day correction to four of
+// the 31 rewritten angles, and it is a human read.
+const LEDGER =
+  process.env.MOOD_LEDGER || 'docs/superpowers/plans/2026-08-31-mood-pools/ledger.json';
+if (fs.existsSync(LEDGER)) {
+  const rows = JSON.parse(fs.readFileSync(LEDGER, 'utf8')).units || [];
+  const owned = new Set(rows.map((r) => r.angleId));
+  const OPENERS =
+    /^(You|Your|When you|If you|Whatever you|Notice|Look|Read|Ask|Name|Pick|Take|Let|There|Nothing|No one)/;
+  // angleObjects, not `angles` — the latter is mapped to {id, contentId, mood}
+  // and no longer carries the source body this pass needs to read.
+  for (const a of angleObjects) {
+    if (!owned.has(a.id)) continue;
+    const text = (field(a.body, 'angle') || '').trim();
+    if (!text) continue;
+    if (/\[Tafsir /.test(text))
+      errors.push(`${a.id}: new angle carries a [Tafsir ...] tag — that is the journey convention`);
+    if (!OPENERS.test(text))
+      errors.push(
+        `${a.id}: new angle does not open in direct address — "${text.slice(0, 48)}..."`,
+      );
+  }
+}
+
 const counts = MOODS.map((m) => pool[m]);
 console.log(`\n  spread: ${Math.min(...counts)}–${Math.max(...counts)} ` +
   `(${(Math.max(...counts) / Math.max(1, Math.min(...counts))).toFixed(1)}x)`);
