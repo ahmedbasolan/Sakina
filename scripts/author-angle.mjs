@@ -1,8 +1,21 @@
 /**
  * Angle-authoring tick script — generalises scripts/add-pilot-story.mjs.
  *
- * Inserts ONE mood angle into quranContentAnglesData and advances its ledger
- * row to `drafted`. Reads a JSON payload from a file path.
+ * Handles all three tiers of the mood-pool expansion:
+ *
+ *   T1  the verse is already in quranData.ts AND already carries the mood.
+ *       Insert the angle only.
+ *   T2  the verse is present but NOT tagged for this mood. Insert the angle
+ *       AND add the mood to the verse's `moods` array — without that second
+ *       edit fetchForMoodLocal's double join (cm.mood AND ca.mood) leaves the
+ *       angle permanently unreachable. It reads fine, it seeds fine, and no
+ *       user can ever be served it.
+ *   T3  the verse does not exist. Create the Content entry, then the angle.
+ *
+ * The declared tier is CROSS-CHECKED against the file, because the tiers are
+ * distinguished by facts the script can read: a row labelled T1 whose verse
+ * lacks the mood is really a T2, and shipping it as T1 is exactly how a dead
+ * angle gets written.
  *
  * Everything below is a constraint from CLAUDE.md's "Editing quranData.ts by
  * script", each of which cost a broken build or a silent corruption once:
@@ -10,21 +23,29 @@
  *   - A file, never `node -e`. Shell quoting mangles Arabic character classes
  *     and \s+ silently.
  *   - Located structurally, never by matching a source string.
- *   - Exactly one match asserted per anchor; nothing written if any fails.
+ *   - Exactly one match asserted per anchor; NOTHING written if any assertion
+ *     fails. All edits are composed in memory and written in one pass, so a
+ *     T3 can never leave a verse behind without its angle.
  *   - CRLF preserved, checked before AND after.
  *   - `id` emitted with SINGLE quotes. verify-journey.mjs's objectAt finds
  *     objects with a literal indexOf("id: '" + id + "'"), so an id emitted
  *     through JSON.stringify as id: "..." is invisible to the verifier — which
- *     surfaces as 40 failures reporting the angles as missing, none of them
- *     naming the cause.
+ *     surfaces as dozens of failures reporting the angles as missing, none of
+ *     them naming the cause.
  *   - All PROSE emitted through JSON.stringify, which double-quotes and so is
  *     apostrophe-safe. Inserting an apostrophe into a single-quoted literal
  *     ('Jami' at-Tirmidhi') terminates the string and breaks the build.
  *
- * WHAT THIS DOES NOT DO: judge the content. It checks structure, uniqueness
- * and shape. Whether the verse fits the mood, whether the citation says what
- * the step claims, and whether the angle speaks to the reader rather than
- * about a scholar are all human reads, enforced downstream by
+ * AFTER A T3 you must run `node scripts/refresh-quran-canonical.mjs`, READ THE
+ * DIFF, then `npx jest quranArabicIntegrity`. The lock fails on your own new
+ * verse otherwise — and regenerating the baseline without reading the diff is
+ * how a corruption gets laundered into it. This script prints the reminder but
+ * cannot enforce it.
+ *
+ * WHAT THIS DOES NOT DO: judge the content. It checks structure, uniqueness,
+ * tier consistency and shape. Whether the verse fits the mood, whether the
+ * citation says what the step claims, and whether the angle speaks to the
+ * reader rather than about a scholar are human reads, enforced downstream by
  * verify-mood-pools' voice pass, verify-citations, and review-mood-fit.
  *
  * Usage: node scripts/author-angle.mjs <payload.json>
@@ -34,23 +55,27 @@ import fs from 'fs';
 const FILE = 'src/data/quranData.ts';
 const LEDGER = process.env.MOOD_LEDGER
   || 'docs/superpowers/plans/2026-08-31-mood-pools/ledger.json';
-const ANCHOR = 'const quranContentAnglesData: ContentAngle[] = [';
+const ANGLES_ANCHOR = 'const quranContentAnglesData: ContentAngle[] = [';
+const VERSES_ANCHOR = 'const quranContentData: Content[] = [';
 
 const STEP_TYPES = ['physical', 'verbal', 'mindset'];
 const SOURCE_TYPES = [
   'sunnah_action', 'prophetic_dua', 'quran_dua', 'prophetic_dhikr', 'composed_dua',
 ];
+const ARABIC = /[؀-ۿ]/;
 
 const fail = (msg) => { console.error(`x ${msg}`); process.exit(1); };
+const J = (v) => JSON.stringify(v);
 
 const payloadPath = process.argv[2];
 if (!payloadPath) fail('usage: node scripts/author-angle.mjs <payload.json>');
 const p = JSON.parse(fs.readFileSync(payloadPath, 'utf8'));
 
 // ── payload shape ─────────────────────────────────────────────────────────
-for (const f of ['angleId', 'contentId', 'mood', 'angle', 'action', 'reflection', 'practiceSteps']) {
+for (const f of ['angleId', 'contentId', 'mood', 'tier', 'angle', 'action', 'reflection', 'practiceSteps']) {
   if (!p[f]) fail(`payload is missing '${f}'`);
 }
+if (!['T1', 'T2', 'T3'].includes(p.tier)) fail(`tier '${p.tier}' must be T1, T2 or T3`);
 if (!Array.isArray(p.practiceSteps) || p.practiceSteps.length !== 3) {
   fail(`practiceSteps must be exactly 3 — the corpus is 243/245 at exactly 3, never 4, never 6 ` +
        `(got ${Array.isArray(p.practiceSteps) ? p.practiceSteps.length : typeof p.practiceSteps})`);
@@ -71,61 +96,153 @@ for (const [i, s] of p.practiceSteps.entries()) {
     fail(`practiceSteps[${i}] cites a source with no sourceType — a bare citation asserts ` +
          `provenance, so say which kind it is`);
 }
-// 0/245 existing mood angles use these. Emitting them would break convention
-// and, for actionSource, badge app-written guidance as sourced.
 for (const banned of ['actionSource', 'actionArabicText']) {
   if (p[banned]) fail(`'${banned}' is used by 0 of 245 existing mood angles — do not introduce it`);
 }
-if (/\[Tafsir /.test(p.angle)) {
-  fail('angle carries a [Tafsir ...] tag — that is the journey convention; mood angles are ' +
-       'direct address');
-}
+if (/\[Tafsir /.test(p.angle))
+  fail('angle carries a [Tafsir ...] tag — that is the journey convention; mood angles are direct address');
 if (/'/.test(p.angleId)) fail('angleId must not contain an apostrophe — it is single-quoted');
+if (/'/.test(p.contentId)) fail('contentId must not contain an apostrophe — it is single-quoted');
 
-// ── file assertions ───────────────────────────────────────────────────────
+// ── read the file and locate everything BEFORE writing anything ───────────
 const src = fs.readFileSync(FILE, 'utf8');
 if (!src.includes('\r\n')) fail('refusing to write: CRLF line endings are already gone');
 
 const idHits = src.split(`id: '${p.angleId}'`).length - 1;
-if (idHits !== 0) fail(`angle id ${p.angleId} already exists (${idHits} match) — reusing an id ` +
-                       `puts two entries under one id into the seeder`);
+if (idHits !== 0)
+  fail(`angle id ${p.angleId} already exists (${idHits} match) — reusing an id puts two entries ` +
+       `under one id into the seeder`);
 
-const contentHits = src.split(`id: '${p.contentId}'`).length - 1;
-if (contentHits !== 1) fail(`expected exactly 1 verse with id ${p.contentId}, found ${contentHits}`);
+const verseHits = src.split(`id: '${p.contentId}'`).length - 1;
+if (verseHits > 1) fail(`found ${verseHits} verses with id ${p.contentId} — expected 0 or 1`);
 
-const anchorAt = src.indexOf(ANCHOR);
-if (anchorAt === -1) fail(`could not find the angles array anchor: ${ANCHOR}`);
+/** Bounds of the object literal whose `id: '<id>'` appears in src. */
+function objectBounds(id) {
+  const at = src.indexOf(`id: '${id}'`);
+  if (at === -1) return null;
+  let open = at;
+  while (src[open] !== '{') open--;
+  let d = 0, q = null, end = -1;
+  for (let k = open; k < src.length; k++) {
+    const c = src[k];
+    if (q) { if (c === '\\') k++; else if (c === q) q = null; continue; }
+    if (c === "'" || c === '"' || c === '`') { q = c; continue; }
+    if (c === '{') d++;
+    else if (c === '}') { d--; if (!d) { end = k; break; } }
+  }
+  return { open, end };
+}
 
-// Append at the end of the angles array — the last `];` in the file before the
-// export line. Anchoring on the array's own terminator rather than on any
-// neighbouring angle keeps this independent of what was written last.
-const exportAt = src.indexOf('export { quranContent', anchorAt);
+// ── tier cross-check against reality ──────────────────────────────────────
+let verseMoods = null;
+let moodsEdit = null;
+
+if (verseHits === 1) {
+  if (p.tier === 'T3')
+    fail(`tier T3 declared but ${p.contentId} already exists — T3 is for a verse that is not in ` +
+         `the corpus. Reuse the existing verse as T1 or T2.`);
+
+  const b = objectBounds(p.contentId);
+  const body = src.slice(b.open, b.end + 1);
+  const m = body.match(/moods: \[([^\]]*)\]/);
+  if (!m) fail(`${p.contentId} has no moods array`);
+  verseMoods = m[1].split(',').map((s) => s.trim().replace(/'/g, '')).filter(Boolean);
+
+  const hasMood = verseMoods.includes(p.mood);
+  if (p.tier === 'T1' && !hasMood)
+    fail(`tier T1 declared but ${p.contentId} is not tagged '${p.mood}' (tags: ${verseMoods.join(', ')}). ` +
+         `That makes this a T2 — without the moods edit the angle would be unreachable.`);
+  if (p.tier === 'T2' && hasMood)
+    fail(`tier T2 declared but ${p.contentId} is already tagged '${p.mood}' — that makes this a T1.`);
+
+  if (p.tier === 'T2') {
+    if (verseMoods.length >= 3)
+      fail(`${p.contentId} already carries ${verseMoods.length} mood tags (${verseMoods.join(', ')}). ` +
+           `The cap is 3 — review-mood-fit flags 4+ as a verse tagged by theme rather than by ` +
+           `what the reader is feeling.`);
+    const next = [...verseMoods, p.mood];
+    moodsEdit = {
+      from: m[0],
+      to: `moods: [${next.map((x) => `'${x}'`).join(', ')}]`,
+      at: b.open + m.index,
+    };
+  }
+} else {
+  if (p.tier !== 'T3')
+    fail(`tier ${p.tier} declared but ${p.contentId} does not exist — only T3 creates a verse`);
+  if (!p.verse) fail('tier T3 requires a `verse` object in the payload');
+  for (const f of ['primaryText', 'arabicText', 'transliteration', 'englishTranslation', 'source', 'audioKey', 'whyThis']) {
+    if (!p.verse[f]) fail(`verse is missing '${f}'`);
+  }
+  if (!ARABIC.test(p.verse.arabicText))
+    fail('verse.arabicText contains no Arabic script — it must be the Uthmani text, fetched');
+  if (!/\d+:\d+/.test(p.verse.source))
+    fail(`verse.source '${p.verse.source}' has no surah:ayah reference`);
+}
+
+// ── locate insertion points ───────────────────────────────────────────────
+const anglesAt = src.indexOf(ANGLES_ANCHOR);
+if (anglesAt === -1) fail(`could not find the angles array anchor: ${ANGLES_ANCHOR}`);
+const versesAt = src.indexOf(VERSES_ANCHOR);
+if (versesAt === -1) fail(`could not find the verses array anchor: ${VERSES_ANCHOR}`);
+if (versesAt > anglesAt) fail('verses array does not precede the angles array — layout changed');
+
+const exportAt = src.indexOf('export { quranContent', anglesAt);
 if (exportAt === -1) fail('could not find the export line after the angles array');
-const closeAt = src.lastIndexOf('];', exportAt);
-if (closeAt === -1 || closeAt < anchorAt) fail('could not find the angles array terminator');
+const anglesClose = src.lastIndexOf('];', exportAt);
+if (anglesClose === -1 || anglesClose < anglesAt) fail('could not find the angles array terminator');
+const versesClose = src.lastIndexOf('];', anglesAt);
+if (versesClose === -1 || versesClose < versesAt) fail('could not find the verses array terminator');
 
 // ── emit ──────────────────────────────────────────────────────────────────
-// ids single-quoted so verify-journey.mjs can see them; prose through
-// JSON.stringify so apostrophes are safe.
-const J = (v) => JSON.stringify(v);
-const lines = [
-  '  {',
-  `    id: '${p.angleId}',`,
-  `    contentId: '${p.contentId}',`,
-  `    mood: '${p.mood}',`,
-  `    angle: ${J(p.angle)},`,
-];
-if (p.angleSource) lines.push(`    angleSource: ${J(p.angleSource)},`);
-lines.push(`    action: ${J(p.action)},`);
-// JSON is a subset of JS object-literal syntax, so the stringified array is a
-// valid literal argument to JSON.stringify — matching the file's existing
-// `practiceSteps: JSON.stringify([...])` shape.
-lines.push(`    practiceSteps: JSON.stringify(${J(p.practiceSteps)}),`);
-lines.push(`    reflection: ${J(p.reflection)},`);
-lines.push('  },');
+function verseBlock() {
+  const v = p.verse;
+  const lines = [
+    '  {',
+    `    id: '${p.contentId}',`,
+    "    type: 'Quran',",
+    `    primaryText: ${J(v.primaryText)},`,
+    `    arabicText: ${J(v.arabicText)},`,
+    `    transliteration: ${J(v.transliteration)},`,
+    `    englishTranslation: ${J(v.englishTranslation)},`,
+    `    source: ${J(v.source)},`,
+    `    audioKey: ${J(v.audioKey)},`,
+    `    whyThis: ${J(v.whyThis)},`,
+    `    moods: ['${p.mood}'],`,
+    '  },',
+  ];
+  return lines.join('\r\n') + '\r\n';
+}
 
-const block = lines.join('\r\n') + '\r\n';
-const out = src.slice(0, closeAt) + block + src.slice(closeAt);
+function angleBlock() {
+  const lines = [
+    '  {',
+    `    id: '${p.angleId}',`,
+    `    contentId: '${p.contentId}',`,
+    `    mood: '${p.mood}',`,
+    `    angle: ${J(p.angle)},`,
+  ];
+  if (p.angleSource) lines.push(`    angleSource: ${J(p.angleSource)},`);
+  lines.push(`    action: ${J(p.action)},`);
+  // JSON is a subset of JS object-literal syntax, so the stringified array is
+  // a valid literal argument — matching the file's existing
+  // `practiceSteps: JSON.stringify([...])` shape.
+  lines.push(`    practiceSteps: JSON.stringify(${J(p.practiceSteps)}),`);
+  lines.push(`    reflection: ${J(p.reflection)},`);
+  lines.push('  },');
+  return lines.join('\r\n') + '\r\n';
+}
+
+// Compose every edit against the ORIGINAL string, applying from the highest
+// offset down so earlier offsets stay valid. One write at the end — a T3 can
+// never leave a verse behind without its angle.
+const edits = [{ at: anglesClose, del: 0, ins: angleBlock() }];
+if (p.tier === 'T3') edits.push({ at: versesClose, del: 0, ins: verseBlock() });
+if (moodsEdit) edits.push({ at: moodsEdit.at, del: moodsEdit.from.length, ins: moodsEdit.to });
+
+edits.sort((a, b) => b.at - a.at);
+let out = src;
+for (const e of edits) out = out.slice(0, e.at) + e.ins + out.slice(e.at + e.del);
 
 if (!out.includes('\r\n')) fail('refusing to write: the edit destroyed CRLF');
 if (out.length <= src.length) fail('refusing to write: the edit did not add content');
@@ -137,17 +254,27 @@ if (fs.existsSync(LEDGER)) {
   const ledger = JSON.parse(fs.readFileSync(LEDGER, 'utf8'));
   let row = ledger.units.find((u) => u.angleId === p.angleId);
   if (!row) {
-    // A T2/T3 row is unassigned until a tick picks it up and chooses a verse.
-    row = ledger.units.find((u) => u.mood === p.mood && u.angleId === null && u.status === 'pending');
-    if (!row) fail(`wrote the angle but found no ledger row to advance for mood ${p.mood} — ` +
-                   `revert with: git checkout ${FILE}`);
+    row = ledger.units.find(
+      (u) => u.mood === p.mood && u.tier === p.tier && u.angleId === null && u.status === 'pending');
+    if (!row)
+      fail(`wrote the angle but found no pending ${p.tier} ledger row for ${p.mood} — ` +
+           `revert with: git checkout ${FILE}`);
     row.angleId = p.angleId;
     row.contentId = p.contentId;
   }
   row.status = 'drafted';
   if (p.citations) row.citations = p.citations;
   fs.writeFileSync(LEDGER, JSON.stringify(ledger, null, 2) + '\n');
-  console.log(`ok — ${p.angleId} inserted (${row.tier}), ledger row -> drafted`);
+  console.log(`ok — ${p.angleId} inserted (${p.tier}), ledger row -> drafted`);
 } else {
-  console.log(`ok — ${p.angleId} inserted (no ledger at ${LEDGER})`);
+  console.log(`ok — ${p.angleId} inserted (${p.tier}; no ledger at ${LEDGER})`);
+}
+
+if (p.tier === 'T2') {
+  console.log(`   + ${p.contentId} moods: ${verseMoods.join(', ')} -> ${[...verseMoods, p.mood].join(', ')}`);
+}
+if (p.tier === 'T3') {
+  console.log(`   + created verse ${p.contentId} (${p.verse.source})`);
+  console.log('   ! NEXT: node scripts/refresh-quran-canonical.mjs, READ THE DIFF, then ' +
+              'npx jest quranArabicIntegrity');
 }
