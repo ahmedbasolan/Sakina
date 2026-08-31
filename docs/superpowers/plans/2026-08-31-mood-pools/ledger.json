@@ -545,84 +545,104 @@
       ]
     },
     {
-      "angleId": null,
-      "contentId": null,
+      "angleId": "q_angle_93_6_lonely",
+      "contentId": "quran_93_6",
       "mood": "Lonely",
       "tier": "T3",
-      "status": "pending",
-      "citations": []
+      "status": "committed",
+      "citations": [
+        "Quran 93:6"
+      ]
     },
     {
-      "angleId": null,
-      "contentId": null,
+      "angleId": "q_angle_93_7_lonely",
+      "contentId": "quran_93_7",
       "mood": "Lonely",
       "tier": "T3",
-      "status": "pending",
-      "citations": []
+      "status": "committed",
+      "citations": [
+        "Quran 93:7"
+      ]
     },
     {
-      "angleId": null,
-      "contentId": null,
+      "angleId": "q_angle_93_8_lonely",
+      "contentId": "quran_93_8",
       "mood": "Lonely",
       "tier": "T3",
-      "status": "pending",
-      "citations": []
+      "status": "committed",
+      "citations": [
+        "Quran 93:8"
+      ]
     },
     {
-      "angleId": null,
-      "contentId": null,
+      "angleId": "q_angle_19_96_lonely",
+      "contentId": "quran_19_96",
       "mood": "Lonely",
       "tier": "T3",
-      "status": "pending",
-      "citations": []
+      "status": "committed",
+      "citations": [
+        "Quran 19:96"
+      ]
     },
     {
-      "angleId": null,
-      "contentId": null,
+      "angleId": "q_angle_3_103_lonely",
+      "contentId": "quran_3_103",
       "mood": "Lonely",
       "tier": "T3",
-      "status": "pending",
-      "citations": []
+      "status": "committed",
+      "citations": [
+        "Quran 3:103"
+      ]
     },
     {
-      "angleId": null,
-      "contentId": null,
+      "angleId": "q_angle_9_71_lonely",
+      "contentId": "quran_9_71",
       "mood": "Lonely",
       "tier": "T3",
-      "status": "pending",
-      "citations": []
+      "status": "committed",
+      "citations": [
+        "Quran 9:71"
+      ]
     },
     {
-      "angleId": null,
-      "contentId": null,
+      "angleId": "q_angle_18_28_lonely",
+      "contentId": "quran_18_28",
       "mood": "Lonely",
       "tier": "T3",
-      "status": "pending",
-      "citations": []
+      "status": "committed",
+      "citations": [
+        "Quran 18:28"
+      ]
     },
     {
-      "angleId": null,
-      "contentId": null,
+      "angleId": "q_angle_20_39_lonely",
+      "contentId": "quran_20_39",
       "mood": "Lonely",
       "tier": "T3",
-      "status": "pending",
-      "citations": []
+      "status": "committed",
+      "citations": [
+        "Quran 20:39"
+      ]
     },
     {
-      "angleId": null,
-      "contentId": null,
+      "angleId": "q_angle_94_4_lonely",
+      "contentId": "quran_94_4",
       "mood": "Lonely",
       "tier": "T3",
-      "status": "pending",
-      "citations": []
+      "status": "committed",
+      "citations": [
+        "Quran 94:4"
+      ]
     },
     {
-      "angleId": null,
-      "contentId": null,
+      "angleId": "q_angle_51_56_lonely",
+      "contentId": "quran_51_56",
       "mood": "Lonely",
       "tier": "T3",
-      "status": "pending",
-      "citations": []
+      "status": "committed",
+      "citations": [
+        "Quran 51:56"
+      ]
     },
     {
       "angleId": "q_angle_12_87_hopeful",

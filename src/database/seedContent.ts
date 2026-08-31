@@ -301,7 +301,11 @@ import type { Content, ContentAngle } from '../types';
 //      from angle, reflection, whyThis and practiceStep instruction text
 //      across 19 fields. React Native Text has no markdown renderer, so
 //      "*with*" reached the user as literal asterisks. Words unchanged.
-const SEED_VERSION = 42;
+// v43: Lonely pool 22 -> 40. 18 new mood angles — 1 T1, 7 re-tags and 10
+//      new Content entries (93:6, 93:7, 93:8, 19:96, 3:103, 9:71, 18:28,
+//      20:39, 94:4, 51:56). The re-tags include 112:1-4, 33:41 and 54:17,
+//      which carried NO mood tag and were unreachable from every pool.
+const SEED_VERSION = 43;
 // Separate keys per content type — Quran and Hadith data change independently,
 // and each seeder used to write the SAME key at the end of its run. Since
 // initializeDatabase() awaits seedQuranContent() before seedHadithContent(),
