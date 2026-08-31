@@ -226,7 +226,7 @@ const quranContentData: Content[] = [
     source: 'Surah Al-Mulk 67:29',
     audioKey: '67:29',
     whyThis: 'This verse pairs belief with tawakkul as a single declaration: "we believe in Him, and upon Him we put our trust." The two cannot be separated. Naming Allah as "Al-Rahman" (the Most Gracious) here is deliberate — your trust is placed in the One whose mercy encompasses everything.',
-    moods: ['Overwhelmed'],
+    moods: ['Overwhelmed', 'Calm'],
   },
   {
     id: 'quran_25_58',
@@ -242,7 +242,7 @@ const quranContentData: Content[] = [
     source: 'Surah Al-Furqan 25:58',
     audioKey: '25:58',
     whyThis: 'Every person you have ever trusted will eventually die. This verse commands you to place your deepest trust in the only One who is Al-Hayy (the Ever-Living) — the One who will never cease to exist, never abandon His promise, and never stop being aware of you and your sins.',
-    moods: ['Overwhelmed'],
+    moods: ['Overwhelmed', 'Calm'],
   },
   {
     id: 'quran_12_90',
@@ -290,7 +290,7 @@ const quranContentData: Content[] = [
     source: 'Surah Yunus 10:62',
     audioKey: '10:62',
     whyThis: 'The Quran defines "awliya Allah" (allies of Allah) in the very next verse (10:63): those who believe and are mindful of Him. This is not an exclusive rank for saints — it is available to every sincere believer. And the promise is absolute: no fear of the future, no grief over the past.',
-    moods: ['Overwhelmed'],
+    moods: ['Overwhelmed', 'Calm'],
   },
 
   // === SAD / SABR ===
@@ -304,7 +304,7 @@ const quranContentData: Content[] = [
     source: 'Surah Ad-Duha 93:3',
     audioKey: '93:3',
     whyThis: 'The word "wadda\'aka" (forsaken you) uses the past tense, indicating a completed, settled fact — not a conditional. Allah is not saying "I will not forsake you if..."; He is stating it as a permanent truth. Ibn Kathir notes this verse came when the Prophet ﷺ feared Allah had abandoned him, and it reestablished certainty where doubt had crept in. [Tafsir Ibn Kathir, Surah Ad-Duha]',
-    moods: ['Sad', 'Tired'],
+    moods: ['Sad', 'Tired', 'Calm'],
   },
   {
     id: 'quran_12_87',
@@ -18163,6 +18163,46 @@ const quranContentAnglesData: ContentAngle[] = [
     action: "Ask Allah in these words to make you someone who keeps the prayer.",
     practiceSteps: JSON.stringify([{"type":"physical","icon":"home","title":"Ask where they can hear you","instruction":"Say this du’a once somewhere your household can hear it, or once for someone in it by name.","source":"Surah Ibrahim 14:40 — Quran","sourceType":"quran_dua"},{"type":"verbal","icon":"hands-prayer","title":"Ibrahim’s wording","instruction":"Raise your hands and ask in the words the ayah gives you.","arabicText":"رَبِّ ٱجْعَلْنِى مُقِيمَ ٱلصَّلَوٰةِ وَمِن ذُرِّيَّتِى ۚ رَبَّنَا وَتَقَبَّلْ دُعَآءِ","transliteration":"Rabbi-j‘alni muqima-s-salati wa min dhurriyyati, Rabbana wa taqabbal du‘a","translation":"My Lord, make me an establisher of prayer, and [many] from my descendants. Our Lord, and accept my supplication.","source":"Surah Ibrahim 14:40 — Quran","sourceType":"quran_dua"},{"type":"mindset","icon":"target","title":"He asked to be made, not given","instruction":"The request is for a capacity, not a result. That is available to you in exactly the same words.","source":"Surah Ibrahim 14:40 — Quran","sourceType":"quran_dua"}]),
     reflection: "What have you been trying to force, that you could ask to be made capable of?",
+  },
+  {
+    id: 'q_angle_10_62_calm',
+    contentId: 'quran_10_62',
+    mood: 'Calm',
+    angle: "There is a group in this ayah defined entirely by what is absent from them: no fear ahead, no grief behind. The awliya of Allah — those close to Him. Notice the ayah does not say their circumstances improved, or that nothing hard happens to them. It says the fear and the grief are not there. That is a different kind of settled than getting what you wanted.",
+    angleSource: "Surah Yunus 10:62",
+    action: "Do one voluntary act today that nobody will know about.",
+    practiceSteps: JSON.stringify([{"type":"physical","icon":"gift","title":"One nafl nobody sees","instruction":"Two extra rak‘ahs, a small sadaqah, or a task done for someone without telling them.","source":"\"My slave keeps on coming closer to Me through performing Nawafil... till I love him.\" [Bukhari 6502]","sourceType":"sunnah_action","sourceGrading":"sahih"},{"type":"verbal","icon":"chat","title":"Ask for nearness, not just relief","instruction":"In your own words, ask Allah to bring you closer to Him — not only to fix the thing.","sourceType":"composed_dua"},{"type":"mindset","icon":"shield","title":"Nearness is the variable","instruction":"The ayah ties the absence of fear to closeness, not to circumstances. That is the part you can actually move.","source":"Surah Yunus 10:62 — Quran","sourceType":"quran_dua"}]),
+    reflection: "Which is heavier for you right now — fear of what is coming, or grief for what went?",
+  },
+  {
+    id: 'q_angle_25_58_calm',
+    contentId: 'quran_25_58',
+    mood: 'Calm',
+    angle: "You are told exactly where to put your weight: on Al-Hayy, the Ever-Living who does not die. The ayah names Him that way on purpose — everything else you have leaned on will one day stop being there, and that is the ayah’s own reasoning, not pessimism. Then it pairs the reliance with praise, so the trust has something to do with its hands.",
+    angleSource: "Surah Al-Furqan 25:58",
+    action: "Say Ya Hayyu ya Qayyum when the worry next surfaces.",
+    practiceSteps: JSON.stringify([{"type":"physical","icon":"candle","title":"Catch it the next time","instruction":"The next time the worry surfaces, stop whatever you are doing for ten seconds first.","source":"Surah Al-Furqan 25:58 — Quran","sourceType":"quran_dua"},{"type":"verbal","icon":"hands-prayer","title":"Call Him by the Name in the ayah","instruction":"Say this — the same Name the ayah tells you to rely on.","arabicText":"يَا حَىُّ يَا قَيُّومُ بِرَحْمَتِكَ أَسْتَغِيثُ","transliteration":"Ya Hayyu ya Qayyum, bi-rahmatika astaghith","translation":"O Living, O Self-Sustaining Sustainer, in Your mercy do I seek relief.","source":"\"Whenever a matter would distress him, the Prophet (ﷺ) would say: ‘O Living, O Self-Sustaining Sustainer! In Your Mercy do I seek relief.’\" [Tirmidhi 3524 — graded gharib by Abu Isa]","sourceType":"prophetic_dua"},{"type":"mindset","icon":"star","title":"The One who does not die","instruction":"The ayah picks this Name over every other. Whatever else you lean on has an end date; this is the reasoning, not a mood.","source":"Surah Al-Furqan 25:58 — Quran","sourceType":"quran_dua"}]),
+    reflection: "What have you been relying on that will not outlast you?",
+  },
+  {
+    id: 'q_angle_93_3_calm',
+    contentId: 'quran_93_3',
+    mood: 'Calm',
+    angle: "Your Lord has not taken leave of you, nor has He detested you. Two denials, both flat, both unconditional — and neither of them is made conditional on how the last stretch has felt. The ayah does not argue you out of the quiet. It tells you what the quiet is not.",
+    angleSource: "Surah Ad-Duha 93:3",
+    action: "Name the thing you have been reading as a sign He has stepped back.",
+    practiceSteps: JSON.stringify([{"type":"physical","icon":"pen","title":"Write down the evidence","instruction":"Write the one thing you have been reading as distance. Seeing it written is usually enough to see how thin it is.","source":"Surah Ad-Duha 93:3 — Quran","sourceType":"quran_dua"},{"type":"verbal","icon":"chat","title":"Say the denial back","instruction":"Read the ayah out loud, slowly, and let it answer the thing you wrote.","source":"Surah Ad-Duha 93:3 — Quran","sourceType":"quran_dua"},{"type":"mindset","icon":"moon","title":"Quiet is not absence","instruction":"The surah is named for the morning light and opens by swearing by the night when it is still. Both are in the oath. Neither is abandonment.","source":"Surah Ad-Duha 93:3 — Quran","sourceType":"quran_dua"}]),
+    reflection: "What have you been treating as evidence, that this ayah says is not evidence?",
+  },
+  {
+    id: 'q_angle_67_29_calm',
+    contentId: 'quran_67_29',
+    mood: 'Calm',
+    angle: "Notice that this ayah hands you a sentence to say rather than a state to reach. He is Ar-Rahman; we have believed in Him; upon Him we have relied. Saying it is the act. The settledness is what follows from having said it — it is not a prerequisite for being allowed to say it.",
+    angleSource: "Surah Al-Mulk 67:29",
+    action: "Say the leaving-the-house du‘a next time you walk out the door.",
+    practiceSteps: JSON.stringify([{"type":"physical","icon":"door","title":"At the threshold","instruction":"Next time you leave the house, pause for one second at the door before you go.","source":"Surah Al-Mulk 67:29 — Quran","sourceType":"quran_dua"},{"type":"verbal","icon":"hands-prayer","title":"Say it on the way out","instruction":"Say this as you step out.","arabicText":"بِسْمِ اللَّهِ تَوَكَّلْتُ عَلَى اللَّهِ لاَ حَوْلَ وَلاَ قُوَّةَ إِلاَّ بِاللَّهِ","transliteration":"Bismillah, tawakkaltu ‘ala Allah, la hawla wa la quwwata illa billah","translation":"In the name of Allah, I trust in Allah; there is no might and no power but in Allah.","source":"\"When a man goes out of his house and says: 'In the name of Allah, I trust in Allah; there is no might and no power but in Allah,' the following will be said to him at that time: 'You are guided, defended and protected.'\" [Abu Dawud 5095]","sourceType":"prophetic_dua"},{"type":"mindset","icon":"compass","title":"Said, then settled","instruction":"The ayah gives you the words in the past tense — we have relied. Say it before you feel it, and let the feeling catch up.","source":"Surah Al-Mulk 67:29 — Quran","sourceType":"quran_dua"}]),
+    reflection: "What would you do differently today if the reliance were already settled?",
   },
 ];
 

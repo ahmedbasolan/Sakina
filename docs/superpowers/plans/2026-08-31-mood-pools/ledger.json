@@ -148,36 +148,47 @@
       ]
     },
     {
-      "angleId": null,
-      "contentId": null,
+      "angleId": "q_angle_10_62_calm",
+      "contentId": "quran_10_62",
       "mood": "Calm",
       "tier": "T2",
-      "status": "pending",
-      "citations": []
+      "status": "committed",
+      "citations": [
+        "Quran 10:62",
+        "Bukhari 6502"
+      ]
     },
     {
-      "angleId": null,
-      "contentId": null,
+      "angleId": "q_angle_25_58_calm",
+      "contentId": "quran_25_58",
       "mood": "Calm",
       "tier": "T2",
-      "status": "pending",
-      "citations": []
+      "status": "committed",
+      "citations": [
+        "Quran 25:58",
+        "Tirmidhi 3524"
+      ]
     },
     {
-      "angleId": null,
-      "contentId": null,
+      "angleId": "q_angle_93_3_calm",
+      "contentId": "quran_93_3",
       "mood": "Calm",
       "tier": "T2",
-      "status": "pending",
-      "citations": []
+      "status": "committed",
+      "citations": [
+        "Quran 93:3"
+      ]
     },
     {
-      "angleId": null,
-      "contentId": null,
+      "angleId": "q_angle_67_29_calm",
+      "contentId": "quran_67_29",
       "mood": "Calm",
       "tier": "T2",
-      "status": "pending",
-      "citations": []
+      "status": "committed",
+      "citations": [
+        "Quran 67:29",
+        "Abu Dawud 5095"
+      ]
     },
     {
       "angleId": null,
