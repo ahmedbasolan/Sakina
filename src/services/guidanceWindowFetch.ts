@@ -159,9 +159,9 @@ async function persistSyntheticContent(experiences: GuidanceExperience[]): Promi
         await db.runAsync(
           `INSERT OR REPLACE INTO content
              (id, type, primaryText, arabicText, transliteration, englishTranslation,
-              source, audioKey, whyThis, propheticPractice, optionalAction,
+              source, audioKey, whyThis, propheticPractice, story, optionalAction,
               optionalReflection, prayerContext)
-           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
           [
             c.id,
             c.type,
@@ -173,6 +173,7 @@ async function persistSyntheticContent(experiences: GuidanceExperience[]): Promi
             c.audioKey ?? null,
             c.whyThis ?? '',
             null,
+            c.story ? JSON.stringify(c.story) : null,
             c.optionalAction ?? null,
             c.optionalReflection ?? null,
             null,

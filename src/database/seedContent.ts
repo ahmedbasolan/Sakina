@@ -369,6 +369,7 @@ export async function seedQuranContent(db: any): Promise<void> {
       item.audioKey ?? null,
       item.whyThis,
       item.propheticPractice ? JSON.stringify(item.propheticPractice) : null,
+      item.story ? JSON.stringify(item.story) : null,
       item.optionalAction ?? null,
       item.optionalReflection ?? null,
       item.prayerContext ? JSON.stringify(item.prayerContext) : null,
@@ -377,10 +378,10 @@ export async function seedQuranContent(db: any): Promise<void> {
       db,
       `INSERT OR REPLACE INTO content
          (id, type, primaryText, arabicText, transliteration, englishTranslation,
-          source, audioKey, whyThis, propheticPractice, optionalAction,
+          source, audioKey, whyThis, propheticPractice, story, optionalAction,
           optionalReflection, prayerContext)
        VALUES `,
-      13,
+      14,
       contentRows,
     );
 
@@ -475,6 +476,7 @@ export async function seedHadithContent(db: any): Promise<void> {
       item.audioKey ?? null,
       item.whyThis,
       item.propheticPractice ? JSON.stringify(item.propheticPractice) : null,
+      item.story ? JSON.stringify(item.story) : null,
       item.optionalAction ?? null,
       item.optionalReflection ?? null,
       item.prayerContext ? JSON.stringify(item.prayerContext) : null,
@@ -483,10 +485,10 @@ export async function seedHadithContent(db: any): Promise<void> {
       db,
       `INSERT OR REPLACE INTO content
          (id, type, primaryText, arabicText, transliteration, englishTranslation,
-          source, audioKey, whyThis, propheticPractice, optionalAction,
+          source, audioKey, whyThis, propheticPractice, story, optionalAction,
           optionalReflection, prayerContext)
        VALUES `,
-      13,
+      14,
       contentRows,
     );
   });

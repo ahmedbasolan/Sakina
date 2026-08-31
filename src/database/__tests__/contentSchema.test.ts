@@ -51,3 +51,35 @@ describe('content table schema', () => {
     expect(Number(m?.[1])).toBeGreaterThanOrEqual(12);
   });
 });
+
+describe('content INSERT sites stay positional-consistent', () => {
+  const sites = [
+    ['src/database/seedContent.ts', 2],
+    ['src/services/guidanceWindowFetch.ts', 1],
+  ] as const;
+
+  it('every INSERT INTO content column list matches its placeholder count', () => {
+    for (const [file, expectedCount] of sites) {
+      const src = read(file);
+      const blocks = [...src.matchAll(/INSERT OR REPLACE INTO content\s*\n?\s*\(([^)]+)\)/g)];
+      expect(blocks).toHaveLength(expectedCount);
+
+      for (const b of blocks) {
+        const columns = b[1].split(',').map((c) => c.trim()).filter(Boolean);
+        expect(columns).toContain('story');
+
+        const after = src.slice(b.index! + b[0].length, b.index! + b[0].length + 400);
+        const literal = after.match(/VALUES \(([?,\s]+)\)/);
+        const perRow = after.match(/VALUES `,\s*\n\s*(\d+),/);
+
+        if (literal) {
+          expect(literal[1].split(',').length).toBe(columns.length);
+        } else if (perRow) {
+          expect(Number(perRow[1])).toBe(columns.length);
+        } else {
+          throw new Error(`no placeholder count found after INSERT in ${file}`);
+        }
+      }
+    }
+  });
+});
