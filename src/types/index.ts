@@ -64,6 +64,26 @@ export type PracticeSourceType =
 
 export type HadithGrading = 'sahih' | 'hasan' | 'sahih_li_ghayrihi' | 'hasan_li_ghayrihi';
 
+/**
+ * An optional narrative attached to a verse — a story from the Quran or a
+ * hadith that the ayah calls to mind. Optional by design: a verse gets one
+ * only when a story genuinely belongs, because filler beside scripture reads
+ * worse than silence.
+ *
+ * `sourceType` is deliberately NOT PracticeStepData's union. That vocabulary
+ * (quran_dua, prophetic_dhikr, ...) describes what a practice step *is*; none
+ * of its members mean "narrative".
+ */
+export interface ContentStory {
+  title: string;
+  body: string;
+  /** "Surah Yusuf 12:15-20" or "Sahih al-Bukhari 3339" — always locatable. */
+  source: string;
+  sourceType: 'quran_narrative' | 'hadith_narrative';
+  /** hadith_narrative only. Lowercase; HadithLayer title-cases for display. */
+  grading?: 'sahih' | 'hasan';
+}
+
 export interface Content {
   id: string;
   type: ContentType;
@@ -79,6 +99,7 @@ export interface Content {
     source: string;
     grading?: string; // e.g., 'Sahih', 'Hasan'
   };
+  story?: ContentStory;
   optionalAction?: string;
   optionalReflection?: string;
   audioKey?: string; // Explicit key for audio playback (e.g., '2:255')

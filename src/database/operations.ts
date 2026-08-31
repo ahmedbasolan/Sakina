@@ -4,7 +4,7 @@ import { createTables, createIndices } from './tables';
 import { runMigrationSteps } from './migrations';
 import { seedQuranContent, seedHadithContent } from './seedContent';
 
-const CURRENT_DB_VERSION = 11; // Increment this to force a content refresh
+const CURRENT_DB_VERSION = 12; // Increment this to force a content refresh
 
 // Internal helper - must be defined before use
 const runInitializationSteps = async (db: SQLite.SQLiteDatabase): Promise<void> => {
@@ -186,6 +186,7 @@ export const initializeDatabase = async (): Promise<void> => {
           audioKey TEXT,
           whyThis TEXT NOT NULL,
           propheticPractice TEXT,
+          story TEXT,
           optionalAction TEXT,
           optionalReflection TEXT,
           prayerContext TEXT

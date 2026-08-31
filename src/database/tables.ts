@@ -24,6 +24,7 @@ const tableDefinitions: TableDefinition[] = [
       audioKey TEXT,
       whyThis TEXT NOT NULL,
       propheticPractice TEXT,
+      story TEXT,
       optionalAction TEXT,
       optionalReflection TEXT,
       prayerContext TEXT
