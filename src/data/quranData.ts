@@ -18358,6 +18358,36 @@ const quranContentAnglesData: ContentAngle[] = [
     practiceSteps: JSON.stringify([{"type":"physical","icon":"eye","title":"One thing, properly","instruction":"Choose something within reach — a leaf, your own hand, water — and look at it for thirty seconds.","source":"Surah Adh-Dhariyat 51:20 — Quran","sourceType":"quran_dua"},{"type":"verbal","icon":"chat","title":"Say what it is a sign of","instruction":"Out loud, finish the sentence: this exists, which means He is ___.","sourceType":"composed_dua"},{"type":"mindset","icon":"leaf","title":"The variable is certainty","instruction":"The ayah does not say the signs are rare. It says they are for the certain. That is the end you can work on.","source":"Surah Adh-Dhariyat 51:20 — Quran","sourceType":"quran_dua"}]),
     reflection: "What is within arm’s reach right now that you have stopped seeing?",
   },
+  {
+    id: 'q_angle_94_5_sad_sad',
+    contentId: 'quran_94_5_sad',
+    mood: 'Sad',
+    angle: "There is one word in this ayah carrying the whole promise: ma‘a. With. Not after the hardship — with it. The ease is not waiting at the far end of this for you to crawl toward; the ayah places it alongside the thing you are currently inside. You are not being asked to hold on until it passes. You are being asked to look again at where you already are.",
+    angleSource: "Surah Ash-Sharh 94:5",
+    action: "Name the hardship out loud, then name one thing that is also true right now.",
+    practiceSteps: JSON.stringify([{"type":"physical","icon":"shield","title":"Meet it at the first stroke","instruction":"Do not wait until you have processed it to turn to Allah. Turn now, in the raw part.","source":"\"Verily, the patience is at the first stroke of a calamity.\" [Bukhari 1283]","sourceType":"sunnah_action","sourceGrading":"sahih"},{"type":"verbal","icon":"chat","title":"Say one alhamdulillah that is true","instruction":"Not for the hardship. For one thing that is still standing while the hardship is here.","source":"\"...if he gets into trouble and shows resignation (and endures it patiently), there is a good for him in it.\" [Sahih Muslim 2999]","sourceType":"sunnah_action","sourceGrading":"sahih"},{"type":"mindset","icon":"leaf","title":"With, not after","instruction":"The ayah says ma‘a — with. Look for the ease packed in beside this, not the one waiting on the other side of it.","source":"Surah Ash-Sharh 94:5 — Quran","sourceType":"quran_dua"}]),
+    reflection: "What is true alongside the hard thing today, that you have not been counting?",
+  },
+  {
+    id: 'q_angle_2_177_sad',
+    contentId: 'quran_2_177',
+    mood: 'Sad',
+    angle: "Your endurance is on the list. This ayah sets out what righteousness actually is, and it puts those who are patient in poverty and hardship in the same sentence as those who pray, who give from wealth they love, who keep their promises. It does not treat getting through today as the empty stretch before the worship starts. It counts it as the worship.",
+    angleSource: "Surah Al-Baqarah 2:177",
+    action: "Do one ordinary duty today and let it count.",
+    practiceSteps: JSON.stringify([{"type":"physical","icon":"checkmark","title":"The next ordinary thing","instruction":"Pick one small duty — a meal made, a message answered, a prayer prayed — and do it without waiting to feel like it.","source":"Surah Al-Baqarah 2:177 — Quran","sourceType":"quran_dua"},{"type":"verbal","icon":"chat","title":"Ask for it to be counted","instruction":"Ask Allah to write today’s endurance as worship, in whatever words come.","sourceType":"composed_dua"},{"type":"mindset","icon":"star","title":"Patience sits beside prayer here","instruction":"The ayah lists the patient alongside those who give and pray. Not a lesser category — the same sentence.","source":"Surah Al-Baqarah 2:177 — Quran","sourceType":"quran_dua"}]),
+    reflection: "What have you been dismissing as merely coping, that this ayah calls righteousness?",
+  },
+  {
+    id: 'q_angle_17_70_sad',
+    contentId: 'quran_17_70',
+    mood: 'Sad',
+    angle: "You have been honoured, and the ayah attaches no condition to it. Karramna — We have honoured the children of Adam — carried them, provided for them of good things, preferred them. All of it stated as already done, none of it as something to be earned back after a bad stretch. Whatever you are worth today is not being recalculated on the strength of how this week went.",
+    angleSource: "Surah Al-Isra 17:70",
+    action: "Treat your body as something honoured once today — food, water, or sleep.",
+    practiceSteps: JSON.stringify([{"type":"physical","icon":"water-drop","title":"Act as though it were true","instruction":"Eat something proper, drink water, or sleep at a reasonable hour — one of the three, today.","source":"Surah Al-Isra 17:70 — Quran","sourceType":"quran_dua"},{"type":"verbal","icon":"chat","title":"Say the sentence back","instruction":"Say out loud that Allah has honoured you. It will feel untrue before it feels true.","sourceType":"composed_dua"},{"type":"mindset","icon":"gem","title":"Already done, not pending","instruction":"The verb is past tense. The honouring is not a reward being withheld until you improve.","source":"Surah Al-Isra 17:70 — Quran","sourceType":"quran_dua"}]),
+    reflection: "Whose assessment of your worth have you been taking as the accurate one?",
+  },
 ];
 
 export { quranContent, quranContentAnglesData as quranContentAngles };

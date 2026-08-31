@@ -265,24 +265,32 @@
       "contentId": "quran_94_5_sad",
       "mood": "Sad",
       "tier": "T1",
-      "status": "pending",
-      "citations": []
+      "status": "committed",
+      "citations": [
+        "Quran 94:5",
+        "Bukhari 1283",
+        "Muslim 2999"
+      ]
     },
     {
       "angleId": "q_angle_2_177_sad",
       "contentId": "quran_2_177",
       "mood": "Sad",
       "tier": "T1",
-      "status": "pending",
-      "citations": []
+      "status": "committed",
+      "citations": [
+        "Quran 2:177"
+      ]
     },
     {
       "angleId": "q_angle_17_70_sad",
       "contentId": "quran_17_70",
       "mood": "Sad",
       "tier": "T1",
-      "status": "pending",
-      "citations": []
+      "status": "committed",
+      "citations": [
+        "Quran 17:70"
+      ]
     },
     {
       "angleId": null,
