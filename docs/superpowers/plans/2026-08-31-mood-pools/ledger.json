@@ -293,60 +293,76 @@
       ]
     },
     {
-      "angleId": null,
-      "contentId": null,
+      "angleId": "q_angle_93_4_sad",
+      "contentId": "quran_93_4",
       "mood": "Sad",
       "tier": "T2",
-      "status": "pending",
-      "citations": []
+      "status": "committed",
+      "citations": [
+        "Quran 93:4",
+        "Muslim 918"
+      ]
     },
     {
-      "angleId": null,
-      "contentId": null,
+      "angleId": "q_angle_21_83_sad",
+      "contentId": "quran_21_83",
       "mood": "Sad",
       "tier": "T2",
-      "status": "pending",
-      "citations": []
+      "status": "committed",
+      "citations": [
+        "Quran 21:83"
+      ]
     },
     {
-      "angleId": null,
-      "contentId": null,
+      "angleId": "q_angle_94_5_sad_pair",
+      "contentId": "quran_94_5",
       "mood": "Sad",
       "tier": "T2",
-      "status": "pending",
-      "citations": []
+      "status": "committed",
+      "citations": [
+        "Quran 94:5-6"
+      ]
     },
     {
-      "angleId": null,
-      "contentId": null,
+      "angleId": "q_angle_26_80_sad",
+      "contentId": "quran_26_80",
       "mood": "Sad",
       "tier": "T2",
-      "status": "pending",
-      "citations": []
+      "status": "committed",
+      "citations": [
+        "Quran 26:80",
+        "Abu Dawud 3106"
+      ]
     },
     {
-      "angleId": null,
-      "contentId": null,
+      "angleId": "q_angle_10_62_sad",
+      "contentId": "quran_10_62",
       "mood": "Sad",
       "tier": "T2",
-      "status": "pending",
-      "citations": []
+      "status": "committed",
+      "citations": [
+        "Quran 10:62"
+      ]
     },
     {
-      "angleId": null,
-      "contentId": null,
+      "angleId": "q_angle_8_46_sad",
+      "contentId": "quran_8_46",
       "mood": "Sad",
       "tier": "T2",
-      "status": "pending",
-      "citations": []
+      "status": "committed",
+      "citations": [
+        "Quran 8:46"
+      ]
     },
     {
-      "angleId": null,
-      "contentId": null,
+      "angleId": "q_angle_8_40_sad",
+      "contentId": "quran_8_40",
       "mood": "Sad",
       "tier": "T2",
-      "status": "pending",
-      "citations": []
+      "status": "committed",
+      "citations": [
+        "Quran 8:40"
+      ]
     },
     {
       "angleId": null,
