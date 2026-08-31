@@ -84,9 +84,25 @@ canonical refresh, no new verse citation.
 **Exclusion:** a content id is not a T1 candidate when its `source` string is
 byte-identical to another entry's — it is a duplicate created for a journey, and
 attaching a mood angle to the duplicate rather than the original splits one
-verse across two ids in the same pool. Exactly three qualify:
+verse across two ids in the same pool. **Four** qualify:
 `quran_2_45_salah_dup` (= `quran_2_45`), `quran_22_77_salah_dup`
-(= `quran_22_77`), `quran_65_3_rizq` (= `quran_65_3`).
+(= `quran_22_77`), `quran_65_3_rizq` (= `quran_65_3`), and
+`quran_2_155_156` (= `quran_2_155`).
+
+The fourth was found by sweeping for identical `source` strings rather than
+for the journey-suffix naming, and it is the one that matters: it carries no
+suffix marking it as a duplicate, both entries share `audioKey: '2:155-156'`,
+and **both already carry a live angle** — so 2:155-156 can already surface
+twice in the same pool under two ids. Deduplicating it is a Plan B cleanup
+item, not part of the +124.
+
+Reading `source` for that sweep requires a **quote-agnostic** matcher. Sources
+whose surah name contains an apostrophe are double-quoted
+(`source: "Surah Al-A'raf 7:199"`), and a `source: '([^']*)'` matcher returns
+null for 31 of them — which then all compare equal to each other and get
+reported as mutual duplicates, wrongly excluding `quran_23_1`, `quran_6_13`
+and `quran_7_31` from Calm's candidates among others. This is the both-quote-
+styles trap already recorded under "Editing `quranData.ts` by script".
 
 **This is a `source`-equality rule, not a suffix rule.** Suffixed ids are not
 duplicates by default: `quran_94_5_sad` is Ash-Sharh **94:5** while
@@ -99,14 +115,14 @@ T1 candidates after that exclusion:
 - **Calm (13):** `quran_14_40` `quran_20_130` `quran_22_77` `quran_23_1`
   `quran_25_47` `quran_29_45` `quran_2_255` `quran_2_45` `quran_30_23`
   `quran_4_103` `quran_6_13` `quran_78_9` `quran_7_31`
-- **Hopeful (22):** `quran_12_87` `quran_14_37` `quran_14_40` `quran_14_7`
+- **Hopeful (21):** `quran_12_87` `quran_14_37` `quran_14_40` `quran_14_7`
   `quran_17_32` `quran_17_79` `quran_20_131` `quran_23_1` `quran_24_32`
-  `quran_25_74` `quran_29_45` `quran_2_155_156` `quran_2_168` `quran_2_261`
+  `quran_25_74` `quran_29_45` `quran_2_168` `quran_2_261`
   `quran_33_21` `quran_49_13` `quran_4_1` `quran_65_7` `quran_67_15`
   `quran_73_1_4` `quran_7_96` `quran_98_5`
 - **Grateful (5):** `quran_11_6` `quran_20_130` `quran_22_77` `quran_24_38`
   `quran_7_96`
-- **Sad (4):** `quran_17_70` `quran_2_155_156` `quran_2_177` `quran_94_5_sad`
+- **Sad (3):** `quran_94_5_sad` `quran_2_177` `quran_17_70`
 - **Tired (2):** `quran_2_261` `quran_67_15`
 - **Lonely (1):** `quran_17_70`
 - **Angry (0), Guilty (0)** — T1 gives these moods nothing.
@@ -123,22 +139,30 @@ transliteration, Sahih International translation smoothed to house voice,
 
 ### 2.3 Allocation
 
-T1 covers 41 of the 124 (Hopeful's 22 candidates exceed its need of 16; the
-6 spare are not authored in this project). The remaining 83 split ~40/60:
+T1 covers 40 of the 124 (Hopeful's 21 candidates exceed its need of 16; the
+5 spare are not authored in this project). The remaining 84 split ~40/60.
 
-| Mood | Need | T1 | T2 | T3 |
-|---|---|---|---|---|
-| Calm | 24 | 13 | 4 | 7 |
-| Sad | 20 | 4 | 6 | 10 |
-| Lonely | 18 | 1 | 7 | 10 |
-| Hopeful | 16 | 16 | 0 | 0 |
-| Tired | 16 | 2 | 6 | 8 |
-| Angry | 15 | 0 | 6 | 9 |
-| Guilty | 10 | 0 | 4 | 6 |
-| Grateful | 5 | 5 | 0 | 0 |
-| **Total** | **124** | **41** | **33** | **50** |
+These figures are **generated**, not tallied by hand — `scripts/seed-ledger.mjs`
+recomputes them from `quranData.ts` and fails if they drift:
+
+| Mood | Need | T1 avail | T1 used | T2 | T3 |
+|---|---|---|---|---|---|
+| Calm | 24 | 13 | 13 | 4 | 7 |
+| Sad | 20 | 3 | 3 | 7 | 10 |
+| Lonely | 18 | 1 | 1 | 7 | 10 |
+| Hopeful | 16 | 21 | 16 | 0 | 0 |
+| Tired | 16 | 2 | 2 | 6 | 8 |
+| Angry | 15 | 0 | 0 | 6 | 9 |
+| Guilty | 10 | 0 | 0 | 4 | 6 |
+| Grateful | 5 | 5 | 5 | 0 | 0 |
+| Overwhelmed | 0 | 8 | 0 | 0 | 0 |
+| **Total** | **124** | | **40** | **34** | **50** |
 
 So the project adds **50 new `Content` entries** and **124 new angles**.
+
+An earlier revision of this table said 41 / 33 / 50. The single-angle
+difference is `quran_2_155_156`, which was counted as a Sad T1 candidate before
+it was identified as a duplicate of `quran_2_155`.
 
 ### 2.4 Angle shape — copied from the corpus, not invented
 
