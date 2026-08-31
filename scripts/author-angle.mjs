@@ -247,21 +247,33 @@ for (const e of edits) out = out.slice(0, e.at) + e.ins + out.slice(e.at + e.del
 if (!out.includes('\r\n')) fail('refusing to write: the edit destroyed CRLF');
 if (out.length <= src.length) fail('refusing to write: the edit did not add content');
 
-fs.writeFileSync(FILE, out);
-
-// ── advance the ledger ────────────────────────────────────────────────────
+// ── resolve the ledger row BEFORE writing anything ────────────────────────
+// This lookup used to run after the file write, so a payload with no matching
+// row exited 1 having already edited quranData.ts and told the operator to
+// `git checkout` it by hand — pushing cleanup onto a human that the code can
+// do, and, in a loop, leaving the angle in the file while the ledger still
+// said `pending` so the next tick tried to insert it again.
+let ledger = null;
+let row = null;
 if (fs.existsSync(LEDGER)) {
-  const ledger = JSON.parse(fs.readFileSync(LEDGER, 'utf8'));
-  let row = ledger.units.find((u) => u.angleId === p.angleId);
+  ledger = JSON.parse(fs.readFileSync(LEDGER, 'utf8'));
+  row = ledger.units.find((u) => u.angleId === p.angleId);
   if (!row) {
     row = ledger.units.find(
       (u) => u.mood === p.mood && u.tier === p.tier && u.angleId === null && u.status === 'pending');
     if (!row)
-      fail(`wrote the angle but found no pending ${p.tier} ledger row for ${p.mood} — ` +
-           `revert with: git checkout ${FILE}`);
+      fail(`no pending ${p.tier} ledger row for ${p.mood} — nothing written. Either the tier is ` +
+           `wrong for this row, or ${p.mood} has no ${p.tier} work left.`);
     row.angleId = p.angleId;
     row.contentId = p.contentId;
+  } else if (row.status === 'committed') {
+    fail(`ledger row for ${p.angleId} is already 'committed' — nothing written`);
   }
+}
+
+fs.writeFileSync(FILE, out);
+
+if (row) {
   row.status = 'drafted';
   if (p.citations) row.citations = p.citations;
   fs.writeFileSync(LEDGER, JSON.stringify(ledger, null, 2) + '\n');
