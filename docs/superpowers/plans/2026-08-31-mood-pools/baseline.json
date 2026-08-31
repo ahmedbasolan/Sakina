@@ -1,0 +1,19 @@
+{
+  "recordedAt": "2026-08-31",
+  "recordedAfter": "Phase 0 (stories infrastructure), commit 40bd72b",
+  "purpose": "Monotonicity baseline. A content tick may fail to ADD to a pool, but must never leave one lower than the value here. Compared per tick; see the 2026-08-31 mood-pools spec section 5.4.",
+  "floor": 10,
+  "target": 40,
+  "pools": {
+    "Overwhelmed": 49,
+    "Sad": 20,
+    "Angry": 25,
+    "Tired": 24,
+    "Lonely": 22,
+    "Grateful": 35,
+    "Hopeful": 24,
+    "Guilty": 30,
+    "Calm": 16
+  },
+  "totalToTarget": 124
+}
