@@ -271,6 +271,65 @@ if (fs.existsSync(LEDGER)) {
   }
 }
 
+// ── markdown in rendered content ──────────────────────────────────────────
+// React Native's <Text> has no markdown renderer, so "*with*" reaches the user
+// as literal asterisks around the word. 23 of these had already shipped across
+// 19 fields before this check existed, and two more nearly went out in a later
+// batch — nothing in a typecheck, a citation pass or the integrity lock can
+// see them, because the string is valid and the citation is correct.
+//
+// Corpus-wide and fatal, NOT scoped to the ledger like the voice pass: this is
+// a rendering defect rather than a matter of authorial voice, so the legacy
+// exemption does not apply.
+//
+// WHAT THIS DOES NOT CATCH: markdown that is invisible when rendered as plain
+// text — a leading "# " reads as a hash, "- " as a hyphen — and HTML entities.
+// It also cannot know whether an asterisk pair was deliberate typography.
+const MARKDOWN = [
+  [/\*[^*\n]{1,60}\*/, 'asterisk emphasis'],
+  [/(^|\s)_[^_\n]{1,60}_(\s|[.,;:!?]|$)/, 'underscore emphasis'],
+  [/`[^`\n]{1,60}`/, 'backtick code span'],
+  [/\[[^\]\n]{1,60}\]\([^)\n]{1,80}\)/, 'markdown link'],
+];
+
+function scanMarkdown(id, name, text) {
+  if (!text) return;
+  for (const [re, label] of MARKDOWN) {
+    // matchAll, not match: a field carrying two pairs must report both, which
+    // is exactly how the first count of these came out four short.
+    for (const hit of text.matchAll(new RegExp(re.source, 'g'))) {
+      errors.push(`${id}: ${label} in ${name} — ${JSON.stringify(hit[0].slice(0, 40))} ` +
+        `renders literally; RN Text has no markdown`);
+    }
+  }
+}
+
+for (const a of angleObjects) {
+  for (const f of ['angle', 'reflection', 'action', 'actionHowTo', 'actionReward']) {
+    scanMarkdown(a.id, f, field(a.body, f));
+  }
+  const at = a.body.indexOf('practiceSteps: JSON.stringify(');
+  if (at !== -1) {
+    const start = a.body.indexOf('[', at);
+    let d = 0, end = -1;
+    for (let k = start; k < a.body.length; k++) {
+      if (a.body[k] === '[') d++;
+      else if (a.body[k] === ']') { d--; if (!d) { end = k; break; } }
+    }
+    try {
+      for (const [i, s] of JSON.parse(a.body.slice(start, end + 1)).entries()) {
+        scanMarkdown(a.id, `step[${i}].title`, s.title);
+        scanMarkdown(a.id, `step[${i}].instruction`, s.instruction);
+        scanMarkdown(a.id, `step[${i}].translation`, s.translation);
+      }
+    } catch { /* shape is verify-journey's job, not this pass's */ }
+  }
+}
+for (const c of verseObjects) {
+  scanMarkdown(c.id, 'whyThis', field(c.body, 'whyThis'));
+  scanMarkdown(c.id, 'englishTranslation', field(c.body, 'englishTranslation'));
+}
+
 const counts = MOODS.map((m) => pool[m]);
 console.log(`\n  spread: ${Math.min(...counts)}–${Math.max(...counts)} ` +
   `(${(Math.max(...counts) / Math.max(1, Math.min(...counts))).toFixed(1)}x)`);

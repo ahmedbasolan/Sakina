@@ -2813,7 +2813,7 @@ const quranContentData: Content[] = [
     englishTranslation: 'He said, "No! Indeed, with me is my Lord; He will guide me."',
     source: "Surah Ash-Shu'ara 26:62",
     audioKey: '26:62',
-    whyThis: 'Musa (AS) said this with the sea in front of him and Pharaoh\'s army closing behind. Ibn Kathir notes his people had just said "we are surely to be overtaken" — the objection was reasonable, and he answered it with one word: kallā, no. Al-Sa\'di draws attention to the tense: sayahdīni, He *will* guide me, spoken before any way out existed. The certainty was not about the exit; it was about the company.',
+    whyThis: 'Musa (AS) said this with the sea in front of him and Pharaoh\'s army closing behind. Ibn Kathir notes his people had just said "we are surely to be overtaken" — the objection was reasonable, and he answered it with one word: kallā, no. Al-Sa\'di draws attention to the tense: sayahdīni, He will guide me, spoken before any way out existed. The certainty was not about the exit; it was about the company.',
     moods: ['Lonely'],
   },
   {
@@ -2826,7 +2826,7 @@ const quranContentData: Content[] = [
       'He said, "I only complain of my suffering and my grief to Allah, and I know from Allah that which you do not know."',
     source: 'Surah Yusuf 12:86',
     audioKey: '12:86',
-    whyThis: 'Yaqub (AS) had lost two sons and been told by everyone around him to stop grieving. Ibn Kathir explains "bathth" as the grief so heavy a person cannot contain it — and note where he takes it: not to the people telling him to move on, but to Allah alone. Al-Sa\'di observes that complaining *to* Allah is not complaining *about* Him, which is why this is recorded as the speech of a prophet rather than a lapse.',
+    whyThis: 'Yaqub (AS) had lost two sons and been told by everyone around him to stop grieving. Ibn Kathir explains "bathth" as the grief so heavy a person cannot contain it — and note where he takes it: not to the people telling him to move on, but to Allah alone. Al-Sa\'di observes that complaining to Allah is not complaining about Him, which is why this is recorded as the speech of a prophet rather than a lapse.',
     moods: ['Lonely'],
   },
   {
@@ -2882,7 +2882,7 @@ const quranContentData: Content[] = [
       'The believers are but brothers, so make settlement between your brothers. And fear Allah that you may receive mercy.',
     source: 'Surah Al-Hujurat 49:10',
     audioKey: '49:10',
-    whyThis: 'Al-Sa\'di notes the sentence is a statement of fact before it is an instruction — "the believers *are* brothers" describes a tie that already exists rather than one you must earn. Ibn Kathir reads the command that follows as the consequence: because the bond is real, a rift in it is something to be repaired rather than accepted. For someone who feels outside every circle, the ayah asserts membership first and asks for effort second.',
+    whyThis: 'Al-Sa\'di notes the sentence is a statement of fact before it is an instruction — "the believers are brothers" describes a tie that already exists rather than one you must earn. Ibn Kathir reads the command that follows as the consequence: because the bond is real, a rift in it is something to be repaired rather than accepted. For someone who feels outside every circle, the ayah asserts membership first and asks for effort second.',
     moods: ['Lonely'],
   },
   {
@@ -2947,7 +2947,7 @@ const quranContentData: Content[] = [
       'Then Adam received words from his Lord, and He accepted his repentance. Indeed, it is He who is the Accepting of repentance, the Merciful.',
     source: 'Surah Al-Baqarah 2:37',
     audioKey: '2:37',
-    whyThis: 'Ibn Kathir notes the direction of the verb: Adam *received* the words — Allah taught him what to say in order to be forgiven. The apology was supplied by the One being apologised to. Al-Sa\'di adds that this is the first repentance in human history and it sets the pattern for every one after it: the servant does not find his own way back, he is shown it.',
+    whyThis: 'Ibn Kathir notes the direction of the verb: Adam received the words — Allah taught him what to say in order to be forgiven. The apology was supplied by the One being apologised to. Al-Sa\'di adds that this is the first repentance in human history and it sets the pattern for every one after it: the servant does not find his own way back, he is shown it.',
     moods: ['Guilty'],
   },
   {
@@ -3095,7 +3095,7 @@ const quranContentData: Content[] = [
       'And be patient for the decision of your Lord, for indeed, you are in Our eyes. And exalt Him with praise of your Lord when you arise.',
     source: 'Surah At-Tur 52:48',
     audioKey: '52:48',
-    whyThis: 'Ibn Kathir renders "bi-aʿyuninā" as under Our observation and Our protection — the phrase carries being watched over rather than merely watched. Al-Sa\'di notes it is given as the *reason* for the patience being asked: endure, because you are not enduring unobserved. The command that follows attaches praise to the moment of getting up, which is the hardest moment for anyone worn down.',
+    whyThis: 'Ibn Kathir renders "bi-aʿyuninā" as under Our observation and Our protection — the phrase carries being watched over rather than merely watched. Al-Sa\'di notes it is given as the reason for the patience being asked: endure, because you are not enduring unobserved. The command that follows attaches praise to the moment of getting up, which is the hardest moment for anyone worn down.',
     moods: ['Tired'],
   },
   {
@@ -3149,7 +3149,7 @@ const quranContentData: Content[] = [
       'And enjoin prayer upon your family and be steadfast therein. We ask you not for provision; We provide for you. And the best outcome is for the righteous.',
     source: 'Surah Taha 20:132',
     audioKey: '20:132',
-    whyThis: 'Ibn Kathir highlights the reversal in the middle of the ayah: the one thing Allah does *not* ask of you is provision, because that is His side of the arrangement. Al-Sa\'di notes the verb "iṣṭabir" is an intensified form of patience, used for something requiring sustained effort over time. What is asked is steadfastness in prayer; what is lifted is the weight of supplying.',
+    whyThis: 'Ibn Kathir highlights the reversal in the middle of the ayah: the one thing Allah does not ask of you is provision, because that is His side of the arrangement. Al-Sa\'di notes the verb "iṣṭabir" is an intensified form of patience, used for something requiring sustained effort over time. What is asked is steadfastness in prayer; what is lifted is the weight of supplying.',
     moods: ['Tired'],
   },
   {
@@ -3195,7 +3195,7 @@ const quranContentData: Content[] = [
       'O you who believe, be persistently standing firm for Allah, witnesses in justice. And do not let the hatred of a people prevent you from being just. Be just; that is nearer to righteousness. And fear Allah; indeed, Allah is Acquainted with what you do.',
     source: "Surah Al-Ma'idah 5:8",
     audioKey: '5:8',
-    whyThis: 'Ibn Kathir explains "shanaān" as intense dislike, and notes the ayah does not ask you to stop feeling it — it forbids letting it distort your judgement. Al-Sa\'di observes that justice toward someone you dislike is named as *nearer to taqwa* than justice in general, because the difficulty is what gives it weight. The command assumes the hatred is present and legislates around it.',
+    whyThis: 'Ibn Kathir explains "shanaān" as intense dislike, and notes the ayah does not ask you to stop feeling it — it forbids letting it distort your judgement. Al-Sa\'di observes that justice toward someone you dislike is named as nearer to taqwa than justice in general, because the difficulty is what gives it weight. The command assumes the hatred is present and legislates around it.',
     moods: ['Angry'],
   },
   {
@@ -3235,7 +3235,7 @@ const quranContentData: Content[] = [
       'And those who do not testify to falsehood, and when they pass near ill speech, they pass by with dignity.',
     source: 'Surah Al-Furqan 25:72',
     audioKey: '25:72',
-    whyThis: 'Al-Sa\'di notes the verb: they pass *by*. They do not stop, engage, or answer. Ibn Kathir renders "kirāman" as honourably — the dignity is in not being drawn in rather than in winning the exchange. This sits among the descriptions of ʿibād ar-Rahman, so declining to engage is listed as a mark of the servants of the Most Merciful, not as avoidance.',
+    whyThis: 'Al-Sa\'di notes the verb: they pass by. They do not stop, engage, or answer. Ibn Kathir renders "kirāman" as honourably — the dignity is in not being drawn in rather than in winning the exchange. This sits among the descriptions of ʿibād ar-Rahman, so declining to engage is listed as a mark of the servants of the Most Merciful, not as avoidance.',
     moods: ['Angry'],
   },
   {
@@ -3249,7 +3249,7 @@ const quranContentData: Content[] = [
       'And tell My servants to say that which is best. Indeed, Satan induces dissension among them. Indeed, Satan is ever a clear enemy to man.',
     source: 'Surah Al-Isra 17:53',
     audioKey: '17:53',
-    whyThis: 'Ibn Kathir notes the same root used in 7:200 — "yanzagh", to goad or prod — but here it is applied to the space *between* two people rather than inside one. Al-Sa\'di draws the practical consequence: harsh words are the opening he works through, so choosing the better wording is not politeness but closing a door. The enmity named at the end is his, not the other person\'s.',
+    whyThis: 'Ibn Kathir notes the same root used in 7:200 — "yanzagh", to goad or prod — but here it is applied to the space between two people rather than inside one. Al-Sa\'di draws the practical consequence: harsh words are the opening he works through, so choosing the better wording is not politeness but closing a door. The enmity named at the end is his, not the other person\'s.',
     moods: ['Angry'],
   },
   {
@@ -12452,7 +12452,7 @@ const quranContentAnglesData: ContentAngle[] = [
     contentId: 'quran_94_5',
     mood: 'Overwhelmed',
     angle:
-      "[Tafsir Ibn Kathir on 94:5-6] The grammarians point at something precise here: 'the hardship' (al-'usr) carries the definite article both times — it is one and the same hardship — while 'ease' (yusr) is indefinite both times, and an indefinite noun repeated is a new one each time. One hardship, two eases. When you are waiting on a result, your mind insists this difficulty is permanent and singular. The ayah answers that the ease is the thing that comes in plural, and that it arrives *with* the hardship, not only after it has gone.",
+      "[Tafsir Ibn Kathir on 94:5-6] The grammarians point at something precise here: 'the hardship' (al-'usr) carries the definite article both times — it is one and the same hardship — while 'ease' (yusr) is indefinite both times, and an indefinite noun repeated is a new one each time. One hardship, two eases. When you are waiting on a result, your mind insists this difficulty is permanent and singular. The ayah answers that the ease is the thing that comes in plural, and that it arrives with the hardship, not only after it has gone.",
     action: 'Turn one anxious thought into a du\'a instead of replaying it.',
     actionHowTo:
       'Catch yourself mid-worry today. Instead of finishing the thought, say the du\'a the Prophet ﷺ said when distressed — out loud if you can.',
@@ -12930,7 +12930,7 @@ const quranContentAnglesData: ContentAngle[] = [
     contentId: 'quran_94_5',
     mood: 'Hopeful',
     angle:
-      "[Tafsir Ibn Kathir on 94:5-6] Notice the preposition: ma'a al-'usr, *with* the hardship — not after it, not once it is over. The ease is described as accompanying the difficulty rather than replacing it. When you hit the topic that will not go in, you tend to read the confusion as a verdict about your ability, and stop. But confusion is what understanding feels like from the inside, before it resolves. The ease the ayah promises is arriving alongside the struggle, in the same sitting, not on the far side of giving up.",
+      "[Tafsir Ibn Kathir on 94:5-6] Notice the preposition: ma'a al-'usr, with the hardship — not after it, not once it is over. The ease is described as accompanying the difficulty rather than replacing it. When you hit the topic that will not go in, you tend to read the confusion as a verdict about your ability, and stop. But confusion is what understanding feels like from the inside, before it resolves. The ease the ayah promises is arriving alongside the struggle, in the same sitting, not on the far side of giving up.",
     action: 'Give the hard topic twenty minutes — and ask for it to be made easy first.',
     actionHowTo:
       'Set a timer for twenty minutes on the thing you have been avoiding. Before you start, say the du\'a the Prophet ﷺ taught for difficulty.',
@@ -12949,7 +12949,7 @@ const quranContentAnglesData: ContentAngle[] = [
         icon: 'light-bulb',
         title: "Ma'a, not ba'd",
         instruction:
-          'The ayah says ease comes *with* the hardship, not after it. Confusion is not evidence that you cannot do this — it is what learning feels like from the inside, in the minutes before it resolves.',
+          'The ayah says ease comes with the hardship, not after it. Confusion is not evidence that you cannot do this — it is what learning feels like from the inside, in the minutes before it resolves.',
         source: 'Tafsir Ibn Kathir on 94:5-6',
         sourceType: 'quran_dua',
       },
@@ -14820,7 +14820,7 @@ const quranContentAnglesData: ContentAngle[] = [
     contentId: 'quran_49_10',
     mood: 'Lonely',
     angle:
-      'Read the grammar before the instruction. It does not say become brothers, or earn your place among them. It says the believers *are* brothers — a fact stated about you before you have done anything to deserve it. Whatever room you feel outside of, membership was not the thing in question. What the ayah asks for after that is repair, which is a job for someone already inside.',
+      'Read the grammar before the instruction. It does not say become brothers, or earn your place among them. It says the believers are brothers — a fact stated about you before you have done anything to deserve it. Whatever room you feel outside of, membership was not the thing in question. What the ayah asks for after that is repair, which is a job for someone already inside.',
     angleSource: "Tafsir al-Sa'di",
     action: 'Repair one specific rift this week — send the first message.',
     practiceSteps: JSON.stringify([
@@ -15124,7 +15124,7 @@ const quranContentAnglesData: ContentAngle[] = [
     contentId: 'quran_2_37',
     mood: 'Guilty',
     angle:
-      'Read the direction of it. Adam did not compose an apology — he *received* words from his Lord, and then those words were accepted. The One who was wronged supplied the wording for the apology. If you have been stuck because you do not know what to say, or because nothing you draft sounds sufficient, that problem was solved in the thirty-seventh ayah of the Quran. He gives you the words too.',
+      'Read the direction of it. Adam did not compose an apology — he received words from his Lord, and then those words were accepted. The One who was wronged supplied the wording for the apology. If you have been stuck because you do not know what to say, or because nothing you draft sounds sufficient, that problem was solved in the thirty-seventh ayah of the Quran. He gives you the words too.',
     angleSource: "Tafsir al-Sa'di",
     action: 'Use words He already gave rather than waiting to find your own.',
     practiceSteps: JSON.stringify([
@@ -15283,7 +15283,7 @@ const quranContentAnglesData: ContentAngle[] = [
       },
     ]),
     reflection:
-      'Do you doubt that He forgives, or that He forgave *you*? They are different problems — which is yours?',
+      'Do you doubt that He forgives, or that He forgave you? They are different problems — which is yours?',
   },
   {
     id: 'q_angle_23_118_guilty',
@@ -15517,7 +15517,7 @@ const quranContentAnglesData: ContentAngle[] = [
         icon: 'hands-prayer',
         title: 'Believing is the ground you stand on',
         instruction:
-          'Say it and hear the structure — we believed, *so* forgive. You are not petitioning on the strength of your conduct. You are petitioning on the strength of who you are turning to.',
+          'Say it and hear the structure — we believed, so forgive. You are not petitioning on the strength of your conduct. You are petitioning on the strength of who you are turning to.',
         arabicText: 'رَبَّنَآ إِنَّنَآ ءَامَنَّا فَٱغْفِرْ لَنَا ذُنُوبَنَا',
         transliteration: "rabbanā innanā āmannā fa-igh'fir lanā dhunūbanā",
         translation: 'Our Lord, indeed we have believed, so forgive us our sins',
@@ -15680,7 +15680,7 @@ const quranContentAnglesData: ContentAngle[] = [
     contentId: 'quran_52_48',
     mood: 'Tired',
     angle:
-      'Bi-aʿyuninā — you are in Our eyes. Not watched the way a supervisor watches, but kept the way you keep something valuable in sight. And notice it is given as the *reason* for the patience being asked, not as a reward afterwards. The exhausting part of a long stretch is usually the suspicion that none of it is being seen. This ayah answers that before it asks anything of you.',
+      'Bi-aʿyuninā — you are in Our eyes. Not watched the way a supervisor watches, but kept the way you keep something valuable in sight. And notice it is given as the reason for the patience being asked, not as a reward afterwards. The exhausting part of a long stretch is usually the suspicion that none of it is being seen. This ayah answers that before it asks anything of you.',
     angleSource: 'Tafsir Ibn Kathir',
     action: 'Say alhamdulillah at the moment you get up, before anything else.',
     practiceSteps: JSON.stringify([
@@ -16099,7 +16099,7 @@ const quranContentAnglesData: ContentAngle[] = [
     contentId: 'quran_94_5',
     mood: 'Tired',
     angle:
-      'The scholars of Arabic note the construction: the hardship carries the definite article both times — the same hardship — while ease is indefinite each time, meaning two different eases. So it is not one difficulty followed by one relief. It is one difficulty accompanied by more relief than it. And the word is maʿa, *with*, not after. The ease is not waiting on the far side of this; some of it is already in the room.',
+      'The scholars of Arabic note the construction: the hardship carries the definite article both times — the same hardship — while ease is indefinite each time, meaning two different eases. So it is not one difficulty followed by one relief. It is one difficulty accompanied by more relief than it. And the word is maʿa, with, not after. The ease is not waiting on the far side of this; some of it is already in the room.',
     angleSource: 'Tafsir Ibn Kathir',
     action: 'Find one ease that is already present inside the hard thing.',
     practiceSteps: JSON.stringify([
@@ -16147,7 +16147,7 @@ const quranContentAnglesData: ContentAngle[] = [
     contentId: 'quran_5_8',
     mood: 'Angry',
     angle:
-      'Read what this ayah assumes about you. It does not say stop disliking them — shanaān is intense dislike and Allah names it as present. What it forbids is letting that feeling bend your judgement. And then it says being just toward someone you cannot stand is *nearer to taqwa* than ordinary fairness, precisely because it is harder. Your anger is not the thing being corrected here. Its reach is.',
+      'Read what this ayah assumes about you. It does not say stop disliking them — shanaān is intense dislike and Allah names it as present. What it forbids is letting that feeling bend your judgement. And then it says being just toward someone you cannot stand is nearer to taqwa than ordinary fairness, precisely because it is harder. Your anger is not the thing being corrected here. Its reach is.',
     angleSource: 'Tafsir Ibn Kathir',
     action: 'State one true thing in their favour, out loud, without softening your position.',
     practiceSteps: JSON.stringify([
@@ -16267,7 +16267,7 @@ const quranContentAnglesData: ContentAngle[] = [
     contentId: 'quran_25_72',
     mood: 'Angry',
     angle:
-      'They pass *by*. They do not stop, correct, or answer — and the word for how they do it is kirāman, with dignity. Notice this sits in the list of the qualities of the servants of the Most Merciful. Walking past something you could have answered is recorded here as a mark of nobility, not of avoidance. Not every provocation is addressed to you, and not every one that is deserves a reply.',
+      'They pass by. They do not stop, correct, or answer — and the word for how they do it is kirāman, with dignity. Notice this sits in the list of the qualities of the servants of the Most Merciful. Walking past something you could have answered is recorded here as a mark of nobility, not of avoidance. Not every provocation is addressed to you, and not every one that is deserves a reply.',
     angleSource: "Tafsir al-Sa'di",
     action: 'Scroll past, walk past, or leave the thread — without composing the reply first.',
     practiceSteps: JSON.stringify([
@@ -16310,7 +16310,7 @@ const quranContentAnglesData: ContentAngle[] = [
     contentId: 'quran_17_53',
     mood: 'Angry',
     angle:
-      'The same word used for the spike of anger inside you — yanzagh, to goad — is used here for the space *between* two people. He works in the gap, and harsh wording is the door he comes through. Which reframes the argument you are in: the person across from you is not the enemy the ayah names at the end. Choosing the better sentence is not politeness. It is shutting a door on something that wants the two of you apart.',
+      'The same word used for the spike of anger inside you — yanzagh, to goad — is used here for the space between two people. He works in the gap, and harsh wording is the door he comes through. Which reframes the argument you are in: the person across from you is not the enemy the ayah names at the end. Choosing the better sentence is not politeness. It is shutting a door on something that wants the two of you apart.',
     angleSource: "Tafsir al-Sa'di",
     action: 'Rewrite your next sentence to the better version before you say it.',
     practiceSteps: JSON.stringify([
@@ -16328,7 +16328,7 @@ const quranContentAnglesData: ContentAngle[] = [
         icon: 'chat',
         title: 'Say the better one',
         instruction:
-          'Not the softest version — the *better* one. Accurate, unarmed, no line included because it will land. Say it out loud once before you say it to them.',
+          'Not the softest version — the better one. Accurate, unarmed, no line included because it will land. Say it out loud once before you say it to them.',
         arabicText: 'وَقُل لِّعِبَادِى يَقُولُوا۟ ٱلَّتِى هِىَ أَحْسَنُ',
         transliteration: 'waqul liʿibādī yaqūlū allatī hiya aḥsanu',
         translation: 'And tell My servants to say that which is best',
