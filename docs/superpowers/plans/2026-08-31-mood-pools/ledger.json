@@ -191,60 +191,74 @@
       ]
     },
     {
-      "angleId": null,
-      "contentId": null,
+      "angleId": "q_angle_39_23_calm",
+      "contentId": "quran_39_23",
       "mood": "Calm",
       "tier": "T3",
-      "status": "pending",
-      "citations": []
+      "status": "committed",
+      "citations": [
+        "Quran 39:23"
+      ]
     },
     {
-      "angleId": null,
-      "contentId": null,
+      "angleId": "q_angle_6_82_calm",
+      "contentId": "quran_6_82",
       "mood": "Calm",
       "tier": "T3",
-      "status": "pending",
-      "citations": []
+      "status": "committed",
+      "citations": [
+        "Quran 6:82"
+      ]
     },
     {
-      "angleId": null,
-      "contentId": null,
+      "angleId": "q_angle_3_191_calm",
+      "contentId": "quran_3_191",
       "mood": "Calm",
       "tier": "T3",
-      "status": "pending",
-      "citations": []
+      "status": "committed",
+      "citations": [
+        "Quran 3:191"
+      ]
     },
     {
-      "angleId": null,
-      "contentId": null,
+      "angleId": "q_angle_17_82_calm",
+      "contentId": "quran_17_82",
       "mood": "Calm",
       "tier": "T3",
-      "status": "pending",
-      "citations": []
+      "status": "committed",
+      "citations": [
+        "Quran 17:82"
+      ]
     },
     {
-      "angleId": null,
-      "contentId": null,
+      "angleId": "q_angle_16_97_calm",
+      "contentId": "quran_16_97",
       "mood": "Calm",
       "tier": "T3",
-      "status": "pending",
-      "citations": []
+      "status": "committed",
+      "citations": [
+        "Quran 16:97"
+      ]
     },
     {
-      "angleId": null,
-      "contentId": null,
+      "angleId": "q_angle_76_25_calm",
+      "contentId": "quran_76_25",
       "mood": "Calm",
       "tier": "T3",
-      "status": "pending",
-      "citations": []
+      "status": "committed",
+      "citations": [
+        "Quran 76:25"
+      ]
     },
     {
-      "angleId": null,
-      "contentId": null,
+      "angleId": "q_angle_51_20_calm",
+      "contentId": "quran_51_20",
       "mood": "Calm",
       "tier": "T3",
-      "status": "pending",
-      "citations": []
+      "status": "committed",
+      "citations": [
+        "Quran 51:20"
+      ]
     },
     {
       "angleId": "q_angle_94_5_sad_sad",
