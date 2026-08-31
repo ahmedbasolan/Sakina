@@ -294,7 +294,10 @@ import type { Content, ContentAngle } from '../types';
 // v40: Calm pool 16 -> 40. 24 new mood angles across three tiers — 13 on
 //      verses already tagged Calm, 4 re-tagging existing verses, and 7 on new
 //      Content entries (39:23, 6:82, 3:191, 17:82, 16:97, 76:25, 51:20).
-const SEED_VERSION = 40;
+// v41: Sad pool 20 -> 40. 20 new mood angles — 3 on verses already tagged
+//      Sad, 7 re-tagging existing verses, and 10 on new Content entries
+//      (57:23, 93:5, 13:24, 12:64, 42:28, 28:13, 94:1, 29:2, 64:11, 10:57).
+const SEED_VERSION = 41;
 // Separate keys per content type — Quran and Hadith data change independently,
 // and each seeder used to write the SAME key at the end of its run. Since
 // initializeDatabase() awaits seedQuranContent() before seedHadithContent(),
