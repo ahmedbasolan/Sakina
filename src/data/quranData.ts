@@ -322,6 +322,22 @@ const quranContentData: Content[] = [
     source: 'Surah Yusuf 12:87',
     audioKey: '12:87',
     whyThis: "Yaqub (AS) taught his sons to never lose hope in Allah's mercy.",
+    story: {
+      title: 'What He Knew That They Did Not',
+      body:
+        "Ya'qub's grief for Yusuf turned his eyes white. His sons told him he would " +
+        'make himself ill, or destroy himself, going on remembering Yusuf — and he ' +
+        'answered that he took his sorrow and his grief to Allah alone, and that he ' +
+        'knew from Allah what they did not know. Then he sent them out to search, and ' +
+        'told them not to despair of relief from Allah, because despairing of it is ' +
+        'not what a believer does. When the caravan set out for home he said he could ' +
+        'sense Yusuf, and his family told him he was in the same old error. Then the ' +
+        'bearer of good news arrived and cast the shirt over his face, and his sight ' +
+        'came back — and he asked them whether he had not told them all along that he ' +
+        'knew from Allah what they did not know.',
+      source: 'Surah Yusuf 12:84-96',
+      sourceType: 'quran_narrative',
+    },
     moods: ['Hopeful'],
   },
   {
