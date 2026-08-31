@@ -327,6 +327,19 @@ function SurahRow({
 
 type Tab = 'saved' | 'surahs';
 
+/**
+ * The download banner has two phases and only one of them can move.
+ * While the three editions are coming down, `cached` is pinned at 0 — no
+ * surah is writable until all three have merged — so a bar driven by the
+ * cached count sits at 0% for the entire multi-MB download and reads as
+ * frozen. `fetchProgress` covers that phase; the cached count takes over
+ * for the write phase, where it moves quickly and honestly.
+ */
+function downloadBarPercent(p: DownloadProgress): number {
+  const fraction = p.fetchProgress != null ? p.fetchProgress : p.cached / p.total;
+  return Math.round(Math.max(0, Math.min(1, fraction)) * 100);
+}
+
 export default function LibraryScreen({ navigation }: any) {
   const insets = useSafeAreaInsets();
   const [activeTab, setActiveTab] = useState<Tab>('saved');
@@ -714,7 +727,9 @@ export default function LibraryScreen({ navigation }: any) {
                       {dlProgress.fetching ? 'Downloading Quran…' : 'Download paused — tap to retry'}
                     </Text>
                     <Text style={styles.dlBannerCount}>
-                      {dlProgress.cached}/{dlProgress.total}
+                      {dlProgress.fetchProgress != null
+                        ? `${downloadBarPercent(dlProgress)}%`
+                        : `${dlProgress.cached}/${dlProgress.total}`}
                     </Text>
                   </View>
                   {/* Progress bar */}
@@ -722,13 +737,15 @@ export default function LibraryScreen({ navigation }: any) {
                     <View
                       style={[
                         styles.dlBarFill,
-                        { width: `${(dlProgress.cached / dlProgress.total) * 100}%` as any },
+                        { width: `${downloadBarPercent(dlProgress)}%` as any },
                       ]}
                     />
                   </View>
                   <Text style={styles.dlBannerSub}>
                     {dlProgress.fetching
-                      ? 'Surahs will be available offline once downloaded'
+                      ? dlProgress.fetchProgress != null
+                        ? 'Downloading the full Quran — about 5 MB, then it is yours offline'
+                        : 'Surahs will be available offline once downloaded'
                       : 'Connection issue stopped the download — tap this banner to try again'}
                   </Text>
                 </TouchableOpacity>

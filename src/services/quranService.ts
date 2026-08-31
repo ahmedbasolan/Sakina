@@ -3,8 +3,10 @@
  *
  * Strategy:
  *  1. On first open of LibraryScreen, kick off `prefetchAllSurahs()`.
- *  2. Fetches surahs in small batches from alquran.cloud (Uthmani + en.sahih —
- *     Sahih International, the translation edition used app-wide).
+ *  2. Fetches the three editions (Uthmani + en.sahih — Sahih International,
+ *     the translation edition used app-wide — plus en.transliteration) as one
+ *     whole-Quran request each, ONE AT A TIME. See DOWNLOAD_TUNING for why
+ *     they are not fetched concurrently.
  *  3. Each surah is stored in `quran_cache` and, once cached, never expires —
  *     Quran text doesn't change, so a downloaded surah stays readable offline
  *     forever. The only thing that invalidates a cached surah is a
@@ -35,11 +37,53 @@ export interface DownloadProgress {
   // "still working" apart from "gave up, some remain uncached" so it can
   // offer a retry instead of a permanent spinner.
   fetching: boolean;
+  // How far the three-edition network download has got, 0..1, while it is
+  // running; null the rest of the time. `cached` cannot move during that
+  // phase — no surah is writable until all three editions have merged — so
+  // without this the banner sat on "0/114" for the whole multi-MB download
+  // and read as frozen. Stays null once writing starts, when `cached` takes
+  // over as the honest measure.
+  fetchProgress?: number | null;
 }
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
 const TOTAL_SURAHS = 114;
+
+const BULK_BASE = 'https://api.alquran.cloud/v1/quran';
+const BULK_EDITIONS = ['quran-uthmani', 'en.sahih', 'en.transliteration'] as const;
+
+/**
+ * Tuning for the whole-Quran download. Exported so its tests can state the
+ * numbers they depend on instead of copying literals.
+ *
+ * The three editions are fetched ONE AT A TIME. Concurrency was the original
+ * design and it is what broke the download on mobile data: 5.1 MB across three
+ * bodies (2.11 + 1.61 + 1.38) sharing one pipe made each of them slower while
+ * the timeout stayed fixed, and `Promise.all` then discarded the ones that HAD
+ * succeeded, so the retry re-downloaded all of it and failed the same way.
+ *
+ * `stallTimeoutMs` is a WATCHDOG, not a deadline: it is re-armed on every
+ * progress event, so it fires only when no bytes have arrived for that long.
+ * A 2 MB body trickling in over two minutes completes; a socket that dies
+ * mid-body is cut loose in 20s. The flat 12s abort it replaces could not tell
+ * those two apart, and killed the first along with the second.
+ *
+ * `maxEditionMs` is the absolute ceiling that stops a pathological
+ * one-byte-per-second connection from holding the download open forever.
+ */
+export const DOWNLOAD_TUNING = {
+  stallTimeoutMs: 20_000,
+  maxEditionMs: 240_000,
+  attempts: 3,
+} as const;
+
+// Raw edition payloads are parked here between downloads so a failure on the
+// third edition does not throw away the two that already arrived — the merge
+// needs all three before a single surah is writable, so without staging a
+// retry means re-downloading everything. Cleared as soon as the merge lands
+// (and on a CACHE_FORMAT_VERSION bump, which may change the edition set).
+const STAGING_KEY_PREFIX = 'quran_bulk_staging_v1_';
 
 // Module-level singleton so multiple LibraryScreen mounts don't double-fetch
 let _isFetching = false;
@@ -92,6 +136,13 @@ async function ensureCacheFormatVersion(): Promise<void> {
     const stored = row ? parseInt(row.value, 10) : 0;
     if (stored < CACHE_FORMAT_VERSION) {
       await db.runAsync('DELETE FROM quran_cache');
+      // Same reasoning as the cache itself: a staged payload was fetched under
+      // the old edition set and must not be merged into the new one. Inlined on
+      // this db handle rather than calling a helper — dbQuery is a serialized
+      // queue, so a nested dbQuery here would deadlock.
+      for (const edition of BULK_EDITIONS) {
+        await db.runAsync('DELETE FROM kv_store WHERE key = ?', [STAGING_KEY_PREFIX + edition]);
+      }
       await db.runAsync(
         'INSERT OR REPLACE INTO kv_store (key, value) VALUES (?, ?)',
         [CACHE_VERSION_KEY, String(CACHE_FORMAT_VERSION)],
@@ -207,6 +258,7 @@ export async function getDownloadProgress(): Promise<DownloadProgress> {
       total: 114,
       done: rows.length >= TOTAL_SURAHS,
       fetching: _isFetching,
+      fetchProgress: null,
     } as DownloadProgress;
   });
 }
@@ -220,35 +272,134 @@ interface RawApiSurah {
   ayahs: RawApiAyah[];
 }
 
-async function fetchEditionBulk(edition: string): Promise<RawApiSurah[]> {
-  const controller = new AbortController();
-  // The whole-Quran payload is a few MB — 12s timeout allows fast fallback
-  // if network is unresponsive.
-  const timeoutId = setTimeout(() => controller.abort(), 12_000);
+/**
+ * GET one edition's whole-Quran payload as text.
+ *
+ * XMLHttpRequest rather than fetch, deliberately: fetch in React Native cannot
+ * report download progress (there is no streaming body — `res.json()` resolves
+ * only once every byte has arrived), so the only timeout it can offer is a flat
+ * wall-clock abort across the whole response. On a 2.1 MB body over mobile data
+ * that wall kills downloads that were working fine. XHR's progress events let
+ * the watchdog measure the thing that actually matters: whether bytes are still
+ * arriving. See DOWNLOAD_TUNING.
+ */
+function requestEditionText(
+  edition: string,
+  onBytes?: (loaded: number, total: number) => void,
+): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+    let settled = false;
+    let stallTimer: ReturnType<typeof setTimeout> | undefined;
+    let ceilingTimer: ReturnType<typeof setTimeout> | undefined;
+
+    const finish = (act: () => void) => {
+      if (settled) return;
+      settled = true;
+      if (stallTimer) clearTimeout(stallTimer);
+      if (ceilingTimer) clearTimeout(ceilingTimer);
+      act();
+    };
+    const abortWith = (message: string) =>
+      finish(() => {
+        try {
+          xhr.abort();
+        } catch {
+          // Already dead — the rejection below is what matters.
+        }
+        reject(new Error(message));
+      });
+    const armStall = () => {
+      if (stallTimer) clearTimeout(stallTimer);
+      stallTimer = setTimeout(
+        () => abortWith(`No data for ${DOWNLOAD_TUNING.stallTimeoutMs}ms on edition ${edition}`),
+        DOWNLOAD_TUNING.stallTimeoutMs,
+      );
+    };
+
+    xhr.onprogress = (e: { loaded?: number; total?: number }) => {
+      armStall();
+      onBytes?.(e?.loaded ?? 0, e?.total ?? 0);
+    };
+    xhr.onload = () =>
+      finish(() => {
+        if (xhr.status >= 200 && xhr.status < 300) resolve(xhr.responseText);
+        else reject(new Error(`HTTP ${xhr.status} for edition ${edition}`));
+      });
+    xhr.onerror = () => finish(() => reject(new Error(`Network error for edition ${edition}`)));
+    xhr.ontimeout = () => abortWith(`Timed out fetching edition ${edition}`);
+
+    xhr.open('GET', `${BULK_BASE}/${edition}`);
+    // 'text' is what keeps React Native's incremental delivery on, and therefore
+    // what makes onprogress fire at all — 'json' hands back one lump at the end
+    // and the watchdog would have nothing to observe.
+    xhr.responseType = 'text';
+    ceilingTimer = setTimeout(
+      () => abortWith(`Exceeded ${DOWNLOAD_TUNING.maxEditionMs}ms on edition ${edition}`),
+      DOWNLOAD_TUNING.maxEditionMs,
+    );
+    armStall();
+    xhr.send();
+  });
+}
+
+function parseEditionText(text: string, edition: string): RawApiSurah[] {
+  const json = JSON.parse(text);
+  const surahs = json?.data?.surahs;
+  if (!Array.isArray(surahs)) throw new Error(`Malformed payload for edition ${edition}`);
+  return surahs as RawApiSurah[];
+}
+
+async function readStagedEdition(edition: string): Promise<RawApiSurah[] | null> {
+  const row = await dbQuery((db) =>
+    db.getFirstAsync<{ value: string }>('SELECT value FROM kv_store WHERE key = ?', [
+      STAGING_KEY_PREFIX + edition,
+    ]),
+  );
+  if (!row) return null;
+  // A truncated or half-written staged payload is worth nothing — treat it as
+  // absent and download the edition again rather than failing the whole merge.
   try {
-    const url = `https://api.alquran.cloud/v1/quran/${edition}`;
-    const res = await Promise.race([
-      fetch(url, { signal: controller.signal }),
-      new Promise<Response>((_, reject) =>
-        setTimeout(() => reject(new Error(`Timed out fetching edition ${edition}`)), 13_000),
-      ),
-    ]);
-    if (!res.ok) throw new Error(`HTTP ${res.status} for edition ${edition}`);
-    const json = await res.json();
-    return json.data.surahs as RawApiSurah[];
-  } finally {
-    clearTimeout(timeoutId);
+    return parseEditionText(row.value, edition);
+  } catch {
+    return null;
   }
 }
 
-async function fetchEditionBulkWithRetry(edition: string): Promise<RawApiSurah[]> {
+/**
+ * Downloads one edition, retrying it on its own — a flaky third edition never
+ * costs the two already in hand. Resumes from a staged payload when there is
+ * one, which is what makes tapping "retry" cheap instead of another 5.1 MB.
+ */
+async function loadEdition(
+  edition: string,
+  stage: boolean,
+  onFraction: (fraction: number) => void,
+): Promise<RawApiSurah[]> {
+  const staged = await readStagedEdition(edition);
+  if (staged) return staged;
+
   let lastError: unknown;
-  for (let attempt = 1; attempt <= 2; attempt++) {
+  for (let attempt = 1; attempt <= DOWNLOAD_TUNING.attempts; attempt++) {
     try {
-      return await fetchEditionBulk(edition);
+      const text = await requestEditionText(edition, (loaded, total) => {
+        // A response without Content-Length reports total 0; the edition then
+        // contributes nothing until it completes, rather than a made-up number.
+        onFraction(total > 0 ? Math.min(loaded / total, 1) : 0);
+      });
+      const surahs = parseEditionText(text, edition);
+      if (stage) {
+        await dbQuery((db) =>
+          db.runAsync('INSERT OR REPLACE INTO kv_store (key, value) VALUES (?, ?)', [
+            STAGING_KEY_PREFIX + edition,
+            text,
+          ]),
+        );
+      }
+      return surahs;
     } catch (error) {
       lastError = error;
-      if (attempt < 2) {
+      if (attempt < DOWNLOAD_TUNING.attempts) {
         const isRateLimited = error instanceof Error && error.message.includes('HTTP 429');
         await sleep((isRateLimited ? 2000 : 800) * attempt);
       }
@@ -267,12 +418,22 @@ async function fetchEditionBulkWithRetry(edition: string): Promise<RawApiSurah[]
  * one edition in a single ~1-5MB response that lands in ~1-2s, so the whole
  * Quran downloads in 3 parallel requests instead of 342 sequential-ish ones.
  */
-async function fetchFullQuranFromApi(): Promise<Map<number, QuranVerse[]>> {
-  const [arabicSurahs, englishSurahs, translitSurahs] = await Promise.all([
-    fetchEditionBulkWithRetry('quran-uthmani'),
-    fetchEditionBulkWithRetry('en.sahih'),
-    fetchEditionBulkWithRetry('en.transliteration'),
-  ]);
+async function fetchFullQuranFromApi(
+  onFraction?: (fraction: number) => void,
+): Promise<Map<number, QuranVerse[]>> {
+  const editions: RawApiSurah[][] = [];
+  for (let i = 0; i < BULK_EDITIONS.length; i++) {
+    // The last edition is not staged: the merge follows it immediately, so a
+    // staged copy would be written and deleted in the same breath.
+    const isLast = i === BULK_EDITIONS.length - 1;
+    editions.push(
+      await loadEdition(BULK_EDITIONS[i], !isLast, (f) =>
+        onFraction?.((i + f) / BULK_EDITIONS.length),
+      ),
+    );
+    if (!isLast) onFraction?.((i + 1) / BULK_EDITIONS.length);
+  }
+  const [arabicSurahs, englishSurahs, translitSurahs] = editions;
 
   if (
     arabicSurahs.length !== TOTAL_SURAHS ||
@@ -337,13 +498,38 @@ export async function prefetchAllSurahs(
     });
 
     if (cachedSet.size >= TOTAL_SURAHS) {
-      onProgress?.({ cached: TOTAL_SURAHS, total: 114, done: true, fetching: false });
+      onProgress?.({
+        cached: TOTAL_SURAHS,
+        total: 114,
+        done: true,
+        fetching: false,
+        fetchProgress: null,
+      });
       return;
     }
 
-    onProgress?.({ cached: cachedSet.size, total: 114, done: false, fetching: true });
+    onProgress?.({
+      cached: cachedSet.size,
+      total: 114,
+      done: false,
+      fetching: true,
+      fetchProgress: 0,
+    });
 
-    const allSurahs = await fetchFullQuranFromApi();
+    // Throttled to ~1% steps: XHR progress can fire many times a second and
+    // every call here is a setState in LibraryScreen.
+    let lastFraction = 0;
+    const allSurahs = await fetchFullQuranFromApi((fraction) => {
+      if (fraction - lastFraction < 0.01) return;
+      lastFraction = fraction;
+      onProgress?.({
+        cached: cachedSet.size,
+        total: 114,
+        done: false,
+        fetching: true,
+        fetchProgress: fraction,
+      });
+    });
     const fetchedAt = Date.now();
     let cached = cachedSet.size;
 
@@ -364,20 +550,46 @@ export async function prefetchAllSurahs(
           // writes themselves take well under a second total, this is purely
           // so the progress bar reads as moving rather than jumping 4→114.
           if (cached % 10 === 0) {
-            onProgress?.({ cached, total: 114, done: false, fetching: true });
+            // fetchProgress null from here on: the network phase is over and
+            // `cached` is now the honest, moving measure.
+            onProgress?.({
+              cached,
+              total: 114,
+              done: false,
+              fetching: true,
+              fetchProgress: null,
+            });
           }
         }
       });
+      // Merged and written — the staged payloads have done their job. Same
+      // db handle, no nested dbQuery (it is a serialized queue).
+      for (const edition of BULK_EDITIONS) {
+        await db.runAsync('DELETE FROM kv_store WHERE key = ?', [STAGING_KEY_PREFIX + edition]);
+      }
     });
 
-    onProgress?.({ cached, total: 114, done: cached >= TOTAL_SURAHS, fetching: false });
+    onProgress?.({
+      cached,
+      total: 114,
+      done: cached >= TOTAL_SURAHS,
+      fetching: false,
+      fetchProgress: null,
+    });
   } catch (error) {
     // Bulk fetch failed outright (network down, API outage) — report the
     // current cached count so the UI shows "stalled", not a stuck spinner.
     const current = await getDownloadProgress().catch(
-      () => ({ cached: 0, total: 114, done: false, fetching: false } as DownloadProgress),
+      () =>
+        ({
+          cached: 0,
+          total: 114,
+          done: false,
+          fetching: false,
+          fetchProgress: null,
+        }) as DownloadProgress,
     );
-    onProgress?.({ ...current, fetching: false });
+    onProgress?.({ ...current, fetching: false, fetchProgress: null });
   } finally {
     _isFetching = false;
   }
