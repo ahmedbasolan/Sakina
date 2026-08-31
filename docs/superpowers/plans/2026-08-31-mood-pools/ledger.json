@@ -9,32 +9,45 @@
       "contentId": "quran_2_255",
       "mood": "Calm",
       "tier": "T1",
-      "status": "pending",
-      "citations": []
+      "status": "committed",
+      "citations": [
+        "Quran 2:255",
+        "Bukhari 2311",
+        "Bukhari 6314"
+      ]
     },
     {
       "angleId": "q_angle_22_77_calm",
       "contentId": "quran_22_77",
       "mood": "Calm",
       "tier": "T1",
-      "status": "pending",
-      "citations": []
+      "status": "committed",
+      "citations": [
+        "Quran 22:77",
+        "Muslim 482"
+      ]
     },
     {
       "angleId": "q_angle_2_45_calm",
       "contentId": "quran_2_45",
       "mood": "Calm",
       "tier": "T1",
-      "status": "pending",
-      "citations": []
+      "status": "committed",
+      "citations": [
+        "Quran 2:45",
+        "Abu Dawud 1319"
+      ]
     },
     {
       "angleId": "q_angle_25_47_calm",
       "contentId": "quran_25_47",
       "mood": "Calm",
       "tier": "T1",
-      "status": "pending",
-      "citations": []
+      "status": "committed",
+      "citations": [
+        "Quran 25:47",
+        "Bukhari 247"
+      ]
     },
     {
       "angleId": "q_angle_78_9_calm",
