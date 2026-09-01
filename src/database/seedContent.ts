@@ -325,7 +325,11 @@ import type { Content, ContentAngle } from '../types';
 //      prohibition, 7:96 closes on divine seizure, 2:168 is a dietary command,
 //      24:32 is a marriage ruling; 20:131, 25:74, 33:21, 65:3 and 98:5 replace
 //      them from the same pool.
-const SEED_VERSION = 45;
+// v46: Hopeful 27 -> 32. 5 more T1 (65:7, 14:37, 2:261, 17:79, 73:1-4).
+//      Bukhari 1410 and 6464 are cited as quoted framing on their steps, not
+//      bare, because the step action is app-written and the hadith is its
+//      basis rather than its text.
+const SEED_VERSION = 46;
 // Separate keys per content type — Quran and Hadith data change independently,
 // and each seeder used to write the SAME key at the end of its run. Since
 // initializeDatabase() awaits seedQuranContent() before seedHadithContent(),
