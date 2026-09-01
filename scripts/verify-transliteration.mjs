@@ -27,7 +27,12 @@ import fs from 'fs';
 const FILE = 'src/services/dailyVerseService.ts';
 const EDITION = 'en.transliteration';
 
-const lines = fs.readFileSync(FILE, 'utf8').split('\n');
+// Split on /\r?\n/, not '\n'. dailyVerseService.ts is CRLF, so splitting on
+// '\n' alone leaves a trailing \r on every line and the end-anchored patterns
+// below matched nothing at all. The script parsed 0 entries and exited 1 with
+// "the file shape changed" — it failed loudly instead of reporting a vacuous
+// pass, which is the only reason the breakage was findable.
+const lines = fs.readFileSync(FILE, 'utf8').split(/\r?\n/);
 
 const entries = [];
 let pending = null;
