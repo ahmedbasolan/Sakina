@@ -286,7 +286,16 @@ once.
   wrong step or none.
 - **Assert exactly one match per edit, and write nothing if any edit fails.**
   A partial apply across 40 edits is far worse than an abort.
-- **Preserve CRLF.** Check for `\r\n` before writing and bail if it is gone.
+- **Preserve CRLF — and count bare LFs, don't just check `\r\n` exists.**
+  The existence check is the obvious one and it is not sufficient: a script
+  that wrapped one field onto a new line with `'\n'` passed
+  `out.includes('\r\n')` cleanly, because the other 18,983 lines were still
+  correct. Nothing in the repo noticed — not the typecheck, not Jest, not any
+  verifier — and it surfaced only as git's "LF will be replaced by CRLF"
+  warning at commit time, which is easy to read past. The file is 100% CRLF,
+  so the invariant is **zero** bare LFs, asserted before *and* after the edit
+  (`scripts/author-angle.mjs` does this now). When you hand-write a multi-line
+  insertion, remember every join in it needs `\r\n`.
 - **Mind the quoting.** Inserting an apostrophe into a single-quoted literal
   (`'Jami at-Tirmidhi 2891'` → `'Jami' at-…'`) terminates the string and
   breaks the build. Re-quote to double instead. Titles come in both quote

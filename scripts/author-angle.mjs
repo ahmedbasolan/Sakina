@@ -108,6 +108,19 @@ if (/'/.test(p.contentId)) fail('contentId must not contain an apostrophe — it
 const src = fs.readFileSync(FILE, 'utf8');
 if (!src.includes('\r\n')) fail('refusing to write: CRLF line endings are already gone');
 
+// COUNT bare LFs, do not merely assert that CRLF still exists somewhere. The
+// existence check is what CLAUDE.md prescribes and it is not sufficient: a
+// one-off edit script wrapped a single field onto a new line with '\n' and
+// still passed, because 18,983 other lines were fine. Only git caught it. The
+// file is 100% CRLF, so the correct invariant is zero.
+const bareLF = (s) => {
+  let n = 0;
+  for (let i = 0; i < s.length; i++) if (s[i] === '\n' && s[i - 1] !== '\r') n++;
+  return n;
+};
+const bareBefore = bareLF(src);
+if (bareBefore !== 0) fail(`refusing to write: ${bareBefore} bare LF(s) already in ${FILE}`);
+
 const idHits = src.split(`id: '${p.angleId}'`).length - 1;
 if (idHits !== 0)
   fail(`angle id ${p.angleId} already exists (${idHits} match) — reusing an id puts two entries ` +
@@ -245,6 +258,8 @@ let out = src;
 for (const e of edits) out = out.slice(0, e.at) + e.ins + out.slice(e.at + e.del);
 
 if (!out.includes('\r\n')) fail('refusing to write: the edit destroyed CRLF');
+const bareAfter = bareLF(out);
+if (bareAfter !== 0) fail(`refusing to write: the edit introduced ${bareAfter} bare LF(s)`);
 if (out.length <= src.length) fail('refusing to write: the edit did not add content');
 
 // ── resolve the ledger row BEFORE writing anything ────────────────────────
