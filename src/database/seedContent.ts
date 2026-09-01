@@ -348,7 +348,27 @@ import type { Content, ContentAngle } from '../types';
 //      11 step clauses across Guilty/Angry/Hopeful was NFC-normalised rather
 //      than the byte-exact quran.com text, and 59:10's step clause had
 //      "Rabbana" moved to the front of a clause the ayah puts it after.
-const SEED_VERSION = 50;
+// v51: Tired 24 -> 40, target floor reached — ALL NINE MOODS AT THE 40 FLOOR.
+//      2 T1 (2:261, 67:15, pre-assigned in the ledger) + 6 T2 (4:28, 3:191,
+//      21:83, 2:214, 29:69, 65:3 re-tagged Tired) + 8 T3 (new verses 64:16,
+//      23:62, 30:54, 19:25, 51:58, 16:7, 13:29, 11:112). Every step Arabic in
+//      this batch was sliced BY WORD INDEX out of whichever text the angle's
+//      verse actually holds (the corpus's own arabicText for T1/T2, a fresh
+//      quran.com fetch for T3) rather than typed or substring-matched — no
+//      Arabic in this batch was ever typed by hand. 3:191's corpus text turned
+//      out to differ from a fresh quran.com fetch by more than NFC (the
+//      richer-Uthmani-edition difference CLAUDE.md documents), which a
+//      substring search across the two texts cannot see past; index slicing
+//      never compares the two texts, so it was unaffected — confirmed by a
+//      21-word count match before slicing and a clean verify-citations run
+//      after. A second bug, caught before authoring: the payload-generation
+//      script read alquran.cloud's transliteration response as `data.text`
+//      instead of `data[0].text` (the API always wraps `data` in an array,
+//      even for one edition), which silently produced 8 payloads with no
+//      primaryText/transliteration at all — JSON.stringify drops undefined
+//      fields rather than erroring, so nothing complained until
+//      author-angle.mjs's required-field check rejected the first one.
+const SEED_VERSION = 51;
 // Separate keys per content type — Quran and Hadith data change independently,
 // and each seeder used to write the SAME key at the end of its run. Since
 // initializeDatabase() awaits seedQuranContent() before seedHadithContent(),
