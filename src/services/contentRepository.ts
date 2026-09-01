@@ -364,6 +364,18 @@ export class ContentRepository {
           return undefined;
         }
       })(),
+      // Guarded the same way. This is the third full-Content mapper in the
+      // file and it was the one that missed `story` — the mood flow attaches
+      // content through mapLocalRow so the story rendered there, while this
+      // path (RotationEngine.buildExperience, when the angle carries no
+      // content) silently returned a Content with no story at all.
+      story: (() => {
+        try {
+          return row.story ? JSON.parse(row.story) : undefined;
+        } catch {
+          return undefined;
+        }
+      })(),
       optionalAction: row.optionalAction,
       optionalReflection: row.optionalReflection,
       moods: [],
