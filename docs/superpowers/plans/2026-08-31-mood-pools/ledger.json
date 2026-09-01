@@ -802,128 +802,167 @@
       "contentId": "quran_2_261",
       "mood": "Tired",
       "tier": "T1",
-      "status": "pending",
-      "citations": []
+      "status": "committed",
+      "citations": [
+        "Quran 2:261"
+      ]
     },
     {
       "angleId": "q_angle_67_15_tired",
       "contentId": "quran_67_15",
       "mood": "Tired",
       "tier": "T1",
-      "status": "pending",
-      "citations": []
+      "status": "committed",
+      "citations": [
+        "Quran 67:15",
+        "Bukhari 5673"
+      ]
     },
     {
-      "angleId": null,
-      "contentId": null,
+      "angleId": "q_angle_21_83_tired",
+      "contentId": "quran_21_83",
       "mood": "Tired",
       "tier": "T2",
-      "status": "pending",
-      "citations": []
+      "status": "committed",
+      "citations": [
+        "Quran 21:83"
+      ]
     },
     {
-      "angleId": null,
-      "contentId": null,
+      "angleId": "q_angle_29_69_tired",
+      "contentId": "quran_29_69",
       "mood": "Tired",
       "tier": "T2",
-      "status": "pending",
-      "citations": []
+      "status": "committed",
+      "citations": [
+        "Quran 29:69",
+        "Muslim 2664"
+      ]
     },
     {
-      "angleId": null,
-      "contentId": null,
+      "angleId": "q_angle_2_214_tired",
+      "contentId": "quran_2_214",
       "mood": "Tired",
       "tier": "T2",
-      "status": "pending",
-      "citations": []
+      "status": "committed",
+      "citations": [
+        "Quran 2:214"
+      ]
     },
     {
-      "angleId": null,
-      "contentId": null,
+      "angleId": "q_angle_3_191_tired",
+      "contentId": "quran_3_191",
       "mood": "Tired",
       "tier": "T2",
-      "status": "pending",
-      "citations": []
+      "status": "committed",
+      "citations": [
+        "Quran 3:191"
+      ]
     },
     {
-      "angleId": null,
-      "contentId": null,
+      "angleId": "q_angle_4_28_tired",
+      "contentId": "quran_4_28",
       "mood": "Tired",
       "tier": "T2",
-      "status": "pending",
-      "citations": []
+      "status": "committed",
+      "citations": [
+        "Quran 4:28",
+        "Bukhari 39"
+      ]
     },
     {
-      "angleId": null,
-      "contentId": null,
+      "angleId": "q_angle_65_3_tired",
+      "contentId": "quran_65_3",
       "mood": "Tired",
       "tier": "T2",
-      "status": "pending",
-      "citations": []
+      "status": "committed",
+      "citations": [
+        "Quran 65:3",
+        "Muslim 2999"
+      ]
     },
     {
-      "angleId": null,
-      "contentId": null,
+      "angleId": "q_angle_11_112_tired",
+      "contentId": "quran_11_112",
       "mood": "Tired",
       "tier": "T3",
-      "status": "pending",
-      "citations": []
+      "status": "committed",
+      "citations": [
+        "Quran 11:112",
+        "Tirmidhi 3297"
+      ]
     },
     {
-      "angleId": null,
-      "contentId": null,
+      "angleId": "q_angle_13_29_tired",
+      "contentId": "quran_13_29",
       "mood": "Tired",
       "tier": "T3",
-      "status": "pending",
-      "citations": []
+      "status": "committed",
+      "citations": [
+        "Quran 13:29"
+      ]
     },
     {
-      "angleId": null,
-      "contentId": null,
+      "angleId": "q_angle_16_7_tired",
+      "contentId": "quran_16_7",
       "mood": "Tired",
       "tier": "T3",
-      "status": "pending",
-      "citations": []
+      "status": "committed",
+      "citations": [
+        "Quran 16:7"
+      ]
     },
     {
-      "angleId": null,
-      "contentId": null,
+      "angleId": "q_angle_19_25_tired",
+      "contentId": "quran_19_25",
       "mood": "Tired",
       "tier": "T3",
-      "status": "pending",
-      "citations": []
+      "status": "committed",
+      "citations": [
+        "Quran 19:25"
+      ]
     },
     {
-      "angleId": null,
-      "contentId": null,
+      "angleId": "q_angle_23_62_tired",
+      "contentId": "quran_23_62",
       "mood": "Tired",
       "tier": "T3",
-      "status": "pending",
-      "citations": []
+      "status": "committed",
+      "citations": [
+        "Quran 23:62"
+      ]
     },
     {
-      "angleId": null,
-      "contentId": null,
+      "angleId": "q_angle_30_54_tired",
+      "contentId": "quran_30_54",
       "mood": "Tired",
       "tier": "T3",
-      "status": "pending",
-      "citations": []
+      "status": "committed",
+      "citations": [
+        "Quran 30:54",
+        "Bukhari 6363"
+      ]
     },
     {
-      "angleId": null,
-      "contentId": null,
+      "angleId": "q_angle_51_58_tired",
+      "contentId": "quran_51_58",
       "mood": "Tired",
       "tier": "T3",
-      "status": "pending",
-      "citations": []
+      "status": "committed",
+      "citations": [
+        "Quran 51:58"
+      ]
     },
     {
-      "angleId": null,
-      "contentId": null,
+      "angleId": "q_angle_64_16_tired",
+      "contentId": "quran_64_16",
       "mood": "Tired",
       "tier": "T3",
-      "status": "pending",
-      "citations": []
+      "status": "committed",
+      "citations": [
+        "Quran 64:16",
+        "Bukhari 5063"
+      ]
     },
     {
       "angleId": "q_angle_49_10_angry",
