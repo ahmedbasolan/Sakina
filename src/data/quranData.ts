@@ -18979,6 +18979,36 @@ const quranContentAnglesData: ContentAngle[] = [
     practiceSteps: JSON.stringify([{"type":"physical","icon":"hands-prayer","title":"Do it now, not later","instruction":"Two rak‘ahs, or ten minutes of Qur’an. The purpose is available in this room.","source":"Surah Adh-Dhariyat 51:56 — Quran","sourceType":"quran_dua"},{"type":"verbal","icon":"chat","title":"Say what you were made for","instruction":"Say the purpose out loud. It is not a relational one.","sourceType":"composed_dua"},{"type":"mindset","icon":"target","title":"No audience required","instruction":"The ayah names one purpose and attaches no other person to it.","source":"Surah Adh-Dhariyat 51:56 — Quran","sourceType":"quran_dua"}]),
     reflection: "What is available to you in an empty room right now?",
   },
+  {
+    id: 'q_angle_12_87_hopeful',
+    contentId: 'quran_12_87',
+    mood: 'Hopeful',
+    angle: "Notice that the instruction arrives in two halves and both of them are actions. Go and inquire — and do not despair of the mercy of Allah. Ya'qub does not tell his sons to feel better about it; he tells them to keep looking, and to refuse despair while they look. Hope is not a mood that has to turn up before the searching can start. It is the second half of an errand.",
+    angleSource: "Surah Yusuf 12:87",
+    action: "Do one concrete thing today toward something you had quietly written off.",
+    practiceSteps: JSON.stringify([{"type":"physical","icon":"compass","title":"Take one step on the written-off thing","instruction":"Pick something you had stopped expecting anything from and do one small concrete part of it today — a message, a form, one phone call."},{"type":"verbal","icon":"chat","title":"Complain upward before sideways","instruction":"Say the hard part out loud to Allah before you say it to anyone else. Ya'qub's own wording, one ayah earlier, is the phrasing for it.","arabicText":"إِنَّمَآ أَشْكُوا۟ بَثِّى وَحُزْنِىٓ إِلَى ٱللَّهِ","translation":"I only complain of my suffering and my grief to Allah.","source":"Surah Yusuf 12:86 — Quran","sourceType":"quran_dua"},{"type":"mindset","icon":"star","title":"One option is ruled out","instruction":"The ayah closes by naming who despairs of Allah's mercy, and it is not the believer. Whatever else today holds, that door is the one that stays shut.","source":"Surah Yusuf 12:87 — Quran","sourceType":"quran_dua"}]),
+    reflection: "What would you still be doing today if you were not waiting to feel hopeful first?",
+  },
+  {
+    id: 'q_angle_65_3_hopeful',
+    contentId: 'quran_65_3_rizq',
+    mood: 'Hopeful',
+    angle: "Take the phrase the ayah actually uses: from where he does not expect. Not more than you expected, not sooner than you expected — from a direction you are not currently watching. Which puts the list you have been running of how this could possibly work out in its place. It is not the list He is working from. Then the ayah says He is sufficient for the one who trusts Him, and that Allah will accomplish His purpose.",
+    angleSource: "Surah At-Talaq 65:3",
+    action: "Name the outcome you want, then say plainly that you do not know the route.",
+    practiceSteps: JSON.stringify([{"type":"physical","icon":"pen","title":"Write the list, then leave the margin","instruction":"Write down every route you can see to the thing you are hoping for. Leave the bottom third of the page empty on purpose — that blank space is what the ayah is describing."},{"type":"verbal","icon":"hands-prayer","title":"Ask for enough, and for independence","instruction":"Ali taught these words to a man buried in debt, saying the Prophet ﷺ taught them to him. Say them once, slowly.","arabicText":"اللَّهُمَّ اكْفِنِي بِحَلاَلِكَ عَنْ حَرَامِكَ وَأَغْنِنِي بِفَضْلِكَ عَمَّنْ سِوَاكَ","translation":"O Allah, suffice me with what You have made lawful against what You have forbidden, and enrich me by Your favour so I need no one besides You.","source":"Jami' at-Tirmidhi 3563","sourceType":"prophetic_dua","sourceGrading":"hasan"},{"type":"mindset","icon":"leaf","title":"Sufficient is a whole claim","instruction":"The ayah does not say Allah will help with it. It says He is sufficient for the one who relies on Him — a word that closes the gap rather than narrowing it.","source":"Surah At-Talaq 65:3 — Quran","sourceType":"quran_dua"}]),
+    reflection: "How many of the ways this could work out are you actually in a position to see?",
+  },
+  {
+    id: 'q_angle_33_21_hopeful',
+    contentId: 'quran_33_21',
+    mood: 'Hopeful',
+    angle: "There is a condition sitting inside this ayah, and the condition is hope. An excellent pattern in the Messenger of Allah — for anyone whose hope is in Allah and the Last Day, and who remembers Allah often. So hope is not what arrives at the end of following him. It is named first, as the thing that makes the following possible at all.",
+    angleSource: "Surah Al-Ahzab 33:21",
+    action: "Copy one small, specific habit of the Prophet ﷺ today.",
+    practiceSteps: JSON.stringify([{"type":"physical","icon":"handshake","title":"Copy one narrow thing","instruction":"Pick a single small habit rather than a whole character — greeting first, eating with the right hand, a smile at someone who did not expect one — and do it deliberately today."},{"type":"verbal","icon":"heart","title":"Send salah on him","instruction":"Send salah on the Prophet ﷺ ten times, in whatever wording you already know. It needs no occasion and no preparation.","source":"\"Whoever sends salah upon me once, Allah will send salah upon him tenfold, and will erase ten sins from him, and will raise him ten degrees in status.\" [Sunan an-Nasa'i 1297]","sourceType":"prophetic_dhikr"},{"type":"mindset","icon":"compass","title":"Read the condition again","instruction":"The qualification the ayah names is not being consistent, or advanced, or already good at this. It is hoping in Allah and the Last Day, and remembering Him often.","source":"Surah Al-Ahzab 33:21 — Quran","sourceType":"quran_dua"}]),
+    reflection: "Which of his habits is small enough that you could start it before tonight?",
+  },
 ];
 
 export { quranContent, quranContentAnglesData as quranContentAngles };
