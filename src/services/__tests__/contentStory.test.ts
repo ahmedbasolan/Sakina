@@ -57,13 +57,16 @@ describe('story survives the SQLite round trip', () => {
     expect(read('src/services/contentRepository.ts')).toContain('c.story');
   });
 
-  // contentRepository.ts builds a full Content in three places — mapCloudRow,
-  // mapLocalRow and fetchContentById — and the first two got `story` while the
-  // third did not. Nothing caught it: the mood flow attaches content via
-  // mapLocalRow, so the story renders there, and the journey flow (which does
-  // go through fetchContentById, from RotationEngine.buildExperience) has no
-  // StoryLayer to notice the field missing. It would have surfaced the day a
-  // story was wanted on a path step, as a story that simply never appeared.
+  // contentRepository.ts builds a full Content in four places — mapCloudRow,
+  // mapLocalRow, fetchContentById and getQuranVerses — and the first two got
+  // `story` while the other two did not. Nothing caught it: the mood flow
+  // attaches content via mapLocalRow, so the story renders there, and the
+  // journey flow (which does go through fetchContentById, from
+  // RotationEngine.buildExperience) has no StoryLayer to notice the field
+  // missing. getQuranVerses (QuranLibraryScreen's source) went uncaught longer
+  // still, because this test itself only enumerated three markers when it was
+  // written — it would have surfaced the day either screen grew a "Story"
+  // affordance, as a story that simply never appeared.
   it('every full-Content mapper carries story', () => {
     const src = read('src/services/contentRepository.ts');
     const bodyOf = (marker: string) => {
@@ -71,7 +74,9 @@ describe('story survives the SQLite round trip', () => {
       expect(at).toBeGreaterThan(-1);
       return src.slice(at, src.indexOf('\n  }', at));
     };
-    for (const marker of ['function mapCloudRow', 'function mapLocalRow', 'async fetchContentById']) {
+    for (const marker of [
+      'function mapCloudRow', 'function mapLocalRow', 'async fetchContentById', 'async getQuranVerses',
+    ]) {
       expect(bodyOf(marker)).toContain('story');
     }
   });

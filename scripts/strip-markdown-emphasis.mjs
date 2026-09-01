@@ -22,9 +22,21 @@ import fs from 'fs';
 const FILE = 'src/data/quranData.ts';
 const EXPECTED = 23;
 
+// Count bare LFs, don't just check `\r\n` exists — CLAUDE.md, "Editing
+// quranData.ts by script". The existence check alone passed once on a file
+// with exactly one bad line among nineteen thousand good ones; a global
+// regex replace across the whole file is exactly the kind of edit where a
+// single stray line ending is easy to miss.
+const bareLF = (s) => {
+  let n = 0;
+  for (let i = 0; i < s.length; i++) if (s[i] === '\n' && s[i - 1] !== '\r') n++;
+  return n;
+};
+
 const src = fs.readFileSync(FILE, 'utf8');
-if (!src.includes('\r\n')) {
-  console.error('x refusing to write: CRLF line endings are already gone');
+const bareBefore = bareLF(src);
+if (bareBefore !== 0) {
+  console.error(`x refusing to write: ${bareBefore} bare LF(s) already in ${FILE}`);
   process.exit(1);
 }
 
@@ -38,8 +50,9 @@ if (matches.length !== EXPECTED) {
 
 const out = src.replace(/\*([^*\n]{1,60})\*/g, '$1');
 
-if (!out.includes('\r\n')) {
-  console.error('x refusing to write: the edit destroyed CRLF');
+const bareAfter = bareLF(out);
+if (bareAfter !== 0) {
+  console.error(`x refusing to write: the edit introduced ${bareAfter} bare LF(s)`);
   process.exit(1);
 }
 // NOT `out.includes('*')` — the file's own JSDoc comment blocks are full of

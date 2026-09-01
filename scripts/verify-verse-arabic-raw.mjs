@@ -51,6 +51,7 @@
  * Both plain and VAR_INJECT modes exiting 0 is the green state.
  */
 import fs from 'fs';
+import { bareLF } from './lib/quranDataParse.mjs';
 
 const SNAPSHOT = 'src/data/canonical/quranArabicCanonical.json';
 const FILE = 'src/data/quranData.ts';
@@ -109,11 +110,6 @@ if (fix) {
     fail(`not in the NFC-only bucket, nothing written: ${notNfc.join(', ')}`);
   buckets.nfc = fixIds;
   const src = fs.readFileSync(FILE, 'utf8');
-  const bareLF = (s) => {
-    let n = 0;
-    for (let i = 0; i < s.length; i++) if (s[i] === '\n' && s[i - 1] !== '\r') n++;
-    return n;
-  };
   if (bareLF(src) !== 0) fail(`refusing to write: bare LF(s) already in ${FILE}`);
 
   const edits = [];

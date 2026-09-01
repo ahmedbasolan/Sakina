@@ -1,7 +1,10 @@
 /**
  * Attach a `story` to an existing Content entry in quranData.ts.
  *
- * Generalises scripts/add-pilot-story.mjs, which is hardcoded to quran_12_87.
+ * Generalises the pilot script that was hardcoded to quran_12_87 (deleted once
+ * this superseded it — its CRLF guard was existence-only, the exact
+ * insufficiency CLAUDE.md's "Editing quranData.ts by script" section warns
+ * against, and a "template" carrying a since-fixed bug is worse than none).
  * Same structural-edit discipline as scripts/author-angle.mjs, and for the
  * same reasons (CLAUDE.md, "Editing quranData.ts by script"):
  *
@@ -31,6 +34,7 @@
  *   payload = { contentId, story: { title, body, source, sourceType, grading? } }
  */
 import fs from 'fs';
+import { bareLF } from './lib/quranDataParse.mjs';
 
 const FILE = 'src/data/quranData.ts';
 const SOURCE_TYPES = ['quran_narrative', 'hadith_narrative'];
@@ -60,11 +64,6 @@ if (!/\d/.test(p.story.source))
 
 const src = fs.readFileSync(FILE, 'utf8');
 
-const bareLF = (s) => {
-  let n = 0;
-  for (let i = 0; i < s.length; i++) if (s[i] === '\n' && s[i - 1] !== '\r') n++;
-  return n;
-};
 const bareBefore = bareLF(src);
 if (bareBefore !== 0) fail(`refusing to write: ${bareBefore} bare LF(s) already in ${FILE}`);
 

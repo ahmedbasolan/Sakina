@@ -22,6 +22,7 @@
  */
 import fs from 'fs';
 import { execFileSync } from 'child_process';
+import { objects as libObjects, stepsOf } from './lib/quranDataParse.mjs';
 
 const STRIP = /[ً-ٟؐ-ؚۖ-ۭـ]/g;
 const bare = (s) => (s || '')
@@ -60,61 +61,11 @@ const KNOWN_ORTHOGRAPHIC = new Set([
 ]);
 
 const src = fs.readFileSync('src/data/quranData.ts', 'utf8');
-function objects(prefix) {
-  const out = [];
-  for (const m of src.matchAll(new RegExp(`id: '(${prefix}[a-zA-Z0-9_]+)'`, 'g'))) {
-    let o = m.index; while (src[o] !== '{') o--;
-    let d = 0, q = null, e = -1;
-    for (let k = o; k < src.length; k++) {
-      const c = src[k];
-      if (q) { if (c === '\\') k++; else if (c === q) q = null; continue; }
-      if (c === "'" || c === '"' || c === '`') { q = c; continue; }
-      if (c === '{') d++; else if (c === '}') { d--; if (!d) { e = k; break; } }
-    }
-    out.push({ id: m[1], body: src.slice(o, e + 1) });
-  }
-  return out;
-}
-
-/**
- * Parse an angle's practiceSteps array by MATCHING BRACKETS, not by regex.
- *
- * Passes 1, 2, 4, 5 and 6 all used
- *   /practiceSteps:\s*JSON\.stringify\(([\s\S]*?)\n\s*\]\),/
- * which requires a NEWLINE before the closing `]),`. Hand-written angles happen
- * to be formatted that way; every angle emitted by scripts/author-angle.mjs puts
- * the whole array on one line, and so matched nothing. `if (!raw) continue;`
- * then skipped them in silence.
- *
- * That hid 75 of 395 angles — all 65 added by the tick script, plus the ten
- * q_angle_tawbah_day* angles already on main. Five passes reported "0 problems"
- * over 320 angles while calling it the whole corpus, which is the exact failure
- * this file's own header warns about: a checker that reads part of its input is
- * worse than none, because it reports green.
- *
- * Returns null when there are genuinely no practiceSteps.
- */
-function stepsOf(body) {
-  const at = body.indexOf('practiceSteps: JSON.stringify(');
-  if (at === -1) return null;
-  const start = body.indexOf('[', at);
-  if (start === -1) return null;
-  let d = 0, q = null, end = -1;
-  for (let k = start; k < body.length; k++) {
-    const c = body[k];
-    if (q) { if (c === '\\') k++; else if (c === q) q = null; continue; }
-    if (c === '"' || c === "'" || c === '`') { q = c; continue; }
-    if (c === '[') d++;
-    else if (c === ']') { d--; if (!d) { end = k; break; } }
-  }
-  if (end === -1) return null;
-  // eval, not JSON.parse. The tick script emits strict JSON, but hand-written
-  // angles are JS array literals — single-quoted strings, unquoted keys — and
-  // JSON.parse rejects them. Swapping in JSON.parse here dropped the checked
-  // count from 96 steps to 2 while still exiting 0, which is the same silent
-  // under-read this helper exists to fix, in the opposite direction.
-  try { return eval('(' + body.slice(start, end + 1) + ')'); } catch { return null; }
-}
+// objects()/stepsOf() moved to scripts/lib/quranDataParse.mjs — this was one
+// of at least six independent copies of the same bracket-matcher across the
+// scripts directory. The header comment on stepsOf's history (the newline-
+// anchored regex that hid 75/395 angles) now lives on the shared function.
+const objects = (prefix) => libObjects(src, prefix);
 
 const cache = new Map();
 async function ayah(ref) {
