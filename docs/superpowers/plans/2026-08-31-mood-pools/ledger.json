@@ -1130,7 +1130,7 @@
       "contentId": "quran_22_77",
       "mood": "Grateful",
       "tier": "T1",
-      "status": "pending",
+      "status": "drafted",
       "citations": []
     },
     {
@@ -1138,7 +1138,7 @@
       "contentId": "quran_20_130",
       "mood": "Grateful",
       "tier": "T1",
-      "status": "pending",
+      "status": "drafted",
       "citations": []
     },
     {
@@ -1146,23 +1146,29 @@
       "contentId": "quran_11_6",
       "mood": "Grateful",
       "tier": "T1",
-      "status": "pending",
+      "status": "drafted",
       "citations": []
     },
     {
-      "angleId": "q_angle_7_96_grateful",
-      "contentId": "quran_7_96",
+      "angleId": "q_angle_29_60_grateful",
+      "contentId": "quran_29_60",
       "mood": "Grateful",
-      "tier": "T1",
-      "status": "pending",
-      "citations": []
+      "tier": "T2",
+      "status": "drafted",
+      "citations": [],
+      "replaces": {
+        "angleId": "q_angle_7_96_grateful",
+        "contentId": "quran_7_96",
+        "tier": "T1",
+        "why": "7:96 closes on divine seizure; its hopeful clause is a counterfactual about people who did not believe. Same rejection as the Hopeful swap. No spare T1 candidate for Grateful, so this becomes a T2 re-tag of 29:60."
+      }
     },
     {
       "angleId": "q_angle_24_38_grateful",
       "contentId": "quran_24_38",
       "mood": "Grateful",
       "tier": "T1",
-      "status": "pending",
+      "status": "drafted",
       "citations": []
     }
   ]
