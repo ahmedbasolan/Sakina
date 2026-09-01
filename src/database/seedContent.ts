@@ -333,7 +333,11 @@ import type { Content, ContentAngle } from '../types';
 //      14:40, 67:15, 49:13, 20:131, 25:74, 98:5). Four moods now at 40.
 //      Seven Hopeful tags stay inert on purpose: 17:32, 7:96, 2:168, 24:32
 //      and 29:45 were rejected on fit, 2:155-156 and 4:1 unused.
-const SEED_VERSION = 47;
+// v48: Grateful 35 -> 40, target floor reached. 4 T1 (22:77, 20:130, 11:6,
+//      24:38) + 1 T2 (29:60 re-tagged Grateful). 7:96 rejected here for the
+//      same reason as in Hopeful: the complete ayah closes on divine seizure.
+//      Grateful had no spare T1, so the unit became a T2. Five moods at 40.
+const SEED_VERSION = 48;
 // Separate keys per content type — Quran and Hadith data change independently,
 // and each seeder used to write the SAME key at the end of its run. Since
 // initializeDatabase() awaits seedQuranContent() before seedHadithContent(),
