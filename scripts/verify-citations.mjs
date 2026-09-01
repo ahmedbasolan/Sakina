@@ -76,6 +76,46 @@ function objects(prefix) {
   return out;
 }
 
+/**
+ * Parse an angle's practiceSteps array by MATCHING BRACKETS, not by regex.
+ *
+ * Passes 1, 2, 4, 5 and 6 all used
+ *   /practiceSteps:\s*JSON\.stringify\(([\s\S]*?)\n\s*\]\),/
+ * which requires a NEWLINE before the closing `]),`. Hand-written angles happen
+ * to be formatted that way; every angle emitted by scripts/author-angle.mjs puts
+ * the whole array on one line, and so matched nothing. `if (!raw) continue;`
+ * then skipped them in silence.
+ *
+ * That hid 75 of 395 angles — all 65 added by the tick script, plus the ten
+ * q_angle_tawbah_day* angles already on main. Five passes reported "0 problems"
+ * over 320 angles while calling it the whole corpus, which is the exact failure
+ * this file's own header warns about: a checker that reads part of its input is
+ * worse than none, because it reports green.
+ *
+ * Returns null when there are genuinely no practiceSteps.
+ */
+function stepsOf(body) {
+  const at = body.indexOf('practiceSteps: JSON.stringify(');
+  if (at === -1) return null;
+  const start = body.indexOf('[', at);
+  if (start === -1) return null;
+  let d = 0, q = null, end = -1;
+  for (let k = start; k < body.length; k++) {
+    const c = body[k];
+    if (q) { if (c === '\\') k++; else if (c === q) q = null; continue; }
+    if (c === '"' || c === "'" || c === '`') { q = c; continue; }
+    if (c === '[') d++;
+    else if (c === ']') { d--; if (!d) { end = k; break; } }
+  }
+  if (end === -1) return null;
+  // eval, not JSON.parse. The tick script emits strict JSON, but hand-written
+  // angles are JS array literals — single-quoted strings, unquoted keys — and
+  // JSON.parse rejects them. Swapping in JSON.parse here dropped the checked
+  // count from 96 steps to 2 while still exiting 0, which is the same silent
+  // under-read this helper exists to fix, in the opposite direction.
+  try { return eval('(' + body.slice(start, end + 1) + ')'); } catch { return null; }
+}
+
 const cache = new Map();
 async function ayah(ref) {
   if (!cache.has(ref)) {
@@ -85,13 +125,39 @@ async function ayah(ref) {
   return cache.get(ref);
 }
 
+// ── Pass 0: coverage ──────────────────────────────────────────────────────
+// Every pass below silently skips an angle whose practiceSteps it cannot read
+// (`if (!steps) continue;`). That is the right behaviour per-angle and a
+// catastrophe in aggregate: the previous extractor could not read 75 of 395
+// angles, and five passes reported "0 problems" over the other 320 without
+// ever saying so. Anything the passes cannot parse is counted here and is
+// FATAL, so an under-read announces itself instead of reading as a clean run.
+//
+// WHAT THIS DOES NOT CATCH: an angle with no practiceSteps field at all is
+// legitimately invisible to these passes and is reported as a count only —
+// PracticeLayer falls back to `action`/`actionHowTo` for those, which pass 3
+// covers via actionSource.
+{
+  const all = objects('q_angle_');
+  const withSteps = all.filter((o) => o.body.includes('practiceSteps: JSON.stringify('));
+  const unreadable = withSteps.filter((o) => !stepsOf(o.body));
+  console.log(
+    `coverage: ${withSteps.length - unreadable.length}/${withSteps.length} angles with ` +
+    `practiceSteps parsed (${all.length - withSteps.length} carry none)`,
+  );
+  if (unreadable.length) {
+    console.error(`\n${unreadable.length} angle(s) whose practiceSteps could NOT be parsed — ` +
+      `every pass below would skip them in silence:`);
+    unreadable.slice(0, 20).forEach((o) => console.error(`  ${o.id}`));
+    process.exit(1);
+  }
+}
+
 const bad = [];
 let checked = 0;
 for (const o of objects('q_angle_')) {
-  const raw = o.body.match(/practiceSteps:\s*JSON\.stringify\(([\s\S]*?)\n\s*\]\),/);
-  if (!raw) continue;
-  let steps;
-  try { steps = eval(raw[1] + '\n]'); } catch { continue; }
+  const steps = stepsOf(o.body);
+  if (!steps) continue;
   for (const st of steps) {
     if (!st.arabicText || !st.source) continue;
     const m = st.source.match(/(\d+):(\d+)(?:-(\d+))?/);
@@ -137,10 +203,8 @@ const LOOKUPABLE =
 
 const unsourced = [];
 for (const o of objects('q_angle_')) {
-  const raw = o.body.match(/practiceSteps:\s*JSON\.stringify\(([\s\S]*?)\n\s*\]\),/);
-  if (!raw) continue;
-  let steps;
-  try { steps = eval(raw[1] + '\n]'); } catch { continue; }
+  const steps = stepsOf(o.body);
+  if (!steps) continue;
   for (const st of steps) {
     if (!CHAINED.has(st.sourceType)) continue;
     if (LOOKUPABLE.test(st.source || '')) continue;
@@ -270,10 +334,8 @@ async function hadithTextEn(coll, n) {
 const mismatch = [];
 let hChecked = 0, hSkipped = 0;
 for (const o of objects('q_angle_')) {
-  const raw = o.body.match(/practiceSteps:\s*JSON\.stringify\(([\s\S]*?)\n\s*\]\),/);
-  if (!raw) continue;
-  let steps;
-  try { steps = eval(raw[1] + '\n]'); } catch { continue; }
+  const steps = stepsOf(o.body);
+  if (!steps) continue;
   for (const st of steps) {
     if (!st.arabicText || !st.source) continue;
     // composed_dua says outright that the wording has no chain; its source line
@@ -326,10 +388,8 @@ const JOINED_AYAT = new Set([
 ]);
 const quranish = [];
 for (const o of objects('q_angle_')) {
-  const raw = o.body.match(/practiceSteps:\s*JSON\.stringify\(([\s\S]*?)\n\s*\]\),/);
-  if (!raw) continue;
-  let steps;
-  try { steps = eval(raw[1] + '\n]'); } catch { continue; }
+  const steps = stepsOf(o.body);
+  if (!steps) continue;
   for (const st of steps) {
     if (st.sourceType !== 'quran_dua' || !st.arabicText || !st.source) continue;
     if (/—\s*Quran\s*$/.test(st.source) || /^Quran \d+:\d+/.test(st.source) || /—\s*Dua of/.test(st.source)) continue;
@@ -395,10 +455,8 @@ function sunnahArabic(urn, n) {
 const sMismatch = [];
 let sChecked = 0, sUnread = 0, sNoUrn = 0;
 for (const o of objects('q_angle_')) {
-  const raw = o.body.match(/practiceSteps:\s*JSON\.stringify\(([\s\S]*?)\n\s*\]\),/);
-  if (!raw) continue;
-  let steps;
-  try { steps = eval(raw[1] + '\n]'); } catch { continue; }
+  const steps = stepsOf(o.body);
+  if (!steps) continue;
   for (const st of steps) {
     if (!st.arabicText || !st.source) continue;
     if (!CHAINED.has(st.sourceType)) continue;
