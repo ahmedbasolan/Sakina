@@ -329,7 +329,11 @@ import type { Content, ContentAngle } from '../types';
 //      Bukhari 1410 and 6464 are cited as quoted framing on their steps, not
 //      bare, because the step action is app-written and the hadith is its
 //      basis rather than its text.
-const SEED_VERSION = 46;
+// v47: Hopeful 32 -> 40, target floor reached. Final 8 T1 (14:7, 23:1,
+//      14:40, 67:15, 49:13, 20:131, 25:74, 98:5). Four moods now at 40.
+//      Seven Hopeful tags stay inert on purpose: 17:32, 7:96, 2:168, 24:32
+//      and 29:45 were rejected on fit, 2:155-156 and 4:1 unused.
+const SEED_VERSION = 47;
 // Separate keys per content type — Quran and Hadith data change independently,
 // and each seeder used to write the SAME key at the end of its run. Since
 // initializeDatabase() awaits seedQuranContent() before seedHadithContent(),
