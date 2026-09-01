@@ -317,7 +317,15 @@ import type { Content, ContentAngle } from '../types';
 //      opening on a bare imperative ("Cast him into the chest"), which reads as
 //      an instruction to the reader. The Arabic opens on ani — saying — so the
 //      framing is restored unbracketed, per the resolve-don't-drop rule.
-const SEED_VERSION = 44;
+// v45: Hopeful 24 -> 27. First 3 of 16, all T1 (12:87, 65:3, 33:21). The
+//      ledger's other five Hopeful picks were reassigned first — seed-ledger
+//      chose T1 candidates by availability, which is the right mechanical
+//      filter and the wrong editorial one, since most of these verses are
+//      tagged Hopeful only so a journey day could point at them. 17:32 is a
+//      prohibition, 7:96 closes on divine seizure, 2:168 is a dietary command,
+//      24:32 is a marriage ruling; 20:131, 25:74, 33:21, 65:3 and 98:5 replace
+//      them from the same pool.
+const SEED_VERSION = 45;
 // Separate keys per content type — Quran and Hadith data change independently,
 // and each seeder used to write the SAME key at the end of its run. Since
 // initializeDatabase() awaits seedQuranContent() before seedHadithContent(),

@@ -649,7 +649,7 @@
       "contentId": "quran_12_87",
       "mood": "Hopeful",
       "tier": "T1",
-      "status": "pending",
+      "status": "drafted",
       "citations": []
     },
     {
@@ -693,12 +693,17 @@
       "citations": []
     },
     {
-      "angleId": "q_angle_29_45_hopeful",
-      "contentId": "quran_29_45",
+      "angleId": "q_angle_98_5_hopeful",
+      "contentId": "quran_98_5",
       "mood": "Hopeful",
       "tier": "T1",
       "status": "pending",
-      "citations": []
+      "citations": [],
+      "replaces": {
+        "angleId": "q_angle_29_45_hopeful",
+        "contentId": "quran_29_45",
+        "why": "29:45 is not wrong, only weak here, and q_angle_29_45_calm already works its strongest clause. 98:5 lists the whole of what was commanded in one short sentence, which is its own kind of hope."
+      }
     },
     {
       "angleId": "q_angle_14_40_hopeful",
@@ -709,20 +714,30 @@
       "citations": []
     },
     {
-      "angleId": "q_angle_2_168_hopeful",
-      "contentId": "quran_2_168",
+      "angleId": "q_angle_33_21_hopeful",
+      "contentId": "quran_33_21",
       "mood": "Hopeful",
       "tier": "T1",
-      "status": "pending",
-      "citations": []
+      "status": "drafted",
+      "citations": [],
+      "replaces": {
+        "angleId": "q_angle_2_168_hopeful",
+        "contentId": "quran_2_168",
+        "why": "2:168 is a dietary command about lawful and good food, tagged for Rizq day 3. 33:21 names hope in its own text — an excellent pattern \"for anyone whose hope is in Allah and the Last Day\"."
+      }
     },
     {
-      "angleId": "q_angle_7_96_hopeful",
-      "contentId": "quran_7_96",
+      "angleId": "q_angle_25_74_hopeful",
+      "contentId": "quran_25_74",
       "mood": "Hopeful",
       "tier": "T1",
       "status": "pending",
-      "citations": []
+      "citations": [],
+      "replaces": {
+        "angleId": "q_angle_7_96_hopeful",
+        "contentId": "quran_7_96",
+        "why": "7:96 ends \"but they denied, so We seized them for what they used to earn\" — its hopeful clause is a counterfactual about people who did not believe, and the complete ayah closes on punishment. Citing only the first half would break the complete-ayah rule, so the verse is swapped rather than cut. 25:74 is a du'a for comfort of the eyes."
+      }
     },
     {
       "angleId": "q_angle_2_261_hopeful",
@@ -757,20 +772,30 @@
       "citations": []
     },
     {
-      "angleId": "q_angle_17_32_hopeful",
-      "contentId": "quran_17_32",
+      "angleId": "q_angle_20_131_hopeful",
+      "contentId": "quran_20_131",
       "mood": "Hopeful",
       "tier": "T1",
       "status": "pending",
-      "citations": []
+      "citations": [],
+      "replaces": {
+        "angleId": "q_angle_17_32_hopeful",
+        "contentId": "quran_17_32",
+        "why": "17:32 is \"do not approach unlawful sexual intercourse\" — a prohibition, tagged Hopeful only because Marriage day 3 points at it. 20:131 (\"the provision of your Lord is better and more enduring\") is a promise."
+      }
     },
     {
-      "angleId": "q_angle_24_32_hopeful",
-      "contentId": "quran_24_32",
+      "angleId": "q_angle_65_3_hopeful",
+      "contentId": "quran_65_3_rizq",
       "mood": "Hopeful",
       "tier": "T1",
-      "status": "pending",
-      "citations": []
+      "status": "drafted",
+      "citations": [],
+      "replaces": {
+        "angleId": "q_angle_24_32_hopeful",
+        "contentId": "quran_24_32",
+        "why": "24:32 carries a real promise (\"If they should be poor, Allah will enrich them from His bounty\") inside a marriage ruling that also addresses slaves. The complete ayah must be shown, and it reads oddly in a general hope pool. 65:3 makes the same promise with nothing to work around: \"He will provide for him from where he does not expect.\""
+      }
     },
     {
       "angleId": "q_angle_2_261_tired",
