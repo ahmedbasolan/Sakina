@@ -649,7 +649,7 @@
       "contentId": "quran_12_87",
       "mood": "Hopeful",
       "tier": "T1",
-      "status": "drafted",
+      "status": "committed",
       "citations": []
     },
     {
@@ -657,7 +657,7 @@
       "contentId": "quran_65_7",
       "mood": "Hopeful",
       "tier": "T1",
-      "status": "drafted",
+      "status": "committed",
       "citations": []
     },
     {
@@ -665,7 +665,7 @@
       "contentId": "quran_14_7",
       "mood": "Hopeful",
       "tier": "T1",
-      "status": "drafted",
+      "status": "committed",
       "citations": []
     },
     {
@@ -673,7 +673,7 @@
       "contentId": "quran_73_1_4",
       "mood": "Hopeful",
       "tier": "T1",
-      "status": "drafted",
+      "status": "committed",
       "citations": []
     },
     {
@@ -681,7 +681,7 @@
       "contentId": "quran_17_79",
       "mood": "Hopeful",
       "tier": "T1",
-      "status": "drafted",
+      "status": "committed",
       "citations": []
     },
     {
@@ -689,7 +689,7 @@
       "contentId": "quran_23_1",
       "mood": "Hopeful",
       "tier": "T1",
-      "status": "drafted",
+      "status": "committed",
       "citations": []
     },
     {
@@ -697,7 +697,7 @@
       "contentId": "quran_98_5",
       "mood": "Hopeful",
       "tier": "T1",
-      "status": "drafted",
+      "status": "committed",
       "citations": [],
       "replaces": {
         "angleId": "q_angle_29_45_hopeful",
@@ -710,7 +710,7 @@
       "contentId": "quran_14_40",
       "mood": "Hopeful",
       "tier": "T1",
-      "status": "drafted",
+      "status": "committed",
       "citations": []
     },
     {
@@ -718,7 +718,7 @@
       "contentId": "quran_33_21",
       "mood": "Hopeful",
       "tier": "T1",
-      "status": "drafted",
+      "status": "committed",
       "citations": [],
       "replaces": {
         "angleId": "q_angle_2_168_hopeful",
@@ -731,7 +731,7 @@
       "contentId": "quran_25_74",
       "mood": "Hopeful",
       "tier": "T1",
-      "status": "drafted",
+      "status": "committed",
       "citations": [],
       "replaces": {
         "angleId": "q_angle_7_96_hopeful",
@@ -744,7 +744,7 @@
       "contentId": "quran_2_261",
       "mood": "Hopeful",
       "tier": "T1",
-      "status": "drafted",
+      "status": "committed",
       "citations": []
     },
     {
@@ -752,7 +752,7 @@
       "contentId": "quran_67_15",
       "mood": "Hopeful",
       "tier": "T1",
-      "status": "drafted",
+      "status": "committed",
       "citations": []
     },
     {
@@ -760,7 +760,7 @@
       "contentId": "quran_14_37",
       "mood": "Hopeful",
       "tier": "T1",
-      "status": "drafted",
+      "status": "committed",
       "citations": []
     },
     {
@@ -768,7 +768,7 @@
       "contentId": "quran_49_13",
       "mood": "Hopeful",
       "tier": "T1",
-      "status": "drafted",
+      "status": "committed",
       "citations": []
     },
     {
@@ -776,7 +776,7 @@
       "contentId": "quran_20_131",
       "mood": "Hopeful",
       "tier": "T1",
-      "status": "drafted",
+      "status": "committed",
       "citations": [],
       "replaces": {
         "angleId": "q_angle_17_32_hopeful",
@@ -789,7 +789,7 @@
       "contentId": "quran_65_3_rizq",
       "mood": "Hopeful",
       "tier": "T1",
-      "status": "drafted",
+      "status": "committed",
       "citations": [],
       "replaces": {
         "angleId": "q_angle_24_32_hopeful",
@@ -1046,91 +1046,120 @@
       "citations": []
     },
     {
-      "angleId": null,
-      "contentId": null,
+      "angleId": "q_angle_21_87_guilty",
+      "contentId": "quran_21_87",
       "mood": "Guilty",
       "tier": "T2",
-      "status": "pending",
-      "citations": []
+      "status": "committed",
+      "citations": [
+        "Quran 21:87"
+      ]
     },
     {
-      "angleId": null,
-      "contentId": null,
+      "angleId": "q_angle_24_22_guilty",
+      "contentId": "quran_24_22",
       "mood": "Guilty",
       "tier": "T2",
-      "status": "pending",
-      "citations": []
+      "status": "committed",
+      "citations": [
+        "Quran 24:22",
+        "Muslim 2588"
+      ]
     },
     {
-      "angleId": null,
-      "contentId": null,
+      "angleId": "q_angle_7_200_guilty",
+      "contentId": "quran_7_200",
       "mood": "Guilty",
       "tier": "T2",
-      "status": "pending",
-      "citations": []
+      "status": "committed",
+      "citations": [
+        "Quran 7:200",
+        "Quran 23:97"
+      ]
     },
     {
-      "angleId": null,
-      "contentId": null,
+      "angleId": "q_angle_25_58_guilty",
+      "contentId": "quran_25_58",
       "mood": "Guilty",
       "tier": "T2",
-      "status": "pending",
-      "citations": []
+      "status": "committed",
+      "citations": [
+        "Quran 25:58",
+        "Bukhari 6405"
+      ]
     },
     {
-      "angleId": null,
-      "contentId": null,
+      "angleId": "q_angle_4_31_guilty",
+      "contentId": "quran_4_31",
       "mood": "Guilty",
       "tier": "T3",
-      "status": "pending",
-      "citations": []
+      "status": "committed",
+      "citations": [
+        "Quran 4:31",
+        "Muslim 233a"
+      ]
     },
     {
-      "angleId": null,
-      "contentId": null,
+      "angleId": "q_angle_11_114_guilty",
+      "contentId": "quran_11_114",
       "mood": "Guilty",
       "tier": "T3",
-      "status": "pending",
-      "citations": []
+      "status": "committed",
+      "citations": [
+        "Quran 11:114",
+        "Bukhari 4687"
+      ]
     },
     {
-      "angleId": null,
-      "contentId": null,
+      "angleId": "q_angle_17_25_guilty",
+      "contentId": "quran_17_25",
       "mood": "Guilty",
       "tier": "T3",
-      "status": "pending",
-      "citations": []
+      "status": "committed",
+      "citations": [
+        "Quran 17:25",
+        "Muslim 2749"
+      ]
     },
     {
-      "angleId": null,
-      "contentId": null,
+      "angleId": "q_angle_9_118_guilty",
+      "contentId": "quran_9_118",
       "mood": "Guilty",
       "tier": "T3",
-      "status": "pending",
-      "citations": []
+      "status": "committed",
+      "citations": [
+        "Quran 9:118",
+        "Bukhari 4418"
+      ]
     },
     {
-      "angleId": null,
-      "contentId": null,
+      "angleId": "q_angle_16_119_guilty",
+      "contentId": "quran_16_119",
       "mood": "Guilty",
       "tier": "T3",
-      "status": "pending",
-      "citations": []
+      "status": "committed",
+      "citations": [
+        "Quran 16:119",
+        "Bukhari 3470"
+      ]
     },
     {
-      "angleId": null,
-      "contentId": null,
+      "angleId": "q_angle_3_31_guilty",
+      "contentId": "quran_3_31",
       "mood": "Guilty",
       "tier": "T3",
-      "status": "pending",
-      "citations": []
+      "status": "committed",
+      "citations": [
+        "Quran 3:31",
+        "Bukhari 6502"
+      ]
     },
     {
       "angleId": "q_angle_22_77_grateful",
       "contentId": "quran_22_77",
       "mood": "Grateful",
       "tier": "T1",
-      "status": "drafted",
+      "status": "committed",
       "citations": []
     },
     {
@@ -1138,7 +1167,7 @@
       "contentId": "quran_20_130",
       "mood": "Grateful",
       "tier": "T1",
-      "status": "drafted",
+      "status": "committed",
       "citations": []
     },
     {
@@ -1146,7 +1175,7 @@
       "contentId": "quran_11_6",
       "mood": "Grateful",
       "tier": "T1",
-      "status": "drafted",
+      "status": "committed",
       "citations": []
     },
     {
@@ -1154,7 +1183,7 @@
       "contentId": "quran_29_60",
       "mood": "Grateful",
       "tier": "T2",
-      "status": "drafted",
+      "status": "committed",
       "citations": [],
       "replaces": {
         "angleId": "q_angle_7_96_grateful",
@@ -1168,7 +1197,7 @@
       "contentId": "quran_24_38",
       "mood": "Grateful",
       "tier": "T1",
-      "status": "drafted",
+      "status": "committed",
       "citations": []
     }
   ]
