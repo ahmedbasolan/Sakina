@@ -28,71 +28,54 @@
  */
 import fs from 'fs';
 import path from 'path';
+import { objects as libObjects, field } from './lib/quranDataParse.mjs';
 
-const BS = String.fromCharCode(92);
 const TARGET = 40;
 const OUT = 'docs/superpowers/plans/2026-08-31-mood-pools/ledger.json';
-const MOODS = [
-  'Calm', 'Sad', 'Lonely', 'Hopeful', 'Tired',
-  'Angry', 'Guilty', 'Grateful', 'Overwhelmed',
-];
-
-// Authoring suffix per mood — must round-trip through verify-mood-pools.mjs's
-// SUFFIX_MOOD or every generated angle is reported as suffix drift.
-const MOOD_SUFFIX = {
-  Overwhelmed: 'anxious', Sad: 'sad', Angry: 'angry', Tired: 'tired',
-  Lonely: 'lonely', Grateful: 'grateful', Hopeful: 'hopeful',
-  Guilty: 'guilty', Calm: 'calm',
-};
 
 const src = fs.readFileSync('src/data/quranData.ts', 'utf8');
 const repo = fs.readFileSync('src/services/contentRepository.ts', 'utf8');
+const moodPools = fs.readFileSync('scripts/verify-mood-pools.mjs', 'utf8');
+const typesSrc = fs.readFileSync('src/types/index.ts', 'utf8');
+const objects = (prefix) => libObjects(src, prefix);
+
 const PREFIXES = JSON.parse(
   (repo.match(/JOURNEY_ANGLE_PREFIXES = (\[[^\]]*\])/) || [, '[]'])[1].replace(/'/g, '"'),
 );
 
-function objects(prefix) {
-  const out = [];
-  for (const m of src.matchAll(new RegExp(`id: '(${prefix}[a-zA-Z0-9_]+)'`, 'g'))) {
-    let open = m.index;
-    while (src[open] !== '{') open--;
-    let d = 0, q = null, end = -1;
-    for (let k = open; k < src.length; k++) {
-      const c = src[k];
-      if (q) { if (c === BS) k++; else if (c === q) q = null; continue; }
-      if (c === "'" || c === '"' || c === '`') { q = c; continue; }
-      if (c === '{') d++;
-      else if (c === '}') { d--; if (!d) { end = k; break; } }
-    }
-    out.push({ id: m[1], body: src.slice(open, end + 1) });
-  }
-  return out;
-}
+// Never retype this list — read it from src/types/index.ts's Mood union, the
+// same discipline JOURNEY_ANGLE_PREFIXES above already gets.
+const moodUnionSrc = (typesSrc.match(/export type Mood =[\s\S]*?;/) || [''])[0];
+const MOODS = [...moodUnionSrc.matchAll(/'([A-Za-z]+)'/g)].map((m) => m[1]);
+if (!MOODS.length) { console.error('x could not parse the Mood union from src/types/index.ts'); process.exit(1); }
 
-/** Quote-agnostic, concatenation-following. See note 1 in the header. */
-function field(body, name) {
-  const m = body.match(new RegExp(`\\b${name}:\\s*`));
-  if (!m) return null;
-  let i = m.index + m[0].length, out = '', first = true;
-  while (i < body.length) {
-    const q = body[i];
-    if (q !== "'" && q !== '"') { if (first) return null; break; }
-    first = false;
-    let k = i + 1;
-    for (; k < body.length; k++) {
-      const c = body[k];
-      if (c === BS) { out += body[k + 1]; k++; continue; }
-      if (c === q) break;
-      out += c;
-    }
-    let j = k + 1;
-    while (j < body.length && /\s/.test(body[j])) j++;
-    if (body[j] !== '+') break;
-    j++;
-    while (j < body.length && /\s/.test(body[j])) j++;
-    i = j;
-  }
-  return out;
+// verify-mood-pools.mjs's SUFFIX_MOOD is suffix -> mood and can be many-to-one
+// (Overwhelmed has anxious+stressed; Hopeful has energized+hopeful; Grateful
+// has grateful+content) — a new angle's authoring suffix must round-trip
+// through it or verify-mood-pools.mjs reports the angle as suffix drift. This
+// used to be a hand-maintained inverse table with its own comment admitting
+// the risk of the two tables disagreeing; it is now derived: for each mood,
+// take every suffix SUFFIX_MOOD maps to it and pick whichever one already has
+// the most angles in the corpus — the tie-break a human made by hand when
+// this table was first written (anxious over stressed, hopeful over
+// energized, grateful over content; verified 27>20, 25>15, 26>14).
+const suffixMoodSrc = (moodPools.match(/const SUFFIX_MOOD = \{[\s\S]*?\};/) || [''])[0];
+if (!suffixMoodSrc) { console.error('x could not find SUFFIX_MOOD in scripts/verify-mood-pools.mjs'); process.exit(1); }
+const suffixToMood = Object.fromEntries(
+  [...suffixMoodSrc.matchAll(/(\w+):\s*'([A-Za-z]+)'/g)].map((m) => [m[1], m[2]]),
+);
+const suffixUsage = {};
+for (const a of objects('q_angle_')) {
+  const m = a.id.match(/_([a-z]+)(?:_angle)?$/);
+  if (m) suffixUsage[m[1]] = (suffixUsage[m[1]] || 0) + 1;
+}
+const MOOD_SUFFIX = {};
+for (const [suffix, mood] of Object.entries(suffixToMood)) {
+  const usage = suffixUsage[suffix] || 0;
+  if (!(mood in MOOD_SUFFIX) || usage > (suffixUsage[MOOD_SUFFIX[mood]] || 0)) MOOD_SUFFIX[mood] = suffix;
+}
+for (const m of MOODS) {
+  if (!MOOD_SUFFIX[m]) { console.error(`x no authoring suffix found for mood '${m}' in SUFFIX_MOOD`); process.exit(1); }
 }
 
 const fail = (msg) => { console.error(`x ${msg}`); process.exit(1); };

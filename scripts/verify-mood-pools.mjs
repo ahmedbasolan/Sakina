@@ -18,19 +18,25 @@
  * Run: node scripts/verify-mood-pools.mjs
  */
 import fs from 'fs';
+import { objects as libObjects, field as libField, stepsOf } from './lib/quranDataParse.mjs';
 
-// MIN_POOL is FATAL and stays at 10: it catches a regression that guts a pool.
-//
-// It is deliberately NOT the project target. Raising it to 40 while the pool
-// expansion is in flight would make this script exit 1 for every under-floor
-// mood from the first tick — and the tick contract reverts on a red gate, so
-// every tick would revert its own work and the project could never finish.
-// The gate meant to prove progress would be the thing preventing it.
-//
-// TARGET_POOL is the progress readout and is never fatal. The 40 floor becomes
-// fatal only as the end-of-project acceptance test, via the env override:
+// MIN_POOL was FATAL at 10 during the expansion: raising it to 40 while pools
+// were still being built would have made this script exit 1 for every
+// under-floor mood from the first tick, and the tick contract reverts on a
+// red gate — so every tick would have reverted its own work and the project
+// could never have finished. TARGET_POOL was the progress readout, and the 40
+// floor only became fatal via an explicit override at the end:
 //   MOOD_FLOOR=40 node scripts/verify-mood-pools.mjs
-const MIN_POOL = Number(process.env.MOOD_FLOOR ?? 10);
+//
+// The expansion is done — all nine moods verified at 40+ as of the Tired
+// commit — so 40 is now the DEFAULT floor, not an opt-in. A plain
+// `node scripts/verify-mood-pools.mjs`, the invocation pattern every sibling
+// verify-*.mjs script uses, now enforces the real acceptance bar; before this
+// change it silently checked against the old bootstrapping floor of 10, and
+// nothing in CLAUDE.md ever named this script or its MOOD_FLOOR override to
+// tell a reader otherwise. MOOD_FLOOR stays available to override lower, for
+// a deliberate future re-expansion that needs the same in-flight leniency.
+const MIN_POOL = Number(process.env.MOOD_FLOOR ?? 40);
 const TARGET_POOL = 40;
 const MOODS = [
   'Overwhelmed', 'Sad', 'Angry', 'Tired', 'Lonely',
@@ -49,57 +55,12 @@ const SUFFIX_MOOD = {
 
 const src = fs.readFileSync('src/data/quranData.ts', 'utf8');
 
-function objects(prefix) {
-  const out = [];
-  for (const m of src.matchAll(new RegExp(`id: '(${prefix}[a-zA-Z0-9_]+)'`, 'g'))) {
-    let open = m.index;
-    while (src[open] !== '{') open--;
-    let depth = 0, quote = null, end = -1;
-    for (let k = open; k < src.length; k++) {
-      const c = src[k];
-      if (quote) { if (c === '\\') k++; else if (c === quote) quote = null; continue; }
-      if (c === "'" || c === '"' || c === '`') { quote = c; continue; }
-      if (c === '{') depth++;
-      else if (c === '}') { depth--; if (!depth) { end = k; break; } }
-    }
-    out.push({ id: m[1], body: src.slice(open, end + 1) });
-  }
-  return out;
-}
-
-// Quote-agnostic and concatenation-following. Both matter, and neither did
-// while this only read short values like `mood` and `contentId`:
-//
-//   - Values whose text contains an apostrophe are DOUBLE quoted
-//     (source: "Surah Al-A'raf 7:199"). A `name: '` matcher returns null for
-//     31 sources in this file, and null-compares-equal-to-null then reports
-//     them all as mutual duplicates.
-//   - Long prose is written as 'a' + 'b' + 'c'. A reader stopping at the
-//     first closing quote checks the opening clause and passes the rest,
-//     which reports green on text it never read.
-const field = (b, name) => {
-  const m = b.match(new RegExp(`\\b${name}:\\s*`));
-  if (!m) return null;
-  let i = m.index + m[0].length, s = '', first = true;
-  while (i < b.length) {
-    const q = b[i];
-    if (q !== "'" && q !== '"') { if (first) return null; break; }
-    first = false;
-    let k = i + 1;
-    for (; k < b.length; k++) {
-      if (b[k] === '\\') { s += b[k + 1]; k++; continue; }
-      if (b[k] === q) break;
-      s += b[k];
-    }
-    let j = k + 1;
-    while (j < b.length && /\s/.test(b[j])) j++;
-    if (b[j] !== '+') break;
-    j++;
-    while (j < b.length && /\s/.test(b[j])) j++;
-    i = j;
-  }
-  return s;
-};
+// objects()/field() moved to scripts/lib/quranDataParse.mjs — this was one of
+// at least six independent copies of the same pair of primitives across the
+// scripts directory (see that module's header). Local wrapper keeps every
+// `objects('q_angle_')`-style call site below unchanged.
+const objects = (prefix) => libObjects(src, prefix);
+const field = libField;
 const moodsOf = (b) =>
   (b.match(/moods:\s*\[([^\]]*)\]/) || ['', ''])[1]
     .replace(/'/g, '').split(',').map((x) => x.trim()).filter(Boolean);
@@ -304,26 +265,37 @@ function scanMarkdown(id, name, text) {
   }
 }
 
+// stepsOf(), not JSON.parse(a.body.slice(...)) — this pass used to be strict
+// JSON only, which rejects the ~70% of angles that predate scripts/author-
+// angle.mjs (single-quoted, unquoted-key JS object literals). The failed
+// parse was swallowed by a bare `catch`, so this markdown check silently
+// covered a minority of the corpus while reporting a clean run over what it
+// called the whole thing — the exact "checker that reads part of its input"
+// failure verify-citations.mjs's own header documents fixing once already.
+// hadStepsCovered / hadStepsTotal below is the coverage guard that failure
+// mode is missing everywhere else it has happened, so it can't happen silently
+// here again.
+let hadStepsTotal = 0, hadStepsCovered = 0;
 for (const a of angleObjects) {
   for (const f of ['angle', 'reflection', 'action', 'actionHowTo', 'actionReward']) {
     scanMarkdown(a.id, f, field(a.body, f));
   }
-  const at = a.body.indexOf('practiceSteps: JSON.stringify(');
-  if (at !== -1) {
-    const start = a.body.indexOf('[', at);
-    let d = 0, end = -1;
-    for (let k = start; k < a.body.length; k++) {
-      if (a.body[k] === '[') d++;
-      else if (a.body[k] === ']') { d--; if (!d) { end = k; break; } }
-    }
-    try {
-      for (const [i, s] of JSON.parse(a.body.slice(start, end + 1)).entries()) {
+  if (a.body.includes('practiceSteps: JSON.stringify(')) {
+    hadStepsTotal++;
+    const steps = stepsOf(a.body);
+    if (steps) {
+      hadStepsCovered++;
+      for (const [i, s] of steps.entries()) {
         scanMarkdown(a.id, `step[${i}].title`, s.title);
         scanMarkdown(a.id, `step[${i}].instruction`, s.instruction);
         scanMarkdown(a.id, `step[${i}].translation`, s.translation);
       }
-    } catch { /* shape is verify-journey's job, not this pass's */ }
+    }
   }
+}
+if (hadStepsCovered < hadStepsTotal) {
+  errors.push(`markdown pass: ${hadStepsTotal - hadStepsCovered}/${hadStepsTotal} angles with ` +
+    `practiceSteps could not be parsed — coverage gap, not a clean run`);
 }
 for (const c of verseObjects) {
   scanMarkdown(c.id, 'whyThis', field(c.body, 'whyThis'));

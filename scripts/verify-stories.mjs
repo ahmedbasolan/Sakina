@@ -38,71 +38,18 @@
  */
 import fs from 'fs';
 import { DatabaseSync } from 'node:sqlite';
+import { objects as libObjects, field } from './lib/quranDataParse.mjs';
 
-const BS = String.fromCharCode(92);
 const SHARE_LIMIT = 0.6;
 const INJECT = process.env.STORY_INJECT === '1';
 
 const src = fs.readFileSync('src/data/quranData.ts', 'utf8');
 const errors = [];
 
-// ── extract Content objects and their story blocks ────────────────────────
-function objects(prefix) {
-  const out = [];
-  for (const m of src.matchAll(new RegExp(`id: '(${prefix}[a-zA-Z0-9_]+)'`, 'g'))) {
-    let open = m.index;
-    while (src[open] !== '{') open--;
-    let d = 0, q = null, end = -1;
-    for (let k = open; k < src.length; k++) {
-      const c = src[k];
-      if (q) { if (c === BS) k++; else if (c === q) q = null; continue; }
-      if (c === "'" || c === '"' || c === '`') { q = c; continue; }
-      if (c === '{') d++;
-      else if (c === '}') { d--; if (!d) { end = k; break; } }
-    }
-    out.push({ id: m[1], body: src.slice(open, end + 1) });
-  }
-  return out;
-}
-
-/**
- * Read a string field, following `'a' + 'b' + 'c'` concatenation to the end.
- * Returns the joined value, so a body split across ten literals is checked
- * whole rather than by its first clause.
- */
-function field(body, name) {
-  const m = body.match(new RegExp(`\\b${name}:\\s*`));
-  if (!m) return null;
-  let i = m.index + m[0].length;
-  let out = '';
-  let first = true;
-
-  while (i < body.length) {
-    const q = body[i];
-    if (q !== "'" && q !== '"') {
-      if (first) return null;
-      break;
-    }
-    first = false;
-
-    let k = i + 1;
-    for (; k < body.length; k++) {
-      const c = body[k];
-      if (c === BS) { out += body[k + 1]; k++; continue; }
-      if (c === q) break;
-      out += c;
-    }
-
-    // Look past the closing quote for a `+` joining another literal.
-    let j = k + 1;
-    while (j < body.length && /\s/.test(body[j])) j++;
-    if (body[j] !== '+') break;
-    j++;
-    while (j < body.length && /\s/.test(body[j])) j++;
-    i = j;
-  }
-  return out;
-}
+// objects()/field() moved to scripts/lib/quranDataParse.mjs — this was one of
+// at least six independent copies of the same pair of primitives across the
+// scripts directory (see that module's header).
+const objects = (prefix) => libObjects(src, prefix);
 
 const stories = [];
 for (const c of objects('quran_')) {
@@ -148,7 +95,11 @@ for (const s of stories) {
     if (!/\d+:\d+(-\d+)?\s*$/.test(s.source.trim()))
       errors.push(`${s.verseId}: quran_narrative source '${s.source}' has no surah:ayah range`);
   } else if (s.sourceType === 'hadith_narrative') {
-    if (!/[A-Za-z'-]\s+\d+\s*$/.test(s.source.trim()))
+    // Trailing letter is real, not a typo: several collections in this corpus
+    // split one hadith number across multiple narrations (Muslim 233a, 2564c,
+    // 2658a — grep the corpus and it's not rare). A digit-only anchor rejects
+    // every one of these as "not locatable", which it is.
+    if (!/[A-Za-z'-]\s+\d+[a-z]?\s*$/.test(s.source.trim()))
       errors.push(`${s.verseId}: hadith_narrative source '${s.source}' is not 'Collection Number'`);
   }
 }

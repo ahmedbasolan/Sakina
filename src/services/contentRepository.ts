@@ -391,7 +391,7 @@ export class ContentRepository {
       const rows = await db.getAllAsync<any>(`
         SELECT
           c.id, c.type, c.primaryText, c.arabicText, c.transliteration,
-          c.englishTranslation, c.source, c.whyThis,
+          c.englishTranslation, c.source, c.whyThis, c.story,
           GROUP_CONCAT(cm.mood, ',') AS moods_csv
         FROM content c
         INNER JOIN content_moods cm ON c.id = cm.contentId
@@ -408,6 +408,12 @@ export class ContentRepository {
         englishTranslation: row.englishTranslation,
         source: row.source,
         whyThis: row.whyThis,
+        // A 4th full-Content mapper, alongside mapCloudRow/mapLocalRow/
+        // fetchContentById — contentStory.test.ts enumerates those three by
+        // name, so this one was missed the first time story shipped and
+        // QuranLibraryScreen would have silently rendered no story once it
+        // grew a "Story" affordance. Same guarded-parse pattern as the others.
+        story: (() => { try { return row.story ? JSON.parse(row.story) : undefined; } catch { return undefined; } })(),
         moods: row.moods_csv ? (row.moods_csv.split(',') as Mood[]) : [],
       }));
     });

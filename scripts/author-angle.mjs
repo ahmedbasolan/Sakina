@@ -1,5 +1,6 @@
 /**
- * Angle-authoring tick script — generalises scripts/add-pilot-story.mjs.
+ * Angle-authoring tick script — generalises the pilot script this superseded
+ * (add-pilot-story.mjs, since deleted; see scripts/add-story.mjs's header).
  *
  * Handles all three tiers of the mood-pool expansion:
  *
@@ -51,6 +52,7 @@
  * Usage: node scripts/author-angle.mjs <payload.json>
  */
 import fs from 'fs';
+import { bareLF } from './lib/quranDataParse.mjs';
 
 const FILE = 'src/data/quranData.ts';
 const LEDGER = process.env.MOOD_LEDGER
@@ -62,6 +64,8 @@ const STEP_TYPES = ['physical', 'verbal', 'mindset'];
 const SOURCE_TYPES = [
   'sunnah_action', 'prophetic_dua', 'quran_dua', 'prophetic_dhikr', 'composed_dua',
 ];
+// Must match src/types/index.ts's HadithGrading union exactly.
+const GRADINGS = ['sahih', 'hasan', 'sahih_li_ghayrihi', 'hasan_li_ghayrihi'];
 const ARABIC = /[؀-ۿ]/;
 
 const fail = (msg) => { console.error(`x ${msg}`); process.exit(1); };
@@ -90,8 +94,14 @@ for (const [i, s] of p.practiceSteps.entries()) {
   }
   if (s.sourceType && !SOURCE_TYPES.includes(s.sourceType))
     fail(`practiceSteps[${i}].sourceType '${s.sourceType}' is not a valid member`);
-  if (s.sourceGrading && !['sahih', 'hasan'].includes(s.sourceGrading))
-    fail(`practiceSteps[${i}].sourceGrading must be lowercase 'sahih' or 'hasan'`);
+  // Matches src/types/index.ts's HadithGrading union exactly. This used to
+  // check only ['sahih', 'hasan'] — two of the type's four members — which
+  // forced anyone citing a correctly-graded hasan/sahih li-ghayrihi hadith to
+  // either drop the grading or misreport it, changing the authenticity claim
+  // the rendered badge makes.
+  if (s.sourceGrading && !GRADINGS.includes(s.sourceGrading))
+    fail(`practiceSteps[${i}].sourceGrading '${s.sourceGrading}' is not a valid member ` +
+         `(${GRADINGS.join(', ')})`);
   if (s.source && !s.sourceType)
     fail(`practiceSteps[${i}] cites a source with no sourceType — a bare citation asserts ` +
          `provenance, so say which kind it is`);
@@ -108,16 +118,12 @@ if (/'/.test(p.contentId)) fail('contentId must not contain an apostrophe — it
 const src = fs.readFileSync(FILE, 'utf8');
 if (!src.includes('\r\n')) fail('refusing to write: CRLF line endings are already gone');
 
-// COUNT bare LFs, do not merely assert that CRLF still exists somewhere. The
-// existence check is what CLAUDE.md prescribes and it is not sufficient: a
-// one-off edit script wrapped a single field onto a new line with '\n' and
-// still passed, because 18,983 other lines were fine. Only git caught it. The
-// file is 100% CRLF, so the correct invariant is zero.
-const bareLF = (s) => {
-  let n = 0;
-  for (let i = 0; i < s.length; i++) if (s[i] === '\n' && s[i - 1] !== '\r') n++;
-  return n;
-};
+// COUNT bare LFs (bareLF, from scripts/lib/quranDataParse.mjs), do not merely
+// assert that CRLF still exists somewhere. The existence check is what
+// CLAUDE.md prescribes as insufficient: a one-off edit script wrapped a
+// single field onto a new line with '\n' and still passed, because 18,983
+// other lines were fine. Only git caught it. The file is 100% CRLF, so the
+// correct invariant is zero.
 const bareBefore = bareLF(src);
 if (bareBefore !== 0) fail(`refusing to write: ${bareBefore} bare LF(s) already in ${FILE}`);
 
@@ -191,6 +197,71 @@ if (verseHits === 1) {
     fail('verse.arabicText contains no Arabic script — it must be the Uthmani text, fetched');
   if (!/\d+:\d+/.test(p.verse.source))
     fail(`verse.source '${p.verse.source}' has no surah:ayah reference`);
+
+  // Byte-compare arabicText against a FRESH quran.com fetch, for single-ayah
+  // audioKeys. This is the check that was missing when 14 verses across two
+  // batches were typed/terminal-round-tripped and silently NFC-normalised
+  // before reaching this file — nothing else in the pipeline catches it at
+  // write time: quranArabicIntegrity compares consonantal SKELETONS (an NFC
+  // reorder doesn't change one), and the canonical lock snapshots whatever
+  // this script hands it. verify-verse-arabic-raw.mjs audits for the drift
+  // AFTER the fact, which only works if someone remembers to run it; this
+  // stops the bad text from being written in the first place.
+  //
+  // Multi-ayah audioKeys ('20:25-26') are skipped rather than guessed at —
+  // this script has no established convention for how the ornament/joining
+  // is formatted across a range, and a wrong guess here would false-fail a
+  // legitimate multi-ayah T3 rather than catch a real one.
+  const singleAyah = p.verse.audioKey.match(/^(\d+):(\d+)$/);
+  if (singleAyah) {
+    const [, surah, ayah] = singleAyah;
+    let fetched, fetchError;
+    try {
+      const r = await (await fetch(
+        `https://api.quran.com/api/v4/verses/by_key/${surah}:${ayah}?fields=text_uthmani`,
+      )).json();
+      fetched = r.verse && r.verse.text_uthmani;
+    } catch (e) {
+      fetchError = e;
+    }
+    // process.exit() called too soon after an awaited fetch() races undici's
+    // socket-close handle on Windows — `Assertion failed: !(handle->flags &
+    // UV_HANDLE_CLOSING), file src\win\async.c` — a libuv platform quirk, not
+    // a logic bug: the message and exit code this produces are both correct
+    // either way, but the crash trace is alarming noise, and it is NOT
+    // confined to a fail() called right here — a plain synchronous fail()
+    // reached much later in this same run (the ledger-row check, hundreds of
+    // lines below, on an entirely successful arabicText match) crashed the
+    // same way, because nothing between here and there ever yields to the
+    // event loop for the handle to actually finish closing. So the wait goes
+    // here, unconditionally, before either outcome — not wrapped around each
+    // individual fail() downstream. 20ms was not enough to reliably avoid it
+    // (still crashed); 300ms did, confirmed over repeated runs of both the
+    // pass and the fail case.
+    await new Promise((r) => setTimeout(r, 300));
+    if (fetchError) fail(`could not verify verse.arabicText against quran.com (network): ${fetchError.message}`);
+    if (!fetched) fail(`quran.com returned no text_uthmani for ${surah}:${ayah}`);
+    // quran.com prefixes a leading space on the first ayah of a surah (proven
+    // against the live canonical snapshot: quran_23_1's own `remote` field
+    // carries it while the corpus's `arabic` does not) — strip it so a
+    // correctly-authored surah-opener doesn't fail this check for matching
+    // the established convention instead of the raw API response.
+    const want = `${fetched.trimStart()} ﴿${ayah}﴾`;
+    if (p.verse.arabicText !== want) {
+      const nfcOnly = p.verse.arabicText.normalize('NFC') === want.normalize('NFC');
+      fail(
+        `verse.arabicText does not byte-match quran.com for ${surah}:${ayah}` +
+        (nfcOnly
+          ? ' — it is the NFC-NORMALISED form (the exact drift this check exists to catch). ' +
+            'Re-fetch fresh from quran.com and paste the raw JSON value; do not retype it.'
+          : '.') +
+        `\n  got : ${p.verse.arabicText}\n  want: ${want}`,
+      );
+    }
+  } else {
+    console.log(`   ! ${p.verse.audioKey} is a multi-ayah range — arabicText NOT byte-verified ` +
+      `against quran.com; check it by hand`);
+  }
 }
 
 // ── locate insertion points ───────────────────────────────────────────────
