@@ -80,7 +80,7 @@ export interface ContentStory {
   /** "Surah Yusuf 12:15-20" or "Sahih al-Bukhari 3339" — always locatable. */
   source: string;
   sourceType: 'quran_narrative' | 'hadith_narrative';
-  /** hadith_narrative only. Lowercase; HadithLayer title-cases for display. */
+  /** hadith_narrative only. Lowercase; StoryLayer title-cases for display. */
   grading?: 'sahih' | 'hasan';
 }
 

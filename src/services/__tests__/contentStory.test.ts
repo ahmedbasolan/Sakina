@@ -57,6 +57,25 @@ describe('story survives the SQLite round trip', () => {
     expect(read('src/services/contentRepository.ts')).toContain('c.story');
   });
 
+  // contentRepository.ts builds a full Content in three places — mapCloudRow,
+  // mapLocalRow and fetchContentById — and the first two got `story` while the
+  // third did not. Nothing caught it: the mood flow attaches content via
+  // mapLocalRow, so the story renders there, and the journey flow (which does
+  // go through fetchContentById, from RotationEngine.buildExperience) has no
+  // StoryLayer to notice the field missing. It would have surfaced the day a
+  // story was wanted on a path step, as a story that simply never appeared.
+  it('every full-Content mapper carries story', () => {
+    const src = read('src/services/contentRepository.ts');
+    const bodyOf = (marker: string) => {
+      const at = src.indexOf(marker);
+      expect(at).toBeGreaterThan(-1);
+      return src.slice(at, src.indexOf('\n  }', at));
+    };
+    for (const marker of ['function mapCloudRow', 'function mapLocalRow', 'async fetchContentById']) {
+      expect(bodyOf(marker)).toContain('story');
+    }
+  });
+
   it('a malformed story does not throw', () => {
     const src = read('src/services/contentRepository.ts');
     const idx = src.indexOf('story:');
