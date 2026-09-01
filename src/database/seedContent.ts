@@ -305,7 +305,15 @@ import type { Content, ContentAngle } from '../types';
 //      new Content entries (93:6, 93:7, 93:8, 19:96, 3:103, 9:71, 18:28,
 //      20:39, 94:4, 51:56). The re-tags include 112:1-4, 33:41 and 54:17,
 //      which carried NO mood tag and were unreachable from every pool.
-const SEED_VERSION = 43;
+// v44: no new content — audit of v39-v43. 19 reflections and 1 angle body
+//      rewritten: 19 of the 62 new reflections had drifted onto one
+//      "What have you been..." construction (the templating SEED_VERSION 30
+//      already rewrote 31 legacy angles to escape), and two entries asserted
+//      things about the reader rather than asking — 112:1-4 told a Lonely
+//      reader "You have been leaning on people", and 20:39 asked how much of
+//      their effort "this week" went on being liked. Also swapped
+//      q_angle_30_23_calm's step 2, which repeated 20:130's du'a.
+const SEED_VERSION = 44;
 // Separate keys per content type — Quran and Hadith data change independently,
 // and each seeder used to write the SAME key at the end of its run. Since
 // initializeDatabase() awaits seedQuranContent() before seedHadithContent(),

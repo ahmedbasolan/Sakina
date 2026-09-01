@@ -18415,7 +18415,7 @@ const quranContentAnglesData: ContentAngle[] = [
     angle: "Your ordinary day is doing something you may not have noticed. Sleeping at night, going out after your provision by day — the ayah calls both of these signs, and then narrows the audience to a people who listen. Not people who are told more, but people who take in what is already in front of them. The sign is not somewhere else. It is your Tuesday.",
     angleSource: "Surah Ar-Rum 30:23",
     action: "Name one ordinary thing from today as a sign before you sleep.",
-    practiceSteps: JSON.stringify([{"type":"physical","icon":"eye","title":"Stop once and look","instruction":"Once today, stop for a full minute and look at something ordinary you did not make — light, breath, sleep arriving.","source":"Surah Ar-Rum 30:23 — Quran","sourceType":"quran_dua"},{"type":"verbal","icon":"star","title":"Say it a hundred times","instruction":"Across the day, say this a hundred times — in the car, walking, waiting.","arabicText":"سُبْحَانَ اللَّهِ وَبِحَمْدِهِ","transliteration":"SubhanAllahi wa bihamdihi","translation":"Glory be to Allah, and praise be to Him.","source":"\"Whoever says, 'Subhan Allah wa bihamdihi,' one hundred times a day, will be forgiven all his sins even if they were as much as the foam of the sea.\" [Bukhari 6405]","sourceType":"prophetic_dhikr","sourceGrading":"sahih"},{"type":"mindset","icon":"chat","title":"Be one of the ones who listen","instruction":"The ayah ends by naming who this is for. Listening is the whole qualification.","source":"Surah Ar-Rum 30:23 — Quran","sourceType":"quran_dua"}]),
+    practiceSteps: JSON.stringify([{"type":"physical","icon":"eye","title":"Stop once and look","instruction":"Once today, stop for a full minute and look at something ordinary you did not make — light, breath, sleep arriving.","source":"Surah Ar-Rum 30:23 — Quran","sourceType":"quran_dua"},{"type":"verbal","icon":"headphones","title":"Hear it once","instruction":"Play the recitation of this ayah and listen to it once without reading along. The ayah names its audience in its last three words — a people who listen — so let hearing be the whole of this."},{"type":"mindset","icon":"chat","title":"Be one of the ones who listen","instruction":"The ayah ends by naming who this is for. Listening is the whole qualification.","source":"Surah Ar-Rum 30:23 — Quran","sourceType":"quran_dua"}]),
     reflection: "What ordinary thing from today would count as a sign, if you let it?",
   },
   {
@@ -18486,7 +18486,7 @@ const quranContentAnglesData: ContentAngle[] = [
     angleSource: "Surah Ibrahim 14:40",
     action: "Ask Allah in these words to make you someone who keeps the prayer.",
     practiceSteps: JSON.stringify([{"type":"physical","icon":"home","title":"Ask where they can hear you","instruction":"Say this du’a once somewhere your household can hear it, or once for someone in it by name.","source":"Surah Ibrahim 14:40 — Quran","sourceType":"quran_dua"},{"type":"verbal","icon":"hands-prayer","title":"Ibrahim’s wording","instruction":"Raise your hands and ask in the words the ayah gives you.","arabicText":"رَبِّ ٱجْعَلْنِى مُقِيمَ ٱلصَّلَوٰةِ وَمِن ذُرِّيَّتِى ۚ رَبَّنَا وَتَقَبَّلْ دُعَآءِ","transliteration":"Rabbi-j‘alni muqima-s-salati wa min dhurriyyati, Rabbana wa taqabbal du‘a","translation":"My Lord, make me an establisher of prayer, and [many] from my descendants. Our Lord, and accept my supplication.","source":"Surah Ibrahim 14:40 — Quran","sourceType":"quran_dua"},{"type":"mindset","icon":"target","title":"He asked to be made, not given","instruction":"The request is for a capacity, not a result. That is available to you in exactly the same words.","source":"Surah Ibrahim 14:40 — Quran","sourceType":"quran_dua"}]),
-    reflection: "What have you been trying to force, that you could ask to be made capable of?",
+    reflection: "What are you trying to force, that you could ask to be made capable of instead?",
   },
   {
     id: 'q_angle_10_62_calm',
@@ -18506,7 +18506,7 @@ const quranContentAnglesData: ContentAngle[] = [
     angleSource: "Surah Al-Furqan 25:58",
     action: "Say Ya Hayyu ya Qayyum when the worry next surfaces.",
     practiceSteps: JSON.stringify([{"type":"physical","icon":"candle","title":"Catch it the next time","instruction":"The next time the worry surfaces, stop whatever you are doing for ten seconds first.","source":"Surah Al-Furqan 25:58 — Quran","sourceType":"quran_dua"},{"type":"verbal","icon":"hands-prayer","title":"Call Him by the Name in the ayah","instruction":"Say this — the same Name the ayah tells you to rely on.","arabicText":"يَا حَىُّ يَا قَيُّومُ بِرَحْمَتِكَ أَسْتَغِيثُ","transliteration":"Ya Hayyu ya Qayyum, bi-rahmatika astaghith","translation":"O Living, O Self-Sustaining Sustainer, in Your mercy do I seek relief.","source":"\"Whenever a matter would distress him, the Prophet (ﷺ) would say: ‘O Living, O Self-Sustaining Sustainer! In Your Mercy do I seek relief.’\" [Tirmidhi 3524 — graded gharib by Abu Isa]","sourceType":"prophetic_dua"},{"type":"mindset","icon":"star","title":"The One who does not die","instruction":"The ayah picks this Name over every other. Whatever else you lean on has an end date; this is the reasoning, not a mood.","source":"Surah Al-Furqan 25:58 — Quran","sourceType":"quran_dua"}]),
-    reflection: "What have you been relying on that will not outlast you?",
+    reflection: "Which of the things holding you up right now will still be standing in ten years?",
   },
   {
     id: 'q_angle_93_3_calm',
@@ -18516,7 +18516,7 @@ const quranContentAnglesData: ContentAngle[] = [
     angleSource: "Surah Ad-Duha 93:3",
     action: "Name the thing you have been reading as a sign He has stepped back.",
     practiceSteps: JSON.stringify([{"type":"physical","icon":"pen","title":"Write down the evidence","instruction":"Write the one thing you have been reading as distance. Seeing it written is usually enough to see how thin it is.","source":"Surah Ad-Duha 93:3 — Quran","sourceType":"quran_dua"},{"type":"verbal","icon":"chat","title":"Say the denial back","instruction":"Read the ayah out loud, slowly, and let it answer the thing you wrote.","source":"Surah Ad-Duha 93:3 — Quran","sourceType":"quran_dua"},{"type":"mindset","icon":"moon","title":"Quiet is not absence","instruction":"The surah is named for the morning light and opens by swearing by the night when it is still. Both are in the oath. Neither is abandonment.","source":"Surah Ad-Duha 93:3 — Quran","sourceType":"quran_dua"}]),
-    reflection: "What have you been treating as evidence, that this ayah says is not evidence?",
+    reflection: "What did the quiet seem to prove?",
   },
   {
     id: 'q_angle_67_29_calm',
@@ -18566,7 +18566,7 @@ const quranContentAnglesData: ContentAngle[] = [
     angleSource: "Surah Al-Isra 17:82",
     action: "Recite Al-Fatihah over yourself for something that hurts.",
     practiceSteps: JSON.stringify([{"type":"physical","icon":"water-drop","title":"Recite it over yourself","instruction":"Cup your hands, recite Al-Fatihah into them, and wipe over whatever aches — body or otherwise.","source":"\"How do you know that Surat-al-Fatiha is a Ruqya?\" [Bukhari 5736]","sourceType":"sunnah_action","sourceGrading":"sahih"},{"type":"verbal","icon":"book-quran","title":"Read a little, not a lot","instruction":"Read three ayat with the meaning open beside them. Stop while you still want more.","source":"Surah Al-Isra 17:82 — Quran","sourceType":"quran_dua"},{"type":"mindset","icon":"heart","title":"It is being sent toward you","instruction":"The verb in the ayah is descending. That places the effort on the giving side, not only on yours.","source":"Surah Al-Isra 17:82 — Quran","sourceType":"quran_dua"}]),
-    reflection: "What have you been treating as a duty, that this ayah calls a mercy?",
+    reflection: "When did reading last feel like something arriving rather than something owed?",
   },
   {
     id: 'q_angle_16_97_calm',
@@ -18576,7 +18576,7 @@ const quranContentAnglesData: ContentAngle[] = [
     angleSource: "Surah An-Nahl 16:97",
     action: "Do one right thing today that will not make your day easier.",
     practiceSteps: JSON.stringify([{"type":"physical","icon":"muscle","title":"The harder right thing","instruction":"Pick the small right action you have been postponing because it costs something, and do it today.","source":"Surah An-Nahl 16:97 — Quran","sourceType":"quran_dua"},{"type":"verbal","icon":"chat","title":"Ask for tayyib","instruction":"Ask Allah for a good life rather than an easy one, in those words.","sourceType":"composed_dua"},{"type":"mindset","icon":"gem","title":"Good is not the same as easy","instruction":"Tayyib means wholesome, sound, clean. None of those mean comfortable.","source":"Surah An-Nahl 16:97 — Quran","sourceType":"quran_dua"}]),
-    reflection: "Which have you been asking for — a good life, or an easy one?",
+    reflection: "Which would you rather be given — a good life, or an easy one?",
   },
   {
     id: 'q_angle_76_25_calm',
@@ -18616,7 +18616,7 @@ const quranContentAnglesData: ContentAngle[] = [
     angleSource: "Surah Al-Baqarah 2:177",
     action: "Do one ordinary duty today and let it count.",
     practiceSteps: JSON.stringify([{"type":"physical","icon":"checkmark","title":"The next ordinary thing","instruction":"Pick one small duty — a meal made, a message answered, a prayer prayed — and do it without waiting to feel like it.","source":"Surah Al-Baqarah 2:177 — Quran","sourceType":"quran_dua"},{"type":"verbal","icon":"chat","title":"Ask for it to be counted","instruction":"Ask Allah to write today’s endurance as worship, in whatever words come.","sourceType":"composed_dua"},{"type":"mindset","icon":"star","title":"Patience sits beside prayer here","instruction":"The ayah lists the patient alongside those who give and pray. Not a lesser category — the same sentence.","source":"Surah Al-Baqarah 2:177 — Quran","sourceType":"quran_dua"}]),
-    reflection: "What have you been dismissing as merely coping, that this ayah calls righteousness?",
+    reflection: "Which part of today was just getting through it?",
   },
   {
     id: 'q_angle_17_70_sad',
@@ -18626,7 +18626,7 @@ const quranContentAnglesData: ContentAngle[] = [
     angleSource: "Surah Al-Isra 17:70",
     action: "Treat your body as something honoured once today — food, water, or sleep.",
     practiceSteps: JSON.stringify([{"type":"physical","icon":"water-drop","title":"Act as though it were true","instruction":"Eat something proper, drink water, or sleep at a reasonable hour — one of the three, today.","source":"Surah Al-Isra 17:70 — Quran","sourceType":"quran_dua"},{"type":"verbal","icon":"chat","title":"Say the sentence back","instruction":"Say out loud that Allah has honoured you. It will feel untrue before it feels true.","sourceType":"composed_dua"},{"type":"mindset","icon":"gem","title":"Already done, not pending","instruction":"The verb is past tense. The honouring is not a reward being withheld until you improve.","source":"Surah Al-Isra 17:70 — Quran","sourceType":"quran_dua"}]),
-    reflection: "Whose assessment of your worth have you been taking as the accurate one?",
+    reflection: "Who decided what you are worth?",
   },
   {
     id: 'q_angle_93_4_sad',
@@ -18646,7 +18646,7 @@ const quranContentAnglesData: ContentAngle[] = [
     angleSource: "Surah Al-Anbiya 21:83",
     action: "Tell Allah plainly what hurts, without softening it first.",
     practiceSteps: JSON.stringify([{"type":"physical","icon":"candle","title":"Somewhere you can say it aloud","instruction":"Find a room where nobody will hear you, so you do not have to phrase it for anyone.","source":"Surah Al-Anbiya 21:83 — Quran","sourceType":"quran_dua"},{"type":"verbal","icon":"chat","title":"Ayyub’s shape","instruction":"Say what has touched you, then say who He is. Those two sentences, in that order.","sourceType":"composed_dua"},{"type":"mindset","icon":"heart","title":"Naming it is not complaining","instruction":"The ayah preserves his words. Saying it hurts was not held against him.","source":"Surah Al-Anbiya 21:83 — Quran","sourceType":"quran_dua"}]),
-    reflection: "What have you been editing out of your du‘a to make it sound more grateful?",
+    reflection: "If you said the hard part as plainly as Ayyub did, what would the sentence be?",
   },
   {
     id: 'q_angle_94_5_sad_pair',
@@ -18676,7 +18676,7 @@ const quranContentAnglesData: ContentAngle[] = [
     angleSource: "Surah Yunus 10:62",
     action: "Name which one is heavier today — the fear or the grief.",
     practiceSteps: JSON.stringify([{"type":"physical","icon":"target","title":"Separate the two","instruction":"Write one line for what you are dreading and one for what you have lost. They need different answers.","source":"Surah Yunus 10:62 — Quran","sourceType":"quran_dua"},{"type":"verbal","icon":"chat","title":"Ask for nearness by name","instruction":"Ask Allah to make you one of those close to Him — the ayah ties the relief to that, not to circumstances.","sourceType":"composed_dua"},{"type":"mindset","icon":"shield","title":"Where it ends, not whether it comes","instruction":"The ayah does not say the awliya are spared loss. It says fear and grief do not settle on them.","source":"Surah Yunus 10:62 — Quran","sourceType":"quran_dua"}]),
-    reflection: "Which of the two is actually louder right now, and which have you been treating as the problem?",
+    reflection: "The awliya are described by what is absent from them. What would be missing from today, if that were true of you?",
   },
   {
     id: 'q_angle_8_46_sad',
@@ -18806,7 +18806,7 @@ const quranContentAnglesData: ContentAngle[] = [
     angleSource: "Surah Al-Isra 17:70",
     action: "Do one thing today that you would only do for someone valuable.",
     practiceSteps: JSON.stringify([{"type":"physical","icon":"gem","title":"Act on the honour, not the mood","instruction":"Cook properly, wash, dress for the day. Treat the body as the ayah describes it.","source":"Surah Al-Isra 17:70 — Quran","sourceType":"quran_dua"},{"type":"verbal","icon":"chat","title":"Say who gave it","instruction":"Say out loud that the honouring came from Allah, not from anyone who left.","sourceType":"composed_dua"},{"type":"mindset","icon":"shield","title":"Not in their gift","instruction":"What people did not grant you, they cannot revoke. The ayah puts the source elsewhere.","source":"Surah Al-Isra 17:70 — Quran","sourceType":"quran_dua"}]),
-    reflection: "Whose attention have you been treating as the thing that makes you real?",
+    reflection: "If nobody looked at you tomorrow, what would change about what you are worth?",
   },
   {
     id: 'q_angle_27_62_lonely',
@@ -18816,7 +18816,7 @@ const quranContentAnglesData: ContentAngle[] = [
     angleSource: "Surah An-Naml 27:62",
     action: "Ask Him for the thing you have been asking people for.",
     practiceSteps: JSON.stringify([{"type":"physical","icon":"candle","title":"Ask before you text anyone","instruction":"The next time you reach for your phone to be heard, ask Allah first. Then text if you still want to.","source":"Surah An-Naml 27:62 — Quran","sourceType":"quran_dua"},{"type":"verbal","icon":"chat","title":"Ask as the desperate one","instruction":"Do not tidy the du‘a up. The ayah names the desperate, not the articulate.","sourceType":"composed_dua"},{"type":"mindset","icon":"door","title":"Out of options is the qualification","instruction":"The condition in the ayah is not composure. It is having nowhere else to go.","source":"Surah An-Naml 27:62 — Quran","sourceType":"quran_dua"}]),
-    reflection: "What have you been waiting for a person to offer, that you have not asked Allah for?",
+    reflection: "What are you hoping a person will offer, that you could ask Allah for tonight?",
   },
   {
     id: 'q_angle_40_44_lonely',
@@ -18842,11 +18842,11 @@ const quranContentAnglesData: ContentAngle[] = [
     id: 'q_angle_112_1_4_lonely',
     contentId: 'quran_112_1_4',
     mood: 'Lonely',
-    angle: "Take the word as-Samad. The ayah calls Allah the One everything turns to and who turns to no one — self-sufficient, needing nothing, depended upon by everything. You have been leaning on people who are themselves leaning. This is the one place in that chain where the leaning stops.",
+    angle: "Take the word as-Samad. The ayah calls Allah the One everything turns to and who turns to no one — self-sufficient, needing nothing, depended upon by everything. Anyone you might lean on is leaning on something themselves. This is the one place in that chain where the leaning stops.",
     angleSource: "Surah Al-Ikhlas 112:1-4",
     action: "Recite Al-Ikhlas three times, slowly, and think about as-Samad.",
     practiceSteps: JSON.stringify([{"type":"physical","icon":"book-quran","title":"Three times, slowly","instruction":"Recite the surah three times without rushing, and stop on as-Samad each time.","source":"Surah Al-Ikhlas 112:1-4 — Quran","sourceType":"quran_dua"},{"type":"verbal","icon":"chat","title":"Name the chain","instruction":"Say who you have been leaning on, then say who they lean on, then stop where the ayah stops.","sourceType":"composed_dua"},{"type":"mindset","icon":"compass","title":"The end of the chain","instruction":"Everyone you rely on relies on someone. As-Samad is where that ends.","source":"Surah Al-Ikhlas 112:1-4 — Quran","sourceType":"quran_dua"}]),
-    reflection: "Who have you been depending on who is also depending on someone?",
+    reflection: "Everyone you lean on is leaning on someone else. Where does the chain end?",
   },
   {
     id: 'q_angle_33_41_lonely',
@@ -18866,7 +18866,7 @@ const quranContentAnglesData: ContentAngle[] = [
     angleSource: "Surah Al-Qamar 54:17",
     action: "Open the Qur’an and read one page, tonight.",
     practiceSteps: JSON.stringify([{"type":"physical","icon":"book-quran","title":"One page, tonight","instruction":"Not a plan, not a schedule. One page, now, with the translation beside it.","source":"Surah Al-Qamar 54:17 — Quran","sourceType":"quran_dua"},{"type":"verbal","icon":"chat","title":"Answer the question","instruction":"The ayah asks whether anyone will. Say yes out loud, then do the page.","sourceType":"composed_dua"},{"type":"mindset","icon":"door","title":"Made easy, on purpose","instruction":"The ayah says it was made easy. Difficulty is not the barrier you thought it was.","source":"Surah Al-Qamar 54:17 — Quran","sourceType":"quran_dua"}]),
-    reflection: "What have you been putting off until you had company for it?",
+    reflection: "What could you start tonight that does not need anyone else to be free?",
   },
   {
     id: 'q_angle_32_16_lonely',
@@ -18916,7 +18916,7 @@ const quranContentAnglesData: ContentAngle[] = [
     angleSource: "Surah Maryam 19:96",
     action: "Do one righteous thing today that has nothing to do with being liked.",
     practiceSteps: JSON.stringify([{"type":"physical","icon":"gift","title":"Do it unseen","instruction":"One good act today that nobody will attribute to you.","source":"Surah Maryam 19:96 — Quran","sourceType":"quran_dua"},{"type":"verbal","icon":"hands-prayer","title":"Ask Him for the wudd","instruction":"Ask Allah to place affection for you in hearts. Those words.","sourceType":"composed_dua"},{"type":"mindset","icon":"heart","title":"Appointed, not earned","instruction":"The ayah makes affection something granted. That takes it out of your negotiation.","source":"Surah Maryam 19:96 — Quran","sourceType":"quran_dua"}]),
-    reflection: "What have you been performing in order to be loved, that this ayah says is not the mechanism?",
+    reflection: "If affection is placed rather than earned, what would you stop doing?",
   },
   {
     id: 'q_angle_3_103_lonely',
@@ -18946,7 +18946,7 @@ const quranContentAnglesData: ContentAngle[] = [
     angleSource: "Surah Al-Kahf 18:28",
     action: "Choose your company for one hour this week on this criterion alone.",
     practiceSteps: JSON.stringify([{"type":"physical","icon":"mosque","title":"Sit where they are","instruction":"One gathering, one circle, one prayer in congregation. Go where the criterion is met.","source":"Surah Al-Kahf 18:28 — Quran","sourceType":"quran_dua"},{"type":"verbal","icon":"chat","title":"Ask for the right people","instruction":"Ask Allah for company that calls on Him, rather than company that impresses you.","sourceType":"composed_dua"},{"type":"mindset","icon":"eye","title":"Do not let the eyes travel","instruction":"The ayah warns about looking past the plain company toward the adorned. That is a real temptation, named.","source":"Surah Al-Kahf 18:28 — Quran","sourceType":"quran_dua"}]),
-    reflection: "Whose company have you been wanting, and whose have you been overlooking?",
+    reflection: "Who calls on their Lord morning and evening that you could sit with this week?",
   },
   {
     id: 'q_angle_20_39_lonely',
@@ -18956,7 +18956,7 @@ const quranContentAnglesData: ContentAngle[] = [
     angleSource: "Surah Ta-Ha 20:39",
     action: "Ask Allah to cast love for you, rather than working to earn it.",
     practiceSteps: JSON.stringify([{"type":"physical","icon":"water-drop","title":"Stop one campaign","instruction":"Pick one relationship you have been managing, and stop managing it for a day.","source":"Surah Ta-Ha 20:39 — Quran","sourceType":"quran_dua"},{"type":"verbal","icon":"hands-prayer","title":"Ask for love to be cast","instruction":"Ask Allah to put love for you where you cannot reach.","sourceType":"composed_dua"},{"type":"mindset","icon":"star","title":"Under His eye","instruction":"Musa was raised under Allah’s eye while entirely helpless. The helplessness did not disqualify him.","source":"Surah Ta-Ha 20:39 — Quran","sourceType":"quran_dua"}]),
-    reflection: "How much of your effort this week has been spent making people like you?",
+    reflection: "What would you stop trying to earn, if love could simply be placed?",
   },
   {
     id: 'q_angle_94_4_lonely',
@@ -18966,7 +18966,7 @@ const quranContentAnglesData: ContentAngle[] = [
     angleSource: "Surah Ash-Sharh 94:4",
     action: "Say the salawat once, and notice what the ayah promised has actually happened.",
     practiceSteps: JSON.stringify([{"type":"physical","icon":"star","title":"Say the salawat","instruction":"Send salawat on the Prophet ﷺ once, deliberately, and notice you are proving the ayah as you do it.","source":"Surah Ash-Sharh 94:4 — Quran","sourceType":"quran_dua"},{"type":"verbal","icon":"chat","title":"Name the real record","instruction":"Say which account you are actually being kept in.","sourceType":"composed_dua"},{"type":"mindset","icon":"shield","title":"Raised while it looked lowest","instruction":"The promise was made during the worst of it, not after the vindication.","source":"Surah Ash-Sharh 94:4 — Quran","sourceType":"quran_dua"}]),
-    reflection: "Whose assessment of you have you been treating as the record?",
+    reflection: "The raising was already underway at the worst of it. What does that change about now?",
   },
   {
     id: 'q_angle_51_56_lonely',
@@ -18976,7 +18976,7 @@ const quranContentAnglesData: ContentAngle[] = [
     angleSource: "Surah Adh-Dhariyat 51:56",
     action: "Do the thing you were made for, right now, alone.",
     practiceSteps: JSON.stringify([{"type":"physical","icon":"hands-prayer","title":"Do it now, not later","instruction":"Two rak‘ahs, or ten minutes of Qur’an. The purpose is available in this room.","source":"Surah Adh-Dhariyat 51:56 — Quran","sourceType":"quran_dua"},{"type":"verbal","icon":"chat","title":"Say what you were made for","instruction":"Say the purpose out loud. It is not a relational one.","sourceType":"composed_dua"},{"type":"mindset","icon":"target","title":"No audience required","instruction":"The ayah names one purpose and attaches no other person to it.","source":"Surah Adh-Dhariyat 51:56 — Quran","sourceType":"quran_dua"}]),
-    reflection: "What have you been postponing until your life looked fuller?",
+    reflection: "What is available to you in an empty room right now?",
   },
 ];
 
