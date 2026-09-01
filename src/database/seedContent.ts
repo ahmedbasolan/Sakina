@@ -341,7 +341,14 @@ import type { Content, ContentAngle } from '../types';
 //      25:58 each re-tagged Guilty) + 6 T3 (new verses 4:31, 11:114, 17:25,
 //      9:118, 16:119, 3:31). 9:118 carries a story — Ka'b ibn Malik's own
 //      account of the fifty nights [Bukhari 4418]. Six moods at 40.
-const SEED_VERSION = 49;
+// v50: Angry 25 -> 40, target floor reached. 6 T2 (49:10, 39:10, 12:18, 10:57,
+//      64:11, 4:1 re-tagged Angry) + 9 T3 (new verses 59:10, 15:47, 73:10,
+//      60:7, 28:55, 49:12, 16:90, 3:120, 49:11). Eight moods at 40; Tired left.
+//      Also repairs, not new content: the arabicText of the 6 Guilty verses and
+//      11 step clauses across Guilty/Angry/Hopeful was NFC-normalised rather
+//      than the byte-exact quran.com text, and 59:10's step clause had
+//      "Rabbana" moved to the front of a clause the ayah puts it after.
+const SEED_VERSION = 50;
 // Separate keys per content type — Quran and Hadith data change independently,
 // and each seeder used to write the SAME key at the end of its run. Since
 // initializeDatabase() awaits seedQuranContent() before seedHadithContent(),
