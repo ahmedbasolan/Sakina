@@ -3978,7 +3978,8 @@ const quranContentData: Content[] = [
     primaryText: "Aniqzifeehi fit Taabooti faqzifeehi fil yammi fal yul qihil yammu bis saahili yaakhuzhu 'aduwwul lee wa 'aduwwul lah; wa alqaitu 'alaika mahabbatam minnee wa litusna'a 'alaa 'ainee",
     arabicText: "أَنِ ٱقْذِفِيهِ فِى ٱلتَّابُوتِ فَٱقْذِفِيهِ فِى ٱلْيَمِّ فَلْيُلْقِهِ ٱلْيَمُّ بِٱلسَّاحِلِ يَأْخُذْهُ عَدُوٌّۭ لِّى وَعَدُوٌّۭ لَّهُۥ ۚ وَأَلْقَيْتُ عَلَيْكَ مَحَبَّةًۭ مِّنِّى وَلِتُصْنَعَ عَلَىٰ عَيْنِىٓ ﴿39﴾",
     transliteration: "Aniqzifeehi fit Taabooti faqzifeehi fil yammi fal yul qihil yammu bis saahili yaakhuzhu 'aduwwul lee wa 'aduwwul lah; wa alqaitu 'alaika mahabbatam minnee wa litusna'a 'alaa 'ainee",
-    englishTranslation: "Cast him into the chest and cast it into the river, and the river will throw it onto the bank; there will take him an enemy to Me and an enemy to him. And I bestowed upon you love from Me that you would be brought up under My eye.",
+    englishTranslation:
+      'Saying, "Cast him into the chest and cast it into the river, and the river will throw it onto the bank; there will take him an enemy to Me and an enemy to him." And I bestowed upon you love from Me that you would be brought up under My eye.',
     source: "Surah Ta-Ha 20:39",
     audioKey: "20:39",
     whyThis: "Told to Musa about his infancy: love was cast upon him from Allah, and he was raised under His eye — both stated as things done to him while he had no say.",

@@ -312,7 +312,11 @@ import type { Content, ContentAngle } from '../types';
 //      things about the reader rather than asking — 112:1-4 told a Lonely
 //      reader "You have been leaning on people", and 20:39 asked how much of
 //      their effort "this week" went on being liked. Also swapped
-//      q_angle_30_23_calm's step 2, which repeated 20:130's du'a.
+//      q_angle_30_23_calm's step 2, which repeated 20:130's du'a. And 20:39's
+//      English: stripping Sahih International's "[Saying]," left the card
+//      opening on a bare imperative ("Cast him into the chest"), which reads as
+//      an instruction to the reader. The Arabic opens on ani — saying — so the
+//      framing is restored unbracketed, per the resolve-don't-drop rule.
 const SEED_VERSION = 44;
 // Separate keys per content type — Quran and Hadith data change independently,
 // and each seeder used to write the SAME key at the end of its run. Since
