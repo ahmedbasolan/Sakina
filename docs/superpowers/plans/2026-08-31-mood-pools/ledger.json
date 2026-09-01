@@ -665,7 +665,7 @@
       "contentId": "quran_14_7",
       "mood": "Hopeful",
       "tier": "T1",
-      "status": "pending",
+      "status": "drafted",
       "citations": []
     },
     {
@@ -689,7 +689,7 @@
       "contentId": "quran_23_1",
       "mood": "Hopeful",
       "tier": "T1",
-      "status": "pending",
+      "status": "drafted",
       "citations": []
     },
     {
@@ -697,7 +697,7 @@
       "contentId": "quran_98_5",
       "mood": "Hopeful",
       "tier": "T1",
-      "status": "pending",
+      "status": "drafted",
       "citations": [],
       "replaces": {
         "angleId": "q_angle_29_45_hopeful",
@@ -710,7 +710,7 @@
       "contentId": "quran_14_40",
       "mood": "Hopeful",
       "tier": "T1",
-      "status": "pending",
+      "status": "drafted",
       "citations": []
     },
     {
@@ -731,7 +731,7 @@
       "contentId": "quran_25_74",
       "mood": "Hopeful",
       "tier": "T1",
-      "status": "pending",
+      "status": "drafted",
       "citations": [],
       "replaces": {
         "angleId": "q_angle_7_96_hopeful",
@@ -752,7 +752,7 @@
       "contentId": "quran_67_15",
       "mood": "Hopeful",
       "tier": "T1",
-      "status": "pending",
+      "status": "drafted",
       "citations": []
     },
     {
@@ -768,7 +768,7 @@
       "contentId": "quran_49_13",
       "mood": "Hopeful",
       "tier": "T1",
-      "status": "pending",
+      "status": "drafted",
       "citations": []
     },
     {
@@ -776,7 +776,7 @@
       "contentId": "quran_20_131",
       "mood": "Hopeful",
       "tier": "T1",
-      "status": "pending",
+      "status": "drafted",
       "citations": [],
       "replaces": {
         "angleId": "q_angle_17_32_hopeful",
