@@ -1,22 +1,51 @@
 /**
- * Mood definitions for MoodSelectionScreen (SVG icon paths, colour tokens,
- * descriptive copy).
+ * The nine moods, defined once.
  *
- * This is NOT actually imported by HomeScreen's SmartMoodGrid or
- * MoodCheckInModal — both of those hardcode their own separate mood arrays
- * (HomeScreen's MOOD_CARD_CONTENT, MoodCheckInModal's GRID_MOODS). An earlier
- * version of this comment claimed all three were unified here; they were not,
- * and the Arabic word for 'Lonely' had quietly drifted apart as a result
- * (وَحْدَة here vs وَحْشَة in the other two, fixed 2026-08-23). Keep the Arabic
- * field here in sync with MoodCheckInModal's GRID_MOODS by hand until these
- * are actually consolidated onto one shared source.
+ * They used to be defined three times — here, in HomeScreen’s
+ * MOOD_CARD_CONTENT and in MoodCheckInModal’s GRID_MOODS — and this file’s
+ * own header said so, ending "keep the Arabic field here in sync with
+ * MoodCheckInModal’s GRID_MOODS by hand until these are actually
+ * consolidated onto one shared source". They are now consolidated.
+ *
+ * Hand-syncing had already failed twice by then. وَحْدَة (Wahda, solitude)
+ * drifted from وَحْشَة (Wahsha, desolation) for Lonely and was fixed in
+ * 2026-08-23; by 2026-08-31 the copies disagreed in four more ways — Calm
+ * rendered as CALM here and PEACEFUL on both other surfaces, Guilty carried
+ * تَوْبَة here and نَدَم · تَوْبَة in the modal, the sublabel meant three
+ * different things, and the ORDER differed (…Tired, Sad, Angry, Lonely here
+ * against …Tired, Lonely, Sad, Angry in both grids). A user who met two of
+ * these surfaces in one session met two different products.
+ *
+ * The three sublabels were NOT the same field wearing three names, which is
+ * why this carries all three: `theme` is the emotional one-liner the check-in
+ * modal shows, `transliteration` is the Latin spelling of `arabic` that the
+ * Home grid shows, and `description` is the sentence on MoodSelectionScreen.
+ * Collapsing them into one would have destroyed two of the three meanings.
+ *
+ * src/constants/__tests__/moodDataSingleSource.test.ts fails if any screen
+ * starts spelling the Arabic out for itself again.
  */
 import { Mood } from '../types';
 
 export interface MoodVisual {
   key: Mood;
   arabic: string;
+  /**
+   * Title Case. Casing is presentation — a screen that wants caps sets
+   * textTransform in its own style. Storing 'GRATEFUL' is what made
+   * SmartMoodGrid re-lowercase it at render time to get a sentence back.
+   */
   label: string;
+  /** One-line emotional theme: 'Abundance', 'Seeking Ease'. Check-in modal. */
+  theme: string;
+  /**
+   * Latin transliteration of `arabic`, and of nothing else. It must be the
+   * SAME word, not a synonym: this field previously read Sukoon beside
+   * سَكِينَة (Sakeenah) and Ghamm beside إِرْهَاق (Irhaq), and Nadam beside
+   * تَوْبَة (Tawbah) — three different words each time. Home mood grid.
+   */
+  transliteration: string;
+  /** Full sentence for the large cards. MoodSelectionScreen. */
   description: string;
   color: string;
   bg: string;
@@ -25,6 +54,9 @@ export interface MoodVisual {
   icon: string;
   /** Ionicons name — used by compact cards / fallback contexts. */
   ionicon: string;
+  /** Guilty only: the check-in modal's full-width Tawbah card. */
+  wideLabel?: string;
+  wideArabic?: string;
 }
 
 /**
@@ -35,7 +67,9 @@ export const MOOD_VISUALS: MoodVisual[] = [
   {
     key: 'Grateful',
     arabic: 'شُكْر',
-    label: 'GRATEFUL',
+    label: 'Grateful',
+    theme: 'Abundance',
+    transliteration: 'Shukr',
     description: 'Thankfulness fills your heart',
     color: '#FBBF24',
     bg: 'rgba(251, 191, 36, 0.08)',
@@ -46,7 +80,9 @@ export const MOOD_VISUALS: MoodVisual[] = [
   {
     key: 'Hopeful',
     arabic: 'أَمَل',
-    label: 'HOPEFUL',
+    label: 'Hopeful',
+    theme: 'Light & Dawn',
+    transliteration: 'Amal',
     description: 'Light breaks through the clouds',
     color: '#22D3EE',
     bg: 'rgba(34, 211, 238, 0.08)',
@@ -57,7 +93,9 @@ export const MOOD_VISUALS: MoodVisual[] = [
   {
     key: 'Calm',
     arabic: 'سَكِينَة',
-    label: 'CALM',
+    label: 'Peaceful',
+    theme: 'Serenity',
+    transliteration: 'Sakeenah',
     description: 'Serenity settles in your soul',
     color: '#34D399',
     bg: 'rgba(52, 211, 153, 0.08)',
@@ -68,7 +106,9 @@ export const MOOD_VISUALS: MoodVisual[] = [
   {
     key: 'Overwhelmed',
     arabic: 'إِرْهَاق',
-    label: 'OVERWHELMED',
+    label: 'Overwhelmed',
+    theme: 'Seeking Ease',
+    transliteration: 'Irhaq',
     description: 'The weight feels too heavy',
     color: '#818CF8',
     bg: 'rgba(129, 140, 248, 0.08)',
@@ -79,7 +119,9 @@ export const MOOD_VISUALS: MoodVisual[] = [
   {
     key: 'Tired',
     arabic: 'تَعَب',
-    label: 'TIRED',
+    label: 'Tired',
+    theme: 'Rest & Renewal',
+    transliteration: "Ta'ab",
     description: 'Seeking strength to carry on',
     color: '#C99A93',
     bg: 'rgba(201, 154, 147, 0.08)',
@@ -88,9 +130,26 @@ export const MOOD_VISUALS: MoodVisual[] = [
     ionicon: 'moon',
   },
   {
+    key: 'Lonely',
+    // Was 'وَحْدَة' (Wahda, solitude) — HomeScreen and the mood check-in modal
+    // both use 'وَحْشَة' (Wahsha, desolation/isolation) for this mood instead.
+    arabic: 'وَحْشَة',
+    label: 'Lonely',
+    theme: 'Seeking Allah',
+    transliteration: 'Wahshah',
+    description: 'Allah is always near',
+    color: '#C084FC',
+    bg: 'rgba(192, 132, 252, 0.08)',
+    border: 'rgba(192, 132, 252, 0.2)',
+    icon: 'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z',
+    ionicon: 'person',
+  },
+  {
     key: 'Sad',
     arabic: 'حُزْن',
-    label: 'SAD',
+    label: 'Sad',
+    theme: 'Healing Tears',
+    transliteration: 'Huzn',
     description: 'Tears are a form of prayer',
     color: '#7BA3D0',
     bg: 'rgba(123, 163, 208, 0.08)',
@@ -101,7 +160,9 @@ export const MOOD_VISUALS: MoodVisual[] = [
   {
     key: 'Angry',
     arabic: 'غَضَب',
-    label: 'ANGRY',
+    label: 'Angry',
+    theme: 'Self-Restraint',
+    transliteration: 'Ghadab',
     description: 'Fire that seeks peace',
     color: '#FB923C',
     bg: 'rgba(251, 146, 60, 0.08)',
@@ -110,27 +171,22 @@ export const MOOD_VISUALS: MoodVisual[] = [
     ionicon: 'flame',
   },
   {
-    key: 'Lonely',
-    // Was 'وَحْدَة' (Wahda, solitude) — HomeScreen and the mood check-in modal
-    // both use 'وَحْشَة' (Wahsha, desolation/isolation) for this mood instead.
-    arabic: 'وَحْشَة',
-    label: 'LONELY',
-    description: 'Allah is always near',
-    color: '#C084FC',
-    bg: 'rgba(192, 132, 252, 0.08)',
-    border: 'rgba(192, 132, 252, 0.2)',
-    icon: 'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z',
-    ionicon: 'person',
-  },
-  {
     key: 'Guilty',
     arabic: 'تَوْبَة',
-    label: 'GUILT',
+    label: 'Guilty',
+    theme: 'Return to Allah’s Endless Mercy',
+    transliteration: 'Tawbah',
     description: 'Seeking forgiveness and return',
     color: '#4FB8A0',
     bg: 'rgba(79, 184, 160, 0.06)',
     border: 'rgba(79, 184, 160, 0.15)',
     icon: 'M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46C19.54 15.03 20 13.57 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74C4.46 8.97 4 10.43 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z',
+    // The check-in modal gives Tawbah a full-width card of its own — Von
+    // Restorff by design, so repentance is never one tile among eight.
+    // These two are that card's copy; every other surface uses
+    // label/arabic above.
+    wideLabel: 'Guilty · Turning to Repentance',
+    wideArabic: 'نَدَم · تَوْبَة',
     ionicon: 'refresh-circle',
   },
 ];

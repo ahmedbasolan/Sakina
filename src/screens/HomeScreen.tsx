@@ -17,6 +17,7 @@ import Svg, { Path, Circle, Line } from 'react-native-svg';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAppContext } from '../context/AppContext';
 import { Mood, MoodConfig } from '../types';
+import { MOOD_VISUALS } from '../constants/moodData';
 import { LocationPickerModal } from '../components/LocationPickerModal';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { JourneyMandalaBackdrop } from '../components/JourneyMandalaBackdrop';
@@ -39,44 +40,23 @@ import MoodCheckinPromptService, { CheckInWindow, getCurrentCheckInWindow } from
 
 /* ─── Constants ──────────────────────────────────────────────── */
 
-// Card content (labels, Arabic terms, icons). All colour fields derive from
-// MoodColors in DesignSystem.ts — the single source of truth — so the accent a
+// Card content comes from constants/moodData.ts, which is the only place the
+// nine moods are described. This file used to keep its own copy and a comment
+// explaining that its Arabic was "kept literally identical" to the check-in
+// modal by hand; three hand-synced tables had already drifted twice.
+//
+// Colour still derives from MoodColors in DesignSystem.ts, so the accent a
 // user taps on the card always matches the immersive background it opens.
-// `arabic` is kept literally identical to MoodCheckInModal's GRID_MOODS /
-// TAWBAH_MOOD (not moodData.ts's MOOD_VISUALS, which disagrees with the modal
-// on a couple of words) so the Home grid and the check-in modal read as the
-// same vocabulary rather than two different translations of the same mood.
-const MOOD_CARD_CONTENT: { id: Mood; label: string; sublabel: string; arabic: string; iconName: string }[] = [
-  { id: 'Grateful',    label: 'GRATEFUL',    sublabel: 'Shukr',   arabic: 'شُكْر',    iconName: 'heart' },
-  { id: 'Hopeful',     label: 'HOPEFUL',     sublabel: 'Amal',    arabic: 'أَمَل',     iconName: 'sunny' },
-  // Sublabel matches the Arabic transliteration, not a synonym: 'Sukoon' (سُكُون,
-  // stillness) was paired with سَكِينَة (Sakeenah, the heart's tranquility — the
-  // app's own name) — a different word. 'Ghamm' (غَمّ, distress/grief) was paired
-  // with إِرْهَاق (Irhaq, exhaustion) — also a different word.
-  { id: 'Calm',        label: 'PEACEFUL',    sublabel: 'Sakeenah', arabic: 'سَكِينَة',  iconName: 'water' },
-  { id: 'Overwhelmed', label: 'OVERWHELMED', sublabel: 'Irhaq',    arabic: 'إِرْهَاق',  iconName: 'layers' },
-  { id: 'Tired',       label: 'TIRED',       sublabel: "Ta'ab",   arabic: 'تَعَب',     iconName: 'moon' },
-  { id: 'Lonely',      label: 'LONELY',      sublabel: 'Wahshah', arabic: 'وَحْشَة',   iconName: 'person' },
-  { id: 'Sad',         label: 'SAD',         sublabel: 'Huzn',    arabic: 'حُزْن',     iconName: 'rainy' },
-  { id: 'Angry',       label: 'ANGRY',       sublabel: 'Ghadab',  arabic: 'غَضَب',     iconName: 'flame' },
-  // Guilty was defined in the Mood type, had MoodColors, had angles written for
-  // it — and was missing from this array, so the only route to it was one deep
-  // link out of the mood calendar. constants/index.ts calls tawbah "sacred;
-  // never gate repentance"; omitting the card gated it.
-  // Arabic is the single word 'تَوْبَة' rather than the modal's wide-card
-  // 'نَدَم · تَوْبَة' compound — this tile is the compact grid format, which the
-  // modal itself only ever pairs with single words.
-  { id: 'Guilty',      label: 'GUILTY',      sublabel: 'Nadam',   arabic: 'تَوْبَة',   iconName: 'refresh-circle' },
-];
-
-const moodConfigs: MoodConfig[] = MOOD_CARD_CONTENT.map(({ id, label, sublabel, arabic, iconName }) => {
-  const mc = MoodColors[id];
+const moodConfigs: MoodConfig[] = MOOD_VISUALS.map((m) => {
+  const mc = MoodColors[m.key];
   return {
-    id,
-    label,
-    sublabel,
-    arabic,
-    iconName,
+    id: m.key,
+    label: m.label,
+    // The Home grid pairs the Arabic with its Latin spelling, not with a
+    // theme — see `transliteration` in moodData.ts for why that matters.
+    sublabel: m.transliteration,
+    arabic: m.arabic,
+    iconName: m.ionicon,
     color: mc.accent,
     bgColor: mc.bgFill,
     borderColor: mc.card.border,
