@@ -143,7 +143,7 @@ const SmartMoodCard = memo(function SmartMoodCard({
               adjustsFontSizeToFit
               minimumFontScale={0.86}
             >
-              {mood.label.charAt(0) + mood.label.slice(1).toLowerCase()}
+              {mood.label}
             </Text>
             <Text
               style={[

@@ -37,6 +37,7 @@ import { CheckInWindow } from '../../services/moodCheckinPromptService';
 import { HapticsService } from '../../services/hapticsService';
 import { useReduceMotion } from '../../hooks/useReduceMotion';
 import { JourneyMandalaBackdrop } from '../JourneyMandalaBackdrop';
+import { MOOD_VISUALS, MOOD_VISUAL_MAP } from '../../constants/moodData';
 
 interface MoodCheckInModalProps {
   visible: boolean;
@@ -53,24 +54,31 @@ interface MoodItem {
   icon: keyof typeof Ionicons.glyphMap;
 }
 
-// Grouped by emotional state for intuitive cognitive scanning
-const GRID_MOODS: MoodItem[] = [
-  { id: 'Grateful', label: 'Grateful', sublabel: 'Abundance', arabic: 'شُكْر', icon: 'heart' },
-  { id: 'Hopeful', label: 'Hopeful', sublabel: 'Light & Dawn', arabic: 'أَمَل', icon: 'sunny' },
-  { id: 'Calm', label: 'Peaceful', sublabel: 'Serenity', arabic: 'سَكِينَة', icon: 'water' },
-  { id: 'Overwhelmed', label: 'Overwhelmed', sublabel: 'Seeking Ease', arabic: 'إِرْهَاق', icon: 'layers' },
-  { id: 'Tired', label: 'Tired', sublabel: 'Rest & Renewal', arabic: 'تَعَب', icon: 'moon' },
-  { id: 'Lonely', label: 'Lonely', sublabel: 'Seeking Allah', arabic: 'وَحْشَة', icon: 'person' },
-  { id: 'Sad', label: 'Sad', sublabel: 'Healing Tears', arabic: 'حُزْن', icon: 'rainy' },
-  { id: 'Angry', label: 'Angry', sublabel: 'Self-Restraint', arabic: 'غَضَب', icon: 'flame' },
-];
+// Both tables come from constants/moodData.ts. This file used to hold its own
+// nine-row copy; see that file’s header for the four ways the copies had
+// drifted apart by the time they were consolidated.
+//
+// The modal shows `theme` — the emotional one-liner — where the Home grid
+// shows the transliteration. Those are different fields on purpose.
+const GRID_MOODS: MoodItem[] = MOOD_VISUALS.filter((m) => m.key !== 'Guilty').map((m) => ({
+  id: m.key,
+  label: m.label,
+  sublabel: m.theme,
+  arabic: m.arabic,
+  icon: m.ionicon as keyof typeof Ionicons.glyphMap,
+}));
 
+// Tawbah gets a full-width card of its own rather than one tile among eight —
+// deliberate, and the reason moodData carries wideLabel/wideArabic. The
+// fallbacks are not decoration: they keep this rendering something sane if a
+// future edit drops the wide copy.
+const GUILTY = MOOD_VISUAL_MAP.get('Guilty')!;
 const TAWBAH_MOOD: MoodItem = {
   id: 'Guilty',
-  label: 'Guilty · Turning to Repentance',
-  sublabel: 'Return to Allah’s Endless Mercy',
-  arabic: 'نَدَم · تَوْبَة',
-  icon: 'refresh-circle',
+  label: GUILTY.wideLabel ?? GUILTY.label,
+  sublabel: GUILTY.theme,
+  arabic: GUILTY.wideArabic ?? GUILTY.arabic,
+  icon: GUILTY.ionicon as keyof typeof Ionicons.glyphMap,
 };
 
 export const MoodCheckInModal: React.FC<MoodCheckInModalProps> = ({
