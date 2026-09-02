@@ -52,7 +52,16 @@ interface MoodItem {
   sublabel: string;
   arabic: string;
   icon: keyof typeof Ionicons.glyphMap;
+  weight: 'light' | 'heavy';
 }
+
+// The two group headings. Deliberately not "Positive"/"Negative": nothing here
+// is a failing, and a person who taps Angry should not be filed under a worse
+// column than one who taps Grateful.
+const GROUP_LABEL: Record<'light' | 'heavy', string> = {
+  light: 'When the heart is at ease',
+  heavy: 'When the heart is carrying something',
+};
 
 // Both tables come from constants/moodData.ts. This file used to hold its own
 // nine-row copy; see that file’s header for the four ways the copies had
@@ -66,6 +75,7 @@ const GRID_MOODS: MoodItem[] = MOOD_VISUALS.filter((m) => m.key !== 'Guilty').ma
   sublabel: m.theme,
   arabic: m.arabic,
   icon: m.ionicon as keyof typeof Ionicons.glyphMap,
+  weight: m.weight,
 }));
 
 // Tawbah gets a full-width card of its own rather than one tile among eight —
@@ -79,6 +89,7 @@ const TAWBAH_MOOD: MoodItem = {
   sublabel: GUILTY.theme,
   arabic: GUILTY.wideArabic ?? GUILTY.arabic,
   icon: GUILTY.ionicon as keyof typeof Ionicons.glyphMap,
+  weight: GUILTY.weight,
 };
 
 export const MoodCheckInModal: React.FC<MoodCheckInModalProps> = ({
@@ -255,9 +266,19 @@ export const MoodCheckInModal: React.FC<MoodCheckInModalProps> = ({
                     outputRange: [16, 0],
                   });
 
+                  // A full-width child in a flexWrap row forces its own line,
+                  // so the heading needs no restructuring of the grid — and it
+                  // makes a group of 3 read as a finished group rather than a
+                  // row that came up short.
+                  const startsGroup =
+                    index === 0 || GRID_MOODS[index - 1].weight !== item.weight;
+
                   return (
+                    <React.Fragment key={item.id}>
+                    {startsGroup ? (
+                      <Text style={styles.groupLabel}>{GROUP_LABEL[item.weight]}</Text>
+                    ) : null}
                     <Animated.View
-                      key={item.id}
                       style={{
                         width: cardWidth,
                         opacity: itemAnim,
@@ -337,6 +358,7 @@ export const MoodCheckInModal: React.FC<MoodCheckInModalProps> = ({
                         </View>
                       </TouchableOpacity>
                     </Animated.View>
+                    </React.Fragment>
                   );
                 })}
 
@@ -536,6 +558,16 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     maxWidth: 320,
     marginBottom: Spacing.xl,
+  },
+  groupLabel: {
+    width: '100%',
+    fontFamily: Typography.fonts.latin,
+    fontSize: Typography.sizes.detail,
+    color: 'rgba(186, 207, 230, 0.55)',
+    letterSpacing: 1.2,
+    textTransform: 'uppercase',
+    marginTop: Spacing.xs,
+    marginBottom: Spacing.xs,
   },
   grid: {
     width: '100%',

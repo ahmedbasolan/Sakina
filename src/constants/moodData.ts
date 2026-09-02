@@ -45,6 +45,17 @@ export interface MoodVisual {
    * تَوْبَة (Tawbah) — three different words each time. Home mood grid.
    */
   transliteration: string;
+  /**
+   * Which half of the check-in grid this belongs to. The grid labels the two
+   * groups, which is Hick's law applied the way it is actually meant: you
+   * cannot remove any of the nine moods — they are the product — so the lever
+   * is categorising them. Choosing within a labelled group of 3 or 5 is two
+   * cheap decisions instead of one eight-way scan.
+   *
+   * The split is 3/5, not the 4/4 an earlier comment here claimed. Tired sits
+   * with the heavy moods: fatigue is something you carry, not ease.
+   */
+  weight: 'light' | 'heavy';
   /** Full sentence for the large cards. MoodSelectionScreen. */
   description: string;
   color: string;
@@ -66,6 +77,7 @@ export interface MoodVisual {
 export const MOOD_VISUALS: MoodVisual[] = [
   {
     key: 'Grateful',
+    weight: 'light',
     arabic: 'شُكْر',
     label: 'Grateful',
     theme: 'Abundance',
@@ -79,6 +91,7 @@ export const MOOD_VISUALS: MoodVisual[] = [
   },
   {
     key: 'Hopeful',
+    weight: 'light',
     arabic: 'أَمَل',
     label: 'Hopeful',
     theme: 'Light & Dawn',
@@ -92,6 +105,7 @@ export const MOOD_VISUALS: MoodVisual[] = [
   },
   {
     key: 'Calm',
+    weight: 'light',
     arabic: 'سَكِينَة',
     label: 'Peaceful',
     theme: 'Serenity',
@@ -105,6 +119,7 @@ export const MOOD_VISUALS: MoodVisual[] = [
   },
   {
     key: 'Overwhelmed',
+    weight: 'heavy',
     arabic: 'إِرْهَاق',
     label: 'Overwhelmed',
     theme: 'Seeking Ease',
@@ -118,6 +133,7 @@ export const MOOD_VISUALS: MoodVisual[] = [
   },
   {
     key: 'Tired',
+    weight: 'heavy',
     arabic: 'تَعَب',
     label: 'Tired',
     theme: 'Rest & Renewal',
@@ -131,6 +147,7 @@ export const MOOD_VISUALS: MoodVisual[] = [
   },
   {
     key: 'Lonely',
+    weight: 'heavy',
     // Was 'وَحْدَة' (Wahda, solitude) — HomeScreen and the mood check-in modal
     // both use 'وَحْشَة' (Wahsha, desolation/isolation) for this mood instead.
     arabic: 'وَحْشَة',
@@ -146,6 +163,7 @@ export const MOOD_VISUALS: MoodVisual[] = [
   },
   {
     key: 'Sad',
+    weight: 'heavy',
     arabic: 'حُزْن',
     label: 'Sad',
     theme: 'Healing Tears',
@@ -159,6 +177,7 @@ export const MOOD_VISUALS: MoodVisual[] = [
   },
   {
     key: 'Angry',
+    weight: 'heavy',
     arabic: 'غَضَب',
     label: 'Angry',
     theme: 'Self-Restraint',
@@ -172,6 +191,7 @@ export const MOOD_VISUALS: MoodVisual[] = [
   },
   {
     key: 'Guilty',
+    weight: 'heavy',
     arabic: 'تَوْبَة',
     label: 'Guilty',
     theme: 'Return to Allah’s Endless Mercy',

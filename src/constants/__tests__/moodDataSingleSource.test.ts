@@ -71,6 +71,20 @@ describe('mood data has one source', () => {
     }
   });
 
+  it('keeps the two weight groups contiguous, which is what makes one heading each', () => {
+    // MoodCheckInModal emits a group heading whenever the weight differs from
+    // the previous entry's. That is only correct while each weight appears as a
+    // single run — interleave them and the picker grows four headings, which is
+    // worse than the ungrouped grid it replaced.
+    const runs = MOOD_VISUALS.map((m) => m.weight).filter(
+      (w, i, all) => i === 0 || all[i - 1] !== w,
+    );
+    expect(runs).toEqual(['light', 'heavy']);
+    for (const m of MOOD_VISUALS) {
+      expect(['light', 'heavy']).toContain(m.weight);
+    }
+  });
+
   it('stores labels in Title Case so a screen can choose its own casing', () => {
     // Storing 'GRATEFUL' forces every other surface either to shout or to
     // re-type the word. Casing is presentation: textTransform belongs in a
