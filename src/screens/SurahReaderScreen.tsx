@@ -2548,7 +2548,23 @@ const styles = StyleSheet.create({
     lineHeight: MUSHAF_ARABIC_LINE_HEIGHT,
     color: '#E8D5A8',
     textAlign: 'justify',
+    // Both direction props are needed, and each is read by a different platform.
+    // `writingDirection` is iOS-only — it does not appear anywhere in React
+    // Native's Android sources. Android takes the paragraph direction from the
+    // Yoga node instead (ParagraphShadowNode sets layoutDirection from
+    // YGNodeLayoutGetDirection), so inside an LTR app this block resolved LTR
+    // even though the script is Arabic. TextLayoutManager then saw paragraph
+    // LTR + script RTL, set swapNormalAndOpposite, and — because "justified"
+    // matches neither its "center" nor its "right" branch — fell through to
+    // ALIGN_OPPOSITE, which for RTL script means aligned LEFT. The leaf read
+    // left-to-right and the short final line hugged the wrong edge.
+    // `direction` sets the Yoga direction Android actually reads. It has to be
+    // this rather than textAlign:'right', because textAlign is also what
+    // switches Android's JUSTIFICATION_MODE_INTER_WORD on — 'right' would
+    // quietly turn the filled lines off. verify-render-hazards.mjs pass 4
+    // guards the pairing.
     writingDirection: 'rtl',
+    direction: 'rtl',
   },
   // Selection and recitation are marked by COLOUR only — no background box.
   // A backgroundColor on a nested Text run is painted per line-fragment, so
