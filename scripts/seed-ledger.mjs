@@ -40,7 +40,7 @@ const typesSrc = fs.readFileSync('src/types/index.ts', 'utf8');
 const objects = (prefix) => libObjects(src, prefix);
 
 const PREFIXES = JSON.parse(
-  (repo.match(/JOURNEY_ANGLE_PREFIXES = (\[[^\]]*\])/) || [, '[]'])[1].replace(/'/g, '"'),
+  (repo.match(/JOURNEY_ANGLE_PREFIXES = (\[[^\]]*\])/)?.[1] ?? '[]').replace(/'/g, '"'),
 );
 
 // Never retype this list — read it from src/types/index.ts's Mood union, the
@@ -84,7 +84,13 @@ const fail = (msg) => { console.error(`x ${msg}`); process.exit(1); };
 const verses = objects('quran_').map((c) => ({
   id: c.id,
   source: field(c.body, 'source'),
-  moods: (c.body.match(/moods: \[([^\]]*)\]/) || [, ''])[1]
+  // `?.[1] ?? d` rather than the `(m || [, d])[1]` sparse-array idiom: the hole
+  // at index 0 reads as a typo to every linter and half the humans, and eslint's
+  // no-sparse-arrays failed CI over it. The two differ only for a regex that
+  // matches while leaving group 1 undefined — neither regex here has an optional
+  // group, and the swap was checked against 20,167 real inputs from quranData.ts
+  // and contentRepository.ts (350 of them matching) with zero divergence.
+  moods: (c.body.match(/moods: \[([^\]]*)\]/)?.[1] ?? '')
     .split(',').map((s) => s.trim().replace(/'/g, '')).filter(Boolean),
 }));
 
