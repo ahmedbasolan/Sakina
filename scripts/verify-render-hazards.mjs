@@ -40,6 +40,41 @@
  * the element look worse, not more like iOS. The three current hits are all
  * glows and are allowlisted for exactly that reason. A real fix for those is a
  * radial-gradient halo view, which is a design change.
+ *
+ * ── Pass 4: textAlign 'justify' on RTL text with no direction:'rtl' ───────
+ * `writingDirection` does not exist anywhere in React Native's Android
+ * sources — it is an iOS-only prop — so on Android the paragraph direction
+ * comes from the Yoga node instead (ParagraphShadowNode.cpp sets
+ * textAttributes.layoutDirection from YGNodeLayoutGetDirection). In an LTR
+ * app that resolves LTR even for Arabic, and TextLayoutManager.getTextAlignment
+ * then sees paragraph LTR + script RTL, sets swapNormalAndOpposite, and —
+ * because "justified" matches neither its "center" nor its "right" branch —
+ * falls through to ALIGN_OPPOSITE, which for RTL script means aligned LEFT.
+ * The block reads left-to-right and the short final line hugs the wrong edge.
+ * Reported from a device against the Mushaf page: "it looks the sentences
+ * started from left to right while Arabic is written from right to left".
+ * `direction: 'rtl'` on the same style fixes it, and unlike textAlign:'right'
+ * it keeps justification on (textAlign is what switches Android's
+ * JUSTIFICATION_MODE_INTER_WORD, so 'right' would silently turn it off).
+ * DOES NOT CATCH: Arabic identified any other way than a sibling
+ * `writingDirection: 'rtl'` (a style that sets only fontFamily: fonts.arabic
+ * is invisible to this); `direction` supplied by an ancestor View instead of
+ * on the text style; styles composed at the call site from two entries. It
+ * also says NOTHING about whether the justification looks right — Android
+ * stretches inter-word spaces, not kashida, which is not how a printed
+ * Mushaf sets a line.
+ *
+ * ── Parser guard ──────────────────────────────────────────────────────────
+ * Every pass reads style blocks through mask()/styleEntries, so a file the
+ * parser cannot walk is skipped by all of them WITHOUT a word. That happened:
+ * an apostrophe inside a regex character class opened a phantom string and
+ * hid SurahReaderScreen, LockscreenVersesScreen and ContextLayer — including
+ * the very fault pass 4 was written for — while the run reported "no render
+ * hazards". mask() now skips regex literals, and a file that declares
+ * StyleSheet.create but yields no entries is a FATAL verifier error.
+ * DOES NOT CATCH: a file whose styles live somewhere other than a literal
+ * `StyleSheet.create(` call, or one where the walk aborts partway and still
+ * yields some entries — a partial parse still looks healthy from here.
  */
 import { readFileSync, globSync } from 'node:fs';
 import path from 'node:path';
@@ -113,6 +148,34 @@ function mask(src, { strings = true } = {}) {
       if (i < n) { out[i] = ' '; out[i + 1] = ' '; i += 2; }
       continue;
     }
+    // A regex literal. Without this, an apostrophe inside a character class
+    // — /[\w'-]+/, /Da'if/, /An-Nasa'i/ — opens a phantom string that runs to
+    // the next apostrophe anywhere in the file, swallowing StyleSheet.create
+    // with it. Three real screens were invisible to EVERY pass that way while
+    // the run still printed "no render hazards".
+    if (c === '/') {
+      let j = i - 1;
+      while (j >= 0 && /\s/.test(out[j])) j--;
+      const prev = j >= 0 ? out[j] : '';
+      // Only an operator, an opening bracket or start-of-input can precede a
+      // regex; anything else makes this division. Misjudging that would blank
+      // real code, so the span is also required to close on the SAME line —
+      // a regex literal cannot span one, and division never will.
+      if (prev === '' || '(,=:[!&|?{};+-*%^~<>'.includes(prev)) {
+        let k = i + 1;
+        let closed = -1;
+        while (k < n && src[k] !== '\n') {
+          if (src[k] === '\\') { k += 2; continue; }
+          if (src[k] === '/') { closed = k; break; }
+          k++;
+        }
+        if (closed !== -1) {
+          for (let m = i; m <= closed; m++) out[m] = ' ';
+          i = closed + 1;
+          continue;
+        }
+      }
+    }
     if (c === "'" || c === '"' || c === '`') {
       const q = c;
       i++;
@@ -134,11 +197,19 @@ const lineOf = (src, idx) => src.slice(0, idx).split('\n').length;
  *  `masked` has comments AND strings blanked (safe for brace/identifier work);
  *  `body` has only comments blanked (safe for matching string values). */
 function* styleEntries(src) {
-  const masked = mask(src);
-  const noComments = mask(src, { strings: false });
-  const createIdx = masked.indexOf('StyleSheet.create(');
+  // Locate the create call in the RAW source, then mask only from there on.
+  // Above it lives JSX, where an apostrophe in ordinary copy — "A verse where
+  // you'll see it" — is not a string opener, but no masker without a real JSX
+  // parser can know that. Masking the whole file let that one apostrophe
+  // swallow everything down to the next quote, StyleSheet.create included, and
+  // LockscreenVersesScreen went unseen by every pass. Styles sit at the bottom
+  // of every file in this codebase, so scoping the mask to them costs nothing.
+  const createIdx = src.indexOf('StyleSheet.create(');
   if (createIdx === -1) return;
-  const objStart = masked.indexOf('{', createIdx);
+  const region = src.slice(createIdx);
+  const masked = mask(region);
+  const noComments = mask(region, { strings: false });
+  const objStart = masked.indexOf('{');
   if (objStart === -1) return;
 
   let depth = 0;
@@ -159,7 +230,8 @@ function* styleEntries(src) {
           key,
           body: noComments.slice(start, i + 1),
           masked: masked.slice(start, i + 1),
-          line: lineOf(src, start),
+          // start indexes `region`, so re-base it before asking for a line.
+          line: lineOf(src, createIdx + start),
         };
         start = -1;
         key = null;
@@ -195,6 +267,24 @@ function passIosOnlyShadow(rel, src) {
     if (hasShadow && hasDepth && !hasElevation) {
       out.push({ id: `${rel}::${e.key}`, line: e.line, what: `style "${e.key}": iOS shadow with no elevation` });
     }
+  }
+  return out;
+}
+
+function passRtlJustify(rel, src) {
+  const out = [];
+  for (const e of styleEntries(src)) {
+    // writingDirection is the only reliable in-style marker that the text is
+    // RTL; without it we cannot tell Arabic from any other justified block.
+    if (!/writingDirection:\s*['"]rtl['"]/.test(e.body)) continue;
+    if (!/textAlign:\s*['"]justify['"]/.test(e.body)) continue;
+    // Case-sensitive, so this cannot match writingDirection/flexDirection.
+    if (/\bdirection:\s*['"]rtl['"]/.test(e.body)) continue;
+    out.push({
+      id: `${rel}::${e.key}`,
+      line: e.line,
+      what: `style "${e.key}": justified RTL text with no direction:'rtl' — Android aligns it left`,
+    });
   }
   return out;
 }
@@ -255,6 +345,7 @@ const PASSES = [
   ['elevation + clip (Android shadow-through-clip)', passElevationClip],
   ['frozen Animated toValue in an empty-dep effect', passFrozenToValue],
   ['iOS-only shadow (flat on Android)', passIosOnlyShadow],
+  ["justified RTL text without direction:'rtl' (Android aligns it left)", passRtlJustify],
 ];
 
 function run(files) {
@@ -312,6 +403,19 @@ const FIXTURES = [
     src: `const s = StyleSheet.create({\n  badge: {\n    borderRadius: 36,\n    elevation: 6,\n    // NO \`overflow: 'hidden'\` here — see ShareSheet.tsx.\n  },\n});`,
   },
   {
+    name: 'justified RTL without direction',
+    rel: 'fixture/Rtl.tsx',
+    src: `const s = StyleSheet.create({\n  leafArabic: {\n    textAlign: 'justify',\n    writingDirection: 'rtl',\n  },\n});`,
+  },
+  {
+    // The fix. Both props stay — writingDirection is what iOS reads, direction
+    // is what Android reads — so a matcher keying on writingDirection alone
+    // would report the fixed code as still broken.
+    name: 'clean: justified RTL that also sets direction',
+    rel: 'fixture/RtlFixed.tsx',
+    src: `const s = StyleSheet.create({\n  leafArabic: {\n    textAlign: 'justify',\n    writingDirection: 'rtl',\n    direction: 'rtl',\n  },\n});`,
+  },
+  {
     name: 'clean: commented-out frozen effect',
     rel: 'fixture/CleanEffect.tsx',
     src: `function Card({ isLocked }) {\n  // useEffect(() => {\n  //   Animated.timing(a, { toValue: isLocked ? 0.65 : 1 }).start();\n  // }, []);\n}`,
@@ -338,6 +442,19 @@ if (process.env.RH_INJECT === '1') {
 }
 
 const files = loadRepoFiles();
+// A file that declares styles the parser cannot see is a VERIFIER failure, not
+// a clean file — every pass skips it in silence, which is the exact failure
+// mode this script exists to prevent. It is fatal rather than a warning, and
+// it must never be allowlisted: the fix belongs in mask()/styleEntries.
+const unparseable = files.filter(
+  (f) => f.src.includes('StyleSheet.create(') && [...styleEntries(f.src)].length === 0,
+);
+if (unparseable.length) {
+  console.error(`${unparseable.length} file(s) declare styles this script cannot parse:\n`);
+  for (const f of unparseable) console.error(`  ${f.rel}`);
+  console.error('\nEvery pass skips these silently. Fix mask()/styleEntries, do not allowlist.');
+  process.exit(1);
+}
 const { real, allowed } = run(files);
 
 for (const [label] of PASSES) {
