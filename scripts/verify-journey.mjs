@@ -39,6 +39,7 @@ const JOURNEYS = [
   ['path_marriage_seeker', 'q_angle_marriage_', 'Hopeful', true],
   ['path_tawbah_intensive', 'q_angle_tawbah_', 'Guilty', true],
   ['path_death_awareness', 'q_angle_death_', 'Hopeful', true],
+  ['path_screen_detox', 'q_angle_screen_', 'Overwhelmed', true],
 ];
 
 const contentIds = new Set([...quran.matchAll(/id: '(quran_[a-z0-9_]+)'/g)].map((m) => m[1]));

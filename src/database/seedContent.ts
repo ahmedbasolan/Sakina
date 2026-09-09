@@ -368,7 +368,21 @@ import type { Content, ContentAngle } from '../types';
 //      primaryText/transliteration at all — JSON.stringify drops undefined
 //      fields rather than erroring, so nothing complained until
 //      author-angle.mjs's required-field check rejected the first one.
-const SEED_VERSION = 51;
+// v52: Screen Detox (path_screen_detox) authored and unlocked — 7 days, theme
+//      Overwhelmed. 7 new journey angles (q_angle_screen_day1-7) + 7 new hadith
+//      rows (hadith_screen_1-7). Only 2 new verses (63:9, 17:36); the other five
+//      days reuse 25:72, 13:28, 23:1, 73:1-4 and 103:1-3, so no duplicate ids
+//      reached the seeder. Every ayah and hadith was fetched before it was
+//      written, which caught one from-memory error before it shipped: the du'a
+//      first chosen for day 3 (Tirmidhi 3604) is actually an unrelated hadith
+//      about seeking refuge from the punishment of the grave and the Dajjal, and
+//      was replaced with Ibn Majah 925. No Arabic in this batch was typed — the
+//      verses are quran.com text_uthmani byte-checked at write time, and each
+//      du'a was sliced out of its fetched matn on a harakat-insensitive skeleton
+//      match (a byte-exact needle failed on every one, and slicing at the final
+//      consonant silently dropped the closing haraka until the span was extended
+//      past the trailing marks).
+const SEED_VERSION = 52;
 // Separate keys per content type — Quran and Hadith data change independently,
 // and each seeder used to write the SAME key at the end of its run. Since
 // initializeDatabase() awaits seedQuranContent() before seedHadithContent(),
