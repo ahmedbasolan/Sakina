@@ -18,6 +18,8 @@ import PathCompletionCelebration from '../components/PathCompletionCelebration';
 import { SubscriptionService } from '../services/subscriptionService';
 import { FreemiumService } from '../services/freemiumService';
 import { logServiceError } from '../services/errorLoggingService';
+import { maybeAskForReview } from '../services/reviewPromptService';
+import { REVIEW_ASK_DELAY_MS } from '../constants';
 import { useAppContext } from '../context/AppContext';
 
 import { useRoute, useNavigation } from '@react-navigation/native';
@@ -79,6 +81,16 @@ export const PathStepScreen: React.FC = () => {
       completedAt: day >= path.duration ? Date.now() : undefined,
     };
     await pathsService.saveProgress(updatedProgress);
+
+    // A banked journey day is the app's most earned moment, so it's where we
+    // ask for a rating. Deferred past the navigation transition so the system
+    // sheet doesn't fight the animation, and skipped whenever this completion
+    // already carried an upgrade ask — two modals at one peak is a nag, not a
+    // celebration.
+    if (!offerUpgrade) {
+      const dayCount = updatedProgress.completedDays.length;
+      setTimeout(() => void maybeAskForReview(dayCount), REVIEW_ASK_DELAY_MS);
+    }
 
     if (toNext && !updatedProgress.isCompleted) {
       const nextStep = pathsService.getCurrentStep(path.id, updatedProgress);

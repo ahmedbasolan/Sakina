@@ -46,6 +46,12 @@ export const STORAGE_KEYS = {
   // so it surfaces at most once per day instead of on every Sad/Overwhelmed
   // visit (see CrisisResourceLine.tsx).
   crisisLineLastShown: '@quietheart_crisis_line_last_shown',
+
+  // Store-review ask — { lastAskAt, askCount }, see reviewPromptService.ts.
+  // Deliberately NOT cleared by clearAllLocalUserData: this is a device-level
+  // nag counter rather than personal data, and resetting it would re-open a
+  // quota the OS itself will not honour.
+  reviewAsk: '@sakina_review_ask',
 } as const;
 
 export const FREEMIUM_LIMITS = {
@@ -58,6 +64,19 @@ export const FREEMIUM_LIMITS = {
 // app never nags. Paired with a "no same peak type twice in a row" rule in
 // freemiumService.shouldOfferUpgrade.
 export const UPGRADE_ASK_COOLDOWN_MS = 3 * 24 * 60 * 60 * 1000; // 3 days
+
+// Store-review ask. iOS shows at most three rating prompts per app per 365
+// days and silently discards the rest — with no callback saying which happened
+// — so these gates exist to avoid spending an invisible quota on a weak
+// moment. A user three days into a journey has shown intent; one finishing day
+// one has not. The lifetime cap matches Apple's own quota so we never burn a
+// trigger the OS was going to swallow anyway.
+export const REVIEW_ASK_MIN_COMPLETED_DAYS = 3;
+export const REVIEW_ASK_COOLDOWN_MS = 90 * 24 * 60 * 60 * 1000; // 90 days
+export const REVIEW_ASK_MAX_LIFETIME = 3;
+// Let the completion modal finish dismissing and the navigation transition
+// settle before the system sheet appears over the top of it.
+export const REVIEW_ASK_DELAY_MS = 900;
 
 // Streak lengths that surface a one-time celebratory banner on Home (spec §8
 // streak_milestone peak). Sorted ascending — useHomeData celebrates each one
