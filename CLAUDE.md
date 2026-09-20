@@ -307,7 +307,17 @@ once.
   lines the diff added.
 - **Do not "normalise" Arabic.** NFC on this corpus is not the lossless
   reorder it looks like — a run over 29 strings changed the codepoint count of
-  four, and most of the file's Arabic is the byte-exact Quran.com API output.
+  four. This line used to end "and most of the file's Arabic is the byte-exact
+  Quran.com API output", which is **false** and had already misled one session
+  into planning an attribution change on it. The corpus is **Tanzil-lineage**,
+  not quran.com: measured over a 20-ayah sample, the corpus carries 21 U+06ED
+  tanween ornaments and alquran.cloud's `quran-uthmani` carries 22, while
+  quran.com's `text_uthmani` carries **zero**. After normalising away the two
+  local conventions (the trailing `﴿n﴾` ayah ornament and a tatweel before a
+  superscript alef) the corpus matches alquran.cloud on 14/20 and quran.com on
+  8/20. quran.com is a *witness* in this repo, never a source — which is
+  exactly what `quranArabicIntegrity`'s header says when it calls our edition
+  richer and refuses to rewrite toward the remote.
   Leave it alone.
 
 **Verify the checker, not just the code.** Any new check must be shown to fail
