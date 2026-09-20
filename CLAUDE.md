@@ -317,8 +317,8 @@ once.
   superscript alef) the corpus matches alquran.cloud on 14/20 and quran.com on
   8/20. quran.com is a *witness* in this repo, never a source — which is
   exactly what `quranArabicIntegrity`'s header says when it calls our edition
-  richer and refuses to rewrite toward the remote.
-  Leave it alone.
+  richer and refuses to rewrite toward the remote. Either way the conclusion
+  is the same: leave the Arabic alone.
 
 **Verify the checker, not just the code.** Any new check must be shown to fail
 on the pre-fix data before you trust it passing on the fixed data — run it,

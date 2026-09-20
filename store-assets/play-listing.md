@@ -85,9 +85,13 @@ drifted claim is visible to Google's policy reviewers as a misrepresentation.
   says "prayer time reminders" and stops there.
 - **Athan / adhan audio.** Not verified as a feature, so the keyword is left
   on the table rather than asserted. Add it only if a real adhan sound ships.
-- **A named upstream for the Arabic text.** `SettingsScreen.tsx` credits
-  Tanzil.net, but the curated corpus is byte-locked against quran.com
-  api/v4 `text_uthmani` (`scripts/refresh-quran-canonical.mjs`) while the
-  downloadable full-Quran text comes from api.alquran.cloud. Two different
-  upstreams, both Uthmani — so the listing claims the script, not a vendor.
-  Worth reconciling the Settings credit separately.
+- **A named upstream for the Arabic text.** The listing claims the script
+  ("Uthmani Arabic") and no vendor, which stays correct however the plumbing
+  changes. For the record, since an earlier draft of this note got it wrong:
+  the curated corpus is **Tanzil-lineage**, not quran.com. Measured over a
+  20-ayah sample, the corpus carries 21 U+06ED tanween ornaments and
+  alquran.cloud's `quran-uthmani` carries 22, while quran.com's
+  `text_uthmani` carries zero; quran.com is only the skeleton *witness* in
+  `quranArabicIntegrity`, never a source. `SettingsScreen.tsx` therefore
+  credits Tanzil.net correctly, and now also credits the transliteration
+  (alquran.cloud) and the recitation (everyayah.com) it had been omitting.
