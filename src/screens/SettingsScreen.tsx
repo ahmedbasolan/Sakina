@@ -356,7 +356,7 @@ export default function SettingsScreen() {
   const handleSources = () => {
     Alert.alert(
       'Sources & Attribution',
-      '• Quranic Text: Tanzil.net\n• Translations: Sahih International\n• Hadith: Bukhari, Muslim, Tirmidhi, Abu Dawud\n• Tafsir: Ibn Kathir, As-Saʿdi, Ibn al-Qayyim',
+      '• Quranic Text: Uthmani script, Tanzil.net\n• Translation: Sahih International\n• Quran library & transliteration: alquran.cloud\n• Recitation: everyayah.com — Yasser Ad-Dussary, Maher Al-Muaiqly, Fares Abbad\n• Hadith: Bukhari, Muslim, Tirmidhi, Abu Dawud\n• Tafsir: Ibn Kathir, As-Saʿdi, Ibn al-Qayyim',
     );
   };
 
