@@ -1,20 +1,26 @@
 const sharp = require('sharp');
 const path = require('path');
+const fs = require('fs');
+const { renderDevice } = require('../_device');
+const SCREENS = require('../_screens');
 
 // Play Store phone screenshot canvas
 const CANVAS_W = 1080;
 const CANVAS_H = 1920;
 
-// region of the source App Store iPhone-canvas PNG holding the fully-rendered
-// phone mockup (bezel + dynamic island + status bar + real content)
-const SRC_DEVICE_X = 130, SRC_DEVICE_Y = 700, SRC_DEVICE_W = 1030;
-const SRC_DEVICE_H = 2796 - SRC_DEVICE_Y; // 2096
-
+// Rendered as vector at this scale, rather than cropped out of the App Store
+// PNG and downsampled — the old crop started at the device's left edge and so
+// cut both side-button columns off every Play screenshot.
 const SCALE = 0.8;
-const DEV_W = Math.round(SRC_DEVICE_W * SCALE);
-const DEV_H = Math.round(SRC_DEVICE_H * SCALE);
-const DEVICE_X = Math.round((CANVAS_W - DEV_W) / 2);
 const DEVICE_Y = 300;
+
+// Tablet slots. 7" was a byte-identical copy of the phone set and 10" a 2x
+// resize of it, both made by hand; written here so they cannot drift.
+const APP_STORE_CAPTURES = path.join(__dirname, '../app-store/real-screenshots');
+const TABLETS = [
+  ['7-inch-tablet-1080x1920', 1080, 1920],
+  ['10-inch-tablet-2160x3840', 2160, 3840],
+];
 
 const CX = CANVAS_W / 2;
 
@@ -55,36 +61,25 @@ async function buildBackground(verb, desc) {
   return sharp(Buffer.from(svg)).png().toBuffer();
 }
 
-async function buildDeviceLayer(srcPngPath) {
-  const cropped = await sharp(srcPngPath)
-    .extract({ left: SRC_DEVICE_X, top: SRC_DEVICE_Y, width: SRC_DEVICE_W, height: SRC_DEVICE_H })
-    .resize(DEV_W, DEV_H)
-    .png()
-    .toBuffer();
-
-  const layer = sharp({ create: { width: CANVAS_W, height: CANVAS_H, channels: 4, background: { r: 0, g: 0, b: 0, alpha: 0 } } });
-  return layer.composite([{ input: cropped, left: DEVICE_X, top: DEVICE_Y }]).png().toBuffer();
-}
-
-const JOBS = [
-  { out: '01-hook-mood-grid.png', verb: 'FIND', desc: 'A VERSE FOR HOW YOU FEEL', src: '../app-store/01-find-verse.png' },
-  { out: '02-relief-verse-match.png', verb: 'EASE', desc: 'OVERWHELM, ONE VERSE AT A TIME', src: '../app-store/02-ease-overwhelm.png' },
-  { out: '03-growth-streak-journeys.png', verb: 'BUILD', desc: 'A DAILY HABIT THAT STICKS', src: '../app-store/03-build-habit.png' },
-  { out: '04-trust-private-journal.png', verb: 'KEEP', desc: 'YOUR REFLECTIONS COMPLETELY PRIVATE', src: '../app-store/04-keep-private.png' },
-  { out: '05-brand-welcome.png', verb: 'BEGIN', desc: 'YOUR JOURNEY TO SAKINA', src: '../app-store/05-begin-journey.png' },
-  { out: '06-read-quran.png', verb: 'READ', desc: 'THE COMPLETE QURAN, BEAUTIFULLY', src: '../app-store/07-read-quran.png' },
-  { out: '07-grow-journeys.png', verb: 'GROW', desc: 'THROUGH GUIDED SPIRITUAL JOURNEYS', src: '../app-store/06-grow-journeys.png' },
-  { out: '08-save-verses.png', verb: 'SAVE', desc: 'EVERY VERSE THAT SPEAKS TO YOU', src: '../app-store/08-save-verses.png' },
-];
-
 (async () => {
   const base = __dirname;
-  for (const job of JOBS) {
+  for (const job of SCREENS) {
     const [bg, device] = await Promise.all([
       buildBackground(job.verb, job.desc),
-      buildDeviceLayer(path.join(base, job.src)),
+      renderDevice({
+        canvasW: CANVAS_W,
+        canvasH: CANVAS_H,
+        y: DEVICE_Y,
+        scale: SCALE,
+        screen: { src: path.join(APP_STORE_CAPTURES, job.src), crop: job.crop },
+      }),
     ]);
-    await sharp(bg).composite([{ input: device }]).png().toFile(path.join(base, job.out));
-    console.log('wrote', job.out);
+    const phone = await sharp(bg).composite([{ input: device }]).png().toBuffer();
+    await sharp(phone).toFile(path.join(base, `${job.play}.png`));
+    for (const [dir, w, h] of TABLETS) {
+      fs.mkdirSync(path.join(base, dir), { recursive: true });
+      await sharp(phone).resize(w, h, { fit: 'fill' }).png().toFile(path.join(base, dir, `${job.play}.png`));
+    }
+    console.log('wrote', job.play);
   }
 })().catch((e) => { console.error(e); process.exit(1); });

@@ -1,17 +1,22 @@
 const sharp = require('sharp');
 const path = require('path');
+const fs = require('fs');
+const { renderDevice } = require('../_device');
+const SCREENS = require('../_screens');
 
+// iPhone 6.9" — the master set. 6.7" and 6.5" are written from it below.
 const CANVAS_W = 1290;
 const CANVAS_H = 2796;
 
-// device frame geometry (matches the illustrated template)
-const DEVICE_X = 130, DEVICE_Y = 700, DEVICE_W = 1030, DEVICE_H = 2280, DEVICE_RX = 72;
-const BEZEL = 18;
-const SCREEN_X = DEVICE_X + BEZEL;
-const SCREEN_Y = DEVICE_Y + BEZEL;
-const SCREEN_W = DEVICE_W - 2 * BEZEL; // 994
-const SCREEN_RX = 54;
-const MAX_SCREEN_H = DEVICE_H - 2 * BEZEL; // 2244
+// Lowest the phone can sit and still have the shortest capture (1946 px of
+// content at this scale) reach the canvas bottom. Any higher and the screen
+// runs out of app before the canvas does.
+const DEVICE_Y = 680;
+
+const DERIVED = [
+  ['6.7-inch-1284x2778', 1284, 2778],
+  ['6.5-inch-1242x2688', 1242, 2688],
+];
 
 const bgDefs = `
   <linearGradient id="bgGrad" x1="0" y1="0" x2="0" y2="1">
@@ -50,104 +55,28 @@ async function buildBackground(verb, desc) {
   return sharp(Buffer.from(svg)).png().toBuffer();
 }
 
-async function buildFrameChrome() {
-  // outer bezel with a true transparent hole over the screen (evenodd), drawn via two rects in one path
-  const svg = `<svg width="${CANVAS_W}" height="${CANVAS_H}" viewBox="0 0 ${CANVAS_W} ${CANVAS_H}" xmlns="http://www.w3.org/2000/svg">
-    <defs>
-      <linearGradient id="screenGlow" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0" stop-color="#D4AF37" stop-opacity="0.10"/>
-        <stop offset="1" stop-color="#D4AF37" stop-opacity="0"/>
-      </linearGradient>
-      <clipPath id="screenClip"><rect x="${SCREEN_X}" y="${SCREEN_Y}" width="${SCREEN_W}" height="${MAX_SCREEN_H}" rx="${SCREEN_RX}"/></clipPath>
-    </defs>
-    <path fill-rule="evenodd" fill="#0C1A2E" stroke="#D4AF37" stroke-opacity="0.35" stroke-width="3" d="
-      M${DEVICE_X + DEVICE_RX},${DEVICE_Y}
-      h${DEVICE_W - 2 * DEVICE_RX} a${DEVICE_RX},${DEVICE_RX} 0 0 1 ${DEVICE_RX},${DEVICE_RX}
-      v${DEVICE_H - 2 * DEVICE_RX} a${DEVICE_RX},${DEVICE_RX} 0 0 1 -${DEVICE_RX},${DEVICE_RX}
-      h-${DEVICE_W - 2 * DEVICE_RX} a${DEVICE_RX},${DEVICE_RX} 0 0 1 -${DEVICE_RX},-${DEVICE_RX}
-      v-${DEVICE_H - 2 * DEVICE_RX} a${DEVICE_RX},${DEVICE_RX} 0 0 1 ${DEVICE_RX},-${DEVICE_RX} Z
-      M${SCREEN_X + SCREEN_RX},${SCREEN_Y}
-      h${SCREEN_W - 2 * SCREEN_RX} a${SCREEN_RX},${SCREEN_RX} 0 0 1 ${SCREEN_RX},${SCREEN_RX}
-      v${MAX_SCREEN_H - 2 * SCREEN_RX} a${SCREEN_RX},${SCREEN_RX} 0 0 1 -${SCREEN_RX},${SCREEN_RX}
-      h-${SCREEN_W - 2 * SCREEN_RX} a${SCREEN_RX},${SCREEN_RX} 0 0 1 -${SCREEN_RX},-${SCREEN_RX}
-      v-${MAX_SCREEN_H - 2 * SCREEN_RX} a${SCREEN_RX},${SCREEN_RX} 0 0 1 ${SCREEN_RX},-${SCREEN_RX} Z"/>
-    <g clip-path="url(#screenClip)">
-      <rect x="${SCREEN_X}" y="${SCREEN_Y}" width="${SCREEN_W}" height="${MAX_SCREEN_H}" fill="url(#screenGlow)"/>
-      <text x="${SCREEN_X + 32}" y="${SCREEN_Y + 44}" font-family="Arial, sans-serif" font-size="22" fill="#F5EDE3" fill-opacity="0.85">9:41</text>
-      <rect x="${SCREEN_X + SCREEN_W - 62}" y="${SCREEN_Y + 24}" width="28" height="14" rx="3" fill="none" stroke="#F5EDE3" stroke-opacity="0.75" stroke-width="1.5"/>
-    </g>
-    <rect x="${DEVICE_X + DEVICE_W / 2 - 65}" y="${DEVICE_Y + 42}" width="130" height="36" rx="18" fill="#040D1A"/>
-    <rect x="${DEVICE_X - 6}" y="840" width="6" height="70" rx="3" fill="#0C1A2E" stroke="#D4AF37" stroke-opacity="0.35" stroke-width="1.5"/>
-    <rect x="${DEVICE_X - 6}" y="930" width="6" height="110" rx="3" fill="#0C1A2E" stroke="#D4AF37" stroke-opacity="0.35" stroke-width="1.5"/>
-    <rect x="${DEVICE_X + DEVICE_W}" y="900" width="6" height="150" rx="3" fill="#0C1A2E" stroke="#D4AF37" stroke-opacity="0.35" stroke-width="1.5"/>
-  </svg>`;
-  return sharp(Buffer.from(svg)).png().toBuffer();
-}
-
-async function buildScreenshotLayer(srcPath, crop) {
-  let img = sharp(srcPath);
-  const meta = await img.metadata();
-  let extractRegion = null;
-  if (crop) {
-    extractRegion = { left: 0, top: crop.top, width: meta.width, height: crop.bottom - crop.top };
-    img = img.extract(extractRegion);
-  }
-  const srcW = meta.width;
-  const srcH = extractRegion ? extractRegion.height : meta.height;
-  const scale = SCREEN_W / srcW;
-  const resizedH = Math.round(srcH * scale);
-  const finalH = Math.min(resizedH, MAX_SCREEN_H);
-
-  const resized = await img.resize(SCREEN_W, resizedH).extract({ left: 0, top: 0, width: SCREEN_W, height: finalH }).png().toBuffer();
-
-  const maskSvg = `<svg width="${SCREEN_W}" height="${finalH}"><rect x="0" y="0" width="${SCREEN_W}" height="${finalH}" rx="${SCREEN_RX}" fill="#fff"/></svg>`;
-  const mask = await sharp(Buffer.from(maskSvg)).png().toBuffer();
-  const masked = await sharp(resized).composite([{ input: mask, blend: 'dest-in' }]).png().toBuffer();
-
-  // solid navy strip (rounded top corners) fills the gap left for our own status-bar overlay,
-  // so the celestial background can't bleed through a transparent seam
-  const STATUS_STRIP = 70;
-  const stripSvg = `<svg width="${SCREEN_W}" height="${STATUS_STRIP}"><path d="M0,${STATUS_STRIP} V${SCREEN_RX} a${SCREEN_RX},${SCREEN_RX} 0 0 1 ${SCREEN_RX},-${SCREEN_RX} H${SCREEN_W - SCREEN_RX} a${SCREEN_RX},${SCREEN_RX} 0 0 1 ${SCREEN_RX},${SCREEN_RX} V${STATUS_STRIP} Z" fill="#07111E"/></svg>`;
-  const strip = await sharp(Buffer.from(stripSvg)).png().toBuffer();
-
-  const layer = sharp({ create: { width: CANVAS_W, height: CANVAS_H, channels: 4, background: { r: 0, g: 0, b: 0, alpha: 0 } } });
-  return layer.composite([
-    { input: strip, left: SCREEN_X, top: SCREEN_Y },
-    { input: masked, left: SCREEN_X, top: SCREEN_Y + STATUS_STRIP },
-  ]).png().toBuffer();
-}
-
-const STANDARD_CROP = { top: 120, bottom: 2940 }; // 1440-wide native device captures
-const COMPACT_CROP = { top: 80, bottom: 1905 }; // 932-wide captures (chat-attachment resolution)
-
-const JOBS = [
-  { out: '01-find-verse.png', verb: 'FIND', desc: 'A VERSE FOR HOW YOU FEEL', src: 'real-screenshots/FIND-v2.jpg', crop: STANDARD_CROP },
-  { out: '02-ease-overwhelm.png', verb: 'EASE', desc: 'OVERWHELM, ONE VERSE AT A TIME', src: 'real-screenshots/EASE-v2.jpg', crop: STANDARD_CROP },
-  { out: '03-build-habit.png', verb: 'BUILD', desc: 'A DAILY HABIT THAT STICKS', src: 'real-screenshots/BUILD-v2.jpg', crop: STANDARD_CROP },
-  { out: '04-keep-private.png', verb: 'KEEP', desc: 'YOUR REFLECTIONS COMPLETELY PRIVATE', src: 'real-screenshots/REFLECTION.jpg', crop: STANDARD_CROP },
-  { out: '05-begin-journey.png', verb: 'BEGIN', desc: 'YOUR JOURNEY TO SAKINA', src: 'real-screenshots/BEGIN.jpg', crop: STANDARD_CROP },
-  { out: '06-grow-journeys.png', verb: 'GROW', desc: 'THROUGH GUIDED SPIRITUAL JOURNEYS', src: 'real-screenshots/JOURNEYS.jpg', crop: COMPACT_CROP },
-  { out: '07-read-quran.png', verb: 'READ', desc: 'THE COMPLETE QURAN, BEAUTIFULLY', src: 'real-screenshots/READ-v2.jpg', crop: STANDARD_CROP },
-  { out: '08-save-verses.png', verb: 'SAVE', desc: 'EVERY VERSE THAT SPEAKS TO YOU', src: 'real-screenshots/SAVE.jpg', crop: COMPACT_CROP },
-];
-
 (async () => {
   const base = __dirname;
-  const fs = require('fs');
-  for (const job of JOBS) {
-    if (!fs.existsSync(path.join(base, job.src))) {
-      console.log('skip (source missing)', job.out);
-      continue;
-    }
-    const [bg, shot, frame] = await Promise.all([
+  // A missing capture must stop the run, not skip it. Skipping is how 04 and 05
+  // quietly kept an old frame while the other six were regenerated around them.
+  const missing = SCREENS.filter((s) => !fs.existsSync(path.join(base, 'real-screenshots', s.src)));
+  if (missing.length) throw new Error(`missing captures: ${missing.map((s) => s.src).join(', ')}`);
+
+  for (const job of SCREENS) {
+    const [bg, device] = await Promise.all([
       buildBackground(job.verb, job.desc),
-      buildScreenshotLayer(path.join(base, job.src), job.crop),
-      buildFrameChrome(),
+      renderDevice({
+        canvasW: CANVAS_W,
+        canvasH: CANVAS_H,
+        y: DEVICE_Y,
+        screen: { src: path.join(base, 'real-screenshots', job.src), crop: job.crop },
+      }),
     ]);
-    await sharp(bg)
-      .composite([{ input: shot }, { input: frame }])
-      .png()
-      .toFile(path.join(base, job.out));
-    console.log('wrote', job.out);
+    const master = await sharp(bg).composite([{ input: device }]).png().toBuffer();
+    await sharp(master).toFile(path.join(base, `${job.id}.png`));
+    for (const [dir, w, h] of DERIVED) {
+      await sharp(master).resize(w, h, { fit: 'fill' }).png().toFile(path.join(base, dir, `${job.id}.png`));
+    }
+    console.log('wrote', job.id);
   }
 })().catch((e) => { console.error(e); process.exit(1); });
