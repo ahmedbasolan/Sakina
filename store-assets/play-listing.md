@@ -1,24 +1,34 @@
 # Google Play — Default store listing (en-US)
 
-> ASO note (2026-09-17): the title carries the primary keyword because Play
-> weights it heaviest, and unlike Apple, Play **indexes the full description** —
-> so the body below repeats target terms in ordinary prose rather than hiding
-> them in a keyword field that does not exist here. Every feature claim was
-> checked against the code; see the "claims checked" list at the bottom before
-> editing, and re-check anything you add.
+> ASO note (2026-09-21): the title targets "daily Quran verses" because App
+> Store autocomplete shows real demand there — "quran verse" alone suggests
+> daily quran verses, quran verse of the day, daily ayah — against thin
+> competition (#1 for "quran verse of the day" had 2 ratings). An earlier draft
+> targeted "Quran for Anxiety"; autocomplete returns **nothing** for "quran
+> anx", "muslim anx" or "dua for anx", so that field looked empty because
+> nobody searches it. Do not revert to it. Caveat: Play's own autocomplete
+> endpoint returned 404, so Play demand is inferred from the App Store's.
+>
+> Play weights the title heaviest and, unlike Apple, **indexes the full
+> description**, so the body repeats target terms in ordinary prose rather than
+> hiding them in a keyword field that does not exist here. Every feature claim
+> was checked against the code; see the "claims checked" list at the bottom
+> before editing, and re-check anything you add.
 
 ## App name  (limit 30)
-Sakina: Quran for Anxiety
+Sakina: Daily Quran Verses
 
 ## Short description  (limit 80)
-Tell it how you feel — get a Quran verse, tafsir, dua and prayer times.
+A verse for how you feel — with tafsir, dua and prayer times.
 
 ## Full description  (limit 4000)
-Some days you open the Quran and don't know where to look. Sakina starts from how you actually feel, then brings you the verse, the tafsir behind it, and one thing to do today.
+Every day, a new verse of the Quran. And whenever you need one, a verse chosen for how you actually feel — with the tafsir behind it and one small thing to do today.
 
-Tell the app you're anxious, grateful, tired, lonely, angry or carrying guilt. It answers with a complete ayah, the scholarly context behind it, an authentic du'a, and a small practice you can finish in a few minutes. Not a generic daily reminder — something chosen for the moment you are in.
+Tell Sakina you're anxious, grateful, tired, lonely, angry or carrying guilt. It answers with a complete ayah, the scholarly context behind it, an authentic du'a, and a practice you can finish in a few minutes. Not a generic daily reminder — something chosen for the moment you are in.
 
 WHAT'S INSIDE
+
+· A daily Quran verse — a new ayah every day, complete and referenced, the first thing you see when you open Sakina.
 
 · Mood-based Quran guidance — nine moods, each mapped to real verses, tafsir from Ibn Kathir, As-Sa'di and Ibn al-Qayyim, and a practice drawn from the Sunnah.
 
@@ -44,7 +54,7 @@ Sakina is not an AI chatbot and it does not generate religious content. It is a 
 
 FOR THE DAYS THAT ARE HARD
 
-This was built for anxiety, grief, loneliness, burnout and guilt as much as for gratitude. If you have been looking for Quran for anxiety, a dua for stress, or a Muslim app that meets you somewhere other than a streak counter, this is that.
+This was built for anxiety, grief, loneliness, burnout and guilt as much as for gratitude. If you want Quran verses that speak to what you are carrying, rather than another streak counter, this is that.
 
 It is for any Muslim who wants dhikr, salah and the Quran woven into an ordinary week — whether you have been praying for thirty years or are finding your way back.
 
@@ -59,13 +69,14 @@ Privacy Policy: https://ahmedbasolan.github.io/sakina-legal/privacy.html
 
 ---
 
-## Claims checked against the code (2026-09-17)
+## Claims checked against the code (2026-09-21)
 
 Re-verify before changing any of these — a store listing is the one place a
 drifted claim is visible to Google's policy reviewers as a misrepresentation.
 
 | Claim | Where it was checked |
 |---|---|
+| a new verse every day | `dailyVerseService.ts` keys the pick to the local date (`todayKey`) with a no-repeat history; rendered at `HomeScreen.tsx:398` |
 | nine moods | `MOOD_LABELS` in `src/constants/index.ts` |
 | ten journeys, seven free | `AVAILABLE_PATH_IDS` (10) minus `PREMIUM_GATED_PATHS` (3) in `PathsScreen.tsx` |
 | two Pro-only journeys | `PREMIUM_GATED_PATHS` — Marriage Seeker, Death Awareness are "Sakina Pro exclusive"; Trusting the Results is a dated free-tier promise, so it is NOT counted as Pro-only |
@@ -80,6 +91,12 @@ drifted claim is visible to Google's policy reviewers as a misrepresentation.
 
 ### Deliberately NOT claimed
 
+- **A widget.** "quran verse widget" is one of the strongest autocomplete
+  suggestions in the whole category, and it is tempting. But Lock Screen Verses
+  is a *notification* with a background photo (`lockscreenVerseService.ts:2`,
+  "preferences and notification payload"), not a widget, and the daily verse
+  lives inside the app. Shipping a real home-screen widget would be the single
+  biggest keyword this app could unlock — until then, the word stays out.
 - **Per-prayer reminder tuning.** `notificationService` schedules prayer
   notifications as one category; there is no per-prayer toggle. The listing
   says "prayer time reminders" and stops there.
