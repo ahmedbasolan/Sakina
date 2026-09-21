@@ -1,17 +1,16 @@
 const sharp = require('sharp');
 const path = require('path');
+const { renderDevice } = require('../_device');
+const SCREENS = require('../_screens');
 
 // iPad 13" Display — one of Apple's accepted pairs for this upload slot
 const CANVAS_W = 2064;
 const CANVAS_H = 2752;
 
-// region of the source iPhone-canvas PNG that contains the fully-rendered
-// phone mockup (bezel + status bar + real content), already verified correct
-const SRC_DEVICE_X = 130, SRC_DEVICE_Y = 700, SRC_DEVICE_W = 1030;
-const SRC_DEVICE_H = 2796 - SRC_DEVICE_Y; // 2096, everything below the device top within the iPhone canvas
-
-const DEVICE_X = Math.round((CANVAS_W - SRC_DEVICE_W) / 2);
-const DEVICE_Y = 580;
+// Same rule as the iPhone set: the lowest the phone can sit and still have the
+// shortest capture reach the canvas bottom. The old crop-and-paste version
+// stopped the phone 76 px above the bottom edge.
+const DEVICE_Y = 640;
 
 const bgDefs = `
   <linearGradient id="bgGrad" x1="0" y1="0" x2="0" y2="1">
@@ -54,48 +53,21 @@ async function buildBackground(verb, desc) {
   return sharp(Buffer.from(svg)).png().toBuffer();
 }
 
-async function buildDeviceLayer(srcPngPath) {
-  const cropped = await sharp(srcPngPath)
-    .extract({ left: SRC_DEVICE_X, top: SRC_DEVICE_Y, width: SRC_DEVICE_W, height: SRC_DEVICE_H })
-    .png()
-    .toBuffer();
-
-  // soft drop shadow for the floating-mockup look
-  const shadowSvg = `<svg width="${SRC_DEVICE_W + 120}" height="${SRC_DEVICE_H + 60}">
-    <defs><filter id="b" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="30"/></filter></defs>
-    <rect x="60" y="30" width="${SRC_DEVICE_W}" height="${SRC_DEVICE_H - 200}" rx="72" fill="#000000" opacity="0.45" filter="url(#b)"/>
-  </svg>`;
-  const shadow = await sharp(Buffer.from(shadowSvg)).png().toBuffer();
-
-  const layer = sharp({ create: { width: CANVAS_W, height: CANVAS_H, channels: 4, background: { r: 0, g: 0, b: 0, alpha: 0 } } });
-  return layer.composite([
-    { input: shadow, left: DEVICE_X - 60, top: DEVICE_Y - 10 },
-    { input: cropped, left: DEVICE_X, top: DEVICE_Y },
-  ]).png().toBuffer();
-}
-
-const JOBS = [
-  { out: '01-find-verse.png', verb: 'FIND', desc: 'A VERSE FOR HOW YOU FEEL' },
-  { out: '02-ease-overwhelm.png', verb: 'EASE', desc: 'OVERWHELM, ONE VERSE AT A TIME' },
-  { out: '03-build-habit.png', verb: 'BUILD', desc: 'A DAILY HABIT THAT STICKS' },
-  { out: '04-keep-private.png', verb: 'KEEP', desc: 'YOUR REFLECTIONS COMPLETELY PRIVATE' },
-  { out: '05-begin-journey.png', verb: 'BEGIN', desc: 'YOUR JOURNEY TO SAKINA' },
-  { out: '06-grow-journeys.png', verb: 'GROW', desc: 'THROUGH GUIDED SPIRITUAL JOURNEYS' },
-  { out: '07-read-quran.png', verb: 'READ', desc: 'THE COMPLETE QURAN, BEAUTIFULLY' },
-  { out: '08-save-verses.png', verb: 'SAVE', desc: 'EVERY VERSE THAT SPEAKS TO YOU' },
-];
-
 (async () => {
   const base = __dirname;
   const outDir = path.join(base, 'ipad-13-inch-2064x2752');
   require('fs').mkdirSync(outDir, { recursive: true });
-  for (const job of JOBS) {
-    const srcPath = path.join(base, job.out);
+  for (const job of SCREENS) {
     const [bg, device] = await Promise.all([
       buildBackground(job.verb, job.desc),
-      buildDeviceLayer(srcPath),
+      renderDevice({
+        canvasW: CANVAS_W,
+        canvasH: CANVAS_H,
+        y: DEVICE_Y,
+        screen: { src: path.join(base, 'real-screenshots', job.src), crop: job.crop },
+      }),
     ]);
-    await sharp(bg).composite([{ input: device }]).png().toFile(path.join(outDir, job.out));
-    console.log('wrote', job.out);
+    await sharp(bg).composite([{ input: device }]).png().toFile(path.join(outDir, `${job.id}.png`));
+    console.log('wrote', job.id);
   }
 })().catch((e) => { console.error(e); process.exit(1); });
