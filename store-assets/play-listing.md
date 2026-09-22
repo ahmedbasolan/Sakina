@@ -25,26 +25,26 @@
 Sakina: Daily Quran Verses
 
 ## Short description  (limit 80)
-A verse for how you feel — with tafsir, dua and prayer times.
+A verse for how you feel, what it means, and journeys to live it.
 
 ## Full description  (limit 4000)
-Every day, a new verse of the Quran. And whenever you need one, a verse chosen for how you actually feel — with the tafsir behind it and one small thing to do today.
+Not just a verse a day. A verse for how you feel, what it means, and journeys to live it.
 
-Tell Sakina you're anxious, grateful, tired, lonely, angry or carrying guilt. It answers with a complete ayah, the scholarly context behind it, an authentic du'a, and a practice you can finish in a few minutes. Not a generic daily reminder — something chosen for the moment you are in.
+Tell Sakina you're overwhelmed, grateful, tired, lonely, angry or carrying guilt. It answers with a complete ayah, the scholarly context behind it, and a question to reflect on, which you can answer in a private journal. Not a generic daily reminder — something chosen for the moment you are in.
+
+When you want more than a moment, a guided journey takes one theme across days: a verse, a lesson and something to practise each day, from a du'a to recite to a small act to carry out.
 
 WHAT'S INSIDE
 
-· A daily Quran verse — a new ayah every day, complete and referenced, the first thing you see when you open Sakina.
+· A daily Quran verse — a new ayah every day, complete and referenced, at the top of Home.
 
-· Mood-based Quran guidance — nine moods, each mapped to real verses, tafsir from Ibn Kathir, As-Sa'di and Ibn al-Qayyim, and a practice drawn from the Sunnah.
+· Mood-based Quran guidance — nine moods, each mapped to real verses, with context drawn from the scholarship of Ibn Kathir, As-Sa'di and Ibn al-Qayyim, and a question to reflect on.
 
-· Ten guided journeys — multi-day Islamic paths on tawakkul, rizq, salah, repentance, hope after crisis, screen detox and more. One verse, one lesson, one practice per day. Seven of them are completely free.
+· Ten guided journeys — multi-day Islamic paths on tawakkul, rizq, salah, repentance, hope after crisis, screen detox and more. One verse, one lesson and one practice a day. Seven of them are completely free.
 
 · Prayer times and qibla — accurate salah times for your location, Hanafi or standard Asr calculation, a live qibla compass, and prayer time reminders.
 
 · Full Quran library — read any surah in Uthmani Arabic with transliteration and the Sahih International translation, laid out page by page like a Mushaf, with verse-by-verse audio recitation.
-
-· Du'a and adhkar — supplications from the Quran and authentic hadith, organised by what you're facing rather than by chapter.
 
 · Reflection journal — write after any session, and keep it. Your reflections are stored only on your device and are never uploaded, even when you sign in.
 
@@ -82,8 +82,11 @@ drifted claim is visible to Google's policy reviewers as a misrepresentation.
 
 | Claim | Where it was checked |
 |---|---|
-| a new verse every day | `dailyVerseService.ts` keys the pick to the local date (`todayKey`) with a no-repeat history; rendered at `HomeScreen.tsx:398` |
-| nine moods | `MOOD_LABELS` in `src/constants/index.ts` |
+| a new verse every day, at the top of Home | `dailyVerseService.ts` keys the pick to the local date (`todayKey`) with a no-repeat history; rendered at `HomeScreen.tsx:398`, directly under `HeroHeader` — so "at the top", not "the first thing you see" |
+| a mood answer = ayah + context + a question to reflect on | `GuidanceScreen.tsx:196` — `LAYER_TYPES` is verse, context and (only when a verse has one) story. ContextLayer renders no du'a, action or practice |
+| that question can be answered in a private journal | `GuidanceScreen.tsx:85` calls `saveReflection` |
+| du'a and practice live in journeys | `PracticeLayer` is mounted only by `PathStepScreen` |
+| nine moods | `MOOD_LABELS` in `src/constants/index.ts` — the list says "overwhelmed", not "anxious": there is no Anxious mood |
 | ten journeys, seven free | `AVAILABLE_PATH_IDS` (10) minus `PREMIUM_GATED_PATHS` (3) in `PathsScreen.tsx` |
 | topics: tawakkul, rizq, salah, repentance, hope after crisis, screen detox | Trusting the Results, Rizq Revolution, Salah Transformation, Tawbah Intensive, Hope After Crisis, Screen Detox. An earlier draft said "grief" — no journey is about grief, and it was never checked |
 | two Pro-only journeys | `PREMIUM_GATED_PATHS` — Marriage Seeker, Death Awareness are "Sakina Pro exclusive"; Trusting the Results is a dated free-tier promise, so it is NOT counted as Pro-only |
@@ -98,6 +101,15 @@ drifted claim is visible to Google's policy reviewers as a misrepresentation.
 
 ### Deliberately NOT claimed
 
+- **A du'a or a practice in the mood flow, or a du'a collection.** Every
+  earlier version of this copy — the live one included — said a mood session
+  ends in a du'a and a practice, and listed a "Du'a and adhkar" collection.
+  Neither exists. The mood flow is verse, context and a reflection question
+  (`GuidanceScreen.tsx:196`); du'as and practices are journey steps
+  (`PracticeLayer`, mounted only by `PathStepScreen`); no du'a screen or route
+  exists. Removed 2026-09-22. This table existed and still passed them over,
+  because nobody checked what a mood session RENDERS — see CLAUDE.md's "Which
+  Angle Fields Actually Render".
 - **A widget.** "quran verse widget" is one of the strongest autocomplete
   suggestions in the whole category, and it is tempting. But Lock Screen Verses
   is a *notification* with a background photo (`lockscreenVerseService.ts:2`,
