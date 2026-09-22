@@ -17,6 +17,9 @@
   was overwritten on 2026-09-22 when version 1.4 was set up.
 - Keywords: `islamic,azkar,adhkar,dhikr,hadith,tafsir,salah,namaz,sunnah,iman,deen,anxiety,calm,journal,mood,sabr` (read from App Store Connect, 2026-09-22)
 - Build: **7** (1.3.0), cut by EAS from commit `50b38d4` on 2026-09-01 — not build 5
+- Promotional text before 2026-09-22: `Emotional well-being, rooted in the Quran. A new verse every day, and one chosen for exactly how you feel, with the tafsir behind it.`
+
+1.4 was submitted with build **8** (1.4.0, commit `cd08cbb`) on 2026-09-22.
 
 ## App name  (limit 30)
 Sakina: Daily Quran Verses
@@ -28,7 +31,7 @@ Prayer Times, Qibla & Tafsir
 verse,day,english,islamic,muslim,dua,dhikr,azkar,hadith,ayah,journal,reminder,audio,surah,namaz,mood
 
 ## Promotional text  (limit 170 — editable any time, not indexed)
-Emotional well-being, rooted in the Quran. A new verse every day, and one chosen for exactly how you feel, with the tafsir behind it.
+Not just a verse a day. A verse for how you feel, what it means, and journeys to live it.
 
 ## Description  (limit 4000 — NOT indexed on iOS)
 Use the "Full description" in `play-listing.md` verbatim. Apple does not
@@ -40,6 +43,38 @@ drift from the other. Its claims are checked in that file's table.
 • Tawbah Intensive, ten days of sincere repentance, is now free.
 • The mood check-in now sorts how you feel into two groups, so yours is quicker to find, and each mood keeps the same name wherever it appears.
 • Sources & Attribution now credits the transliteration and the Quran reciters.
+
+## 1.4.1 subtitle  (limit 30 — ship with the next version)
+A verse for how you feel
+
+## 1.4.1 keywords  (limit 100 — ship with the next version)
+prayer,times,qibla,tafsir,dua,dhikr,hadith,islamic,muslim,english,journal,audio,surah,ayah,mood,day
+
+### Why 1.4.1 changes the subtitle
+
+The name is what people type; the subtitle is what they READ in search
+results, beside the first screenshots. 1.4's "Prayer Times, Qibla & Tafsir"
+is Muslim Pro's feature list — the most generic line on the page, and the
+one place the difference should show. "A verse for how you feel" is the
+same sentence as screenshot 1's headline, so a search result reads as one
+story: Sakina: Daily Quran Verses / A verse for how you feel / FIND a verse
+for how you feel.
+
+The cost is that prayer times and qibla drop from subtitle weight to keyword
+weight. That is small in practice: "prayer times" is held by Muslim Pro
+(598k ratings) and Athan Pro (80k), and a 0-rating app was not going to
+outrank them from any field.
+
+Keyword changes from 1.4, each for a reason:
+- in: `prayer`, `times`, `qibla`, `tafsir` — moved down from the subtitle
+- out: `verse` — now in the subtitle, and a repeated word is wasted characters
+- out: `azkar` — the app has no adhkar collection; keep keywords to features
+  that exist (`dua` and `dhikr` stay: journeys carry du'a and dhikr steps)
+- out: `reminder`, `namaz` — the weakest remaining demand, to make room
+
+Both fields change only with a new version, and 1.4 was already in review,
+so they wait for 1.4.1 rather than pulling 1.4 — which carries the rating
+prompt — back out of the queue.
 
 ---
 
