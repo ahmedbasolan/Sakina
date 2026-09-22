@@ -1,5 +1,11 @@
 # Google Play — Default store listing (en-US)
 
+> **Ship gate.** Play listing text goes live the moment it is saved, with no
+> build attached. The description counts ten journeys, seven free: true on
+> `feat/screen-detox-journey`, **false** on `main` today (9 journeys, 5 free).
+> Apply it only once the Android build containing that branch is live, or it
+> promises users two journeys they cannot open.
+
 > ASO note (2026-09-21): the title targets "daily Quran verses" because App
 > Store autocomplete shows real demand there — "quran verse" alone suggests
 > daily quran verses, quran verse of the day, daily ayah — against thin
@@ -32,7 +38,7 @@ WHAT'S INSIDE
 
 · Mood-based Quran guidance — nine moods, each mapped to real verses, tafsir from Ibn Kathir, As-Sa'di and Ibn al-Qayyim, and a practice drawn from the Sunnah.
 
-· Ten guided journeys — multi-day Islamic paths on tawakkul, rizq, salah, repentance, grief, screen detox and more. One verse, one lesson, one practice per day. Seven of them are completely free.
+· Ten guided journeys — multi-day Islamic paths on tawakkul, rizq, salah, repentance, hope after crisis, screen detox and more. One verse, one lesson, one practice per day. Seven of them are completely free.
 
 · Prayer times and qibla — accurate salah times for your location, Hanafi or standard Asr calculation, a live qibla compass, and prayer time reminders.
 
@@ -79,6 +85,7 @@ drifted claim is visible to Google's policy reviewers as a misrepresentation.
 | a new verse every day | `dailyVerseService.ts` keys the pick to the local date (`todayKey`) with a no-repeat history; rendered at `HomeScreen.tsx:398` |
 | nine moods | `MOOD_LABELS` in `src/constants/index.ts` |
 | ten journeys, seven free | `AVAILABLE_PATH_IDS` (10) minus `PREMIUM_GATED_PATHS` (3) in `PathsScreen.tsx` |
+| topics: tawakkul, rizq, salah, repentance, hope after crisis, screen detox | Trusting the Results, Rizq Revolution, Salah Transformation, Tawbah Intensive, Hope After Crisis, Screen Detox. An earlier draft said "grief" — no journey is about grief, and it was never checked |
 | two Pro-only journeys | `PREMIUM_GATED_PATHS` — Marriage Seeker, Death Awareness are "Sakina Pro exclusive"; Trusting the Results is a dated free-tier promise, so it is NOT counted as Pro-only |
 | Ibn Kathir / As-Sa'di / Ibn al-Qayyim | attribution block in `SettingsScreen.tsx` |
 | Hanafi or standard Asr | prayer times settings |
