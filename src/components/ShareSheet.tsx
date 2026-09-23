@@ -32,6 +32,7 @@ import {
   buildShareText,
   pickShareCardTextTier,
   shareCardLayout,
+  SHARE_CARD_INSETS,
   CardTheme,
   ShareCardTextTier,
 } from '../utils/shareCard';
@@ -802,8 +803,8 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.background.primary,
     borderRadius: BorderRadius.xxl,
     overflow: 'hidden',
-    paddingHorizontal: Spacing.xl,
-    paddingVertical: Spacing.xxl,
+    paddingHorizontal: SHARE_CARD_INSETS.cardPaddingH,
+    paddingVertical: SHARE_CARD_INSETS.cardPaddingV,
     alignItems: 'center',
     justifyContent: 'space-between',
   },
@@ -814,8 +815,8 @@ const styles = StyleSheet.create({
   // touching the card's edges.
   previewCardPhoto: {
     justifyContent: 'center',
-    paddingHorizontal: Spacing.lg,
-    paddingVertical: Spacing.lg,
+    paddingHorizontal: SHARE_CARD_INSETS.photoCardPadding,
+    paddingVertical: SHARE_CARD_INSETS.photoCardPadding,
   },
   // Dims the blurred fill so the sharp, uncropped photo on top of it stands
   // out as the actual picture.
@@ -839,8 +840,8 @@ const styles = StyleSheet.create({
     borderRadius: BorderRadius.xl,
     borderWidth: 1,
     borderColor: 'rgba(255,255,255,0.12)',
-    paddingHorizontal: Spacing.lg,
-    paddingVertical: Spacing.lg,
+    paddingHorizontal: SHARE_CARD_INSETS.photoPanelPadding,
+    paddingVertical: SHARE_CARD_INSETS.photoPanelPadding,
     alignItems: 'center',
   },
   cardHeader: {
@@ -881,7 +882,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     textAlign: 'center',
     lineHeight: 26,
-    marginHorizontal: 12,
+    marginHorizontal: SHARE_CARD_INSETS.quoteMarginH,
   },
   previewFooter: {
     alignItems: 'center',

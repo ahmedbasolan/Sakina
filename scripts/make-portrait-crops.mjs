@@ -5,9 +5,11 @@
  * backgroundThemeService.ts (and directly by the MoodColors images in
  * DesignSystem.ts). The share card uses it because it sizes itself to its
  * photo, and a landscape photo made a card too short to hold a verse; the
- * full-screen backgrounds use it so the visible part is framed on the
- * subject. The originals stay for the theme picker thumbnails and the iOS
- * lock-screen attachment (Android shows no attachment image at all).
+ * full-screen backgrounds, the theme picker tiles and the paywall's preview
+ * strip use it so what shows is framed on the subject, and every preview
+ * matches what the user gets. The originals stay for the iOS lock-screen
+ * attachment and the lock-screen settings screen that previews it (Android
+ * shows no attachment image at all).
  *
  * `x` is where the crop sits across the photo: 0 = flush left, 1 = flush
  * right. Each was picked by eye against the photo, not by sharp's attention

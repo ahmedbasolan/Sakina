@@ -6,6 +6,8 @@ import {
   CARD_ASPECT_RATIO,
   CardTheme,
 } from '../shareCard';
+import fs from 'fs';
+import path from 'path';
 import { quranContent } from '../../data/quranData';
 import { BackgroundTheme } from '../../types';
 
@@ -192,5 +194,47 @@ describe('shareCardLayout', () => {
     const landscapeTier = pickShareCardTextTier(visible, landscape.textWidth, landscape.heightBudget);
     expect(portraitTier.arabicFontSize).toBeGreaterThan(smallest.arabicFontSize);
     expect(landscapeTier).toEqual(smallest);
+  });
+});
+
+// shareCardLayout's text budget is only right while ShareSheet's styles use
+// the same insets. This reads the stylesheet source, so it catches a literal
+// typed back into one of those styles (the drift SHARE_CARD_INSETS exists to
+// prevent). WHAT IT DOES NOT CATCH: a new padding added to some other style
+// inside the card, which the budget would not know about either.
+describe('ShareSheet styles use SHARE_CARD_INSETS', () => {
+  const source = fs.readFileSync(path.join(__dirname, '../../components/ShareSheet.tsx'), 'utf8');
+  const styleBlock = (name: string): string => {
+    const start = source.indexOf(`  ${name}: {\n`);
+    expect(start).toBeGreaterThan(-1);
+    return source.slice(start, source.indexOf('\n  },', start));
+  };
+
+  it.each([
+    [
+      'previewCard',
+      [
+        'paddingHorizontal: SHARE_CARD_INSETS.cardPaddingH',
+        'paddingVertical: SHARE_CARD_INSETS.cardPaddingV',
+      ],
+    ],
+    [
+      'previewCardPhoto',
+      [
+        'paddingHorizontal: SHARE_CARD_INSETS.photoCardPadding',
+        'paddingVertical: SHARE_CARD_INSETS.photoCardPadding',
+      ],
+    ],
+    [
+      'glassPanel',
+      [
+        'paddingHorizontal: SHARE_CARD_INSETS.photoPanelPadding',
+        'paddingVertical: SHARE_CARD_INSETS.photoPanelPadding',
+      ],
+    ],
+    ['previewQuote', ['marginHorizontal: SHARE_CARD_INSETS.quoteMarginH']],
+  ])('%s', (name, expected) => {
+    const block = styleBlock(name);
+    for (const line of expected) expect(block).toContain(line);
   });
 });
