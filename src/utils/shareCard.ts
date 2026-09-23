@@ -1,6 +1,54 @@
 import { ImageSourcePropType } from 'react-native';
 import { BackgroundTheme } from '../types';
 import { portraitSource } from './portraitSource';
+import { Spacing } from '../theme/DesignSystem';
+
+// A gradient card's target shape. Closer to an actual phone screenshot
+// (~9:16-9:20) than a square-ish social post crop (4:5): the whole point is
+// "looks like a screenshot of the verse screen", and the extra height also
+// buys real room for text before tiering has to shrink it. A photo card uses
+// its photo's own shape instead (see shareCardLayout).
+export const CARD_ASPECT_RATIO = 0.62; // width / height, portrait
+// Header ("Sakina app") + footer (surah name + ref) + inter-block gaps:
+// short, roughly-constant-length strings that don't scale with the verse,
+// budgeted once here rather than re-measured per render.
+export const NON_SCALING_CONTENT_HEIGHT = 90;
+
+export interface ShareCardLayout {
+  /** previewCard's `minHeight`: the size it renders at unless a verse too
+   *  long for even the smallest tier makes it grow. */
+  cardTargetHeight: number;
+  /** Width and height the verse text must fit in, for pickShareCardTextTier. */
+  textWidth: number;
+  heightBudget: number;
+}
+
+/**
+ * Sizes the share card. A photo card takes its photo's own shape, so the
+ * photo fills it edge to edge with nothing cropped, and the text tier is then
+ * picked to fit that height. A gradient card, or a photo whose size can't be
+ * read (`photoAspect` null), uses CARD_ASPECT_RATIO.
+ *
+ * The insets mirror each branch's styles in ShareSheet.tsx: the photo branch
+ * uses previewCardPhoto + glassPanel padding (Spacing.lg all round), tighter
+ * than the gradient card's, because a landscape photo gives it far less
+ * height; Spacing.md * 2 covers previewQuote's own horizontal margin. Change
+ * those styles and this must change with them.
+ */
+export function shareCardLayout(
+  cardWidth: number,
+  isPhoto: boolean,
+  photoAspect: number | null,
+): ShareCardLayout {
+  const cardTargetHeight = cardWidth / (photoAspect ?? CARD_ASPECT_RATIO);
+  const textWidth = isPhoto
+    ? cardWidth - Spacing.lg * 4 - Spacing.md * 2
+    : cardWidth - Spacing.xl * 2 - Spacing.lg * 2 - Spacing.md;
+  const heightBudget = isPhoto
+    ? cardTargetHeight - Spacing.lg * 4 - NON_SCALING_CONTENT_HEIGHT
+    : cardTargetHeight - Spacing.xxl * 2 - Spacing.xl * 2 - NON_SCALING_CONTENT_HEIGHT;
+  return { cardTargetHeight, textWidth, heightBudget };
+}
 
 export interface CardTheme {
   id: string;
