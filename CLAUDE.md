@@ -732,7 +732,8 @@ of them portrait:
 - **Source at ≥3000px tall**, never upscaled or AI-enlarged: the share capture
   shows softness first.
 - **JPEG, sRGB, quality 80–85, ~250–450 KB.** The set averages ~300 KB and
-  ships in the bundle (11 MB for 28), so every photo is download size.
+  ships in the bundle (8.4 MB for the 27 themes plus `mood_sad.jpg`, and
+  2.2 MB more for the share crops), so every photo is download size.
 - **Strip EXIF**: it can carry GPS, and an orientation flag can render the
   photo sideways where it is ignored.
 
