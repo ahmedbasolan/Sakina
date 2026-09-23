@@ -46,6 +46,9 @@ const CARD_ASPECT_RATIO = 0.62; // width / height, portrait
 // short, roughly-constant-length strings that don't scale with the verse,
 // budgeted once here rather than re-measured per render.
 const NON_SCALING_CONTENT_HEIGHT = 90;
+// Blur for the photo copy that fills the bands around a `contain`ed photo.
+// Strong enough that the fill reads as colour, not as a second picture.
+const PHOTO_FILL_BLUR_RADIUS = 20;
 
 interface ShareSheetProps {
   isVisible: boolean;
@@ -477,17 +480,16 @@ const ShareSheet = ({ isVisible, onClose, isPremium, onUpgrade, content }: Share
                   // absoluteFill'd Image has no such proxy step and reliably
                   // covers the card's real box.
                   //
-                  // `cover` (not `contain`) for the same full-bleed,
-                  // immersive look as the lock screen preview's NotifCard
-                  // (LockscreenVersesScreen.tsx) — `contain` technically
-                  // shows every pixel, but letterboxes and shrinks the photo
-                  // enough that its most vivid region typically lands
-                  // directly behind the centered quote text, which reads as
-                  // "the photo barely shows" even though nothing is being
-                  // cropped. Matching NotifCard's actual fix instead: keep
-                  // the photo full-bleed, and give the text its own opaque
-                  // panel (glassPanel below) rather than relying on the
-                  // photo darkening enough on its own to stay legible.
+                  // Two layers of the same photo: a blurred `cover` copy
+                  // filling the card, and the sharp photo on top with
+                  // `contain`. 23 of the 29 theme photos are landscape
+                  // (~3:2) while this card is portrait (0.62), so `cover`
+                  // alone cut ~59% of their width, and users saw only a
+                  // sliver of the photo they picked. `contain` keeps the
+                  // whole photo; the blurred copy fills the bands above and
+                  // below it so the card still reads full-bleed rather than
+                  // letterboxed. Portrait photos (2:3 and taller) leave only
+                  // thin bands, so they still look almost edge to edge.
                   <View
                     style={[styles.previewCard, styles.previewCardPhoto, { minHeight: cardTargetHeight }]}
                   >
@@ -495,11 +497,17 @@ const ShareSheet = ({ isVisible, onClose, isPremium, onUpgrade, content }: Share
                       source={background.imageSource}
                       style={StyleSheet.absoluteFillObject}
                       resizeMode="cover"
+                      blurRadius={PHOTO_FILL_BLUR_RADIUS}
                     />
-                    <LinearGradient
-                      colors={['rgba(7,17,30,0.15)', 'rgba(7,17,30,0.85)']}
+                    <View style={styles.photoFillScrim} />
+                    <Image
+                      source={background.imageSource}
                       style={StyleSheet.absoluteFillObject}
+                      resizeMode="contain"
                     />
+                    {/* Even, light scrim instead of the old 15%→85% gradient,
+                        which blacked out the bottom of the photo. */}
+                    <View style={styles.photoScrim} />
                     <View style={styles.glassPanel}>
                       <CardContent
                         textColor={textColor}
@@ -825,13 +833,25 @@ const styles = StyleSheet.create({
   previewCardPhoto: {
     justifyContent: 'center',
   },
-  // Text's own opaque backing over a photo — matches NotifCard's treatment
-  // in LockscreenVersesScreen.tsx (rgba(12,26,46,0.72)) rather than the
-  // generic warm-tinted Colors.glass tokens, which are tuned for panels on
-  // this app's dark screens, not for sitting over a bright nature photo.
+  // Dims the blurred fill so the sharp, uncropped photo on top of it stands
+  // out as the actual picture.
+  photoFillScrim: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(7,17,30,0.35)',
+  },
+  photoScrim: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(7,17,30,0.25)',
+  },
+  // Text's own backing over a photo, in NotifCard's navy
+  // (LockscreenVersesScreen.tsx) rather than the warm-tinted Colors.glass
+  // tokens, which are tuned for this app's dark screens. 0.6 rather than
+  // NotifCard's 0.72 so the whole photo, which now sits behind the verse,
+  // stays visible through the panel. Worst case (a pure-white photo) under
+  // photoScrim still gives primary text about 6:1 contrast.
   glassPanel: {
     width: '100%',
-    backgroundColor: 'rgba(12,26,46,0.72)',
+    backgroundColor: 'rgba(12,26,46,0.6)',
     borderRadius: BorderRadius.xl,
     borderWidth: 1,
     borderColor: 'rgba(255,255,255,0.12)',
