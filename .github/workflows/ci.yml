@@ -22,7 +22,10 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          # 22, not 20: moodDataSingleSource.test.ts uses fs.globSync and
+          # contentStory.test.ts uses node:sqlite, neither of which exists
+          # on Node 20. Matches the EAS job below.
+          node-version: '22'
           cache: 'npm'
 
       - name: Install dependencies
