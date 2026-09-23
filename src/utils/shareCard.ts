@@ -14,6 +14,25 @@ export const CARD_ASPECT_RATIO = 0.62; // width / height, portrait
 // budgeted once here rather than re-measured per render.
 export const NON_SCALING_CONTENT_HEIGHT = 90;
 
+/**
+ * The share card's insets, defined once and used by both ShareSheet.tsx's
+ * styles and shareCardLayout's text budget. They used to be written twice,
+ * so changing a style silently desynced the budget and the tests still
+ * passed, because they only checked the function's own numbers.
+ */
+export const SHARE_CARD_INSETS = {
+  /** previewCard: the gradient card's padding. */
+  cardPaddingH: Spacing.xl,
+  cardPaddingV: Spacing.xxl,
+  /** previewCardPhoto: the photo card's own padding, tighter because a
+   *  landscape photo gives it far less height. */
+  photoCardPadding: Spacing.lg,
+  /** glassPanel: the text backing inside a photo card. */
+  photoPanelPadding: Spacing.lg,
+  /** previewQuote: the English translation's side margin. */
+  quoteMarginH: Spacing.md,
+} as const;
+
 export interface ShareCardLayout {
   /** previewCard's `minHeight`: the size it renders at unless a verse too
    *  long for even the smallest tier makes it grow. */
@@ -29,11 +48,11 @@ export interface ShareCardLayout {
  * picked to fit that height. A gradient card, or a photo whose size can't be
  * read (`photoAspect` null), uses CARD_ASPECT_RATIO.
  *
- * The insets mirror each branch's styles in ShareSheet.tsx: the photo branch
- * uses previewCardPhoto + glassPanel padding (Spacing.lg all round), tighter
- * than the gradient card's, because a landscape photo gives it far less
- * height; Spacing.md * 2 covers previewQuote's own horizontal margin. Change
- * those styles and this must change with them.
+ * The insets come from SHARE_CARD_INSETS, the same values ShareSheet.tsx's
+ * styles use. The gradient branch also subtracts a glassPanel-sized margin it
+ * doesn't have (Spacing.lg * 2 across, Spacing.xl * 2 down): a deliberate
+ * safety margin, so it can only pick an equal or smaller tier, never one that
+ * overflows.
  */
 export function shareCardLayout(
   cardWidth: number,
@@ -41,12 +60,13 @@ export function shareCardLayout(
   photoAspect: number | null,
 ): ShareCardLayout {
   const cardTargetHeight = cardWidth / (photoAspect ?? CARD_ASPECT_RATIO);
+  const i = SHARE_CARD_INSETS;
   const textWidth = isPhoto
-    ? cardWidth - Spacing.lg * 4 - Spacing.md * 2
-    : cardWidth - Spacing.xl * 2 - Spacing.lg * 2 - Spacing.md;
+    ? cardWidth - (i.photoCardPadding + i.photoPanelPadding + i.quoteMarginH) * 2
+    : cardWidth - i.cardPaddingH * 2 - Spacing.lg * 2 - i.quoteMarginH;
   const heightBudget = isPhoto
-    ? cardTargetHeight - Spacing.lg * 4 - NON_SCALING_CONTENT_HEIGHT
-    : cardTargetHeight - Spacing.xxl * 2 - Spacing.xl * 2 - NON_SCALING_CONTENT_HEIGHT;
+    ? cardTargetHeight - (i.photoCardPadding + i.photoPanelPadding) * 2 - NON_SCALING_CONTENT_HEIGHT
+    : cardTargetHeight - i.cardPaddingV * 2 - Spacing.xl * 2 - NON_SCALING_CONTENT_HEIGHT;
   return { cardTargetHeight, textWidth, heightBudget };
 }
 

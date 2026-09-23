@@ -35,6 +35,7 @@ import { HapticsService } from '../services/hapticsService';
 import { revenueCat } from '../services/revenueCatService';
 import { logServiceError } from '../services/errorLoggingService';
 import { BACKGROUND_THEMES } from '../services/backgroundThemeService';
+import { portraitSource } from '../utils/portraitSource';
 
 // A handful of visually distinct themes to preview on the paywall — one per
 // category so the strip reads as varied, not repetitive.
@@ -569,7 +570,7 @@ const SupportSakinaScreen: React.FC<Props> = ({ embedded = false, onDone }) => {
                       {THEME_PREVIEWS.map((theme) => (
                         <Image
                           key={theme.id}
-                          source={theme.imageSource}
+                          source={portraitSource(theme)}
                           style={styles.themePreviewThumb}
                           resizeMode="cover"
                           accessibilityLabel={theme.name}

@@ -15,13 +15,13 @@ jest.mock('@react-native-async-storage/async-storage', () =>
   require('@react-native-async-storage/async-storage/jest/async-storage-mock'),
 );
 import { Image } from 'react-native';
-import { render, within } from '@testing-library/react-native';
+import { act, render, within } from '@testing-library/react-native';
 import BackgroundThemePicker from '../BackgroundThemePicker';
 import { BACKGROUND_THEMES } from '../../services/backgroundThemeService';
 import { portraitSource } from '../../utils/portraitSource';
 
 describe('BackgroundThemePicker', () => {
-  it('previews each theme with the same photo the app will show', () => {
+  it('previews each theme with the same photo the app will show', async () => {
     const { queryByLabelText } = render(
       <BackgroundThemePicker
         isVisible
@@ -31,6 +31,9 @@ describe('BackgroundThemePicker', () => {
         onSelectTheme={() => {}}
       />,
     );
+    // Ionicons loads its font asynchronously and re-renders when it lands;
+    // let that settle inside act() so it doesn't warn after the test.
+    await act(async () => {});
     let checked = 0;
     let withCrop = 0;
     for (const theme of BACKGROUND_THEMES) {

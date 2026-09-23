@@ -726,7 +726,13 @@ of them portrait:
   all** (the builder never reads a per-notification image for a locally
   scheduled notification). A session once claimed Android crops it to a wide
   banner; that was false — check the comment above `content.attachments`.
-- **Theme picker** thumbnails — 1:1.4 portrait tiles.
+- **Previews** — the theme picker's 1:1.4 tiles, the share sheet's photo
+  circle and the paywall's preview strip (`SupportSakinaScreen`) all go
+  through `portraitSource()`, so a preview shows the same framing the user
+  gets. They used the originals once, and "Lion" previewed the lion's back
+  but delivered its face. Only the lock-screen settings screen keeps
+  `imageSource`, because it previews the iOS attachment, which is the
+  original.
 
 **Spec for every new photo**
 
