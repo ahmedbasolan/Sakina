@@ -137,7 +137,7 @@ export const MoodColors: Record<
     accent: '#818CF8',
     bgFill: '#0F172A',
     glow: 'rgba(129, 140, 248, 0.2)',
-    image: require('../assets/themes/ocean_deep_blue.jpg'), // Calm starry night sky over ocean
+    image: require('../assets/themes/ocean_deep_blue.jpg'), // Starry night sky over a dark hill (no ocean, despite the filename)
     card: { border: '#4A63CC', gradient: ['#3A52B0', '#26357A', '#26357A'] },
   },
   Angry: {
@@ -145,7 +145,7 @@ export const MoodColors: Record<
     accent: '#FB923C',
     bgFill: '#1A0F0A',
     glow: 'rgba(251, 146, 60, 0.2)',
-    image: require('../assets/themes/landscape_desert_dunes.jpg'), // Peaceful desert sunset with warm tones
+    image: require('../assets/themes/landscape_desert_dunes.jpg'), // Pine forest fading into white mist (no desert, despite the filename)
     card: { border: '#BC551A', gradient: ['#9C4614', '#6D300D', '#6D300D'] },
   },
   Sad: {
@@ -213,7 +213,7 @@ export const MoodColors: Record<
     accent: '#C4708C',
     bgFill: '#2A0D18',
     glow: 'rgba(196, 112, 140, 0.2)',
-    image: require('../assets/themes/nature_waterfall.jpg'), // Gentle waterfall in lush green forest — renewal/tawbah
+    image: require('../assets/themes/nature_waterfall.jpg'), // A male lion walking through grass (no waterfall, despite the filename)
     card: { border: '#A34E6E', gradient: ['#8A3F5C', '#5F2B3F', '#5F2B3F'] },
   },
 };
