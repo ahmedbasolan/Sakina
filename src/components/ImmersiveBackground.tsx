@@ -4,6 +4,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Colors, MoodColors } from '../theme/DesignSystem';
 import { Mood, PathTone } from '../types';
 import { backgroundThemeService } from '../services/backgroundThemeService';
+import { portraitSource } from '../utils/portraitSource';
 import { TwinklingStar } from './TwinklingStar';
 import { AnimatedMandala } from './AnimatedMandala';
 import { useReduceMotion } from '../hooks/useReduceMotion';
@@ -64,7 +65,7 @@ const ImmersiveBackground: React.FC<ImmersiveBackgroundProps> = ({
       // Reset to null when no theme is selected so clearing it (Default) reverts
       // the background instead of keeping the previously-read image.
       backgroundThemeService.getSelectedTheme().then((t) => {
-        setSelectedThemeSource(t ? t.imageSource : null);
+        setSelectedThemeSource(t ? portraitSource(t) : null);
       });
     }
   }, [isPremium, selfManageTheme]);

@@ -710,11 +710,17 @@ of them portrait:
   with the verse panel over roughly the middle 70–80%, then text tiered to fit.
   A 3:2 landscape photo made a card ~228dp tall that could not hold 50:16 even
   at the smallest tier; that is why the 21 landscape themes carry a 2:3
-  `shareImageSource` crop.
+  `portraitImageSource` crop.
 - **Full-screen backgrounds** (`ImmersiveBackground`, `GuidanceScreen`, mood
-  screens) — `resizeMode="cover"` on a ~9:19.5 phone. These still use the
-  landscape *originals*, so on a phone they show only about a third of each
-  landscape photo's width. Portrait sources fix this with no code change.
+  screens) — `resizeMode="cover"` on a ~9:19.5 phone. Themes go through
+  `portraitSource()` (`src/utils/portraitSource.ts`) and the six landscape
+  `MoodColors` images name `portrait/` directly, which `make-portrait-crops.mjs`
+  enforces. **The crop does not show more of the photo** — a phone is narrower
+  than 2:3, so the screen shows the same ~31% of a 3:2 original's width either
+  way. It changes *which* 31%: framed on the subject instead of the middle
+  (the lion's face, the whole kingfisher, the sun). On a 13" iPad (3:4) the
+  crop shows slightly *less* than the original would. Only a genuinely
+  portrait, higher-resolution source shows more.
 - **iOS lock-screen notification attachment** (`lockscreenVerseService.ts`) —
   square thumbnail collapsed, full image expanded. **Android shows no image at
   all** (the builder never reads a per-notification image for a locally
@@ -727,13 +733,13 @@ of them portrait:
 - **Portrait, 9:16, delivered at 1440 × 2560.** The captured share image is
   ~1000–1150px wide and the largest iPhone ~1320px, so 1440 covers both; a 13"
   iPad (the app sets `supportsTablet`) upscales ~1.4×, which the scrims hide.
-  Nothing wider than 2:3 — `make-share-crops.mjs` treats that as landscape and
+  Nothing wider than 2:3 — `make-portrait-crops.mjs` treats that as landscape and
   fails until you add a hand-picked crop.
 - **Source at ≥3000px tall**, never upscaled or AI-enlarged: the share capture
   shows softness first.
 - **JPEG, sRGB, quality 80–85, ~250–450 KB.** The set averages ~300 KB and
   ships in the bundle (8.4 MB for the 27 themes plus `mood_sad.jpg`, and
-  2.2 MB more for the share crops), so every photo is download size.
+  2.2 MB more for the portrait crops), so every photo is download size.
 - **Strip EXIF**: it can carry GPS, and an orientation flag can render the
   photo sideways where it is ignored.
 
@@ -769,8 +775,8 @@ of them portrait:
    it is persisted in AsyncStorage and the lock-screen prefs. Removing a theme
    is safe: every reader falls back (`backgroundThemeService.test.ts` pins it).
 4. If it is wider than 2:3 anyway, add an entry to `CROPS` in
-   `scripts/make-share-crops.mjs`, run it, **look at the output**, and add the
-   `shareImageSource` line — the script fails if either is missing. Choose `x`
+   `scripts/make-portrait-crops.mjs`, run it, **look at the output**, and add the
+   `portraitImageSource` line — the script fails if either is missing. Choose `x`
    by eye: sharp's attention strategy cut the Sheikh Zayed mosque in half.
 5. `npx tsc --noEmit -p tsconfig.json` and `npx jest`.
 

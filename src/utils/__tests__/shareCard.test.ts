@@ -44,7 +44,7 @@ describe('resolveCardBackground', () => {
   });
 
   it('prefers the portrait share crop when the theme has one', () => {
-    const result = resolveCardBackground(purpleTheme, { ...photoTheme, shareImageSource: 2 }, true);
+    const result = resolveCardBackground(purpleTheme, { ...photoTheme, portraitImageSource: 2 }, true);
     expect(result.kind === 'photo' && result.imageSource).toBe(2);
   });
 
