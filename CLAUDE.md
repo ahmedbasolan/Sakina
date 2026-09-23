@@ -700,6 +700,79 @@ uploaded under an account that did not write them. Both shipped broken.
   `clearAllLocalUserData` and the `PERSONAL` list in `verify-local-wipe.mjs`.
   The verifier's subset check catches an omission from the wipe, not from both.
 
+## Background Photos — sourcing, spec & adding one
+
+The theme photos (`BACKGROUND_THEMES` in `backgroundThemeService.ts`, plus the
+`MoodColors[*].image` entries in `DesignSystem.ts`) render in four places, all
+of them portrait:
+
+- **Share card** (`ShareSheet.tsx`) — sized to the photo's own aspect ratio,
+  with the verse panel over roughly the middle 70–80%, then text tiered to fit.
+  A 3:2 landscape photo made a card ~228dp tall that could not hold 50:16 even
+  at the smallest tier; that is why the 21 landscape themes carry a 2:3
+  `shareImageSource` crop.
+- **Full-screen backgrounds** (`ImmersiveBackground`, `GuidanceScreen`, mood
+  screens) — `resizeMode="cover"` on a ~9:19.5 phone. These still use the
+  landscape *originals*, so on a phone they show only about a third of each
+  landscape photo's width. Portrait sources fix this with no code change.
+- **iOS lock-screen notification attachment** (`lockscreenVerseService.ts`) —
+  square thumbnail collapsed, full image expanded. **Android shows no image at
+  all** (the builder never reads a per-notification image for a locally
+  scheduled notification). A session once claimed Android crops it to a wide
+  banner; that was false — check the comment above `content.attachments`.
+- **Theme picker** thumbnails — 1:1.4 portrait tiles.
+
+**Spec for every new photo**
+
+- **Portrait, 9:16, delivered at 1440 × 2560.** The captured share image is
+  ~1000–1150px wide and the largest iPhone ~1320px, so 1440 covers both; a 13"
+  iPad (the app sets `supportsTablet`) upscales ~1.4×, which the scrims hide.
+  Nothing wider than 2:3 — `make-share-crops.mjs` treats that as landscape and
+  fails until you add a hand-picked crop.
+- **Source at ≥3000px tall**, never upscaled or AI-enlarged: the share capture
+  shows softness first.
+- **JPEG, sRGB, quality 80–85, ~250–450 KB.** The set averages ~300 KB and
+  ships in the bundle (11 MB for 28), so every photo is download size.
+- **Strip EXIF**: it can carry GPS, and an orientation flag can render the
+  photo sideways where it is ignored.
+
+**Composition**
+
+- **Quiet centre.** The verse covers the middle on the share card and on
+  full-screen backgrounds. Subject in the top or bottom fifth, or a texture
+  that reads at the edges (sky, stars, water, mist). Al-Haram, Blue Mosque and
+  the elephant are mostly hidden behind the panel today for exactly this
+  reason.
+- **Dark-to-mid tone, not bright or busy** — text is white, and pale sky, snow
+  or dense foliage fights it even through the scrim.
+- **Celestial Night palette**: night blues, dusk, warm light on cool. Milky Way
+  and Golden Sunset fit; a bright midday meadow does not.
+- **No** skyscrapers (the one theme that was a skyscraper was removed),
+  brands, logos, other faiths' religious imagery, or identifiable people
+  (stock licences rarely include model releases). Depicting animals is a
+  product decision, not a technical one: part of this audience follows the
+  view that discourages images of living beings, and the Animals category
+  exists already.
+
+**Adding one**
+
+1. **Name it from the photo, after choosing it.** 15 of 28 themes shipped with
+   names that did not match their image ("Bamboo Grove" was puffins, "Hidden
+   Waterfall" a lion, "Desert Dunes" a misty pine forest) because the names
+   were planned before the photos. Look at the file, then name and categorise.
+2. **Record the source** (URL, photographer, licence) in the commit message.
+   The repo has no record for the existing set, which is why no
+   higher-resolution originals could be found when the share card needed them.
+3. Add `src/assets/themes/<id>.jpg` and a `BACKGROUND_THEMES` entry under its
+   category's section comment. **Never rename or reuse an existing `id`** —
+   it is persisted in AsyncStorage and the lock-screen prefs. Removing a theme
+   is safe: every reader falls back (`backgroundThemeService.test.ts` pins it).
+4. If it is wider than 2:3 anyway, add an entry to `CROPS` in
+   `scripts/make-share-crops.mjs`, run it, **look at the output**, and add the
+   `shareImageSource` line — the script fails if either is missing. Choose `x`
+   by eye: sharp's attention strategy cut the Sheikh Zayed mosque in half.
+5. `npx tsc --noEmit -p tsconfig.json` and `npx jest`.
+
 ## Commands
 - Typecheck: `npx tsc --noEmit -p tsconfig.json`
 - Tests: `npx jest` (ownership rules: `src/services/__tests__/localDataOwnership.test.ts`)
