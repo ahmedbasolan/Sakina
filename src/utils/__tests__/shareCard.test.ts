@@ -1,4 +1,12 @@
-import { resolveCardBackground, buildShareText, pickShareCardTextTier, CardTheme } from '../shareCard';
+import {
+  resolveCardBackground,
+  buildShareText,
+  pickShareCardTextTier,
+  shareCardLayout,
+  CARD_ASPECT_RATIO,
+  CardTheme,
+} from '../shareCard';
+import { quranContent } from '../../data/quranData';
 import { BackgroundTheme } from '../../types';
 
 const purpleTheme: CardTheme = { id: 'purple', colors: ['#C4B5FD', '#8B5CF6'], label: 'Royal' };
@@ -135,5 +143,54 @@ describe('buildShareText', () => {
       { showEnglish: true, showArabic: true, showTransliteration: true },
     );
     expect(result).toBe(`"${content.text}"\n\n\n${content.source}\n\nShared via Sakina`);
+  });
+});
+
+describe('shareCardLayout', () => {
+  // 342 = a 390dp-wide phone minus the sheet's Spacing.xl gutters.
+  const WIDTH = 342;
+
+  it('gives a photo card its photo\'s own shape, so the photo fills it uncropped', () => {
+    const { cardTargetHeight } = shareCardLayout(WIDTH, true, 2 / 3);
+    expect(cardTargetHeight).toBeCloseTo(513, 0);
+  });
+
+  it('uses CARD_ASPECT_RATIO for a gradient card', () => {
+    expect(shareCardLayout(WIDTH, false, null).cardTargetHeight).toBeCloseTo(WIDTH / CARD_ASPECT_RATIO, 5);
+  });
+
+  it('falls back to CARD_ASPECT_RATIO when a photo\'s size cannot be read', () => {
+    expect(shareCardLayout(WIDTH, true, null).cardTargetHeight).toBeCloseTo(WIDTH / CARD_ASPECT_RATIO, 5);
+  });
+
+  it('budgets text against the photo branch\'s tighter padding', () => {
+    // previewCardPhoto + glassPanel padding (16 each side, twice) and
+    // previewQuote's 12 margin each side; 90 for header/footer.
+    const photo = shareCardLayout(WIDTH, true, 2 / 3);
+    expect(photo.textWidth).toBe(WIDTH - 88);
+    expect(photo.heightBudget).toBeCloseTo(513 - 64 - 90, 0);
+    const gradient = shareCardLayout(WIDTH, false, null);
+    expect(gradient.textWidth).toBe(WIDTH - 48 - 32 - 12);
+  });
+
+  // Why the landscape themes carry portrait crops: the same verse gets a
+  // readable size on a 2:3 card but is pushed to the smallest tier on a 3:2
+  // one. (pickShareCardTextTier returns the smallest tier whether or not it
+  // fits, so this cannot tell "fits at 11pt" from "card will grow".)
+  it('keeps 50:16 above the smallest tier on a 2:3 card, and drops it to the smallest on 3:2', () => {
+    const verse = quranContent.find((c) => c.id === 'quran_50_16');
+    expect(verse).toBeDefined();
+    const visible = {
+      arabicText: verse!.arabicText,
+      transliteration: verse!.transliteration,
+      englishText: verse!.englishTranslation,
+    };
+    const portrait = shareCardLayout(WIDTH, true, 2 / 3);
+    const landscape = shareCardLayout(WIDTH, true, 3 / 2);
+    const smallest = pickShareCardTextTier({ englishText: 'a'.repeat(5000) }, 100, 10);
+    const portraitTier = pickShareCardTextTier(visible, portrait.textWidth, portrait.heightBudget);
+    const landscapeTier = pickShareCardTextTier(visible, landscape.textWidth, landscape.heightBudget);
+    expect(portraitTier.arabicFontSize).toBeGreaterThan(smallest.arabicFontSize);
+    expect(landscapeTier).toEqual(smallest);
   });
 });

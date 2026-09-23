@@ -17,6 +17,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Colors, Spacing, Typography, BorderRadius } from '../theme/DesignSystem';
 import { BackgroundTheme, BackgroundThemeCategory } from '../types';
 import { BACKGROUND_THEMES, THEME_CATEGORIES } from '../services/backgroundThemeService';
+import { portraitSource } from '../utils/portraitSource';
 
 const COLUMN_COUNT = 2;
 
@@ -74,7 +75,7 @@ const BackgroundThemePicker: React.FC<BackgroundThemePickerProps> = ({
                 accessibilityLabel={`${item.name}${isLocked ? ', premium' : ''}`}
                 accessibilityState={{ selected: isSelected, disabled: isLocked }}
             >
-                <Image source={item.imageSource} style={styles.themeImage} resizeMode="cover" />
+                <Image source={portraitSource(item)} style={styles.themeImage} resizeMode="cover" />
                 <LinearGradient
                     colors={['transparent', 'rgba(0,0,0,0.6)']}
                     style={styles.themeOverlay}

@@ -13,12 +13,10 @@ import {
   Platform,
   Clipboard,
   Image,
-  ImageSourcePropType,
 } from 'react-native';
 import ViewShot from 'react-native-view-shot';
 import * as Sharing from 'expo-sharing';
 import * as MediaLibrary from 'expo-media-library';
-import { Asset } from 'expo-asset';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -33,21 +31,13 @@ import {
   resolveCardBackground,
   buildShareText,
   pickShareCardTextTier,
+  shareCardLayout,
   CardTheme,
   ShareCardTextTier,
 } from '../utils/shareCard';
+import { assetAspectRatio } from '../utils/assetAspectRatio';
+import { portraitSource } from '../utils/portraitSource';
 
-// previewCard's target shape — see the sizing comment at its computation
-// below in ShareSheet for why this is a target rather than a hard cap.
-// Closer to an actual phone screenshot (~9:16-9:20) than a square-ish social
-// post crop (4:5) — the whole point is "looks like a screenshot of the verse
-// screen", and the extra height also buys real room for text before tiering
-// has to shrink it.
-const CARD_ASPECT_RATIO = 0.62; // width / height, portrait
-// Header ("Sakina app") + footer (surah name + ref) + inter-block gaps —
-// short, roughly-constant-length strings that don't scale with the verse,
-// budgeted once here rather than re-measured per render.
-const NON_SCALING_CONTENT_HEIGHT = 90;
 // Blur for the photo copy that fills the bands around a `contain`ed photo.
 // Strong enough that the fill reads as colour, not as a second picture.
 const PHOTO_FILL_BLUR_RADIUS = 20;
@@ -84,24 +74,6 @@ const FONTS = [
   },
   { id: 'sans', name: 'Outfit Sans', family: Platform.OS === 'ios' ? 'Avenir' : 'sans-serif' },
 ];
-
-/** width / height of a bundled image, or null if it can't be resolved
- *  (no size recorded, or not a single image source). expo-asset rather than
- *  Image.resolveAssetSource: react-native-web's Image has no
- *  resolveAssetSource, and calling it crashed the whole sheet on web the
- *  moment a photo was picked. Asset.fromModule takes both shapes a
- *  require()'d image has: a registry number on native, and a
- *  `{ uri, width, height }` object on web. Null falls back to
- *  CARD_ASPECT_RATIO. */
-function assetAspectRatio(source: ImageSourcePropType): number | null {
-  if (Array.isArray(source)) return null;
-  try {
-    const { width, height } = Asset.fromModule(source as Parameters<typeof Asset.fromModule>[0]);
-    return width && height ? width / height : null;
-  } catch {
-    return null;
-  }
-}
 
 /** Parse "Surah Ar-Rum 30:4-5" → { name: "Ar-Rum", ref: "30:4-5" } */
 function parseSource(src: string): { name: string; ref: string } {
@@ -416,32 +388,16 @@ const ShareSheet = ({ isVisible, onClose, isPremium, onUpgrade, content }: Share
 
   const parsedSource = parseSource(content.source);
 
-  // Target size for previewCard — a `minHeight`, not a hard `height`/
-  // `aspectRatio`, so the card renders at this exact size for the common
-  // case (full photo background always visible, per the "like a screenshot"
-  // brief) while still being able to grow for the rare verse whose text
-  // doesn't fit even at the smallest tier below. `cardWidth` mirrors
-  // previewCard's actual rendered width: screen width minus sheetContainer's
-  // own paddingHorizontal (Spacing.xl on each side).
-  //
-  // A photo card takes the photo's own shape, so the photo fills it exactly
-  // with nothing cropped, and the text tier is then picked to fit that
-  // height. A gradient card keeps CARD_ASPECT_RATIO.
+  // Card size and the text tier's budget: see shareCardLayout. `cardWidth`
+  // mirrors previewCard's rendered width, the screen minus sheetContainer's
+  // paddingHorizontal (Spacing.xl on each side).
   const cardWidth = screenWidth - Spacing.xl * 2;
   const isPhoto = background.kind === 'photo';
-  const photoAspect = isPhoto ? assetAspectRatio(background.imageSource) : null;
-  const cardTargetHeight = cardWidth / (photoAspect ?? CARD_ASPECT_RATIO);
-
-  // Mirrors each branch's own insets. The photo branch uses the tighter
-  // previewCardPhoto + glassPanel padding (Spacing.lg all round) because a
-  // landscape photo gives it far less height than the gradient card; the
-  // Spacing.md * 2 covers previewQuote's own horizontal margin.
-  const textWidth = isPhoto
-    ? cardWidth - Spacing.lg * 4 - Spacing.md * 2
-    : cardWidth - Spacing.xl * 2 - Spacing.lg * 2 - Spacing.md;
-  const heightBudget = isPhoto
-    ? cardTargetHeight - Spacing.lg * 4 - NON_SCALING_CONTENT_HEIGHT
-    : cardTargetHeight - Spacing.xxl * 2 - Spacing.xl * 2 - NON_SCALING_CONTENT_HEIGHT;
+  const { cardTargetHeight, textWidth, heightBudget } = shareCardLayout(
+    cardWidth,
+    isPhoto,
+    isPhoto ? assetAspectRatio(background.imageSource) : null,
+  );
 
   const tier = useMemo(
     () =>
@@ -669,7 +625,7 @@ const ShareSheet = ({ isVisible, onClose, isPremium, onUpgrade, content }: Share
                 >
                   <View style={styles.photoThemeCircle}>
                     {selectedPhotoTheme ? (
-                      <Image source={selectedPhotoTheme.imageSource} style={styles.photoThemeThumb} />
+                      <Image source={portraitSource(selectedPhotoTheme)} style={styles.photoThemeThumb} />
                     ) : (
                       <Ionicons name="image-outline" size={20} color="rgba(255,255,255,0.6)" />
                     )}
