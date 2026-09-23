@@ -43,6 +43,11 @@ describe('resolveCardBackground', () => {
     });
   });
 
+  it('prefers the portrait share crop when the theme has one', () => {
+    const result = resolveCardBackground(purpleTheme, { ...photoTheme, shareImageSource: 2 }, true);
+    expect(result.kind === 'photo' && result.imageSource).toBe(2);
+  });
+
   it('falls back to the gradient for a non-premium user even with a photo theme selected', () => {
     const result = resolveCardBackground(purpleTheme, photoTheme, false);
     expect(result.kind).toBe('gradient');
