@@ -20,6 +20,7 @@ import ShareSheet from '../components/ShareSheet';
 import DisplayPreferencesModal from '../components/DisplayPreferencesModal';
 import BackgroundThemePicker from '../components/BackgroundThemePicker';
 import { backgroundThemeService } from '../services/backgroundThemeService';
+import { portraitSource } from '../utils/portraitSource';
 import LayerContainer from '../components/LayerContainer';
 import LayerPager from '../components/LayerPager';
 import RestingPoint from '../components/RestingPoint';
@@ -111,7 +112,7 @@ const GuidanceScreen: React.FC = () => {
     if (!isPremium) return;
     const t = await backgroundThemeService.getSelectedTheme();
     setSelectedThemeId(t?.id ?? null);
-    setSelectedThemeSource(t?.imageSource ?? null);
+    setSelectedThemeSource(t ? portraitSource(t) : null);
     setSelectedThemeName(t?.name ?? null);
   }, [isPremium]);
 

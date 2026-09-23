@@ -1,12 +1,13 @@
 #!/usr/bin/env node
 /**
- * Cuts a 2:3 portrait crop of every landscape theme photo for the share
- * card (ShareSheet.tsx sizes a photo card to its photo, so a landscape photo
- * made a card too short to hold a verse). Output goes to
- * src/assets/themes/share/ and is referenced as `shareImageSource` in
- * backgroundThemeService.ts. The originals are left untouched: they are
- * also full-screen backgrounds and lock-screen notification attachments,
- * and Android shows those attachments as a wide banner.
+ * Cuts a 2:3 portrait crop of every landscape theme photo. Output goes to
+ * src/assets/themes/portrait/ and is referenced as `portraitImageSource` in
+ * backgroundThemeService.ts (and directly by the MoodColors images in
+ * DesignSystem.ts). The share card uses it because it sizes itself to its
+ * photo, and a landscape photo made a card too short to hold a verse; the
+ * full-screen backgrounds use it so the visible part is framed on the
+ * subject. The originals stay for the theme picker thumbnails and the iOS
+ * lock-screen attachment (Android shows no attachment image at all).
  *
  * `x` is where the crop sits across the photo: 0 = flush left, 1 = flush
  * right. Each was picked by eye against the photo, not by sharp's attention
@@ -16,14 +17,14 @@
  * Crops are full height at native resolution (no upscaling), so a 1440x960
  * source gives 640x960.
  *
- * Usage: node scripts/make-share-crops.mjs
+ * Usage: node scripts/make-portrait-crops.mjs
  */
 import sharp from 'sharp';
 import fs from 'fs';
 import path from 'path';
 
 const SRC = 'src/assets/themes';
-const OUT = path.join(SRC, 'share');
+const OUT = path.join(SRC, 'portrait');
 const ASPECT = 2 / 3; // width / height
 
 const CROPS = {
@@ -62,9 +63,20 @@ for (const f of fs.readdirSync(SRC).filter((n) => n.endsWith('.jpg'))) {
 const service = fs.readFileSync('src/services/backgroundThemeService.ts', 'utf8');
 for (const id of Object.keys(CROPS)) {
   if (!fs.existsSync(path.join(SRC, id + '.jpg'))) failures.push(`crop listed for missing ${id}.jpg`);
-  if (!service.includes(`shareImageSource: require('../assets/themes/share/${id}.jpg')`))
-    failures.push(`${id} has a crop but no shareImageSource in backgroundThemeService.ts`);
+  if (!service.includes(`portraitImageSource: require('../assets/themes/portrait/${id}.jpg')`))
+    failures.push(`${id} has a crop but no portraitImageSource in backgroundThemeService.ts`);
 }
+// The MoodColors images in DesignSystem.ts are full-screen backgrounds that
+// bypass BACKGROUND_THEMES, so they must name the portrait/ crop directly.
+// mood_sad.jpg (0.78) is the one exception: it has no crop, and is exempt
+// from the landscape check above for the same reason.
+const designSystem = fs.readFileSync('src/theme/DesignSystem.ts', 'utf8');
+for (const [, rel] of designSystem.matchAll(/require\('\.\.\/assets\/themes\/([^']+\.jpg)'\)/g)) {
+  const { width, height } = await sharp(path.join(SRC, rel)).metadata();
+  if (width / height > ASPECT + 0.01 && rel !== 'mood_sad.jpg')
+    failures.push(`DesignSystem.ts uses landscape ${rel} as a full-screen mood image; point it at portrait/`);
+}
+
 if (failures.length) {
   console.error(failures.join('\n'));
   process.exit(1);

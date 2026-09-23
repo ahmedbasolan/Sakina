@@ -14,7 +14,7 @@ export const BACKGROUND_THEMES: BackgroundTheme[] = [
         name: 'Milky Way',
         category: 'sky',
         imageSource: require('../assets/themes/sky_milky_way.jpg'),
-        shareImageSource: require('../assets/themes/share/sky_milky_way.jpg'),
+        portraitImageSource: require('../assets/themes/portrait/sky_milky_way.jpg'),
         isPremium: true,
     },
     {
@@ -22,7 +22,7 @@ export const BACKGROUND_THEMES: BackgroundTheme[] = [
         name: 'Northern Lights',
         category: 'sky',
         imageSource: require('../assets/themes/sky_northern_lights.jpg'),
-        shareImageSource: require('../assets/themes/share/sky_northern_lights.jpg'),
+        portraitImageSource: require('../assets/themes/portrait/sky_northern_lights.jpg'),
         isPremium: true,
     },
     {
@@ -30,7 +30,7 @@ export const BACKGROUND_THEMES: BackgroundTheme[] = [
         name: 'Golden Sunset',
         category: 'sky',
         imageSource: require('../assets/themes/sky_golden_sunset.jpg'),
-        shareImageSource: require('../assets/themes/share/sky_golden_sunset.jpg'),
+        portraitImageSource: require('../assets/themes/portrait/sky_golden_sunset.jpg'),
         isPremium: true,
     },
     {
@@ -38,7 +38,7 @@ export const BACKGROUND_THEMES: BackgroundTheme[] = [
         name: 'Starry Galaxy',
         category: 'sky',
         imageSource: require('../assets/themes/sky_starry_galaxy.jpg'),
-        shareImageSource: require('../assets/themes/share/sky_starry_galaxy.jpg'),
+        portraitImageSource: require('../assets/themes/portrait/sky_starry_galaxy.jpg'),
         isPremium: true,
     },
     {
@@ -46,7 +46,7 @@ export const BACKGROUND_THEMES: BackgroundTheme[] = [
         name: 'Quiet Stars',
         category: 'sky',
         imageSource: require('../assets/themes/sky_pastel_clouds.jpg'),
-        shareImageSource: require('../assets/themes/share/sky_pastel_clouds.jpg'),
+        portraitImageSource: require('../assets/themes/portrait/sky_pastel_clouds.jpg'),
         isPremium: true,
     },
     {
@@ -63,7 +63,7 @@ export const BACKGROUND_THEMES: BackgroundTheme[] = [
         name: 'Snow Peaks',
         category: 'mountains',
         imageSource: require('../assets/themes/mountain_snow_peaks.jpg'),
-        shareImageSource: require('../assets/themes/share/mountain_snow_peaks.jpg'),
+        portraitImageSource: require('../assets/themes/portrait/mountain_snow_peaks.jpg'),
         isPremium: true,
     },
     {
@@ -71,7 +71,7 @@ export const BACKGROUND_THEMES: BackgroundTheme[] = [
         name: 'Mountain Valley',
         category: 'mountains',
         imageSource: require('../assets/themes/mountain_misty_valley.jpg'),
-        shareImageSource: require('../assets/themes/share/mountain_misty_valley.jpg'),
+        portraitImageSource: require('../assets/themes/portrait/mountain_misty_valley.jpg'),
         isPremium: true,
     },
     {
@@ -79,7 +79,7 @@ export const BACKGROUND_THEMES: BackgroundTheme[] = [
         name: 'Alpine Lake',
         category: 'mountains',
         imageSource: require('../assets/themes/mountain_alpine_lake.jpg'),
-        shareImageSource: require('../assets/themes/share/mountain_alpine_lake.jpg'),
+        portraitImageSource: require('../assets/themes/portrait/mountain_alpine_lake.jpg'),
         isPremium: true,
     },
     {
@@ -87,7 +87,7 @@ export const BACKGROUND_THEMES: BackgroundTheme[] = [
         name: 'Snowy Summit',
         category: 'mountains',
         imageSource: require('../assets/themes/mountain_sunrise_peak.jpg'),
-        shareImageSource: require('../assets/themes/share/mountain_sunrise_peak.jpg'),
+        portraitImageSource: require('../assets/themes/portrait/mountain_sunrise_peak.jpg'),
         isPremium: true,
     },
     {
@@ -95,7 +95,7 @@ export const BACKGROUND_THEMES: BackgroundTheme[] = [
         name: 'Lake Reflection',
         category: 'mountains',
         imageSource: require('../assets/themes/mountain_lake_reflection.jpg'),
-        shareImageSource: require('../assets/themes/share/mountain_lake_reflection.jpg'),
+        portraitImageSource: require('../assets/themes/portrait/mountain_lake_reflection.jpg'),
         isPremium: true,
     },
 
@@ -105,7 +105,7 @@ export const BACKGROUND_THEMES: BackgroundTheme[] = [
         name: 'Forest Light',
         category: 'nature',
         imageSource: require('../assets/themes/nature_forest_path.jpg'),
-        shareImageSource: require('../assets/themes/share/nature_forest_path.jpg'),
+        portraitImageSource: require('../assets/themes/portrait/nature_forest_path.jpg'),
         isPremium: true,
     },
     {
@@ -113,7 +113,7 @@ export const BACKGROUND_THEMES: BackgroundTheme[] = [
         name: 'Forest Lake',
         category: 'nature',
         imageSource: require('../assets/themes/nature_autumn_forest.jpg'),
-        shareImageSource: require('../assets/themes/share/nature_autumn_forest.jpg'),
+        portraitImageSource: require('../assets/themes/portrait/nature_autumn_forest.jpg'),
         isPremium: true,
     },
     {
@@ -121,7 +121,7 @@ export const BACKGROUND_THEMES: BackgroundTheme[] = [
         name: 'Lone Tree',
         category: 'nature',
         imageSource: require('../assets/themes/nature_sunbeams_forest.jpg'),
-        shareImageSource: require('../assets/themes/share/nature_sunbeams_forest.jpg'),
+        portraitImageSource: require('../assets/themes/portrait/nature_sunbeams_forest.jpg'),
         isPremium: true,
     },
     {
@@ -138,7 +138,7 @@ export const BACKGROUND_THEMES: BackgroundTheme[] = [
         name: 'Lavender Fields',
         category: 'landscapes',
         imageSource: require('../assets/themes/landscape_lavender_field.jpg'),
-        shareImageSource: require('../assets/themes/share/landscape_lavender_field.jpg'),
+        portraitImageSource: require('../assets/themes/portrait/landscape_lavender_field.jpg'),
         isPremium: true,
     },
     {
@@ -146,7 +146,7 @@ export const BACKGROUND_THEMES: BackgroundTheme[] = [
         name: 'Golden Field',
         category: 'landscapes',
         imageSource: require('../assets/themes/landscape_rolling_hills.jpg'),
-        shareImageSource: require('../assets/themes/share/landscape_rolling_hills.jpg'),
+        portraitImageSource: require('../assets/themes/portrait/landscape_rolling_hills.jpg'),
         isPremium: true,
     },
     {
@@ -161,7 +161,7 @@ export const BACKGROUND_THEMES: BackgroundTheme[] = [
         name: 'Sheikh Zayed Mosque',
         category: 'landscapes',
         imageSource: require('../assets/themes/landscape_sheikh_zayed.jpg'),
-        shareImageSource: require('../assets/themes/share/landscape_sheikh_zayed.jpg'),
+        portraitImageSource: require('../assets/themes/portrait/landscape_sheikh_zayed.jpg'),
         isPremium: true,
     },
     {
@@ -178,7 +178,7 @@ export const BACKGROUND_THEMES: BackgroundTheme[] = [
         name: 'Calm Shore',
         category: 'ocean',
         imageSource: require('../assets/themes/ocean_calm_shore.jpg'),
-        shareImageSource: require('../assets/themes/share/ocean_calm_shore.jpg'),
+        portraitImageSource: require('../assets/themes/portrait/ocean_calm_shore.jpg'),
         isPremium: true,
     },
     {
@@ -186,7 +186,7 @@ export const BACKGROUND_THEMES: BackgroundTheme[] = [
         name: 'Sunset Beach',
         category: 'ocean',
         imageSource: require('../assets/themes/ocean_sunset_beach.jpg'),
-        shareImageSource: require('../assets/themes/share/ocean_sunset_beach.jpg'),
+        portraitImageSource: require('../assets/themes/portrait/ocean_sunset_beach.jpg'),
         isPremium: true,
     },
 
@@ -196,7 +196,7 @@ export const BACKGROUND_THEMES: BackgroundTheme[] = [
         name: 'Lion',
         category: 'animals',
         imageSource: require('../assets/themes/nature_waterfall.jpg'),
-        shareImageSource: require('../assets/themes/share/nature_waterfall.jpg'),
+        portraitImageSource: require('../assets/themes/portrait/nature_waterfall.jpg'),
         isPremium: true,
     },
     {
@@ -204,7 +204,7 @@ export const BACKGROUND_THEMES: BackgroundTheme[] = [
         name: 'Puffins',
         category: 'animals',
         imageSource: require('../assets/themes/nature_bamboo_grove.jpg'),
-        shareImageSource: require('../assets/themes/share/nature_bamboo_grove.jpg'),
+        portraitImageSource: require('../assets/themes/portrait/nature_bamboo_grove.jpg'),
         isPremium: true,
     },
     {
@@ -212,7 +212,7 @@ export const BACKGROUND_THEMES: BackgroundTheme[] = [
         name: 'Kingfisher',
         category: 'animals',
         imageSource: require('../assets/themes/animals_birds_flight.jpg'),
-        shareImageSource: require('../assets/themes/share/animals_birds_flight.jpg'),
+        portraitImageSource: require('../assets/themes/portrait/animals_birds_flight.jpg'),
         isPremium: true,
     },
     {
