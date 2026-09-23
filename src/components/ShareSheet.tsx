@@ -18,6 +18,7 @@ import {
 import ViewShot from 'react-native-view-shot';
 import * as Sharing from 'expo-sharing';
 import * as MediaLibrary from 'expo-media-library';
+import { Asset } from 'expo-asset';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -85,11 +86,21 @@ const FONTS = [
 ];
 
 /** width / height of a bundled image, or null if it can't be resolved
- *  (a remote URI, or no size in the asset registry). */
+ *  (no size recorded, or not a single image source). expo-asset rather than
+ *  Image.resolveAssetSource: react-native-web's Image has no
+ *  resolveAssetSource, and calling it crashed the whole sheet on web the
+ *  moment a photo was picked. Asset.fromModule takes both shapes a
+ *  require()'d image has: a registry number on native, and a
+ *  `{ uri, width, height }` object on web. Null falls back to
+ *  CARD_ASPECT_RATIO. */
 function assetAspectRatio(source: ImageSourcePropType): number | null {
-  const resolved = Image.resolveAssetSource(source);
-  if (!resolved?.width || !resolved?.height) return null;
-  return resolved.width / resolved.height;
+  if (Array.isArray(source)) return null;
+  try {
+    const { width, height } = Asset.fromModule(source as Parameters<typeof Asset.fromModule>[0]);
+    return width && height ? width / height : null;
+  } catch {
+    return null;
+  }
 }
 
 /** Parse "Surah Ar-Rum 30:4-5" → { name: "Ar-Rum", ref: "30:4-5" } */
