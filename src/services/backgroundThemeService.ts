@@ -43,10 +43,17 @@ export const BACKGROUND_THEMES: BackgroundTheme[] = [
     },
     {
         id: 'sky_pastel_clouds',
-        name: 'Pastel Clouds',
+        name: 'Quiet Stars',
         category: 'sky',
         imageSource: require('../assets/themes/sky_pastel_clouds.jpg'),
         shareImageSource: require('../assets/themes/share/sky_pastel_clouds.jpg'),
+        isPremium: true,
+    },
+    {
+        id: 'ocean_deep_blue',
+        name: 'Starlit Hills',
+        category: 'sky',
+        imageSource: require('../assets/themes/ocean_deep_blue.jpg'),
         isPremium: true,
     },
 
@@ -61,7 +68,7 @@ export const BACKGROUND_THEMES: BackgroundTheme[] = [
     },
     {
         id: 'mountain_misty_valley',
-        name: 'Misty Valley',
+        name: 'Mountain Valley',
         category: 'mountains',
         imageSource: require('../assets/themes/mountain_misty_valley.jpg'),
         shareImageSource: require('../assets/themes/share/mountain_misty_valley.jpg'),
@@ -77,7 +84,7 @@ export const BACKGROUND_THEMES: BackgroundTheme[] = [
     },
     {
         id: 'mountain_sunrise_peak',
-        name: 'Sunrise Peak',
+        name: 'Snowy Summit',
         category: 'mountains',
         imageSource: require('../assets/themes/mountain_sunrise_peak.jpg'),
         shareImageSource: require('../assets/themes/share/mountain_sunrise_peak.jpg'),
@@ -95,23 +102,15 @@ export const BACKGROUND_THEMES: BackgroundTheme[] = [
     // ─── Nature & Forests ────────────────────────────────────────
     {
         id: 'nature_forest_path',
-        name: 'Forest Path',
+        name: 'Forest Light',
         category: 'nature',
         imageSource: require('../assets/themes/nature_forest_path.jpg'),
         shareImageSource: require('../assets/themes/share/nature_forest_path.jpg'),
         isPremium: true,
     },
     {
-        id: 'nature_waterfall',
-        name: 'Hidden Waterfall',
-        category: 'nature',
-        imageSource: require('../assets/themes/nature_waterfall.jpg'),
-        shareImageSource: require('../assets/themes/share/nature_waterfall.jpg'),
-        isPremium: true,
-    },
-    {
         id: 'nature_autumn_forest',
-        name: 'Autumn Forest',
+        name: 'Forest Lake',
         category: 'nature',
         imageSource: require('../assets/themes/nature_autumn_forest.jpg'),
         shareImageSource: require('../assets/themes/share/nature_autumn_forest.jpg'),
@@ -119,29 +118,21 @@ export const BACKGROUND_THEMES: BackgroundTheme[] = [
     },
     {
         id: 'nature_sunbeams_forest',
-        name: 'Sunlit Woods',
+        name: 'Lone Tree',
         category: 'nature',
         imageSource: require('../assets/themes/nature_sunbeams_forest.jpg'),
         shareImageSource: require('../assets/themes/share/nature_sunbeams_forest.jpg'),
         isPremium: true,
     },
     {
-        id: 'nature_bamboo_grove',
-        name: 'Bamboo Grove',
-        category: 'nature',
-        imageSource: require('../assets/themes/nature_bamboo_grove.jpg'),
-        shareImageSource: require('../assets/themes/share/nature_bamboo_grove.jpg'),
-        isPremium: true,
-    },
-
-    // ─── Landscapes & Deserts ────────────────────────────────────
-    {
         id: 'landscape_desert_dunes',
-        name: 'Desert Dunes',
-        category: 'landscapes',
+        name: 'Misty Pines',
+        category: 'nature',
         imageSource: require('../assets/themes/landscape_desert_dunes.jpg'),
         isPremium: true,
     },
+
+    // ─── Landscapes & Architecture ───────────────────────────────
     {
         id: 'landscape_lavender_field',
         name: 'Lavender Fields',
@@ -152,7 +143,7 @@ export const BACKGROUND_THEMES: BackgroundTheme[] = [
     },
     {
         id: 'landscape_rolling_hills',
-        name: 'Rolling Hills',
+        name: 'Golden Field',
         category: 'landscapes',
         imageSource: require('../assets/themes/landscape_rolling_hills.jpg'),
         shareImageSource: require('../assets/themes/share/landscape_rolling_hills.jpg'),
@@ -173,6 +164,20 @@ export const BACKGROUND_THEMES: BackgroundTheme[] = [
         shareImageSource: require('../assets/themes/share/landscape_sheikh_zayed.jpg'),
         isPremium: true,
     },
+    {
+        id: 'ocean_wooden_pier',
+        name: 'Skyward',
+        category: 'landscapes',
+        imageSource: require('../assets/themes/ocean_wooden_pier.jpg'),
+        isPremium: true,
+    },
+    {
+        id: 'animals_kaaba_sanctuary',
+        name: 'Al-Haram Sanctuary',
+        category: 'landscapes',
+        imageSource: require('../assets/themes/animals_kaaba_sanctuary.jpg'),
+        isPremium: true,
+    },
 
     // ─── Ocean & Water ───────────────────────────────────────────
     {
@@ -181,20 +186,6 @@ export const BACKGROUND_THEMES: BackgroundTheme[] = [
         category: 'ocean',
         imageSource: require('../assets/themes/ocean_calm_shore.jpg'),
         shareImageSource: require('../assets/themes/share/ocean_calm_shore.jpg'),
-        isPremium: true,
-    },
-    {
-        id: 'ocean_deep_blue',
-        name: 'Deep Blue',
-        category: 'ocean',
-        imageSource: require('../assets/themes/ocean_deep_blue.jpg'),
-        isPremium: true,
-    },
-    {
-        id: 'ocean_wooden_pier',
-        name: 'Wooden Pier',
-        category: 'ocean',
-        imageSource: require('../assets/themes/ocean_wooden_pier.jpg'),
         isPremium: true,
     },
     {
@@ -208,8 +199,24 @@ export const BACKGROUND_THEMES: BackgroundTheme[] = [
 
     // ─── Animals ─────────────────────────────────────────────────
     {
+        id: 'nature_waterfall',
+        name: 'Lion',
+        category: 'animals',
+        imageSource: require('../assets/themes/nature_waterfall.jpg'),
+        shareImageSource: require('../assets/themes/share/nature_waterfall.jpg'),
+        isPremium: true,
+    },
+    {
+        id: 'nature_bamboo_grove',
+        name: 'Puffins',
+        category: 'animals',
+        imageSource: require('../assets/themes/nature_bamboo_grove.jpg'),
+        shareImageSource: require('../assets/themes/share/nature_bamboo_grove.jpg'),
+        isPremium: true,
+    },
+    {
         id: 'animals_birds_flight',
-        name: 'Birds in Flight',
+        name: 'Kingfisher',
         category: 'animals',
         imageSource: require('../assets/themes/animals_birds_flight.jpg'),
         shareImageSource: require('../assets/themes/share/animals_birds_flight.jpg'),
@@ -217,16 +224,9 @@ export const BACKGROUND_THEMES: BackgroundTheme[] = [
     },
     {
         id: 'animals_deer_meadow',
-        name: 'Deer at Dawn',
+        name: 'Elephant',
         category: 'animals',
         imageSource: require('../assets/themes/animals_deer_meadow.jpg'),
-        isPremium: true,
-    },
-    {
-        id: 'animals_kaaba_sanctuary',
-        name: 'Al-Haram Sanctuary',
-        category: 'animals',
-        imageSource: require('../assets/themes/animals_kaaba_sanctuary.jpg'),
         isPremium: true,
     },
     {
