@@ -163,7 +163,7 @@ export const MoodColors: Record<
     accent: '#34D399',
     bgFill: '#064E3B',
     glow: 'rgba(52, 211, 153, 0.2)',
-    image: require('../assets/themes/mountain_alpine_lake.jpg'), // Still forest lake with perfect reflection
+    image: require('../assets/themes/portrait/mountain_alpine_lake.jpg'), // Turquoise lake, rowing boat and cliffs (portrait crop)
     card: { border: '#16A578', gradient: ['#128A64', '#0C5F46', '#0C5F46'] },
   },
   Grateful: {
@@ -171,7 +171,7 @@ export const MoodColors: Record<
     accent: '#FBBF24',
     bgFill: '#451A03',
     glow: 'rgba(251, 191, 36, 0.2)',
-    image: require('../assets/themes/mountain_snow_peaks.jpg'), // Golden sunrise over majestic mountain peaks
+    image: require('../assets/themes/portrait/mountain_snow_peaks.jpg'), // Lit summit above a sea of cloud at dusk (portrait crop)
     card: { border: '#B5761F', gradient: ['#96601A', '#6B4212', '#6B4212'] },
   },
   Hopeful: {
@@ -179,7 +179,7 @@ export const MoodColors: Record<
     accent: '#22D3EE',
     bgFill: '#083344',
     glow: 'rgba(34, 211, 238, 0.2)',
-    image: require('../assets/themes/sky_golden_sunset.jpg'), // Dawn horizon light breaking through clouds
+    image: require('../assets/themes/portrait/sky_golden_sunset.jpg'), // Sun setting over a misty lake, wooden jetty (portrait crop)
     card: { border: '#1A93C2', gradient: ['#12789F', '#0C536F', '#0C536F'] },
   },
   Tired: {
@@ -190,7 +190,7 @@ export const MoodColors: Record<
     accent: '#C99A93',
     bgFill: '#1C1917',
     glow: 'rgba(201, 154, 147, 0.2)',
-    image: require('../assets/themes/landscape_lavender_field.jpg'), // Soft sunset over peaceful lavender meadow
+    image: require('../assets/themes/portrait/landscape_lavender_field.jpg'), // Soft sunset over a lavender field (portrait crop)
     card: { border: '#996963', gradient: ['#7D5651', '#573B38', '#573B38'] },
   },
   Lonely: {
@@ -198,7 +198,7 @@ export const MoodColors: Record<
     accent: '#C084FC',
     bgFill: '#2E1065',
     glow: 'rgba(192, 132, 252, 0.2)',
-    image: require('../assets/themes/sky_milky_way.jpg'), // Vast starry night sky with milky way over mountains
+    image: require('../assets/themes/portrait/sky_milky_way.jpg'), // Milky Way over a snowy peak (portrait crop)
     card: { border: '#8B48D6', gradient: ['#7639BC', '#522585', '#522585'] },
   },
   Guilty: {
@@ -213,7 +213,7 @@ export const MoodColors: Record<
     accent: '#C4708C',
     bgFill: '#2A0D18',
     glow: 'rgba(196, 112, 140, 0.2)',
-    image: require('../assets/themes/nature_waterfall.jpg'), // A male lion walking through grass (no waterfall, despite the filename)
+    image: require('../assets/themes/portrait/nature_waterfall.jpg'), // A male lion walking through grass (no waterfall, despite the filename; portrait crop)
     card: { border: '#A34E6E', gradient: ['#8A3F5C', '#5F2B3F', '#5F2B3F'] },
   },
 };

@@ -1,5 +1,6 @@
 import { ImageSourcePropType } from 'react-native';
 import { BackgroundTheme } from '../types';
+import { portraitSource } from './portraitSource';
 
 export interface CardTheme {
   id: string;
@@ -29,7 +30,7 @@ export function resolveCardBackground(
       // The portrait crop when there is one: the share card takes its
       // photo's shape, and a landscape photo makes a card too short for a
       // verse.
-      imageSource: selectedPhotoTheme.shareImageSource ?? selectedPhotoTheme.imageSource,
+      imageSource: portraitSource(selectedPhotoTheme),
       textColor: '#FFFFFF',
       subTextColor: 'rgba(255, 255, 255, 0.8)',
     };
