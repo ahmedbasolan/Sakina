@@ -13,6 +13,7 @@ import {
   Platform,
   Clipboard,
   Image,
+  ImageSourcePropType,
 } from 'react-native';
 import ViewShot from 'react-native-view-shot';
 import * as Sharing from 'expo-sharing';
@@ -82,6 +83,14 @@ const FONTS = [
   },
   { id: 'sans', name: 'Outfit Sans', family: Platform.OS === 'ios' ? 'Avenir' : 'sans-serif' },
 ];
+
+/** width / height of a bundled image, or null if it can't be resolved
+ *  (a remote URI, or no size in the asset registry). */
+function assetAspectRatio(source: ImageSourcePropType): number | null {
+  const resolved = Image.resolveAssetSource(source);
+  if (!resolved?.width || !resolved?.height) return null;
+  return resolved.width / resolved.height;
+}
 
 /** Parse "Surah Ar-Rum 30:4-5" → { name: "Ar-Rum", ref: "30:4-5" } */
 function parseSource(src: string): { name: string; ref: string } {
@@ -403,16 +412,25 @@ const ShareSheet = ({ isVisible, onClose, isPremium, onUpgrade, content }: Share
   // doesn't fit even at the smallest tier below. `cardWidth` mirrors
   // previewCard's actual rendered width: screen width minus sheetContainer's
   // own paddingHorizontal (Spacing.xl on each side).
+  //
+  // A photo card takes the photo's own shape, so the photo fills it exactly
+  // with nothing cropped, and the text tier is then picked to fit that
+  // height. A gradient card keeps CARD_ASPECT_RATIO.
   const cardWidth = screenWidth - Spacing.xl * 2;
-  const cardTargetHeight = cardWidth / CARD_ASPECT_RATIO;
+  const isPhoto = background.kind === 'photo';
+  const photoAspect = isPhoto ? assetAspectRatio(background.imageSource) : null;
+  const cardTargetHeight = cardWidth / (photoAspect ?? CARD_ASPECT_RATIO);
 
-  // Conservative (i.e. narrower) than either branch's real available width —
-  // the photo branch additionally insets by glassPanel's own horizontal
-  // padding, so using that narrower figure for both branches only ever
-  // causes the gradient branch to pick an equal-or-smaller tier than it
-  // strictly needs, never a larger one that could overflow.
-  const textWidth = cardWidth - Spacing.xl * 2 - Spacing.lg * 2 - Spacing.md;
-  const heightBudget = cardTargetHeight - Spacing.xxl * 2 - Spacing.xl * 2 - NON_SCALING_CONTENT_HEIGHT;
+  // Mirrors each branch's own insets. The photo branch uses the tighter
+  // previewCardPhoto + glassPanel padding (Spacing.lg all round) because a
+  // landscape photo gives it far less height than the gradient card; the
+  // Spacing.md * 2 covers previewQuote's own horizontal margin.
+  const textWidth = isPhoto
+    ? cardWidth - Spacing.lg * 4 - Spacing.md * 2
+    : cardWidth - Spacing.xl * 2 - Spacing.lg * 2 - Spacing.md;
+  const heightBudget = isPhoto
+    ? cardTargetHeight - Spacing.lg * 4 - NON_SCALING_CONTENT_HEIGHT
+    : cardTargetHeight - Spacing.xxl * 2 - Spacing.xl * 2 - NON_SCALING_CONTENT_HEIGHT;
 
   const tier = useMemo(
     () =>
@@ -480,16 +498,13 @@ const ShareSheet = ({ isVisible, onClose, isPremium, onUpgrade, content }: Share
                   // absoluteFill'd Image has no such proxy step and reliably
                   // covers the card's real box.
                   //
-                  // Two layers of the same photo: a blurred `cover` copy
-                  // filling the card, and the sharp photo on top with
-                  // `contain`. 23 of the 29 theme photos are landscape
-                  // (~3:2) while this card is portrait (0.62), so `cover`
-                  // alone cut ~59% of their width, and users saw only a
-                  // sliver of the photo they picked. `contain` keeps the
-                  // whole photo; the blurred copy fills the bands above and
-                  // below it so the card still reads full-bleed rather than
-                  // letterboxed. Portrait photos (2:3 and taller) leave only
-                  // thin bands, so they still look almost edge to edge.
+                  // The card is sized to the photo's own aspect ratio
+                  // (cardTargetHeight above), so the sharp `contain` layer
+                  // fills it edge to edge with nothing cropped. The blurred
+                  // `cover` copy under it only shows if the card had to grow
+                  // taller than the photo: a verse too long to fit even the
+                  // smallest text tier. Then it fills the gap above and
+                  // below, still without cropping the photo or the ayah.
                   <View
                     style={[styles.previewCard, styles.previewCardPhoto, { minHeight: cardTargetHeight }]}
                   >
@@ -832,6 +847,8 @@ const styles = StyleSheet.create({
   // touching the card's edges.
   previewCardPhoto: {
     justifyContent: 'center',
+    paddingHorizontal: Spacing.lg,
+    paddingVertical: Spacing.lg,
   },
   // Dims the blurred fill so the sharp, uncropped photo on top of it stands
   // out as the actual picture.
@@ -856,7 +873,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'rgba(255,255,255,0.12)',
     paddingHorizontal: Spacing.lg,
-    paddingVertical: Spacing.xl,
+    paddingVertical: Spacing.lg,
     alignItems: 'center',
   },
   cardHeader: {
