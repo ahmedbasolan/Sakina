@@ -213,7 +213,7 @@ export const MoodColors: Record<
     accent: '#C4708C',
     bgFill: '#2A0D18',
     glow: 'rgba(196, 112, 140, 0.2)',
-    image: require('../assets/themes/portrait/nature_waterfall.jpg'), // A male lion walking through grass (no waterfall, despite the filename; portrait crop)
+    image: require('../assets/themes/portrait/nature_forest_path.jpg'), // Light breaking through a dark, misty forest (portrait crop)
     card: { border: '#A34E6E', gradient: ['#8A3F5C', '#5F2B3F', '#5F2B3F'] },
   },
 };
