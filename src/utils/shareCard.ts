@@ -26,7 +26,10 @@ export function resolveCardBackground(
   if (isPremium && selectedPhotoTheme) {
     return {
       kind: 'photo',
-      imageSource: selectedPhotoTheme.imageSource,
+      // The portrait crop when there is one: the share card takes its
+      // photo's shape, and a landscape photo makes a card too short for a
+      // verse.
+      imageSource: selectedPhotoTheme.shareImageSource ?? selectedPhotoTheme.imageSource,
       textColor: '#FFFFFF',
       subTextColor: 'rgba(255, 255, 255, 0.8)',
     };
