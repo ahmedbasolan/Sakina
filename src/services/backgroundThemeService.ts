@@ -165,13 +165,6 @@ export const BACKGROUND_THEMES: BackgroundTheme[] = [
         isPremium: true,
     },
     {
-        id: 'ocean_wooden_pier',
-        name: 'Skyward',
-        category: 'landscapes',
-        imageSource: require('../assets/themes/ocean_wooden_pier.jpg'),
-        isPremium: true,
-    },
-    {
         id: 'animals_kaaba_sanctuary',
         name: 'Al-Haram Sanctuary',
         category: 'landscapes',

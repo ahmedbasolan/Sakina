@@ -119,7 +119,7 @@ export async function resolveThemeAttachment(themeId: string | null): Promise<st
     // tier a user who never opened the theme picker would get verse
     // notifications with no photo and no indication why.
     //
-    // The final tier is NOT filtered to free themes: all 28 entries in
+    // The final tier is NOT filtered to free themes: all 27 entries in
     // BACKGROUND_THEMES are isPremium: true — there are no free ones — and this
     // whole feature is premium-gated anyway, so the user is entitled to any of
     // them. (An earlier draft of the spec said "6 free themes"; that was
