@@ -703,8 +703,10 @@ uploaded under an account that did not write them. Both shipped broken.
 ## Background Photos — sourcing, spec & adding one
 
 The theme photos (`BACKGROUND_THEMES` in `backgroundThemeService.ts`, plus the
-`MoodColors[*].image` entries in `DesignSystem.ts`) render in four places, all
-of them portrait:
+`MoodColors[*].image` entries in `DesignSystem.ts`) render in four places,
+almost all of them portrait. The exceptions are the iOS lock-screen attachment
+(a square thumbnail, then the full original) and the share sheet's small round
+photo circle:
 
 - **Share card** (`ShareSheet.tsx`) — sized to the photo's own aspect ratio,
   with the verse panel over roughly the middle 70–80%, then text tiered to fit.
@@ -743,7 +745,10 @@ of them portrait:
   fails until you add a hand-picked crop.
 - **Source at ≥3000px tall**, never upscaled or AI-enlarged: the share capture
   shows softness first.
-- **JPEG, sRGB, quality 80–85, ~250–450 KB.** The set averages ~300 KB and
+- **JPEG, sRGB, quality 80–85, ~250–450 KB** for a newly sourced photo.
+  (`make-portrait-crops.mjs` saves its crops at 86 on purpose: they are cut
+  from originals that are already compressed, and the higher setting limits
+  the loss from saving a second time.) The set averages ~300 KB and
   ships in the bundle (8.4 MB for the 27 themes plus `mood_sad.jpg`, and
   2.2 MB more for the portrait crops), so every photo is download size.
 - **Strip EXIF**: it can carry GPS, and an orientation flag can render the
