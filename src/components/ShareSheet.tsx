@@ -33,6 +33,7 @@ import {
   pickShareCardTextTier,
   shareCardLayout,
   SHARE_CARD_INSETS,
+  quoteTranslation,
   CardTheme,
   ShareCardTextTier,
 } from '../utils/shareCard';
@@ -166,7 +167,7 @@ const CardContent = ({
             },
           ]}
         >
-          &quot;{content.text}&quot;
+          {quoteTranslation(content.text)}
         </Text>
       )}
     </View>
@@ -446,52 +447,75 @@ const ShareSheet = ({ isVisible, onClose, isPremium, onUpgrade, content }: Share
                 `overflow:'hidden'` + `borderRadius` on the same view — the
                 clip and the shadow fight, and the shadow's own rounded-rect
                 backing shows through past the image's corners. Keeping the
-                shadow on a plain, non-clipping wrapper and the corner
-                clipping on the inner card (which ViewShot captures alone,
-                so the exported image never bakes the shadow in) fixes both
-                at once. */}
+                shadow on a plain, non-clipping wrapper fixes that.
+                The rounded corners live on previewCardClip, a wrapper
+                OUTSIDE ViewShot, not on the card: ViewShot draws only its own
+                view, so the saved image is a plain rectangle. With the radius
+                on the card itself it saved rounded, transparent corners, which
+                some apps fill with black or white when the image is shared. */}
             <View style={styles.previewCardShadow}>
-              <ViewShot ref={viewShotRef} options={{ format: 'png', quality: 1 }}>
-                {background.kind === 'photo' ? (
-                  // Plain View + absolutely-positioned Image instead of
-                  // ImageBackground: previewCard's height is set explicitly
-                  // below (a computed `minHeight`, not the stylesheet's own
-                  // fixed value), and ImageBackground's own implementation
-                  // re-proxies width/height from the outer style onto its
-                  // inner <Image> (see its "Temporary Workaround" comment in
-                  // react-native/Libraries/Image/ImageBackground.js) — with
-                  // no resolved height to proxy, the image fell back to its
-                  // own intrinsic aspect ratio instead of covering the card,
-                  // leaving bare strips at the sides. A directly
-                  // absoluteFill'd Image has no such proxy step and reliably
-                  // covers the card's real box.
-                  //
-                  // The card is sized to the photo's own aspect ratio
-                  // (cardTargetHeight above), so the sharp `contain` layer
-                  // fills it edge to edge with nothing cropped. The blurred
-                  // `cover` copy under it only shows if the card had to grow
-                  // taller than the photo: a verse too long to fit even the
-                  // smallest text tier. Then it fills the gap above and
-                  // below, still without cropping the photo or the ayah.
-                  <View
-                    style={[styles.previewCard, styles.previewCardPhoto, { minHeight: cardTargetHeight }]}
-                  >
-                    <Image
-                      source={background.imageSource}
-                      style={StyleSheet.absoluteFillObject}
-                      resizeMode="cover"
-                      blurRadius={PHOTO_FILL_BLUR_RADIUS}
-                    />
-                    <View style={styles.photoFillScrim} />
-                    <Image
-                      source={background.imageSource}
-                      style={StyleSheet.absoluteFillObject}
-                      resizeMode="contain"
-                    />
-                    {/* Even, light scrim instead of the old 15%→85% gradient,
-                        which blacked out the bottom of the photo. */}
-                    <View style={styles.photoScrim} />
-                    <View style={styles.glassPanel}>
+              <View style={styles.previewCardClip}>
+                <ViewShot ref={viewShotRef} options={{ format: 'png', quality: 1 }}>
+                  {background.kind === 'photo' ? (
+                    // Plain View + absolutely-positioned Image instead of
+                    // ImageBackground: previewCard's height is set explicitly
+                    // below (a computed `minHeight`, not the stylesheet's own
+                    // fixed value), and ImageBackground's own implementation
+                    // re-proxies width/height from the outer style onto its
+                    // inner <Image> (see its "Temporary Workaround" comment in
+                    // react-native/Libraries/Image/ImageBackground.js) — with
+                    // no resolved height to proxy, the image fell back to its
+                    // own intrinsic aspect ratio instead of covering the card,
+                    // leaving bare strips at the sides. A directly
+                    // absoluteFill'd Image has no such proxy step and reliably
+                    // covers the card's real box.
+                    //
+                    // The card is sized to the photo's own aspect ratio
+                    // (cardTargetHeight above), so the sharp `contain` layer
+                    // fills it edge to edge with nothing cropped. The blurred
+                    // `cover` copy under it only shows if the card had to grow
+                    // taller than the photo: a verse too long to fit even the
+                    // smallest text tier. Then it fills the gap above and
+                    // below, still without cropping the photo or the ayah.
+                    <View
+                      style={[styles.previewCard, styles.previewCardPhoto, { minHeight: cardTargetHeight }]}
+                    >
+                      <Image
+                        source={background.imageSource}
+                        style={StyleSheet.absoluteFillObject}
+                        resizeMode="cover"
+                        blurRadius={PHOTO_FILL_BLUR_RADIUS}
+                      />
+                      <View style={styles.photoFillScrim} />
+                      <Image
+                        source={background.imageSource}
+                        style={StyleSheet.absoluteFillObject}
+                        resizeMode="contain"
+                      />
+                      {/* Even, light scrim instead of the old 15%→85% gradient,
+                          which blacked out the bottom of the photo. */}
+                      <View style={styles.photoScrim} />
+                      <View style={styles.glassPanel}>
+                        <CardContent
+                          textColor={textColor}
+                          subTextColor={subTextColor}
+                          content={content}
+                          parsedSource={parsedSource}
+                          selectedFont={selectedFont}
+                          showArabic={showArabic}
+                          showTransliteration={showTransliteration}
+                          showEnglish={showEnglish}
+                          tier={tier}
+                        />
+                      </View>
+                    </View>
+                  ) : (
+                    <LinearGradient
+                      colors={background.colors}
+                      start={{ x: 0, y: 0 }}
+                      end={{ x: 1, y: 1 }}
+                      style={[styles.previewCard, { minHeight: cardTargetHeight }]}
+                    >
                       <CardContent
                         textColor={textColor}
                         subTextColor={subTextColor}
@@ -503,29 +527,10 @@ const ShareSheet = ({ isVisible, onClose, isPremium, onUpgrade, content }: Share
                         showEnglish={showEnglish}
                         tier={tier}
                       />
-                    </View>
-                  </View>
-                ) : (
-                  <LinearGradient
-                    colors={background.colors}
-                    start={{ x: 0, y: 0 }}
-                    end={{ x: 1, y: 1 }}
-                    style={[styles.previewCard, { minHeight: cardTargetHeight }]}
-                  >
-                    <CardContent
-                      textColor={textColor}
-                      subTextColor={subTextColor}
-                      content={content}
-                      parsedSource={parsedSource}
-                      selectedFont={selectedFont}
-                      showArabic={showArabic}
-                      showTransliteration={showTransliteration}
-                      showEnglish={showEnglish}
-                      tier={tier}
-                    />
-                  </LinearGradient>
-                )}
-              </ViewShot>
+                    </LinearGradient>
+                  )}
+                </ViewShot>
+              </View>
             </View>
 
             {/* PERSONALIZE - COLORS */}
@@ -796,12 +801,18 @@ const styles = StyleSheet.create({
     shadowRadius: 16,
     elevation: 12,
   },
+  // Rounds the card on screen without the rounding reaching the saved image
+  // (see the comment above the ViewShot). No elevation here, so it doesn't
+  // repeat the elevation + overflow + radius combination on one view.
+  previewCardClip: {
+    borderRadius: BorderRadius.xxl,
+    overflow: 'hidden',
+  },
   previewCard: {
     width: '100%',
     // minHeight is set inline per-render (a computed target from the card's
     // 4:5 aspect ratio) — not fixed here, since it depends on screen width.
     backgroundColor: Colors.background.primary,
-    borderRadius: BorderRadius.xxl,
     overflow: 'hidden',
     paddingHorizontal: SHARE_CARD_INSETS.cardPaddingH,
     paddingVertical: SHARE_CARD_INSETS.cardPaddingV,
