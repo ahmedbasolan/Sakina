@@ -13,6 +13,7 @@ import {
   Platform,
   Clipboard,
   Image,
+  LayoutChangeEvent,
 } from 'react-native';
 import ViewShot from 'react-native-view-shot';
 import * as Sharing from 'expo-sharing';
@@ -195,6 +196,16 @@ const ShareSheet = ({ isVisible, onClose, isPremium, onUpgrade, content }: Share
   const [selectedPhotoTheme, setSelectedPhotoTheme] = useState<BackgroundTheme | null>(null);
   const [isPhotoPickerVisible, setIsPhotoPickerVisible] = useState(false);
   const viewShotRef = useRef<ViewShot>(null);
+  // The photo card's real size, measured. See the photo branch below.
+  const [photoCardSize, setPhotoCardSize] = useState<{ width: number; height: number } | null>(
+    null,
+  );
+  const onPhotoCardLayout = useCallback((e: LayoutChangeEvent) => {
+    const { width, height } = e.nativeEvent.layout;
+    setPhotoCardSize((prev) =>
+      prev && prev.width === width && prev.height === height ? prev : { width, height },
+    );
+  }, []);
 
   // A lapsed subscriber never gets stuck rendering a background they can no
   // longer pick — reset the moment isPremium turns false.
@@ -401,6 +412,14 @@ const ShareSheet = ({ isVisible, onClose, isPremium, onUpgrade, content }: Share
     isPhoto ? assetAspectRatio(background.imageSource) : null,
   );
 
+  // Explicit pixel size for the photo layers, not absoluteFill. On an Android
+  // device the absoluteFill'd photo drew at its own intrinsic size (a 649px
+  // crop as ~649dp) from the top-left corner, so the card showed the lion's
+  // face at ~1.8x instead of the whole photo. A numeric width and height
+  // leaves the image nothing to fall back to. Until the first layout, the
+  // computed size stands in.
+  const photoLayerSize = photoCardSize ?? { width: cardWidth, height: cardTargetHeight };
+
   const tier = useMemo(
     () =>
       pickShareCardTextTier(
@@ -466,9 +485,9 @@ const ShareSheet = ({ isVisible, onClose, isPremium, onUpgrade, content }: Share
                     // react-native/Libraries/Image/ImageBackground.js) — with
                     // no resolved height to proxy, the image fell back to its
                     // own intrinsic aspect ratio instead of covering the card,
-                    // leaving bare strips at the sides. A directly
-                    // absoluteFill'd Image has no such proxy step and reliably
-                    // covers the card's real box.
+                    // leaving bare strips at the sides. absoluteFill on the
+                    // Image was not reliable either (see photoLayerSize), so
+                    // the photo layers get the card's measured size.
                     //
                     // The card is sized to the photo's own aspect ratio
                     // (cardTargetHeight above), so the sharp `contain` layer
@@ -479,17 +498,18 @@ const ShareSheet = ({ isVisible, onClose, isPremium, onUpgrade, content }: Share
                     // below, still without cropping the photo or the ayah.
                     <View
                       style={[styles.previewCard, styles.previewCardPhoto, { minHeight: cardTargetHeight }]}
+                      onLayout={onPhotoCardLayout}
                     >
                       <Image
                         source={background.imageSource}
-                        style={StyleSheet.absoluteFillObject}
+                        style={[styles.photoLayer, photoLayerSize]}
                         resizeMode="cover"
                         blurRadius={PHOTO_FILL_BLUR_RADIUS}
                       />
                       <View style={styles.photoFillScrim} />
                       <Image
                         source={background.imageSource}
-                        style={StyleSheet.absoluteFillObject}
+                        style={[styles.photoLayer, photoLayerSize]}
                         resizeMode="contain"
                       />
                       {/* Even, light scrim instead of the old 15%→85% gradient,
@@ -834,6 +854,11 @@ const styles = StyleSheet.create({
   photoFillScrim: {
     ...StyleSheet.absoluteFillObject,
     backgroundColor: 'rgba(7,17,30,0.35)',
+  },
+  photoLayer: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
   },
   photoScrim: {
     ...StyleSheet.absoluteFillObject,
