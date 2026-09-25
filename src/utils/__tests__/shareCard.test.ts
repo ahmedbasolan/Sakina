@@ -3,6 +3,7 @@ import {
   buildShareText,
   pickShareCardTextTier,
   shareCardLayout,
+  quoteTranslation,
   CARD_ASPECT_RATIO,
   CardTheme,
 } from '../shareCard';
@@ -125,7 +126,7 @@ describe('buildShareText', () => {
       showArabic: false,
       showTransliteration: false,
     });
-    expect(result).toBe(`"${content.text}"\n\n\n${content.source}\n\nShared via Sakina`);
+    expect(result).toBe(`“${content.text}”\n\n\n${content.source}\n\nShared via Sakina`);
   });
 
   it('includes Arabic and transliteration when toggled on', () => {
@@ -135,7 +136,7 @@ describe('buildShareText', () => {
       showTransliteration: true,
     });
     expect(result).toBe(
-      `"${content.text}"\n\n${content.arabicText}\n(${content.transliteration})\n\n${content.source}\n\nShared via Sakina`,
+      `“${content.text}”\n\n${content.arabicText}\n(${content.transliteration})\n\n${content.source}\n\nShared via Sakina`,
     );
   });
 
@@ -144,7 +145,7 @@ describe('buildShareText', () => {
       { text: content.text, source: content.source },
       { showEnglish: true, showArabic: true, showTransliteration: true },
     );
-    expect(result).toBe(`"${content.text}"\n\n\n${content.source}\n\nShared via Sakina`);
+    expect(result).toBe(`“${content.text}”\n\n\n${content.source}\n\nShared via Sakina`);
   });
 });
 
@@ -236,5 +237,61 @@ describe('ShareSheet styles use SHARE_CARD_INSETS', () => {
   ])('%s', (name, expected) => {
     const block = styleBlock(name);
     for (const line of expected) expect(block).toContain(line);
+  });
+
+  // The saved image must be a plain rectangle: rounded corners on the
+  // captured card saved as transparent corners that some apps fill with black
+  // or white. WHAT THIS DOES NOT CATCH: whether ViewShot on a given platform
+  // really ignores a parent's clipping. That needs a saved image on a device.
+  it('keeps the rounded corners outside the captured view', () => {
+    expect(styleBlock('previewCard')).not.toContain('borderRadius');
+    expect(styleBlock('previewCardClip')).toContain('borderRadius');
+    const clip = source.indexOf('<View style={styles.previewCardClip}>');
+    const shot = source.indexOf('<ViewShot ref={viewShotRef}');
+    expect(clip).toBeGreaterThan(-1);
+    expect(shot).toBeGreaterThan(clip);
+  });
+});
+
+describe('quoteTranslation', () => {
+  it('wraps a translation in curly quotes', () => {
+    expect(quoteTranslation('And We are nearer to him than his jugular vein.')).toBe(
+      '“And We are nearer to him than his jugular vein.”',
+    );
+  });
+
+  // The bug seen on a device: 20:46 printed as "He said, "Do not fear. ...
+  // I hear and I see."" with a doubled quote at the end.
+  it('turns quotes inside the translation into single quotes (20:46)', () => {
+    const verse = quranContent.find((c) => c.id === 'quran_20_46');
+    expect(verse).toBeDefined();
+    const out = quoteTranslation(verse!.englishTranslation);
+    expect(out).not.toContain('"');
+    expect(out).not.toMatch(/””|“‘“/);
+    expect(out).toMatch(/^“He said, ‘Do not fear\./);
+    expect(out.endsWith('’”')).toBe(true);
+  });
+
+  it('opens a quote at the very start, and after a bracket or dash', () => {
+    expect(quoteTranslation('"Say, (it is) true."')).toBe('“‘Say, (it is) true.’”');
+    expect(quoteTranslation('said—"Peace."')).toBe('“said—‘Peace.’”');
+  });
+
+  it('leaves apostrophes alone', () => {
+    expect(quoteTranslation("Allah's mercy")).toBe("“Allah's mercy”");
+  });
+
+  // Every translation in the corpus: no straight double quote survives, and
+  // the inner quotes still pair up (as many ‘ as ’).
+  it('handles every translation in quranData', () => {
+    for (const c of quranContent) {
+      const out = quoteTranslation(c.englishTranslation);
+      expect(out).not.toContain('"');
+      const opens = (out.match(/‘/g) || []).length;
+      // Straight apostrophes are left as they are, so every ’ is a closing
+      // quote (the corpus has no curly apostrophes to confuse the count).
+      const closes = (out.match(/’/g) || []).length;
+      expect([c.id, opens]).toEqual([c.id, closes]);
+    }
   });
 });

@@ -243,10 +243,29 @@ export function pickShareCardTextTier(
   return TEXT_TIERS[TEXT_TIERS.length - 1];
 }
 
+/**
+ * Wraps a translation in curly quotes, turning any quotes inside it into
+ * single ones: “He said, ‘Do not fear.’” instead of "He said, "Do not
+ * fear."". 57 of the corpus's 280 translations quote speech, and wrapping
+ * them in straight double quotes printed a doubled "" on the share card and
+ * in the copied text. Punctuation only; no word of the translation changes.
+ *
+ * Each inner quote is judged on its own (opening after a space, an opening
+ * bracket or the start; closing otherwise) rather than assuming they come in
+ * pairs, because the share sheet is also fed translations from outside
+ * quranData.ts.
+ */
+export function quoteTranslation(text: string): string {
+  const inner = text.replace(/["“”]/g, (_q, i: number) =>
+    i === 0 || /[\s([{—–-]/.test(text[i - 1]) ? '‘' : '’',
+  );
+  return `“${inner}”`;
+}
+
 /** Builds the plain-text share payload from the toggled-on content sections. */
 export function buildShareText(content: ShareTextContent, toggles: ShareTextToggles): string {
   let shareText = '';
-  if (toggles.showEnglish) shareText += `"${content.text}"\n\n`;
+  if (toggles.showEnglish) shareText += `${quoteTranslation(content.text)}\n\n`;
   if (toggles.showArabic && content.arabicText) shareText += `${content.arabicText}\n`;
   if (toggles.showTransliteration && content.transliteration)
     shareText += `(${content.transliteration})\n`;
