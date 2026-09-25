@@ -251,6 +251,19 @@ describe('ShareSheet styles use SHARE_CARD_INSETS', () => {
     expect(clip).toBeGreaterThan(-1);
     expect(shot).toBeGreaterThan(clip);
   });
+
+  // An absoluteFill'd photo drew at its intrinsic size on an Android device
+  // (the card showed a ~1.8x zoom from the top-left). WHAT THIS DOES NOT
+  // CATCH: whether the measured size is right, or that the device now shows
+  // the whole photo. That needs a device.
+  it('sizes the photo layers explicitly, not with absoluteFill', () => {
+    const photoImages = source.match(/<Image\s+source=\{background\.imageSource\}[^>]*>/g) ?? [];
+    expect(photoImages).toHaveLength(2);
+    for (const tag of photoImages) {
+      expect(tag).not.toContain('absoluteFill');
+      expect(tag).toContain('photoLayerSize');
+    }
+  });
 });
 
 describe('quoteTranslation', () => {

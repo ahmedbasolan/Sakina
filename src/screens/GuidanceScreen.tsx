@@ -41,6 +41,11 @@ import { fetchWindowGuidance } from '../services/guidanceWindowFetch';
 import PrayerTimesService, { formatPrayerTime } from '../services/prayerTimesService';
 import { getUserLocation } from '../services/locationStorage';
 
+// The background photo's own opacity on the verse screen (ImmersiveBackground
+// defaults to 0.25). A little brighter here; its 0.38 scrim still sits on top
+// for the verse text.
+const GUIDANCE_PHOTO_OPACITY = 0.32;
+
 const GuidanceScreen: React.FC = () => {
   const route = useRoute<any>();
   const navigation = useNavigation<any>();
@@ -357,6 +362,7 @@ const GuidanceScreen: React.FC = () => {
       isPremium={isPremium}
       imageSource={selectedThemeSource ?? undefined}
       selfManageTheme={false}
+      overlayOpacity={GUIDANCE_PHOTO_OPACITY}
     >
       <GoldenMotes color={(MoodColors[mood] || MoodColors.Calm).accent} />
       <StatusBar barStyle="light-content" translucent backgroundColor="transparent" />
