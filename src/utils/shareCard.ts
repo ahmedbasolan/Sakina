@@ -77,6 +77,25 @@ export interface CardTheme {
   textColor?: string;
 }
 
+/** A measured photo card, tagged with the photo it was measured for. */
+export type MeasuredPhotoCard = { source: ImageSourcePropType; width: number; height: number };
+
+/**
+ * The size to draw the share card's photo layers at: the card's measured size
+ * when that measurement belongs to the photo now showing, else `fallback` (the
+ * computed size). Without the source check, switching to a photo of another
+ * shape drew it for one frame at the previous photo's size.
+ */
+export function photoLayerSize(
+  measured: MeasuredPhotoCard | null,
+  source: ImageSourcePropType | null,
+  fallback: { width: number; height: number },
+): { width: number; height: number } {
+  return measured && source != null && measured.source === source
+    ? { width: measured.width, height: measured.height }
+    : fallback;
+}
+
 export type CardBackground =
   | { kind: 'gradient'; colors: [string, string, ...string[]]; textColor: string; subTextColor: string }
   | { kind: 'photo'; imageSource: ImageSourcePropType; textColor: string; subTextColor: string };
