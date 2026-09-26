@@ -45,6 +45,12 @@ interface ImmersiveBackgroundProps {
 // Shared navy base, matching PathsScreen / PathDetailScreen.
 const NAVY_GRADIENT = ['#0A1321', Colors.background.secondary];
 
+// The background photo's own opacity on the verse screens: the mood flow
+// (GuidanceScreen) and a journey day (PathStepScreen). A little brighter than
+// the 0.25 default; the 0.38 scrim below still sits on top for the verse text.
+// Shared so the two screens cannot drift apart again.
+export const VERSE_SCREEN_PHOTO_OPACITY = 0.32;
+
 const ImmersiveBackground: React.FC<ImmersiveBackgroundProps> = ({
   children,
   theme = 'sand',
