@@ -4,6 +4,7 @@ import {
   pickShareCardTextTier,
   shareCardLayout,
   quoteTranslation,
+  photoLayerSize,
   CARD_ASPECT_RATIO,
   CardTheme,
 } from '../shareCard';
@@ -261,8 +262,13 @@ describe('ShareSheet styles use SHARE_CARD_INSETS', () => {
     expect(photoImages).toHaveLength(2);
     for (const tag of photoImages) {
       expect(tag).not.toContain('absoluteFill');
-      expect(tag).toContain('photoLayerSize');
+      expect(tag).toContain('photoLayerDims');
     }
+    // Remounting per photo is what makes onLayout re-measure when two photos
+    // give the card the same size.
+    expect(source).toMatch(
+      /key=\{selectedPhotoTheme\?\.id\}\s+style=\{\[styles\.previewCard, styles\.previewCardPhoto/,
+    );
   });
 });
 
@@ -306,5 +312,33 @@ describe('quoteTranslation', () => {
       const closes = (out.match(/’/g) || []).length;
       expect([c.id, opens]).toEqual([c.id, closes]);
     }
+  });
+});
+
+// Behaviour, not source text: the measured size is used only for the photo it
+// was measured with. WHAT THIS DOES NOT CATCH: whether onLayout reports the
+// size the photo is actually drawn at on a device.
+describe('photoLayerSize', () => {
+  const fallback = { width: 300, height: 450 };
+  const photoA = 101;
+  const photoB = 202;
+
+  it('uses the computed size before the card is measured', () => {
+    expect(photoLayerSize(null, photoA, fallback)).toEqual(fallback);
+  });
+
+  it('uses the measured size for the photo it was measured with', () => {
+    const measured = { source: photoA, width: 312, height: 470 };
+    expect(photoLayerSize(measured, photoA, fallback)).toEqual({ width: 312, height: 470 });
+  });
+
+  it("does not carry one photo's measured size over to another photo", () => {
+    const measured = { source: photoA, width: 312, height: 470 };
+    expect(photoLayerSize(measured, photoB, fallback)).toEqual(fallback);
+  });
+
+  it('uses the computed size when no photo is showing', () => {
+    const measured = { source: photoA, width: 312, height: 470 };
+    expect(photoLayerSize(measured, null, fallback)).toEqual(fallback);
   });
 });
