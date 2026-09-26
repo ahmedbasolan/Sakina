@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import { GestureDetector } from 'react-native-gesture-handler';
 import { HapticsService } from '../services/hapticsService';
-import ImmersiveBackground from '../components/ImmersiveBackground';
+import ImmersiveBackground, { VERSE_SCREEN_PHOTO_OPACITY } from '../components/ImmersiveBackground';
 import { GoldenMotes } from '../components/GoldenMotes';
 import GuidanceHeader from '../components/GuidanceHeader';
 import VerseLayer from '../components/VerseLayer';
@@ -40,11 +40,6 @@ import { setCachedGuidance } from '../services/windowGuidanceCache';
 import { fetchWindowGuidance } from '../services/guidanceWindowFetch';
 import PrayerTimesService, { formatPrayerTime } from '../services/prayerTimesService';
 import { getUserLocation } from '../services/locationStorage';
-
-// The background photo's own opacity on the verse screen (ImmersiveBackground
-// defaults to 0.25). A little brighter here; its 0.38 scrim still sits on top
-// for the verse text.
-const GUIDANCE_PHOTO_OPACITY = 0.32;
 
 const GuidanceScreen: React.FC = () => {
   const route = useRoute<any>();
@@ -362,7 +357,7 @@ const GuidanceScreen: React.FC = () => {
       isPremium={isPremium}
       imageSource={selectedThemeSource ?? undefined}
       selfManageTheme={false}
-      overlayOpacity={GUIDANCE_PHOTO_OPACITY}
+      overlayOpacity={VERSE_SCREEN_PHOTO_OPACITY}
     >
       <GoldenMotes color={(MoodColors[mood] || MoodColors.Calm).accent} />
       <StatusBar barStyle="light-content" translucent backgroundColor="transparent" />
