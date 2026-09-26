@@ -712,7 +712,13 @@ photo circle:
   with the verse panel over roughly the middle 70–80%, then text tiered to fit.
   A 3:2 landscape photo made a card ~228dp tall that could not hold 50:16 even
   at the smallest tier; that is why the 21 landscape themes carry a 2:3
-  `portraitImageSource` crop.
+  `portraitImageSource` crop. The photo layers get an explicit width and
+  height (`photoLayerSize`, from the card's measured size), not
+  `absoluteFill`: an Android screenshot showed the card photo drawn ~1.8×
+  from its top-left corner, where an intrinsic-size draw would put it. That
+  cause was inferred, not reproduced — `ImmersiveBackground`'s absoluteFill
+  `ImageBackground` drew fine on the same phone — so do not "simplify" the
+  explicit size back to `absoluteFill` without checking a device.
 - **Full-screen backgrounds** (`ImmersiveBackground`, `GuidanceScreen`, mood
   screens) — `resizeMode="cover"` on a ~9:19.5 phone. Themes go through
   `portraitSource()` (`src/utils/portraitSource.ts`) and the six landscape

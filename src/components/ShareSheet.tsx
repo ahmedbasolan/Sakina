@@ -32,6 +32,8 @@ import {
   resolveCardBackground,
   buildShareText,
   pickShareCardTextTier,
+  photoLayerSize,
+  MeasuredPhotoCard,
   shareCardLayout,
   SHARE_CARD_INSETS,
   quoteTranslation,
@@ -196,16 +198,8 @@ const ShareSheet = ({ isVisible, onClose, isPremium, onUpgrade, content }: Share
   const [selectedPhotoTheme, setSelectedPhotoTheme] = useState<BackgroundTheme | null>(null);
   const [isPhotoPickerVisible, setIsPhotoPickerVisible] = useState(false);
   const viewShotRef = useRef<ViewShot>(null);
-  // The photo card's real size, measured. See the photo branch below.
-  const [photoCardSize, setPhotoCardSize] = useState<{ width: number; height: number } | null>(
-    null,
-  );
-  const onPhotoCardLayout = useCallback((e: LayoutChangeEvent) => {
-    const { width, height } = e.nativeEvent.layout;
-    setPhotoCardSize((prev) =>
-      prev && prev.width === width && prev.height === height ? prev : { width, height },
-    );
-  }, []);
+  // The photo card's real size, measured. See photoLayerSize below.
+  const [photoCardSize, setPhotoCardSize] = useState<MeasuredPhotoCard | null>(null);
 
   // A lapsed subscriber never gets stuck rendering a background they can no
   // longer pick — reset the moment isPremium turns false.
@@ -412,13 +406,31 @@ const ShareSheet = ({ isVisible, onClose, isPremium, onUpgrade, content }: Share
     isPhoto ? assetAspectRatio(background.imageSource) : null,
   );
 
-  // Explicit pixel size for the photo layers, not absoluteFill. On an Android
-  // device the absoluteFill'd photo drew at its own intrinsic size (a 649px
-  // crop as ~649dp) from the top-left corner, so the card showed the lion's
-  // face at ~1.8x instead of the whole photo. A numeric width and height
-  // leaves the image nothing to fall back to. Until the first layout, the
-  // computed size stands in.
-  const photoLayerSize = photoCardSize ?? { width: cardWidth, height: cardTargetHeight };
+  // Explicit width and height (dp) for the photo layers, not absoluteFill. A
+  // device screenshot showed the card photo at ~1.8x from the top-left corner,
+  // where an image drawn at its intrinsic size (the 649px crop as ~649dp)
+  // would land. That cause is INFERRED from the screenshot, not reproduced:
+  // ImmersiveBackground's absoluteFill ImageBackground drew correctly on the
+  // same device. A numeric size cures a wrong-size draw whatever its cause;
+  // it would not cure a different fault, such as a stale bundle. Until the
+  // card is measured for the current photo, the computed size stands in.
+  const photoSource = isPhoto ? background.imageSource : null;
+  const onPhotoCardLayout = useCallback(
+    (e: LayoutChangeEvent) => {
+      if (photoSource == null) return;
+      const { width, height } = e.nativeEvent.layout;
+      setPhotoCardSize((prev) =>
+        prev && prev.source === photoSource && prev.width === width && prev.height === height
+          ? prev
+          : { source: photoSource, width, height },
+      );
+    },
+    [photoSource],
+  );
+  const photoLayerDims = photoLayerSize(photoCardSize, photoSource, {
+    width: cardWidth,
+    height: cardTargetHeight,
+  });
 
   const tier = useMemo(
     () =>
@@ -486,7 +498,7 @@ const ShareSheet = ({ isVisible, onClose, isPremium, onUpgrade, content }: Share
                     // no resolved height to proxy, the image fell back to its
                     // own intrinsic aspect ratio instead of covering the card,
                     // leaving bare strips at the sides. absoluteFill on the
-                    // Image was not reliable either (see photoLayerSize), so
+                    // Image was not reliable either (see photoLayerDims), so
                     // the photo layers get the card's measured size.
                     //
                     // The card is sized to the photo's own aspect ratio
@@ -497,19 +509,23 @@ const ShareSheet = ({ isVisible, onClose, isPremium, onUpgrade, content }: Share
                     // smallest text tier. Then it fills the gap above and
                     // below, still without cropping the photo or the ayah.
                     <View
+                      // Remount per photo: onLayout fires on mount, but not
+                      // when a new photo leaves the card the same size, which
+                      // would leave the old photo's measurement in place.
+                      key={selectedPhotoTheme?.id}
                       style={[styles.previewCard, styles.previewCardPhoto, { minHeight: cardTargetHeight }]}
                       onLayout={onPhotoCardLayout}
                     >
                       <Image
                         source={background.imageSource}
-                        style={[styles.photoLayer, photoLayerSize]}
+                        style={[styles.photoLayer, photoLayerDims]}
                         resizeMode="cover"
                         blurRadius={PHOTO_FILL_BLUR_RADIUS}
                       />
                       <View style={styles.photoFillScrim} />
                       <Image
                         source={background.imageSource}
-                        style={[styles.photoLayer, photoLayerSize]}
+                        style={[styles.photoLayer, photoLayerDims]}
                         resizeMode="contain"
                       />
                       {/* Even, light scrim instead of the old 15%→85% gradient,
