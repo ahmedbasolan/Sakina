@@ -4,7 +4,7 @@ import { GestureDetector } from 'react-native-gesture-handler';
 import { HapticsService } from '../services/hapticsService';
 import { UserPathProgress, Content } from '../types';
 import { PathsService } from '../services/pathsService';
-import ImmersiveBackground from '../components/ImmersiveBackground';
+import ImmersiveBackground, { VERSE_SCREEN_PHOTO_OPACITY } from '../components/ImmersiveBackground';
 import PathTopBar from '../components/PathTopBar';
 import LayerContainer from '../components/LayerContainer';
 import LayerPager from '../components/LayerPager';
@@ -514,7 +514,12 @@ export const PathStepScreen: React.FC = () => {
   };
 
   return (
-    <ImmersiveBackground accentColor={accentColor} tone={tone} isPremium={isPremium}>
+    <ImmersiveBackground
+      accentColor={accentColor}
+      tone={tone}
+      isPremium={isPremium}
+      overlayOpacity={VERSE_SCREEN_PHOTO_OPACITY}
+    >
       <PathTopBar
         currentDay={step.day}
         totalDays={path.duration}
