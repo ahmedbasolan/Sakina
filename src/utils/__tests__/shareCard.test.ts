@@ -5,6 +5,8 @@ import {
   shareCardLayout,
   quoteTranslation,
   photoLayerSize,
+  previewScale,
+  PREVIEW_MAX_HEIGHT_FRACTION,
   CARD_ASPECT_RATIO,
   CardTheme,
 } from '../shareCard';
@@ -251,6 +253,20 @@ describe('ShareSheet styles use SHARE_CARD_INSETS', () => {
     for (const line of expected) expect(block).toContain(line);
   });
 
+  // The preview is scaled by a wrapper OUTSIDE ViewShot, so the captured view
+  // is never itself transformed. WHAT THIS DOES NOT CATCH: whether ViewShot
+  // ignores an ancestor's transform on a given platform. That needs a saved
+  // image from a device.
+  it('scales the preview outside the captured view', () => {
+    expect(styleBlock('previewScaleWrap')).toContain("transformOrigin: 'top left'");
+    const wrap = source.indexOf('style={[\n                    styles.previewScaleWrap');
+    const shot = source.indexOf('<ViewShot ref={viewShotRef}');
+    expect(wrap).toBeGreaterThan(-1);
+    expect(shot).toBeGreaterThan(wrap);
+    // Nothing on the ViewShot tag itself.
+    expect(source.slice(shot, source.indexOf('>', shot))).not.toMatch(/transform|scale/);
+  });
+
   // The saved image must be a plain rectangle: rounded corners on the
   // captured card saved as transparent corners that some apps fill with black
   // or white. WHAT THIS DOES NOT CATCH: whether ViewShot on a given platform
@@ -328,6 +344,45 @@ describe('quoteTranslation', () => {
       const closes = (out.match(/’/g) || []).length;
       expect([c.id, opens]).toEqual([c.id, closes]);
     }
+  });
+});
+
+// Behaviour: the on-screen preview shrinks a card that would fill the sheet,
+// and leaves a short one alone. WHAT THIS DOES NOT CATCH: how the sheet lays
+// out on a device, or that the saved image is unaffected by the scale.
+describe('previewScale', () => {
+  it('leaves a card that is short enough at full size', () => {
+    expect(previewScale(427, 844)).toBe(1);
+    expect(previewScale(0.6 * 844, 844)).toBe(1);
+  });
+
+  it('shrinks a window-shaped photo card to the preview budget', () => {
+    // 390 x 844 window: the card is ~740dp, the budget 60% of 844.
+    const cardHeight = (342 * 844) / 390;
+    const s = previewScale(cardHeight, 844);
+    expect(s).toBeLessThan(1);
+    expect(cardHeight * s).toBeCloseTo(PREVIEW_MAX_HEIGHT_FRACTION * 844, 5);
+  });
+
+  it('keeps the preview inside the sheet with room for the controls', () => {
+    // The sheet's scroll area is 92% of the window minus ~40 for the handle.
+    const windows = [
+      [390, 844],
+      [412, 915],
+      [360, 780],
+      [430, 932],
+    ];
+    for (const [w, h] of windows) {
+      const cardHeight = ((w - 48) * h) / w;
+      const visible = 0.92 * h - 40;
+      expect(cardHeight * previewScale(cardHeight, h)).toBeLessThan(visible - 100);
+    }
+  });
+
+  it('is 1 when a size is missing or not positive', () => {
+    expect(previewScale(0, 844)).toBe(1);
+    expect(previewScale(700, 0)).toBe(1);
+    expect(previewScale(NaN, 844)).toBe(1);
   });
 });
 

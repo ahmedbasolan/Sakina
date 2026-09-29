@@ -716,7 +716,12 @@ photo circle:
   9:19.5 phone. A 3:2 landscape photo would have made a card ~228dp tall that
   could not hold 50:16 even at the smallest tier; the 21 landscape themes
   carry a 2:3 `portraitImageSource` crop, and `cover` on a window-shaped card
-  crops that further, as on the verse screen. The photo layer gets an explicit
+  crops that further, as on the verse screen. Being window-shaped it would fill
+  the sheet and push the Show / Style / Save controls off screen, so its
+  on-screen preview is scaled down (`previewScale`, by a wrapper *outside*
+  `ViewShot`) while the card, and so the saved image, stays full size. That
+  the capture ignores the wrapper's transform is assumed, not confirmed on a
+  device. The photo layer gets an explicit
   width and height (`photoLayerSize`, from the card's measured size), not
   `absoluteFill`: an Android screenshot showed the card photo drawn ~1.8×
   from its top-left corner, where an intrinsic-size draw would put it. That
