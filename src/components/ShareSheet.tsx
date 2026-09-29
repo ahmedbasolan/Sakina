@@ -40,12 +40,7 @@ import {
   CardTheme,
   ShareCardTextTier,
 } from '../utils/shareCard';
-import { assetAspectRatio } from '../utils/assetAspectRatio';
 import { portraitSource } from '../utils/portraitSource';
-
-// Blur for the photo copy that fills the bands around a `contain`ed photo.
-// Strong enough that the fill reads as colour, not as a second picture.
-const PHOTO_FILL_BLUR_RADIUS = 20;
 
 interface ShareSheetProps {
   isVisible: boolean;
@@ -397,13 +392,15 @@ const ShareSheet = ({ isVisible, onClose, isPremium, onUpgrade, content }: Share
 
   // Card size and the text tier's budget: see shareCardLayout. `cardWidth`
   // mirrors previewCard's rendered width, the screen minus sheetContainer's
-  // paddingHorizontal (Spacing.xl on each side).
+  // paddingHorizontal (Spacing.xl on each side). A photo card takes the
+  // window's shape, so `cover` frames the photo exactly as the full-screen
+  // verse screen does (ImmersiveBackground: same photo, `cover`, window-shaped).
   const cardWidth = screenWidth - Spacing.xl * 2;
   const isPhoto = background.kind === 'photo';
   const { cardTargetHeight, textWidth, heightBudget } = shareCardLayout(
     cardWidth,
     isPhoto,
-    isPhoto ? assetAspectRatio(background.imageSource) : null,
+    isPhoto ? screenWidth / screenHeight : null,
   );
 
   // Explicit width and height (dp) for the photo layers, not absoluteFill. A
@@ -501,13 +498,11 @@ const ShareSheet = ({ isVisible, onClose, isPremium, onUpgrade, content }: Share
                     // Image was not reliable either (see photoLayerDims), so
                     // the photo layers get the card's measured size.
                     //
-                    // The card is sized to the photo's own aspect ratio
-                    // (cardTargetHeight above), so the sharp `contain` layer
-                    // fills it edge to edge with nothing cropped. The blurred
-                    // `cover` copy under it only shows if the card had to grow
-                    // taller than the photo: a verse too long to fit even the
-                    // smallest text tier. Then it fills the gap above and
-                    // below, still without cropping the photo or the ayah.
+                    // The card has the window's shape (cardTargetHeight above),
+                    // so `cover` crops the photo the way the verse screen does.
+                    // A verse too long to fit even the smallest text tier makes
+                    // the card grow taller than that; `cover` then crops a
+                    // little more of the photo's sides, never the ayah.
                     <View
                       // Remount per photo: onLayout fires on mount, but not
                       // when a new photo leaves the card the same size, which
@@ -520,13 +515,6 @@ const ShareSheet = ({ isVisible, onClose, isPremium, onUpgrade, content }: Share
                         source={background.imageSource}
                         style={[styles.photoLayer, photoLayerDims]}
                         resizeMode="cover"
-                        blurRadius={PHOTO_FILL_BLUR_RADIUS}
-                      />
-                      <View style={styles.photoFillScrim} />
-                      <Image
-                        source={background.imageSource}
-                        style={[styles.photoLayer, photoLayerDims]}
-                        resizeMode="contain"
                       />
                       {/* Even, light scrim instead of the old 15%→85% gradient,
                           which blacked out the bottom of the photo. */}
@@ -864,12 +852,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingHorizontal: SHARE_CARD_INSETS.photoCardPadding,
     paddingVertical: SHARE_CARD_INSETS.photoCardPadding,
-  },
-  // Dims the blurred fill so the sharp, uncropped photo on top of it stands
-  // out as the actual picture.
-  photoFillScrim: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(7,17,30,0.35)',
   },
   photoLayer: {
     position: 'absolute',

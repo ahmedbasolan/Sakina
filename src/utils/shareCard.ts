@@ -43,10 +43,11 @@ export interface ShareCardLayout {
 }
 
 /**
- * Sizes the share card. A photo card takes its photo's own shape, so the
- * photo fills it edge to edge with nothing cropped, and the text tier is then
- * picked to fit that height. A gradient card, or a photo whose size can't be
- * read (`photoAspect` null), uses CARD_ASPECT_RATIO.
+ * Sizes the share card. A photo card takes `photoAspect` (the window's
+ * width / height), the shape of the full-screen verse screen, so a `cover`
+ * photo is framed exactly as it is there; the text tier is then picked to fit
+ * that height. A gradient card, or a photo card with no aspect given
+ * (`photoAspect` null), uses CARD_ASPECT_RATIO.
  *
  * The insets come from SHARE_CARD_INSETS, the same values ShareSheet.tsx's
  * styles use. The gradient branch also subtracts a glassPanel-sized margin it
