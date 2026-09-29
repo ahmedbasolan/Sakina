@@ -33,6 +33,7 @@ import {
   buildShareText,
   pickShareCardTextTier,
   photoLayerSize,
+  previewScale,
   MeasuredPhotoCard,
   shareCardLayout,
   SHARE_CARD_INSETS,
@@ -195,6 +196,9 @@ const ShareSheet = ({ isVisible, onClose, isPremium, onUpgrade, content }: Share
   const viewShotRef = useRef<ViewShot>(null);
   // The photo card's real size, measured. See photoLayerSize below.
   const [photoCardSize, setPhotoCardSize] = useState<MeasuredPhotoCard | null>(null);
+  // The card's real height at full size (layout, so a preview transform does
+  // not change it). A long verse can make it taller than cardTargetHeight.
+  const [cardHeight, setCardHeight] = useState<number | null>(null);
 
   // A lapsed subscriber never gets stuck rendering a background they can no
   // longer pick — reset the moment isPremium turns false.
@@ -424,6 +428,15 @@ const ShareSheet = ({ isVisible, onClose, isPremium, onUpgrade, content }: Share
     },
     [photoSource],
   );
+  const onCardWrapLayout = useCallback((e: LayoutChangeEvent) => {
+    const { height } = e.nativeEvent.layout;
+    setCardHeight((prev) => (prev === height ? prev : height));
+  }, []);
+  // A photo card is as tall as the window, which would fill the sheet and push
+  // the controls off screen, so its preview is drawn smaller. The card itself
+  // (and so the saved image) stays full size.
+  const fullCardHeight = cardHeight ?? cardTargetHeight;
+  const previewScaleValue = isPhoto ? previewScale(fullCardHeight, screenHeight) : 1;
   const photoLayerDims = photoLayerSize(photoCardSize, photoSource, {
     width: cardWidth,
     height: cardTargetHeight,
@@ -481,45 +494,84 @@ const ShareSheet = ({ isVisible, onClose, isPremium, onUpgrade, content }: Share
                 view, so the saved image is a plain rectangle. With the radius
                 on the card itself it saved rounded, transparent corners, which
                 some apps fill with black or white when the image is shared. */}
-            <View style={styles.previewCardShadow}>
+            <View
+              style={[
+                styles.previewCardShadow,
+                {
+                  width: cardWidth * previewScaleValue,
+                  height: fullCardHeight * previewScaleValue,
+                },
+              ]}
+            >
               <View style={styles.previewCardClip}>
-                <ViewShot ref={viewShotRef} options={{ format: 'png', quality: 1 }}>
-                  {background.kind === 'photo' ? (
-                    // Plain View + absolutely-positioned Image instead of
-                    // ImageBackground: previewCard's height is set explicitly
-                    // below (a computed `minHeight`, not the stylesheet's own
-                    // fixed value), and ImageBackground's own implementation
-                    // re-proxies width/height from the outer style onto its
-                    // inner <Image> (see its "Temporary Workaround" comment in
-                    // react-native/Libraries/Image/ImageBackground.js) — with
-                    // no resolved height to proxy, the image fell back to its
-                    // own intrinsic aspect ratio instead of covering the card,
-                    // leaving bare strips at the sides. absoluteFill on the
-                    // Image was not reliable either (see photoLayerDims), so
-                    // the photo layers get the card's measured size.
-                    //
-                    // The card has the window's shape (cardTargetHeight above),
-                    // so `cover` crops the photo the way the verse screen does.
-                    // A verse too long to fit even the smallest text tier makes
-                    // the card grow taller than that; `cover` then crops a
-                    // little more of the photo's sides, never the ayah.
-                    <View
-                      // Remount per photo: onLayout fires on mount, but not
-                      // when a new photo leaves the card the same size, which
-                      // would leave the old photo's measurement in place.
-                      key={selectedPhotoTheme?.id}
-                      style={[styles.previewCard, styles.previewCardPhoto, { minHeight: cardTargetHeight }]}
-                      onLayout={onPhotoCardLayout}
-                    >
-                      <Image
-                        source={background.imageSource}
-                        style={[styles.photoLayer, photoLayerDims]}
-                        resizeMode="cover"
-                      />
-                      {/* Even, light scrim instead of the old 15%→85% gradient,
-                          which blacked out the bottom of the photo. */}
-                      <View style={styles.photoScrim} />
-                      <View style={styles.glassPanel}>
+                {/* The preview's scale lives on this wrapper, OUTSIDE ViewShot,
+                    so the captured view is never itself transformed and the
+                    saved image is full size. (Assumes an ancestor's transform
+                    is not captured; not yet confirmed on a device.) */}
+                <View
+                  style={[
+                    styles.previewScaleWrap,
+                    { width: cardWidth, transform: [{ scale: previewScaleValue }] },
+                  ]}
+                  onLayout={onCardWrapLayout}
+                >
+                  <ViewShot ref={viewShotRef} options={{ format: 'png', quality: 1 }}>
+                    {background.kind === 'photo' ? (
+                      // Plain View + absolutely-positioned Image instead of
+                      // ImageBackground: previewCard's height is set explicitly
+                      // below (a computed `minHeight`, not the stylesheet's own
+                      // fixed value), and ImageBackground's own implementation
+                      // re-proxies width/height from the outer style onto its
+                      // inner <Image> (see its "Temporary Workaround" comment in
+                      // react-native/Libraries/Image/ImageBackground.js) — with
+                      // no resolved height to proxy, the image fell back to its
+                      // own intrinsic aspect ratio instead of covering the card,
+                      // leaving bare strips at the sides. absoluteFill on the
+                      // Image was not reliable either (see photoLayerDims), so
+                      // the photo layers get the card's measured size.
+                      //
+                      // The card has the window's shape (cardTargetHeight above),
+                      // so `cover` crops the photo the way the verse screen does.
+                      // A verse too long to fit even the smallest text tier makes
+                      // the card grow taller than that; `cover` then crops a
+                      // little more of the photo's sides, never the ayah.
+                      <View
+                        // Remount per photo: onLayout fires on mount, but not
+                        // when a new photo leaves the card the same size, which
+                        // would leave the old photo's measurement in place.
+                        key={selectedPhotoTheme?.id}
+                        style={[styles.previewCard, styles.previewCardPhoto, { minHeight: cardTargetHeight }]}
+                        onLayout={onPhotoCardLayout}
+                      >
+                        <Image
+                          source={background.imageSource}
+                          style={[styles.photoLayer, photoLayerDims]}
+                          resizeMode="cover"
+                        />
+                        {/* Even, light scrim instead of the old 15%→85% gradient,
+                            which blacked out the bottom of the photo. */}
+                        <View style={styles.photoScrim} />
+                        <View style={styles.glassPanel}>
+                          <CardContent
+                            textColor={textColor}
+                            subTextColor={subTextColor}
+                            content={content}
+                            parsedSource={parsedSource}
+                            selectedFont={selectedFont}
+                            showArabic={showArabic}
+                            showTransliteration={showTransliteration}
+                            showEnglish={showEnglish}
+                            tier={tier}
+                          />
+                        </View>
+                      </View>
+                    ) : (
+                      <LinearGradient
+                        colors={background.colors}
+                        start={{ x: 0, y: 0 }}
+                        end={{ x: 1, y: 1 }}
+                        style={[styles.previewCard, { minHeight: cardTargetHeight }]}
+                      >
                         <CardContent
                           textColor={textColor}
                           subTextColor={subTextColor}
@@ -531,29 +583,10 @@ const ShareSheet = ({ isVisible, onClose, isPremium, onUpgrade, content }: Share
                           showEnglish={showEnglish}
                           tier={tier}
                         />
-                      </View>
-                    </View>
-                  ) : (
-                    <LinearGradient
-                      colors={background.colors}
-                      start={{ x: 0, y: 0 }}
-                      end={{ x: 1, y: 1 }}
-                      style={[styles.previewCard, { minHeight: cardTargetHeight }]}
-                    >
-                      <CardContent
-                        textColor={textColor}
-                        subTextColor={subTextColor}
-                        content={content}
-                        parsedSource={parsedSource}
-                        selectedFont={selectedFont}
-                        showArabic={showArabic}
-                        showTransliteration={showTransliteration}
-                        showEnglish={showEnglish}
-                        tier={tier}
-                      />
-                    </LinearGradient>
-                  )}
-                </ViewShot>
+                      </LinearGradient>
+                    )}
+                  </ViewShot>
+                </View>
               </View>
             </View>
 
@@ -817,6 +850,8 @@ const styles = StyleSheet.create({
   // Shadow only — no overflow/borderRadius-vs-elevation conflict here since
   // this view clips nothing. See the comment at the call site.
   previewCardShadow: {
+    // Centred: a scaled photo preview is narrower than the sheet.
+    alignSelf: 'center',
     borderRadius: BorderRadius.xxl,
     marginBottom: Spacing.xxl,
     shadowColor: '#000',
@@ -829,8 +864,18 @@ const styles = StyleSheet.create({
   // (see the comment above the ViewShot). No elevation here, so it doesn't
   // repeat the elevation + overflow + radius combination on one view.
   previewCardClip: {
+    width: '100%',
+    height: '100%',
     borderRadius: BorderRadius.xxl,
     overflow: 'hidden',
+  },
+  // Full-size card, scaled about its top-left corner to fit the preview box
+  // (previewCardClip clips the rest of its unscaled layout box).
+  previewScaleWrap: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    transformOrigin: 'top left',
   },
   previewCard: {
     width: '100%',

@@ -33,6 +33,22 @@ export const SHARE_CARD_INSETS = {
   quoteMarginH: Spacing.md,
 } as const;
 
+/** The tallest a photo card's on-screen preview may be, as a share of the
+ *  window's height. The sheet's visible area is ~87% of the window, and the
+ *  controls (Show, Style, photos, Save) sit below the card, so the preview
+ *  leaves them in view. */
+export const PREVIEW_MAX_HEIGHT_FRACTION = 0.6;
+
+/**
+ * The scale to draw the share card's on-screen preview at: 1 while the card
+ * is short enough, else just enough to bring it to PREVIEW_MAX_HEIGHT_FRACTION
+ * of the window. Display only: the saved image is captured at full size.
+ */
+export function previewScale(cardHeight: number, windowHeight: number): number {
+  if (!(cardHeight > 0) || !(windowHeight > 0)) return 1;
+  return Math.min(1, (windowHeight * PREVIEW_MAX_HEIGHT_FRACTION) / cardHeight);
+}
+
 export interface ShareCardLayout {
   /** previewCard's `minHeight`: the size it renders at unless a verse too
    *  long for even the smallest tier makes it grow. */
