@@ -708,12 +708,16 @@ almost all of them portrait. The exceptions are the iOS lock-screen attachment
 (a square thumbnail, then the full original) and the share sheet's small round
 photo circle:
 
-- **Share card** (`ShareSheet.tsx`) — sized to the photo's own aspect ratio,
-  with the verse panel over roughly the middle 70–80%, then text tiered to fit.
-  A 3:2 landscape photo made a card ~228dp tall that could not hold 50:16 even
-  at the smallest tier; that is why the 21 landscape themes carry a 2:3
-  `portraitImageSource` crop. The photo layers get an explicit width and
-  height (`photoLayerSize`, from the card's measured size), not
+- **Share card** (`ShareSheet.tsx`) — window-shaped (`screenWidth /
+  screenHeight`) with `cover`, so the photo is framed exactly as on the
+  full-screen verse screen; the verse panel sits over roughly the middle
+  70–80%, then text tiered to fit. It used to take the photo's own aspect and
+  `contain` it, which showed ~45% more width than the verse screen on a
+  9:19.5 phone. A 3:2 landscape photo would have made a card ~228dp tall that
+  could not hold 50:16 even at the smallest tier; the 21 landscape themes
+  carry a 2:3 `portraitImageSource` crop, and `cover` on a window-shaped card
+  crops that further, as on the verse screen. The photo layer gets an explicit
+  width and height (`photoLayerSize`, from the card's measured size), not
   `absoluteFill`: an Android screenshot showed the card photo drawn ~1.8×
   from its top-left corner, where an intrinsic-size draw would put it. That
   cause was inferred, not reproduced — `ImmersiveBackground`'s absoluteFill

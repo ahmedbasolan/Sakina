@@ -154,16 +154,18 @@ describe('shareCardLayout', () => {
   // 342 = a 390dp-wide phone minus the sheet's Spacing.xl gutters.
   const WIDTH = 342;
 
-  it('gives a photo card its photo\'s own shape, so the photo fills it uncropped', () => {
-    const { cardTargetHeight } = shareCardLayout(WIDTH, true, 2 / 3);
-    expect(cardTargetHeight).toBeCloseTo(513, 0);
+  it('gives a photo card the aspect it is handed (the window\'s, from ShareSheet)', () => {
+    expect(shareCardLayout(WIDTH, true, 2 / 3).cardTargetHeight).toBeCloseTo(513, 0);
+    // 390 x 844 window: the card is as tall as the verse screen is, scaled to
+    // the card's width, so `cover` crops the photo the same way.
+    expect(shareCardLayout(WIDTH, true, 390 / 844).cardTargetHeight).toBeCloseTo((WIDTH * 844) / 390, 5);
   });
 
   it('uses CARD_ASPECT_RATIO for a gradient card', () => {
     expect(shareCardLayout(WIDTH, false, null).cardTargetHeight).toBeCloseTo(WIDTH / CARD_ASPECT_RATIO, 5);
   });
 
-  it('falls back to CARD_ASPECT_RATIO when a photo\'s size cannot be read', () => {
+  it('falls back to CARD_ASPECT_RATIO when a photo card is given no aspect', () => {
     expect(shareCardLayout(WIDTH, true, null).cardTargetHeight).toBeCloseTo(WIDTH / CARD_ASPECT_RATIO, 5);
   });
 
@@ -177,10 +179,12 @@ describe('shareCardLayout', () => {
     expect(gradient.textWidth).toBe(WIDTH - 48 - 32 - 12);
   });
 
-  // Why the landscape themes carry portrait crops: the same verse gets a
+  // A short, wide card cannot hold a long verse: the same verse gets a
   // readable size on a 2:3 card but is pushed to the smallest tier on a 3:2
-  // one. (pickShareCardTextTier returns the smallest tier whether or not it
-  // fits, so this cannot tell "fits at 11pt" from "card will grow".)
+  // one. The photo card is window-shaped (taller than 2:3), so it is on the
+  // safe side of this. (pickShareCardTextTier returns the smallest tier
+  // whether or not it fits, so this cannot tell "fits at 11pt" from "card
+  // will grow".)
   it('keeps 50:16 above the smallest tier on a 2:3 card, and drops it to the smallest on 3:2', () => {
     const verse = quranContent.find((c) => c.id === 'quran_50_16');
     expect(verse).toBeDefined();
@@ -190,11 +194,18 @@ describe('shareCardLayout', () => {
       englishText: verse!.englishTranslation,
     };
     const portrait = shareCardLayout(WIDTH, true, 2 / 3);
+    const windowShaped = shareCardLayout(WIDTH, true, 390 / 844);
     const landscape = shareCardLayout(WIDTH, true, 3 / 2);
     const smallest = pickShareCardTextTier({ englishText: 'a'.repeat(5000) }, 100, 10);
     const portraitTier = pickShareCardTextTier(visible, portrait.textWidth, portrait.heightBudget);
     const landscapeTier = pickShareCardTextTier(visible, landscape.textWidth, landscape.heightBudget);
+    const windowTier = pickShareCardTextTier(
+      visible,
+      windowShaped.textWidth,
+      windowShaped.heightBudget,
+    );
     expect(portraitTier.arabicFontSize).toBeGreaterThan(smallest.arabicFontSize);
+    expect(windowTier.arabicFontSize).toBeGreaterThanOrEqual(portraitTier.arabicFontSize);
     expect(landscapeTier).toEqual(smallest);
   });
 });
@@ -255,15 +266,20 @@ describe('ShareSheet styles use SHARE_CARD_INSETS', () => {
 
   // An absoluteFill'd photo drew at its intrinsic size on an Android device
   // (the card showed a ~1.8x zoom from the top-left). WHAT THIS DOES NOT
-  // CATCH: whether the measured size is right, or that the device now shows
-  // the whole photo. That needs a device.
-  it('sizes the photo layers explicitly, not with absoluteFill', () => {
+  // CATCH: whether the measured size is right, or that the device now frames
+  // the photo like the verse screen. That needs a device.
+  it('sizes the photo layer explicitly, not with absoluteFill', () => {
     const photoImages = source.match(/<Image\s+source=\{background\.imageSource\}[^>]*>/g) ?? [];
-    expect(photoImages).toHaveLength(2);
+    expect(photoImages).toHaveLength(1);
     for (const tag of photoImages) {
       expect(tag).not.toContain('absoluteFill');
       expect(tag).toContain('photoLayerDims');
+      // `cover`, like ImmersiveBackground: `contain` would show the whole
+      // photo and no longer match the verse screen's framing.
+      expect(tag).toContain('resizeMode="cover"');
     }
+    // The card takes the window's shape, not the photo's.
+    expect(source).toMatch(/isPhoto \? screenWidth \/ screenHeight : null/);
     // Remounting per photo is what makes onLayout re-measure when two photos
     // give the card the same size.
     expect(source).toMatch(
