@@ -33,7 +33,13 @@
  *   P8  a bare hadith citation under a "Sunnah Action" badge with no recorded human
  *       review (HUMAN_REVIEWED) — it asserts the step IS that hadith's practice
  *
- * Also checked under P5: a grade stated in PROSE ("[Tirmidhi 1087, graded sahih]").
+ * Also checked under P5: a grade stated in PROSE ("[Tirmidhi 1087, graded sahih]"), and
+ * a hadith layer with NO grading — HadithLayer.tsx prints `grading || 'authentic'`, so a
+ * missing grade is a claim of authenticity (Tawbah day 6 shipped that way over an
+ * Ibn Majah narration most graders call Da'if).
+ *   P0  a citation in a collection this script CAN fetch (the mirror's five, Muslim)
+ *       that returns nothing — fails rather than noting, so an outage or a changed
+ *       page layout cannot produce a green run that verified less
  *
  * WHAT THIS DOES NOT CATCH (read before treating a green run as "correct"):
  *   - It cannot tell that an INSTRUCTION is right. "Give from what you need"
@@ -62,7 +68,7 @@
  *
  * Modes (both exiting 0 is the green state, as with RT_INJECT / RH_INJECT):
  *   node scripts/verify-journey-claims.mjs                 normal run
- *   CLAIMS_INJECT=1 node scripts/verify-journey-claims.mjs injects 12 known faults
+ *   CLAIMS_INJECT=1 node scripts/verify-journey-claims.mjs injects 14 known faults
  *                                                           and exits 0 only if
  *                                                           each is detected
  *   CLAIMS_REV=HEAD node scripts/verify-journey-claims.mjs runs the checks on the
@@ -128,6 +134,11 @@ const HUMAN_REVIEWED = [
   ['q_angle_death_day5', 'Write the will', "Bukhari 2738: not permissible for a Muslim who has something to will to stay two nights without his will written and kept ready (Muslim 1627 the same)."],
   ['q_angle_death_day6', 'Start a sadaqa jariya today', 'Muslim 1631: when a man dies his acts end except recurring charity, knowledge by which people benefit, or a pious child who prays for him.'],
   ['q_angle_death_day6', 'Teach one thing', 'Muslim 1631 (as above): knowledge by which people benefit.'],
+];
+// A hadith LAYER whose grading differs from the published grading of the full narration
+// because the layer shows only part of it: [angleId, reason]
+const ALLOW_GRADINGS = [
+  ['q_angle_study_day1', "Ibn Majah 224: the mirror grades the WHOLE narration Daif (Al-Albani, Arna'ut, Abdul-Baqi: Very Daif; Zubair Ali Zai: Daif), but the layer shows only the opening clause, and sunnah.com's own note says: \"'Seeking knowledge is a duty upon every Muslim' is authentic through many sources, but the remaining text is not acceptable.\" The layer carries the conservative 'hasan li-ghayrihi' (strengthened by other routes), not 'sahih', because no grader's grade for the clause alone was fetched."],
 ];
 // A hadith that legitimately appears on two days of one journey: [journey, key, reason]
 const ALLOW_P1 = [
@@ -443,7 +454,13 @@ function runChecks(days, src) {
     for (const [label, text] of dayFields(d)) for (const k of citesIn(text)) {
       if (!src.H[k]) {
         const al = ALLOW_UNVERIFIED.find(([x]) => x === k);
-        notes.push(`UNVERIFIED ${k} (${d.journey} day ${d.day}, ${label})${al ? ' — ' + al[1] : ''}`);
+        // A collection this script CAN fetch (the mirror's five, or Muslim at sunnah.com)
+        // that returns nothing is a failure, not a note: otherwise an outage, a wrong
+        // number or a changed page layout turns every check on that citation into
+        // silence and the run goes green having verified less. (Muslim 2658a once
+        // hid behind this: the parser, not the citation, was wrong.)
+        if (!al && (MIRROR.has(k.split(':')[0]) || k.startsWith('muslim:'))) fail('P0 cited source could not be fetched', d, `${k} in ${label} — unreachable, mis-numbered, or the page layout changed`);
+        else notes.push(`UNVERIFIED ${k} (${d.journey} day ${d.day}, ${label})${al ? ' — ' + al[1] : ''}`);
       }
     }
     // corpus for P2
@@ -569,6 +586,7 @@ function runChecks(days, src) {
         if (!g || !g.length) { notes.push(`UNGRADED ${k} (${d.journey} day ${d.day}) claimed «${grading}»`); continue; }
         const ranks = g.map((x) => rank(x.grade)).filter(Boolean);
         const best = Math.max(...ranks), weak = ranks.filter((r) => r === 1).length, strong = ranks.filter((r) => r > 1).length;
+        if (label.startsWith('hadith layer') && ALLOW_GRADINGS.find(([a]) => a === d.angleId)) continue;
         if (best < claimRank(grading)) fail('P5 grading over-claims', d, `${label}: ${k} claimed «${grading}» but graders say ${g.map((x) => x.name + ':' + x.grade).join(', ')}`);
         else if (weak >= 2 && weak > strong) fail('P5 grading over-claims', d, `${label}: ${k} claimed «${grading}» but most graders say Daif (${g.map((x) => x.name + ':' + x.grade).join(', ')})`);
       }
@@ -586,6 +604,14 @@ function runChecks(days, src) {
       if (s.sourceType === 'composed_dua' && !/Suggested wording|Divine Name/i.test(s.source || '')) fail('P7 composed_dua mislabelled', d, `step ${i + 1} "${s.title}": «${s.source}»`);
     });
     if (d.hadith?.propheticPractice?.grading) gradeCheck('hadith layer practice', d.hadith.propheticPractice.source, d.hadith.propheticPractice.grading);
+    // HadithLayer.tsx renders `grading || 'authentic'`: a layer with NO grading does not
+    // hide the grade, it prints the word "Authentic". So a missing grading is a claim of
+    // authenticity and gets the same test as an explicit one.
+    if (d.hadith && !d.hadith.propheticPractice?.grading) {
+      const ks = citesIn(d.hadith.propheticPractice?.source ?? d.hadith.source);
+      const collectionGraded = ks.length && ks.every((k) => ['bukhari', 'muslim'].includes(k.split(':')[0]));
+      gradeCheck('hadith layer (no grading → the screen prints "Authentic")', d.hadith.propheticPractice?.source ?? d.hadith.source, collectionGraded ? 'sahih' : 'hasan');
+    }
     // P5b — gradings stated in PROSE: "[Tirmidhi 1087, graded sahih]" is a claim too.
     for (const [label, text] of dayFields(d)) {
       for (const m of String(text ?? '').matchAll(/\[([^\]]*?)\bgraded\s+(sahih|hasan)\b[^\]]*\]/gi)) gradeCheck(`${label} (stated in prose)`, m[1], m[2]);
@@ -651,6 +677,10 @@ function injections(days, src) {
   { const ds = clone(); const d = ds.find((x) => x.hadith && !ALLOW_LAYERS.find(([a]) => a === x.angleId) && citesIn(x.hadith.source).some((k) => src.H[k])); d.hadith.englishTranslation = 'The quick brown fox jumps over the lazy dog every single day without fail'; d.hadith.translation = d.hadith.englishTranslation; out.push(['P6 hadith layer text is not the published hadith', ds]); }
   // F11 — a grade stated in prose over a hadith the graders call weak
   { const ds = clone(); ds[0].angle.angle += ' It is reported [Abu Dawud 1518, graded sahih].'; out.push(['P5 grading over-claims', ds]); }
+  // F13 — a hadith layer with NO grading on a weak hadith: HadithLayer.tsx prints "Authentic"
+  { const ds = clone(); const d = ds.find((x) => x.hadith && !ALLOW_GRADINGS.find(([a]) => a === x.angleId)); d.hadith.source = 'Abu Dawud 1518'; d.hadith.propheticPractice = { description: 'x', source: 'Abu Dawud 1518' }; out.push(['P5 grading over-claims', ds]); }
+  // F14 — a citation in a collection we can fetch, to a number that does not resolve
+  { const ds = clone(); ds[0].steps[0].source = 'Sahih al-Bukhari 99999'; out.push(['P0 cited source could not be fetched', ds]); }
   // F12 — a "Suggested practice" step wearing a scripture badge
   { const ds = clone(); const d = ds.find((x) => x.steps.some((s) => /^Suggested practice/.test(s.source || ''))); d.steps.find((s) => /^Suggested practice/.test(s.source || '')).sourceType = 'quran_dua'; out.push(['P7 badge on a step that claims no source', ds]); }
   return out;

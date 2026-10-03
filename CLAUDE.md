@@ -629,8 +629,11 @@ Four scripts, none of which need a device:
   or prose "graded sahih" that the published gradings contradict (P5); a hadith
   layer that is not recognisably the published text (P6); a badge that promises
   words but shows no Arabic (P7); a bare hadith citation under a "Sunnah Action"
-  badge nobody has reviewed (P8). `CLAIMS_INJECT=1` injects 12 faults and exits 0
-  only if each is detected; `CLAIMS_REV=HEAD` runs the checks on the committed
+  badge nobody has reviewed (P8); a cited source it can fetch but could not (P0).
+  P5 also treats a hadith layer with **no** grading as a claim: `HadithLayer.tsx`
+  renders `grading || 'authentic'`, so deleting a grade makes the screen say
+  "Authentic" (the first fix for Study day 1 did exactly that). `CLAIMS_INJECT=1`
+  injects 14 faults and exits 0 only if each is detected; `CLAIMS_REV=HEAD` runs the checks on the committed
   data (on 2026-10-03 it reported 150 failures there and 0 on the fixed tree);
   `CLAIMS_DETAIL=1` prints the published text under each P2 failure. Both normal
   and inject modes exiting 0 is the green state.

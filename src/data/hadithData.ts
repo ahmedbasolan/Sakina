@@ -29,10 +29,11 @@ export const hadithContent: Content[] = [
     englishTranslation: 'Seeking knowledge is an obligation upon every Muslim',
     source: 'Ibn Majah 224',
     transliteration: 'Talabul-ilmi fareedah ala kulli muslim',
-    whyThis: 'Foundation for the path: knowledge-seeking is not optional but commanded. (sunnah.com notes that this opening clause is authentic through many sources, while the rest of the narration in Ibn Majah 224 is not acceptable — so it is shown here without a grading.)',
+    whyThis: 'Foundation for the path: knowledge-seeking is not optional but commanded. (sunnah.com notes that this opening clause is authentic through many sources, while the rest of the narration in Ibn Majah 224 is not acceptable — so the grade shown is the conservative one for a clause strengthened by other routes.)',
     propheticPractice: {
       description: 'Reflect on knowledge-seeking as a divine obligation',
       source: 'Ibn Majah 224',
+      grading: 'hasan_li_ghayrihi',
     },
     moods: [],
   },
