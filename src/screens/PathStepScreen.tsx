@@ -14,6 +14,7 @@ import ContextLayer, { extractSourceLabel, stripCitationTags } from '../componen
 import PracticeLayer, { PracticeStepData } from '../components/PracticeLayer';
 import ReflectionLayer from '../components/ReflectionLayer';
 import FloatingActionRow from '../components/FloatingActionRow';
+import { CrisisResourceLine } from '../components/CrisisResourceLine';
 import PathCompletionCelebration from '../components/PathCompletionCelebration';
 import { SubscriptionService } from '../services/subscriptionService';
 import { FreemiumService } from '../services/freemiumService';
@@ -562,6 +563,10 @@ export const PathStepScreen: React.FC = () => {
           )}
         </View>
       </GestureDetector>
+
+      {/* Same quiet safety line the mood flow shows; it self-gates on the journey's
+          theme (Sad / Overwhelmed only) and surfaces at most once per day. */}
+      <CrisisResourceLine mood={path.theme} />
 
       <LayerPager
         total={layerTypes.length}

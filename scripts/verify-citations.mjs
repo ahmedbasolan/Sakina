@@ -335,7 +335,7 @@ for (const r of mismatch) console.log(`  ${r.id}  ·  ${r.title}  ·  "${r.src}"
 // be in that verse.
 const JOINED_AYAT = new Set([
   // Legitimately two ayat quoted as one dhikr, and the source line says so.
-  'q_angle_rizq_day12|The Patience Dua',
+  // (empty: the only entry, Rizq's "The Patience Dua", went when Rizq was cut to 7 days)
 ]);
 const quranish = [];
 for (const o of objects('q_angle_')) {

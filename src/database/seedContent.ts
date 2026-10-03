@@ -435,7 +435,12 @@ import type { Content, ContentAngle } from '../types';
 //      had made the screen say "Authentic" about Ibn Majah 224. Tawbah day 6 no longer
 //      shows hadith_tawbah_6 (Ibn Majah 4250, which printed "Authentic" with no grading
 //      although most graders call it Da'if); that day renders one layer fewer.
-const SEED_VERSION = 56;
+// v57: Rizq Revolution cut from 14 days to 7 (docs/journeys-spec.md: Day 4 was close to Day 9).
+//      Kept: what rizq is, Ar-Razzaq, halal, tawakkul + action, contentment, the dua, the
+//      review. q_angle_rizq_day6/10/14 are now day5/6/7; day5/7/8/9/11/12/13 were deleted.
+//      Day 7's recap now names only the six days that remain. Installs that already seeded
+//      the old rows keep them, unreferenced.
+const SEED_VERSION = 57;
 // Separate keys per content type — Quran and Hadith data change independently,
 // and each seeder used to write the SAME key at the end of its run. Since
 // initializeDatabase() awaits seedQuranContent() before seedHadithContent(),
