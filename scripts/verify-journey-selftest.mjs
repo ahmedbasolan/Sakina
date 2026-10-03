@@ -57,10 +57,14 @@ const CASES = [
   ['duplicate verse', () => patch('staticPaths.ts', `contentId: 'quran_2_152'`, `contentId: 'quran_14_7'`), /verse quran_14_7 also on day 2/],
   ['duplicate hadith', () => patch('staticPaths.ts', `hadithContentId: 'hadith_results_5'`, `hadithContentId: 'hadith_results_3'`), /hadith Muslim 2999 also on day 3/],
   ['bad icon', () => patch('quranData.ts', `icon: 'compass',\r\n        title: 'Rabitu`, `icon: 'telescope',\r\n        title: 'Rabitu`), /bad icon telescope/],
-  ['bad sourceType', () => patch('quranData.ts', `sourceType: 'prophetic_dhikr',\r\n        sourceGrading: 'hasan',\r\n      },\r\n    ]),\r\n    reflection:\r\n      'Which of your three`, `sourceType: 'made_up',\r\n        sourceGrading: 'hasan',\r\n      },\r\n    ]),\r\n    reflection:\r\n      'Which of your three`), /bad sourceType made_up/],
+  // Anchored on the step's own source line, not on the text that follows it: a re-emit that
+  // re-wraps the reflection (as the 2026-10-03 claims fixes did) must not stale this fixture.
+  ['bad sourceType', () => patch('quranData.ts', `source: 'Ibn Majah 3803',\r\n        sourceType: 'prophetic_dhikr',`, `source: 'Ibn Majah 3803',\r\n        sourceType: 'made_up',`), /bad sourceType made_up/],
   ['broken practiceSteps JSON', () => patch('quranData.ts', `practiceSteps: JSON.stringify([\r\n      {\r\n        type: 'mindset',\r\n        icon: 'target',\r\n        title: 'The striving is the record'`, `practiceSteps: '[{oops',\r\n    _dead: JSON.stringify([\r\n      {\r\n        type: 'mindset',\r\n        icon: 'target',\r\n        title: 'The striving is the record'`), /practiceSteps JSON invalid/],
-  ['missing tafsir tag', () => patch('quranData.ts', `"[Tafsir Ibn Kathir on 2:152] Allah offers`, `"Allah offers`), /no \[Tafsir \.\.\.\] tag/],
-  ['tag not at start', () => patch('quranData.ts', `"[Tafsir Ibn Kathir on 53:39] The ayah sets`, `"The ayah sets [Tafsir Ibn Kathir on 53:39]`), /tag not at string start/],
+  // No leading quote character in the anchor: the angle may be single- or double-quoted
+  // depending on whether it holds an apostrophe, and a re-emit may switch between them.
+  ['missing tafsir tag', () => patch('quranData.ts', `[Tafsir Ibn Kathir on 2:152] Allah offers`, `Allah offers`), /no \[Tafsir \.\.\.\] tag/],
+  ['tag not at start', () => patch('quranData.ts', `[Tafsir Ibn Kathir on 53:39] The ayah sets`, `The ayah sets [Tafsir Ibn Kathir on 53:39]`), /tag not at string start/],
   // Matches either wording: the verifier reports an arbitrary 60% cut when the
   // angle has >= 4 sentences and an empty Matters section below that.
   ['no split pattern', () => patch('quranData.ts', `. When you study, the striving is the part`, `. Studying means the striving is the part`), /no split pattern/],
