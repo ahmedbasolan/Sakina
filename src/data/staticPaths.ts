@@ -1095,7 +1095,6 @@ export const STATIC_SPIRITUAL_PATHS: SpiritualPath[] = [
         focus: 'Sincere repentance is a direction you commit to, not a form you submit once.',
         contentId: 'quran_66_8',
         angleId: 'q_angle_tawbah_day6',
-        hadithContentId: 'hadith_tawbah_6',
         isCompleted: false,
       },
       {

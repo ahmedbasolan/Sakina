@@ -430,7 +430,12 @@ import type { Content, ContentAngle } from '../types';
 //      Prayer Leadership 7/13/14, Hope 5, Tawbah 3/9. Marriage 9 no longer adds
 //      "Monday or Thursday" to a hadith that does not say it. Every source was
 //      fetched, or read in Arabic, before it was written.
-const SEED_VERSION = 55;
+// v56: audit of the v55 commit. hadith_study_1 carries 'hasan_li_ghayrihi' instead of no
+//      grading — HadithLayer.tsx prints `grading || 'authentic'`, so removing the grade
+//      had made the screen say "Authentic" about Ibn Majah 224. Tawbah day 6 no longer
+//      shows hadith_tawbah_6 (Ibn Majah 4250, which printed "Authentic" with no grading
+//      although most graders call it Da'if); that day renders one layer fewer.
+const SEED_VERSION = 56;
 // Separate keys per content type — Quran and Hadith data change independently,
 // and each seeder used to write the SAME key at the end of its run. Since
 // initializeDatabase() awaits seedQuranContent() before seedHadithContent(),
