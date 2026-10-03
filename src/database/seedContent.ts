@@ -382,7 +382,55 @@ import type { Content, ContentAngle } from '../types';
 //      match (a byte-exact needle failed on every one, and slicing at the final
 //      consonant silently dropped the closing haraka until the span was extended
 //      past the trailing marks).
-const SEED_VERSION = 52;
+// v53: Rizq Revolution (path_rizq_revolution) — all 14 day angles
+//      (q_angle_rizq_day1-14) rewritten after a scholarly + clinical review. No
+//      new ids, no verse text touched. Fixed: Day 1 credited Ibn Kathir with a
+//      "written and guaranteed" reading of 51:22 when his entry says rain/Paradise;
+//      Day 8 told users to give "from what you need" against Bukhari 1426; Day 10
+//      labelled Abu Dawud 1518 (Da'if) as hasan and put an invented timing on the
+//      Nasa'i du'a; Days 2/5/7/11/14 attributed claims to Ghazali / Ibn al-Qayyim /
+//      Ibn Taymiyyah / Ibn Uthaymeen / Ibn Baaz that could not be located; Day 3's
+//      Imam Ahmad anecdote had no source. Added the Tirmidhi 3563 debt du'a (Day
+//      12), a crisis line on Day 12, and dropped lines that prosperity-gated
+//      worship or told hungry users "Has Allah ever left you starving?". Every
+//      source was fetched before it was written (mirror + sunnah.com + quran.com
+//      tafsir 169).
+// v54: Salah Transformation (path_salah_transformation) — all 7 day angles
+//      (q_angle_salah_1-7) corrected after a scholarly + clinical review. No new
+//      ids, no verse text touched. Fixed: Abu Dawud 874 (Hudhayfa's NIGHT prayer)
+//      had been cited on days 3, 5 and 6 for three different claims — it now
+//      backs only day 6 (the seat between the prostrations); day 3 cites Ibn
+//      Majah 803 (Abu Humayd: faced the qibla, raised his hands, said Allahu
+//      Akbar), day 5 cites Bukhari 793 and Muslim 772, day 6's imam rule cites
+//      Bukhari 689. Day 7's 33/33/34 moved from Bukhari 843 (which gives 33 each)
+//      to Muslim 596. Stitched English "quotes" on days 4 and 5 now match the
+//      published translations. Unlocatable "Ibn Rajab on 23:1-2" and "Ibn
+//      al-Qayyim on 29:45" angles were rewritten around Ibn Kathir's entries,
+//      and the day 2 / day 7 angles no longer credit Ibn Kathir with claims his
+//      entries do not make. Added a "a wandering mind is not a verdict" step
+//      (Bukhari 608) and a scholar/doctor pointer for prayer-doubt on days 1
+//      and 5. Every source was fetched before it was written.
+// v55: claims audit of all ten available journeys (scripts/verify-journey-claims.mjs, new).
+//      No new ids; no verse Arabic touched. Corrected: English in quotation marks that
+//      was not the published translation (Study 1-7, Results 1-7, Prayer Leadership
+//      1/4/7/10/14, Marriage Seeker 2/3/4/8/9, Rizq 1); 23 scripture/prophetic badges
+//      on steps that show no Arabic (Study, Results, Rizq) now carry no badge, and
+//      app-written exercises say "Suggested practice"; "Sahih Ibn Hibban 974" was the
+//      wrong number — Hisn al-Muslim 139 gives Ibn Hibban 2427 (Rizq 9, Study 4 + its
+//      hadith layer, whose Arabic also stopped after the first clause); Ibn Majah 224
+//      shown without the "hasan" grading sunnah.com contradicts; Results 4/6 and
+//      Study 1/2 stopped citing a hadith under a quote it does not contain or on two
+//      days; Prayer Leadership 1 now sources where a single follower stands (Bukhari
+//      699) instead of "Lead your people in prayer". Attributions that the cited
+//      tafsir does not make were rewritten or re-tagged: Hope 1 (Ibn Kathir/al-Sa'di
+//      on 12:86), Hope 3 (the "layers" are Ibn Kathir 21:87; the widening promise is
+//      al-Sa'di 21:88), Hope 7 (unfetchable "Madarij" -> Ibn Kathir 13:28), Death 1
+//      (Ibn Kathir never says the Companions disliked death), Death 4 (no "minor
+//      death" in al-Qurtubi's entry), Marriage 1/4/5/10 (al-Qurtubi/al-Sa'di),
+//      Prayer Leadership 7/13/14, Hope 5, Tawbah 3/9. Marriage 9 no longer adds
+//      "Monday or Thursday" to a hadith that does not say it. Every source was
+//      fetched, or read in Arabic, before it was written.
+const SEED_VERSION = 55;
 // Separate keys per content type — Quran and Hadith data change independently,
 // and each seeder used to write the SAME key at the end of its run. Since
 // initializeDatabase() awaits seedQuranContent() before seedHadithContent(),

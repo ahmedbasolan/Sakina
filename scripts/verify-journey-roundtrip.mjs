@@ -101,7 +101,7 @@ const contentById = new Map(quranContent.map((c) => [c.id, c]));
 
 const angleSrc = new Map(quranContentAngles.map((a) => [a.id, a]));
 
-for (const pathId of ['path_trusting_the_results', 'path_study_journaling', 'path_prayer_leadership', 'path_hope_after_crisis', 'path_marriage_seeker', 'path_tawbah_intensive', 'path_death_awareness', 'path_screen_detox']) {
+for (const pathId of ['path_rizq_revolution', 'path_salah_transformation', 'path_trusting_the_results', 'path_study_journaling', 'path_prayer_leadership', 'path_hope_after_crisis', 'path_marriage_seeker', 'path_tawbah_intensive', 'path_death_awareness', 'path_screen_detox']) {
   const path = STATIC_SPIRITUAL_PATHS.find((p) => p.id === pathId);
   console.log(`=== ${path.title} ===`);
   for (const step of path.dailySteps) {

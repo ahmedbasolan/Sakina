@@ -267,6 +267,13 @@ unreadable rather than as a bad citation.
 
 One citation stays unverifiable by script: `q_angle_rizq_day10`'s Sunan
 an-Nasa'i al-Kubra 9514. sunnah.com indexes al-Kubra by book with no item URN.
+It was checked by hand on 2026-10-02: `https://sunnah.com/nasaikubra/64` lists
+"Book 64, Hadith 9514" (Arabic only — Abu Musa hears the Prophet ﷺ say the du'a
+as he performs wudu, then asks about it). To re-check, fetch that book page and
+slice the text between the `Hadith 9513` and `Hadith 9514` labels — and do it in
+Node, not `grep -o '.{0,1700}…'`, which backtracks for minutes on a 4 MB page.
+Note the label sits AFTER the hadith it names ("Arabic reference : Book 64,
+Hadith 9514" ends the text above it).
 
 ---
 
@@ -490,10 +497,15 @@ on `q_angle_results_day1`–`day7`, `path_study_journaling` on
 both; **add any new journey to that script's `JOURNEYS` list** so the same
 check covers it.
 
-`path_rizq_revolution` and `path_salah_transformation` already use dedicated
-angles but predate this section — their angles are terser, lack the
-`[Tafsir ...]` tag, and Salah reuses `quran_29_45` on days 3 and 7. They are
-not in the verifier's list yet and would not pass it unchanged.
+`path_rizq_revolution` and `path_salah_transformation` also use dedicated
+angles and are now in the verifier's `JOURNEYS` list as strict, and in the
+roundtrip's path list. This paragraph used to say they predated this section and
+would not pass; both were rewritten on 2026-10-02 (SEED_VERSION 53 and 54) after
+a scholarly + clinical review, and both pass. What that review found is worth
+knowing before authoring the next journey: the verifiers passed while a hadith
+was cited on three days for three different claims, a 33/33/34 count was
+attributed to a hadith that says 33 each, and a stitched English "quote" sat
+next to a citation. Every one of those is a claim the verifiers cannot see.
 
 ### 1b. One verse and one hadith per journey
 
@@ -602,6 +614,38 @@ Four scripts, none of which need a device:
 - `node scripts/verify-journey-selftest.mjs` — injects 14 known faults into a
   sandbox copy and asserts the verifier catches each. Run it after editing
   `verify-journey.mjs`; a checker that only ever prints "passed" is untested.
+  Its fixtures are literal-text patches of `quranData.ts`: anchor a new one on
+  the line you mean, not on the quote character or line-wrapping around it — a
+  re-emit that switches `'…'` for `"…"` silently stales it.
+- `node scripts/verify-journey-claims.mjs` — the checks the scripts above cannot
+  make because they read structure and Arabic, not what the prose asserts. It runs
+  over **every** journey in `AVAILABLE_PATHS` and needs network + `curl`. Eight
+  checks: a hadith cited on two days (P1); an English quotation (>= 5 words) that
+  is not a verbatim substring of the hadith cited that day, the tagged Ibn Kathir
+  entry's prose, the verse shown on that day's screen, or a Sahih International
+  ayah it cites (P2); a quote that is the verse but worded differently from the
+  verse card (P3); a scholar credited who is not the tagged tafsir, a tag it cannot
+  fetch, an early authority absent from the tagged entry (P4); a `sourceGrading`
+  or prose "graded sahih" that the published gradings contradict (P5); a hadith
+  layer that is not recognisably the published text (P6); a badge that promises
+  words but shows no Arabic (P7); a bare hadith citation under a "Sunnah Action"
+  badge nobody has reviewed (P8). `CLAIMS_INJECT=1` injects 12 faults and exits 0
+  only if each is detected; `CLAIMS_REV=HEAD` runs the checks on the committed
+  data (on 2026-10-03 it reported 150 failures there and 0 on the fixed tree);
+  `CLAIMS_DETAIL=1` prints the published text under each P2 failure. Both normal
+  and inject modes exiting 0 is the green state.
+  **Exemptions are human decisions with a recorded reason** — the `ALLOW_*` and
+  `HUMAN_REVIEWED` lists at the top of the file. Every entry dated 2026-10-03 was
+  read by an AI assistant against fetched text (Arabic tafsir read in Arabic); that
+  is a second pair of eyes, not scholarly sign-off. **What it does not catch**, and
+  what that first review found by hand: an instruction that is wrong under a correct
+  citation; a *number* that belongs to a different hadith (33/33/34 cited to a
+  hadith that says 33 each); a paraphrase that drifted from its source; a quote that
+  stops early; the contents of Arabic tafsir entries (al-Qurtubi, al-Sa'di) — five
+  of whose attributions were wrong and are only guarded by the `ALLOW_SCHOLARS`
+  ledger; and anything in an unfetchable collection (Ibn Hibban, Hisn, al-Kubra).
+  A green run means those *mechanical* faults are absent. It does not mean the
+  content is correct.
 
 Between them they caught a collapsed Understand/Matters split, a stray-space
 artifact, and a brace-matcher that counted `{` inside string literals — none
@@ -652,6 +696,11 @@ of which a typecheck can see.
     verifier. That surfaces as the angles being reported *missing* and the
     days *borrowing mood angles*: 40 failures, one cause, and not one of the
     messages naming it. Quote ids with `'`; keep `JSON.stringify` for prose.
+    This happened a second time on 2026-10-03 inside a re-emit script that
+    `JSON.stringify`'d every string field of a JSON-style angle: `id: "…"`,
+    two angles went invisible, and the next verifier run died with "unresolved
+    angle" rather than a message about quoting. `id`, `contentId` and `mood`
+    are the three fields that must stay single-quoted.
 
 `staticPaths.ts` is **CRLF** and several `focus`/`title` strings contain escaped
 apostrophes (`Allah\'s`). A `/focus: '[^']*'/` style regex stops at the escape
