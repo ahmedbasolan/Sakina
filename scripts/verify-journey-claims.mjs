@@ -96,7 +96,7 @@ const BROWSER_UA =
 //
 // Quote exemptions: [angleId, substring of the quotation, reason]
 const ALLOW_QUOTES = [
-  ['q_angle_rizq_day10', 'Is there anyone asking of Me', "Ibn Kathir's 51:22 entry cites this hadith ('Allah descends…') from the Sahih collections; the step says so. No hadith number was given, so none is cited."],
+  ['q_angle_rizq_day6', 'Is there anyone asking of Me', "Ibn Kathir's 51:22 entry cites this hadith ('Allah descends…') from the Sahih collections; the step says so. No hadith number was given, so none is cited."],
   ['q_angle_crisis_day1', 'I am not okay and I did not want to say it alone', 'Sample message the app suggests the user send — app-written, not a quotation of any source.'],
   ['q_angle_crisis_day6', 'how long until this is over', 'The question the step asks the user to stop asking — app-written, not a quotation.'],
   ['q_angle_crisis_day6', 'what is present alongside it right now', 'The question the step asks the user to ask instead — app-written, not a quotation.'],
@@ -122,8 +122,6 @@ const ALLOW_SCHOLARS = [
 // found to say what the step asks: [angleId, step title, what the hadith says]
 const HUMAN_REVIEWED = [
   ['q_angle_rizq_day4', 'Tie your camel', "Tirmidhi 2517: a man asks whether to tie his camel and rely on Allah or leave it loose and rely; the Prophet says 'Tie it and rely'."],
-  ['q_angle_rizq_day7', 'Be exact in one deal', 'Bukhari 2079: if buyer and seller speak the truth and describe defects they are blessed in their transaction; if they lie or hide something the blessing is lost.'],
-  ['q_angle_rizq_day8', 'Give from what you can spare', "Bukhari 1426: 'the best charity is that which is practiced by a wealthy person. And start giving first to your dependents'."],
   ['q_angle_salah_5', 'Stillness until you are settled', 'Bukhari 793: the man who prayed hastily is told to bow, rise, prostrate and sit each with calmness till he feels at ease.'],
   ['q_angle_study_day7', 'Thank a person by name', "Abu Dawud 4811: 'He who does not thank the people is not thankful to Allah'."],
   ['q_angle_results_day3', "Take it into two rak'ah", "Muslim 482: 'The nearest a servant comes to his Lord is when he is prostrating himself, so make supplication (in this state)'."],

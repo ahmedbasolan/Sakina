@@ -265,7 +265,7 @@ the same text check against sunnah.com for the collections the mirror cannot
 answer. It needs network and `curl`, and treats an unreachable page as
 unreadable rather than as a bad citation.
 
-One citation stays unverifiable by script: `q_angle_rizq_day10`'s Sunan
+One citation stays unverifiable by script: `q_angle_rizq_day6`'s Sunan
 an-Nasa'i al-Kubra 9514. sunnah.com indexes al-Kubra by book with no item URN.
 It was checked by hand on 2026-10-02: `https://sunnah.com/nasaikubra/64` lists
 "Book 64, Hadith 9514" (Arabic only — Abu Musa hears the Prophet ﷺ say the du'a
