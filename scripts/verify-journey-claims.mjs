@@ -116,6 +116,7 @@ const ALLOW_SCHOLARS = [
   ['q_angle_marriage_day1', 'qurtubi', "al-Qurtubi on 30:21 (read in Arabic): Ibn Abbas/Mujahid/al-Hasan — mawaddah = intimacy, rahmah = the child; as-Suddi — love / compassion; Ibn Abbas — a man's love for his wife / his mercy toward her."],
   ['q_angle_marriage_day4', 'sadi', "al-Sa'di on 2:216 (read in Arabic): general for acts of obedience/sin; not absolute for worldly matters; Allah is more merciful to the servant than himself and knows his interest better — matches the angle."],
   ['q_angle_marriage_day5', 'qurtubi', "al-Qurtubi on 24:32 (read in Arabic, 6th point): do not refrain from marriage over poverty; a promise of enrichment to those who marry seeking Allah's pleasure and protection from sin; Ibn Masud — 'seek wealth in marriage' — matches the angle."],
+  ['q_angle_marriage_day7', 'qurtubi', "al-Qurtubi on 3:159 (read in Arabic, 2026-10-04): the ayah's meaning is that the Prophet was gentle with those who turned away on the day of Uhud and did not rebuke them, and Allah shows that this was by His enabling — the angle's Uhud context. Ibn Kathir's entry on 3:159 gives the consultation sequence but not this occasion."],
   ['q_angle_marriage_day10', 'sadi', "al-Sa'di on 20:131 (read in Arabic): provision of your Lord = knowledge/faith/deeds now and lasting bliss after, better in itself and more lasting; remind yourself of it and weigh the two — matches the angle."],
 ];
 // "Sunnah Action" steps whose bare citation was read against the fetched hadith and
