@@ -379,7 +379,7 @@ function sunnahUrn(name) {
   if (n.includes('nawawi')) return 'nawawi40';
   if (n.includes('hibban')) return 'ibnhibban';
   if (n.includes('adab')) return 'adab';
-  if (n.includes('kubra')) return null; // al-Kubra is indexed by book, no item URN
+  if (n.includes('kubra')) return 'nasaikubra'; // served by item number (sunnah.com/nasaikubra:9514); an earlier note here said it was book-indexed only
   if (n.includes('ahmad')) return 'ahmad';
   if (n.includes('muslim')) return 'muslim';
   return null;
@@ -427,7 +427,7 @@ for (const o of objects('q_angle_')) {
   }
 }
 console.log(`\nchecked ${sChecked} citations against sunnah.com directly ` +
-            `(${sUnread} unreadable, ${sNoUrn} with no item URN — Nasa'i al-Kubra is book-indexed)`);
+            `(${sUnread} unreadable, ${sNoUrn} with no sunnah.com collection)`);
 console.log(`steps whose Arabic is NOT in the hadith they cite: ${sMismatch.length}`);
 for (const r of sMismatch) console.log(`  ${r.id}  ·  ${r.title}  ·  ${r.ref}  ·  overlap ${r.score.toFixed(2)}`);
 

@@ -453,7 +453,10 @@ import type { Content, ContentAngle } from '../types';
 //      Study d3 credited Ibn Kathir (22:77) with calling 'do good' unbounded - his entry never
 //      discusses it; re-tagged to al-Sa'di, whose entry does say the command is general. Prayer
 //      Leadership d2 gave Ibn Kathir a single view and an 'every unit' reason - he records two views.
-const SEED_VERSION = 61;
+// v62: the Hisn al-Muslim 139 hadith is now cited as 'Sahih Ibn Hibban 974' (the number sunnah.com, al-Albani
+//      and Ibn Hajar use; Hisn's printed 2427 is another edition's), and q_angle_87_8_tired grades it sahih to
+//      match q_angle_6_17_stressed. All three read from sunnah.com / Dorar on 2026-10-04.
+const SEED_VERSION = 62;
 // Separate keys per content type — Quran and Hadith data change independently,
 // and each seeder used to write the SAME key at the end of its run. Since
 // initializeDatabase() awaits seedQuranContent() before seedHadithContent(),

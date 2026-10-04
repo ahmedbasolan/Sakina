@@ -12799,7 +12799,7 @@ const quranContentAnglesData: ContentAngle[] = [
     actionArabicText: 'اللَّهُمَّ لَا سَهْلَ إِلَّا مَا جَعَلْتَهُ سَهْلًا، وَأَنْتَ تَجْعَلُ الْحَزْنَ إِذَا شِئْتَ سَهْلًا',
     actionTransliteration: "Allahumma la sahla illa ma ja'altahu sahla, wa anta taj'alu l-hazna idha shi'ta sahla",
     actionTranslation: 'O Allah, nothing is easy except what You make easy, and You make the difficult easy if You wish',
-    actionSource: 'Hisn al-Muslim 139 (Ibn Hibban 2427)',
+    actionSource: 'Hisn al-Muslim 139 (Sahih Ibn Hibban 974)',
     practiceSteps: JSON.stringify([
       {
         type: 'mindset',
@@ -12816,7 +12816,7 @@ const quranContentAnglesData: ContentAngle[] = [
         arabicText: 'اللَّهُمَّ لَا سَهْلَ إِلَّا مَا جَعَلْتَهُ سَهْلًا، وَأَنْتَ تَجْعَلُ الْحَزْنَ إِذَا شِئْتَ سَهْلًا',
         transliteration: "Allahumma la sahla illa ma ja'altahu sahla, wa anta taj'alu l-hazna idha shi'ta sahla",
         translation: 'O Allah, nothing is easy except what You make easy, and You make the difficult easy if You wish',
-        source: 'Hisn al-Muslim 139 (Ibn Hibban 2427)',
+        source: 'Hisn al-Muslim 139 (Sahih Ibn Hibban 974)',
         sourceType: 'prophetic_dua',
         sourceGrading: 'sahih',
       },
@@ -13162,7 +13162,7 @@ const quranContentAnglesData: ContentAngle[] = [
         translation: 'O Allah, there is no ease except what You make easy',
         source: 'Sahih Ibn Hibban 974 (Hisn al-Muslim 139)',
         sourceType: 'prophetic_dua',
-        sourceGrading: 'hasan',
+        sourceGrading: 'sahih',
       },
       {
         type: 'mindset',
