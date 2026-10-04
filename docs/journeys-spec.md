@@ -7,8 +7,11 @@ author against, not finished content.
 
 ## Principles
 
-1. **7 days is the default.** Low attention spans make 14 feel long. A complete
-   transformation arc fits in 7 (Salah Transformation proves it).
+1. **7 days is the minimum, and the default.** Low attention spans make 14 feel
+   long. A complete transformation arc fits in 7 (Salah Transformation proves it).
+   Go longer when the subject's severity needs it (confirmed by Ahmed 2026-10-04):
+   a heavier subject earns more days; a lighter one stays at 7. The tables below
+   are targets for the current stubs, not a ceiling.
 2. **14 days only for a genuine multi-stage arc** — where day 8 is new
    territory, not "more verses." Sabr, tawbah, and decision journeys qualify.
 3. **Keep 21–90 only where the duration *is* the therapy** (habit rewiring,
