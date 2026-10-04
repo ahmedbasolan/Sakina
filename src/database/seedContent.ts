@@ -444,7 +444,10 @@ import type { Content, ContentAngle } from '../types';
 //      Prayer Leadership d7/d9/d11 (Jumu'ah recitation claim softened; Ameen and the sujud al-sahw
 //      timing now say schools differ), Tawbah d7 (don't contact the person wronged if that would
 //      harm), Results d1 (Musa's du'a ordering), Marriage d9 (hadith: 'young and had no wealth').
-const SEED_VERSION = 58;
+// v59: Prayer Leadership d1/d8 say the journey is written for a man leading and send a woman to a
+//      scholar for how her school arranges the row; Death Awareness d1 gains a plain 'if this turns into
+//      thoughts of ending your life' line pointing at findahelpline.com and the Hope journey.
+const SEED_VERSION = 59;
 // Separate keys per content type — Quran and Hadith data change independently,
 // and each seeder used to write the SAME key at the end of its run. Since
 // initializeDatabase() awaits seedQuranContent() before seedHadithContent(),

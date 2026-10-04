@@ -16273,7 +16273,7 @@ const quranContentAnglesData: ContentAngle[] = [
         type: 'physical',
         icon: 'person',
         title: 'Lead the smallest congregation there is',
-        instruction: 'Lead one prayer at home this week — your family, or one friend. If only one person joins you he stands level with you on your right, not behind (Day 8 covers how a row forms once there are two). Confidence is built at that size, not at the front of a full masjid.',
+        instruction: 'Lead one prayer at home this week — your family, or one friend. If only one person joins you he stands level with you on your right, not behind (Day 8 covers how a row forms once there are two). Confidence is built at that size, not at the front of a full masjid. These days are written for a man leading; if you are a woman, whether and how you lead other women is something schools answer differently, so ask a trusted scholar before using Day 8 — the days on learning and reciting surahs are useful either way.',
         source: '"…he drew me to his right by holding me by the head" [Sahih al-Bukhari 699]',
       },
       {
@@ -16513,7 +16513,7 @@ const quranContentAnglesData: ContentAngle[] = [
         icon: 'person',
         title: 'Where they stand, by how many',
         instruction:
-          'One man praying with you stands level with you on your right, not behind you — the Prophet ﷺ twice moved someone from his left round to his right. When a second man arrives, both step back and form a row. Only from that point are you alone in front.',
+          'One man praying with you stands level with you on your right, not behind you — the Prophet ﷺ twice moved someone from his left round to his right. When a second man arrives, both step back and form a row. Only from that point are you alone in front. This describes a man leading; if you are a woman leading women, ask a trusted scholar how your school arranges the row.',
         source: '"He then took and brought me around him and set me on his right side. Then Ibn Sakhr came and stood on his left side. He then took us with his both hands and made us stand behind him." [Sunan Abi Dawud 634]',
       },
       {
@@ -17635,7 +17635,7 @@ const quranContentAnglesData: ContentAngle[] = [
         type: 'mindset',
         icon: 'light-bulb',
         title: 'Name the fear plainly',
-        instruction: 'Write down the specific thing about death that unsettles you — the unknown, leaving people behind, the account itself. Naming the fear is not weak faith; it is the first move toward preparing for the thing you named.',
+        instruction: 'Write down the specific thing about death that unsettles you — the unknown, leaving people behind, the account itself. Naming the fear is not weak faith; it is the first move toward preparing for the thing you named. If thinking about death ever turns into thoughts of ending your life, stop here: tell someone you trust today, or open findahelpline.com for free, confidential support. The Hope journey in this app is written for exactly that.',
         source: 'Suggested practice — the theme of Surah Ali Imran 3:185',
       },
       {
