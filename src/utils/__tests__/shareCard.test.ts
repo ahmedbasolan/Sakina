@@ -218,7 +218,11 @@ describe('shareCardLayout', () => {
 // prevent). WHAT IT DOES NOT CATCH: a new padding added to some other style
 // inside the card, which the budget would not know about either.
 describe('ShareSheet styles use SHARE_CARD_INSETS', () => {
-  const source = fs.readFileSync(path.join(__dirname, '../../components/ShareSheet.tsx'), 'utf8');
+  // Normalise CRLF: a Windows checkout (autocrlf) has `\r\n`, and every `\n`-anchored
+  // lookup below would miss and fail on a correct file.
+  const source = fs
+    .readFileSync(path.join(__dirname, '../../components/ShareSheet.tsx'), 'utf8')
+    .replace(/\r\n/g, '\n');
   const styleBlock = (name: string): string => {
     const start = source.indexOf(`  ${name}: {\n`);
     expect(start).toBeGreaterThan(-1);
