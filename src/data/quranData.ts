@@ -12397,7 +12397,7 @@ const quranContentAnglesData: ContentAngle[] = [
         type: 'verbal',
         icon: 'hands-prayer',
         title: 'Hand over the rest',
-        instruction: "When the action is done, say the du'a of Musa (peace be upon him) before a hard task. You are asking for an expanded chest and an eased affair — not for the outcome to be changed, but for you to be carried through it.",
+        instruction: "Before you start the part that is yours, say the du'a of Musa (peace be upon him) — and again when you are done, if the worry returns. You are asking for an expanded chest and an eased affair — not for the outcome to be changed, but for you to be carried through it.",
         arabicText: 'رَبِّ اشْرَحْ لِي صَدْرِي وَيَسِّرْ لِي أَمْرِي',
         transliteration: 'Rabbi ishrah li sadri wa yassir li amri',
         translation: 'My Lord, expand for me my breast and ease for me my task',
@@ -16480,7 +16480,7 @@ const quranContentAnglesData: ContentAngle[] = [
         type: 'verbal',
         icon: 'book-quran',
         title: "Add Al-A'la and Al-Ghashiyah",
-        instruction: "Both are short, both are heard every Jumu'ah, and a congregation recognises them from the first line. Learn them in that order.",
+        instruction: "Both are short, both are Sunnah recitations for Jumu'ah and the two 'Eids, and a congregation recognises them from the first line. Learn them in that order.",
         source: "\"…the Messenger of Allah (ﷺ) used to recite on two 'Ids and in Friday prayer…\" [Sahih Muslim 878]",
       },
       {
@@ -16580,7 +16580,7 @@ const quranContentAnglesData: ContentAngle[] = [
         icon: 'chat',
         title: 'Leave a beat for the Ameen',
         instruction:
-          'Say Ameen after the last ayah of Al-Fatihah, then pause before starting the surah. That silence is where the row says it with you.',
+          'Say Ameen after the last ayah of Al-Fatihah in the way your school teaches — schools differ on whether the imam says it aloud or quietly — then pause before starting the surah. Where the imam says it aloud, that silence is where the row says it with you.',
         source: '"Say Amin when the Imam says it." [Sahih al-Bukhari 780]',
       },
     ]),
@@ -16631,7 +16631,7 @@ const quranContentAnglesData: ContentAngle[] = [
         icon: 'shield',
         title: 'Take the lower number',
         instruction:
-          'If you cannot remember whether that was three or four, treat it as three, complete the prayer, and prostrate twice before the salam.',
+          'If you cannot remember whether that was three or four, treat it as three, complete the prayer, and prostrate twice. This narration puts the two prostrations before the salam; schools differ on the details of doubt and on that timing, so follow your own school.',
         source: '"He should cast aside his doubt and base his prayer on what he is sure of, then perform two prostrations before giving salutations." [Sahih Muslim 571]',
       },
       {
@@ -17363,7 +17363,7 @@ const quranContentAnglesData: ContentAngle[] = [
         type: 'mindset',
         icon: 'compass',
         title: 'The instruction was for people with nothing yet',
-        instruction: 'This hadith was addressed to companions with no income and no prospects in sight — not to people who already had everything arranged. Wherever you are in the process right now, this instruction was written for exactly that stage.',
+        instruction: 'This hadith was addressed to young companions who had no wealth — not to people who already had everything arranged. Wherever you are in the process right now, this instruction was written for exactly that stage.',
         source: 'Reflects Bukhari 5066',
       },
     ]),
@@ -17592,7 +17592,7 @@ const quranContentAnglesData: ContentAngle[] = [
     contentId: 'quran_24_22',
     mood: 'Guilty',
     angle: "[Tafsir Ibn Kathir on 24:22] Ibn Kathir records the occasion of this ayah: after the slander against Aisha, Abu Bakr as-Siddiq swore he would never again spend on Mistah, a relative he had been supporting who had taken part in spreading it. The ayah came addressed to people of virtue and means, telling them not to swear off giving — and then asked a question instead of issuing a threat: ala tuhibbuna an yaghfira Allahu lakum, would you not love that Allah should forgive you. Ibn Kathir notes that Abu Bakr's answer was to resume the support immediately. Read on the seventh day of a return, the ayah names the half of repentance that cannot be settled privately, because a sin that touched another person leaves two ledgers rather than one — what you owe, and what you are holding. When you ask to be forgiven while refusing to forgive, the ayah does not call it hypocrisy; it simply puts the two side by side and lets the question do the work.",
-    practiceSteps: JSON.stringify([{"type":"verbal","icon":"hands-prayer","title":"The du'a Abu Bakr asked for","instruction":"Abu Bakr as-Siddiq asked the Prophet ﷺ to teach him a supplication to use in his prayer, and this is what he was given. Say it in your own prayer today.","arabicText":"اللَّهُمَّ إِنِّي ظَلَمْتُ نَفْسِي ظُلْمًا كَثِيرًا وَلاَ يَغْفِرُ الذُّنُوبَ إِلاَّ أَنْتَ، فَاغْفِرْ لِي مَغْفِرَةً مِنْ عِنْدِكَ، وَارْحَمْنِي إِنَّكَ أَنْتَ الْغَفُورُ الرَّحِيمُ","transliteration":"Allahumma inni zalamtu nafsi zulman kathiran wa la yaghfiru adh-dhunuba illa anta, faghfir li maghfiratan min indika, warhamni innaka anta al-Ghafuru ar-Rahim","translation":"O Allah! I have done great injustice to myself and none except You forgives sins, so bestow on me a forgiveness from You, and have mercy on me, You are the Forgiver, the Merciful.","source":"Sahih al-Bukhari 834","sourceType":"prophetic_dua","sourceGrading":"sahih"},{"type":"physical","icon":"handshake","title":"Settle one thing you owe","instruction":"The Prophet ﷺ said that whoever has wronged another in his reputation or anything else should seek his pardon today, before a Day when there is no money to settle with. Pick one person you actually wronged and contact them — briefly, without a speech, and without requiring that they respond well.","source":"Sahih al-Bukhari 2449","sourceType":"sunnah_action","sourceGrading":"sahih"},{"type":"mindset","icon":"heart","title":"Release one thing you are holding","instruction":"Abu Bakr was within his rights and the ayah still asked him the question. Name one person whose debt to you you are still holding, and decide whether you want that ledger open on the Day you are asking to have your own closed.","source":"Tafsir Ibn Kathir on 24:22"}]),
+    practiceSteps: JSON.stringify([{"type":"verbal","icon":"hands-prayer","title":"The du'a Abu Bakr asked for","instruction":"Abu Bakr as-Siddiq asked the Prophet ﷺ to teach him a supplication to use in his prayer, and this is what he was given. Say it in your own prayer today.","arabicText":"اللَّهُمَّ إِنِّي ظَلَمْتُ نَفْسِي ظُلْمًا كَثِيرًا وَلاَ يَغْفِرُ الذُّنُوبَ إِلاَّ أَنْتَ، فَاغْفِرْ لِي مَغْفِرَةً مِنْ عِنْدِكَ، وَارْحَمْنِي إِنَّكَ أَنْتَ الْغَفُورُ الرَّحِيمُ","transliteration":"Allahumma inni zalamtu nafsi zulman kathiran wa la yaghfiru adh-dhunuba illa anta, faghfir li maghfiratan min indika, warhamni innaka anta al-Ghafuru ar-Rahim","translation":"O Allah! I have done great injustice to myself and none except You forgives sins, so bestow on me a forgiveness from You, and have mercy on me, You are the Forgiver, the Merciful.","source":"Sahih al-Bukhari 834","sourceType":"prophetic_dua","sourceGrading":"sahih"},{"type":"physical","icon":"handshake","title":"Settle one thing you owe","instruction":"The Prophet ﷺ said that whoever has wronged another in his reputation or anything else should seek his pardon today, before a Day when there is no money to settle with. Pick one person you actually wronged and contact them — briefly, without a speech, and without requiring that they respond well. If contacting them would hurt them, uncover something they do not know, or put either of you at risk, do not — ask a trusted scholar how to put it right another way, and make du'a for them in the meantime.","source":"Sahih al-Bukhari 2449","sourceType":"sunnah_action","sourceGrading":"sahih"},{"type":"mindset","icon":"heart","title":"Release one thing you are holding","instruction":"Abu Bakr was within his rights and the ayah still asked him the question. Name one person whose debt to you you are still holding, and decide whether you want that ledger open on the Day you are asking to have your own closed.","source":"Tafsir Ibn Kathir on 24:22"}]),
     reflection: "Whose pardon do you owe that you have been calling 'not the right time' — and how long has it not been the right time?",
   },
   {
