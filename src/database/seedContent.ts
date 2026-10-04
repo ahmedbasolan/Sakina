@@ -456,7 +456,13 @@ import type { Content, ContentAngle } from '../types';
 // v62: the Hisn al-Muslim 139 hadith is now cited as 'Sahih Ibn Hibban 974' (the number sunnah.com, al-Albani
 //      and Ibn Hajar use; Hisn's printed 2427 is another edition's), and q_angle_87_8_tired grades it sahih to
 //      match q_angle_6_17_stressed. All three read from sunnah.com / Dorar on 2026-10-04.
-const SEED_VERSION = 62;
+// v63: tafsir attributions corrected after reading every tag in the 10 available journeys against the fetched
+//      entries (2026-10-04): wording that credited a scholar with the app's own framing, or with something the
+//      entry does not say, now says what the entry says. Study d1/d2/d6, Results d2/d3/d4/d7 (d2 re-tagged to
+//      al-Qurtubi 94:6 and hedged as a reading), Prayer Leadership d1/d4/d14, Hope d4 (re-tagged to al-Qurtubi
+//      50:16: Ibn Kathir takes the nearness as the angels, not knowledge), Marriage d2/3/5/6/7/8/9/10/11/14,
+//      Screen Detox d2/d6.
+const SEED_VERSION = 63;
 // Separate keys per content type — Quran and Hadith data change independently,
 // and each seeder used to write the SAME key at the end of its run. Since
 // initializeDatabase() awaits seedQuranContent() before seedHadithContent(),
