@@ -12372,7 +12372,7 @@ const quranContentAnglesData: ContentAngle[] = [
     mood: 'Overwhelmed',
     angle: '[Tafsir Ibn Kathir on 3:159] The order Allah gives in this ayah is deliberate: consult the matter (shūrā), then resolve on it, and only then rely — "Then when you have decided, put your trust in Allah." Tawakkul is placed after the work, never instead of it. When you have studied, revised, and done what was genuinely in your hand, the outcome stops being your burden to carry. Allah names His love for al-mutawakkilīn — those who rely on Him — and He names it for the one who acts first, then entrusts the rest.',
     action: 'Name the one preparation step that is still yours to do today — then do it, and hand the outcome over deliberately.',
-    actionHowTo: "Write the action down before you start, and when it is finished say the du'a of Musa (peace be upon him) once, out loud: \"Rabbi ishrah li sadri wa yassir li amri.\"",
+    actionHowTo: "Write the action down, then say the du'a of Musa (peace be upon him) once, out loud, before you start — and again when you finish, if the worry returns: \"Rabbi ishrah li sadri wa yassir li amri.\"",
     actionReward: 'Allah closes the ayah with a promise, not a warning: "Indeed, Allah loves those who put their trust in Him." [Quran 3:159]',
     actionArabicText: 'رَبِّ اشْرَحْ لِي صَدْرِي وَيَسِّرْ لِي أَمْرِي',
     actionTransliteration: 'Rabbi ishrah li sadri wa yassir li amri',
