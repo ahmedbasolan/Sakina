@@ -1,6 +1,7 @@
 import { SpiritualPath, PathStep, UserPathProgress, Mood, SpecialEditionBundle } from '../types';
 import { STATIC_SPIRITUAL_PATHS, SPECIAL_EDITION_BUNDLES } from '../data/staticPaths';
 import { SupabaseDataService } from './supabaseDataService';
+import { migrateRizqProgress } from '../utils/rizqProgressMigration';
 
 /**
  * kv_store key holding the id of the journey whose day was opened most
@@ -227,9 +228,21 @@ export class PathsService {
     }
   }
 
+  /**
+   * Rizq went from 14 to 7 days; a row saved under the old numbering is remapped
+   * and written back once (see rizqProgressMigration.ts). Any other row passes
+   * through untouched, and a failed write-back just means we remap again next read.
+   */
+  private async applyMigrations(progress: UserPathProgress): Promise<UserPathProgress> {
+    const migrated = migrateRizqProgress(progress);
+    if (migrated !== progress) await this.saveProgress(migrated);
+    return migrated;
+  }
+
   async loadProgress(pathId: string): Promise<UserPathProgress | null> {
     try {
-      return await this.supabaseData.getPathProgress(pathId);
+      const progress = await this.supabaseData.getPathProgress(pathId);
+      return progress ? await this.applyMigrations(progress) : progress;
     } catch (error) {
       console.error('Error loading path progress:', error);
       return null;
@@ -238,7 +251,8 @@ export class PathsService {
 
   async getAllProgress(): Promise<UserPathProgress[]> {
     try {
-      return await this.supabaseData.getAllPathProgress();
+      const all: UserPathProgress[] = await this.supabaseData.getAllPathProgress();
+      return await Promise.all(all.map((p) => this.applyMigrations(p)));
     } catch (error) {
       console.error('Error loading all path progress:', error);
       return [];
