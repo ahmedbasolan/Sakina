@@ -59,8 +59,9 @@
  *     not compared.
  *   - Tafsir entries in Arabic (al-Qurtubi, al-Sa'di) cannot be quote-checked
  *     here; their tags are accepted, with the Arabic read by a human.
- *   - Citations to Ibn Hibban, Musnad Ahmad, Hisn al-Muslim and al-Kubra are not
- *     fetchable by number; they are listed as UNVERIFIED notes, not failures.
+ *   - Musnad Ahmad is not fetched. Hisn al-Muslim, Sahih Ibn Hibban and al-Kubra are fetched from
+ *     sunnah.com by number, but that site answers ANY number, so a page that loads does not prove the
+ *     number is right; verify-citations.mjs pass 6 checks the step's Arabic against the page.
  *   - It does not verify that a cited hadith number is the RIGHT hadith for the
  *     day's theme; only that quoted words exist in it.
  *   - Every exemption lives in ALLOW_* below with a reason. An exemption is a
@@ -68,7 +69,7 @@
  *
  * Modes (both exiting 0 is the green state, as with RT_INJECT / RH_INJECT):
  *   node scripts/verify-journey-claims.mjs                 normal run
- *   CLAIMS_INJECT=1 node scripts/verify-journey-claims.mjs injects 14 known faults
+ *   CLAIMS_INJECT=1 node scripts/verify-journey-claims.mjs injects 15 known faults
  *                                                           and exits 0 only if
  *                                                           each is detected
  *   CLAIMS_REV=HEAD node scripts/verify-journey-claims.mjs runs the checks on the
@@ -105,7 +106,6 @@ const ALLOW_QUOTES = [
   ['q_angle_death_day5', 'I am a traveler here', "A thought the reader may have ('shifts from … to …'), not a quotation of a source."],
   ['q_angle_death_day5', 'I want the trip to be over', "A thought the reader may have, introducing the pointer to the Hope journey — not a quotation of a source."],
   ['q_angle_death_day7', 'I want this to be over', "A thought the reader may have, introducing the pointer to the Hope journey — not a quotation of a source."],
-  ['q_angle_study_day4', 'there is no ease other than what You make easy', "Quoted from Hisn al-Muslim 139 as sunnah.com prints it (read 2026-10-03). The entry is not fetchable by number, so this check cannot see it."],
 ];
 // Tags naming a tafsir this script cannot fetch: [angleId, reason]
 const ALLOW_TAGS = [];
@@ -147,11 +147,10 @@ const ALLOW_LAYERS = [
   ['q_angle_study_day3', "The layer shows only the opening fragment, innama al-a'mal bi-l-niyyat, and 'Actions are but by intentions' is its standard translation; the USC text renders the whole sentence differently."],
 ];
 // Citations that cannot be fetched by number but were checked by hand: [key, reason]
-const ALLOW_UNVERIFIED = [
-  ['nasaikubra:9514', "Checked by hand 2026-10-02 at sunnah.com/nasaikubra/64 (Book 64, Hadith 9514): Abu Musa hears the Prophet say the du'a while performing wudu."],
-  ['hisn:139', "Checked by hand 2026-10-03 via sunnah.com search ('la sahla illa ma ja altahu sahla'): Hisn al-Muslim 139, 'Reference: Ibn Hibban in his Sahih (no. 2427), and Ibn As-Sunni (no. 351). Al-Hafidh (Ibn Hajar) said that this Hadith is authentic… also declared authentic by Abdul-Qadir Al-Arna'ut'."],
-  ['ibnhibban:2427', "Same Hisn al-Muslim 139 entry (2026-10-03). The number 974, used before, matches nothing there."],
-];
+// Citations the script could not fetch. Empty since 2026-10-04: Hisn al-Muslim, Sahih Ibn Hibban and
+// Nasa'i al-Kubra are all served by number at sunnah.com/<coll>:<n>. The old entries here said they
+// were not, and one recorded 974 as a wrong Ibn Hibban number when it is the right one.
+const ALLOW_UNVERIFIED = [];
 
 // ── helpers ──────────────────────────────────────────────────────────────────
 const read = (f) => (REV ? execFileSync('git', ['show', `${REV}:${f}`], { cwd: ROOT, maxBuffer: 1 << 30 }).toString('utf8') : fs.readFileSync(path.join(ROOT, f), 'utf8'));
@@ -287,9 +286,44 @@ async function fetchHadith(key) {
       const en = sunnahEnglish('muslim', num);
       return en ? { en, alt: null, grades: null } : null;
     }
+    if (SUNNAH_ONLY.has(coll) && /^\d+$/.test(num)) {
+      const p = sunnahPage(coll, num);
+      return p ? { en: p.text, alt: null, grades: EXTERNAL_GRADES[key] || p.grades } : null;
+    }
     return null;
   });
 }
+
+// Hisn al-Muslim, Sahih Ibn Hibban and Nasa'i al-Kubra are not on the mirror, but sunnah.com
+// serves each by number (sunnah.com/<coll>:<n>). Hisn has an English field; Ibn Hibban and
+// al-Kubra are Arabic only. NOTE sunnah.com answers ANY number with some hadith, so a page that
+// loads proves nothing about the number: verify-citations.mjs pass 6 is what checks the
+// step's Arabic against the page (it caught nothing here because the numbers are right).
+const SUNNAH_ONLY = new Set(['hisn', 'ibnhibban', 'nasaikubra']);
+function sunnahPage(coll, num) {
+  const html = execFileSync('curl', ['-sL', '--max-time', '30', '-A', BROWSER_UA, `https://sunnah.com/${coll}:${num}`], { maxBuffer: 1 << 26 }).toString().replace(/\s+/g, ' ');
+  const take = (re) => { const m = html.match(re); return m ? m[1].replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim() : null; };
+  const en = take(/<div class="?english_hadith_full[^>]*>(.*?)<\/div>/);
+  const ar = take(/<div class="?arabic_hadith_full arabic"?[^>]*>(.*?)<\/div>/);
+  const text = en || ar;
+  if (!text) return null;
+  // Hisn prints its own verdict in the English field ("Al-Hafidh (Ibn Hajar) said that this
+  // Hadith is authentic ... also declared authentic by 'Abdul-Qadir Al-Arna'ut").
+  const grades = coll === 'hisn' && /\bauthentic\b/i.test(en || '')
+    ? [{ name: "Ibn Hajar / al-Arna'ut (as printed in Hisn on sunnah.com)", grade: 'Sahih' }]
+    : null;
+  return { text, grades };
+}
+// Gradings read from a source on 2026-10-04 for collections sunnah.com does not grade.
+// Each entry names where it was read; add none from memory.
+const EXTERNAL_GRADES = {
+  // surahquran.com/Hadith-66451.html (Dorar al-Sunniyya data): al-Albani, Silsilah Sahihah 2886,
+  // "isnaduhu sahih 'ala shart Muslim" (cites Ibn Hibban 974); Ibn Hajar, al-Futuhat al-Rabbaniyya 4/25, "sahih".
+  'ibnhibban:974': [
+    { name: 'al-Albani (Silsilah Sahihah 2886, isnad sahih on Muslim\'s conditions)', grade: 'Sahih' },
+    { name: 'Ibn Hajar (al-Futuhat al-Rabbaniyya 4/25)', grade: 'Sahih' },
+  ],
+};
 
 // ── tafsir + verse sources ───────────────────────────────────────────────────
 const TAFSIR_ID = { 'ibn kathir': 169, 'al-qurtubi': 90, "al-sa'di": 91, 'al-baghawi': 94, 'al-tabari': 15 };
@@ -457,7 +491,7 @@ function runChecks(days, src) {
         // number or a changed page layout turns every check on that citation into
         // silence and the run goes green having verified less. (Muslim 2658a once
         // hid behind this: the parser, not the citation, was wrong.)
-        if (!al && (MIRROR.has(k.split(':')[0]) || k.startsWith('muslim:'))) fail('P0 cited source could not be fetched', d, `${k} in ${label} — unreachable, mis-numbered, or the page layout changed`);
+        if (!al && (MIRROR.has(k.split(':')[0]) || k.startsWith('muslim:') || SUNNAH_ONLY.has(k.split(':')[0]))) fail('P0 cited source could not be fetched', d, `${k} in ${label} — unreachable, mis-numbered, or the page layout changed`);
         else notes.push(`UNVERIFIED ${k} (${d.journey} day ${d.day}, ${label})${al ? ' — ' + al[1] : ''}`);
       }
     }
@@ -679,6 +713,10 @@ function injections(days, src) {
   { const ds = clone(); const d = ds.find((x) => x.hadith && !ALLOW_GRADINGS.find(([a]) => a === x.angleId)); d.hadith.source = 'Abu Dawud 1518'; d.hadith.propheticPractice = { description: 'x', source: 'Abu Dawud 1518' }; out.push(['P5 grading over-claims', ds]); }
   // F14 — a citation in a collection we can fetch, to a number that does not resolve
   { const ds = clone(); ds[0].steps[0].source = 'Sahih al-Bukhari 99999'; out.push(['P0 cited source could not be fetched', ds]); }
+  // F15 — words put in a Hisn al-Muslim du'a that the page does not print. Hisn is read from
+  // sunnah.com since 2026-10-04; before that its quotes were exempted by hand, so nothing could fail here.
+  { const ds = clone(); const d = ds.find((x) => x.steps.some((s) => citesIn(s.source).includes('hisn:139')));
+    if (d) { d.angle.angle += ' The du\'a is recorded as "there is no ease other than what You decree for me alone" [Hisn al-Muslim 139].'; out.push(['P2 quotation not found in any source', ds]); } }
   // F12 — a "Suggested practice" step wearing a scripture badge
   { const ds = clone(); const d = ds.find((x) => x.steps.some((s) => /^Suggested practice/.test(s.source || ''))); d.steps.find((s) => /^Suggested practice/.test(s.source || '')).sourceType = 'quran_dua'; out.push(['P7 badge on a step that claims no source', ds]); }
   return out;

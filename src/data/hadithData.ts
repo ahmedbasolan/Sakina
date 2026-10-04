@@ -6,7 +6,10 @@ import { Content } from '../types';
  * - Ibn Majah 224: chain Da'if Jaddan (sunnah.com note); matn authenticated by other narrations — grading kept 'hasan'
  * - Muslim 2699: Sahih ✓
  * - Bukhari 1: Sahih ✓
- * - Ibn Hibban: "Allahumma la sahla" — cited at collection level (Sahih Ibn Hibban), graded sahih (Ibn Hibban included it in his Sahih; also authenticated by al-Albani). Exact hadith number still to confirm; no fabricated number shipped.
+ * - Hisn al-Muslim 139 / Sahih Ibn Hibban 974, "Allahumma la sahla" (Anas): text read 2026-10-04 at sunnah.com/hisn:139 and sunnah.com/ibnhibban:974.
+ *   Graded sahih: al-Albani (Silsilah Sahihah 2886: chain sahih on Muslim's conditions), Ibn Hajar (al-Futuhat al-Rabbaniyya 4/25), al-Arna'ut
+ *   (as printed in Hisn). Hisn prints the Ibn Hibban reference as 2427, which is its edition's number; 974 is the one on sunnah.com and in
+ *   al-Albani / Ibn Hajar. On sunnah.com, ibnhibban:2427 is an unrelated Witr hadith.
  * - Bukhari 6465 / Muslim 782: Sahih ✓
  * - Ibn Majah 925: Sahih (Darussalam) — corrected from 'hasan'
  * - Abu Dawud 4811: Sahih (Al-Albani) — corrected from 'hasan'
@@ -81,12 +84,12 @@ export const hadithContent: Content[] = [
     arabicText: 'اللَّهُمَّ لَا سَهْلَ إِلَّا مَا جَعَلْتَهُ سَهْلًا، وَأَنْتَ تَجْعَلُ الْحَزْنَ إِذَا شِئْتَ سَهْلًا',
     translation: 'O Allah, nothing is easy except what You make easy, and You make the difficult easy if You wish',
     englishTranslation: 'O Allah, nothing is easy except what You make easy, and You make the difficult easy if You wish',
-    source: 'Hisn al-Muslim 139 (Ibn Hibban 2427)',
+    source: 'Hisn al-Muslim 139 (Sahih Ibn Hibban 974)',
     transliteration: "Allahumma la sahla illa ma ja'altahu sahla, wa anta taj'alu l-hazna idha shi'ta sahla",
     whyThis: 'Reframe hard topics as dependent on divine ease, not personal effort alone.',
     propheticPractice: {
       description: 'Recite this dua for difficult subjects',
-      source: 'Hisn al-Muslim 139 (Ibn Hibban 2427)',
+      source: 'Hisn al-Muslim 139 (Sahih Ibn Hibban 974)',
       grading: 'sahih',
     },
     moods: [],

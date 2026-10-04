@@ -265,15 +265,21 @@ the same text check against sunnah.com for the collections the mirror cannot
 answer. It needs network and `curl`, and treats an unreachable page as
 unreadable rather than as a bad citation.
 
-One citation stays unverifiable by script: `q_angle_rizq_day6`'s Sunan
-an-Nasa'i al-Kubra 9514. sunnah.com indexes al-Kubra by book with no item URN.
-It was checked by hand on 2026-10-02: `https://sunnah.com/nasaikubra/64` lists
-"Book 64, Hadith 9514" (Arabic only — Abu Musa hears the Prophet ﷺ say the du'a
-as he performs wudu, then asks about it). To re-check, fetch that book page and
-slice the text between the `Hadith 9513` and `Hadith 9514` labels — and do it in
-Node, not `grep -o '.{0,1700}…'`, which backtracks for minutes on a 4 MB page.
-Note the label sits AFTER the hadith it names ("Arabic reference : Book 64,
-Hadith 9514" ends the text above it).
+Hisn al-Muslim, Sahih Ibn Hibban and Nasa'i al-Kubra are all fetchable from
+sunnah.com **by number** (`https://sunnah.com/hisn:139`, `/ibnhibban:974`,
+`/nasaikubra:9514`), and both verifiers now read them that way. This section
+used to say al-Kubra is "indexed by book with no item URN" and that Ibn Hibban
+974 "matches nothing". Both were wrong (re-read 2026-10-04): the first because
+nobody tried the `<collection>:<number>` form; the second because Hisn prints a
+different edition's number (2427) than sunnah.com, al-Albani (Silsilah Sahihah
+2886) and Ibn Hajar (al-Futuhat al-Rabbaniyya 4/25) use (974) — and sunnah.com's
+`ibnhibban:2427` is an unrelated Witr hadith. Two rules follow. **sunnah.com
+answers any number with some hadith**, so a page that loads proves nothing; the
+check is the step's Arabic against the page (pass 6 — the Rizq day-6 du'a scores
+1.00 against `nasaikubra:9514` and 0.00 against `nasaikubra:9513`). And **when
+two printed editions disagree on a number, cite the one a reader can look up**
+and say which edition it is. Musnad Ahmad is the one collection still not
+fetched by the claims verifier.
 
 ---
 
@@ -633,7 +639,7 @@ Four scripts, none of which need a device:
   P5 also treats a hadith layer with **no** grading as a claim: `HadithLayer.tsx`
   renders `grading || 'authentic'`, so deleting a grade makes the screen say
   "Authentic" (the first fix for Study day 1 did exactly that). `CLAIMS_INJECT=1`
-  injects 14 faults and exits 0 only if each is detected; `CLAIMS_REV=HEAD` runs the checks on the committed
+  injects 15 faults and exits 0 only if each is detected; `CLAIMS_REV=HEAD` runs the checks on the committed
   data (on 2026-10-03 it reported 150 failures there and 0 on the fixed tree);
   `CLAIMS_DETAIL=1` prints the published text under each P2 failure. Both normal
   and inject modes exiting 0 is the green state.
@@ -646,7 +652,9 @@ Four scripts, none of which need a device:
   hadith that says 33 each); a paraphrase that drifted from its source; a quote that
   stops early; the contents of Arabic tafsir entries (al-Qurtubi, al-Sa'di) — five
   of whose attributions were wrong and are only guarded by the `ALLOW_SCHOLARS`
-  ledger; and anything in an unfetchable collection (Ibn Hibban, Hisn, al-Kubra).
+  ledger; and anything in Musnad Ahmad, which it does not fetch. A Hisn, Ibn
+  Hibban or al-Kubra *number* is guarded only by the Arabic check in
+  `verify-citations.mjs` pass 6, because sunnah.com answers any number.
   A green run means those *mechanical* faults are absent. It does not mean the
   content is correct.
 
