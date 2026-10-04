@@ -440,7 +440,11 @@ import type { Content, ContentAngle } from '../types';
 //      review. q_angle_rizq_day6/10/14 are now day5/6/7; day5/7/8/9/11/12/13 were deleted.
 //      Day 7's recap now names only the six days that remain. Installs that already seeded
 //      the old rows keep them, unreferenced.
-const SEED_VERSION = 57;
+// v58: wording-only fixes found reading every available journey's app-written instructions:
+//      Prayer Leadership d7/d9/d11 (Jumu'ah recitation claim softened; Ameen and the sujud al-sahw
+//      timing now say schools differ), Tawbah d7 (don't contact the person wronged if that would
+//      harm), Results d1 (Musa's du'a ordering), Marriage d9 (hadith: 'young and had no wealth').
+const SEED_VERSION = 58;
 // Separate keys per content type — Quran and Hadith data change independently,
 // and each seeder used to write the SAME key at the end of its run. Since
 // initializeDatabase() awaits seedQuranContent() before seedHadithContent(),
