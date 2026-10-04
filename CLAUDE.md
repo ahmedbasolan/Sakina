@@ -617,6 +617,20 @@ Four scripts, none of which need a device:
   fetchable (quran.com `api/v4/tafsirs`: Ibn Kathir 169 en, Qurtubi 90 ar,
   Sa'di 91 ar, Baghawi 94, Tabari 15) — so there is no excuse for writing
   "Ibn Kathir notes…" without reading the entry first.
+  **How bad is it when nobody reads?** On 2026-10-04 every tag in the 10 available
+  journeys was read against its fetched entry (83 uses, 76 distinct): about a
+  quarter of the credits were wrong, with this tool green throughout. The faults
+  were one pattern: "<scholar> reads X as <the app's own framing>" — "a mercy as
+  much as a standard", "gratitude as a cause, not a courtesy", "both limit and
+  guarantee", "a rest so complete the eyes stop searching" — where the entry says
+  something plainer or nothing of the kind. Four were worse than overstated: Ibn
+  Kathir was credited with reading "nearer than the jugular vein" as knowledge
+  when his entry rejects that reading for the angels; with an occasion of
+  revelation his entry does not give; with a grammar argument that is al-Qurtubi's
+  report of Tha'lab, which al-Jurjani calls flawed; and with Allah's answer "qad
+  fa'alt" to every request, where Muslim 126 has it in Ibn Abbas's report and Abu
+  Hurayrah's says "I shall". When you write a credit, put the app's reading in the
+  app's voice and let the scholar's sentence be only what the entry contains.
 - `node scripts/verify-journey-selftest.mjs` — injects 14 known faults into a
   sandbox copy and asserts the verifier catches each. Run it after editing
   `verify-journey.mjs`; a checker that only ever prints "passed" is untested.
