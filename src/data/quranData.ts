@@ -12751,7 +12751,7 @@ const quranContentAnglesData: ContentAngle[] = [
     id: 'q_angle_study_day3',
     contentId: 'quran_22_77',
     mood: 'Hopeful',
-    angle: "[Tafsir Ibn Kathir on 22:77] The ayah lists bowing, prostrating, worship — and then widens without warning: wa-f'alu al-khayr, and do good. Ibn Kathir takes the phrase as deliberately unbounded, covering every good act, not only the ritual ones named before it. When you sit down to study with the intention that this is for Allah — so you can support your parents, serve people with what you know, stop being a burden — the hours do not become worship by being relabelled. They were already inside the category the ayah opened. The niyyah is what makes you aware of it.",
+    angle: "[Tafsir al-Sa'di on 22:77] The ayah lists bowing, prostrating, worship — and then widens without warning: wa-f'alu al-khayr, and do good. Al-Sa'di reads that last command as general: after singling out bowing and prostration, the ayah commands doing good in the widest terms, not only the ritual acts named before it. When you sit down to study with the intention that this is for Allah — so you can support your parents, serve people with what you know, stop being a burden — the hours do not become worship by being relabelled. They were already inside the category the ayah opened. The niyyah is what makes you aware of it.",
     action: 'State the intention out loud before you open the book.',
     actionHowTo: 'Before your next study session, say why you are doing it and who it serves. Say it in your own words, out loud, before the first page.',
     actionReward: 'Prophet ﷺ said: "The reward of deeds depends upon the intentions and every person will get the reward according to what he has intended…" [Bukhari 1]',
@@ -12765,7 +12765,7 @@ const quranContentAnglesData: ContentAngle[] = [
         icon: 'compass',
         title: 'The category was already open',
         instruction: 'The ayah names ruku and sujud, then says "and do good" without drawing a boundary. Your study hours were never outside worship waiting to be admitted. Intention makes you conscious of where they already sat.',
-        source: 'Tafsir Ibn Kathir on 22:77',
+        source: "Tafsir al-Sa'di on 22:77",
       },
       {
         type: 'physical',
@@ -16295,7 +16295,7 @@ const quranContentAnglesData: ContentAngle[] = [
     contentId: 'quran_15_87',
     mood: 'Hopeful',
     angle:
-      '[Tafsir Ibn Kathir on 15:87] Ibn Kathir records that the seven oft-repeated is Al-Fatihah, singled out in the same breath as the great Qur\'an that contains it, and read by the early commentators as the reason the surah returns in every unit of every prayer. Nothing else you memorise carries that weight. The Prophet ﷺ said: "Whoever does not recite Al-Fatiha in his prayer, his prayer is invalid" [Sahih al-Bukhari 756] — so this is the one text to make flawless before you add anything else to your list. When you lead, it is also the only thing the congregation hears from you in every single rak\'ah.',
+      '[Tafsir Ibn Kathir on 15:87] Ibn Kathir records two views on the seven oft-repeated — the seven long surahs, or Al-Fatihah with its seven ayat — and cites two hadiths in Bukhari where the Prophet ﷺ names Al-Fatihah as the seven oft-repeated and the great Qur\'an, adding that the two views do not contradict. Al-Fatihah is recited in every rak\'ah of the prayer. Nothing else you memorise carries that weight. The Prophet ﷺ said: "Whoever does not recite Al-Fatiha in his prayer, his prayer is invalid" [Sahih al-Bukhari 756] — so this is the one text to make flawless before you add anything else to your list. When you lead, it is also the only thing the congregation hears from you in every single rak\'ah.',
     action: 'Recite Al-Fatihah aloud to someone who can correct you.',
     practiceSteps: JSON.stringify([
       {

@@ -449,7 +449,11 @@ import type { Content, ContentAngle } from '../types';
 //      thoughts of ending your life' line pointing at findahelpline.com and the Hope journey.
 // v60: Results d1's legacy actionHowTo said to say Musa's du'a after the task; aligned with the
 //      step, which now says before (and again after if the worry returns).
-const SEED_VERSION = 60;
+// v61: two tafsir attributions the entries do not support, found reading the 8 advisory tags:
+//      Study d3 credited Ibn Kathir (22:77) with calling 'do good' unbounded - his entry never
+//      discusses it; re-tagged to al-Sa'di, whose entry does say the command is general. Prayer
+//      Leadership d2 gave Ibn Kathir a single view and an 'every unit' reason - he records two views.
+const SEED_VERSION = 61;
 // Separate keys per content type — Quran and Hadith data change independently,
 // and each seeder used to write the SAME key at the end of its run. Since
 // initializeDatabase() awaits seedQuranContent() before seedHadithContent(),
