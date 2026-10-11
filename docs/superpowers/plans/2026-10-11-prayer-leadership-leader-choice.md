@@ -84,7 +84,7 @@ git add docs/superpowers/plans/2026-10-11-prayer-leadership-women-lessons-draft.
 git commit -m "docs(plan): draft women's lessons for Prayer Leadership (for review)"
 ```
 
-Send Ahmed the file. **Do not start Task 5 until he approves it.** Tasks 2–4 and 6–7 do not depend on the text and may proceed.
+Send Ahmed the file. **Do not start Task 5 until he approves it.** Tasks 2, 3, 4 and 7 do not depend on the text and may proceed. **Task 6 must run after Task 5**: its selftest fault anchors on `q_angle_imam_day8_f` in `staticPaths.ts`, and `verify-journey-selftest.mjs` refuses to run on a failing baseline.
 
 ---
 
@@ -613,18 +613,29 @@ out['src/data/staticPaths.ts'] = edit('src/data/staticPaths.ts', [
   [`    target: 'Confidence',${CRLF}    isPremium: false,`,
    `    target: 'Confidence',${CRLF}    isPremium: false,${CRLF}    leaderChoice: true,`],
   [`        angleId: 'q_angle_imam_day1',${CRLF}`,
-   `        angleId: 'q_angle_imam_day1',${CRLF}        variants: { womanLeading: { angleId: 'q_angle_imam_day1_f', title: TITLE_1_F } },${CRLF}`],
-  // ...one pair per day 8, 9, 10, 11 (angleId only) and 14
-  // (angleId + hadithContentId: 'hadith_imam_14_f' + TITLE_14_F + FOCUS_14_F),
-  // and step_imam_7's title → 'Surahs Everyone Knows'
+   `        angleId: 'q_angle_imam_day1',${CRLF}        variants: { womanLeading: { angleId: 'q_angle_imam_day1_f', title: ${TITLE_1_F} } },${CRLF}`],
+  [`        angleId: 'q_angle_imam_day8',${CRLF}`,
+   `        angleId: 'q_angle_imam_day8',${CRLF}        variants: { womanLeading: { angleId: 'q_angle_imam_day8_f' } },${CRLF}`],
+  [`        angleId: 'q_angle_imam_day9',${CRLF}`,
+   `        angleId: 'q_angle_imam_day9',${CRLF}        variants: { womanLeading: { angleId: 'q_angle_imam_day9_f' } },${CRLF}`],
+  [`        angleId: 'q_angle_imam_day10',${CRLF}`,
+   `        angleId: 'q_angle_imam_day10',${CRLF}        variants: { womanLeading: { angleId: 'q_angle_imam_day10_f' } },${CRLF}`],
+  [`        angleId: 'q_angle_imam_day11',${CRLF}`,
+   `        angleId: 'q_angle_imam_day11',${CRLF}        variants: { womanLeading: { angleId: 'q_angle_imam_day11_f' } },${CRLF}`],
+  [`        angleId: 'q_angle_imam_day14',${CRLF}`,
+   `        angleId: 'q_angle_imam_day14',${CRLF}        variants: { womanLeading: { angleId: 'q_angle_imam_day14_f', hadithContentId: 'hadith_imam_14_f', title: ${TITLE_14_F}, focus: ${FOCUS_14_F} } },${CRLF}`],
+  [`        title: 'Surahs the Mosque Knows',`, `        title: 'Surahs Everyone Knows',`],
 ]);
+// Each anchor above was counted on 2026-10-11 and occurs exactly once
+// (angleId lines are unique per step; 'Surahs the Mosque Knows' only in staticPaths).
+// `edit()` re-asserts that, so a drifted file aborts instead of half-applying.
 // quranData: four shared edits (exact before/after from the approved draft) + one
 // insertion of the six _f angle objects after the q_angle_imam_day14 object.
 // hadithData: insert hadith_imam_14_f after the hadith_imam_14 object.
 for (const [f, s] of Object.entries(out)) fs.writeFileSync(f, s); // only after every edit succeeded
 ```
 
-`TITLE_1_F`, `TITLE_14_F`, `FOCUS_14_F` are the approved strings, emitted with `JSON.stringify(...)` into the TS source only if they contain an apostrophe; otherwise wrapped in single quotes. Every multi-line insertion is joined with `CRLF`.
+`TITLE_1_F`, `TITLE_14_F`, `FOCUS_14_F` are defined at the top of the script as the approved strings **already quoted for TS source**: `const q = (s) => (s.includes("'") ? JSON.stringify(s) : \`'${s}'\`);` then `const TITLE_1_F = q('<approved title>')`, etc. Every multi-line insertion is joined with `CRLF`.
 
 - [ ] **Step 2: Run the script, then confirm**
 
@@ -768,6 +779,12 @@ import React from 'react';
 import { render, fireEvent } from '@testing-library/react-native';
 import { LeaderChoiceSheet } from '../LeaderChoiceSheet';
 
+// No SafeAreaProvider in jest (jest.config.js only loads jest-native matchers),
+// and useSafeAreaInsets throws without one.
+jest.mock('react-native-safe-area-context', () => ({
+  useSafeAreaInsets: () => ({ top: 0, bottom: 0, left: 0, right: 0 }),
+}));
+
 it('shows the question, both answers and the privacy line', () => {
   const { getByText } = render(
     <LeaderChoiceSheet visible current={null} onChoose={jest.fn()} onClose={jest.fn()} />,
@@ -881,7 +898,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    minHeight: 52,
+    // body text (16) + 2 × lg (16) ≈ 48pt — clears the 44pt target with tokens only
+    paddingVertical: Spacing.lg,
     paddingHorizontal: Spacing.lg,
     borderRadius: BorderRadius.md,
     borderWidth: 1,
