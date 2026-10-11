@@ -29,6 +29,13 @@ this journey.)
 | 13 How the Prayer Ends | unchanged | shared | shared |
 | 14 Go Back and Lead Your People | unchanged | new lesson + **new title/focus**: Umm Waraqah commanded to lead the people of her house; a woman leads women, not men (four-school agreement) | **Abu Dawud 592** (new `hadith_imam_14_f`) |
 
+Shared hadith layers were read for male-only wording (2026-10-11) and all fit a woman
+leading women, with two constraints on her lesson text: Day 9's Bukhari 780 ("Say Amin
+when the Imam says it") and Day 10's Bukhari 722 (followers answer her "Sami'a llahu
+liman hamidah") both assume the row can hear her — so the women's Day 9/10 must not
+tell her to be inaudible to her own row; the Hanafi/Maliki "silent" report is about
+recitation, and the text says so rather than extending it.
+
 Rules for the women's text: add only what a source below supports; remove men-only
 mechanics without inventing replacements; companions' practice (Aisha, Umm Salamah) goes
 in the lesson prose with its grading dispute stated, **never** in the hadith layer (which
@@ -77,8 +84,13 @@ prefix in `JOURNEY_ANGLE_PREFIXES` already covers the new ids.
 **Resolution — one seam, in `PathsService`**
 - Pure `resolveStep(step, choice)` in `src/utils/leaderChoice.ts`: returns the step with
   the `womanLeading` fields applied when `choice === 'woman'`, else the step unchanged.
-- `PathsService` holds the choice in memory per path, loads it from kv_store at app start
-  (awaited alongside existing init), and **every method that returns a path or steps**
+- `PathsService` holds the choice in memory per path. There is **no PathsService init
+  today**, so the cache is hydrated inside the two async calls every consumer already
+  awaits before showing journey steps: `loadProgress` (PathDetail, on focus) and
+  `getAllProgress` (Home card, on app open). A first render before hydration shows the
+  shared titles for one frame at most; the `useFocusEffect` re-render corrects it.
+  Resolution returns **copies**; `STATIC_SPIRITUAL_PATHS` is never mutated.
+  **Every method that returns a path or steps**
   (`getPathById`, `getAllPaths`, `getPathsByMood`, `getCurrentStep`, `getNextStep`,
   `getCompletedSteps`) returns resolved steps. So every consumer — PathDetail list +
   openDay, PathStep advance, Home card (`useHomeData`), completion celebration — is
@@ -94,10 +106,16 @@ prefix in `JOURNEY_ANGLE_PREFIXES` already covers the new ids.
 - Added to `clearAllLocalUserData`'s kv delete list → `verify-local-wipe` picks it up.
   Like `last_opened_path`, it is not cleared on sign-out (shared-device caveat, accepted
   precedent).
-- Error reports: journey-flow `logServiceError` calls must carry the **step id**
-  (`step_imam_8`), never the angle id, so PostHog never sees `_f`.
-  (`rotationEngine.getGuidanceForStep` logs `{ angleId }` — the journey call sites pass a
-  step id for logging instead.)
+- Error reports: PostHog receives the exception **message** and the sanitized
+  **context** (`errorLoggingService.captureToPostHog`); `sanitizeContext` drops only
+  email/token/url-style keys, so an angle id passes through. Three places put a lesson id
+  into one of those, and all three must stop naming `_f` ids:
+  `rotationEngine.getGuidanceForStep` — message `Angle not found: ${angleId}` and
+  context `{ angleId }` (lines 137, 142); `contentRepository.fetchAngleById` cloud
+  fallback — context `{ angleId }` (line 327). Approach: these log a non-revealing id
+  (the step id when the caller passes one, otherwise the angle id with a `_f` suffix
+  stripped). `getHadithContent` only `console.error`s (PostHog does not capture console),
+  so `hadith_imam_14_f` is not reported. Jest asserts no `_f` reaches `logServiceError`.
 - Residual, documented not "fixed": the Supabase fallback `fetchAngleById` (only when the
   local seed lacks the angle) would request an `_f` id; the SQLite DB is included in the
   user's own Android/iCloud backup.
@@ -135,4 +153,8 @@ prefix in `JOURNEY_ANGLE_PREFIXES` already covers the new ids.
 3. Content insertion by script, SEED bump.
 4. Picker UI.
 5. Verifier extensions + selftests.
-6. Full verification run; commit; no push until asked.
+6. Docs: CLAUDE.md "Journey Sessions" gains a short note that a step may carry
+   `variants`, that every verifier checks each variant sequence, and that variant ids
+   must stay out of error-report text; the `prayer-leadership-gender-choice` memory is
+   updated to the built state.
+7. Full verification run; commit; no push until asked.
