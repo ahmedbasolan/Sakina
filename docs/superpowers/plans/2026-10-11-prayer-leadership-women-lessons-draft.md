@@ -13,6 +13,12 @@ carried over **verbatim** and marked *(carried over)*. Everything else is new or
 and every sentence of it is either traced to a source in the table under the day or
 marked *app voice*.
 
+**Hadith rule (controller ruling, fix round 1):** the women's days add **no new hadith**.
+The only hadith they introduce are Bukhari 1203/1204 (clapping) and Abu Dawud 592 (Umm
+Waraqah), both from spec §3. Every other hadith on a women's day is either that day's
+shared hadith layer or a carried-over step from the man's same day (Bukhari 744 and 734 on
+Day 8, Bukhari 772 on Day 11), re-fetched and read whole on 2026-10-12.
+
 **Sources used** (all re-read on 2026-10-12 unless marked "spec §3"):
 
 | Key | Source | URL |
@@ -36,10 +42,10 @@ marked *app voice*.
 | F-1371 | Dorar fiqh encyclopedia — the imam must be male: a woman does not lead men, by agreement of the four schools (Ibn Abidin, Ibn Abd al-Barr, al-Nawawi al-Majmu' 4/255, al-Mardawi); Ibn Hazm reports consensus | dorar.net/feqhia/1371 |
 | F-1385 | Dorar — a woman may lead women: majority (Hanafi, Shafi'i, Hanbali), "except that the Hanafis hold it disliked"; Umm Salamah led Asr "and stood among us" (Abd al-Razzaq, Musannaf 5082), chain graded sahih by al-Nawawi (al-Majmu' 4/199); Ibn Hazm (al-Muhalla 3/137): "her ruling with us is to stand ahead of the women" | dorar.net/feqhia/1385 |
 | F-1387 | Dorar — she stands in the middle of them: Hanafi (al-Zayla'i), Shafi'i (al-Nawawi), Hanbali (al-Ruhaybani); Ibn Qudamah: "we know of no disagreement in it among those who hold she may lead them" (al-Mughni 2/149). Aisha led women in Maghrib, stood in their middle and recited aloud (Ibn Hazm, al-Muhalla 4/219; chain graded sahih by Ibn al-Mulaqqin). Reciting aloud: she recites aloud in the audible prayers unless non-mahram men are present — Shafi'i (Rawdat al-Talibin) and Hanbali (Tashih al-Furu'); also Ibn Taymiyyah, Ibn Baz ("so that they hear her and benefit from the speech of Allah"), Ibn Uthaymin. Audible recitation in Fajr and the first two rak'ahs of Maghrib and Isha is by consensus (Ibn Hazm, al-Nawawi, Ibn Qudamah) and "general to men and women" (Ibn Baz) | dorar.net/feqhia/1387 |
-| F-IbnBaz | Ibn Baz, fatwa "Ruling on a woman leading": permissible, and recommended when needed for teaching; the hadith "the most versed in the Book of Allah leads the people" includes women; a reciting, knowledgeable woman leading "the women of her household", or sisters gathered with her, "is all good"; it lets the women take her prayer as their example in her recitation, bowing, prostration, sitting between the prostrations and rising after ruku | binbaz.org.sa/fatwas/17618 (the bare-id URL now redirects to an unrelated fatwa; `…/fatwas/17618/x` resolves to the right page) |
-| F-schools | Shafi'i recommended (SeekersGuidance, Shuaib Ally, from al-Majmu'); Hanbali permitted (Dorar, Diyanet); Hanafi disliked — prohibitively in the well-known view, mildly per some (SeekersGuidance, Basem Itani; al-Fatawa al-Hindiyya, Fath al-Qadir); Maliki **not permitted** (Diyanet citing Ibn Rushd, Ibn Juzay) | spec §3 |
+| F-IbnBaz | Ibn Baz, fatwa "حكم إمامة المرأة" (Ruling on a woman leading): permissible, and recommended when needed for teaching; the hadith "the most versed in the Book of Allah leads the people" includes women; a reciting, knowledgeable woman leading "the women of her household", or sisters gathered with her, "is all good"; it lets the women take her prayer as their example in her recitation, bowing, prostration, sitting between the prostrations and rising after ruku | https://binbaz.org.sa/fatwas/17618/حكم-امامة-المراة (fetched 2026-10-12, title "حكم إمامة المرأة"; the bare `…/fatwas/17618` redirects to an unrelated fatwa and must not be cited) |
+| F-schools | **Shafi'i recommended** — Ustadh Shuaib Ally, "How a Female Imam Should Lead a Congregation of Women in Prayer? [Shafi'i School]" ("In the Shafi'i school, it is recommended for a woman to lead other women in congregational prayer", source al-Majmu'), and Shaykh Dr. Muhammad Fayez Awad, "Is It Permissible for a Woman to Lead a Group of Women in Prayer? (Shafi'i)" ("her leading them is indeed valid and recommended"). **Hanafi disliked — prohibitively so in its well-known view** ("the well-known view in the books of the school here is that this is the dislike of prohibition (karaha tahrimiyya)" [al-Fatawa al-Hindiyya]; "some expert scholars in the Hanafi School" held it a dislike of preference [Fath al-Qadir; I'la al-Sunan]) — Shaykh Dr. Basem Hussayn Itani, "Is It Permissible for a Woman to Lead a Congregation of Women in Prayer?". Hanbali permitted (F-1385). Maliki **not permitted** (Diyanet citing Ibn Rushd, Ibn Juzay — spec §3) | seekersguidance.org/answers/shafii-fiqh/how-a-female-imam-should-lead-a-congregation-of-women-in-prayer-shafii-school/ · seekersguidance.org/answers/prayer-shafii-fiqh/is-it-permissible-for-a-woman-to-lead-a-group-of-women-in-prayer-shafii/ · seekersguidance.org/answers/prayer/is-it-permissible-for-a-woman-to-lead-a-congregation-of-women-in-prayer/ (all fetched 2026-10-12); Maliki: spec §3 |
 | F-Jordan | Jordan Iftaa (Shafi'i): middle of the front row "while being advanced a bit in front of them" | spec §3 |
-| F-Muslih | Hanafi + Maliki: a woman leading recites silently — al-Muslih only, so "reported" | spec §3 (almosleh.com/en/f-32487 returned 404 on 2026-10-12) |
+| F-Muslih | Khalid al-Muslih: "If a woman leads other women in prayer then she recites loudly where loud recitation is required … though it is not permissible if there are strange people around who are not mahrams … This is the view held by the Shafites and Hanbalites. However the Malikites are of the opinion that she should not recite loudly but rather silently … This is also the view of the Hanafites" — the only source read for the Hanafi/Maliki view, so "reported" | https://www.almosleh.com/en/f-32487 (fetched 2026-10-12, 200; the bare-host `almosleh.com/…` form is what returned 404 in the first round) |
 | F-Humaydi | Fawzi al-Humaydi grades the companion reports weak and holds she stands ahead, as Ibn Hazm did | spec §3 (Ibn Hazm's view also read in F-1385) |
 
 ---
@@ -54,7 +60,7 @@ marked *app voice*.
 **angle**
 
 ```
-[Tafsir Ibn Kathir on 54:17] Ibn Kathir explains that Allah made the Quran easy to recite and comprehend for those who seek it, and reads the ayah's closing question as asking whether anyone will remember through it. The bar for leading is far narrower than most people assume it is. The Prophet ﷺ said: "The one who is most versed in Allah's Book should act as Imam for the people" [Sahih Muslim 673] — not the most learned in fiqh, not the eldest, not the most respected in the room — and Ibn Baz held that this covers a woman leading women, which he called permissible, and recommended when it is needed for teaching. The schools differ on whether she leads at all: the Shafi'i school recommends it, the Hanbali school permits it, the Hanafi school holds it disliked, and the Maliki school does not permit it. All four agree that a woman does not lead men. What you can already recite without stumbling is the exact thing that hadith measures.
+[Tafsir Ibn Kathir on 54:17] Ibn Kathir explains that Allah made the Quran easy to recite and comprehend for those who seek it, and reads the ayah's closing question as asking whether anyone will remember through it. The bar for leading is far narrower than most people assume it is. The Prophet ﷺ said: "The one who is most versed in Allah's Book should act as Imam for the people" [Sahih Muslim 673] — not the most learned in fiqh, not the eldest, not the most respected in the room — and Ibn Baz held that this covers a woman leading women, which he called permissible, and recommended when it is needed for teaching. The schools differ on whether she leads at all: the Shafi'i school recommends it, the Hanbali school permits it, the Hanafi school holds it disliked — prohibitively so in its well-known view — and the Maliki school does not permit it. All four agree that a woman does not lead men. What you can already recite without stumbling is the exact thing that hadith measures.
 ```
 
 Split: `. The Prophet ﷺ said:` → Understand = the tafsir + "bar" sentences; Matters = from the hadith on.
@@ -75,7 +81,7 @@ Split: `. The Prophet ﷺ said:` → Understand = the tafsir + "bar" sentences; 
     icon: 'home',
     title: 'Lead the smallest congregation there is',
     instruction: 'Lead one prayer at home this week — the women of your household, or a sister who joins you. Confidence is built at that size. If you follow the Maliki school, it does not permit a woman to lead the prayer; the days on learning and reciting surahs serve you either way.',
-    source: 'Ibn Baz, fatwa on a woman leading women (binbaz.org.sa, fatwa 17618)',
+    source: 'Ibn Baz, fatwa "Ruling on a woman leading" — https://binbaz.org.sa/fatwas/17618/حكم-امامة-المراة',
   },
   {
     type: 'verbal',
@@ -102,7 +108,7 @@ Split: `. The Prophet ﷺ said:` → Understand = the tafsir + "bar" sentences; 
 | Hadith quote | H-M673 (verbatim substring of sunnah.com English) |
 | "not the most learned in fiqh, not the eldest…" | app voice, carried over; consistent with the order in H-M673 (reciting → Sunnah → hijrah → Islam/age) |
 | Ibn Baz: covers a woman leading women; permissible, recommended when needed for teaching | F-IbnBaz |
-| Shafi'i recommends / Hanbali permits / Hanafi disliked / Maliki not permitted | F-schools (spec §3); Hanafi "disliked" also F-1385 |
+| Shafi'i recommends / Hanbali permits / Hanafi disliked, prohibitively so in its well-known view / Maliki not permitted | F-schools (Shuaib Ally + Muhammad Fayez Awad; F-1385; Basem Itani; Maliki spec §3); Hanafi "disliked" also F-1385 |
 | All four agree a woman does not lead men | F-1371 |
 | "What you can already recite…" | app voice, carried over |
 | Step 2: lead the women of your household or a sister | F-IbnBaz ("the women of her household, or some of her sisters gather with her") |
@@ -130,8 +136,8 @@ Split: `. The Prophet ﷺ said:` (checked before `. When you` in `splitPatterns`
     type: 'physical',
     icon: 'person',
     title: 'Where you stand',
-    instruction: 'Stand in the middle of the front row, with the women on either side of you rather than ahead of you. The Hanafi, Shafi\'i and Hanbali schools agree on this; the Jordanian Iftaa, following the Shafi\'i school, adds that she is advanced a little ahead of them. Umm Salamah is reported to have led women in Asr standing among them.',
-    source: 'Dorar Fiqh Encyclopedia, citing al-Zayla\'i, al-Nawawi and al-Ruhaybani, and Ibn Qudamah, al-Mughni 2/149 · Umm Salamah: Musannaf Abd al-Razzaq 5082',
+    instruction: 'Stand in the middle of the front row, level with the women on either side of you, not out in front of them. The Hanafi, Shafi\'i and Hanbali schools agree on this; the Jordanian Iftaa, following the Shafi\'i school, adds that she is advanced a little ahead of them.',
+    source: 'Dorar Fiqh Encyclopedia, citing al-Zayla\'i, al-Nawawi and al-Ruhaybani, and Ibn Qudamah, al-Mughni 2/149',
   },
   {
     type: 'physical',
@@ -177,7 +183,8 @@ Split: `. The Prophet ﷺ said:` (checked before `. When you` in `splitPatterns`
 | al-Humaydi grades weak, holds she leads from ahead; Ibn Hazm held the same | F-Humaydi (spec §3); Ibn Hazm also F-1385 ("her ruling with us is to stand ahead of the women") |
 | Hadith quote | H-M433 |
 | "first thing… is look along the line…"; "order that never changes" | app voice (adapted from man's) |
-| Jordanian Iftaa nuance | F-Jordan (spec §3) |
+| Jordanian Iftaa nuance | F-Jordan (spec §3); the same two positions — level, or slightly ahead "just enough to distinguish her as the imam", both valid — are given for the Shafi'i school by Shaykh Jamir Meah (seekersguidance.org/answers/shafii-fiqh/how-should-women-pray-in-congregation-in-the-shafii-school/, fetched 2026-10-12) |
+| Step 1 "level with the women on either side of you, not out in front of them" | F-1387 ("in their middle"); Shuaib Ally: "stand in the middle of the line of the congregation, not ahead of them". Umm Salamah dropped from the step (fix round 1) — the angle carries her report with its grading dispute |
 | Opening du'a step | H-B744 (carried over; the narration describes the silence between takbir and recitation and gives this du'a) |
 | Takbir step | H-B734 (carried over, "back of the row" → "ends of the row"; spec §2 "the takbir unchanged") |
 
@@ -190,7 +197,7 @@ No title/focus override. `hadithContentId`: shared `hadith_imam_9` (Bukhari 780)
 **angle**
 
 ```
-[Tafsir Ibn Kathir on 17:78] Ibn Kathir records that "the recitation of dawn is ever witnessed" refers to the angels of the night and of the day attending it. Reciting aloud in Fajr and in the first two rak'ahs of Maghrib and Isha is a ruling for women as well as men, and the Shafi'i and Hanbali schools have a woman leading women recite aloud in them, so that the women hear her — unless men who are not her mahram are present. The Hanafi and Maliki schools are reported to have her recite quietly. Aisha is reported to have led women in Maghrib, standing in their middle and reciting aloud, a chain Ibn al-Mulaqqin graded sahih, though Fawzi al-Humaydi grades these reports weak. The Prophet ﷺ said: "Say Amin when the Imam says it" [Sahih al-Bukhari 780] — so the row is being handed something to answer. Your voice is now setting the pace for every woman praying with you, which means steady matters far more than impressive, and the beat you leave after Al-Fatihah is where the row catches up with you.
+[Tafsir Ibn Kathir on 17:78] Ibn Kathir records that "the recitation of dawn is ever witnessed" refers to the angels of the night and of the day attending it. Ibn Baz held that the audible recitation of Fajr and the first two rak'ahs of Maghrib and Isha is a ruling for women as well as men, and that a woman leading women recites aloud in them so that they hear her and benefit from the words of Allah. The Shafi'i and Hanbali schools have her recite aloud in those prayers unless men who are not her mahram are present; the Hanafi and Maliki schools are reported to have her recite silently. Aisha is reported to have led women in Maghrib, standing in their middle and reciting aloud, a chain Ibn al-Mulaqqin graded sahih, though Fawzi al-Humaydi grades these reports weak. The Prophet ﷺ said: "Say Amin when the Imam says it" [Sahih al-Bukhari 780] — so the row is being handed something to answer. Your voice is now setting the pace for every woman praying with you, which means steady matters far more than impressive, and the beat you leave after Al-Fatihah is where the row catches up with you.
 ```
 
 Split: `. The Prophet ﷺ said:`.
@@ -203,8 +210,8 @@ Split: `. The Prophet ﷺ said:`.
     type: 'mindset',
     icon: 'sun',
     title: 'Know when you recite aloud',
-    instruction: "In the Shafi'i and Hanbali schools you recite aloud in Fajr and the first two rak'ahs of Maghrib and Isha so the women can hear you, unless men who are not your mahram are present. The Hanafi and Maliki schools are reported to have a woman recite quietly. Follow your own school.",
-    source: "Dorar Fiqh Encyclopedia, citing al-Nawawi, Rawdat al-Talibin, and al-Mardawi, Tashih al-Furu'",
+    instruction: "In the Shafi'i and Hanbali schools you recite aloud in Fajr and the first two rak'ahs of Maghrib and Isha, unless men who are not your mahram are present; Ibn Baz gave the reason as letting the women hear you and benefit from the words of Allah. The Hanafi and Maliki schools are reported to have a woman recite silently. Follow your own school.",
+    source: "Dorar Fiqh Encyclopedia, citing al-Nawawi, Rawdat al-Talibin, al-Mardawi, Tashih al-Furu', and Ibn Baz, Majmu' Fatawa 12/131 · Khalid al-Muslih, https://www.almosleh.com/en/f-32487",
   },
   {
     type: 'physical',
@@ -230,9 +237,9 @@ Split: `. The Prophet ﷺ said:`.
 | Claim | Source |
 |---|---|
 | "ever witnessed" = the angels of the night and of the day attend it | T-IK17:78 (the hadith he records: "It is witnessed by the angels of the night and the angels of the day"). The man's angle adds "which is part of why Fajr is recited aloud" inside the credit — not in the entry, so not carried over |
-| Aloud in Fajr + first two of Maghrib/Isha; ruling general to men and women | F-1387 (consensus: Ibn Hazm, al-Nawawi, Ibn Qudamah; "general to men and women" — Ibn Baz) |
-| Shafi'i + Hanbali: she recites aloud unless non-mahram men are present; "so that the women hear her" | F-1387 (Rawdat al-Talibin, Tashih al-Furu'; Ibn Baz "so that they hear her") |
-| Hanafi + Maliki reported quiet | F-Muslih (spec §3, "reported") — about recitation only, per spec §2 |
+| Ibn Baz: audible recitation of Fajr + first two of Maghrib/Isha is a ruling for women as well as men; she recites aloud so they hear her and benefit from the words of Allah | F-1387 — consensus on audibility (Ibn Hazm, al-Nawawi, Ibn Qudamah); "this is general to men and women" footnoted to Ibn Baz, Fatawa Nur 'ala al-Darb 9/35; "so that she makes them hear and they benefit from the speech of Allah" — Ibn Baz, Majmu' Fatawa 12/131. Attributed to Ibn Baz (fix round 1), not stated as flat fact or as the schools' reason |
+| Shafi'i + Hanbali: she recites aloud unless non-mahram men are present | F-1387 (Rawdat al-Talibin, Tashih al-Furu'); F-Muslih (same view, "the Shafites and Hanbalites") |
+| Hanafi + Maliki reported silent | F-Muslih (fetched 2026-10-12; only source, so "reported") — about recitation only, per spec §2 |
 | Aisha led Maghrib, stood in their middle, recited aloud; Ibn al-Mulaqqin graded chain sahih | F-1387 |
 | al-Humaydi grades weak | F-Humaydi (spec §3) |
 | Hadith quote | H-B780 (same wording as the shared hadith layer) |
@@ -244,12 +251,15 @@ Shared-hadith constraint (spec §2): nothing here tells her to be inaudible to h
 
 ## Day 10 — `q_angle_imam_day10_f` (contentId `quran_2_43`, mood `Hopeful`)
 
-No title/focus override (title "The Imam Is Followed" and focus "Transition takbirs and the pace of the row." stay shared — see Concerns). `hadithContentId`: shared `hadith_imam_10` (Bukhari 722).
+**Step override (`step_imam_10.variants.womanLeading`)** — added in fix round 1 (controller ruling 6):
+- `title`: no override — "The Imam Is Followed" holds for her.
+- `focus`: **Your pace, and the answer the row gives.** (shared: "Transition takbirs and the pace of the row." — names the voice instruction her lesson drops). "Pace" is the lesson's own app-voice teaching; "the answer the row gives" is Rabbana lakal hamd after Sami'a llahu liman hamidah (Bukhari 722).
+- `hadithContentId`: no override — shared `hadith_imam_10` (Bukhari 722); see the shared edit to its `whyThis`/`description` below.
 
 **angle**
 
 ```
-[Tafsir Ibn Kathir on 2:43] Ibn Kathir explains "bow down along with those who bow" as being among the believers in the best of the deeds they do, foremost of them the prayer. Once women are praying with you, every movement you make has become an instruction to them. The Prophet ﷺ said: "The Imam is (appointed) to be followed. So do not differ from him, bow when he bows…" [Sahih al-Bukhari 722], and to say Rabbana lakal hamd [Our Lord, to You is all praise] when the imam says Sami'a llahu liman hamidah [Allah has heard whoever praises Him]. Ibn Baz counted it among the benefits of a woman leading that the women take her prayer as their example — her recitation, her bowing, her prostration, her sitting between the prostrations and her rising after ruku. Your movements have to be unhurried, or the row cannot stay with you.
+[Tafsir Ibn Kathir on 2:43] Ibn Kathir explains "bow with those who bow" as being among the believers in the best of the deeds they do, foremost of them the prayer. Once women are praying with you, every movement you make has become an instruction to them. The Prophet ﷺ said: "The Imam is (appointed) to be followed. So do not differ from him, bow when he bows…" [Sahih al-Bukhari 722], and to say Rabbana lakal hamd [Our Lord, to You is all praise] when the imam says Sami'a llahu liman hamidah [Allah has heard whoever praises Him]. Ibn Baz counted it among the benefits of a woman leading that the women take her prayer as their example — her recitation, her bowing, her prostration, her sitting between the prostrations and her rising after ruku. Your movements have to be unhurried, or the row cannot stay with you.
 ```
 
 Split: `. The Prophet ﷺ said:`.
@@ -276,7 +286,7 @@ Split: `. The Prophet ﷺ said:`.
     type: 'verbal',
     icon: 'chat',
     title: 'What the row answers',
-    instruction: "When you rise from ruku saying Sami'a llahu liman hamidah [Allah has heard whoever praises Him], the women with you answer Rabbana lakal hamd [Our Lord, to You is all praise]. Following you is the whole of their part in the prayer's movements.",
+    instruction: "When you rise from ruku saying Sami'a llahu liman hamidah [Allah has heard whoever praises Him], the women with you answer Rabbana lakal hamd [Our Lord, to You is all praise].",
     source: '"The Imam is (appointed) to be followed. So do not differ from him…" [Sahih al-Bukhari 722]',
   },
 ]
@@ -288,14 +298,14 @@ Split: `. The Prophet ﷺ said:`.
 
 | Claim | Source |
 |---|---|
-| "bow… with those who bow" = be among the believers in the best of their deeds, foremost the prayer | T-IK2:43 ("And be among the believers performing the best deeds they perform, such as, and foremost, the prayer"). The man's credit ("read as an instruction about praying in congregation") is close to the entry's "many scholars said this Ayah is proof for the obligation of… congregation (for men only)"; not used here because of the "(for men only)" |
+| "bow with those who bow" (the verse card's wording, `quran_2_43` englishTranslation "…and bow with those who bow.") = be among the believers in the best of their deeds, foremost the prayer | T-IK2:43 ("And be among the believers performing the best deeds they perform, such as, and foremost, the prayer"). The man's credit ("read as an instruction about praying in congregation") is close to the entry's "many scholars said this Ayah is proof for the obligation of… congregation (for men only)"; not used here because of the "(for men only)" |
 | "every movement… instruction" | app voice, carried over |
 | Hadith quote + Rabbana lakal hamd / Sami'a llahu | H-B722 |
 | Ibn Baz: the women take her prayer as their example in recitation, bowing, prostration, sitting, rising after ruku | F-IbnBaz |
 | "Your movements have to be unhurried…" | app voice |
 | Step 1 (adapted: "call the next takbir" → "move to the next"; "behind you" → "following you") | app voice, source 2:43 carried over |
 | Step 3: the row answers Rabbana lakal hamd when she says Sami'a llahu | H-B722 |
-| "Following you is the whole of their part…" | app voice — **review**: restates "do not differ from him"; cut if it reads as more than the hadith says |
+| ~~"Following you is the whole of their part…"~~ | cut in fix round 1 |
 
 Shared-hadith constraint (spec §2): Step 3 assumes the row hears her "Sami'a llahu liman hamidah", consistent with H-B722; no instruction asks her to be inaudible.
 
@@ -442,7 +452,7 @@ Proposed entry (matn only, from "وَكَانَ" to the end, as the other `hadit
   translation: "The Messenger of Allah (ﷺ) used to visit her at her house. He appointed a mu'adhdhin to call adhan for her; and he commanded her to lead the inmates of her house in prayer. 'Abd al-Rahman said: I saw her mu'adhdhin who was an old man.",
   englishTranslation: "The Messenger of Allah (ﷺ) used to visit her at her house. He appointed a mu'adhdhin to call adhan for her; and he commanded her to lead the inmates of her house in prayer. 'Abd al-Rahman said: I saw her mu'adhdhin who was an old man.",
   source: 'Sunan Abi Dawud 592',
-  transliteration: "Wa kana Rasulullahi ﷺ yazuruha fi baytiha, wa ja'ala laha mu'adhdhinan yu'adhdhinu laha, wa amaraha an ta'umma ahla dariha",
+  transliteration: "Wa kana Rasulullahi ﷺ yazuruha fi baytiha, wa ja'ala laha mu'adhdhinan yu'adhdhinu laha, wa amaraha an ta'umma ahla dariha. Qala 'Abd al-Rahman: fa-ana ra'aytu mu'adhdhinaha shaykhan kabira",
   whyThis: 'The command was to lead the people of her own house — the first congregation is the one already at home.',
   propheticPractice: {
     description: 'Lead one prayer for the women of your own house',
@@ -489,36 +499,110 @@ Before:
 After:
 > Someone elderly, someone straight from work, a parent with a child who will not last. He named exactly these people as the reason.
 
-(The step's title "Look at who is actually behind you" is shared and is accurate for her too — the women stand beside her, but this day is shared and the spec changes only the "elderly man" wording. Flagged under Concerns.)
+(The step title is changed too — see "Neutral wording on shared days" below.)
+
+### Neutral wording on shared days (fix round 1, controller ruling 7)
+
+Every line below is shown to a woman leading (shared days, or shared hadith layers on her
+days) and was written for a man's row. Each "after" is true for a man or a woman leading.
+**Before** strings are the exact raw source (escapes included) dumped from the files on
+2026-10-12, so the insertion script can anchor on them; anchor **inside the named object**
+(`id: 'q_angle_imam_dayN'` / `id: 'hadith_imam_N'`), because some fragments recur
+elsewhere ("standing behind him" ×2, "everyone behind him" ×3 in `quranData.ts`). Each full
+"before" sentence below occurs exactly once in its file.
+
+**Mechanic first — Day 13 "turn round".** A woman leading stands in the row, so she has no
+"turn round". No source was fetched for the imam turning to face the row (for either), so
+the line describes less instead of substituting a different mechanic. What is kept is what
+Sahih Muslim 591 says (sunnah.com, fetched whole): "When the Messenger of Allah (ﷺ)
+finished his prayer. He begged forgiveness three times and said: O Allah! Thou art Peace…"
+
+| # | Object (file:line) | Before (exact) | After |
+|---|---|---|---|
+| N1 | `q_angle_imam_day13` angle (quranData.ts:16697) | `When you finish, stay seated long enough for that dhikr before you turn round.` | `When you finish, make that dhikr the first thing you say.` |
+| N2 | `q_angle_imam_day13` angle (quranData.ts:16697) | `and after turning from the prayer seek forgiveness` | `and after finishing the prayer seek forgiveness` (sunnah.com English: "finished his prayer") |
+| N3 | `q_angle_imam_day13` angle (quranData.ts:16697) | `An imam who rushes the closing teaches everyone behind him to rush it too.` | `An imam who rushes the closing teaches the whole row to rush it too.` |
+| N4 | `hadith_imam_13` whyThis (hadithData.ts:502) | `This is the first thing he said after turning from it, and an imam who skips it teaches the whole row to skip it.` | `This is the first thing he said after finishing it, and an imam who skips it teaches the whole row to skip it.` |
+| N5 | `hadith_imam_8` whyThis (hadithData.ts:417) — shared layer on her Day 8 | `It is turning round, levelling the line, and only then beginning.` | `It is levelling the line, and only then beginning.` |
+| N6 | `q_angle_imam_day3` angle (quranData.ts:16334) | `When you recite it in the second rak\'ah, nobody standing behind you is lost.` | `When you recite it in the second rak\'ah, nobody praying with you is lost.` |
+| N7 | `q_angle_imam_day3` step "Use it tonight, not eventually" instruction (quranData.ts:16358) | `A surah you have recited in a real prayer is one you will not lose when people are behind you.` | `A surah you have recited in a real prayer is one you will not lose when people are praying with you.` |
+| N8 | `q_angle_imam_day6` angle (quranData.ts:16441) | `A congregation is not grading your repertoire, and nobody behind you is keeping a list.` | `A congregation is not grading your repertoire, and nobody praying with you is keeping a list.` |
+| N9 | `q_angle_imam_day7` angle (quranData.ts:16476) | `keep it brief enough that the weakest person behind you is not being tested.` | `keep it brief enough that the weakest person praying with you is not being tested.` |
+| N10 | `q_angle_imam_day12` angle (quranData.ts:16662) — **also corrects the credit**, see C5 | `Ibn Kathir reads "a mercy to the worlds" as describing how he dealt with people and not only what he brought them, and the clearest place that shows in prayer is how long he made it when others were standing behind him.` | `Ibn Kathir explains "a mercy to the worlds" as Allah having sent him as a mercy for all peoples. One clear place that mercy shows in prayer is how long he made it when others were praying with him.` |
+| N11 | `q_angle_imam_day12` step title (quranData.ts:16676) | `title: 'Look at who is actually behind you',` | `title: 'Look at who is actually praying with you',` |
+| N12 | `hadith_imam_2` whyThis (hadithData.ts:315) | `which is why an imam perfects it before adding a single surah to his list.` | `which is why an imam perfects it before adding a single surah to the list.` |
+| N13 | `hadith_imam_9` propheticPractice.description (hadithData.ts:436) — shared layer on her Day 9 | `description: 'Say Ameen aloud after Al-Fatihah and pause before the surah',` | `description: 'Say Ameen after Al-Fatihah and pause before the surah',` (Day 9's own step says schools differ on saying it aloud; the layer should not assert it for either) |
+| N14 | `hadith_imam_10` whyThis (hadithData.ts:451) — shared layer on her Day 10 | `That is why the transition takbirs have to be audible and unhurried.` | `That is why the transitions have to be unhurried.` |
+| N15 | `hadith_imam_10` propheticPractice.description (hadithData.ts:453) | `description: 'Call every transition clearly and settle before the next one',` | `description: 'Settle into each position before moving to the next',` |
+
+N14/N15 also change what a man sees on the hadith layer (it no longer repeats "audible"); his
+angle and steps still teach audible transitions. That is the only way to keep a shared layer
+from asserting, on her Day 10, the voice rule her lesson drops (spec §2). If you would rather
+keep the man's layer as is, the alternative is a `hadithContentId` override on her Day 10
+pointing at a copy — which the spec's one-new-hadith design does not currently allow.
+
+Checked and left alone: Day 4's "the two surahs he chose to stand in front of people with"
+(describes the Prophet ﷺ, true as history); Day 6's "The man who ended every rak'ah with it"
+and `hadith_imam_6` (the companion in Bukhari 7375); Day 2's "a nervous imam" (neutral).
+Day 3's step icon `'mosque'` is an icon name, not wording. `staticPaths.ts` titles/focus for
+shared days contain no men-framed wording (only Day 1's title, handled by its override).
+
+### Men's tafsir-credit corrections (fix round 1, controller ruling 8)
+
+Each entry was re-read whole on 2026-10-12 (api.quran.com tafsirs 169 / 91). The scholar's
+sentence now carries only what the entry says; the app's reading moves into the app's voice.
+
+| # | Object (file:line) | Before (exact) | After | Entry says |
+|---|---|---|---|---|
+| C1 | `q_angle_imam_day8` angle (quranData.ts:16508) | `Ibn Kathir glosses qanitin as standing in obedient stillness, making the posture part of the command rather than decoration around it.` | `Ibn Kathir explains standing before Allah "with obedience" as standing with humbleness and humility before Him, and reads the command as forbidding ordinary speech in the prayer. That makes the posture part of the command rather than decoration around it.` | "(And stand before Allah with obedience.) meaning, with humbleness and humility before Him… This command indicates that it is not allowed to speak during the prayer" — no "stillness". (String is single-quoted; the double quotes need no escape.) |
+| C2 | `q_angle_imam_day9` angle (quranData.ts:16559) | `refers to the angels of the night and of the day attending it, which is part of why Fajr is recited aloud rather than silently.` | `refers to the angels of the night and of the day attending it. Fajr is one of the prayers you recite aloud, and that recitation has witnesses.` | The entry gives the hadith "It is witnessed by the angels of the night and the angels of the day" and says nothing about why Fajr is audible. ("you recite aloud" is the man's own Day 9 teaching, Bukhari 772.) |
+| C3 | `q_angle_imam_day10` angle (quranData.ts:16594, double-quoted) | `Ibn Kathir notes that the command to bow \"with those who bow\" is read as an instruction about praying in congregation rather than merely about the posture.` | `Ibn Kathir records that many scholars took the command to bow \"with those who bow\" as proof that praying in congregation is obligatory for men.` | "Many scholars said that this Ayah (2:43) is proof for the obligation of performing the prayer in congregation (for men only)." "rather than merely about the posture" was app framing. |
+| C4 | `q_angle_imam_day11` angle (quranData.ts:16626, double-quoted) | `Al-Sa'di takes \"created weak\" as the reason the law is made light rather than as an accusation, and the prostrations of forgetfulness are one of the places that lightening becomes visible.` | `Al-Sa'di explains that Allah lightens the law out of His mercy and His knowledge of human weakness from every side — of body, of will, of resolve, of faith and of patience. The prostrations of forgetfulness are one of the places that lightening becomes visible.` | "وذلك لرحمته التامة وإحسانه الشامل، وعلمه وحكمته بضعف الإنسان من جميع الوجوه، ضعف البنية، وضعف الإرادة، وضعف العزيمة، وضعف الإيمان، وضعف الصبر" — nothing about "accusation". |
+| C5 | `q_angle_imam_day12` angle — folded into N10 | (see N10) | (see N10) | "He has made Muhammad ﷺ a mercy to the `Alamin, i.e., He sent him as a mercy for all of them peoples". "how he dealt with people and not only what he brought them" is not in the entry. |
+
+Found while re-reading, **not** in ruling 8 and not changed (open question O5): Day 6's
+"Ibn Kathir reads the increase in faith here as something the recitation itself does to the
+listener, not something the reciter has to manufacture by varying his material." The entry
+(8:2) supports the first half ("when His Ayat are recited unto them, they increase their
+faith"); the second half is app framing inside the credit, and "his material" is
+men-framed.
 
 ---
 
-## Step 4 self-audit (women's days 1, 8, 9, 10, 11, 14 + `hadith_imam_14_f`)
+## Step 4 self-audit (re-run after fix round 1)
 
-Searched the women's text (angle, practiceSteps, reflection, overrides, hadith layer) — not the source tables, the "Before" quotations of men's text, or the "Removed" notes.
+**Pass A: women's text only.** Code blocks, reflections and overrides of the six women's days, plus `hadith_imam_14_f`. Run with scratchpad `audit.mjs`.
 
-| Search | Hits in women's text | Disposition |
+| Search | Hits | Disposition |
 |---|---|---|
-| "invalid" | 1 — Day 14 angle, al-Sa'di's "valid, invalid and complete" | Kept: it is al-Sa'di's "يفسدها" about the prayer in general, carried over verbatim; not a claim about women or the Maliki school. |
-| "stands in front" | 0 | Day 8 states al-Humaydi/Ibn Hazm's view as "leads from ahead of the row". |
-| "behind you" | 0 | Man's "behind you" in Day 10 step 1 → "following you"; Day 9 → "praying with you". |
-| "Subhan Allah" (as what her followers say) | 0 as an instruction; 1 inside the quoted Bukhari 1203 source on Day 11 | The quote is the hadith's own words ("…is for men"); the instruction says her followers clap. |
-| "silent"/"quietly" applied to takbirs | 0 | "silent opening du'a" (Day 8 angle), "stayed silent… between the takbir and the recitation" (Day 8 step 3, carried over), "quietly" for recitation (Day 9) and for Ameen (Day 9 step 3, carried over) — none applies to a takbir. |
-| Hadith numbers not in {Bukhari 1203/1204, Abu Dawud 592, the day's shared hadith} | 3 — Bukhari 744 and 734 (Day 8), Bukhari 772 (Day 11) | **Kept deliberately; decision for Ahmed** — see Concerns 1. |
+| "invalid" | 1: Day 14 angle, al-Sa'di's "valid, invalid and complete" | Kept. It is al-Sa'di's "يفسدها" about the prayer in general, carried over verbatim. It says nothing about women or the Maliki school. |
+| "stands in front" | 0 | Day 8 gives al-Humaydi's and Ibn Hazm's view as "leads from ahead of the row". |
+| "behind" (any) | 0 | |
+| "Subhan Allah" (as what her followers say) | 0 as an instruction; 1 inside the quoted Bukhari 1203 source on Day 11 | The quote is the hadith's own wording ("…is for men"). The instruction tells her followers to clap. |
+| "silent"/"quietly" applied to takbirs | 0 (5 non-takbir hits) | The hits are: "silent opening du'a" (Day 8 angle); "stayed silent… between the takbir and the recitation" (Day 8 step 3, carried over); "recite silently" (Day 9 angle and step 1, which is recitation and comes from al-Muslih); "aloud or quietly" (Ameen, Day 9 step 3, carried over). |
+| Hadith numbers | Muslim 673, 433, 571; Bukhari 780, 722, 1203, 744, 734, 772; Abu Dawud 592 | **No new hadith** (see the rule at the top). 744, 734 and 772 are carried over (controller ruling 5). No number appears on two days of the women's sequence. |
 
-Run mechanically (scratchpad `audit.mjs` over the code blocks, reflections and overrides of the six women's days): invalid 1, stands in front 0, "behind" (any) 0, Subhan Allah 1 (the quote), silent/quietly 5 (all non-takbir, listed above). Numbers found: the ten hadith below plus **Musannaf Abd al-Razzaq 5082** (Day 8 step 1 source) — a companion report from spec §3, not a hadith; it is in prose/source only, never in the hadith layer.
+Day 8 step 1 no longer names Musannaf 5082 (fix round 1). The angle mentions Umm Salamah's report together with its grading dispute, but gives no number.
 
-Hadith numbers present, per day: D1 Muslim 673 · D8 Muslim 433, Bukhari 744, Bukhari 734 · D9 Bukhari 780 · D10 Bukhari 722 · D11 Muslim 571, Bukhari 1203, Bukhari 772 · D14 Abu Dawud 592. No number appears on two women's days. Within the full women's sequence (shared days 2–7, 12, 13 included), none of these numbers is cited on another day (checked against every `q_angle_imam_day*` citation). Every one was fetched and read whole on 2026-10-12.
+**Pass B: whole draft (grep).** Every hit outside the women's text sits in one of these places:
+- a source or claim table;
+- a "Removed" note;
+- an exact **before** quotation of men's text that this draft replaces (N1–N15, C1–C4, the Day 1, 8 and 12 befores);
+- the Day 13 mechanic note.
+
+Hadith numbers that appear only in "Removed" notes: Abu Dawud 634, Bukhari 380, 628 and 699, Muslim 660. Bukhari 7375 appears only in "Checked and left alone". Muslim 591 is the existing shared Day 13 citation, quoted to justify N1/N2.
+
+**Anchor check.** Scratchpad `anchors.mjs` confirms that every N/C **before** string, and each of the original shared-edit befores, occurs exactly **once** in `quranData.ts`, `hadithData.ts` or `staticPaths.ts`.
 
 ---
 
-## Concerns for review
+## Open questions for Ahmed
 
-1. **The brief's hadith whitelist vs. the owner's rule.** The brief allows only Bukhari 1203/1204, Abu Dawud 592 or the day's shared hadith. Following it literally would delete three steps that apply to a woman exactly as to a man — the opening du'a (Bukhari 744), the opening takbir (Bukhari 734), and "Al-Fatihah alone is enough" (Bukhari 772) — making those days differ where no source says the practice differs (spec §1/§2: "if the practices are same then let it continue"; spec §2 Day 8: "the takbir unchanged"). I kept them, verbatim (734 with "back of the row" → "ends of the row"), and re-fetched all three. If you prefer the strict whitelist, delete those three steps; Day 8 would then have two steps and need one more to meet the 3-step minimum.
-2. **Day 8 takbir vs. Day 10 transitions.** The spec keeps Day 8's "say the takbir so the row can follow it" but drops Day 10's "say the transitions out loud" for lack of a voice source. Both are voice instructions; Day 8's rests on Bukhari 734's "Say the Takbir when he says it". Neither text addresses non-mahram men being present for takbirs. Please confirm you want Day 8's step.
-3. **Day 10 shared title/focus.** "The Imam Is Followed" is fine; the shared focus "Transition takbirs and the pace of the row." names the instruction the women's day drops. Consider a variant focus (e.g. "The pace of the row, and what it answers.") — the spec only allows overrides on Days 1 and 14, so I have not proposed one.
-4. **25:74 says "wives".** The Day 14 du'a is carried over with Sahih International's "from among our wives" (verified at api.alquran.cloud 25:74). The Arabic أزواجنا means spouses; the translation is Sahih International's own word, so I did not change it. A woman reciting it may find it odd; options are keep, or swap to a different verified Quranic du'a.
-5. **Day 12 shared step title** "Look at who is actually behind you" — accurate for a man's row, not quite for hers (her row is beside her). Out of spec scope; flagging only.
-6. **Two credits in the men's angles that the entries do not support** (found while re-reading; not changed here, not in scope): Day 8 "Ibn Kathir glosses qanitin as standing in obedient stillness" (entry: "with humbleness and humility… not allowed to speak"); Day 9 "…which is part of why Fajr is recited aloud" sits inside the Ibn Kathir credit but is not in the entry. Day 11's "rather than as an accusation" is app framing inside the al-Sa'di credit. The women's versions avoid all three.
-7. **Source links that moved.** `binbaz.org.sa/fatwas/17618` now redirects to an unrelated fatwa (adhan in sandals); `binbaz.org.sa/fatwas/17618/<any-slug>` resolves to "حكم إمامة المرأة". `almosleh.com/en/f-32487` returns 404 — the Hanafi/Maliki "quiet" report therefore rests only on the spec §3 reading of 2026-10-11 and is worded "reported".
-8. **Companion-report citations in prose** (Day 8: "Musannaf Abd al-Razzaq 5082" in a step's `source`). `verify-citations.mjs` / `verify-journey-claims.mjs` may not know how to read a Musannaf citation; Task 5/6 should check what they do with it rather than let it fail as "unlocatable" or pass unread.
+- **O1. "wives" in 25:74.** The Day 14 du'a is carried over with Sahih International's "from among our wives" (verified at api.alquran.cloud 25:74). The Arabic أزواجنا means spouses. Options: keep it, or swap in a different, verified Quranic du'a.
+- **O2. The full Abu Dawud 592 matn.** `hadith_imam_14_f` keeps the narrator's closing remark that her mu'adhdhin was an old man (the reviewer recommends keeping it). The shorter option ends at "…in prayer." The lesson text says nothing beyond the hadith's words about who was in her house.
+- **O3. Day 8 takbir and Day 10 transitions.** The spec keeps Day 8's "say the takbir so the row can follow it", which rests on Bukhari 734. It drops Day 10's audible-transitions step. Neither text addresses non-mahram men being present. Please confirm Day 8's step.
+- **O4. N14 and N15 change the man's hadith layer too.** They are the only way to stop the shared `hadith_imam_10` from asserting "audible" on her Day 10.
+- **O5. Day 6 men's credit.** "…not something the reciter has to manufacture by varying his material" is app framing inside an Ibn Kathir credit, and "his" is men-framed. Not changed, because it was outside ruling 8. A suggested fix keeps the entry's half and moves the rest into app voice.
+- **O6. One woman praying with her.** The spec removed this line, not replaced, because no source was found. Fix round 1 found one: Shaykh Jamir Meah (SeekersGuidance, Shafi'i, fetched 2026-10-12) says that with two people "the follower stands slightly behind the Imam… This applies to a male leading another man or a women leading another woman". That is a single Shafi'i source, and it differs from the Bukhari 699 practice for two men. It is not added. Tell me if you want it on Day 1 or 8 for her.
+- **O7. `quran_17_78` whyThis** (quranData.ts:3414) reads "…which is part of why Fajr is a prayer recited aloud rather than silently." It is app voice, not a credit, and the journeys do not render it (the tafsir tag supplies the footnote). Flagged only, because it repeats C2's unsupported link.
+- **O8. Scholar review.** As the spec says, a scholar should approve the six women's lessons before release.
