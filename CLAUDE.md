@@ -641,7 +641,7 @@ Four scripts, none of which need a device:
   fa'alt" to every request, where Muslim 126 has it in Ibn Abbas's report and Abu
   Hurayrah's says "I shall". When you write a credit, put the app's reading in the
   app's voice and let the scholar's sentence be only what the entry contains.
-- `node scripts/verify-journey-selftest.mjs` — injects 15 known faults into a
+- `node scripts/verify-journey-selftest.mjs` — injects 16 known faults into a
   sandbox copy and asserts the verifier catches each. Run it after editing
   `verify-journey.mjs`; a checker that only ever prints "passed" is untested.
   Its fixtures are literal-text patches of `quranData.ts`: anchor a new one on
