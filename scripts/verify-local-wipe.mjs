@@ -26,6 +26,8 @@
  *  - A NEW personal table added to tables.ts but omitted from both the wipe and
  *    the PERSONAL list below. The subset assertion catches an omission from the
  *    wipe, not an omission from both. Add new personal tables to PERSONAL.
+ *  - A NEW personal kv_store key omitted from both operations.ts and PERSONAL_KV (same
+ *    subset limit as tables). Add new personal keys to PERSONAL_KV.
  *  - AsyncStorage, which holds no personal content today (see the docstring on
  *    clearAllLocalUserData).
  */
@@ -138,6 +140,10 @@ const PERSONAL = [
   'user_sessions',
   'user_subscription',
 ];
+// kv_store keys that hold personal data. Each MUST appear in the shipped wipe's key
+// list -- a hard assertion, so deleting one from operations.ts fails the run (the
+// replay above only deletes whatever keys it parsed, so it cannot notice a removal).
+const PERSONAL_KV = ['quran_reading_progress', 'last_opened_path', 'prayer_leadership_leader'];
 // Seeded app content and device config, identical for every user.
 const MUST_SURVIVE = [
   'content',
@@ -159,6 +165,10 @@ for (const t of PERSONAL) {
 }
 for (const t of MUST_SURVIVE) {
   if (count(t) === 0) failures.push(`${t}: content/config table was wiped and must not be`);
+}
+
+for (const k of PERSONAL_KV) {
+  if (!WIPED_KV_KEYS.includes(k)) failures.push(`kv_store: personal key '${k}' absent from clearAllLocalUserData`);
 }
 
 const kvKeys = db.prepare('SELECT key FROM kv_store ORDER BY key').all().map((r) => r.key);
