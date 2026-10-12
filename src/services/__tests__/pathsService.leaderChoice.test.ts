@@ -79,3 +79,21 @@ it('other journeys are returned as the same objects', async () => {
   const rizq = STATIC_SPIRITUAL_PATHS.find((p) => p.id === 'path_rizq_revolution')!;
   expect(service.getPathById('path_rizq_revolution')).toBe(rizq);
 });
+
+it('Day 14 and Day 10 take the variant hadith, title and focus, read from the data', async () => {
+  await service.setLeaderChoice(ID, 'woman');
+  const resolved = service.getPathById(ID)!.dailySteps;
+  const base = staticPath().dailySteps;
+
+  const v14 = base.find((s) => s.day === 14)!.variants!.womanLeading!;
+  const d14 = resolved.find((s) => s.day === 14)!;
+  expect(v14.hadithContentId).toBeTruthy();
+  expect(d14.hadithContentId).toBe(v14.hadithContentId);
+  expect(d14.hadithContentId).toBe('hadith_imam_14_f');
+  expect(d14.title).toBe(v14.title);
+  expect(d14.focus).toBe(v14.focus);
+
+  const v10 = base.find((s) => s.day === 10)!.variants!.womanLeading!;
+  expect(v10.focus).toBeTruthy();
+  expect(resolved.find((s) => s.day === 10)!.focus).toBe(v10.focus);
+});
