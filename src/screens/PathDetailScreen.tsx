@@ -204,7 +204,6 @@ export const PathDetailScreen: React.FC = () => {
     });
   };
 
-  /** Renders a single day row — shared by flat and phase-grouped layouts. */
   const chooseLeader = async (choice: LeaderChoice) => {
     try {
       await pathsService.setLeaderChoice(path.id, choice);
@@ -223,7 +222,8 @@ export const PathDetailScreen: React.FC = () => {
     if (resolved) openDay(resolved);
   };
 
-  const renderStep =(step: (typeof path.dailySteps)[0]) => {
+  /** Renders a single day row — shared by flat and phase-grouped layouts. */
+  const renderStep = (step: (typeof path.dailySteps)[0]) => {
     const isCompleted = completedSteps.some(cs => cs.day === step.day);
     const isCurrent = userProgress ? step.day === userProgress.currentDay : step.day === 1;
     const isLocked = userProgress ? step.day > userProgress.currentDay : step.day > 1;
@@ -288,7 +288,7 @@ export const PathDetailScreen: React.FC = () => {
               {path.leaderChoice && leaderChoice && (
                 <TouchableOpacity
                   onPress={() => setSheetOpen(true)}
-                  hitSlop={{ top: 12, right: 12, bottom: 12, left: 12 }}
+                  hitSlop={{ top: 16, right: 16, bottom: 16, left: 16 }}
                   accessibilityRole="button"
                   accessibilityLabel="Change who is leading"
                 >
