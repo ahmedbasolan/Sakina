@@ -9,6 +9,15 @@
  * footnote does not fall back to the verse's whyThis, and a split pattern so
  * ContextLayer produces both an Understand and a Matters section.
  *
+ * Step variants: for every base step, the base angleId must NOT end in `_f`,
+ * every `variants.<key>.angleId` MUST end in `_f`, and a variant's angleId must
+ * differ from its base step's. WHAT THAT DOES NOT CATCH: it checks the id's
+ * spelling only. A `_f` angle whose text is a man's lesson, a variant that
+ * points at the wrong day's `_f` angle, or a variant whose fiqh is wrong all
+ * pass; and a variant without an angleId is only reported by the missing-angle
+ * check, not by name. The suffix is the privacy boundary (redactVariantId and
+ * fetchAngleById key on it), which is why its spelling is policed here.
+ *
  * Run: node scripts/verify-journey.mjs
  */
 import fs from 'fs';
@@ -110,6 +119,23 @@ let fail = 0, reported = 0;
 for (const [pathId, anglePrefix, theme, strict] of JOURNEYS) {
   const path = objectAt(paths, pathId);
   if (!path) { console.log(`!! path not found: ${pathId}`); fail++; continue; }
+
+  for (const bs of path.dailySteps || []) {
+    if (bs.angleId.endsWith('_f')) {
+      console.log(`  !! day ${bs.day}: base step angleId ${bs.angleId} ends in _f (a women's variant id on the shared sequence)`);
+      fail++;
+    }
+    for (const [vk, v] of Object.entries(bs.variants || {})) {
+      if (!v.angleId || !v.angleId.endsWith('_f')) {
+        console.log(`  !! day ${bs.day}: variant ${vk} angleId ${v.angleId} does not end in _f`);
+        fail++;
+      }
+      if (v.angleId === bs.angleId) {
+        console.log(`  !! day ${bs.day}: variant ${vk} angleId equals the base step's (${bs.angleId})`);
+        fail++;
+      }
+    }
+  }
 
   for (const { label, steps } of variantSequences(path)) {
     // In a non-strict journey the same checks run and print, but count toward

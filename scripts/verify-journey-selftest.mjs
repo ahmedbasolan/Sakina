@@ -79,6 +79,10 @@ const CASES = [
   // A step-variant sequence (the woman-leading Prayer Leadership) is its own journey
   // to the verifier: a variant angle that does not exist must be reported.
   ['variant points at a missing angle', () => patch('staticPaths.ts', `angleId: 'q_angle_imam_day8_f'`, `angleId: 'q_angle_imam_day88_f'`), /missing angle q_angle_imam_day88_f/],
+  // The base line `angleId: 'q_angle_imam_day9',` is unique; the same literal with _f also
+  // sits inside day 9's variant (as `..day9_f'`), so this anchor hits the base step only.
+  ['base step uses a _f angle', () => patch('staticPaths.ts', `angleId: 'q_angle_imam_day9',`, `angleId: 'q_angle_imam_day9_f',`), /base step angleId q_angle_imam_day9_f ends in _f/],
+
 ];
 
 // Baseline must pass, or every negative result below is meaningless.
