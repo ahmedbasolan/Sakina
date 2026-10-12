@@ -522,6 +522,16 @@ believer") under two different day titles. Check with a scripted sweep, not by
 eye; `hadithData.ts` ids are per-day (`hadith_results_5`) so a duplicate hides
 behind a distinct-looking id.
 
+### 1c. Step variants (Prayer Leadership's "Who is leading?")
+
+A step may carry `variants.womanLeading` (angle, hadith, title, focus). `PathsService`
+applies it through `src/utils/leaderChoice.ts`; screens never read `variants`. Every
+journey verifier expands variants with `scripts/lib/journeyVariants.mjs` and checks each
+sequence as its own journey — a woman never sees the base sequence. The choice lives in
+kv_store `prayer_leadership_leader` only (deleted by `clearAllLocalUserData`), and a
+variant id (`…_f`) must never reach `logServiceError`: pass it through `redactVariantId`.
+Sources and the day table: `docs/superpowers/specs/2026-10-11-prayer-leadership-leader-choice-design.md`.
+
 ### 2. `content.whyThis` is per-verse, not per-journey
 
 `PathStepScreen` passes `content.whyThis` as ContextLayer's `source`, which
@@ -631,7 +641,7 @@ Four scripts, none of which need a device:
   fa'alt" to every request, where Muslim 126 has it in Ibn Abbas's report and Abu
   Hurayrah's says "I shall". When you write a credit, put the app's reading in the
   app's voice and let the scholar's sentence be only what the entry contains.
-- `node scripts/verify-journey-selftest.mjs` — injects 14 known faults into a
+- `node scripts/verify-journey-selftest.mjs` — injects 15 known faults into a
   sandbox copy and asserts the verifier catches each. Run it after editing
   `verify-journey.mjs`; a checker that only ever prints "passed" is untested.
   Its fixtures are literal-text patches of `quranData.ts`: anchor a new one on
