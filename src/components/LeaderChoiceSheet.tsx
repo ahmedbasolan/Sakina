@@ -26,8 +26,16 @@ export const LeaderChoiceSheet: React.FC<Props> = ({ visible, current, onChoose,
   const insets = useSafeAreaInsets();
   return (
     <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
-      <Pressable style={styles.overlay} onPress={onClose} accessibilityLabel="Close">
-        <Pressable style={[styles.sheet, { paddingBottom: insets.bottom + Spacing.xl }]}>
+      <View style={styles.overlay}>
+        {/* Sibling, not parent: an accessible Pressable wrapping the sheet hides its
+            children from VoiceOver on iOS, which would lock the options away. */}
+        <Pressable
+          style={StyleSheet.absoluteFill}
+          onPress={onClose}
+          accessibilityRole="button"
+          accessibilityLabel="Close"
+        />
+        <View style={[styles.sheet, { paddingBottom: insets.bottom + Spacing.xl }]}>
           <Text style={styles.title} accessibilityRole="header">Who is leading?</Text>
           <Text style={styles.body}>
             A few days change when a woman leads women: where she stands, reciting aloud,
@@ -41,6 +49,7 @@ export const LeaderChoiceSheet: React.FC<Props> = ({ visible, current, onChoose,
                 style={[styles.option, selected && styles.optionSelected]}
                 onPress={() => onChoose(o.value)}
                 accessibilityRole="button"
+                accessibilityLabel={o.label}
                 accessibilityState={{ selected }}
               >
                 <Text style={styles.optionText}>{o.label}</Text>
@@ -49,8 +58,8 @@ export const LeaderChoiceSheet: React.FC<Props> = ({ visible, current, onChoose,
             );
           })}
           <Text style={styles.caption}>Stays on your device. Never sent to Sakina.</Text>
-        </Pressable>
-      </Pressable>
+        </View>
+      </View>
     </Modal>
   );
 };
