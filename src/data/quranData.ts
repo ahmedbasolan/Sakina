@@ -16273,7 +16273,7 @@ const quranContentAnglesData: ContentAngle[] = [
         type: 'physical',
         icon: 'person',
         title: 'Lead the smallest congregation there is',
-        instruction: 'Lead one prayer at home this week — your family, or one friend. If only one person joins you he stands level with you on your right, not behind (Day 8 covers how a row forms once there are two). Confidence is built at that size, not at the front of a full masjid. These days are written for a man leading; if you are a woman, whether and how you lead other women is something schools answer differently, so ask a trusted scholar before using Day 8 — the days on learning and reciting surahs are useful either way.',
+        instruction: 'Lead one prayer at home this week — your family, or one friend. If only one person joins you he stands level with you on your right, not behind (Day 8 covers how a row forms once there are two). Confidence is built at that size, not at the front of a full masjid. If a woman is leading women, choose that on the journey screen — Days 1, 8, 9, 10, 11 and 14 change where the practice differs.',
         source: '"…he drew me to his right by holding me by the head" [Sahih al-Bukhari 699]',
       },
       {
@@ -16331,7 +16331,7 @@ const quranContentAnglesData: ContentAngle[] = [
     contentId: 'quran_112_1_4',
     mood: 'Hopeful',
     angle:
-      '[Tafsir Ibn Kathir on 112:1-4] Ibn Kathir reports that Al-Ikhlas came down in answer to people who asked the Prophet ﷺ to describe his Lord, and that its four ayahs settle the question without a word to spare. It is the shortest complete answer in the Qur\'an to the largest question anyone can ask. The Prophet ﷺ said: "By Him in Whose Hand my life is, this Surah is equal to one-third of the Qur\'an" [Sahih al-Bukhari 5013] — which is part of why it is the surah nearly every congregation already knows by heart. When you recite it in the second rak\'ah, nobody standing behind you is lost.',
+      '[Tafsir Ibn Kathir on 112:1-4] Ibn Kathir reports that Al-Ikhlas came down in answer to people who asked the Prophet ﷺ to describe his Lord, and that its four ayahs settle the question without a word to spare. It is the shortest complete answer in the Qur\'an to the largest question anyone can ask. The Prophet ﷺ said: "By Him in Whose Hand my life is, this Surah is equal to one-third of the Qur\'an" [Sahih al-Bukhari 5013] — which is part of why it is the surah nearly every congregation already knows by heart. When you recite it in the second rak\'ah, nobody praying with you is lost.',
     action: "Recite Al-Ikhlas in the second rak'ah of your next prayer.",
     practiceSteps: JSON.stringify([
       {
@@ -16355,7 +16355,7 @@ const quranContentAnglesData: ContentAngle[] = [
         icon: 'mosque',
         title: 'Use it tonight, not eventually',
         instruction:
-          "Put it in the second rak'ah of your next prayer. A surah you have recited in a real prayer is one you will not lose when people are behind you.",
+          "Put it in the second rak'ah of your next prayer. A surah you have recited in a real prayer is one you will not lose when people are praying with you.",
         source: 'Surah Al-Ikhlas 112:1-4',
       },
     ]),
@@ -16438,7 +16438,7 @@ const quranContentAnglesData: ContentAngle[] = [
     contentId: 'quran_8_2',
     mood: 'Hopeful',
     angle:
-      '[Tafsir Ibn Kathir on 8:2] Ibn Kathir reads the increase in faith here as something the recitation itself does to the listener, not something the reciter has to manufacture by varying his material. A congregation is not grading your repertoire, and nobody behind you is keeping a list. Your job is to recite well what you actually hold, and to hold more of it over time. The Prophet ﷺ sent a man on an expedition who led his companions and closed every rak\'ah with Qul huwa Allahu ahad; asked why, he said it describes the Most Merciful and he loved to recite it, and the answer sent back was "Tell him that Allah loves him" [Sahih al-Bukhari 7375] — repeating the one surah was what earned that, not what had to be excused.',
+      '[Tafsir Ibn Kathir on 8:2] Ibn Kathir explains that faith increases when the Qur\'an is recited. That increase is something the recitation itself does to the listener, not something the reciter has to manufacture by varying the material. A congregation is not grading your repertoire, and nobody praying with you is keeping a list. Your job is to recite well what you actually hold, and to hold more of it over time. The Prophet ﷺ sent a man on an expedition who led his companions and closed every rak\'ah with Qul huwa Allahu ahad; asked why, he said it describes the Most Merciful and he loved to recite it, and the answer sent back was "Tell him that Allah loves him" [Sahih al-Bukhari 7375] — repeating the one surah was what earned that, not what had to be excused.',
     action: 'Lead with the two surahs you are most solid on, and use them again.',
     practiceSteps: JSON.stringify([
       {
@@ -16473,7 +16473,7 @@ const quranContentAnglesData: ContentAngle[] = [
     id: 'q_angle_imam_day7',
     contentId: 'quran_7_204',
     mood: 'Hopeful',
-    angle: "[Tafsir al-Qurtubi on 7:204] Al-Qurtubi records that Ibn Masud, Abu Hurairah, Jabir, az-Zuhri and Ata were among those who said this ayah was revealed about the prayer, that an-Naqqash reported the commentators agreed the listening applies in obligatory and voluntary prayer alike, and that he judges the general reading — silence for whatever the imam recites aloud — to be the sound one. That is the room you are reciting into: people whose instruction is to stop talking and follow your voice. The Prophet ﷺ used to recite \"Glorify the name of Thy Lord, the Most High\" and \"Has there come to thee the news of the overwhelming event\" on the two Eids and on Jumu'ah [Sahih Muslim 878] — short surahs, chosen for the fullest congregations of the year. So pick from the set the congregation already carries, and keep it brief enough that the weakest person behind you is not being tested.",
+    angle: "[Tafsir al-Qurtubi on 7:204] Al-Qurtubi records that Ibn Masud, Abu Hurairah, Jabir, az-Zuhri and Ata were among those who said this ayah was revealed about the prayer, that an-Naqqash reported the commentators agreed the listening applies in obligatory and voluntary prayer alike, and that he judges the general reading — silence for whatever the imam recites aloud — to be the sound one. That is the room you are reciting into: people whose instruction is to stop talking and follow your voice. The Prophet ﷺ used to recite \"Glorify the name of Thy Lord, the Most High\" and \"Has there come to thee the news of the overwhelming event\" on the two Eids and on Jumu'ah [Sahih Muslim 878] — short surahs, chosen for the fullest congregations of the year. So pick from the set the congregation already carries, and keep it brief enough that the weakest person praying with you is not being tested.",
     action: 'Choose two short surahs the congregation already knows and drill them this week.',
     practiceSteps: JSON.stringify([
       {
@@ -16498,14 +16498,14 @@ const quranContentAnglesData: ContentAngle[] = [
         source: "Surah Al-A'raf 7:204",
       },
     ]),
-    reflection: 'Which surah would you reach for if the iqamah were called and everyone turned to you right now?',
+    reflection: 'Which surah would you reach for if everyone turned to you right now?',
   },
   {
     id: 'q_angle_imam_day8',
     contentId: 'quran_2_238',
     mood: 'Hopeful',
     angle:
-      '[Tafsir Ibn Kathir on 2:238] Ibn Kathir glosses qanitin as standing in obedient stillness, making the posture part of the command rather than decoration around it. An imam sets that posture for everyone behind him before he has said a word. The Prophet ﷺ said: "Straighten your rows, for the straightening of a row is a part of the perfection of prayer" [Sahih Muslim 433] — so the first thing you do as imam is not recite, it is look up and level the line. When that is done, the takbir, the silent opening du\'a and the recitation follow in an order that never changes.',
+      '[Tafsir Ibn Kathir on 2:238] Ibn Kathir explains "stand before Allah, devoutly obedient" as standing with humbleness and humility before Him, and reads the command as forbidding ordinary speech in the prayer. That makes the posture part of the command rather than decoration around it. An imam sets that posture for everyone behind him before he has said a word. The Prophet ﷺ said: "Straighten your rows, for the straightening of a row is a part of the perfection of prayer" [Sahih Muslim 433] — so the first thing you do as imam is not recite, it is look up and level the line. When that is done, the takbir, the silent opening du\'a and the recitation follow in an order that never changes.',
     action: 'Straighten the row and pause before you say the opening takbir.',
     practiceSteps: JSON.stringify([
       {
@@ -16513,7 +16513,7 @@ const quranContentAnglesData: ContentAngle[] = [
         icon: 'person',
         title: 'Where they stand, by how many',
         instruction:
-          'One man praying with you stands level with you on your right, not behind you — the Prophet ﷺ twice moved someone from his left round to his right. When a second man arrives, both step back and form a row. Only from that point are you alone in front. This describes a man leading; if you are a woman leading women, ask a trusted scholar how your school arranges the row.',
+          'One man praying with you stands level with you on your right, not behind you — the Prophet ﷺ twice moved someone from his left round to his right. When a second man arrives, both step back and form a row. Only from that point are you alone in front. If a woman is leading women, choose that on the journey screen — Days 1, 8, 9, 10, 11 and 14 change where the practice differs.',
         source: '"He then took and brought me around him and set me on his right side. Then Ibn Sakhr came and stood on his left side. He then took us with his both hands and made us stand behind him." [Sunan Abi Dawud 634]',
       },
       {
@@ -16556,7 +16556,7 @@ const quranContentAnglesData: ContentAngle[] = [
     contentId: 'quran_17_78',
     mood: 'Hopeful',
     angle:
-      '[Tafsir Ibn Kathir on 17:78] Ibn Kathir records that "the recitation of dawn is ever witnessed" refers to the angels of the night and of the day attending it, which is part of why Fajr is recited aloud rather than silently. The Prophet ﷺ said: "Say Amin when the Imam says it" [Sahih al-Bukhari 780] — so reciting out loud is not performance, it is the congregation being handed something to answer. Your voice is now setting the pace for every person standing behind you, which means steady matters far more than impressive, and the beat you leave after Al-Fatihah is where the row catches up with you.',
+      '[Tafsir Ibn Kathir on 17:78] Ibn Kathir records that "the recitation of dawn is ever witnessed" refers to the angels of the night and of the day attending it. Fajr is one of the prayers you recite aloud, and that recitation has witnesses. The Prophet ﷺ said: "Say Amin when the Imam says it" [Sahih al-Bukhari 780] — so reciting out loud is not performance, it is the congregation being handed something to answer. Your voice is now setting the pace for every person standing behind you, which means steady matters far more than impressive, and the beat you leave after Al-Fatihah is where the row catches up with you.',
     action: 'Recite aloud in Fajr, Maghrib and Isha, slower than feels natural.',
     practiceSteps: JSON.stringify([
       {
@@ -16591,7 +16591,7 @@ const quranContentAnglesData: ContentAngle[] = [
     id: 'q_angle_imam_day10',
     contentId: 'quran_2_43',
     mood: 'Hopeful',
-    angle: "[Tafsir Ibn Kathir on 2:43] Ibn Kathir notes that the command to bow \"with those who bow\" is read as an instruction about praying in congregation rather than merely about the posture. Once people are behind you, every movement you make has become an instruction to them. The Prophet ﷺ said: \"The Imam is (appointed) to be followed. So do not differ from him, bow when he bows…\" [Sahih al-Bukhari 722], and to say Rabbana lakal hamd [Our Lord, to You is all praise] when he says Sami'a llahu liman hamidah [Allah has heard whoever praises Him] — which means your transitions have to be audible and unhurried, or the row cannot stay with you.",
+    angle: "[Tafsir Ibn Kathir on 2:43] Ibn Kathir records that many scholars took the command to bow \"with those who bow\" as proof that praying in congregation is obligatory for men. Once people are behind you, every movement you make has become an instruction to them. The Prophet ﷺ said: \"The Imam is (appointed) to be followed. So do not differ from him, bow when he bows…\" [Sahih al-Bukhari 722], and to say Rabbana lakal hamd [Our Lord, to You is all praise] when he says Sami'a llahu liman hamidah [Allah has heard whoever praises Him] — which means your transitions have to be audible and unhurried, or the row cannot stay with you.",
     action: 'Say every transition takbir clearly and settle before the next one.',
     practiceSteps: JSON.stringify([
       {
@@ -16623,7 +16623,7 @@ const quranContentAnglesData: ContentAngle[] = [
     contentId: 'quran_4_28',
     mood: 'Hopeful',
     angle:
-      "[Tafsir al-Sa'di on 4:28] Al-Sa'di takes \"created weak\" as the reason the law is made light rather than as an accusation, and the prostrations of forgetfulness are one of the places that lightening becomes visible. Everyone who has ever led has lost their place at some point. The Prophet ﷺ said: \"He should cast aside his doubt and base his prayer on what he is sure of, then perform two prostrations before giving salutations\" [Sahih Muslim 571] — there is a fixed procedure, which tells you the slip was expected. When you forget, you do not stop; you take the number you are certain of and finish.",
+      "[Tafsir al-Sa'di on 4:28] Al-Sa'di explains that Allah lightens the law out of His mercy and His knowledge of human weakness from every side — of body, of will, of resolve, of faith and of patience. The prostrations of forgetfulness are one of the places that lightening becomes visible. Everyone who has ever led has lost their place at some point. The Prophet ﷺ said: \"He should cast aside his doubt and base his prayer on what he is sure of, then perform two prostrations before giving salutations\" [Sahih Muslim 571] — there is a fixed procedure, which tells you the slip was expected. When you forget, you do not stop; you take the number you are certain of and finish.",
     action: 'Learn the two prostrations of forgetfulness before you need them.',
     practiceSteps: JSON.stringify([
       {
@@ -16659,7 +16659,7 @@ const quranContentAnglesData: ContentAngle[] = [
     contentId: 'quran_21_107',
     mood: 'Hopeful',
     angle:
-      '[Tafsir Ibn Kathir on 21:107] Ibn Kathir reads "a mercy to the worlds" as describing how he dealt with people and not only what he brought them, and the clearest place that shows in prayer is how long he made it when others were standing behind him. Length stops being devotion at the point where it is being spent out of someone else\'s day. The Prophet ﷺ said: "If anyone of you leads the people in the prayer, he should shorten it for amongst them are the weak, the sick and the old" [Sahih al-Bukhari 703] — and the same hadith adds that praying alone you may lengthen it as much as you wish. When you are unsure which surah to take, take the shorter one.',
+      '[Tafsir Ibn Kathir on 21:107] Ibn Kathir explains "a mercy to the worlds" as Allah having sent him as a mercy for all peoples. One clear place that mercy shows in prayer is how long he made it when others were praying with him. Length stops being devotion at the point where it is being spent out of someone else\'s day. The Prophet ﷺ said: "If anyone of you leads the people in the prayer, he should shorten it for amongst them are the weak, the sick and the old" [Sahih al-Bukhari 703] — and the same hadith adds that praying alone you may lengthen it as much as you wish. When you are unsure which surah to take, take the shorter one.',
     action: 'Choose the shorter surah every time you are unsure.',
     practiceSteps: JSON.stringify([
       {
@@ -16673,9 +16673,9 @@ const quranContentAnglesData: ContentAngle[] = [
       {
         type: 'mindset',
         icon: 'person',
-        title: 'Look at who is actually behind you',
+        title: 'Look at who is actually praying with you',
         instruction:
-          'An elderly man, someone straight from work, a parent with a child who will not last. He named exactly these people as the reason.',
+          'Someone elderly, someone straight from work, a parent with a child who will not last. He named exactly these people as the reason.',
         source: '"He who acts as Imam of the people, he must be brief, for among them are the aged, among them are the sick, among them are the weak, and among them are the people who have business to attend." [Sahih Muslim 468]',
       },
       {
@@ -16694,7 +16694,7 @@ const quranContentAnglesData: ContentAngle[] = [
     id: 'q_angle_imam_day13',
     contentId: 'quran_33_41',
     mood: 'Hopeful',
-    angle: "[Tafsir al-Sa'di on 33:41] Al-Sa'di lists the least that abundant remembrance means as keeping the morning and evening adhkar, the remembrance after each of the five prayers, and the remembrance that fits each occasion as it arises — kept up at all times and in every state. The end of the prayer is one of the places it is easiest to let attention drop. An imam who rushes the closing teaches everyone behind him to rush it too. The Prophet ﷺ would sit for the tashahhud, send salawat, and after turning from the prayer seek forgiveness three times before saying anything else [Sahih Muslim 591] — the ending is a sequence, not a stop. When you finish, stay seated long enough for that dhikr before you turn round.",
+    angle: "[Tafsir al-Sa'di on 33:41] Al-Sa'di lists the least that abundant remembrance means as keeping the morning and evening adhkar, the remembrance after each of the five prayers, and the remembrance that fits each occasion as it arises — kept up at all times and in every state. The end of the prayer is one of the places it is easiest to let attention drop. An imam who rushes the closing teaches the whole row to rush it too. The Prophet ﷺ would seek forgiveness three times when he finished his prayer [Sahih Muslim 591] — the ending is a sequence, not a stop. When you finish, do not skip that dhikr.",
     action: 'Sit through the full closing sequence without shortening any part of it.',
     practiceSteps: JSON.stringify([
       {
@@ -16724,12 +16724,12 @@ const quranContentAnglesData: ContentAngle[] = [
       {
         type: 'mindset',
         icon: 'candle',
-        title: 'Do not stand straight up',
-        instruction: 'Give the salam to your right and then to your left, and then stay where you are. Seeking forgiveness three times and the dhikr that follows is the first thing he did, before he spoke to anyone.',
+        title: 'Close with the dhikr',
+        instruction: 'Give the salam to your right and then to your left. Seeking forgiveness three times and the dhikr that follows is what he did when he finished his prayer.',
         source: "\"He said the salam to his right and to his left.\" [Sunan an-Nasa'i 1319] · \"O Allah! Thou art Peace, and peace comes from Thee.\" [Sahih Muslim 591]",
       },
     ]),
-    reflection: 'After your next prayer, stay seated for the closing dhikr. What did you usually stand up in the middle of?',
+    reflection: 'After your next prayer, say the closing dhikr in full. Which part of it did you usually skip?',
   },
   {
     id: 'q_angle_imam_day14',
@@ -16765,6 +16765,216 @@ const quranContentAnglesData: ContentAngle[] = [
       },
     ]),
     reflection: 'Which prayer, which day, and who will be praying with you? Write the three answers down now.',
+  },
+  // Prayer Leadership — women-leading versions of days 1, 8, 9, 10, 11 and 14, chosen through
+  // the path's leaderChoice (step.variants.womanLeading). Text is the approved draft
+  // docs/superpowers/plans/2026-10-11-prayer-leadership-women-lessons-draft.md (2026-10-12);
+  // `action` is the first practice step's instruction, so it never states a men-only mechanic.
+  {
+    id: 'q_angle_imam_day1_f',
+    contentId: 'quran_54_17',
+    mood: 'Hopeful',
+    angle: "[Tafsir Ibn Kathir on 54:17] Ibn Kathir explains that Allah made the Quran easy to recite and comprehend for those who seek it, and reads the ayah's closing question as asking whether anyone will remember through it. The bar for leading is far narrower than most people assume it is. The Prophet ﷺ said: \"The one who is most versed in Allah's Book should act as Imam for the people\" [Sahih Muslim 673] — not the most learned in fiqh, not the eldest, not the most respected in the room — and Ibn Baz held that this covers a woman leading women, which he called permissible, and recommended when it is needed for teaching. The schools differ on whether she leads at all: the Shafi'i school recommends it, the Hanbali school permits it, the Hanafi school holds it disliked — prohibitively so in its well-known view — and the Maliki school does not permit it. All four agree that a woman does not lead men. What you can already recite without stumbling is the exact thing that hadith measures.",
+    action: "Write the list out. Most people who assume they cannot lead find they have Al-Fatihah and four or five short surahs — which is already enough for two rak'ahs.",
+    practiceSteps: JSON.stringify([
+      {
+        type: 'mindset',
+        icon: 'brain',
+        title: 'Count what you already hold',
+        instruction: "Write the list out. Most people who assume they cannot lead find they have Al-Fatihah and four or five short surahs — which is already enough for two rak'ahs.",
+        source: "\"The one who is most versed in Allah's Book should act as Imam for the people.\" [Sahih Muslim 673]",
+      },
+      {
+        type: 'physical',
+        icon: 'home',
+        title: 'Lead the smallest congregation there is',
+        instruction: 'Lead one prayer at home this week — the women of your household, or a sister who joins you. Confidence is built at that size. If you follow the Hanafi school, whose well-known view holds it prohibitively disliked, or the Maliki school, which does not permit it, follow your school here; the days on learning and reciting surahs serve you either way.',
+        source: 'Ibn Baz, fatwa "Ruling on a woman leading" — https://binbaz.org.sa/fatwas/17618/حكم-امامة-المراة · Hanafi: Basem Itani, SeekersGuidance · Maliki: Diyanet (Türkiye) fatwa citing Ibn Rushd and Ibn Juzay',
+      },
+      {
+        type: 'verbal',
+        icon: 'hands-prayer',
+        title: "The du'a of the one sent to speak",
+        instruction: 'Musa asked for this before he was sent to speak in front of people who frightened him. Say it before you step forward.',
+        arabicText: 'رَبِّ ٱشْرَحْ لِى صَدْرِى وَيَسِّرْ لِىٓ أَمْرِى وَٱحْلُلْ عُقْدَةً مِّن لِّسَانِى يَفْقَهُوا۟ قَوْلِى',
+        transliteration: "rabbi ish'raḥ lī ṣadrī wayassir lī amrī wa-uḥ'lul ʿuq'datan min lisānī yafqahū qawlī",
+        translation: 'My Lord, expand for me my breast, and ease for me my task, and untie the knot from my tongue that they may understand my speech.',
+        source: 'Quran 20:25-28',
+        sourceType: 'quran_dua',
+      },
+    ]),
+    reflection: 'What is actually holding you back — not knowing enough, or not wanting to be seen trying?',
+  },
+  {
+    id: 'q_angle_imam_day8_f',
+    contentId: 'quran_2_238',
+    mood: 'Hopeful',
+    angle: "[Tafsir Ibn Kathir on 2:238] Ibn Kathir explains \"stand before Allah, devoutly obedient\" as standing with humbleness and humility before Him, and reads the command as forbidding ordinary speech in the prayer. When you lead women you take that posture among them — in the majority view, not ahead of them: the Hanafi, Shafi'i and Hanbali schools place her in their middle, and Ibn Qudamah wrote that he knew of no disagreement on it among those who allow her to lead. Umm Salamah is reported to have led women in Asr and stood among them, a chain al-Nawawi graded sahih; Fawzi al-Humaydi grades these reports weak and holds, as Ibn Hazm did, that she leads from ahead of the row. The Prophet ﷺ said: \"Straighten your rows, for the straightening of a row is a part of the perfection of prayer\" [Sahih Muslim 433] — so the first thing you do as imam is not recite, it is look along the line you are standing in and level it. When that is done, the takbir, the silent opening du'a and the recitation follow in an order that never changes.",
+    action: "Stand in the middle of the front row, level with the women on either side of you, not out in front of them. The Hanafi, Shafi'i and Hanbali schools agree that she stands in their middle. Within the Shafi'i school there is a second view: that she may stand slightly ahead of the row, just enough to mark her as the imam.",
+    practiceSteps: JSON.stringify([
+      {
+        type: 'physical',
+        icon: 'person',
+        title: 'Where you stand',
+        instruction: "Stand in the middle of the front row, level with the women on either side of you, not out in front of them. The Hanafi, Shafi'i and Hanbali schools agree that she stands in their middle. Within the Shafi'i school there is a second view: that she may stand slightly ahead of the row, just enough to mark her as the imam.",
+        source: "Middle: Dorar Fiqh Encyclopedia, citing al-Zayla'i, al-Nawawi, al-Ruhaybani and Ibn Qudamah, al-Mughni 2/149 · Second view: Jamir Meah, SeekersGuidance (citing Ibn Qasim, al-Shubari and al-Ramli); Jordan Iftaa, fatwa 2971",
+      },
+      {
+        type: 'physical',
+        icon: 'muscle',
+        title: 'Level the row before the takbir',
+        instruction: 'Look along the row on both sides of you and straighten it before you begin. A row is levelled before the prayer starts, not during it.',
+        source: '"Straighten your rows, for the straightening of a row is a part of the perfection of prayer." [Sahih Muslim 433]',
+      },
+      {
+        type: 'verbal',
+        icon: 'hands-prayer',
+        title: 'The silence after the takbir',
+        instruction: 'He stayed silent for a moment between the takbir and the recitation. This is what he said in that gap — say it before you begin Al-Fatihah.',
+        arabicText: 'اللَّهُمَّ بَاعِدْ بَيْنِي وَبَيْنَ خَطَايَاىَ كَمَا بَاعَدْتَ بَيْنَ الْمَشْرِقِ وَالْمَغْرِبِ، اللَّهُمَّ نَقِّنِي مِنَ الْخَطَايَا كَمَا يُنَقَّى الثَّوْبُ الأَبْيَضُ مِنَ الدَّنَسِ، اللَّهُمَّ اغْسِلْ خَطَايَاىَ بِالْمَاءِ وَالثَّلْجِ وَالْبَرَدِ',
+        transliteration: "Allahumma ba'id bayni wa bayna khatayaya kama ba'adta bayna al-mashriqi wal-maghrib. Allahumma naqqini min al-khataya kama yunaqqa ath-thawb al-abyad min ad-danas. Allahumma ighsil khatayaya bil-ma'i wath-thalji wal-barad.",
+        translation: 'O Allah, set me apart from my sins as You have set apart the East and the West. O Allah, cleanse me of my sins as a white garment is cleansed of dirt. O Allah, wash away my sins with water, snow and hail.',
+        source: 'Sahih al-Bukhari 744',
+        sourceType: 'prophetic_dua',
+        sourceGrading: 'sahih',
+      },
+      {
+        type: 'verbal',
+        icon: 'muscle',
+        title: 'Say the takbir so the row can follow it',
+        instruction: 'The opening takbir is a signal before it is a phrase. If the women at the ends of the row cannot hear it, they start after you and stay a step late for the whole prayer.',
+        source: '"The Imam is to be followed. Say the Takbir when he says it." [Sahih al-Bukhari 734]',
+      },
+    ]),
+    reflection: 'Picture the moment before the takbir. What do you do with your hands, your eyes, the row you are standing in?',
+  },
+  {
+    id: 'q_angle_imam_day9_f',
+    contentId: 'quran_17_78',
+    mood: 'Hopeful',
+    angle: "[Tafsir Ibn Kathir on 17:78] Ibn Kathir records that \"the recitation of dawn is ever witnessed\" refers to the angels of the night and of the day attending it. Ibn Baz held that the audible recitation of Fajr and the first two rak'ahs of Maghrib and Isha is a ruling for women as well as men, and that a woman leading women recites aloud in them so that they hear her and benefit from the words of Allah. The Shafi'i and Hanbali schools have her recite aloud in those prayers unless men who are not her mahram are present; the Hanafi and Maliki schools are reported to have her recite silently. Aisha is reported to have led women in Maghrib, standing in their middle and reciting aloud, a chain Ibn al-Mulaqqin graded sahih, though Fawzi al-Humaydi grades these reports weak. The Prophet ﷺ said: \"Say Amin when the Imam says it\" [Sahih al-Bukhari 780] — so the row is being handed something to answer. Your voice is now setting the pace for every woman praying with you, which means steady matters far more than impressive, and the beat you leave after Al-Fatihah is where the row catches up with you.",
+    action: "In the Shafi'i and Hanbali schools you recite aloud in Fajr and the first two rak'ahs of Maghrib and Isha, unless men who are not your mahram are present; Ibn Baz gave the reason as letting the women hear you and benefit from the words of Allah. The Hanafi and Maliki schools are reported to have a woman recite silently. Follow your own school.",
+    practiceSteps: JSON.stringify([
+      {
+        type: 'mindset',
+        icon: 'sun',
+        title: 'Know when you recite aloud',
+        instruction: "In the Shafi'i and Hanbali schools you recite aloud in Fajr and the first two rak'ahs of Maghrib and Isha, unless men who are not your mahram are present; Ibn Baz gave the reason as letting the women hear you and benefit from the words of Allah. The Hanafi and Maliki schools are reported to have a woman recite silently. Follow your own school.",
+        source: "Dorar Fiqh Encyclopedia, citing al-Nawawi, Rawdat al-Talibin, al-Mardawi, Tashih al-Furu', and Ibn Baz, Majmu' Fatawa 12/131 · Khalid al-Muslih, https://www.almosleh.com/en/f-32487",
+      },
+      {
+        type: 'physical',
+        icon: 'breathing',
+        title: 'Slower than feels natural',
+        instruction: 'Nerves speed you up without your noticing. Recite deliberately slower than you would alone — measured recitation is what is asked for and what a row can actually follow.',
+        source: 'Surah Al-Muzzammil 73:4',
+      },
+      {
+        type: 'verbal',
+        icon: 'chat',
+        title: 'Leave a beat for the Ameen',
+        instruction: 'Say Ameen after the last ayah of Al-Fatihah in the way your school teaches — schools differ on whether the imam says it aloud or quietly — then pause before starting the surah. Where the imam says it aloud, that silence is where the row says it with you.',
+        source: '"Say Amin when the Imam says it." [Sahih al-Bukhari 780]',
+      },
+    ]),
+    reflection: 'Record yourself reciting Al-Fatihah aloud and play it back. Was it slower or faster than you expected?',
+  },
+  {
+    id: 'q_angle_imam_day10_f',
+    contentId: 'quran_2_43',
+    mood: 'Hopeful',
+    angle: "[Tafsir Ibn Kathir on 2:43] Ibn Kathir explains \"bow with those who bow\" as being among the believers in the best of the deeds they do, foremost of them the prayer. Once women are praying with you, every movement you make has become an instruction to them. The Prophet ﷺ said: \"The Imam is (appointed) to be followed. So do not differ from him, bow when he bows…\" [Sahih al-Bukhari 722], and to say Rabbana lakal hamd [Our Lord, to You is all praise] when the imam says Sami'a llahu liman hamidah [Allah has heard whoever praises Him]. Ibn Baz counted it among the benefits of a woman leading that the women take her prayer as their example — her recitation, her bowing, her prostration, her sitting between the prostrations and her rising after ruku. Your movements have to be unhurried, or the row cannot stay with you.",
+    action: 'Settle fully into each position before you move to the next. Everyone following you is always half a second later than you are.',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'physical',
+        icon: 'clock',
+        title: 'Arrive before you move on',
+        instruction: 'Settle fully into each position before you move to the next. Everyone following you is always half a second later than you are.',
+        source: 'Surah Al-Baqarah 2:43',
+      },
+      {
+        type: 'mindset',
+        icon: 'person',
+        title: 'Your pace is now their pace',
+        instruction: 'What felt comfortable praying alone is usually too quick for a row. Assume you are faster than you think and slow down before you are told.',
+        source: 'Surah Al-Baqarah 2:43',
+      },
+      {
+        type: 'verbal',
+        icon: 'chat',
+        title: 'What the row answers',
+        instruction: "When you rise from ruku saying Sami'a llahu liman hamidah [Allah has heard whoever praises Him], the women with you answer Rabbana lakal hamd [Our Lord, to You is all praise].",
+        source: '"The Imam is (appointed) to be followed. So do not differ from him…" [Sahih al-Bukhari 722]',
+      },
+    ]),
+    reflection: 'In the last congregation you prayed in, did the imam ever move before you had settled? What did that feel like?',
+  },
+  {
+    id: 'q_angle_imam_day11_f',
+    contentId: 'quran_4_28',
+    mood: 'Hopeful',
+    angle: "[Tafsir al-Sa'di on 4:28] Al-Sa'di explains that Allah lightens the law out of His mercy and His knowledge of human weakness from every side — weakness of body, of will, of resolve, of faith and of patience. The prostrations of forgetfulness are one of the places in the prayer where that lightening becomes visible, and everyone who has ever led has lost their place at some point. The Prophet ﷺ said: \"He should cast aside his doubt and base his prayer on what he is sure of, then perform two prostrations before giving salutations\" [Sahih Muslim 571] — there is a fixed procedure, which tells you the slip was expected. When you forget, you do not stop; you take the number you are certain of and finish.",
+    action: 'If you cannot remember whether that was three or four, treat it as three, complete the prayer, and prostrate twice. This narration puts the two prostrations before the salam; schools differ on the details of doubt and on that timing, so follow your own school.',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'mindset',
+        icon: 'shield',
+        title: 'Take the lower number',
+        instruction: 'If you cannot remember whether that was three or four, treat it as three, complete the prayer, and prostrate twice. This narration puts the two prostrations before the salam; schools differ on the details of doubt and on that timing, so follow your own school.',
+        source: '"He should cast aside his doubt and base his prayer on what he is sure of, then perform two prostrations before giving salutations." [Sahih Muslim 571]',
+      },
+      {
+        type: 'physical',
+        icon: 'chat',
+        title: 'How they will correct you',
+        instruction: 'The hadith gives clapping to women as the way to alert the imam; applied to a woman leading women, the women praying with you clap. It is a prompt rather than a complaint — take the correction and carry on.',
+        source: "\"The saying 'Subhan Allah' is for men and clapping is for women.\" [Sahih al-Bukhari 1203]",
+      },
+      {
+        type: 'mindset',
+        icon: 'calm-face',
+        title: 'A blank is not a disqualification',
+        instruction: "If a surah leaves you mid-rak'ah, move to one you know, or simply go into ruku — Al-Fatihah on its own is enough for the rak'ah to stand. Being human in front of people is provided for.",
+        source: '"If you recite Al-Fatiha only it is sufficient, but if you recite something else in addition, it is better." [Sahih al-Bukhari 772]',
+      },
+    ]),
+    reflection: 'What is the specific mistake you are most afraid of making in front of people? Write down what would actually happen next.',
+  },
+  {
+    id: 'q_angle_imam_day14_f',
+    contentId: 'quran_20_132',
+    mood: 'Hopeful',
+    angle: "[Tafsir al-Sa'di on 20:132] Al-Sa'di reads the command as urging your family to prayer — and, since commanding a thing commands what it requires, teaching them what makes the prayer valid, invalid and complete — and \"be steadfast therein\" as establishing it with its limits, pillars, manners and khushu', which is hard on the soul and has to be pressed on. That second command is addressed to the one giving the first, before anyone is asked to follow. Your first congregation is the women already in your house. The Messenger of Allah ﷺ visited Umm Waraqah at her house, appointed a mu'adhdhin for her, and \"commanded her to lead the inmates of her house in prayer\" [Sunan Abi Dawud 592]. The four schools agree that a woman does not lead men, so the people you lead are the women. If you follow the Hanafi school, whose well-known view holds a woman leading women prohibitively disliked, or the Maliki school, which does not permit it, follow your school here. Otherwise, pick a prayer, pick the women who will pray with you, and lead.",
+    action: 'Choose one specific prayer in the next three days and which women of your house will pray with you. An unnamed intention is how this stays a plan forever. If your school is Hanafi or Maliki, follow its ruling on a woman leading (see Day 1).',
+    practiceSteps: JSON.stringify([
+      {
+        type: 'physical',
+        icon: 'home',
+        title: 'Name the prayer and the women',
+        instruction: 'Choose one specific prayer in the next three days and which women of your house will pray with you. An unnamed intention is how this stays a plan forever. If your school is Hanafi or Maliki, follow its ruling on a woman leading (see Day 1).',
+        source: '"…he commanded her to lead the inmates of her house in prayer." [Sunan Abi Dawud 592]',
+      },
+      {
+        type: 'mindset',
+        icon: 'checkmark',
+        title: 'Fix your two surahs in advance',
+        instruction: "Decide now which surah goes in each rak'ah, and write it down. Choosing at the takbir is what makes people freeze.",
+        source: 'Surah Ta-Ha 20:132',
+      },
+      {
+        type: 'verbal',
+        icon: 'hands-prayer',
+        title: 'Ask to be one who establishes the prayer',
+        instruction: "This is the du'a of Ibrahim. Say it before you step forward.",
+        arabicText: 'رَبِّ ٱجْعَلْنِى مُقِيمَ ٱلصَّلَوٰةِ وَمِن ذُرِّيَّتِى ۚ رَبَّنَا وَتَقَبَّلْ دُعَآءِ',
+        transliteration: "rabbi ij'ʿalnī muqīma l-ṣalati wamin dhurriyyatī rabbanā wataqabbal duʿāi",
+        translation: 'My Lord, make me an establisher of prayer, and from my descendants. Our Lord, and accept my supplication.',
+        source: 'Quran 14:40',
+        sourceType: 'quran_dua',
+      },
+    ]),
+    reflection: 'Which prayer, which day, and which women will be praying with you? Write the three answers down now.',
   },
   {
     id: 'q_angle_crisis_day1',
