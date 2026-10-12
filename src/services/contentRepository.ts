@@ -11,6 +11,7 @@ import { Mood, ContentAngle, Content, ContentType, PrayerContext } from '../type
 import { dbQuery } from '../database/connection';
 import { SupabaseDataService } from './supabaseDataService';
 import { logServiceError } from './errorLoggingService';
+import { redactVariantId } from '../utils/leaderChoice';
 
 /**
  * Angle-id prefixes that mark an angle as belonging to one journey day.
@@ -328,7 +329,7 @@ export class ContentRepository {
         'ContentRepository',
         'fetchAngleById',
         error instanceof Error ? error : new Error(String(error)),
-        { angleId },
+        { angleId: redactVariantId(angleId) },
       );
     }
     return null;
