@@ -320,6 +320,11 @@ export class ContentRepository {
       };
     }
 
+    // A women's-variant id must never reach the server: the sheet promises the
+    // choice is "Never sent to Sakina". Variant angles always ship in the local
+    // seed, so a missing row is not something the cloud could fill anyway.
+    if (redactVariantId(angleId) !== angleId) return null;
+
     // Cloud fallback — angle not seeded locally yet
     try {
       const cloudAngle = await this.supabaseData.fetchAngleById(angleId);
