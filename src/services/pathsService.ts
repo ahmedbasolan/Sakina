@@ -2,6 +2,9 @@ import { SpiritualPath, PathStep, UserPathProgress, Mood, SpecialEditionBundle }
 import { STATIC_SPIRITUAL_PATHS, SPECIAL_EDITION_BUNDLES } from '../data/staticPaths';
 import { SupabaseDataService } from './supabaseDataService';
 import { migrateRizqProgress } from '../utils/rizqProgressMigration';
+import {
+  LeaderChoice, LEADER_CHOICE_KEY, LEADER_CHOICE_PATH_ID, resolvePath,
+} from '../utils/leaderChoice';
 
 /**
  * kv_store key holding the id of the journey whose day was opened most
@@ -24,8 +27,11 @@ const LAST_OPENED_PATH_KEY = 'last_opened_path';
  * eagerly here broke pathsService.test.ts, which has no reason to know about
  * the DB layer. Same pattern useHomeData uses to reach PathsService itself.
  * Both callers are cold paths (opening a journey day, loading Home).
+ * A lazy `require` rather than `import()` because jest-expo cannot run dynamic
+ * import without --experimental-vm-modules; the laziness is unchanged.
  */
-const getDbQuery = async () => (await import('../database/connection')).dbQuery;
+const getDbQuery = async () =>
+  require('../database/connection').dbQuery as typeof import('../database/connection').dbQuery;
 
 export class PathsService {
   private static instance: PathsService;
@@ -37,6 +43,17 @@ export class PathsService {
     return PathsService.instance;
   }
 
+  /**
+   * "Who is leading?" for Prayer Leadership, mirrored from kv_store. Re-read on
+   * every progress load (not cached forever) so an account wipe, which deletes
+   * the row, takes effect on the next screen without a restart.
+   */
+  private leaderChoice: LeaderChoice | null = null;
+
+  private resolve(path: SpiritualPath): SpiritualPath {
+    return path.id === LEADER_CHOICE_PATH_ID ? resolvePath(path, this.leaderChoice) : path;
+  }
+
   getAllPaths(_isPremium: boolean = false, _unlockedBundleIds: string[] = []): SpiritualPath[] {
     // Free-core model (spec §5): every journey's text is free, distress journeys
     // included, EXCEPT the paths PathsScreen.tsx's PREMIUM_GATED_PATHS names —
@@ -45,7 +62,7 @@ export class PathsService {
     // not here — this always returns the full catalog and the params below are
     // still unused; `_isPremium` / `_unlockedBundleIds` were reserved for
     // early-access windows (§6) and that is what ended up building this.
-    return STATIC_SPIRITUAL_PATHS;
+    return STATIC_SPIRITUAL_PATHS.map((p) => this.resolve(p));
   }
 
   getAvailableBundles(): SpecialEditionBundle[] {
@@ -69,11 +86,12 @@ export class PathsService {
   }
 
   getPathById(pathId: string): SpiritualPath | null {
-    return STATIC_SPIRITUAL_PATHS.find((path) => path.id === pathId) || null;
+    const path = STATIC_SPIRITUAL_PATHS.find((p) => p.id === pathId);
+    return path ? this.resolve(path) : null;
   }
 
   getPathsByMood(mood: Mood): SpiritualPath[] {
-    return STATIC_SPIRITUAL_PATHS.filter((path) => path.theme === mood);
+    return STATIC_SPIRITUAL_PATHS.filter((path) => path.theme === mood).map((p) => this.resolve(p));
   }
 
   getCurrentStep(pathId: string, userProgress: UserPathProgress): PathStep | null {
@@ -241,6 +259,7 @@ export class PathsService {
 
   async loadProgress(pathId: string): Promise<UserPathProgress | null> {
     try {
+      await this.refreshLeaderChoice();
       const progress = await this.supabaseData.getPathProgress(pathId);
       return progress ? await this.applyMigrations(progress) : progress;
     } catch (error) {
@@ -251,6 +270,7 @@ export class PathsService {
 
   async getAllProgress(): Promise<UserPathProgress[]> {
     try {
+      await this.refreshLeaderChoice();
       const all: UserPathProgress[] = await this.supabaseData.getAllPathProgress();
       return await Promise.all(all.map((p) => this.applyMigrations(p)));
     } catch (error) {
@@ -286,6 +306,38 @@ export class PathsService {
       return row?.value ?? null;
     } catch {
       return null;
+    }
+  }
+
+  getLeaderChoice(pathId: string): LeaderChoice | null {
+    return pathId === LEADER_CHOICE_PATH_ID ? this.leaderChoice : null;
+  }
+
+  async setLeaderChoice(pathId: string, choice: LeaderChoice): Promise<void> {
+    if (pathId !== LEADER_CHOICE_PATH_ID) return;
+    const dbQuery = await getDbQuery();
+    await dbQuery(async (db) => {
+      await db.runAsync('INSERT OR REPLACE INTO kv_store (key, value) VALUES (?, ?)', [
+        LEADER_CHOICE_KEY,
+        choice,
+      ]);
+    });
+    this.leaderChoice = choice;
+  }
+
+  async refreshLeaderChoice(): Promise<void> {
+    try {
+      const dbQuery = await getDbQuery();
+      const row = await dbQuery(async (db) =>
+        db.getFirstAsync<{ value: string }>('SELECT value FROM kv_store WHERE key = ?', [
+          LEADER_CHOICE_KEY,
+        ]),
+      );
+      const v = row?.value;
+      this.leaderChoice = v === 'man' || v === 'woman' ? v : null;
+    } catch {
+      // Keep the last known value: a transient read failure must not flip the
+      // journey's content mid-session.
     }
   }
 }

@@ -129,14 +129,15 @@ export const clearAllLocalUserData = async (): Promise<void> => {
         await db.execAsync(`DELETE FROM ${table}`);
       }
 
-      // kv_store is mixed: the reading position, the last-opened journey and
-      // the data-owner marker are personal, the cache-format version is not.
+      // kv_store is mixed: the reading position, the last-opened journey, the
+      // Prayer Leadership leader choice and the data-owner marker are personal, the cache-format version is not.
       // Delete by key rather than emptying the table. Dropping the owner marker
       // is what returns the device to a clean "no account has claimed this"
       // state after a delete.
-      await db.runAsync('DELETE FROM kv_store WHERE key IN (?, ?, ?)', [
+      await db.runAsync('DELETE FROM kv_store WHERE key IN (?, ?, ?, ?)', [
         'quran_reading_progress',
         'last_opened_path',
+        'prayer_leadership_leader',
         LOCAL_DATA_OWNER_KEY,
       ]);
     });
