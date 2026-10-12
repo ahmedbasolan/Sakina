@@ -26,3 +26,12 @@ it('reports the chosen answer', () => {
   fireEvent.press(getByText('A woman, leading women'));
   expect(onChoose).toHaveBeenCalledWith('woman');
 });
+
+it('exposes both answers as focusable buttons (not hidden inside an accessible backdrop)', () => {
+  const { getByRole } = render(
+    <LeaderChoiceSheet visible current={null} onChoose={jest.fn()} onClose={jest.fn()} />,
+  );
+  getByRole('button', { name: 'A man' });
+  getByRole('button', { name: 'A woman, leading women' });
+  getByRole('button', { name: 'Close' });
+});
