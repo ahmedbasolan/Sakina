@@ -21,6 +21,7 @@ import { ReflectionRepository, SavedReflection } from './reflectionRepository';
 import PrayerTimesService from './prayerTimesService';
 import { logDatabaseError, logServiceError } from './errorLoggingService';
 import { scoreAngle } from './rotationScoring';
+import { redactVariantId } from '../utils/leaderChoice';
 
 export class RotationEngine {
   private static instance: RotationEngine;
@@ -134,12 +135,13 @@ export class RotationEngine {
     try {
       const angle = await this.contentRepo.fetchAngleById(angleId);
       if (!angle) {
-        logServiceError('RotationEngine', 'getGuidanceForStep', `Angle not found: ${angleId}`, { angleId });
+        const logId = redactVariantId(angleId);
+        logServiceError('RotationEngine', 'getGuidanceForStep', `Angle not found: ${logId}`, { angleId: logId });
         return null;
       }
       return this.buildExperience(angle);
     } catch (error) {
-      logServiceError('RotationEngine', 'getGuidanceForStep', error instanceof Error ? error : new Error(String(error)), { angleId });
+      logServiceError('RotationEngine', 'getGuidanceForStep', error instanceof Error ? error : new Error(String(error)), { angleId: redactVariantId(angleId) });
       return null;
     }
   }
