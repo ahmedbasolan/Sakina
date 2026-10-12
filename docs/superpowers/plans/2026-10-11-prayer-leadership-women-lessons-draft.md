@@ -1,6 +1,6 @@
 # Prayer Leadership — women's lessons + shared wording (DRAFT for review)
 
-Date: 2026-10-12 · Status: **draft, awaiting Ahmed's approval** · Spec:
+Date: 2026-10-12 · Status: **approved by Ahmed 2026-10-12 with the round-3 edits; scholar review still pending** · Spec:
 `docs/superpowers/specs/2026-10-11-prayer-leadership-leader-choice-design.md` (§2, §3)
 
 This is the exact text Task 5 inserts. Nothing here is in the app yet. A scholar should
@@ -81,7 +81,7 @@ Split: `. The Prophet ﷺ said:` → Understand = the tafsir + "bar" sentences; 
     type: 'physical',
     icon: 'home',
     title: 'Lead the smallest congregation there is',
-    instruction: 'Lead one prayer at home this week — the women of your household, or a sister who joins you. Confidence is built at that size. If you follow the Maliki school, it does not permit a woman to lead the prayer; the days on learning and reciting surahs serve you either way.',
+    instruction: 'Lead one prayer at home this week — the women of your household, or a sister who joins you. Confidence is built at that size. If you follow the Hanafi school, whose well-known view holds it prohibitively disliked, or the Maliki school, which does not permit it, follow your school here; the days on learning and reciting surahs serve you either way.',
     source: 'Ibn Baz, fatwa "Ruling on a woman leading" — https://binbaz.org.sa/fatwas/17618/حكم-امامة-المراة',
   },
   {
@@ -113,7 +113,7 @@ Split: `. The Prophet ﷺ said:` → Understand = the tafsir + "bar" sentences; 
 | All four agree a woman does not lead men | F-1371 |
 | "What you can already recite…" | app voice, carried over |
 | Step 2: lead the women of your household or a sister | F-IbnBaz ("the women of her household, or some of her sisters gather with her") |
-| Step 2: Maliki does not permit it; surah days serve her either way | F-schools; spec §2 "Known gaps" |
+| Step 2: Hanafi — prohibitively disliked in its well-known view; Maliki — not permitted; follow your school; surah days serve her either way | F-schools: Hanafi per Basem Itani ("the well-known view in the books of the school here is that this is the dislike of prohibition (karaha tahrimiyya)"); Maliki per spec §3 (Diyanet citing Ibn Rushd, Ibn Juzay); spec §2 "Known gaps". "Follow your school here" is app voice (fix round 3) |
 
 ---
 
@@ -124,7 +124,7 @@ No title/focus override. `hadithContentId`: shared `hadith_imam_8` (Muslim 433).
 **angle**
 
 ```
-[Tafsir Ibn Kathir on 2:238] Ibn Kathir explains "stand before Allah, devoutly obedient" as standing with humbleness and humility before Him, and reads the command as forbidding ordinary speech in the prayer. When you lead women you take that posture among them, not ahead of them: the Hanafi, Shafi'i and Hanbali schools place her in their middle, and Ibn Qudamah wrote that he knew of no disagreement on it among those who allow her to lead. Umm Salamah is reported to have led women in Asr and stood among them, a chain al-Nawawi graded sahih; Fawzi al-Humaydi grades these reports weak and holds, as Ibn Hazm did, that she leads from ahead of the row. The Prophet ﷺ said: "Straighten your rows, for the straightening of a row is a part of the perfection of prayer" [Sahih Muslim 433] — so the first thing you do as imam is not recite, it is look along the line you are standing in and level it. When that is done, the takbir, the silent opening du'a and the recitation follow in an order that never changes.
+[Tafsir Ibn Kathir on 2:238] Ibn Kathir explains "stand before Allah, devoutly obedient" as standing with humbleness and humility before Him, and reads the command as forbidding ordinary speech in the prayer. When you lead women you take that posture among them — in the majority view, not ahead of them: the Hanafi, Shafi'i and Hanbali schools place her in their middle, and Ibn Qudamah wrote that he knew of no disagreement on it among those who allow her to lead. Umm Salamah is reported to have led women in Asr and stood among them, a chain al-Nawawi graded sahih; Fawzi al-Humaydi grades these reports weak and holds, as Ibn Hazm did, that she leads from ahead of the row. The Prophet ﷺ said: "Straighten your rows, for the straightening of a row is a part of the perfection of prayer" [Sahih Muslim 433] — so the first thing you do as imam is not recite, it is look along the line you are standing in and level it. When that is done, the takbir, the silent opening du'a and the recitation follow in an order that never changes.
 ```
 
 Split: `. The Prophet ﷺ said:` (checked before `. When you` in `splitPatterns`, so the earlier "When you lead women" does not split).
@@ -378,7 +378,7 @@ Split: `. The Prophet ﷺ said:`.
 **angle**
 
 ```
-[Tafsir al-Sa'di on 20:132] Al-Sa'di reads the command as urging your family to prayer — and, since commanding a thing commands what it requires, teaching them what makes the prayer valid, invalid and complete — and "be steadfast therein" as establishing it with its limits, pillars, manners and khushu', which is hard on the soul and has to be pressed on. That second command is addressed to the one giving the first, before anyone is asked to follow. Your first congregation is the women already in your house. The Messenger of Allah ﷺ visited Umm Waraqah at her house, appointed a mu'adhdhin for her, and "commanded her to lead the inmates of her house in prayer" [Sunan Abi Dawud 592]. The four schools agree that a woman does not lead men, so the people you lead are the women. Pick a prayer, pick the women who will pray with you, and lead.
+[Tafsir al-Sa'di on 20:132] Al-Sa'di reads the command as urging your family to prayer — and, since commanding a thing commands what it requires, teaching them what makes the prayer valid, invalid and complete — and "be steadfast therein" as establishing it with its limits, pillars, manners and khushu', which is hard on the soul and has to be pressed on. That second command is addressed to the one giving the first, before anyone is asked to follow. Your first congregation is the women already in your house. The Messenger of Allah ﷺ visited Umm Waraqah at her house, appointed a mu'adhdhin for her, and "commanded her to lead the inmates of her house in prayer" [Sunan Abi Dawud 592]. The four schools agree that a woman does not lead men, so the people you lead are the women. If you follow the Hanafi school, whose well-known view holds a woman leading women prohibitively disliked, or the Maliki school, which does not permit it, follow your school here. Otherwise, pick a prayer, pick the women who will pray with you, and lead.
 ```
 
 Split: `. Your ` → Understand = al-Sa'di; Matters = from "Your first congregation…".
@@ -393,7 +393,7 @@ Split: `. Your ` → Understand = al-Sa'di; Matters = from "Your first congregat
     type: 'physical',
     icon: 'home',
     title: 'Name the prayer and the women',
-    instruction: 'Choose one specific prayer in the next three days and which women of your house will pray with you. An unnamed intention is how this stays a plan forever.',
+    instruction: 'Choose one specific prayer in the next three days and which women of your house will pray with you. An unnamed intention is how this stays a plan forever. If your school is Hanafi or Maliki, follow its ruling on a woman leading (see Day 1).',
     source: '"…he commanded her to lead the inmates of her house in prayer." [Sunan Abi Dawud 592]',
   },
   {
@@ -406,14 +406,14 @@ Split: `. Your ` → Understand = al-Sa'di; Matters = from "Your first congregat
   {
     type: 'verbal',
     icon: 'hands-prayer',
-    title: 'Ask to be made one who leads',
-    instruction: 'The believers in Surah Al-Furqan ask for exactly this. Say it before you step forward.',
-    arabicText: 'رَبَّنَا هَبْ لَنَا مِنْ أَزْوَٰجِنَا وَذُرِّيَّـٰتِنَا قُرَّةَ أَعْيُنٍ وَٱجْعَلْنَا لِلْمُتَّقِينَ إِمَامًا',
-    transliteration: "rabbanā hab lanā min azwājinā wadhurriyyātinā qurrata aʿyunin wa-ij'ʿalnā lil'muttaqīna imāman",
-    translation: 'Our Lord, grant us from among our wives and offspring comfort to our eyes, and make us an example for the righteous.',
-    source: 'Quran 25:74',
+    title: 'Ask to be one who establishes the prayer',
+    instruction: 'This is the du\'a of Ibrahim. Say it before you step forward.',
+    arabicText: 'رَبِّ ٱجْعَلْنِى مُقِيمَ ٱلصَّلَوٰةِ وَمِن ذُرِّيَّتِى ۚ رَبَّنَا وَتَقَبَّلْ دُعَآءِ',
+    transliteration: "rabbi ij'ʿalnī muqīma l-ṣalati wamin dhurriyyatī rabbanā wataqabbal duʿāi",
+    translation: 'My Lord, make me an establisher of prayer, and from my descendants. Our Lord, and accept my supplication.',
+    source: 'Quran 14:40',
     sourceType: 'quran_dua',
-  }, // (carried over verbatim — see Concerns on "wives")
+  }, // (fix round 3 — replaces 25:74 for her; the man's Day 14 keeps 25:74 unchanged)
 ]
 ```
 
@@ -426,8 +426,10 @@ Split: `. Your ` → Understand = al-Sa'di; Matters = from "Your first congregat
 | "first congregation is the women already in your house" | app voice; F-IbnBaz ("the women of her household") |
 | He visited her at her house, appointed a mu'adhdhin, commanded her to lead the inmates of her house | H-AD592 (quoted words verbatim from the jsdelivr English) |
 | Four schools: a woman does not lead men | F-1371 |
-| "so the people you lead are the women"; "Pick a prayer…" | app voice |
-| Step 1 | H-AD592 (quoted); instruction app voice adapted from man's |
+| "so the people you lead are the women"; "Otherwise, pick a prayer…" | app voice |
+| Hanafi/Maliki caveat (angle and step 1) | F-schools: Hanafi per Basem Itani (karaha tahrimiyya, well-known view); Maliki per spec §3. "Follow your school here" is app voice (fix round 3). Placed after "Your first congregation…", so the `. Your ` split is unchanged |
+| Step 1 | H-AD592 (quoted); instruction app voice adapted from man's; caveat as above |
+| Step 3 du'a (Quran 14:40) | api.alquran.cloud 14:40 (quran-uthmani + en.sahih), fetched 2026-10-12. Arabic exactly as returned (no ayah ornament, not retyped). English = Sahih International with the translator bracket "[many]" dropped ("…and [many] from my descendants" → "…and from my descendants"), per CLAUDE.md. Transliteration copied from the repo's own `quran_14_40` entry (quranData.ts:2324). "The du'a of Ibrahim" — the ayah sits in Ibrahim's supplication (14:35–41); app voice for the rest. 14:40 is not used on any Prayer Leadership day in either sequence (checked every `q_angle_imam_day*`; its only path use is `step_salah_6` in Salah Transformation) |
 
 **Removed:** Bukhari 628 (men from one tribe sent home; "the oldest one amongst you should lead") — replaced by Abu Dawud 592, per spec §2.
 
@@ -605,17 +607,19 @@ Hadith numbers that appear only in "Removed" notes: Abu Dawud 634, Bukhari 380, 
 
 **Fix round 2 re-run** (2026-10-12): Pass A unchanged — invalid 1, stands in front 0, behind 0, Subhan Allah 1 (quote), silent/quietly 5 (none on takbirs), same ten hadith numbers. Pass B: no "stay seated"/"stay where you are" remains outside the N-table "before" quotes; "with obedience" remains only in C1's "Entry says" column, where it is Ibn Kathir's translator quoting the ayah — the verse itself is now quoted as the verse card's "stand before Allah, devoutly obedient". `anchors.mjs` re-run: all 25 N/C anchors (N1–N21, C1–C4) and the 5 original befores occur exactly once; every anchor is a single-line substring of a CRLF file and carries the file's own escapes (e.g. N6 `rak\'ah`).
 
+**Fix round 3 re-run** (2026-10-12): Pass A unchanged (invalid 1, stands in front 0, behind 0, Subhan Allah 1 as the quote, silent/quietly 5 with none on takbirs, same ten hadith numbers). The 14:40 Arabic in the draft is byte-identical to the API's `quran-uthmani` text (checked by script). Du'a/dhikr steps across her 14-day sequence are all distinct: D1 Quran 20:25-28 · D4 Quran 114:1-6 · D8 Bukhari 744 · D13 Bukhari 831, Bukhari 3370 · D14 **Quran 14:40**. No other day in either sequence uses 14:40.
+
 **Anchor check.** Scratchpad `anchors.mjs` confirms that every N/C **before** string, and each of the original shared-edit befores, occurs exactly **once** in `quranData.ts`, `hadithData.ts` or `staticPaths.ts`.
 
 ---
 
 ## Open questions for Ahmed
 
-- **O1. "wives" in 25:74.** The Day 14 du'a is carried over with Sahih International's "from among our wives" (verified at api.alquran.cloud 25:74). The Arabic أزواجنا means spouses. Options: keep it, or swap in a different, verified Quranic du'a.
-- **O2. The full Abu Dawud 592 matn.** `hadith_imam_14_f` keeps the narrator's closing remark that her mu'adhdhin was an old man (the reviewer recommends keeping it). The shorter option ends at "…in prayer." The lesson text says nothing beyond the hadith's words about who was in her house.
-- **O3. Day 8 takbir and Day 10 transitions.** The spec keeps Day 8's "say the takbir so the row can follow it", which rests on Bukhari 734. It drops Day 10's audible-transitions step. Neither text addresses non-mahram men being present. Please confirm Day 8's step.
-- **O4. N14 and N15 change the man's hadith layer too.** They are the only way to stop the shared `hadith_imam_10` from asserting "audible" on her Day 10.
+- **O1. RESOLVED (Ahmed, 2026-10-12): her Day 14 du'a is Quran 14:40; the man's Day 14 keeps 25:74.** Original question — "wives" in 25:74. The Day 14 du'a is carried over with Sahih International's "from among our wives" (verified at api.alquran.cloud 25:74). The Arabic أزواجنا means spouses. Options: keep it, or swap in a different, verified Quranic du'a.
+- **O2. RESOLVED (Ahmed, 2026-10-12): keep the full matn, including the old-man line.** Original question — `hadith_imam_14_f` keeps the narrator's closing remark that her mu'adhdhin was an old man (the reviewer recommends keeping it). The shorter option ends at "…in prayer." The lesson text says nothing beyond the hadith's words about who was in her house.
+- **O3. RESOLVED (Ahmed, 2026-10-12): keep Day 8's takbir step.** Original question — Day 8 takbir and Day 10 transitions. The spec keeps Day 8's "say the takbir so the row can follow it", which rests on Bukhari 734. It drops Day 10's audible-transitions step. Neither text addresses non-mahram men being present. Please confirm Day 8's step.
+- **O4. RESOLVED (Ahmed, 2026-10-12): N14/N15 accepted.** Original note — N14 and N15 change the man's hadith layer too. They are the only way to stop the shared `hadith_imam_10` from asserting "audible" on her Day 10.
 - **O5. Day 6 men's credit.** Resolved in fix round 2 (N21 / C6).
-- **O6. One woman praying with her.** The spec removed this line, not replaced, because no source was found. Fix round 1 found one: Shaykh Jamir Meah (SeekersGuidance, Shafi'i, fetched 2026-10-12) says that with two people "the follower stands slightly behind the Imam… This applies to a male leading another man or a women leading another woman". That is a single Shafi'i source, and it differs from the Bukhari 699 practice for two men. It is not added. Tell me if you want it on Day 1 or 8 for her.
+- **O6. RESOLVED (Ahmed, 2026-10-12): not added.** Original question — one woman praying with her. The spec removed this line, not replaced, because no source was found. Fix round 1 found one: Shaykh Jamir Meah (SeekersGuidance, Shafi'i, fetched 2026-10-12) says that with two people "the follower stands slightly behind the Imam… This applies to a male leading another man or a women leading another woman". That is a single Shafi'i source, and it differs from the Bukhari 699 practice for two men. It is not added. Tell me if you want it on Day 1 or 8 for her.
 - **O7. `quran_17_78` whyThis** (quranData.ts:3414) reads "…which is part of why Fajr is a prayer recited aloud rather than silently." It is app voice, not a credit, and the journeys do not render it (the tafsir tag supplies the footnote). Flagged only, because it repeats C2's unsupported link.
 - **O8. Scholar review.** As the spec says, a scholar should approve the six women's lessons before release.
