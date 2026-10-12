@@ -14,8 +14,11 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRoute, useNavigation, useFocusEffect } from '@react-navigation/native';
 import { Colors, Typography, Spacing } from '../theme/DesignSystem';
 
-import { UserPathProgress } from '../types';
+import { UserPathProgress, PathStep } from '../types';
 import { PathsService } from '../services/pathsService';
+import { LeaderChoiceSheet } from '../components/LeaderChoiceSheet';
+import { LeaderChoice } from '../utils/leaderChoice';
+import { logServiceError } from '../services/errorLoggingService';
 import { useAppContext } from '../context/AppContext';
 
 import { MaterialCommunityIcons } from '@expo/vector-icons';
@@ -95,6 +98,9 @@ export const PathDetailScreen: React.FC = () => {
   const { pathId } = route.params;
   const path = pathsService.getPathById(pathId);
   const [userProgress, setUserProgress] = useState<UserPathProgress | undefined>();
+  const [leaderChoice, setLeaderChoiceState] = useState<LeaderChoice | null>(null);
+  const [pendingStep, setPendingStep] = useState<PathStep | null>(null);
+  const [sheetOpen, setSheetOpen] = useState(false);
 
   // Reload on every focus (not just mount) so the ring, dots and Continue label
   // refresh when the user returns from completing a lesson in PathStepScreen.
@@ -104,7 +110,10 @@ export const PathDetailScreen: React.FC = () => {
     useCallback(() => {
       let active = true;
       pathsService.loadProgress(pathId).then((progress) => {
-        if (active) setUserProgress(progress || undefined);
+        if (active) {
+          setUserProgress(progress || undefined);
+          setLeaderChoiceState(pathsService.getLeaderChoice(pathId));
+        }
       });
       return () => {
         active = false;
@@ -136,6 +145,11 @@ export const PathDetailScreen: React.FC = () => {
    * the focus effect above.
    */
   const openDay = async (step: (typeof path.dailySteps)[0]) => {
+    if (path.leaderChoice && !pathsService.getLeaderChoice(path.id)) {
+      setPendingStep(step);
+      setSheetOpen(true);
+      return;
+    }
     let progress = userProgress;
     if (!progress) {
       progress = {
@@ -181,7 +195,7 @@ export const PathDetailScreen: React.FC = () => {
     if (!navigation.isFocused()) return;
 
     navigation.navigate('PathStep', {
-      path,
+      path: pathsService.getPathById(path.id) ?? path,
       step,
       userProgress: progress,
       guidanceExperience: experience,
@@ -191,7 +205,25 @@ export const PathDetailScreen: React.FC = () => {
   };
 
   /** Renders a single day row — shared by flat and phase-grouped layouts. */
-  const renderStep = (step: (typeof path.dailySteps)[0]) => {
+  const chooseLeader = async (choice: LeaderChoice) => {
+    try {
+      await pathsService.setLeaderChoice(path.id, choice);
+    } catch (error) {
+      // Write failed: keep the sheet open and the old state so a retry is a plain tap.
+      // Never log an angle id (the choice itself stays on-device).
+      logServiceError('PathDetailScreen', 'setLeaderChoice', error instanceof Error ? error : new Error(String(error)));
+      return;
+    }
+    setLeaderChoiceState(choice);
+    setSheetOpen(false);
+    const resolved = pendingStep
+      ? pathsService.getPathById(path.id)?.dailySteps.find((s) => s.day === pendingStep.day)
+      : undefined;
+    setPendingStep(null);
+    if (resolved) openDay(resolved);
+  };
+
+  const renderStep =(step: (typeof path.dailySteps)[0]) => {
     const isCompleted = completedSteps.some(cs => cs.day === step.day);
     const isCurrent = userProgress ? step.day === userProgress.currentDay : step.day === 1;
     const isLocked = userProgress ? step.day > userProgress.currentDay : step.day > 1;
@@ -253,6 +285,18 @@ export const PathDetailScreen: React.FC = () => {
               <Text style={styles.heroSubtitle}>
                 {path.target || path.theme}
               </Text>
+              {path.leaderChoice && leaderChoice && (
+                <TouchableOpacity
+                  onPress={() => setSheetOpen(true)}
+                  hitSlop={{ top: 12, right: 12, bottom: 12, left: 12 }}
+                  accessibilityRole="button"
+                  accessibilityLabel="Change who is leading"
+                >
+                  <Text style={styles.leaderLine}>
+                    Leading: {leaderChoice === 'woman' ? 'A woman' : 'A man'} · Change
+                  </Text>
+                </TouchableOpacity>
+              )}
             </View>
           </View>
 
@@ -358,6 +402,12 @@ export const PathDetailScreen: React.FC = () => {
           </View>
         </View>
       </ScrollView>
+      <LeaderChoiceSheet
+        visible={sheetOpen}
+        current={leaderChoice}
+        onChoose={chooseLeader}
+        onClose={() => { setSheetOpen(false); setPendingStep(null); }}
+      />
     </View>
   );
 };
@@ -434,6 +484,12 @@ const styles = StyleSheet.create({
   heroSubtitle: {
     fontSize: 14,
     color: Colors.text.muted,
+  },
+  leaderLine: {
+    fontFamily: Typography.fonts.latin,
+    fontSize: Typography.sizes.detail,
+    color: Colors.text.steel,
+    marginTop: Spacing.xs,
   },
   progressSection: {
     flexDirection: 'row',
