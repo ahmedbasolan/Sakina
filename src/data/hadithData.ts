@@ -528,7 +528,7 @@ export const hadithContent: Content[] = [
     id: 'hadith_imam_14_f',
     type: 'Hadith',
     primaryText: 'He commanded her to lead the inmates of her house in prayer',
-    arabicText: 'وَكَانَ رَسُولُ اللَّهِ صلى الله عليه وسلم يَزُورُهَا فِي بَيْتِهَا وَجَعَلَ لَهَا مُؤَذِّنًا يُؤَذِّنُ لَهَا وَأَمَرَهَا أَنْ تَؤُمَّ أَهْلَ دَارِهَا ‏.‏ قَالَ عَبْدُ الرَّحْمَنِ فَأَنَا رَأَيْتُ مُؤَذِّنَهَا شَيْخًا كَبِيرًا ‏.‏',
+    arabicText: 'وَكَانَ رَسُولُ اللَّهِ صلى الله عليه وسلم يَزُورُهَا فِي بَيْتِهَا وَجَعَلَ لَهَا مُؤَذِّنًا يُؤَذِّنُ لَهَا وَأَمَرَهَا أَنْ تَؤُمَّ أَهْلَ دَارِهَا ‏.‏ قَالَ عَبْدُ الرَّحْمَنِ فَأَنَا رَأَيْتُ مُؤَذِّنَهَا شَيْخًا كَبِيرًا ‏.‏',
     translation: "The Messenger of Allah (ﷺ) used to visit her at her house. He appointed a mu'adhdhin to call adhan for her; and he commanded her to lead the inmates of her house in prayer. 'Abd al-Rahman said: I saw her mu'adhdhin who was an old man.",
     englishTranslation: "The Messenger of Allah (ﷺ) used to visit her at her house. He appointed a mu'adhdhin to call adhan for her; and he commanded her to lead the inmates of her house in prayer. 'Abd al-Rahman said: I saw her mu'adhdhin who was an old man.",
     source: 'Sunan Abi Dawud 592',
