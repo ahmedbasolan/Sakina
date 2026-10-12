@@ -233,6 +233,19 @@ export interface SpiritualPath {
   isPremium?: boolean; // Included in subscription
   isSpecialEdition?: boolean; // Part of a one-time purchase bundle
   bundleId?: string; // Reference to SpecialEditionBundle
+  /**
+   * The journey asks "Who is leading?" and some days carry a `variants.womanLeading`
+   * version (Prayer Leadership only). See src/utils/leaderChoice.ts.
+   */
+  leaderChoice?: true;
+}
+
+/** Fields a day replaces when a woman is leading women. Unset fields stay shared. */
+export interface StepVariant {
+  angleId: string;
+  hadithContentId?: string;
+  title?: string;
+  focus?: string;
 }
 
 export interface PathStep {
@@ -252,6 +265,8 @@ export interface PathStep {
    * which is the single ayah the day's lesson is built on.
    */
   surahIds?: string[];
+  /** Applied by resolveStep(); never read directly by screens. */
+  variants?: { womanLeading?: StepVariant };
 }
 
 export interface UserPathProgress {
