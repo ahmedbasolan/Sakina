@@ -462,7 +462,14 @@ import type { Content, ContentAngle } from '../types';
 //      al-Qurtubi 94:6 and hedged as a reading), Prayer Leadership d1/d4/d14, Hope d4 (re-tagged to al-Qurtubi
 //      50:16: Ibn Kathir takes the nearness as the angels, not knowledge), Marriage d2/3/5/6/7/8/9/10/11/14,
 //      Screen Detox d2/d6.
-const SEED_VERSION = 63;
+// v64: Prayer Leadership leader choice: six women-leading angles (q_angle_imam_day{1,8,9,10,11,14}_f) and
+//      hadith_imam_14_f (Sunan Abi Dawud 592, Umm Waraqah), reached through step.variants.womanLeading on
+//      days 1/8/9/10/11/14 (leaderChoice on the path). Shared wording made true for a man or a woman leading:
+//      d7 title + reflection, d1/d8 pointer lines, d3/d6/d7/d12 'behind you', d12 step, d13 closing (describes
+//      only what Muslim 591 / Nasa'i 1319 say), and hadith_imam_2/8/9/10/13 whyThis + descriptions. Men's tafsir
+//      credits corrected to what the entries say: d6 (8:2), d8 (2:238), d9 (17:78), d10 (2:43), d11 (4:28),
+//      d12 (21:107).
+const SEED_VERSION = 64;
 // Separate keys per content type — Quran and Hadith data change independently,
 // and each seeder used to write the SAME key at the end of its run. Since
 // initializeDatabase() awaits seedQuranContent() before seedHadithContent(),
