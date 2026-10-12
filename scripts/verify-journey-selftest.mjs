@@ -33,6 +33,8 @@ function reset() {
     path.join(SB, 'src/services/contentRepository.ts'),
   );
   fs.copyFileSync(path.join(REPO, 'scripts/verify-journey.mjs'), path.join(SB, 'scripts/verify-journey.mjs'));
+  fs.mkdirSync(path.join(SB, 'scripts', 'lib'), { recursive: true });
+  fs.copyFileSync(path.join(REPO, 'scripts/lib/journeyVariants.mjs'), path.join(SB, 'scripts/lib/journeyVariants.mjs'));
 }
 
 function patch(file, from, to) {
@@ -74,6 +76,9 @@ const CASES = [
   // a study-sheet layer the day's instructions still tell the user to read.
   ['missing surah lesson', () => patch('staticPaths.ts', `surahIds: ['surah_87', 'surah_88', 'surah_109']`, `surahIds: ['surah_87', 'surah_888', 'surah_109']`), /missing surah lesson surah_888/],
   ['duplicate surah in a day', () => patch('staticPaths.ts', `surahIds: ['surah_87', 'surah_88', 'surah_109']`, `surahIds: ['surah_87', 'surah_87', 'surah_109']`), /surah surah_87 listed twice/],
+  // A step-variant sequence (the woman-leading Prayer Leadership) is its own journey
+  // to the verifier: a variant angle that does not exist must be reported.
+  ['variant points at a missing angle', () => patch('staticPaths.ts', `angleId: 'q_angle_imam_day8_f'`, `angleId: 'q_angle_imam_day88_f'`), /missing angle q_angle_imam_day88_f/],
 ];
 
 // Baseline must pass, or every negative result below is meaningless.

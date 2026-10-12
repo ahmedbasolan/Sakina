@@ -14,6 +14,7 @@ import fs from 'fs';
 import path from 'path';
 import { DatabaseSync } from 'node:sqlite';
 import { createRequire } from 'module';
+import { variantSequences } from './lib/journeyVariants.mjs';
 
 // Resolve `typescript` from the repo root (cwd), which works whether this is
 // run from scripts/ or from the project root.
@@ -104,48 +105,51 @@ const angleSrc = new Map(quranContentAngles.map((a) => [a.id, a]));
 for (const pathId of ['path_rizq_revolution', 'path_salah_transformation', 'path_trusting_the_results', 'path_study_journaling', 'path_prayer_leadership', 'path_hope_after_crisis', 'path_marriage_seeker', 'path_tawbah_intensive', 'path_death_awareness', 'path_screen_detox']) {
   const path = STATIC_SPIRITUAL_PATHS.find((p) => p.id === pathId);
   console.log(`=== ${path.title} ===`);
-  for (const step of path.dailySteps) {
-    const a = fetchAngleById(step.angleId);          // the real read path
-    if (!a) { console.log(`  !! day ${step.day}: fetchAngleById returned null -> "A Moment of Patience" alert`); fail++; continue; }
+  for (const { label: seqLabel, steps } of variantSequences(path)) {
+    console.log(`--- sequence${seqLabel || ' (base)'}`);
+    for (const step of steps) {
+      const a = fetchAngleById(step.angleId);          // the real read path
+      if (!a) { console.log(`  !! day ${step.day}: fetchAngleById returned null -> "A Moment of Patience" alert`); fail++; continue; }
 
-    // PathStepScreen's practiceSteps memo
-    let ps = [];
-    try { ps = JSON.parse(a.practiceSteps); } catch { console.log(`  !! day ${step.day}: practiceSteps unparseable after round trip`); fail++; }
-    if (!ps.length) { console.log(`  !! day ${step.day}: 0 practice steps -> empty Practice layer`); fail++; }
+      // PathStepScreen's practiceSteps memo
+      let ps = [];
+      try { ps = JSON.parse(a.practiceSteps); } catch { console.log(`  !! day ${step.day}: practiceSteps unparseable after round trip`); fail++; }
+      if (!ps.length) { console.log(`  !! day ${step.day}: 0 practice steps -> empty Practice layer`); fail++; }
 
-    // Compare against the pre-DB source of truth rather than against a shape
-    // rule. The previous check required every `verbal` step to carry Arabic,
-    // which encoded a habit of the first two journeys rather than a
-    // requirement: PracticeLayer guards the du'a block on `item.arabicText`
-    // (line ~264), so a verbal step that only asks you to recite something
-    // aloud renders correctly with none. What actually has to hold is that
-    // whatever the source declares survives seed -> SQLite -> fetch intact.
-    const srcAngle = angleSrc.get(step.angleId);
-    let srcSteps = [];
-    try { srcSteps = JSON.parse(srcAngle?.practiceSteps ?? '[]'); } catch { /* the parse check above owns this */ }
-    if (JSON.stringify(srcSteps) !== JSON.stringify(ps)) {
-      console.log(`  !! day ${step.day}: practiceSteps do not match the source after the round trip`);
-      fail++;
+      // Compare against the pre-DB source of truth rather than against a shape
+      // rule. The previous check required every `verbal` step to carry Arabic,
+      // which encoded a habit of the first two journeys rather than a
+      // requirement: PracticeLayer guards the du'a block on `item.arabicText`
+      // (line ~264), so a verbal step that only asks you to recite something
+      // aloud renders correctly with none. What actually has to hold is that
+      // whatever the source declares survives seed -> SQLite -> fetch intact.
+      const srcAngle = angleSrc.get(step.angleId);
+      let srcSteps = [];
+      try { srcSteps = JSON.parse(srcAngle?.practiceSteps ?? '[]'); } catch { /* the parse check above owns this */ }
+      if (JSON.stringify(srcSteps) !== JSON.stringify(ps)) {
+        console.log(`  !! day ${step.day}: practiceSteps do not match the source after the round trip`);
+        fail++;
+      }
+      // A step that does declare Arabic must still have it, and must be readable.
+      for (const s of ps.filter((x) => x.arabicText)) {
+        if (!/[؀-ۿ]/.test(s.arabicText)) { console.log(`  !! day ${step.day}: step "${s.title}" lost its Arabic`); fail++; }
+        if (!s.translation) { console.log(`  !! day ${step.day}: step "${s.title}" shows Arabic with no translation`); fail++; }
+      }
+
+      // ContextLayer sections + footnote
+      const content = contentById.get(step.contentId);
+      let u = a.angle, m = '';
+      for (const p of SPLIT) { const x = a.angle.match(p); if (x) { u = a.angle.slice(0, x.index + 1); m = a.angle.slice(x.index + 1); break; } }
+      const tag = (a.angle.match(/\[Tafsir\s+[^\]]+\]/) || [])[0];
+      const label = tag ? tag.replace(/[[\]]/g, '') : content?.whyThis || 'Islamic Scholarship';
+      if (!m) { console.log(`  !! day ${step.day}: empty Matters section`); fail++; }
+      if (!tag) { console.log(`  !! day ${step.day}: footnote falls back to whyThis`); fail++; }
+      if (!a.reflection) { console.log(`  !! day ${step.day}: no reflection prompt -> generic fallback copy`); fail++; }
+
+      // Layer count PathStepScreen will build
+      const layers = step.hadithContentId ? 5 : 4;
+      console.log(`  day ${step.day}: ${layers} layers · ${ps.length} practice (${ps.filter((x)=>x.arabicText).length} with Arabic) · footnote "${label.slice(0,34)}" · U ${clean(u).length}ch / M ${clean(m).length}ch`);
     }
-    // A step that does declare Arabic must still have it, and must be readable.
-    for (const s of ps.filter((x) => x.arabicText)) {
-      if (!/[؀-ۿ]/.test(s.arabicText)) { console.log(`  !! day ${step.day}: step "${s.title}" lost its Arabic`); fail++; }
-      if (!s.translation) { console.log(`  !! day ${step.day}: step "${s.title}" shows Arabic with no translation`); fail++; }
-    }
-
-    // ContextLayer sections + footnote
-    const content = contentById.get(step.contentId);
-    let u = a.angle, m = '';
-    for (const p of SPLIT) { const x = a.angle.match(p); if (x) { u = a.angle.slice(0, x.index + 1); m = a.angle.slice(x.index + 1); break; } }
-    const tag = (a.angle.match(/\[Tafsir\s+[^\]]+\]/) || [])[0];
-    const label = tag ? tag.replace(/[[\]]/g, '') : content?.whyThis || 'Islamic Scholarship';
-    if (!m) { console.log(`  !! day ${step.day}: empty Matters section`); fail++; }
-    if (!tag) { console.log(`  !! day ${step.day}: footnote falls back to whyThis`); fail++; }
-    if (!a.reflection) { console.log(`  !! day ${step.day}: no reflection prompt -> generic fallback copy`); fail++; }
-
-    // Layer count PathStepScreen will build
-    const layers = step.hadithContentId ? 5 : 4;
-    console.log(`  day ${step.day}: ${layers} layers · ${ps.length} practice (${ps.filter((x)=>x.arabicText).length} with Arabic) · footnote "${label.slice(0,34)}" · U ${clean(u).length}ch / M ${clean(m).length}ch`);
   }
   console.log();
 }

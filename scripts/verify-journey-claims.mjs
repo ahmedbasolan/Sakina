@@ -81,6 +81,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { execFileSync } from 'node:child_process';
+import { variantSequences } from './lib/journeyVariants.mjs';
 
 const ROOT = process.cwd();
 const REV = process.env.CLAIMS_REV || '';
@@ -106,6 +107,7 @@ const ALLOW_QUOTES = [
   ['q_angle_death_day5', 'I am a traveler here', "A thought the reader may have ('shifts from … to …'), not a quotation of a source."],
   ['q_angle_death_day5', 'I want the trip to be over', "A thought the reader may have, introducing the pointer to the Hope journey — not a quotation of a source."],
   ['q_angle_death_day7', 'I want this to be over', "A thought the reader may have, introducing the pointer to the Hope journey — not a quotation of a source."],
+  ['q_angle_imam_day1_f', 'Ruling on a woman leading', "Title of Ibn Baz's fatwa, not a quotation of its text: binbaz.org.sa/fatwas/17618 (fetched 2026-10-12) is titled «حكم إمامة المرأة», i.e. 'Ruling on a woman leading'."],
 ];
 // Tags naming a tafsir this script cannot fetch: [angleId, reason]
 const ALLOW_TAGS = [];
@@ -118,6 +120,8 @@ const ALLOW_SCHOLARS = [
   ['q_angle_marriage_day5', 'qurtubi', "al-Qurtubi on 24:32 (read in Arabic, 6th point): do not refrain from marriage over poverty; a promise of enrichment to those who marry seeking Allah's pleasure and protection from sin; Ibn Masud — 'seek wealth in marriage' — matches the angle."],
   ['q_angle_marriage_day7', 'qurtubi', "al-Qurtubi on 3:159 (read in Arabic, 2026-10-04): the ayah's meaning is that the Prophet was gentle with those who turned away on the day of Uhud and did not rebuke them, and Allah shows that this was by His enabling — the angle's Uhud context. Ibn Kathir's entry on 3:159 gives the consultation sequence but not this occasion."],
   ['q_angle_marriage_day10', 'sadi', "al-Sa'di on 20:131 (read in Arabic): provision of your Lord = knowledge/faith/deeds now and lasting bliss after, better in itself and more lasting; remind yourself of it and weigh the two — matches the angle."],
+  ['q_angle_imam_day8_f', 'nawawi', "dorar.net/feqhia/1385 and /1387 (fetched 2026-10-12, read in Arabic): Umm Salamah led women in Asr and stood among them, 'sahhaha isnadahu al-Nawawi' in al-Majmu' 4/199; the Shafi'i school places her in the middle, citing al-Nawawi, al-Majmu' 3/527 — matches the angle and the step's source line."],
+  ['q_angle_imam_day9_f', 'nawawi', "dorar.net/feqhia/1387 (fetched 2026-10-12, read in Arabic): a woman leading women recites aloud in the aloud prayers unless non-mahram men are present — Shafi'i school, al-Nawawi, Rawdat al-Talibin 1/248; Hanbali, al-Mardawi, Tashih al-Furu' 2/186 — matches the step's source line."],
 ];
 // "Sunnah Action" steps whose bare citation was read against the fetched hadith and
 // found to say what the step asks: [angleId, step title, what the hadith says]
@@ -357,13 +361,13 @@ function loadDays() {
   for (const pid of ids) {
     const p = objectAt(paths, pid);
     if (!p) throw new Error('path not found: ' + pid);
-    for (const st of p.dailySteps) {
+    for (const { label, steps } of variantSequences(p)) for (const st of steps) {
       const a = objectAt(quran, st.angleId);
       const v = objectAt(quran, st.contentId);
       const h = st.hadithContentId ? objectAt(hadithSrc, st.hadithContentId) : null;
       if (!a || !v) throw new Error(`unresolved angle/content for ${pid} day ${st.day}`);
       days.push({
-        journey: pid, day: st.day, angleId: st.angleId, angle: a, verse: v, hadith: h,
+        journey: pid + label, day: st.day, angleId: st.angleId, angle: a, verse: v, hadith: h,
         steps: a.practiceSteps ? JSON.parse(a.practiceSteps) : [],
       });
     }

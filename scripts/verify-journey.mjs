@@ -12,6 +12,7 @@
  * Run: node scripts/verify-journey.mjs
  */
 import fs from 'fs';
+import { variantSequences } from './lib/journeyVariants.mjs';
 
 const paths = fs.readFileSync('src/data/staticPaths.ts', 'utf8');
 const quran = fs.readFileSync('src/data/quranData.ts', 'utf8');
@@ -110,109 +111,111 @@ for (const [pathId, anglePrefix, theme, strict] of JOURNEYS) {
   const path = objectAt(paths, pathId);
   if (!path) { console.log(`!! path not found: ${pathId}`); fail++; continue; }
 
-  // In a non-strict journey the same checks run and print, but count toward
-  // `reported` instead of `fail` — visible without gating the build.
-  const err = strict
-    ? (d, m) => { console.log(`  !! day ${d}: ${m}`); fail++; }
-    : (d, m) => { console.log(`  ?? day ${d}: ${m}`); reported++; };
-  // Observations that are legal but worth seeing. They do not fail the run.
-  const note = (d, m) => { console.log(`  ·  day ${d}: ${m}`); };
-  const seenVerse = new Map(), seenDua = new Map(), seenHadith = new Map();
+  for (const { label, steps } of variantSequences(path)) {
+    // In a non-strict journey the same checks run and print, but count toward
+    // `reported` instead of `fail` — visible without gating the build.
+    const err = strict
+      ? (d, m) => { console.log(`  !! day ${d}: ${m}`); fail++; }
+      : (d, m) => { console.log(`  ?? day ${d}: ${m}`); reported++; };
+    // Observations that are legal but worth seeing. They do not fail the run.
+    const note = (d, m) => { console.log(`  ·  day ${d}: ${m}`); };
+    const seenVerse = new Map(), seenDua = new Map(), seenHadith = new Map();
 
-  console.log(`=== ${path.title} — ${path.dailySteps.length}/${path.duration} days · theme ${path.theme} ===\n`);
+    console.log(`=== ${path.title}${label} — ${steps.length}/${path.duration} days · theme ${path.theme} ===\n`);
 
-  if (path.dailySteps.length !== path.duration) {
-    console.log(`  !! ${path.dailySteps.length} steps but duration ${path.duration}`);
-    fail++;
-  }
-
-  for (const step of path.dailySteps) {
-    const day = step.day;
-    if (!contentIds.has(step.contentId)) err(day, `missing content ${step.contentId}`);
-    // hadithContentId is optional (CLAUDE.md: "optional `hadithContentId`").
-    // Only a hadith that is named but does not exist is a fault; a day with no
-    // hadith simply renders one layer fewer. Reporting absence as "missing
-    // hadith undefined" produced 13 false failures on Rizq and Salah.
-    if (step.hadithContentId && !hadIds.has(step.hadithContentId)) {
-      err(day, `missing hadith ${step.hadithContentId}`);
-    } else if (!step.hadithContentId) {
-      note(day, 'no hadith on this day (renders one layer fewer)');
-    }
-    if (!angleIds.has(step.angleId)) err(day, `missing angle ${step.angleId}`);
-    if (!step.angleId.startsWith(anglePrefix)) {
-      err(day, `borrowed mood angle: ${step.angleId} (expected ${anglePrefix}*)`);
-      continue;
+    if (steps.length !== path.duration) {
+      console.log(`  !! ${steps.length} steps but duration ${path.duration}`);
+      fail++;
     }
 
-    if (seenVerse.has(step.contentId)) err(day, `verse ${step.contentId} also on day ${seenVerse.get(step.contentId)}`);
-    seenVerse.set(step.contentId, day);
-
-    const h = objectAt(hadith, step.hadithContentId);
-    if (h) {
-      if (seenHadith.has(h.source)) err(day, `hadith ${h.source} also on day ${seenHadith.get(h.source)}`);
-      seenHadith.set(h.source, day);
-    }
-
-    const a = objectAt(quran, step.angleId);
-    if (!a) { err(day, 'angle could not be parsed'); continue; }
-    if (a.contentId !== step.contentId) err(day, `angle.contentId ${a.contentId} != step ${step.contentId}`);
-    if (a.mood !== theme) err(day, `angle mood ${a.mood} != path theme ${theme}`);
-
-    let ps;
-    if (!a.practiceSteps) {
-      // Distinct from malformed JSON. PathStepScreen falls back to the angle's
-      // loose `action` field: one step, no du'a block, no source. All seven
-      // Salah days are in this state.
-      err(day, 'no practiceSteps — falls back to the bare `action` field');
-      continue;
-    }
-    try { ps = JSON.parse(a.practiceSteps); } catch { err(day, 'practiceSteps JSON invalid'); continue; }
-    for (const s of ps) {
-      if (!TYPES.has(s.type)) err(day, `bad type ${s.type}`);
-      if (!ICONS.has(s.icon)) err(day, `bad icon ${s.icon}`);
-      // sourceType is optional by design — a step that claims no chain omits it
-      // (see PracticeStepData). Only a value outside the union is a fault.
-      if (s.sourceType !== undefined && !SRCT.has(s.sourceType)) {
-        err(day, `bad sourceType ${s.sourceType}`);
+    for (const step of steps) {
+      const day = step.day;
+      if (!contentIds.has(step.contentId)) err(day, `missing content ${step.contentId}`);
+      // hadithContentId is optional (CLAUDE.md: "optional `hadithContentId`").
+      // Only a hadith that is named but does not exist is a fault; a day with no
+      // hadith simply renders one layer fewer. Reporting absence as "missing
+      // hadith undefined" produced 13 false failures on Rizq and Salah.
+      if (step.hadithContentId && !hadIds.has(step.hadithContentId)) {
+        err(day, `missing hadith ${step.hadithContentId}`);
+      } else if (!step.hadithContentId) {
+        note(day, 'no hadith on this day (renders one layer fewer)');
       }
-      if (!s.source) err(day, `practice step "${s.title}" missing source`);
-    }
+      if (!angleIds.has(step.angleId)) err(day, `missing angle ${step.angleId}`);
+      if (!step.angleId.startsWith(anglePrefix)) {
+        err(day, `borrowed mood angle: ${step.angleId} (expected ${anglePrefix}*)`);
+        continue;
+      }
 
-    if (a.actionArabicText) {
-      if (seenDua.has(a.actionArabicText)) err(day, `du'a repeats day ${seenDua.get(a.actionArabicText)}`);
-      seenDua.set(a.actionArabicText, day);
-    }
+      if (seenVerse.has(step.contentId)) err(day, `verse ${step.contentId} also on day ${seenVerse.get(step.contentId)}`);
+      seenVerse.set(step.contentId, day);
 
-    const lbl = (a.angle.match(/\[Tafsir\s+[^\]]+\]/) || [])[0];
-    if (!lbl) err(day, 'no [Tafsir ...] tag — footnote falls back to the verse whyThis');
-    else if (a.angle.indexOf(lbl) !== 0) err(day, 'tafsir tag not at string start (leaves a stray space)');
+      const h = objectAt(hadith, step.hadithContentId);
+      if (h) {
+        if (seenHadith.has(h.source)) err(day, `hadith ${h.source} also on day ${seenHadith.get(h.source)}`);
+        seenHadith.set(h.source, day);
+      }
 
-    let u = a.angle, mt = '';
-    for (const p of SPLIT) {
-      const x = a.angle.match(p);
-      if (x) { u = a.angle.slice(0, x.index + 1); mt = a.angle.slice(x.index + 1); break; }
-    }
-    // No pattern is not automatically fatal: splitIntoSections falls back to a
-    // 60% sentence split when the text has >= 4 sentences, and only returns an
-    // empty `matters` below that. Saying "will be empty" for every miss
-    // overstated 13 findings.
-    // Both branches are failures — CLAUDE.md requires the angle to contain a
-    // pattern so the split lands where you intend. They are worded differently
-    // because the consequence differs: >= 4 sentences degrades to an arbitrary
-    // 60% cut, below that `matters` renders empty. The message used to claim
-    // "will be empty" in both cases, which overstated 7 of them.
-    if (!mt) {
-      const sentences = a.angle.split(/(?<=\.)\s+/).length;
-      if (sentences >= 4) err(day, `no split pattern — falls back to an arbitrary 60% cut (${sentences} sentences)`);
-      else err(day, `no split pattern and only ${sentences} sentence(s) — Matters section renders empty`);
-    }
-    if (/\s\./.test(clean(u))) err(day, 'stray space before a period after tag strip');
+      const a = objectAt(quran, step.angleId);
+      if (!a) { err(day, 'angle could not be parsed'); continue; }
+      if (a.contentId !== step.contentId) err(day, `angle.contentId ${a.contentId} != step ${step.contentId}`);
+      if (a.mood !== theme) err(day, `angle mood ${a.mood} != path theme ${theme}`);
 
-    console.log(`day ${day} — ${step.title}`);
-    console.log(`   ${step.contentId} · ${step.angleId} · ${h ? h.source : '?'}`);
-    console.log(`   label: ${lbl ? lbl.replace(/[[\]]/g, '') : '(none)'} · practice: ${ps.length} steps`);
-    console.log(`   U: ${clean(u).slice(0, 92)}...`);
-    console.log(`   M: ${clean(mt).slice(0, 92)}...\n`);
+      let ps;
+      if (!a.practiceSteps) {
+        // Distinct from malformed JSON. PathStepScreen falls back to the angle's
+        // loose `action` field: one step, no du'a block, no source. All seven
+        // Salah days are in this state.
+        err(day, 'no practiceSteps — falls back to the bare `action` field');
+        continue;
+      }
+      try { ps = JSON.parse(a.practiceSteps); } catch { err(day, 'practiceSteps JSON invalid'); continue; }
+      for (const s of ps) {
+        if (!TYPES.has(s.type)) err(day, `bad type ${s.type}`);
+        if (!ICONS.has(s.icon)) err(day, `bad icon ${s.icon}`);
+        // sourceType is optional by design — a step that claims no chain omits it
+        // (see PracticeStepData). Only a value outside the union is a fault.
+        if (s.sourceType !== undefined && !SRCT.has(s.sourceType)) {
+          err(day, `bad sourceType ${s.sourceType}`);
+        }
+        if (!s.source) err(day, `practice step "${s.title}" missing source`);
+      }
+
+      if (a.actionArabicText) {
+        if (seenDua.has(a.actionArabicText)) err(day, `du'a repeats day ${seenDua.get(a.actionArabicText)}`);
+        seenDua.set(a.actionArabicText, day);
+      }
+
+      const lbl = (a.angle.match(/\[Tafsir\s+[^\]]+\]/) || [])[0];
+      if (!lbl) err(day, 'no [Tafsir ...] tag — footnote falls back to the verse whyThis');
+      else if (a.angle.indexOf(lbl) !== 0) err(day, 'tafsir tag not at string start (leaves a stray space)');
+
+      let u = a.angle, mt = '';
+      for (const p of SPLIT) {
+        const x = a.angle.match(p);
+        if (x) { u = a.angle.slice(0, x.index + 1); mt = a.angle.slice(x.index + 1); break; }
+      }
+      // No pattern is not automatically fatal: splitIntoSections falls back to a
+      // 60% sentence split when the text has >= 4 sentences, and only returns an
+      // empty `matters` below that. Saying "will be empty" for every miss
+      // overstated 13 findings.
+      // Both branches are failures — CLAUDE.md requires the angle to contain a
+      // pattern so the split lands where you intend. They are worded differently
+      // because the consequence differs: >= 4 sentences degrades to an arbitrary
+      // 60% cut, below that `matters` renders empty. The message used to claim
+      // "will be empty" in both cases, which overstated 7 of them.
+      if (!mt) {
+        const sentences = a.angle.split(/(?<=\.)\s+/).length;
+        if (sentences >= 4) err(day, `no split pattern — falls back to an arbitrary 60% cut (${sentences} sentences)`);
+        else err(day, `no split pattern and only ${sentences} sentence(s) — Matters section renders empty`);
+      }
+      if (/\s\./.test(clean(u))) err(day, 'stray space before a period after tag strip');
+
+      console.log(`day ${day} — ${step.title}`);
+      console.log(`   ${step.contentId} · ${step.angleId} · ${h ? h.source : '?'}`);
+      console.log(`   label: ${lbl ? lbl.replace(/[[\]]/g, '') : '(none)'} · practice: ${ps.length} steps`);
+      console.log(`   U: ${clean(u).slice(0, 92)}...`);
+      console.log(`   M: ${clean(mt).slice(0, 92)}...\n`);
+    }
   }
 }
 
@@ -236,10 +239,10 @@ const journeyPrefixes = (() => {
 for (const pm of paths.matchAll(/id:\s*'(path_[a-zA-Z0-9_]+)'/g)) {
   const path = objectAt(paths, pm[1]);
   if (!path || !Array.isArray(path.dailySteps)) continue;
-  path.dailySteps.forEach((step, i) => {
+  for (const { label, steps } of variantSequences(path)) steps.forEach((step, i) => {
     if (!step.angleId) return;
     if (journeyPrefixes.some((p) => step.angleId.startsWith(`q_angle_${p}_`))) return;
-    console.log(`  !! ${pm[1]} day ${i + 1}: borrows mood angle ${step.angleId} — journey days need their own angle`);
+    console.log(`  !! ${pm[1]}${label} day ${i + 1}: borrows mood angle ${step.angleId} — journey days need their own angle`);
     fail++;
   });
 }
@@ -306,8 +309,9 @@ const normAr = (s) =>
 for (const pm of paths.matchAll(/id:\s*'(path_[a-zA-Z0-9_]+)'/g)) {
   const path = objectAt(paths, pm[1]);
   if (!path || !Array.isArray(path.dailySteps) || path.dailySteps.length < 2) continue;
+  for (const { label, steps } of variantSequences(path)) {
   const seen = new Map();
-  path.dailySteps.forEach((step, i) => {
+  steps.forEach((step, i) => {
     const a = step.angleId && objectAt(quran, step.angleId);
     if (!a) return;
     const arabics = new Set();
@@ -320,11 +324,12 @@ for (const pm of paths.matchAll(/id:\s*'(path_[a-zA-Z0-9_]+)'/g)) {
     for (const ar of arabics) {
       if (ar.length < 8) continue;
       if (seen.has(ar)) {
-        console.log(`  !! ${pm[1]} day ${i + 1}: du'a repeats day ${seen.get(ar)} — ${ar.slice(0, 40)}`);
+        console.log(`  !! ${pm[1]}${label} day ${i + 1}: du'a repeats day ${seen.get(ar)} — ${ar.slice(0, 40)}`);
         fail++;
       } else seen.set(ar, i + 1);
     }
   });
+  }
 }
 
 if (reported) {
