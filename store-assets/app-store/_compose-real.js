@@ -38,9 +38,10 @@ const stars = `<g fill="#D4AF37">
   <circle cx="900" cy="220" r="2.5" fill-opacity="0.5"/>
 </g>`;
 
+// Verbs over 8 letters (UNDERSTAND) drop to 128 so they keep a margin on the 1290 canvas.
 function headline(verb, desc) {
   return `
-  <text x="645" y="300" text-anchor="middle" font-family="Georgia, serif" font-size="152" font-weight="bold" letter-spacing="2" fill="#F5EDE3">${verb}</text>
+  <text x="645" y="300" text-anchor="middle" font-family="Georgia, serif" font-size="${verb.length > 8 ? 128 : 152}" font-weight="bold" letter-spacing="2" fill="#F5EDE3">${verb}</text>
   <text x="645" y="392" text-anchor="middle" font-family="Georgia, serif" font-size="54" letter-spacing="1" fill="#F5EDE3" fill-opacity="0.85">${desc}</text>`;
 }
 
