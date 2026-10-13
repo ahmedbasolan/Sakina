@@ -6,7 +6,10 @@ Sakina is a React Native (Expo) Islamic spiritual companion app. Aesthetic:
 accent (`Colors.accent.primary #D4AF37`), twinkling stars, faint gold mandala
 backdrop, calm and breathing motion. The warm-on-cool contrast is intentional —
 a lantern under a starlit sky. Brand mark is the gold lantern (fanoos) in
-`assets/icon.png`, recreated as [`SakinaLantern`](src/components/SakinaLantern.tsx).
+`assets/icon.png`. [`SakinaLantern`](src/components/SakinaLantern.tsx) renders
+that exact lantern, cut out of the icon by `node scripts/build-lantern-assets.js`
+(which also draws the Android notification icon from it) — re-run it if the
+icon changes rather than hand-drawing the mark again.
 
 Styling is **React Native `StyleSheet` + the core `Animated` API**, with all
 visual values coming from [`DesignSystem.ts`](src/theme/DesignSystem.ts).
