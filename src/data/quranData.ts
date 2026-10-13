@@ -8082,7 +8082,7 @@ const quranContentAnglesData: ContentAngle[] = [
     contentId: 'quran_97_5',
     mood: 'Calm',
     angle:
-      'Allah says: "Peace it is until the emergence of dawn." Ibn Kathir explains that Laylatul Qadr (the Night of Decree) is enveloped in complete salam (peace)—from the moment the sun sets until dawn. Al-Sa\'di adds that this peace is not just an absence of harm but an active, descending tranquility that touches every believer who seeks it. The Prophet ﷺ said: "Whoever stands in prayer on Laylatul Qadr out of faith and seeking reward, his previous sins will be forgiven." [Sahih Bukhari 1901] While Laylatul Qadr is one special night, the principle of seeking peace in the stillness of the night applies to every night of devotion. [Tafsir Ibn Kathir]',
+      'Allah calls a whole night peace: "Peace it is, until the emergence of dawn." Ibn Kathir records Qatadah\'s explanation: all of it is good, and there is no evil in it until Fajr. That night comes once a year, but the One who sends down its peace is near you every night. Give Him a few unhurried minutes before Fajr, and let the stillness be your worship. The Prophet ﷺ promised that whoever stands in prayer on Laylatul Qadr out of faith and hope of reward is forgiven his previous sins. [Sahih Bukhari 1901] [Tafsir Ibn Kathir]',
     angleSource: 'Tafsir Ibn Kathir',
     action: 'Set an intention to find stillness in the early hours of tomorrow.',
     practiceSteps: JSON.stringify([
@@ -8091,9 +8091,8 @@ const quranContentAnglesData: ContentAngle[] = [
         icon: 'crescent',
         title: 'Peace until dawn',
         instruction:
-          'Laylatul Qadr is enveloped in complete salam — not just absence of harm, but an active, descending tranquility. While that is one special night, the principle applies to every night of devotion. Seek the stillness of the night for your soul.',
+          'Al-Sa\'di explains that this night is safe from every harm and evil because its good is so abundant, and that it lasts from sunset until the break of dawn. That night comes once a year; the stillness before Fajr is there every night.',
         source: "Tafsir al-Sa'di on 97:5",
-        sourceType: 'quran_dua',
       },
       {
         type: 'physical',
@@ -8102,7 +8101,7 @@ const quranContentAnglesData: ContentAngle[] = [
         instruction:
           "Set an intention to wake up 15 minutes before Fajr tomorrow. In that stillness, pray 2 rak'ahs. The night is when the world is quiet and your heart can hear Allah most clearly.",
         source:
-          '"Whoever stands in prayer on Laylatul Qadr... his sins will be forgiven." [Bukhari 1901]',
+          '"Whoever established prayers on the night of Qadr out of sincere faith and hoping for a reward from Allah, then all his previous sins will be forgiven." [Bukhari 1901]',
         sourceType: 'sunnah_action',
         sourceGrading: 'sahih',
       },
