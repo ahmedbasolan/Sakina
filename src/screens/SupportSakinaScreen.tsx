@@ -17,7 +17,7 @@ import {
   View,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useNavigation } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import {
@@ -30,6 +30,8 @@ import {
 } from '../theme/DesignSystem';
 import { LEGAL_URLS } from '../constants';
 import { EARLY_ACCESS_DAYS } from '../constants/journeyAvailability';
+import SupporterThanks from '../components/SupporterThanks';
+import { formatDateYMD } from '../utils/date';
 import { useReduceMotion } from '../hooks/useReduceMotion';
 import { FreemiumService } from '../services/freemiumService';
 import { HapticsService } from '../services/hapticsService';
@@ -150,6 +152,13 @@ const SupportSakinaScreen: React.FC<Props> = ({ embedded = false, onDone }) => {
   const insets = useSafeAreaInsets();
   const reduceMotion = useReduceMotion();
   const freemium = FreemiumService.getInstance();
+  // Re-read on focus: a purchase or restore elsewhere can change it.
+  const [isPremium, setIsPremium] = useState(() => freemium.isPremium());
+  useFocusEffect(
+    useCallback(() => {
+      setIsPremium(freemium.isPremium());
+    }, [freemium]),
+  );
 
   const [selectedPlan, setSelectedPlan] = useState<Plan>('yearly');
   const [loading, setLoading] = useState(false);
@@ -351,6 +360,31 @@ const SupportSakinaScreen: React.FC<Props> = ({ embedded = false, onDone }) => {
       Alert.alert('Could not open link', 'Please try again later.'),
     );
   };
+
+  // A subscriber reaching this screen (Settings → "Sakina Pro · Active") gets
+  // what their support built, not a paywall for something they already have.
+  // Never in onboarding's embedded mode, which must always end via onDone.
+  // Placed after every hook so hook order never changes between renders.
+  if (isPremium && !embedded) {
+    return (
+      <SupporterThanks
+        state={freemium.getSubscriptionState()}
+        today={formatDateYMD()}
+        onClose={() => navigation.goBack()}
+        onManage={() => {
+          const url = freemium.getSubscriptionState()?.managementUrl;
+          if (!url) return; // the link is only rendered when this exists
+          revenueCat.openManageSubscriptions(url).catch((error) =>
+            logServiceError(
+              'SupportSakinaScreen',
+              'openManageSubscriptions',
+              error instanceof Error ? error : new Error(String(error)),
+            ),
+          );
+        }}
+      />
+    );
+  }
 
   return (
     <LinearGradient colors={Colors.celestialWash} style={styles.container}>
