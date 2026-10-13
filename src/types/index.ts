@@ -90,8 +90,15 @@ export interface Content {
   primaryText: string;
   arabicText?: string;
   transliteration?: string;
-  englishTranslation: string; // Detailed context/instruction
-  translation?: string; // Literal translation of Arabic text
+  /** Quran: the Sahih International translation of the complete ayah — the
+   *  only English a verse screen or share card shows. Hadith: the full account. */
+  englishTranslation: string;
+  /** Hadith only (a short direct caption for HadithLayer). Quran entries must
+   *  not carry it: 39 did until 2026-10-13, expanded with tafsir and occasions
+   *  of revelation, some dropping clauses (5:13 lost "We cursed them"). They
+   *  never rendered — the content table has no column for it — and were
+   *  deleted rather than left for a future column to surface. */
+  translation?: string;
   source: string;
   whyThis: string;
   propheticPractice?: {
