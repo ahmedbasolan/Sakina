@@ -17,6 +17,13 @@ App Review notes on 1.5 corrected: the mood flow ends in a reflection question, 
 a "practical spiritual action"; and the paywall is reached in guest mode, because the
 Pro demo account now opens the supporter screen from Settings.
 
+### Screenshots — uploaded to 1.5 on 2026-10-13
+Order on both iPhone (Face ID large, 1284x2778; the required 6.1/6.3" slot scales
+from it) and iPad 13": FIND, UNDERSTAND, EASE, GROW, KEEP, BUILD, SAVE, READ, BEGIN.
+UNDERSTAND is new. The iPad set was re-uploaded from the repo because ASC still held
+an older capture set in a different order (BEGIN first). Known stale, kept by Ahmed:
+FIND shows the old ungrouped grid with Guilty as "Nadam"; GROW shows Rizq as 14 days.
+
 ### Categories — swapped 2026-10-13 (was Lifestyle / Reference)
 Primary **Reference**, secondary **Lifestyle**. Apple's category guide lists
 "religion" under Reference and has no Religion category; Muslim Pro, Quran Majeed,
