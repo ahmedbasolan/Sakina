@@ -183,6 +183,10 @@ export interface SubscriptionState {
   subscriptionEndDate?: number;
   isActive: boolean;
   willRenew: boolean;
+  /** First time this person held Pro (RevenueCat). In memory only, never persisted. */
+  supporterSinceMs?: number;
+  /** Store page for managing this subscription. Absent for lifetime / promotional. In memory only. */
+  managementUrl?: string;
   unlockedBundleIds?: string[]; // IDs of purchased Special Edition bundles
 }
 
