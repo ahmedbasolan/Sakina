@@ -555,7 +555,7 @@ Add styles next to `lockedStatus` (same metrics so locked and unlocked pills ali
     marginBottom: Spacing.sm,
   },
   proEarlyPillText: {
-    fontSize: Typography.sizes.detail,
+    fontSize: Typography.sizes.label,
     fontWeight: '700',
     color: Colors.accent.primary,
     letterSpacing: 1,
@@ -564,9 +564,35 @@ Add styles next to `lockedStatus` (same metrics so locked and unlocked pills ali
 
 (If `Typography` is not already imported in this file, it is — line 23 imports `Colors, Spacing, BorderRadius, Typography`.)
 
-- [ ] **Step 5: Update the sort to read `released`**
+- [ ] **Step 5: Stop new early-access journeys sinking to the bottom**
 
-Already done in Task 1 Step 4; confirm `isPathLocked` is still the lock input to the sort.
+The Explore sort puts every locked card last. Under early access that buries
+the newest journey — the one the window exists to announce — below every old
+one for free users. Sink only contentless stubs; everything startable sorts
+newest first, locked or not. In the `activeFilter === 'all'` sort replace:
+
+```ts
+        const aLocked = isPathLocked(a.id);
+        const bLocked = isPathLocked(b.id);
+        if (aLocked !== bLocked) return aLocked ? 1 : -1;
+```
+
+with:
+
+```ts
+        // Only contentless stubs sink. A locked early-access or Pro-exclusive
+        // journey keeps its date position, so "newest first" stays true for
+        // free users too — a new journey is news even before it is theirs.
+        const aStub = !AVAILABLE_PATH_IDS.has(a.id);
+        const bStub = !AVAILABLE_PATH_IDS.has(b.id);
+        if (aStub !== bStub) return aStub ? 1 : -1;
+```
+
+Remove `isPathLocked` from that `useMemo`'s dependency list if nothing else in
+it reads it. Update the sort comment above ("Newest-available first, locked
+previews after") to "Newest first; contentless stubs after". Note for the
+commit message: Marriage Seeker and Death Awareness move from the bottom of
+Explore into date order for free users.
 
 - [ ] **Step 6: Verify**
 
@@ -610,8 +636,6 @@ import { EARLY_ACCESS_DAYS } from '../constants/journeyAvailability';
 
 Replace the comment block above the "Pro-exclusive journeys" entry (the one explaining why "Early access" was removed) with: `// "Early access" was removed on 2026-10-13 because nothing enforced it, and restored once journeyAccess.ts did. If the window is ever removed, remove this bullet in the same commit.`
 
-Confirm `sparkles-outline` exists: `grep -c '"sparkles-outline"' node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/glyphmaps/Ionicons.json` → expect `1`. If 0, use `star-outline`.
-
 - [ ] **Step 2: Verify and commit**
 
 Run: `npx tsc --noEmit -p tsconfig.json && npx jest`
@@ -632,13 +656,14 @@ git push
 - Create: `src/utils/__tests__/supporterSince.test.ts`
 - Modify: `src/types/index.ts:179-187` (`SubscriptionState`)
 - Modify: `src/services/subscriptionService.ts` — `syncFromCustomerInfo` (~line 202)
-- Modify: `src/services/revenueCatService.ts` — add `showManageSubscriptions()`
+- Modify: `src/services/revenueCatService.ts` — add `openManageSubscriptions()`
 
 **Interfaces:**
 - Produces:
   - `supporterSinceMs(entitlement: { originalPurchaseDateMillis?: number | null } | undefined): number | undefined`
   - `SubscriptionState.supporterSinceMs?: number`
-  - `revenueCat.showManageSubscriptions(): Promise<void>`
+  - `SubscriptionState.managementUrl?: string` — RevenueCat `CustomerInfo.managementURL`; absent for lifetime and for promotional grants (the App Review demo account is one), which is what decides whether a "Manage subscription" link has anything to open
+  - `revenueCat.openManageSubscriptions(managementUrl: string): Promise<void>`
 
 - [ ] **Step 1: Write the failing test**
 
@@ -691,24 +716,39 @@ In `src/types/index.ts`, add to `SubscriptionState` after `willRenew`:
 ```ts
   /** First time this person held Pro (RevenueCat). In memory only, never persisted. */
   supporterSinceMs?: number;
+  /** Store page for managing this subscription. Absent for lifetime / promotional. In memory only. */
+  managementUrl?: string;
 ```
 
 In `subscriptionService.ts` `syncFromCustomerInfo`, add to the `this.subscriptionState = { … }` literal:
 
 ```ts
       supporterSinceMs: isActive ? supporterSinceMs(entitlement) : undefined,
+      managementUrl: isActive ? info.managementURL ?? undefined : undefined,
 ```
 
-with `import { supporterSinceMs } from '../utils/supporterSince';`. Do **not** add it to either SQL statement.
+with `import { supporterSinceMs } from '../utils/supporterSince';`. Do **not** add either to the SQL statements.
 
-In `revenueCatService.ts`, add after `restorePurchases`:
+In `revenueCatService.ts`, add after `restorePurchases` (and add `Linking` to the existing `react-native` import):
 
 ```ts
-  /** Opens the store's own subscription management sheet. No-op when RC is unavailable. */
-  async showManageSubscriptions(): Promise<void> {
-    this.configure();
-    if (!this.configured) return;
-    await Purchases.showManageSubscriptions();
+  /**
+   * Open the store's subscription management. `Purchases.showManageSubscriptions`
+   * is iOS-only (its own docs: "Only available in iOS 13+"), so Android opens
+   * RevenueCat's managementURL — the Play subscriptions page — instead. The
+   * caller only offers this when that URL exists, which is also what keeps the
+   * link off lifetime and promotional entitlements, where there is nothing to
+   * manage.
+   */
+  async openManageSubscriptions(managementUrl: string): Promise<void> {
+    if (Platform.OS === 'ios') {
+      this.configure();
+      if (this.configured) {
+        await Purchases.showManageSubscriptions();
+        return;
+      }
+    }
+    await Linking.openURL(managementUrl);
   }
 ```
 
@@ -825,7 +865,7 @@ git push
 - Modify: `src/screens/SupportSakinaScreen.tsx` — add premium state + branch before the main `return (` (~line 348)
 
 **Interfaces:**
-- Consumes: `journeysReleasedSince`, `formatShortDate` (Tasks 2, 6); `SubscriptionState` with `supporterSinceMs` (Task 5); `revenueCat.showManageSubscriptions()` (Task 5); `PathsService.getInstance().getAllPaths()` for titles; `formatDateYMD`.
+- Consumes: `journeysReleasedSince`, `formatShortDate` (Tasks 2, 6); `SubscriptionState` with `supporterSinceMs` and `managementUrl` (Task 5); `revenueCat.openManageSubscriptions(url)` (Task 5); `STATIC_SPIRITUAL_PATHS` from `src/data/staticPaths.ts` for titles (pure data — `PathsService` would drag Supabase into the component test); `formatDateYMD`.
 - Produces: `SupporterThanks` default export, props:
   `{ state: SubscriptionState | null; today: string; onClose: () => void; onManage: () => void }`
 
@@ -843,6 +883,12 @@ import React from 'react';
 import { render } from '@testing-library/react-native';
 import SupporterThanks from '../SupporterThanks';
 
+jest.mock('react-native-safe-area-context', () => ({
+  useSafeAreaInsets: () => ({ top: 0, bottom: 0, left: 0, right: 0 }),
+}));
+// The lantern is an Image + Svg glow with its own reduce-motion hook; it is
+// decoration here and not what this test is about.
+jest.mock('../SakinaLantern', () => ({ SakinaLantern: () => null }));
 jest.mock('../../constants/journeyAvailability', () => ({
   EARLY_ACCESS_DAYS: 30,
   AVAILABLE_PATHS: { path_screen_detox: { released: '2026-12-15', access: 'early_access' } },
@@ -859,7 +905,8 @@ describe('SupporterThanks', () => {
       <SupporterThanks state={{ ...base, supporterSinceMs: since }} today="2026-12-20" onClose={noop} onManage={noop} />,
     );
     getByText(/Supporting since Dec 1, 2026/);
-    getByText(/Opens to everyone on Jan 14/);
+    getByText('Screen Detox');
+    getByText(/opens to everyone on Jan 14/);
   });
 
   it('shows the honest empty state when nothing shipped since they joined', () => {
@@ -879,11 +926,31 @@ describe('SupporterThanks', () => {
     expect(JSON.stringify(toJSON())).not.toMatch(/Invalid Date|1970/);
   });
 
-  it('hides Manage subscription for lifetime', () => {
-    const { queryByText } = render(
+  it('offers Manage subscription only when the store gave a management URL', () => {
+    const withUrl = render(
+      <SupporterThanks
+        state={{ ...base, managementUrl: 'https://apps.apple.com/account/subscriptions' }}
+        today="2026-12-20"
+        onClose={noop}
+        onManage={noop}
+      />,
+    );
+    withUrl.getByText('Manage subscription');
+    // Lifetime and promotional grants (the App Review demo account) carry no URL.
+    const lifetime = render(
       <SupporterThanks state={{ ...base, type: 'lifetime', willRenew: false }} today="2026-12-20" onClose={noop} onManage={noop} />,
     );
-    expect(queryByText('Manage subscription')).toBeNull();
+    expect(lifetime.queryByText('Manage subscription')).toBeNull();
+  });
+
+  it('says "Lifetime" for a lifetime unlock and "Pro until" for a cancelled plan', () => {
+    const end = new Date(2027, 2, 3).getTime();
+    render(
+      <SupporterThanks state={{ ...base, type: 'lifetime', willRenew: false }} today="2026-12-20" onClose={noop} onManage={noop} />,
+    ).getByText(/Lifetime/);
+    render(
+      <SupporterThanks state={{ ...base, willRenew: false, subscriptionEndDate: end }} today="2026-12-20" onClose={noop} onManage={noop} />,
+    ).getByText('Pro until Mar 3, 2027');
   });
 });
 ```
@@ -905,13 +972,17 @@ describe('SupporterThanks', () => {
 import React, { useMemo } from 'react';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { BorderRadius, Colors, Spacing, Typography } from '../theme/DesignSystem';
 import { SubscriptionState } from '../types';
+import { STATIC_SPIRITUAL_PATHS } from '../data/staticPaths';
 import { formatDateYMD } from '../utils/date';
 import { formatShortDate, journeysReleasedSince } from '../utils/journeyAccess';
-import { PathsService } from '../services/pathsService';
-import SakinaLantern from './SakinaLantern';
+import { SakinaLantern } from './SakinaLantern';
+
+// Path titles never change at runtime (variants change steps, not the title).
+const TITLES = new Map(STATIC_SPIRITUAL_PATHS.map((p) => [p.id, p.title]));
 
 interface Props {
   state: SubscriptionState | null;
@@ -935,29 +1006,34 @@ function planLine(state: SubscriptionState | null): string | null {
 const SupporterThanks: React.FC<Props> = ({ state, today, onClose, onManage }) => {
   const insets = useSafeAreaInsets();
   const since = state?.supporterSinceMs;
-  const titles = useMemo(
-    () => new Map(PathsService.getInstance().getAllPaths().map((p) => [p.id, p.title])),
-    [],
-  );
   const built = useMemo(
     () => (since ? journeysReleasedSince(formatDateYMD(new Date(since)), today) : null),
     [since, today],
   );
   const plan = planLine(state);
-  const canManage = state?.isActive && state.type !== 'lifetime';
+  // The URL's presence is the test: lifetime and promotional grants have none.
+  const canManage = !!state?.isActive && !!state.managementUrl;
 
   return (
-    <View style={[styles.root, { paddingTop: insets.top + Spacing.lg }]}>
+    // Same ground as the paywall it replaces (SupportSakinaScreen's root).
+    <LinearGradient colors={Colors.celestialWash} style={styles.root}>
       <TouchableOpacity
         onPress={onClose}
-        style={styles.close}
+        // Absolute positioning ignores the root's padding, so the inset goes
+        // on the button itself or it lands under the status bar.
+        style={[styles.close, { top: insets.top + Spacing.sm }]}
         hitSlop={{ top: 12, right: 12, bottom: 12, left: 12 }}
         accessibilityRole="button"
         accessibilityLabel="Close"
       >
         <Ionicons name="close" size={24} color={Colors.text.secondary} />
       </TouchableOpacity>
-      <ScrollView contentContainerStyle={[styles.content, { paddingBottom: insets.bottom + Spacing.xxl }]}>
+      <ScrollView
+        contentContainerStyle={[
+          styles.content,
+          { paddingTop: insets.top + Spacing.xxxl, paddingBottom: insets.bottom + Spacing.xxl },
+        ]}
+      >
         <SakinaLantern size={56} />
         <Text style={styles.title}>Thank you for supporting Sakina</Text>
         {since ? <Text style={styles.meta}>Supporting since {longDate(since)}</Text> : null}
@@ -975,7 +1051,7 @@ const SupporterThanks: React.FC<Props> = ({ state, today, onClose, onManage }) =
                 <View key={j.pathId} style={styles.row}>
                   <Ionicons name="book-outline" size={18} color={Colors.accent.primary} />
                   <View style={styles.rowText}>
-                    <Text style={styles.rowTitle}>{titles.get(j.pathId) ?? j.pathId}</Text>
+                    <Text style={styles.rowTitle}>{TITLES.get(j.pathId) ?? j.pathId}</Text>
                     <Text style={styles.rowMeta}>
                       {j.inEarlyAccess && j.publicFrom
                         ? `Yours now · opens to everyone on ${formatShortDate(j.publicFrom)}`
@@ -998,14 +1074,14 @@ const SupporterThanks: React.FC<Props> = ({ state, today, onClose, onManage }) =
           </TouchableOpacity>
         ) : null}
       </ScrollView>
-    </View>
+    </LinearGradient>
   );
 };
 
 const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: Colors.background },
+  root: { flex: 1 },
   close: { position: 'absolute', right: Spacing.xl, zIndex: 1 },
-  content: { alignItems: 'center', paddingHorizontal: Spacing.xl, paddingTop: Spacing.xxxl, gap: Spacing.sm },
+  content: { alignItems: 'center', paddingHorizontal: Spacing.xl, gap: Spacing.sm },
   title: {
     fontFamily: Typography.fonts.serif,
     fontSize: Typography.sizes.h1,
@@ -1048,7 +1124,11 @@ const styles = StyleSheet.create({
 export default SupporterThanks;
 ```
 
-Before writing, confirm the token names exist and adjust to the real ones: `grep -n "glass\|secondary\|background" src/theme/DesignSystem.ts | head -20` and `grep -n "export\|size" src/components/SakinaLantern.tsx | head`. If `Colors.background` is an object, use `Colors.background.primary` (or whatever `SupportSakinaScreen` uses for its root); if `SakinaLantern` is a named export or takes a different size prop, match it. The test mocks nothing visual, so a wrong token name fails the typecheck, not silently.
+Every token above was checked against `src/theme/DesignSystem.ts` on
+2026-10-13: `Colors.celestialWash`, `Colors.text.primary/secondary`,
+`Colors.glass.light`, `Colors.accent.primary`, `Typography.sizes.h1/h2/body/small/detail`,
+`Typography.fonts.serif/latin`. `SakinaLantern` is a **named** export with a
+`size` prop (height).
 
 - [ ] **Step 4: Branch the Support screen**
 
@@ -1085,10 +1165,12 @@ Immediately before the main `return (` (after every hook, so hook order never ch
         today={formatDateYMD()}
         onClose={() => navigation.goBack()}
         onManage={() => {
-          revenueCat.showManageSubscriptions().catch((error) =>
+          const url = freemium.getSubscriptionState()?.managementUrl;
+          if (!url) return; // the link is only rendered when this exists
+          revenueCat.openManageSubscriptions(url).catch((error) =>
             logServiceError(
               'SupportSakinaScreen',
-              'showManageSubscriptions',
+              'openManageSubscriptions',
               error instanceof Error ? error : new Error(String(error)),
             ),
           );
@@ -1169,5 +1251,6 @@ git push
 
 - Free account → Journeys: every current card unchanged; Marriage Seeker / Death Awareness say "SAKINA PRO EXCLUSIVE"; stubs say "COMING SOON".
 - Temporarily set one journey's `released` to today in `journeyAvailability.ts`: free account shows "FREE FROM <date 30 days out>" and taps to the Support screen; Pro account shows a gold "PRO EARLY ACCESS" pill and opens it. Revert.
-- Pro account → Settings → "Sakina Pro · Active": thank-you view, supporting-since date, plan line, "Manage subscription" opens the store sheet. Lifetime account: no manage link.
+- Pro account → Settings → "Sakina Pro · Active": thank-you view, supporting-since date, plan line, close button clear of the status bar. "Manage subscription" opens Apple's sheet on iPhone and Play's subscriptions page on Android. Lifetime account and the review demo account (promotional grant): no manage link.
+- Free account → Explore: Marriage Seeker and Death Awareness now sit in date order, not at the bottom.
 - Onboarding's last step still shows the plain subscribe-or-skip paywall (embedded mode is never replaced).
