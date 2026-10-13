@@ -76,7 +76,7 @@ moves their clock forward unlocks early. Low stakes, not worth a server check.
      is nothing to manage. iOS opens `Purchases.showManageSubscriptions()`;
      that API is iOS-only, so Android opens the management URL (Play's
      subscriptions page).
-- Supporting-since is kept in memory on `SubscriptionState` only — no schema
+- Supporting-since and the management URL are kept in memory on `SubscriptionState` only — no schema
   change, no new kv_store key (a kv key would be personal data and would have
   to join `clearAllLocalUserData`).
 
