@@ -73,3 +73,23 @@ export function getJourneyAccess(
     routeToPaywall: true,
   };
 }
+
+/**
+ * Explore-tab order: every startable journey newest first by `released` —
+ * locked or not, because a new journey is news even before it is yours, and
+ * early access exists to announce it — then contentless stubs, in
+ * declaration order. (Sorting every locked card last used to bury exactly the
+ * journey early access is for.)
+ */
+export function compareExploreOrder(
+  aId: string,
+  bId: string,
+  declIndex: (pathId: string) => number,
+): number {
+  const aDate = AVAILABLE_PATHS[aId]?.released;
+  const bDate = AVAILABLE_PATHS[bId]?.released;
+  if (aDate && bDate && aDate !== bDate) return aDate < bDate ? 1 : -1;
+  if (aDate && !bDate) return -1;
+  if (!aDate && bDate) return 1;
+  return declIndex(aId) - declIndex(bId);
+}

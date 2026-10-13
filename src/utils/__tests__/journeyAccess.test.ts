@@ -100,3 +100,21 @@ describe('formatShortDate / parseYMD', () => {
     expect(parseYMD('2026-03-02').getDate()).toBe(2);
   });
 });
+
+import { compareExploreOrder } from '../journeyAccess';
+
+describe('compareExploreOrder', () => {
+  // Declaration order for the stubs' tie-break.
+  const decl = new Map(['path_stub_b', 'path_stub_a', 'path_new', 'path_excl', 'path_jan'].map((id, i) => [id, i]));
+  const sortIds = (ids: string[]) => [...ids].sort((a, b) => compareExploreOrder(a, b, (id) => decl.get(id) ?? 0));
+
+  it('puts every startable journey newest first, locked or not, and stubs last in declaration order', () => {
+    expect(sortIds(['path_stub_a', 'path_jan', 'path_stub_b', 'path_excl', 'path_new'])).toEqual([
+      'path_new', // 2026-11-01, early access (locked for a free user)
+      'path_excl', // 2026-08-18, Pro exclusive
+      'path_jan', // 2026-01-31
+      'path_stub_b',
+      'path_stub_a',
+    ]);
+  });
+});

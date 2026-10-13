@@ -6,7 +6,7 @@
  * Revolution, Salah Transformation, Study Journaling, Trusting the Results,
  * Prayer Leadership, Hope After Crisis, Marriage Seeker, Tawbah Intensive,
  * Death Awareness, Screen Detox. All other paths are stubs with no
- * `dailySteps` yet and show a generic "Early Access · Premium" locked state.
+ * `dailySteps` yet and show a "Coming soon" locked state.
  *
  * Availability, release dates and who may start each journey live in
  * src/constants/journeyAvailability.ts. A path can be *available but staged
@@ -39,7 +39,9 @@ import { SubscriptionService } from '../services/subscriptionService';
 import { JourneyMandalaBackdrop } from '../components/JourneyMandalaBackdrop';
 import { TwinklingStar } from '../components/TwinklingStar';
 import { getPathVisual } from '../constants/pathVisuals';
-import { AVAILABLE_PATHS, AVAILABLE_PATH_IDS } from '../constants/journeyAvailability';
+import { AVAILABLE_PATH_IDS } from '../constants/journeyAvailability';
+import { compareExploreOrder, getJourneyAccess } from '../utils/journeyAccess';
+import { formatDateYMD } from '../utils/date';
 
 // Height reserved for the pinned header (star field + filter/search row). The
 // star positions below are fractions of it, so the two cannot drift apart.
@@ -173,14 +175,14 @@ interface JourneyCardProps {
   index: number;
   isActive: boolean;
   isLocked: boolean;
-  /** Short locked-status copy (e.g. "Sakina Pro exclusive"). Falls back to the
-   *  generic "Early Access · Coming Soon" pill when unset. */
-  lockedLabel?: string;
+  /** Locked: why (e.g. "Free from Nov 12"). Unlocked: only "Pro early access".
+   *  From src/utils/journeyAccess.ts. */
+  statusLabel?: string;
   userProgress?: UserPathProgress;
   onPress: () => void;
 }
 
-function JourneyCard({ path, index, isActive, isLocked, lockedLabel, userProgress, onPress }: JourneyCardProps) {
+function JourneyCard({ path, index, isActive, isLocked, statusLabel, userProgress, onPress }: JourneyCardProps) {
   const visual = getPathVisual(path.id);
   const isCompleted = !!userProgress?.isCompleted;
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -212,7 +214,7 @@ function JourneyCard({ path, index, isActive, isLocked, lockedLabel, userProgres
   // but never remounts it — the entrance effect above would keep the mount-time
   // opacity forever. That is reachable, not theoretical: buy Pro on the Support
   // screen and come back, PathsScreen's useFocusEffect re-reads isPremium,
-  // isPathLocked flips to false, every render-time value (colour, badge, label)
+  // the card's access flips to unlocked, every render-time value (colour, badge, label)
   // updates correctly — and the card stays dimmed at 0.65 as if still locked.
   // Skips its own mount pass so it can't race the delayed entrance above.
   const lockSyncedRef = useRef(false);
@@ -241,7 +243,7 @@ function JourneyCard({ path, index, isActive, isLocked, lockedLabel, userProgres
         activeOpacity={isLocked ? 0.95 : 0.88}
         onPress={onPress}
         accessibilityRole="button"
-        accessibilityLabel={isLocked ? `${path.title} — Premium, ${lockedLabel ? lockedLabel.toLowerCase() : 'early access coming soon'}` : `${path.title} — ${completedDays} of ${totalDays} days complete`}
+        accessibilityLabel={isLocked ? `${path.title} — locked, ${(statusLabel ?? 'coming soon').toLowerCase()}` : `${path.title} — ${statusLabel ? `${statusLabel}, ` : ''}${completedDays} of ${totalDays} days complete`}
         accessibilityHint={isLocked ? undefined : 'Double tap to open this journey'}
         accessibilityState={{ disabled: isLocked }}
       >
@@ -344,10 +346,19 @@ function JourneyCard({ path, index, isActive, isLocked, lockedLabel, userProgres
               <View style={styles.lockedStatus}>
                 <MaterialCommunityIcons name="lock" size={11} color={`${Colors.accent.primary}70`} />
                 <Text style={styles.lockedStatusText}>
-                  {(lockedLabel ?? 'Early Access · Coming Soon').toUpperCase()}
+                  {(statusLabel ?? 'Coming soon').toUpperCase()}
                 </Text>
               </View>
             ) : (
+              <>
+              {/* Pro early access: a perk, so full-strength gold, unlike the
+                  dimmed lock pill above. */}
+              {statusLabel ? (
+                <View style={styles.proEarlyPill}>
+                  <MaterialCommunityIcons name="star-four-points" size={11} color={Colors.accent.primary} />
+                  <Text style={styles.proEarlyPillText}>{statusLabel.toUpperCase()}</Text>
+                </View>
+              ) : null}
               <View style={styles.progressSection}>
                 <View style={styles.progressTrack}>
                   <LinearGradient
@@ -363,6 +374,7 @@ function JourneyCard({ path, index, isActive, isLocked, lockedLabel, userProgres
                   {isCompleted ? 'COMPLETE' : `${completedDays}/${totalDays}`}
                 </Text>
               </View>
+              </>
             )}
           </View>
         </FrostedSurface>
@@ -435,38 +447,33 @@ export default function PathsScreen() {
     }, []),
   );
 
-  // A path is locked because it has no content yet (not in AVAILABLE_PATH_IDS),
-  // or because it's real but staged behind Pro, this user isn't premium, AND
-  // they never had progress on it. That last clause is a grandfather clause,
-  // not an edge case: a journey can be open to everyone before it is gated
-  // (path_trusting_the_results was, in July), so a free user who already
-  // started — or finished — it must not be locked out mid-journey or have a
-  // completed journey re-hidden behind a paywall. The gate is for new starts
-  // only.
-  // Single source of truth: onPathSelected calls this instead of
-  // re-deriving the same decision, so the sort order, the tap handler and
-  // the card's visual state cannot disagree with each other.
-  const isPathLocked = useCallback(
-    (pathId: string) => {
-      if (!AVAILABLE_PATH_IDS.has(pathId)) return true;
-      if (AVAILABLE_PATHS[pathId]?.access !== 'pro_exclusive' || isPremium) return false;
-      const hasExistingProgress = userProgressList.some((p) => p.pathId === pathId);
-      return !hasExistingProgress;
-    },
+  // Lock state, label and paywall routing all come from one pure rule,
+  // src/utils/journeyAccess.ts, so the tap handler and the card's visual
+  // state cannot disagree. It keeps the grandfather clause: anyone with
+  // progress on a journey keeps it, whatever their tier now — a journey can
+  // be open to everyone before it is gated (path_trusting_the_results was, in
+  // July), and a started or finished journey must never be re-hidden behind
+  // a paywall. `today` is read per call: a screen left open across midnight
+  // picks up the new day on its next focus/progress reload.
+  const accessFor = useCallback(
+    (pathId: string) =>
+      getJourneyAccess(pathId, {
+        isPremium,
+        hasProgress: userProgressList.some((p) => p.pathId === pathId),
+        today: formatDateYMD(),
+      }),
     [isPremium, userProgressList],
   );
 
   const onPathSelected = (pathId: string) => {
-    if (!isPathLocked(pathId)) {
+    const access = accessFor(pathId);
+    if (!access.locked) {
       navigation.navigate('PathDetail', { pathId });
       return;
     }
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    // A still-unbuilt early-access stub has no upgrade to offer; only route to
-    // the paywall when the lock is actually the premium gate.
-    if (AVAILABLE_PATHS[pathId]?.access === 'pro_exclusive') {
-      navigation.navigate('Support');
-    }
+    // A contentless stub has no upgrade to offer; only a Pro gate routes on.
+    if (access.routeToPaywall) navigation.navigate('Support');
   };
 
   // ── Filter logic ────────────────────────────────────────────
@@ -482,25 +489,16 @@ export default function PathsScreen() {
       const unstarted = PATHS.filter(
         (path) => !userProgressList.some((p) => p.pathId === path.id),
       );
-      // Newest-available first, locked previews after. Ordering on
-      // AVAILABLE_PATHS dates rather than declaration order because
-      // staticPaths.ts is not chronological — path_hope_after_crisis sits
-      // tenth in the file but shipped most recently of the committed set,
-      // and path_trusting_the_results sits last but shipped in July.
-      // Undated (locked, contentless) stubs keep declaration order among
-      // themselves; they have no ship date to sort on.
+      // Newest first; contentless stubs after (compareExploreOrder). Ordering
+      // on release dates rather than declaration order because staticPaths.ts
+      // is not chronological — path_hope_after_crisis sits tenth in the file
+      // but shipped later than most, and path_trusting_the_results sits last
+      // but shipped in July. Locked journeys keep their date position: a new
+      // early-access journey must surface at the top for free users too.
       const order = new Map(PATHS.map((p, i) => [p.id, i]));
-      return unstarted.sort((a, b) => {
-        const aLocked = isPathLocked(a.id);
-        const bLocked = isPathLocked(b.id);
-        if (aLocked !== bLocked) return aLocked ? 1 : -1;
-        const aDate = AVAILABLE_PATHS[a.id]?.released;
-        const bDate = AVAILABLE_PATHS[b.id]?.released;
-        if (aDate && bDate && aDate !== bDate) return aDate < bDate ? 1 : -1;
-        if (aDate && !bDate) return -1;
-        if (!aDate && bDate) return 1;
-        return (order.get(a.id) ?? 0) - (order.get(b.id) ?? 0);
-      });
+      return unstarted.sort((a, b) =>
+        compareExploreOrder(a.id, b.id, (id) => order.get(id) ?? 0),
+      );
     }
     if (activeFilter === 'active') {
       return PATHS.filter((path) => {
@@ -514,7 +512,7 @@ export default function PathsScreen() {
       const prog = userProgressList.find((p) => p.pathId === path.id);
       return prog?.isCompleted;
     });
-  }, [PATHS, userProgressList, activeFilter, isPathLocked]);
+  }, [PATHS, userProgressList, activeFilter]);
 
   // Search narrows within whatever tab is currently selected, rather than
   // overriding it — typing "salah" while on "Active" only searches active paths.
@@ -673,14 +671,14 @@ export default function PathsScreen() {
         renderItem={({ item, index }) => {
           const userProgress = userProgressList.find((p) => p.pathId === item.id);
           const isActive = !!userProgress && !userProgress.isCompleted;
-          const isLocked = isPathLocked(item.id);
+          const access = accessFor(item.id);
           return (
             <JourneyCard
               path={item}
               index={index}
               isActive={isActive}
-              isLocked={isLocked}
-              lockedLabel={AVAILABLE_PATHS[item.id]?.access === 'pro_exclusive' ? 'Sakina Pro exclusive' : undefined}
+              isLocked={access.locked}
+              statusLabel={access.label}
               userProgress={userProgress}
               onPress={() => onPathSelected(item.id)}
             />
@@ -882,6 +880,24 @@ const styles = StyleSheet.create({
     fontSize: 10,
     fontWeight: '700',
     color: `${Colors.accent.primary}70`,
+    letterSpacing: 1,
+  },
+  proEarlyPill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.xs,
+    paddingVertical: Spacing.xs,
+    paddingHorizontal: Spacing.md,
+    borderRadius: BorderRadius.sm,
+    borderWidth: 1,
+    borderColor: `${Colors.accent.primary}40`,
+    alignSelf: 'flex-start',
+    marginBottom: Spacing.sm,
+  },
+  proEarlyPillText: {
+    fontSize: Typography.sizes.label,
+    fontWeight: '700',
+    color: Colors.accent.primary,
     letterSpacing: 1,
   },
 
