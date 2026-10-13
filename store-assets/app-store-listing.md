@@ -17,6 +17,13 @@ App Review notes on 1.5 corrected: the mood flow ends in a reflection question, 
 a "practical spiritual action"; and the paywall is reached in guest mode, because the
 Pro demo account now opens the supporter screen from Settings.
 
+### Categories — swapped 2026-10-13 (was Lifestyle / Reference)
+Primary **Reference**, secondary **Lifestyle**. Apple's category guide lists
+"religion" under Reference and has no Religion category; Muslim Pro, Quran Majeed,
+Quran Widgets, Daily Quran – Verse a Day, Bible Chat and Hallow are all Reference
+first; faith apps in the top-100 free chart that day: Reference 33 (US) / 22 (GB) /
+40 (AE), Lifestyle 1 / 0 / 4, Health & Fitness 0 / 0 / 0. Ships with 1.5.
+
 ### App name  (limit 30) — 28
 Sakina: Quran Verses by Mood
 
