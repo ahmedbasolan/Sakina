@@ -9,6 +9,14 @@
 
 ## 1.5 — chosen 2026-10-13 (Option A)
 
+**Entered in App Store Connect 2026-10-13**: version 1.5 created (Prepare for
+Submission, no build). Name and subtitle (App Information) plus promo, description,
+What's New and keywords saved and re-checked after reload (description and What's
+New by SHA-1 against this file). Live 1.4 untouched, its promo text included.
+App Review notes on 1.5 corrected: the mood flow ends in a reflection question, not
+a "practical spiritual action"; and the paywall is reached in guest mode, because the
+Pro demo account now opens the supporter screen from Settings.
+
 ### App name  (limit 30) — 28
 Sakina: Quran Verses by Mood
 
