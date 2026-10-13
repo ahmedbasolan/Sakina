@@ -40,6 +40,11 @@ here may reintroduce trial copy.
   keep going, whatever their tier now.
 - A free user tapping an early-access card goes to the Support screen (same as
   the Pro-exclusive gate today).
+- Explore stays "newest first" for free users: only contentless stubs sink to
+  the bottom. A locked new journey keeps its date position (it used to sink
+  with every locked card, which would bury exactly the journey early access
+  exists to announce). Side effect: Marriage Seeker and Death Awareness move
+  from the bottom into date order for free users.
 - Every journey currently shipped is older than 30 days, so this changes no
   card on release day; it takes effect with the next journey.
 - Paywall bullet returns, truthfully: "Early access to new journeys — every new
@@ -65,8 +70,12 @@ moves their clock forward unlocks early. Low stakes, not worth a server check.
      <date>". Empty state: "The next journey is being written. Your support is
      what keeps new ones coming." (No date promised.) When supporting-since is
      unknown, the section is omitted.
-  5. "Manage subscription" text link → RevenueCat `showManageSubscriptions()`.
-     Hidden for lifetime (nothing to manage).
+  5. "Manage subscription" text link, shown only when RevenueCat's
+     `CustomerInfo.managementURL` exists — which also keeps it off lifetime
+     unlocks and promotional grants (the App Review demo account), where there
+     is nothing to manage. iOS opens `Purchases.showManageSubscriptions()`;
+     that API is iOS-only, so Android opens the management URL (Play's
+     subscriptions page).
 - Supporting-since is kept in memory on `SubscriptionState` only — no schema
   change, no new kv_store key (a kv key would be personal data and would have
   to join `clearAllLocalUserData`).
