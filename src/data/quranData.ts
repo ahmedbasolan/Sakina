@@ -98,8 +98,6 @@ const quranContentData: Content[] = [
       "alladhīna qāla lahumu l-nāsu inna l-nāsa qad jamaʿū lakum fa-ikh'shawhum fazādahum īmānan waqālū ḥasbunā l-lahu waniʿ'ma l-wakīlu",
     englishTranslation:
       'Those who were told, "Indeed, the people have gathered against you, so fear them." But it increased them in faith, and they said, "Sufficient for us is Allah, and He is the best Disposer of affairs."',
-    translation:
-      'After the Battle of Uhud, the believers were warned that their enemies had regrouped against them. But instead of being afraid, their faith only grew stronger — and they declared: "Allah is enough for us; He is the best One to rely on."',
     source: 'Surah Ali Imran 3:173',
     audioKey: '3:173',
     whyThis: 'When threatened with overwhelming opposition after Uhud, the companions responded not with fear but with increased faith and this declaration. "Hasbunallah wa ni\'mal wakeel" — Allah is enough for us, and He is the best Disposer of affairs — is a statement the Prophet Ibrahim (AS) also made when thrown into the fire. [Bukhari 4563]',
@@ -171,8 +169,6 @@ const quranContentData: Content[] = [
       "qāla rajulāni mina alladhīna yakhāfūna anʿama l-lahu ʿalayhimā ud'khulū ʿalayhimu l-bāba fa-idhā dakhaltumūhu fa-innakum ghālibūna waʿalā l-lahi fatawakkalū in kuntum mu'minīna",
     englishTranslation:
       'Two men from those who feared Allah, upon whom Allah had bestowed favor, said, "Enter upon them through the gate. When you have entered it, you will be victorious. And upon Allah put your trust, if you are believers."',
-    translation:
-      'Two men among those who feared Allah and upon whom Allah had bestowed favour said: "Enter upon them through the gate. When you have entered it, you will be victorious. And upon Allah put your trust, if you are believers."',
     source: 'Surah Al-Maidah 5:23',
     audioKey: '5:23',
     whyThis: 'Tawakkul (reliance on Allah) is not just encouraged - it is a sign of true belief.',
@@ -189,8 +185,6 @@ const quranContentData: Content[] = [
       'wamā lanā allā natawakkala ʿalā l-lahi waqad hadānā subulanā walanaṣbiranna ʿalā mā ādhaytumūnā waʿalā l-lahi falyatawakkali l-mutawakilūna',
     englishTranslation:
       'And why should we not put our trust upon Allah, while He has guided us to our ways? And surely we will bear with patience whatever harm you may cause us. And upon Allah let those who trust put their trust.',
-    translation:
-      'The messengers of Allah replied to those who threatened them: "Why would we not trust in Allah, when He has already guided us? We will patiently endure whatever harm you cause us. Whoever truly trusts — let them place their trust in Allah alone."',
     source: 'Surah Ibrahim 14:12',
     audioKey: '14:12',
     whyThis: 'The messengers of Allah said this while being actively threatened and harmed. Their tawakkul was not passive — it was a declaration made under pressure. The verse shows that true reliance on Allah is what allows a believer to bear harm with patience rather than collapse under it.',
@@ -255,8 +249,6 @@ const quranContentData: Content[] = [
       "qālū a-innaka la-anta yūsufu qāla anā yūsufu wahādhā akhī qad manna l-lahu ʿalaynā innahu man yattaqi wayaṣbir fa-inna l-laha lā yuḍīʿu ajra l-muḥ'sinīna",
     englishTranslation:
       'They said, "Are you indeed Yusuf?" He said, "I am Yusuf, and this is my brother. Indeed, Allah has been gracious to us. Indeed, he who fears Allah and is patient — then indeed, Allah does not allow the reward of the good-doers to be lost."',
-    translation:
-      'They said, "Are you indeed Yusuf?" He said, "I am Yusuf, and this is my brother. Indeed, Allah has been gracious to us. Indeed, he who fears Allah and is patient — then indeed, Allah does not allow the reward of the good-doers to be lost."',
     source: 'Surah Yusuf 12:90',
     audioKey: '12:90',
     whyThis: 'Yusuf (AS) was thrown into a well, enslaved, and imprisoned — yet decades later he stood as a minister of Egypt and reunited with his family. His own words confirm the principle: taqwa (God-consciousness) plus sabr (patient perseverance) guarantees that nothing of your reward will be lost with Allah.',
@@ -317,8 +309,6 @@ const quranContentData: Content[] = [
       "yābaniyya idh'habū fataḥassasū min yūsufa wa-akhīhi walā tāy'asū min rawḥi l-lahi innahu lā yāy'asu min rawḥi l-lahi illā l-qawmu l-kāfirūna",
     englishTranslation:
       'O my sons, go and inquire about Yusuf and his brother, and do not despair of the mercy of Allah. Indeed, none despairs of the mercy of Allah except the disbelieving people.',
-    translation:
-      'O my sons, go and inquire about Yusuf and his brother, and do not despair of the mercy of Allah. Indeed, none despairs of the mercy of Allah except the disbelieving people.',
     source: 'Surah Yusuf 12:87',
     audioKey: '12:87',
     whyThis: "Yaqub (AS) taught his sons to never lose hope in Allah's mercy.",
@@ -347,8 +337,6 @@ const quranContentData: Content[] = [
     arabicText: '۞ وَأَيُّوبَ إِذْ نَادَىٰ رَبَّهُۥٓ أَنِّى مَسَّنِىَ ٱلضُّرُّ وَأَنتَ أَرْحَمُ ٱلرَّٰحِمِينَ ﴿83﴾',
     transliteration: 'wa-ayyūba idh nādā rabbahu annī massaniya l-ḍurru wa-anta arḥamu l-rāḥimīna',
     englishTranslation: 'And [mention] Job, when he called to his Lord, "Indeed, adversity has touched me, and You are the Most Merciful of the merciful."',
-    translation:
-      'And [mention] Job, when he called to his Lord, "Indeed, adversity has touched me, and You are the Most Merciful of the merciful."',
     source: 'Surah Al-Anbiya 21:83',
     audioKey: '21:83',
     whyThis: 'The powerful dua of Ayyub (AS) during his trial.',
@@ -439,8 +427,6 @@ const quranContentData: Content[] = [
       "wadhā l-nūni idh dhahaba mughāḍiban faẓanna an lan naqdira ʿalayhi fanādā fī l-ẓulumāti an lā ilāha illā anta sub'ḥānaka innī kuntu mina l-ẓālimīna",
     englishTranslation:
       'And Dhun-Nun, when he went while angry and thought that We would not decree upon him. Then he called out in the darkness, "There is no god except You; glory be to You. Indeed, I have been of the wrongdoers."',
-    translation:
-      'And remember the Man of the Fish — Prophet Yunus — when he departed in anger, thinking he would not be held to account. Then, from the depths of darkness, he cried out: "There is no god except You; glory be to You. Indeed, I have been among the wrongdoers."',
     source: 'Surah Al-Anbiya 21:87',
     audioKey: '21:87',
     whyThis: 'The Prophet ﷺ said: "The supplication of Dhun-Nun (Yunus) in the belly of the whale — no Muslim ever calls upon Allah with it in any matter except that Allah responds to them." [Tirmidhi 3505, graded hasan] Acknowledging your own shortcomings before making du\'a is itself a key to answered prayer.',
@@ -625,8 +611,6 @@ const quranContentData: Content[] = [
       "walā yatali ulū l-faḍli minkum wal-saʿati an yu'tū ulī l-qur'bā wal-masākīna wal-muhājirīna fī sabīli l-lahi walyaʿfū walyaṣfaḥū alā tuḥibbūna an yaghfira l-lahu lakum wal-lahu ghafūrun raḥīmun",
     englishTranslation:
       'And let not those of virtue among you and wealth swear not to give to their relatives, the needy, and the emigrants in the cause of Allah. Let them pardon and overlook. Would you not like that Allah should forgive you? And Allah is Oft-Forgiving, Most Merciful.',
-    translation:
-      'Those among you who have been blessed with wealth and goodness should not swear to stop helping their relatives, the poor, and those who sacrificed for Allah\'s cause. Rather, forgive and let it go. Would you not love for Allah to forgive you? And Allah is Oft-Forgiving, Most Merciful.',
     source: 'Surah An-Nur 24:22',
     audioKey: '24:22',
     whyThis: 'This verse was revealed about Abu Bakr (RA), who swore to stop financially supporting a relative after that person had spread slander against his daughter Aisha (RA). Allah\'s response was to ask: "Would you not love for Allah to forgive you?" The question is rhetorical — and personal. Forgiving those who wrong us unlocks Allah\'s forgiveness for us.',
@@ -659,8 +643,6 @@ const quranContentData: Content[] = [
       "fabimā naqḍihim mīthāqahum laʿannāhum wajaʿalnā qulūbahum qāsiyatan yuḥarrifūna l-kalima ʿan mawāḍiʿihi wanasū ḥaẓẓan mimmā dhukkirū bihi walā tazālu taṭṭaliʿu ʿalā khāinatin min'hum illā qalīlan min'hum fa-uʿ'fu ʿanhum wa-iṣ'faḥ inna l-laha yuḥibbu l-muḥ'sinīna",
     englishTranslation:
       'So for their breaking of the covenant, We cursed them and made their hearts hard. They distort words from their places and forgot a part of what they were reminded of. And you will still observe treachery from them, except a few. But forgive them and overlook. Indeed, Allah loves the good-doers.',
-    translation:
-      'Because certain people among the Children of Israel broke their covenant with Allah, their hearts became hardened. They twisted the words of scripture, and forgot much of what they were taught. You will still see betrayal from many of them — but forgive them, and let it go. Indeed, Allah loves those who do good.',
     source: 'Surah Al-Maidah 5:13',
     audioKey: '5:13',
     whyThis: 'Pardoning and overlooking makes you among those Allah loves.',
@@ -709,8 +691,6 @@ const quranContentData: Content[] = [
       'qul lilladhīna āmanū yaghfirū lilladhīna lā yarjūna ayyāma l-lahi liyajziya qawman bimā kānū yaksibūna',
     englishTranslation:
       'Say to those who believe to forgive those who do not hope for the days of Allah, that He may recompense a people for what they used to earn.',
-    translation:
-      'Tell the believers: forgive those who do not fear the consequences of their actions before Allah — so that He may repay each group for what they have earned. Leave justice to Him.',
     source: 'Surah Al-Jathiyah 45:14',
     audioKey: '45:14',
     whyThis: 'This verse instructs believers to forgive those who do not fear the consequences of their actions — people who wrong others without accountability. The reason given is that Allah Himself will repay each group for what they earned. Forgiving is not letting injustice go unanswered; it is leaving the answer to Allah.',
@@ -745,8 +725,6 @@ const quranContentData: Content[] = [
       'illā man tāba waāmana waʿamila ʿamalan ṣāliḥan fa-ulāika yubaddilu l-lahu sayyiātihim ḥasanātin wakāna l-lahu ghafūran raḥīman',
     englishTranslation:
       'Except those who repent, believe, and do righteous deeds — for those, Allah will replace their evil deeds with good ones. And Allah is Oft-Forgiving, Most Merciful.',
-    translation:
-      'But those who sincerely repent, renew their faith, and follow it up with good deeds — for them, Allah will transform their past sins into good deeds on their record. And ever is Allah Oft-Forgiving, Most Merciful.',
     source: 'Surah Al-Furqan 25:70',
     audioKey: '25:70',
     whyThis: "True repentance doesn't just erase sins - it transforms them into good deeds.",
@@ -832,8 +810,6 @@ const quranContentData: Content[] = [
       "walaqad ātaynā luq'māna l-ḥik'mata ani ush'kur lillahi waman yashkur fa-innamā yashkuru linafsihi waman kafara fa-inna l-laha ghaniyyun ḥamīdun",
     englishTranslation:
       'And We certainly gave Luqman wisdom, saying, "Be grateful to Allah." And whoever is grateful is grateful for himself. And whoever is ungrateful, then indeed Allah is Free of need, Praiseworthy.',
-    translation:
-      'And We certainly gave Luqman wisdom, saying, "Be grateful to Allah." And whoever is grateful is grateful for himself. And whoever is ungrateful, then indeed Allah is Free of need, Praiseworthy.',
     source: 'Surah Luqman 31:12',
     audioKey: '31:12',
     whyThis: 'Wisdom and gratitude go hand in hand - gratitude benefits the one who expresses it.',
@@ -850,8 +826,6 @@ const quranContentData: Content[] = [
       "qāla alladhī ʿindahu ʿil'mun mina l-kitābi anā ātīka bihi qabla an yartadda ilayka ṭarfuka falammā raāhu mus'taqirran ʿindahu qāla hādhā min faḍli rabbī liyabluwanī a-ashkuru am akfuru waman shakara fa-innamā yashkuru linafsihi waman kafara fa-inna rabbī ghaniyyun karīmun",
     englishTranslation:
       'One who had knowledge from the Scripture said, "I will bring it to you before your glance returns to you." And when he saw it placed before him, he said, "This is from the favor of my Lord, to test me whether I am grateful or ungrateful. And whoever is grateful — it is only for his own soul. And whoever is ungrateful, then indeed my Lord is Self-sufficient, Noble."',
-    translation:
-      'One who had knowledge from the Scripture said, "I will bring it to you before your glance returns to you." And when he saw it placed before him, he said, "This is from the favour of my Lord, to test me whether I will be grateful or ungrateful. And whoever is grateful — it is only for his own soul. And whoever is ungrateful, then indeed my Lord is Self-sufficient, Most Generous."',
     source: 'Surah An-Naml 27:40',
     audioKey: '27:40',
     whyThis: 'Sulaiman (AS) recognized that blessings are tests of gratitude.',
@@ -868,8 +842,6 @@ const quranContentData: Content[] = [
       "yaʿmalūna lahu mā yashāu min maḥārība watamāthīla wajifānin kal-jawābi waqudūrin rāsiyātin iʿ'malū āla dāwūda shuk'ran waqalīlun min ʿibādiya l-shakūru",
     englishTranslation:
       'They made for him what he willed of elevated chambers, statues, bowls like reservoirs, and cooking pots firmly set. "Work, O family of Dawood, in gratitude." But few of My slaves are grateful.',
-    translation:
-      'They made for him what he willed of elevated chambers, statues, bowls like reservoirs, and cooking pots firmly set. "Work, O family of Dawood, in gratitude." But few of My servants are grateful.',
     source: 'Surah Saba 34:13',
     audioKey: '34:13',
     whyThis: 'True gratitude is expressed through action, not just words. Few achieve this level.',
@@ -1041,8 +1013,6 @@ const quranContentData: Content[] = [
       "waquli iʿ'malū fasayarā l-lahu ʿamalakum warasūluhu wal-mu'minūna wasaturaddūna ilā ʿālimi l-ghaybi wal-shahādati fayunabbi-ukum bimā kuntum taʿmalūna",
     englishTranslation:
       'And say, "Do, for Allah will see your deed, and His Messenger, and the believers. And you will be brought back to the Knower of the unseen and the seen, and He will inform you of what you used to do."',
-    translation:
-      'Say: "Act! For Allah will see your deeds, and so will His Prophet and the believers. Then you will be returned to the One who knows all things — the hidden and the visible — and He will inform you of everything you used to do."',
     source: 'Surah At-Tawbah 9:105',
     audioKey: '9:105',
     whyThis: 'This verse was revealed to motivate believers to act rather than wait passively. Allah, His Messenger ﷺ, and the believers are all witnesses to your deeds — then you return to Allah who knows the unseen and the visible. Your efforts are not going unnoticed; they are being witnessed at multiple levels.',
@@ -1138,8 +1108,6 @@ const quranContentData: Content[] = [
       "wa-anzalnā ilayka l-kitāba bil-ḥaqi muṣaddiqan limā bayna yadayhi mina l-kitābi wamuhayminan ʿalayhi fa-uḥ'kum baynahum bimā anzala l-lahu walā tattabiʿ ahwāahum ʿammā jāaka mina l-ḥaqi likullin jaʿalnā minkum shir'ʿatan wamin'hājan walaw shāa l-lahu lajaʿalakum ummatan wāḥidatan walākin liyabluwakum fī mā ātākum fa-is'tabiqū l-khayrāti ilā l-lahi marjiʿukum jamīʿan fayunabbi-ukum bimā kuntum fīhi takhtalifūna",
     englishTranslation:
       'And We revealed to you the Book in truth, confirming what was before it of the Scripture and as a guardian over it. So judge between them by what Allah has revealed, and do not follow their vain desires away from the truth that has come to you. For each of you We have made a law and a clear way. And if Allah had willed, He would have made you one community, but to test you in what He has given you; so race to good. To Allah you will all return, and He will inform you concerning that over which you used to differ.',
-    translation:
-      'We revealed the Quran to you in truth, confirming the scriptures before it. Judge between people by what Allah has revealed, and do not follow anyone\'s desires over the truth. For each community, We made a path and a way of life. Had Allah willed, He would have made you all one nation — but He tests you through what He has given you. So compete with one another in doing good; to Allah you will all return, and He will clarify everything you disagreed about.',
     source: 'Surah Al-Maidah 5:48',
     audioKey: '5:48',
     whyThis: 'Competition in goodness - use your energy to outdo others in positive deeds.',
@@ -1204,8 +1172,6 @@ const quranContentData: Content[] = [
       "fī biḍ'ʿi sinīna lillahi l-amru min qablu wamin baʿdu wayawma-idhin yafraḥu l-mu'minūna binaṣri l-lahi yanṣuru man yashāu wahuwa l-ʿazīzu l-raḥīmu",
     englishTranslation:
       'Within a few years. To Allah belongs the command before and after. And that day the believers will rejoice in the help of Allah. He helps whom He wills. And He is the All-Mighty, the Most Merciful.',
-    translation:
-      'Within a few years. To Allah belongs the command before and after. And that day the believers will rejoice in the help of Allah. He helps whom He wills. And He is the All-Mighty, the Most Merciful.',
     source: 'Surah Ar-Rum 30:4-5',
     audioKey: '30:4-5',
     whyThis: 'When the Romans were defeated and the situation looked hopeless, the Quran predicted their comeback victory "within a few years" — and it came to pass. This verse is a reminder that Allah holds all command before and after every event. What looks like a final defeat is often only a turning point.',
@@ -1222,8 +1188,6 @@ const quranContentData: Content[] = [
       'fariḥīna bimā ātāhumu l-lahu min faḍlihi wayastabshirūna bi-alladhīna lam yalḥaqū bihim min khalfihim allā khawfun ʿalayhim walā hum yaḥzanūna',
     englishTranslation:
       'Rejoicing in what Allah has bestowed upon them of His bounty, and they receive good tidings about those yet to join them — that there will be no fear upon them, nor will they grieve.',
-    translation:
-      'Those who gave their lives for Allah\'s cause are alive with their Lord — rejoicing in what He has given them. They are delighted for the believers still living on earth: that they, too, will have no fear, nor will they grieve.',
     source: 'Surah Ali Imran 3:170',
     audioKey: '3:170',
     whyThis: 'The martyrs in Allah\'s cause are described as alive, rejoicing, and actively sending good news to those still on earth. This verse is a reminder that what appears to be loss in this life is often a gain that cannot yet be seen. The joy of those who have returned to Allah is real, and so is the promise awaiting every sincere believer.',
@@ -1256,8 +1220,6 @@ const quranContentData: Content[] = [
       "wamā jaʿalahu l-lahu illā bush'rā walitaṭma-inna bihi qulūbukum wamā l-naṣru illā min ʿindi l-lahi inna l-laha ʿazīzun ḥakīmun",
     englishTranslation:
       'And Allah made it not but as good tidings, and so that your hearts would be at rest. And there is no victory except from Allah. Indeed, Allah is All-Mighty, All-Wise.',
-    translation:
-      'Allah sent the angels at the Battle of Badr only as good news, and to put your hearts at ease — for victory comes from no one but Allah. Indeed, Allah is All-Mighty, All-Wise.',
     source: 'Surah Al-Anfal 8:10',
     audioKey: '8:10',
     whyThis: 'Before the Battle of Badr, Allah sent a calming rain and a sense of tranquility to the believers to help them sleep and recover. This verse reminds us that divine reassurance — sakinah — is real and tangible. Victory and peace both come from Allah alone; our part is to receive them with trust.',
@@ -1274,8 +1236,6 @@ const quranContentData: Content[] = [
       "thumma anzala l-lahu sakīnatahu ʿalā rasūlihi waʿalā l-mu'minīna wa-anzala junūdan lam tarawhā waʿadhaba alladhīna kafarū wadhālika jazāu l-kāfirīna",
     englishTranslation:
       'Then Allah sent down His tranquility upon His Messenger and upon the believers, and sent down forces which you did not see, and He punished those who disbelieved. And that is the recompense of the disbelievers.',
-    translation:
-      'At the Battle of Hunayn, when the believers initially panicked and fled, Allah sent down His tranquility upon His Prophet and upon the believers. He sent down forces they could not see, and turned the tide against the disbelievers — that is how He repays those who reject faith.',
     source: 'Surah At-Tawbah 9:26',
     audioKey: '9:26',
     whyThis: 'At Hunayn, the believers initially scattered due to overconfidence. Yet Allah sent His sakinah (tranquility) and unseen armies to restore them. This shows that calm and steadiness in difficult moments are not something we manufacture — they are gifts that Allah descends upon those who turn back to Him.',
@@ -1292,8 +1252,6 @@ const quranContentData: Content[] = [
       "illā tanṣurūhu faqad naṣarahu l-lahu idh akhrajahu alladhīna kafarū thāniya ith'nayni idh humā fī l-ghāri idh yaqūlu liṣāḥibihi lā taḥzan inna l-laha maʿanā fa-anzala l-lahu sakīnatahu ʿalayhi wa-ayyadahu bijunūdin lam tarawhā wajaʿala kalimata alladhīna kafarū l-suf'lā wakalimatu l-lahi hiya l-ʿul'yā wal-lahu ʿazīzun ḥakīmun",
     englishTranslation:
       'If you do not help him, Allah has already helped him when those who disbelieved drove him out as one of two, when they were in the cave and he said to his companion, "Do not grieve; indeed, Allah is with us." Then Allah sent down His tranquility upon him and supported him with forces you did not see, and made the word of those who disbelieved the lowest, while the word of Allah is the highest. And Allah is All-Mighty, All-Wise.',
-    translation:
-      'Even if you do not help the Prophet Muhammad ﷺ — Allah already helped him. When the disbelievers of Makkah drove him out, he hid in a cave with his companion Abu Bakr and told him: "Do not grieve; Allah is with us." Then Allah sent down His tranquility upon him, supported him with unseen forces, and made the word of the disbelievers the lowest — while the word of Allah remains the highest. And Allah is All-Mighty, All-Wise.',
     source: 'Surah At-Tawbah 9:40',
     audioKey: '9:40',
     whyThis: 'In the cave of Thawr, the Prophet ﷺ told Abu Bakr (RA) not to grieve — because Allah was with them. Allah responded by sending His sakinah and unseen support. This moment, among the most dangerous the Prophet ﷺ faced, became the model for every believer: when you say "Allah is with us," trust it completely.',
@@ -1308,8 +1266,6 @@ const quranContentData: Content[] = [
     transliteration: 'wamā yulaqqāhā illā alladhīna ṣabarū wamā yulaqqāhā illā dhū ḥaẓẓin ʿaẓīmin',
     englishTranslation:
       'And it is not granted except to those who are patient, and it is not granted except to one having a great fortune.',
-    translation:
-      'The ability to respond to evil with good — this quality is granted only to those who are truly patient; only to those whom Allah has blessed with an immense fortune of character.',
     source: 'Surah Fussilat 41:35',
     audioKey: '41:35',
     whyThis: 'The verse makes clear that responding to harm with goodness is not a natural human reflex — it is a special quality that Allah grants. It is described as a "great fortune" (hazz azeem), placing it among the highest of character traits. Anger is natural; choosing ihsan in response to harm is divine.',
@@ -1344,8 +1300,6 @@ const quranContentData: Content[] = [
       "fa-idhā balaghna ajalahunna fa-amsikūhunna bimaʿrūfin aw fāriqūhunna bimaʿrūfin wa-ashhidū dhaway ʿadlin minkum wa-aqīmū l-shahādata lillahi dhālikum yūʿaẓu bihi man kāna yu'minu bil-lahi wal-yawmi l-ākhiri waman yattaqi l-laha yajʿal lahu makhrajan",
     englishTranslation:
       'Then when they have reached their term, either retain them with kindness or part with them with kindness. And bring to witness two just men among you, and establish the testimony for Allah. That is instructed to whoever believes in Allah and the Last Day. And whoever fears Allah — He will make for him a way out.',
-    translation:
-      'In matters of marriage: either stay together with kindness, or part with kindness — and let two trustworthy people witness the decision. This is the counsel for whoever believes in Allah and the Last Day. And whoever is mindful of Allah — He will always make a way out for them.',
     source: 'Surah At-Talaq 65:2',
     audioKey: '65:2',
     whyThis: 'Allah promises a way out for those who are mindful of Him.',
@@ -1532,8 +1486,6 @@ const quranContentData: Content[] = [
       "qul lā amliku linafsī nafʿan walā ḍarran illā mā shāa l-lahu walaw kuntu aʿlamu l-ghayba la-is'takthartu mina l-khayri wamā massaniya l-sūu in anā illā nadhīrun wabashīrun liqawmin yu'minūna",
     englishTranslation:
       'Say, "I hold not for myself the power of benefit or harm, except what Allah has willed. And if I knew the unseen, I could have acquired much good, and no harm would have touched me. I am not except a warner and a bringer of good tidings to a people who believe."',
-    translation:
-      'The Prophet Muhammad ﷺ was told to say: "I have no power to benefit or harm even myself — only what Allah wills. If I knew the future, I would have gathered only good for myself, and no hardship would have touched me. I am only a messenger: one who warns, and one who brings good news to those who believe."',
     source: "Surah Al-A'raf 7:188",
     audioKey: '7:188',
     whyThis: 'Let go of the illusion of control - only what Allah wills happens.',
@@ -1581,8 +1533,6 @@ const quranContentData: Content[] = [
       'wamina l-shayāṭīni man yaghūṣūna lahu wayaʿmalūna ʿamalan dūna dhālika wakunnā lahum ḥāfiẓīna wa-ayyūba idh nādā rabbahu annī massaniya l-ḍuru wa-anta arḥamu l-rāḥimīna',
     englishTranslation:
       'And of the devils were some who would dive for him and do other work, and We were of them Guardians. And Ayub, when he called to his Lord, "Indeed, adversity has touched me, and You are the Most Merciful of the merciful."',
-    translation:
-      'Among the jinn, some would dive into the sea for Prophet Sulayman (Solomon) and carry out other tasks; and We kept watch over them all. And remember Prophet Ayyub (Job), when he cried out to his Lord: "Hardship has truly afflicted me — and You are the Most Merciful of all who show mercy."',
     source: 'Surah Al-Anbiya 21:82-83',
     audioKey: '21:82-83',
     whyThis: "The du'a of Ayyub (AS) - acknowledge the hardship, then turn to the Most Merciful.",
@@ -1647,8 +1597,6 @@ const quranContentData: Content[] = [
       "laqad raḍiya l-lahu ʿani l-mu'minīna idh yubāyiʿūnaka taḥta l-shajarati faʿalima mā fī qulūbihim fa-anzala l-sakīnata ʿalayhim wa-athābahum fatḥan qarīban",
     englishTranslation:
       'Certainly was Allah pleased with the believers when they pledged allegiance to you under the tree, and He knew what was in their hearts, so He sent down tranquility upon them and rewarded them with a near victory.',
-    translation:
-      'Allah was truly pleased with the believers when they pledged their loyalty to the Prophet Muhammad ﷺ at Hudaybiyyah, beneath a tree. He knew the sincerity in their hearts; so He sent down tranquility upon them, and rewarded them with a victory that was soon to come.',
     source: 'Surah Al-Fath 48:18',
     audioKey: '48:18',
     whyThis: 'At Hudaybiyyah, the companions pledged their lives to the Prophet ﷺ beneath a tree. Allah responded to the sincerity He saw in their hearts by sending sakinah (tranquility) upon them and promising a near victory. Sincerity of heart draws tranquility from Allah — and the victory that follows belongs to Him to give.',
@@ -1697,8 +1645,6 @@ const quranContentData: Content[] = [
       "alladhīna tatawaffāhumu l-malāikatu ṭayyibīna yaqūlūna salāmun ʿalaykumu ud'khulū l-janata bimā kuntum taʿmalūna",
     englishTranslation:
       'Those whom the angels take in death while they are pure, saying, "Peace be upon you. Enter Paradise for what you used to do."',
-    translation:
-      'The righteous — those whose souls the angels take gently, while they are in a state of goodness — the angels greet them, saying: "Peace be upon you. Enter Paradise, as a reward for the good you used to do."',
     source: 'Surah An-Nahl 16:32',
     audioKey: '16:32',
     whyThis: 'The moment of death is described here as entirely peaceful for the righteous — the angels greet them with salam. This verse is a reminder that the life you build now shapes the manner in which you will leave it. A heart at peace in this life is being prepared for a peaceful return to Allah.',
@@ -1723,8 +1669,6 @@ const quranContentData: Content[] = [
     arabicText: 'سَلَـٰمٌ هِىَ حَتَّىٰ مَطْلَعِ ٱلْفَجْرِ ﴿5﴾',
     transliteration: 'salāmun hiya ḥattā maṭlaʿi l-fajri',
     englishTranslation: 'Peace it is, until the emergence of dawn.',
-    translation:
-      'Laylat al-Qadr — the Night of Power; a single night in Ramadan, worth more than a thousand months — is nothing but peace: from dusk, until the break of dawn.',
     source: 'Surah Al-Qadr 97:5',
     audioKey: '97:5',
     whyThis: 'Laylatul Qadr is pure peace - a night that is entirely salam until dawn.',
@@ -1737,8 +1681,6 @@ const quranContentData: Content[] = [
     arabicText: 'فَسَلَـٰمٌۭ لَّكَ مِنْ أَصْحَـٰبِ ٱلْيَمِينِ ﴿91﴾',
     transliteration: 'fasalāmun laka min aṣḥābi l-yamīni',
     englishTranslation: 'Then peace for you, from the companions of the right.',
-    translation:
-      'For the righteous — those destined for Paradise — there is nothing but peace; a greeting of "Salam."',
     source: "Surah Al-Waqi'ah 56:91",
     audioKey: '56:91',
     whyThis: 'On the Day of Judgment, when the companions of the right hand receive their books, they are met with salam — pure peace. This is the ultimate destination of every striving believer: not only freedom from punishment, but the gift of divine peace itself as their welcome.',
@@ -1839,8 +1781,6 @@ const quranContentData: Content[] = [
     arabicText: 'قَالَ رَبِّ ٱشْرَحْ لِى صَدْرِى وَيَسِّرْ لِىٓ أَمْرِى ﴿25-26﴾',
     transliteration: "qāla rabbi ish'raḥ lī ṣadrī wayassir lī amrī",
     englishTranslation: 'He said, "My Lord, expand for me my breast, and ease for me my task."',
-    translation:
-      'Prophet Musa (Moses) — when Allah gave him the mission to confront Pharaoh — prayed: "My Lord, open up my heart for me, and make my task easy."',
     source: 'Surah Taha 20:25-26',
     audioKey: '20:25-26',
     whyThis: 'Musa (AS) was given one of the most daunting missions in history — to stand before Pharaoh — yet his first response was to make du\'a for an open heart and easy task. This is a model for every believer who feels overwhelmed by what lies ahead: begin with du\'a, ask Allah to prepare you internally before you engage externally.',
@@ -1857,8 +1797,6 @@ const quranContentData: Content[] = [
       'fasatadhkurūna mā aqūlu lakum wa-ufawwiḍu amrī ilā l-lahi inna l-laha baṣīrun bil-ʿibādi',
     englishTranslation:
       'And you will remember what I say to you. And I entrust my affair to Allah. Indeed, Allah is All-Seeing of His slaves.',
-    translation:
-      'A believing man from Pharaoh\'s own people — who had been hiding his faith — stood up and warned them: "You will remember what I am telling you. As for me, I entrust my affair entirely to Allah. Indeed, Allah sees all that His servants do."',
     source: 'Surah Ghafir 40:44',
     audioKey: '40:44',
     whyThis: 'A man who had hidden his faith in the court of Pharaoh finally spoke up, warned his people, and then said: "I entrust my affair to Allah." He did what was required of him — spoke truth — then released the outcome. This is the practical meaning of tawakkul: act with what you have, then place the results with Allah.',
@@ -1903,8 +1841,6 @@ const quranContentData: Content[] = [
     arabicText: 'قَالَ لَا تَخَافَآ ۖ إِنَّنِى مَعَكُمَآ أَسْمَعُ وَأَرَىٰ ﴿46﴾',
     transliteration: 'qāla lā takhāfā innanī maʿakumā asmaʿu wa-arā',
     englishTranslation: 'He said, "Do not fear. Indeed, I am with you both; I hear and I see."',
-    translation:
-      'When Allah sent Prophet Musa and his brother Harun to confront Pharaoh, they were afraid. Allah reassured them: "Do not fear. I am with you both; I hear everything, and I see everything."',
     source: 'Surah Taha 20:46',
     audioKey: '20:46',
     whyThis: 'Allah is witnessing your struggle directly. You are never unseen or unheard.',
@@ -1922,8 +1858,6 @@ const quranContentData: Content[] = [
       'wamā kāna l-lahu liyuʿadhibahum wa-anta fīhim wamā kāna l-lahu muʿadhibahum wahum yastaghfirūna',
     englishTranslation:
       'But Allah would not punish them while you are among them, and Allah would not punish them while they seek forgiveness.',
-    translation:
-      'Allah would not punish the people of Makkah while the Prophet Muhammad ﷺ was still living among them; and Allah would not punish any people so long as they are seeking His forgiveness.',
     source: 'Surah Al-Anfal 8:33',
     audioKey: '8:33',
     whyThis: 'Istighfar (seeking forgiveness) is a literal shield from difficulty and guilt.',
@@ -1957,8 +1891,6 @@ const quranContentData: Content[] = [
       'alladhī aḥallanā dāra l-muqāmati min faḍlihi lā yamassunā fīhā naṣabun walā yamassunā fīhā lughūbun',
     englishTranslation:
       'He Who has settled us in the Home of Eternity out of His bounty. No fatigue touches us therein, nor does weariness.',
-    translation:
-      'The people of Paradise will say: "It is Allah who, by His grace, has settled us in the eternal Home. No tiredness touches us here; no exhaustion reaches us."',
     source: 'Surah Fatir 35:35',
     audioKey: '35:35',
     whyThis: 'The people of Paradise describe their state by what is absent: no fatigue, no weariness. This is the final destination — a place where the exhaustion of this world has a complete and permanent end. When you feel drained by this life, this verse reminds you that all of that effort is building toward a rest that never ends.',
@@ -2033,8 +1965,6 @@ const quranContentData: Content[] = [
       "yāayyuhā l-muzamilu qumi al-layla illā qalīlan niṣ'fahu awi unquṣ min'hu qalīlan aw zid ʿalayhi warattili l-qur'āna tartīlan",
     englishTranslation:
       'O you who wraps himself, stand in prayer at night, except for a little — half of it, or lessen from it a little, or add to it — and recite the Quran with measured, rhythmic recitation.',
-    translation:
-      'Allah addressed the Prophet Muhammad ﷺ — who was wrapped in his garments after receiving revelation — and said: "Rise, and pray through the night — except a little. Half of it, or a bit less, or a bit more; and recite the Quran slowly and beautifully."',
     source: 'Surah Al-Muzzammil 73:1-4',
     audioKey: '73:1-4',
     whyThis: 'Even in fatigue, a portion of night prayer revives the soul. Start small.',
@@ -2163,8 +2093,6 @@ const quranContentData: Content[] = [
       "wal-ḍuḥā wal-layli idhā sajā mā waddaʿaka rabbuka wamā qalā walal-ākhiratu khayrun laka mina l-ūlā walasawfa yuʿ'ṭīka rabbuka fatarḍā",
     englishTranslation:
       'By the morning brightness and by the night when it covers with darkness, your Lord has not taken leave of you, [O Muhammad], nor has He detested [you]. And the Hereafter is better for you than the first [life]. And your Lord is going to give you, and you will be satisfied.',
-    translation:
-      'After revelation had paused for a time — and the Prophet Muhammad ﷺ feared he had been abandoned — Allah swore by the morning light and the still of night, reassuring him: "Your Lord has not left you, nor does He dislike you. What is coming is far better than what has passed; and your Lord will give you so much, that you will be completely satisfied."',
     source: 'Surah Ad-Duha 93:1-5',
     audioKey: '93:1-5',
     whyThis: 'Surah Ad-Duha reads like a love letter from Allah to a soul in pain. Ibn Kathir records that it was revealed after revelation paused for a period, during which the Prophet ﷺ was deeply distressed — feeling forgotten, even silenced. Allah swore by the morning light — a symbol of radiance — and the still night — a symbol of calm — that He had not abandoned nor displeased His prophet. Every promise in this surah was fulfilled in the Prophet\'s ﷺ life. [Tafsir Ibn Kathir, Surah Ad-Duha]',
@@ -2197,8 +2125,6 @@ const quranContentData: Content[] = [
       "qāla rabbi ish'raḥ lī ṣadrī wayassir lī amrī wa-iḥ'lul ʿuqdatan min lisānī yafqahū qawlī",
     englishTranslation:
       '[Moses] said, "My Lord, expand for me my breast [with assurance] and ease for me my task and untie the knot from my tongue that they may understand my speech."',
-    translation:
-      'Prophet Musa (Moses) — nervous before his mission to confront Pharaoh — prayed: "My Lord, open up my heart for me; make my task easy; and remove the difficulty from my speech, so that people can understand what I say."',
     source: 'Surah Taha 20:25-28',
     audioKey: '20:25-28',
     whyThis: 'Musa (AS) asked for three things before his mission: an open heart, ease in his task, and clarity in speech. He knew that the internal barriers — fear, confusion, inadequacy — were the real obstacles, not the external challenge itself. This du\'a is the believer\'s prayer before any daunting task.',
@@ -2260,8 +2186,6 @@ const quranContentData: Content[] = [
       "ut'lu mā ūḥiya ilayka mina l-kitābi wa-aqimi l-ṣalata inna l-ṣalata tanhā ʿani l-faḥshāi wal-munkari waladhik'ru l-lahi akbaru wal-lahu yaʿlamu mā taṣnaʿūna",
     englishTranslation:
       'Recite what has been revealed to you of the Book, and establish prayer. Indeed, prayer prevents immorality and evil deeds, and surely the remembrance of Allah is greatest. And Allah knows what you do.',
-    translation:
-      'Recite what has been revealed to you of the Quran, and establish your prayer. Truly, prayer keeps you away from shameful and evil deeds; and the remembrance of Allah is the greatest thing of all. Allah knows everything you do.',
     source: 'Surah Al-Ankabut 29:45',
     audioKey: '29:45',
     whyThis: 'A reminder that true prayer is a shield against immorality and is the greatest form of remembrance.',
@@ -2490,8 +2414,6 @@ const quranContentData: Content[] = [
       "rabbanā innī askantu min dhurriyyatī biwādin ghayri dhī zarʿin ʿinda baytika l-muḥarami rabbanā liyuqīmū l-ṣalata fa-ij'ʿal afidatan mina l-nāsi tahwī ilayhim wa-ur'zuq'hum mina l-thamarāti laʿallahum yashkurūna",
     englishTranslation:
       'Our Lord, indeed I have settled some of my offspring in a valley without cultivation, near Your Sacred House, our Lord, that they may establish prayer. So make hearts among the people incline toward them, and provide them with fruits so that they may be grateful.',
-    translation:
-      'Prophet Ibrahim (Abraham) — after leaving his wife Hajar and infant son Ismail in the barren desert of Makkah, near the Sacred Ka\'bah — prayed: "Our Lord, I have settled some of my family in a valley with no crops, near Your Holy House, so they may establish prayer. Make people\'s hearts drawn to them; and provide them with fruits, so they may give thanks."',
     source: 'Surah Ibrahim 14:37',
     audioKey: '14:37',
     whyThis: 'Ibrahim (AS) left his family in a barren valley with no crops, no water, no infrastructure — and made du\'a for provision. Today Makkah is one of the most visited places on earth. His du\'a for his family\'s sustenance was answered across centuries. This verse shows that genuine du\'a for rizq, rooted in tawakkul, is fulfilled by Allah even in the most unlikely circumstances.',

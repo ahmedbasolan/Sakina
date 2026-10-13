@@ -341,7 +341,7 @@ const GuidanceScreen: React.FC = () => {
 
   const handleShareVerse = () => {
     handleShare(
-      experience.content.translation || experience.content.englishTranslation || '',
+      experience.content.englishTranslation || '',
       experience.content.source || '',
       experience.content.arabicText,
       experience.content.transliteration,
@@ -399,7 +399,7 @@ const GuidanceScreen: React.FC = () => {
             {currentLayer === 0 && (
               <VerseLayer
                 arabic={experience.content.arabicText || ''}
-                translation={experience.content.translation || experience.content.englishTranslation}
+                translation={experience.content.englishTranslation}
                 reference={experience.content.source || ''}
                 transliteration={experience.content.transliteration}
                 showTransliteration={preferences.showTransliteration}
