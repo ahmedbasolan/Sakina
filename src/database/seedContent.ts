@@ -469,7 +469,12 @@ import type { Content, ContentAngle } from '../types';
 //      only what Muslim 591 / Nasa'i 1319 say), and hadith_imam_2/8/9/10/13 whyThis + descriptions. Men's tafsir
 //      credits corrected to what the entries say: d6 (8:2), d8 (2:238), d9 (17:78), d10 (2:43), d11 (4:28),
 //      d12 (21:107).
-const SEED_VERSION = 64;
+// v65: q_angle_97_5_calm (Calm, 97:5) credited al-Sa'di with calling this peace "not just an absence of
+//      harm but an active, descending tranquility" (his entry says the opposite: safe from every harm and
+//      evil, because its good is so abundant) and Ibn Kathir with "from the moment the sun sets" (al-Sa'di's
+//      point, not his). Card rewritten in direct address with only what the entries say; the mindset step
+//      no longer badges tafsir as quran_dua; both Bukhari 1901 quotations now use the published English.
+const SEED_VERSION = 65;
 // Separate keys per content type — Quran and Hadith data change independently,
 // and each seeder used to write the SAME key at the end of its run. Since
 // initializeDatabase() awaits seedQuranContent() before seedHadithContent(),
