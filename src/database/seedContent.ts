@@ -474,7 +474,9 @@ import type { Content, ContentAngle } from '../types';
 //      evil, because its good is so abundant) and Ibn Kathir with "from the moment the sun sets" (al-Sa'di's
 //      point, not his). Card rewritten in direct address with only what the entries say; the mindset step
 //      no longer badges tafsir as quran_dua; both Bukhari 1901 quotations now use the published English.
-const SEED_VERSION = 65;
+// v66: quran_2_257 englishTranslation rendered Taghut as "the evil ones", a vaguer term than the
+//      source's (CLAUDE.md Quran rule 2); now "Taghut", as Sahih International has it.
+const SEED_VERSION = 66;
 // Separate keys per content type — Quran and Hadith data change independently,
 // and each seeder used to write the SAME key at the end of its run. Since
 // initializeDatabase() awaits seedQuranContent() before seedHadithContent(),
