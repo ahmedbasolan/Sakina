@@ -259,10 +259,14 @@ const VERSE_POOL: Omit<DailyVerse, 'dateKey'>[] = [
     ref: 'Al-A\'raf 7:156',
   },
   {
-    arabic: 'يَكَادُ ٱلْبَرْقُ يَخْطَفُ أَبْصَٰرَهُمْ ۖ كُلَّمَآ أَضَآءَ لَهُم مَّشَوْا۟ فِيهِ وَإِذَآ أَظْلَمَ عَلَيْهِمْ قَامُوا۟ ۚ وَلَوْ شَآءَ ٱللَّهُ لَذَهَبَ بِسَمْعِهِمْ وَأَبْصَٰرِهِمْ ۚ إِنَّ ٱللَّهَ عَلَىٰ كُلِّ شَىْءٍۢ قَدِيرٌۭ ﴿20﴾',
-    transliteration: "Yakaadul barqu yakhtafu absaarahum kullamaaa adaaa'a lahum mashaw feehi wa izaaa azlama 'alaihim qaamoo; wa law shaaa'al laahu lazahaba bisam'ihim wa absaarihim; innal laaha 'alaa kulli shai'in Qadeer",
-    translation: 'The lightning almost snatches away their sight. Whenever it flashes for them, they walk on; but when it darkens over them, they stand still. Had Allah willed, He could have taken away their hearing and their sight. Indeed, Allah has power over all things.',
-    ref: 'Al-Baqarah 2:20',
+    // Replaced 2:20 (2026-10-13): the lightning parable describes the hypocrites
+    // and read oddly as a stand-alone verse of the day (CLAUDE.md Quran rule 3).
+    // 9:51 from api.alquran.cloud (en.transliteration, en.sahih verbatim); the
+    // Arabic is copied from quran_9_51 in quranData.ts and equals quran-uthmani.
+    arabic: 'قُل لَّن يُصِيبَنَآ إِلَّا مَا كَتَبَ ٱللَّهُ لَنَا هُوَ مَوْلَىٰنَا ۚ وَعَلَى ٱللَّهِ فَلْيَتَوَكَّلِ ٱلْمُؤْمِنُونَ ﴿51﴾',
+    transliteration: "Qul lany-yuseebanaaa illaa maa katabal laahu lanaa Huwa mawlaanaa; wa 'alal laahi falyatawak kalimu 'minoon",
+    translation: 'Say, "Never will we be struck except by what Allah has decreed for us; He is our protector." And upon Allah let the believers rely.',
+    ref: 'At-Tawbah 9:51',
   },
   {
     arabic: 'وَمَنْ أَحْسَنُ قَوْلًۭا مِّمَّن دَعَآ إِلَى ٱللَّهِ وَعَمِلَ صَٰلِحًۭا وَقَالَ إِنَّنِى مِنَ ٱلْمُسْلِمِينَ ﴿33﴾',

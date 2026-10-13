@@ -137,7 +137,7 @@ const quranContentData: Content[] = [
     transliteration:
       "al-lahu waliyyu alladhīna āmanū yukh'rijuhum mina l-ẓulumāti ilā l-nūri wa-alladhīna kafarū awliyāuhumu l-ṭāghūtu yukh'rijūnahum mina l-nūri ilā l-ẓulumāti ulāika aṣḥābu l-nāri hum fīhā khālidūna",
     englishTranslation:
-      'Allah is the Protecting Guardian of those who believe. He brings them out from darkness into light. And those who disbelieve — their guardians are the evil ones, who bring them out from light into darkness. Those are the companions of the Fire; they will abide therein forever.',
+      'Allah is the Protecting Guardian of those who believe. He brings them out from darkness into light. And those who disbelieve — their guardians are Taghut, who bring them out from light into darkness. Those are the companions of the Fire; they will abide therein forever.',
     source: 'Surah Al-Baqarah 2:257',
     audioKey: '2:257',
     whyThis: 'The word "wali" here means more than a friend — it is a guardian and protector with authority. When you feel overwhelmed and directionless, this verse reminds you that Allah Himself is actively guiding you out of every darkness. The journey from darkness to light is not something you do alone; Allah initiates it.',
