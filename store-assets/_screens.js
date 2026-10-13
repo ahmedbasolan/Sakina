@@ -12,6 +12,10 @@ const COMPACT_CROP = { top: 80, bottom: 1905 }; // 932-wide captures (chat-attac
 
 module.exports = [
   { id: '01-find-verse', play: '01-hook-mood-grid', verb: 'FIND', desc: 'A VERSE FOR HOW YOU FEEL', src: 'FIND-v2.jpg', crop: STANDARD_CROP },
+  // Added for 1.5 (2026-10-13): the subtitle promises tafsir, and no screenshot showed it.
+  // 1440x3088 native capture; bottom stops above the Android nav bar. Sorts after 01 so
+  // the other files keep their names; upload order follows this array, not the name.
+  { id: '01b-understand-verse', play: '09-understand-verse', verb: 'UNDERSTAND', desc: 'THE MEANING BEHIND EACH VERSE', src: 'UNDERSTAND.jpg', crop: { top: 140, bottom: 2905 } },
   { id: '02-ease-overwhelm', play: '02-relief-verse-match', verb: 'EASE', desc: 'OVERWHELM, ONE VERSE AT A TIME', src: 'EASE-v2.jpg', crop: STANDARD_CROP },
   { id: '03-build-habit', play: '03-growth-streak-journeys', verb: 'BUILD', desc: 'A DAILY HABIT THAT STICKS', src: 'BUILD-v2.jpg', crop: STANDARD_CROP },
   // REFLECTION.png and BEGIN.png were recovered on 2026-09-21 from the committed
