@@ -118,3 +118,31 @@ describe('compareExploreOrder', () => {
     ]);
   });
 });
+
+import { journeysReleasedSince } from '../journeyAccess';
+
+describe('journeysReleasedSince', () => {
+  it('lists journeys released on or after the day they joined, newest first', () => {
+    // path_crisis and path_new share 2026-11-01; ties break by id, A→Z.
+    expect(journeysReleasedSince('2026-11-01', '2026-12-31').map((j) => j.pathId)).toEqual([
+      'path_dec',
+      'path_crisis',
+      'path_new',
+    ]);
+  });
+  it('marks one still in its window', () => {
+    const [newest] = journeysReleasedSince('2026-12-01', '2026-12-20');
+    expect(newest).toEqual({
+      pathId: 'path_dec',
+      released: '2026-12-15',
+      publicFrom: '2027-01-14',
+      inEarlyAccess: true,
+    });
+  });
+  it('is empty when they joined after every release', () => {
+    expect(journeysReleasedSince('2027-06-01', '2027-06-02')).toEqual([]);
+  });
+  it('never lists a journey dated after today (future-dated or clock skew)', () => {
+    expect(journeysReleasedSince('2026-01-01', '2026-11-30').map((j) => j.pathId)).not.toContain('path_dec');
+  });
+});

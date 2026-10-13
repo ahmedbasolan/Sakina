@@ -93,3 +93,31 @@ export function compareExploreOrder(
   if (!aDate && bDate) return 1;
   return declIndex(aId) - declIndex(bId);
 }
+
+export interface ReleasedJourney {
+  pathId: string;
+  released: string;
+  publicFrom: string | null;
+  inEarlyAccess: boolean;
+}
+
+/**
+ * Journeys that reached users on or after `sinceYMD` and not after `today`,
+ * newest first. Feeds the supporter view's "Built since you joined".
+ */
+export function journeysReleasedSince(sinceYMD: string, today: string): ReleasedJourney[] {
+  return Object.entries(AVAILABLE_PATHS)
+    .filter(([, r]) => r.released >= sinceYMD && r.released <= today)
+    .sort(([a, ra], [b, rb]) =>
+      ra.released === rb.released ? a.localeCompare(b) : ra.released < rb.released ? 1 : -1,
+    )
+    .map(([pathId, r]) => {
+      const publicFrom = publicFromYMD(r);
+      return {
+        pathId,
+        released: r.released,
+        publicFrom,
+        inEarlyAccess: r.access === 'early_access' && publicFrom !== null && today < publicFrom,
+      };
+    });
+}
