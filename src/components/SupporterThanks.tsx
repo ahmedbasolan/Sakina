@@ -27,6 +27,13 @@ interface Props {
   today: string;
   onClose: () => void;
   onManage: () => void;
+  /**
+   * Opens the plan picker on Lifetime. Lifetime is a non-consumable sold only
+   * in the app, and before this view replaced the paywall a subscriber reached
+   * it from Settings — so the route stays. Pass it only when the store
+   * actually offers a lifetime package.
+   */
+  onGetLifetime?: () => void;
 }
 
 const longDate = (ms: number) =>
@@ -41,7 +48,7 @@ function planLine(state: SubscriptionState | null): string | null {
   return state.willRenew ? `${label} · renews ${end}` : `Pro until ${end}`;
 }
 
-const SupporterThanks: React.FC<Props> = ({ state, today, onClose, onManage }) => {
+const SupporterThanks: React.FC<Props> = ({ state, today, onClose, onManage, onGetLifetime }) => {
   const insets = useSafeAreaInsets();
   const since = state?.supporterSinceMs;
   const built = useMemo(
@@ -102,6 +109,25 @@ const SupporterThanks: React.FC<Props> = ({ state, today, onClose, onManage }) =
           </View>
         ) : null}
 
+        {onGetLifetime && state?.type !== 'lifetime' ? (
+          <View style={styles.lifetime}>
+            <TouchableOpacity
+              onPress={onGetLifetime}
+              hitSlop={{ top: 12, right: 12, bottom: 12, left: 12 }}
+              accessibilityRole="button"
+            >
+              <Text style={styles.link}>Get Lifetime</Text>
+            </TouchableOpacity>
+            {/* The store never cancels a running subscription when a
+                non-consumable is bought; without this line a subscriber could
+                pay for both without knowing. */}
+            <Text style={styles.note}>
+              Buying Lifetime does not cancel your current subscription. Cancel it in your
+              store&apos;s subscription settings.
+            </Text>
+          </View>
+        ) : null}
+
         {canManage ? (
           <TouchableOpacity
             onPress={onManage}
@@ -149,6 +175,15 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.glass.light,
   },
   rowText: { flex: 1, gap: Spacing.xs },
+  // The link inside carries the block's top margin (styles.link).
+  lifetime: { alignItems: 'center', gap: Spacing.xs },
+  note: {
+    fontFamily: Typography.fonts.latin,
+    fontSize: Typography.sizes.detail,
+    lineHeight: Typography.sizes.detail * 1.5,
+    color: Colors.text.secondary,
+    textAlign: 'center',
+  },
   rowTitle: { fontFamily: Typography.fonts.latin, fontSize: Typography.sizes.body, color: Colors.text.primary },
   rowMeta: { fontFamily: Typography.fonts.latin, fontSize: Typography.sizes.detail, color: Colors.text.secondary },
   link: {

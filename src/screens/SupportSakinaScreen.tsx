@@ -154,6 +154,9 @@ const SupportSakinaScreen: React.FC<Props> = ({ embedded = false, onDone }) => {
   const freemium = FreemiumService.getInstance();
   // Re-read on focus: a purchase or restore elsewhere can change it.
   const [isPremium, setIsPremium] = useState(() => freemium.isPremium());
+  // A subscriber who taps "Get Lifetime" on the supporter view gets the plan
+  // picker back for this visit.
+  const [showPlans, setShowPlans] = useState(false);
   useFocusEffect(
     useCallback(() => {
       setIsPremium(freemium.isPremium());
@@ -365,12 +368,20 @@ const SupportSakinaScreen: React.FC<Props> = ({ embedded = false, onDone }) => {
   // what their support built, not a paywall for something they already have.
   // Never in onboarding's embedded mode, which must always end via onDone.
   // Placed after every hook so hook order never changes between renders.
-  if (isPremium && !embedded) {
+  if (isPremium && !embedded && !showPlans) {
     return (
       <SupporterThanks
         state={freemium.getSubscriptionState()}
         today={formatDateYMD()}
         onClose={() => navigation.goBack()}
+        onGetLifetime={
+          hasLifetime
+            ? () => {
+                setSelectedPlan('lifetime');
+                setShowPlans(true);
+              }
+            : undefined
+        }
         onManage={() => {
           const url = freemium.getSubscriptionState()?.managementUrl;
           if (!url) return; // the link is only rendered when this exists
