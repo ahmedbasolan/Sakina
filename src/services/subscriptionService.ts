@@ -12,6 +12,7 @@ import { revenueCat } from './revenueCatService';
 import { CustomerInfo } from 'react-native-purchases';
 import { resetLockscreenPrefsOnLapse } from './lockscreenVerseService';
 import { logServiceError } from './errorLoggingService';
+import { supporterSinceMs } from '../utils/supporterSince';
 
 // Dev-only owner override — treat these accounts as premium WITHOUT a real
 // purchase, so premium features can be tested on a signed-in account. Gated
@@ -144,6 +145,8 @@ export class SubscriptionService {
           type: undefined,
           trialEndDate: undefined,
           subscriptionEndDate: undefined,
+          supporterSinceMs: undefined,
+          managementUrl: undefined,
           isActive: false,
           willRenew: false,
         };
@@ -211,6 +214,10 @@ export class SubscriptionService {
       // back to false rather than true, since asserting a renewal that will
       // not happen is the more harmful of the two errors.
       willRenew: entitlement?.willRenew ?? false,
+      // In memory only — deliberately absent from the SQL below. Both feed
+      // the supporter view (SupporterThanks) and both are re-read from RC.
+      supporterSinceMs: isActive ? supporterSinceMs(entitlement) : undefined,
+      managementUrl: isActive ? info.managementURL ?? undefined : undefined,
       unlockedBundleIds: currentBundles,
     };
 

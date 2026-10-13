@@ -18,7 +18,7 @@ import Purchases, {
   LOG_LEVEL,
   PACKAGE_TYPE,
 } from 'react-native-purchases';
-import { Platform } from 'react-native';
+import { Linking, Platform } from 'react-native';
 import { REVENUECAT_ANDROID_API_KEY, REVENUECAT_IOS_API_KEY } from '@env';
 
 // ─── SDK keys ──────────────────────────────────────────────────────────────
@@ -221,6 +221,25 @@ class RevenueCatService {
     this.configure();
     if (!this.configured) throw new Error('RevenueCat native module not available');
     return Purchases.restorePurchases();
+  }
+
+  /**
+   * Open the store's subscription management. `Purchases.showManageSubscriptions`
+   * is iOS-only (its own docs: "Only available in iOS 13+"), so Android opens
+   * RevenueCat's managementURL — the Play subscriptions page — instead. The
+   * caller only offers this when that URL exists, which is also what keeps the
+   * link off lifetime and promotional entitlements, where there is nothing to
+   * manage.
+   */
+  async openManageSubscriptions(managementUrl: string): Promise<void> {
+    if (Platform.OS === 'ios') {
+      this.configure();
+      if (this.configured) {
+        await Purchases.showManageSubscriptions();
+        return;
+      }
+    }
+    await Linking.openURL(managementUrl);
   }
 
   /** Associate the RC anonymous ID with a known user. Call on sign-in. */
