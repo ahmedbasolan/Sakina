@@ -1,12 +1,76 @@
 # App Store — version metadata (en-US)
 
-> **Ship gate.** Apply this with the first iOS build cut from a `main` that
-> contains `feat/screen-detox-journey`, and bump `app.json`'s `version` past
-> 1.3.0 first — the name, subtitle, keywords and description can only change
-> with a new version. The description counts ten journeys, seven free, which
-> is true on that branch and **false** on `main` today (9 journeys, 5 free).
-> Promotional text is the only field that can go live without a new version,
-> so it is written to be true on both builds and states no count.
+> **Ship gate.** Section "1.5" applies to the first iOS build cut from `main`
+> at or after `01b8928` (2026-10-13). Name, subtitle, keywords and description
+> change only with a new version. The promotional text and description count
+> **eight** free journeys and Pro early access, which is **false** on the live
+> 1.4 build (seven free, no early access). So never paste the 1.5 promo text
+> into the live 1.4 version, even though promo text can be edited there.
+
+## 1.5 — chosen 2026-10-13 (Option A)
+
+### App name  (limit 30) — 28
+Sakina: Quran Verses by Mood
+
+### Subtitle  (limit 30) — 29
+Daily Ayah, Journeys & Tafsir
+
+### Keywords  (limit 100) — 100
+day,dua,dhikr,hadith,islamic,muslim,prayer,times,qibla,journal,reflection,reminder,surah,lock,screen
+
+### Promotional text  (limit 170 — editable any time, not indexed)
+A verse for how you feel, the meaning behind it, and journeys to live it. 10 guided journeys, 8 of them free.
+
+### Description
+The "Full description" in `play-listing.md`, verbatim (updated for 1.5: eight
+free, Pro early access).
+
+### What's New
+• Prayer Leadership now asks who is leading, with versions of six days written for women leading women.
+• Trusting the Results is now free for everyone. That makes 8 of the 10 journeys free.
+• Rizq Revolution is now 7 focused days, and your progress carries over.
+• Sakina Pro subscribers get new journeys 30 days before everyone else, and a new screen showing what their support has built.
+• Shared verse cards now frame the photo the way your screen does.
+
+### Why Option A
+
+Measured 2026-10-13 against App Store autocomplete (US, `clientApplication=Software`)
+and the iTunes Search API. Sakina (0 ratings) ranked below 50 for every query
+tried, including "daily quran verses", its own 1.4 name word for word, because
+those fields are held by apps with 95 to 240k ratings. So the name now says what
+the app IS (a verse chosen for your mood) and the subtitle carries the features
+and the winnable terms:
+
+| Phrase (autocomplete suggests it) | Matched by | Top of the field |
+|---|---|---|
+| quran journey / my quran journey / muslim journey | name `quran` + subtitle `journeys` | 0 to 8k ratings; #1 for "quran journey" has 0 |
+| daily ayah | subtitle | thin |
+| daily quran verses | subtitle `daily` + name `quran verses` | 95 ratings |
+| quran verse of the day | name + keyword `day` | 3 to 5k ratings |
+| quran tafsir | name + subtitle | 14k to 19k ratings (feature, not a ranking bet) |
+| verse of the day lock screen | name + keywords `day,lock,screen` | Lock Screen Verses (a notification, so no "widget") |
+| islamic journal / quran reflection | keywords | 0 to 90 ratings |
+
+No word repeats across name, subtitle and keywords (checked by script). Dropped
+from 1.4's keywords: `verse`/`english`/`audio`/`azkar`/`namaz` (plural in the
+name, weakest demand, or not a feature). Renaming costs nothing at 0 ratings.
+
+Option B, not chosen: keep `Sakina: Daily Quran Verses` with subtitle
+`Mood Guidance, Journeys & Dua`.
+
+### Claims in 1.5's What's New, checked (live 1.4 = build 8, commit `cd08cbb`)
+
+| Claim | Evidence (none is an ancestor of cd08cbb) |
+|---|---|
+| Prayer Leadership asks who is leading; six days for women leading women | 1ba285b, 77a9641 (days 1, 8, 9, 10, 11, 14) |
+| Trusting the Results free; 8 of 10 free | 3a92a39; `journeyAvailability.ts` |
+| Rizq Revolution 7 days, progress carried over | 3a3e544, 4e2a4f2; `staticPaths.ts` `duration: 7` |
+| Pro early access 30 days; supporter screen | f17a1c6, 4919fef, af4a994 |
+| share card framed like the screen | 81ae3a5 |
+
+---
+
+# History (1.4 and earlier)
 
 ## Live today (for rollback)
 
@@ -44,10 +108,10 @@ drift from the other. Its claims are checked in that file's table.
 • The mood check-in now sorts how you feel into two groups, so yours is quicker to find, and each mood keeps the same name wherever it appears.
 • Sources & Attribution now credits the transliteration and the Quran reciters.
 
-## 1.4.1 subtitle  (limit 30 — ship with the next version)
+## 1.4.1 subtitle  (SUPERSEDED by 1.5 Option A, never shipped)
 A verse for how you feel
 
-## 1.4.1 keywords  (limit 100 — ship with the next version)
+## 1.4.1 keywords  (SUPERSEDED by 1.5 Option A, never shipped)
 prayer,times,qibla,tafsir,dua,dhikr,hadith,islamic,muslim,english,journal,audio,surah,ayah,mood,day
 
 ### Why 1.4.1 changes the subtitle

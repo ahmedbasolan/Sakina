@@ -1,10 +1,11 @@
 # Google Play — Default store listing (en-US)
 
 > **Ship gate.** Play listing text goes live the moment it is saved, with no
-> build attached. The description counts ten journeys, seven free: true on
-> `feat/screen-detox-journey`, **false** on `main` today (9 journeys, 5 free).
-> Apply it only once the Android build containing that branch is live, or it
-> promises users two journeys they cannot open.
+> build attached. The description counts ten journeys, **eight** free, and
+> Pro early access: true on `main` from `01b8928` (2026-10-13, Trusting the
+> Results freed), **false** on any build before it (seven free, no early
+> access). Apply it only once an Android build cut from that `main` is live.
+> The App Store description is this same text, so the same gate applies there.
 
 > ASO note (2026-09-21): the title targets "daily Quran verses" because App
 > Store autocomplete shows real demand there — "quran verse" alone suggests
@@ -40,7 +41,7 @@ WHAT'S INSIDE
 
 · Mood-based Quran guidance — nine moods, each mapped to real verses, with context drawn from the scholarship of Ibn Kathir, As-Sa'di and Ibn al-Qayyim, and a question to reflect on.
 
-· Ten guided journeys — multi-day Islamic paths on tawakkul, rizq, salah, repentance, hope after crisis, screen detox and more. One verse, one lesson and one practice a day. Seven of them are completely free.
+· Ten guided journeys — multi-day Islamic paths on tawakkul, rizq, salah, repentance, hope after crisis, screen detox and more. One verse, one lesson and one practice a day. Eight of them are completely free.
 
 · Prayer times and qibla — accurate salah times for your location, Hanafi or standard Asr calculation, a live qibla compass, and prayer time reminders.
 
@@ -66,7 +67,7 @@ It is for any Muslim who wants dhikr, salah and the Quran woven into an ordinary
 
 SAKINA PRO
 
-Unlocks unlimited guidance, lock screen verses, background themes, and two Pro-only journeys. Monthly, annual, or a one-time lifetime unlock that never renews. Everything not marked Pro above stays free, including seven of the ten journeys.
+Unlocks unlimited guidance, lock screen verses, background themes, two Pro-only journeys, and every new journey 30 days before it opens to everyone. Monthly, annual, or a one-time lifetime unlock that never renews. Everything not marked Pro above stays free, including eight of the ten journeys.
 
 سَكِينَة — Sakina — is the tranquillity that descends on the heart and settles it. That is the whole idea.
 
@@ -87,9 +88,10 @@ drifted claim is visible to Google's policy reviewers as a misrepresentation.
 | that question can be answered in a private journal | `GuidanceScreen.tsx:85` calls `saveReflection` |
 | du'a and practice live in journeys | `PracticeLayer` is mounted only by `PathStepScreen` |
 | nine moods | `MOOD_LABELS` in `src/constants/index.ts` — the list says "overwhelmed", not "anxious": there is no Anxious mood |
-| ten journeys, seven free | `AVAILABLE_PATH_IDS` (10) minus `PREMIUM_GATED_PATHS` (3) in `PathsScreen.tsx` |
+| ten journeys, eight free | `AVAILABLE_PATHS` in `src/constants/journeyAvailability.ts`: 10 entries, 2 `pro_exclusive`, none inside its early-access window on 2026-10-13 (newest, Screen Detox, released 09-09, free from 10-09). Re-count when a journey is added: a new one is Pro-only for its first 30 days |
 | topics: tawakkul, rizq, salah, repentance, hope after crisis, screen detox | Trusting the Results, Rizq Revolution, Salah Transformation, Tawbah Intensive, Hope After Crisis, Screen Detox. An earlier draft said "grief" — no journey is about grief, and it was never checked |
-| two Pro-only journeys | `PREMIUM_GATED_PATHS` — Marriage Seeker, Death Awareness are "Sakina Pro exclusive"; Trusting the Results is a dated free-tier promise, so it is NOT counted as Pro-only |
+| two Pro-only journeys | `access: 'pro_exclusive'` — Marriage Seeker, Death Awareness. Trusting the Results became free on 2026-10-13 (3a92a39) |
+| every new journey 30 days early for Pro | `getJourneyAccess` in `src/utils/journeyAccess.ts`, `EARLY_ACCESS_DAYS` = 30; applies to `access: 'early_access'`, the documented default (CLAUDE.md §6). Nothing forces a new entry to use it, so check the entry when adding a journey |
 | Ibn Kathir / As-Sa'di / Ibn al-Qayyim | attribution block in `SettingsScreen.tsx` |
 | Hanafi or standard Asr | prayer times settings |
 | qibla compass | `src/components/LocationCompass.tsx` |
