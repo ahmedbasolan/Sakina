@@ -178,11 +178,15 @@ interface JourneyCardProps {
   /** Locked: why (e.g. "Free from Nov 12"). Unlocked: only "Pro early access".
    *  From src/utils/journeyAccess.ts. */
   statusLabel?: string;
+  /** Locked behind Pro (journeyAccess routeToPaywall), as opposed to a
+   *  contentless stub that is locked for everyone. Only this earns the
+   *  PREMIUM corner badge. */
+  proLocked?: boolean;
   userProgress?: UserPathProgress;
   onPress: () => void;
 }
 
-function JourneyCard({ path, index, isActive, isLocked, statusLabel, userProgress, onPress }: JourneyCardProps) {
+export function JourneyCard({ path, index, isActive, isLocked, statusLabel, proLocked, userProgress, onPress }: JourneyCardProps) {
   const visual = getPathVisual(path.id);
   const isCompleted = !!userProgress?.isCompleted;
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -321,11 +325,15 @@ function JourneyCard({ path, index, isActive, isLocked, statusLabel, userProgres
                   {path.target || path.theme}
                 </Text>
               </View>
+              {/* A "Coming soon" stub is locked for Pro too, so it gets no
+                  PREMIUM badge and no chevron: the lock icon says enough. */}
               {isLocked ? (
+                proLocked ? (
                 <View style={styles.earlyAccessBadge}>
                   <MaterialCommunityIcons name="star-four-points" size={9} color={Colors.accent.primary} />
                   <Text style={styles.earlyAccessText}>PREMIUM</Text>
                 </View>
+                ) : null
               ) : isCompleted ? (
                 <MaterialCommunityIcons name="check-decagram" size={19} color={visual.color} />
               ) : (
@@ -679,6 +687,7 @@ export default function PathsScreen() {
               isActive={isActive}
               isLocked={access.locked}
               statusLabel={access.label}
+              proLocked={access.routeToPaywall}
               userProgress={userProgress}
               onPress={() => onPathSelected(item.id)}
             />
