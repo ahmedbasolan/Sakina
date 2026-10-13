@@ -58,10 +58,14 @@ export function SakinaLantern({ size = 130, animated = true }: Props) {
   }, [breathing, light]);
 
   const width = size * ASPECT;
+  // The Image carries the size itself. A require()'d source with no width/height
+  // in style takes the asset's own dimensions (184 x 360), and those beat
+  // absolute-fill insets: the 16 pt share-card mark drew 360 tall over the verse.
+  const box = { width, height: size };
 
   return (
-    <View style={{ width, height: size }} pointerEvents="none">
-      <Image source={LANTERN} style={styles.fill} resizeMode="contain" />
+    <View style={box} pointerEvents="none">
+      <Image source={LANTERN} style={box} resizeMode="contain" />
       {breathing ? (
         <Animated.View style={[styles.fill, { opacity: light }]}>
           <Svg width={width} height={size}>
