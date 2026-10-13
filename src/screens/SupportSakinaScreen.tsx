@@ -29,6 +29,7 @@ import {
   Typography,
 } from '../theme/DesignSystem';
 import { LEGAL_URLS } from '../constants';
+import { EARLY_ACCESS_DAYS } from '../constants/journeyAvailability';
 import { useReduceMotion } from '../hooks/useReduceMotion';
 import { FreemiumService } from '../services/freemiumService';
 import { HapticsService } from '../services/hapticsService';
@@ -84,16 +85,22 @@ const FEATURES: {
   description: string;
   showThemePreview?: boolean;
 }[] = [
-  // Substance first, looks last. "Early access to new journeys" used to sit
-  // here, and it was false: the unfinished journeys are locked for Pro too,
-  // and the one journey staged "early" had been held past its promised free
-  // date for three months. It comes back only when a dated early-access window
-  // that opens to free users on its own is actually enforced in code.
+  // Substance first, looks last. "Early access" was removed on 2026-10-13
+  // because nothing enforced it, and restored once journeyAccess.ts did. If
+  // the window is ever removed, remove that bullet in the same commit.
   {
     icon: 'book-outline',
     title: 'Pro-exclusive journeys',
-    // Must match PREMIUM_GATED_PATHS in PathsScreen.tsx.
+    // Must match the access: 'pro_exclusive' entries in
+    // src/constants/journeyAvailability.ts.
     description: 'Marriage Seeker and Death Awareness, two complete journeys only Pro can start',
+  },
+  {
+    icon: 'sparkles-outline',
+    title: 'Early access to new journeys',
+    // Enforced by src/utils/journeyAccess.ts for every 'early_access' entry
+    // in src/constants/journeyAvailability.ts — the default for new journeys.
+    description: `Every new journey opens to Pro ${EARLY_ACCESS_DAYS} days before everyone else`,
   },
   {
     icon: 'pie-chart-outline',
