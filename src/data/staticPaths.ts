@@ -1267,9 +1267,11 @@ export const STATIC_SPIRITUAL_PATHS: SpiritualPath[] = [
     duration: 7,
     theme: 'Overwhelmed',
     target: 'Tawakkul and sabr through uncertainty',
-    // Staged behind Sakina Pro — see PREMIUM_GATED_PATHS in PathsScreen.tsx,
-    // which is what actually enforces this and carries the free-tier ETA.
-    isPremium: true,
+    // Free since 2026-10-13. It was staged behind Sakina Pro from 2026-07-01
+    // under a "Free tier · 2 weeks" label, a promise that went unkept for
+    // three months. PREMIUM_GATED_PATHS in PathsScreen.tsx is what enforces
+    // a gate; this flag is not read by any screen.
+    isPremium: false,
     tone: 'refuge',
     dailySteps: [
       {

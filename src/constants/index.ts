@@ -56,7 +56,6 @@ export const STORAGE_KEYS = {
 
 export const FREEMIUM_LIMITS = {
   refreshesPerPrayerWindow: 3,
-  maxSavedItems: 30,
   historyWindowDays: 30,
 } as const;
 

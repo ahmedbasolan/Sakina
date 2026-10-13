@@ -53,7 +53,7 @@ const THEME_PREVIEWS = THEME_PREVIEW_IDS.map((id) =>
 
 // 'lifetime' is only ever selectable when the store actually returned a
 // lifetime package (pricing.lifetimePrice != null). Annual stays the default
-// selection so the free-trial entry point is untouched.
+// selection.
 type Plan = 'yearly' | 'monthly' | 'lifetime';
 
 /**
@@ -84,11 +84,31 @@ const FEATURES: {
   description: string;
   showThemePreview?: boolean;
 }[] = [
+  // Substance first, looks last. "Early access to new journeys" used to sit
+  // here, and it was false: the unfinished journeys are locked for Pro too,
+  // and the one journey staged "early" had been held past its promised free
+  // date for three months. It comes back only when a dated early-access window
+  // that opens to free users on its own is actually enforced in code.
   {
-    icon: 'color-palette-outline',
-    title: 'Beautiful background themes',
-    description: 'A different mandala or nightscape behind every session, not just the one default',
-    showThemePreview: true,
+    icon: 'book-outline',
+    title: 'Pro-exclusive journeys',
+    // Must match PREMIUM_GATED_PATHS in PathsScreen.tsx.
+    description: 'Marriage Seeker and Death Awareness, two complete journeys only Pro can start',
+  },
+  {
+    icon: 'pie-chart-outline',
+    title: 'Mood analytics & insights',
+    description: 'See which days and moods actually repeat, instead of just remembering the loudest ones',
+  },
+  {
+    icon: 'time-outline',
+    title: '90 days of history',
+    description: 'Look back across three months of moods and reflections, not just the last 30 days',
+  },
+  {
+    icon: 'infinite-outline',
+    title: 'Unlimited guidance refreshes',
+    description: 'Return to divine guidance as many times as you need',
   },
   {
     icon: 'phone-portrait-outline',
@@ -104,24 +124,10 @@ const FEATURES: {
         : 'A complete ayah waiting for you at Tahajjud, morning, and evening remembrance',
   },
   {
-    icon: 'infinite-outline',
-    title: 'Unlimited guidance refreshes',
-    description: 'Return to divine guidance as many times as you need',
-  },
-  {
-    icon: 'book-outline',
-    title: 'Early access to new journeys',
-    description: 'Explore curated Quranic journeys before anyone else',
-  },
-  {
-    icon: 'time-outline',
-    title: '90 days of history',
-    description: 'Look back across three months of moods and reflections, not just the last 30 days',
-  },
-  {
-    icon: 'pie-chart-outline',
-    title: 'Mood analytics & insights',
-    description: 'See which days and moods actually repeat, instead of just remembering the loudest ones',
+    icon: 'color-palette-outline',
+    title: 'Beautiful background themes',
+    description: 'A different mandala or nightscape behind every session, not just the one default',
+    showThemePreview: true,
   },
 ];
 
@@ -140,11 +146,10 @@ const SupportSakinaScreen: React.FC<Props> = ({ embedded = false, onDone }) => {
 
   const [selectedPlan, setSelectedPlan] = useState<Plan>('yearly');
   const [loading, setLoading] = useState(false);
-  // Whether the user can still get the intro free trial on the yearly plan.
-  // Assume eligible until RC says otherwise, so the trial label doesn't flicker
-  // for first-time users on the common path. Returning users who used their
-  // trial flip to false and see a plain "Subscribe" CTA (App Store guideline).
-  const [trialEligible, setTrialEligible] = useState(true);
+  // There is no free trial (owner decision, 2026-10-13). This screen used to
+  // read intro-offer eligibility from RevenueCat and *assume eligible* until it
+  // answered, so it could print "Start 7-day free trial" for a moment even
+  // where no trial existed. With no trial path at all, nothing can flash one.
   // Pricing — store-localized or nothing. `null` means we could not read the
   // store, in which case the plan picker and purchase CTA are withheld rather
   // than showing an invented price (see freemiumService.getPricing).
@@ -184,7 +189,6 @@ const SupportSakinaScreen: React.FC<Props> = ({ embedded = false, onDone }) => {
             yearlyUSD: p.yearlyPriceAmount,
             monthlyPrice: p.monthlyPrice,
             yearlyPrice: p.yearlyPrice,
-            trialDays: p.trialDays,
             lifetimePrice: p.lifetimePrice,
             lifetimeUSD: p.lifetimePriceAmount,
           });
@@ -200,16 +204,8 @@ const SupportSakinaScreen: React.FC<Props> = ({ embedded = false, onDone }) => {
   }, []);
 
   useEffect(() => {
-    let cancelled = false;
-    revenueCat
-      .isYearlyTrialEligible()
-      .then((eligible) => {
-        if (!cancelled) setTrialEligible(eligible);
-      })
-      .catch(() => {});
     loadPricing();
     return () => {
-      cancelled = true;
       // Invalidate any in-flight pricing attempt so it can't setState after unmount.
       pricingAttempt.current++;
     };
@@ -256,9 +252,7 @@ const SupportSakinaScreen: React.FC<Props> = ({ embedded = false, onDone }) => {
     : selectedPlan === 'lifetime'
       ? 'Unlock Sakina for life'
       : selectedPlan === 'yearly'
-        ? trialEligible
-          ? `Start ${pricing.trialDays}-day free trial`
-          : 'Subscribe yearly'
+        ? 'Subscribe yearly'
         : 'Subscribe monthly';
 
   // Never rendered without `pricing` — the whole CTA block is withheld when
@@ -272,9 +266,7 @@ const SupportSakinaScreen: React.FC<Props> = ({ embedded = false, onDone }) => {
         // would describe a subscription the user is not buying.
         `${pricing.lifetimePrice} once · never renews · restores on any device you sign in to`
       : selectedPlan === 'yearly'
-        ? trialEligible
-          ? `Then ${pricing.yearlyPrice}/year, auto-renews annually · cancel anytime`
-          : `${pricing.yearlyPrice}/year, auto-renews annually · cancel anytime`
+        ? `${pricing.yearlyPrice}/year, auto-renews annually · cancel anytime`
         : `${pricing.monthlyPrice}/month, auto-renews monthly · cancel anytime`;
 
   const handleContinue = async () => {
@@ -286,7 +278,7 @@ const SupportSakinaScreen: React.FC<Props> = ({ embedded = false, onDone }) => {
         selectedPlan === 'lifetime'
           ? await freemium.activatePremium('lifetime')
           : selectedPlan === 'yearly'
-            ? await freemium.startTrial()
+            ? await freemium.activatePremium('yearly')
             : await freemium.activatePremium('monthly');
       if (ok) {
         HapticsService.notificationAsync('SUCCESS');
@@ -454,9 +446,9 @@ const SupportSakinaScreen: React.FC<Props> = ({ embedded = false, onDone }) => {
             </TouchableOpacity>
 
             {/* Lifetime — rendered only when the store returned a lifetime
-                package. Sits third and is never pre-selected, so the annual
-                free-trial funnel is unchanged for everyone who doesn't
-                deliberately choose to own it. */}
+                package. Sits third and is never pre-selected, so annual stays
+                the default for everyone who doesn't deliberately choose to
+                own it. */}
             {hasLifetime && (
               <TouchableOpacity
                 style={[

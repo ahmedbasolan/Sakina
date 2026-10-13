@@ -154,7 +154,6 @@ export interface UserSession {
 
 export interface FreemiumLimits {
   refreshesPerPrayerWindow: number;
-  maxSavedItems: number;
   historyWindowDays: number;
 }
 

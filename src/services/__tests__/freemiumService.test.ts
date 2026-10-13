@@ -46,7 +46,6 @@ jest.mock('../subscriptionService', () => ({
         unlockedBundleIds: [],
       })),
       purchaseBundle: jest.fn(() => Promise.resolve(true)),
-      startTrial: jest.fn(() => Promise.resolve(true)),
       activatePremium: jest.fn(() => Promise.resolve(true)),
       resetToFreeTier: jest.fn(() => Promise.resolve()),
     })),
@@ -56,7 +55,6 @@ jest.mock('../subscriptionService', () => ({
 jest.mock('../../constants', () => ({
   FREEMIUM_LIMITS: {
     refreshesPerPrayerWindow: 3,
-    maxSavedItems: 30,
     historyWindowDays: 30,
   },
   UPGRADE_ASK_COOLDOWN_MS: 3 * 24 * 60 * 60 * 1000, // 3 days
@@ -78,7 +76,6 @@ jest.mock('../revenueCatService', () => ({
     purchasePackage: jest.fn(() => Promise.resolve({ success: false, customerInfo: null })),
     restorePurchases: jest.fn(() => Promise.resolve({ entitlements: { active: {} } })),
     resolveDurationType: jest.fn(() => Promise.resolve('yearly')),
-    isYearlyTrialEligible: jest.fn(() => Promise.resolve(true)),
   },
 }));
 
@@ -121,7 +118,6 @@ describe('FreemiumService', () => {
         unlockedBundleIds: [],
       })),
       purchaseBundle: jest.fn(() => Promise.resolve(true)),
-      startTrial: jest.fn(() => Promise.resolve(true)),
       activatePremium: jest.fn(() => Promise.resolve(true)),
       restorePurchases: jest.fn(() => Promise.resolve(true)),
       resetToFreeTier: jest.fn(() => Promise.resolve()),
@@ -222,9 +218,10 @@ describe('FreemiumService', () => {
 
       await service.purchaseBundle('bundle-1');
 
-      // No access without a validated payment: neither a bundle grant nor a trial.
+      // No access without a validated payment: neither a bundle grant nor a
+      // subscription purchase.
       expect(mockSubscriptionService.purchaseBundle).not.toHaveBeenCalled();
-      expect(mockSubscriptionService.startTrial).not.toHaveBeenCalled();
+      expect(mockSubscriptionService.activatePremium).not.toHaveBeenCalled();
     });
   });
 
@@ -232,7 +229,6 @@ describe('FreemiumService', () => {
     it('returns free-tier limits', () => {
       const limits = service.getCurrentLimits();
       expect(limits.refreshesPerPrayerWindow).toBe(3);
-      expect(limits.maxSavedItems).toBe(30);
       expect(limits.historyWindowDays).toBe(30);
     });
 
@@ -240,7 +236,6 @@ describe('FreemiumService', () => {
       mockSubscriptionService.isPremium.mockReturnValue(true);
       const limits = service.getCurrentLimits();
       expect(limits.refreshesPerPrayerWindow).toBe(Infinity);
-      expect(limits.maxSavedItems).toBe(Infinity);
       expect(limits.historyWindowDays).toBe(90);
     });
   });
@@ -292,31 +287,6 @@ describe('FreemiumService', () => {
     });
   });
 
-  describe('Save Items', () => {
-    it('always allows saving for premium users', async () => {
-      mockSubscriptionService.isPremium.mockReturnValue(true);
-      expect(await service.canSaveItem()).toBe(true);
-    });
-
-    it('allows saving for free users under the cap', async () => {
-      mockSubscriptionService.isPremium.mockReturnValue(false);
-      const { dbQuery } = require('../../database/connection');
-      dbQuery.mockImplementationOnce((op: any) =>
-        op({ getFirstAsync: jest.fn().mockResolvedValue({ n: 5 }) }),
-      );
-      expect(await service.canSaveItem()).toBe(true);
-    });
-
-    it('blocks saving for free users at the cap', async () => {
-      mockSubscriptionService.isPremium.mockReturnValue(false);
-      const { dbQuery } = require('../../database/connection');
-      dbQuery.mockImplementationOnce((op: any) =>
-        op({ getFirstAsync: jest.fn().mockResolvedValue({ n: 30 }) }),
-      );
-      expect(await service.canSaveItem()).toBe(false);
-    });
-  });
-
   describe('Paywall Detection', () => {
     it('returns null (comfort-flow paywall removed — peaks-only model)', () => {
       expect(service.getPaywallType()).toBeNull();
@@ -345,7 +315,6 @@ describe('FreemiumService', () => {
         yearlyPrice: 'AU$59.99',
         monthlyPriceAmount: 7.99,
         yearlyPriceAmount: 59.99,
-        trialDays: 7,
         // An offering with no lifetime package — the normal state before the
         // non-consumable goes live. Spelled out as null rather than omitted:
         // toEqual treats a missing key and an undefined value as equal, so an
@@ -364,7 +333,6 @@ describe('FreemiumService', () => {
         yearlyUSD: 59.99,
         monthlyPrice: 'AU$7.99',
         yearlyPrice: 'AU$59.99',
-        trialDays: 7,
         lifetimePrice: null,
         lifetimeUSD: null,
       });
@@ -377,7 +345,6 @@ describe('FreemiumService', () => {
         yearlyPrice: 'AED 169.99',
         monthlyPriceAmount: 19.99,
         yearlyPriceAmount: 169.99,
-        trialDays: 7,
         lifetimePrice: 'AED 400.00',
         lifetimePriceAmount: 400,
       });
@@ -446,20 +413,6 @@ describe('FreemiumService', () => {
   });
 
   describe('Premium Activation', () => {
-    it('should start trial successfully', async () => {
-      mockSubscriptionService.startTrial.mockResolvedValue(true);
-      mockSessionService.getCurrentSession.mockReturnValue({
-        guidanceSessionsUsed: 1,
-        nextRefreshesRemaining: 3,
-      });
-
-      const result = await service.startTrial();
-
-      expect(result).toBe(true);
-      expect(mockSubscriptionService.startTrial).toHaveBeenCalled();
-      expect(mockSessionService.saveSession).toHaveBeenCalled();
-    });
-
     it('should activate monthly premium', async () => {
       mockSubscriptionService.activatePremium.mockResolvedValue(true);
       mockSessionService.getCurrentSession.mockReturnValue({
