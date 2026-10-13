@@ -82,3 +82,24 @@ describe('SupporterThanks', () => {
     ).getByText('Pro until Mar 3, 2027');
   });
 });
+
+describe('SupporterThanks — Lifetime upgrade', () => {
+  // Lifetime is a non-consumable bought only in the app; before this view
+  // replaced the paywall, subscribers reached it from Settings.
+  it('offers Lifetime to a subscriber when the screen can sell it', () => {
+    const { getByText } = render(
+      <SupporterThanks state={base} today="2026-12-20" onClose={noop} onManage={noop} onGetLifetime={noop} />,
+    );
+    getByText('Get Lifetime');
+    // Buying Lifetime does not cancel a running subscription; say so.
+    getByText(/does not cancel your current subscription/);
+  });
+  it('does not offer Lifetime to a lifetime owner, or when it cannot be sold', () => {
+    const owner = render(
+      <SupporterThanks state={{ ...base, type: 'lifetime', willRenew: false }} today="2026-12-20" onClose={noop} onManage={noop} onGetLifetime={noop} />,
+    );
+    expect(owner.queryByText('Get Lifetime')).toBeNull();
+    const unsold = render(<SupporterThanks state={base} today="2026-12-20" onClose={noop} onManage={noop} />);
+    expect(unsold.queryByText('Get Lifetime')).toBeNull();
+  });
+});

@@ -19,6 +19,7 @@ import Purchases, {
   PACKAGE_TYPE,
 } from 'react-native-purchases';
 import { Linking, Platform } from 'react-native';
+import { sameStoreProduct } from '../utils/rcProductMatch';
 import { REVENUECAT_ANDROID_API_KEY, REVENUECAT_IOS_API_KEY } from '@env';
 
 // ─── SDK keys ──────────────────────────────────────────────────────────────
@@ -130,8 +131,10 @@ class RevenueCatService {
       console.warn('[RevenueCat] resolveDurationType: getOffering failed, defaulting to yearly:', error);
       return 'yearly';
     }
-    const matched = offering?.availablePackages.find(
-      (p) => p.product.identifier === productIdentifier,
+    // Not ===: Play package ids carry ':<basePlanId>' and entitlement ids do
+    // not, so a strict match resolved every Android monthly to 'yearly'.
+    const matched = offering?.availablePackages.find((p) =>
+      sameStoreProduct(p.product.identifier, productIdentifier),
     );
     switch (matched?.packageType) {
       case PACKAGE_TYPE.MONTHLY:
