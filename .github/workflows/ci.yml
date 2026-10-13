@@ -6,8 +6,7 @@ on:
   pull_request:
     branches: [main, develop]
   # Manual trigger from the Actions tab or `gh workflow run ci.yml`. Runs on
-  # the selected branch; on `main` this also exercises the push-only
-  # EAS preview job, so it doubles as a way to re-verify after changing secrets.
+  # the selected branch, and is the ONLY way the EAS preview job below runs.
   workflow_dispatch:
 
 jobs:
@@ -52,9 +51,11 @@ jobs:
   eas-build-preview:
     name: EAS Preview Build (Android APK)
     runs-on: ubuntu-latest
-    # Runs on pushes and manual dispatches — skipped on PRs to save build
-    # minutes.
-    if: github.event_name != 'pull_request'
+    # Manual only: runs when the workflow is dispatched by hand (Actions tab →
+    # CI → Run workflow, or `gh workflow run ci.yml`), never on a push or PR.
+    # It used to run on every push to main, so even a README-only commit
+    # queued a build; builds are now started only when someone asks for one.
+    if: github.event_name == 'workflow_dispatch'
     needs: lint-and-test
     # Fire-and-forget convenience build (`--no-wait`) — kicks an EAS build and
     # returns immediately. It is NON-BLOCKING: it must never fail the workflow
