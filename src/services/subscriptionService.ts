@@ -104,15 +104,6 @@ export class SubscriptionService {
     return success;
   }
 
-  /**
-   * Start the free trial. The trial period is defined on the yearly product in
-   * App Store Connect — purchasing the yearly package will automatically present
-   * the trial sheet to the user if they're eligible.
-   */
-  async startTrial(): Promise<boolean> {
-    return this.activatePremium('yearly');
-  }
-
   /** Restore purchases (required by App Store / Play Store guidelines). Throws on failure. */
   async restorePurchases(): Promise<boolean> {
     const info = await revenueCat.restorePurchases();

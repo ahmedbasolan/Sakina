@@ -10,10 +10,10 @@
  *
  * A path can also be *available but staged behind Sakina Pro* — real content,
  * gated for free users — via PREMIUM_GATED_PATHS below. Its label doubles as
- * the gate's terms: a dated one is a free-tier promise (Trusting the
- * Results); "Sakina Pro exclusive" (Marriage Seeker, Death Awareness) makes
- * no such promise. Screen Detox and Tawbah Intensive ship free — available,
- * ungated, and deliberately absent from PREMIUM_GATED_PATHS.
+ * the gate's terms: "Sakina Pro exclusive" (Marriage Seeker, Death Awareness)
+ * makes no free-tier promise. Trusting the Results, Screen Detox and Tawbah
+ * Intensive ship free — available, ungated, and deliberately absent from
+ * PREMIUM_GATED_PATHS.
  * This reverses pathsService.ts's "Free-core model (spec §5)" comment for the
  * paths listed there; that comment now only describes the paths NOT in
  * PREMIUM_GATED_PATHS.
@@ -79,13 +79,13 @@ const AVAILABLE_PATH_IDS = new Set(Object.keys(AVAILABLE_PATHS));
 // rolled out to Pro first. Keep the label to 2-3 words; it renders in a
 // small locked-status pill.
 //
-// The label doubles as the gate's timeline: a dated one ("Free tier · 2
-// weeks") is a promise the free tier will get this later. Marriage Seeker
-// carries no such promise — it's premium-exclusive with no committed free
-// date — so its label says that plainly rather than implying a countdown
-// that isn't real.
+// The label doubles as the gate's timeline. Never write a dated label here
+// ("Free tier · 2 weeks") by hand: Trusting the Results carried exactly that
+// from 2026-07-01 until it was freed on 2026-10-13, because nothing removed
+// the gate when the two weeks ran out. Marriage Seeker and Death Awareness
+// carry no such promise — they are premium-exclusive with no committed free
+// date — so their label says that plainly.
 const PREMIUM_GATED_PATHS: Record<string, string> = {
-  path_trusting_the_results: 'Free tier · 2 weeks',
   path_marriage_seeker: 'Sakina Pro exclusive',
   path_death_awareness: 'Sakina Pro exclusive',
 };
@@ -215,7 +215,7 @@ interface JourneyCardProps {
   index: number;
   isActive: boolean;
   isLocked: boolean;
-  /** Short locked-status copy (e.g. "Free tier · 2 weeks"). Falls back to the
+  /** Short locked-status copy (e.g. "Sakina Pro exclusive"). Falls back to the
    *  generic "Early Access · Coming Soon" pill when unset. */
   lockedLabel?: string;
   userProgress?: UserPathProgress;
@@ -480,10 +480,11 @@ export default function PathsScreen() {
   // A path is locked because it has no content yet (not in AVAILABLE_PATH_IDS),
   // or because it's real but staged behind Pro, this user isn't premium, AND
   // they never had progress on it. That last clause is a grandfather clause,
-  // not an edge case: path_trusting_the_results was open to everyone before
-  // this gate existed, so a free user who already started — or finished — it
-  // must not be locked out mid-journey or have a completed journey re-hidden
-  // behind a paywall the day this ships. The gate is for new starts only.
+  // not an edge case: a journey can be open to everyone before it is gated
+  // (path_trusting_the_results was, in July), so a free user who already
+  // started — or finished — it must not be locked out mid-journey or have a
+  // completed journey re-hidden behind a paywall. The gate is for new starts
+  // only.
   // Single source of truth: onPathSelected calls this instead of
   // re-deriving the same decision, so the sort order, the tap handler and
   // the card's visual state cannot disagree with each other.

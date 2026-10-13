@@ -6,13 +6,16 @@
  *
  * Flow: Bismillah → Welcome → Heart Check-In → Personalization →
  *       First Guidance → Location → Notification → Commit →
- *       Trial Offer → Main
+ *       Supporter Offer → Main
  *
  * No cold paywall in onboarding (spec §8) — upgrade asks otherwise live only
- * at peaks. The one exception is the final Trial Offer step: a single warm,
- * always-skippable ask placed after real value (First Guidance) and
- * emotional commitment (Commit), never before either. See
- * docs/superpowers/specs/2026-08-16-onboarding-trial-offer-design.md.
+ * at peaks. The one exception is the final Supporter Offer step: a single
+ * warm, always-skippable ask placed after real value (First Guidance) and
+ * emotional commitment (Commit), never before either. It was built as a
+ * 7-day trial offer (docs/superpowers/specs/2026-08-16-onboarding-trial-offer-design.md);
+ * the trial was dropped on 2026-10-13 and the step kept as a plain
+ * subscribe-or-skip, at the owner's choice. Code and comments elsewhere that
+ * say "trial offer" mean this step.
  */
 import React, { useState, useRef, useCallback, useEffect } from 'react';
 import {

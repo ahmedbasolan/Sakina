@@ -170,7 +170,7 @@ export class RotationEngine {
    * NOTE the same `getAll` also backs the Library's Saved Verses tab, which
    * passes nothing and must keep passing nothing: an empty-reflection row there
    * is a BOOKMARK, not history, and a bookmark must never age out of view.
-   * Saved items are limited by `maxSavedItems`, not by this window.
+   * Saved items are not capped on any tier.
    */
   async getSavedReflections(sinceTimestamp = 0): Promise<SavedReflection[]> {
     return this.reflectionRepo.getAll(sinceTimestamp);

@@ -909,7 +909,10 @@ export default function MoodHistoryCalendarScreen({ onBack }: MoodHistoryCalenda
                 </View>
                 <View style={styles.premiumTeaserFeatureRow}>
                   <MaterialCommunityIcons name="lightbulb-on-outline" size={16} color={Colors.accent.primary} />
-                  <Text style={styles.premiumTeaserFeatureText}>Personalized spiritual insights & advice</Text>
+                  {/* Was "Personalized spiritual insights & advice". computeInsights
+                      finds weekday, time-of-day and after-heavy-day patterns; its
+                      tips are general, not advice written for this user. */}
+                  <Text style={styles.premiumTeaserFeatureText}>Which days and times weigh heaviest</Text>
                 </View>
                 <View style={styles.premiumTeaserFeatureRow}>
                   <MaterialCommunityIcons name="trending-up" size={16} color={Colors.accent.primary} />

@@ -15,8 +15,7 @@
  * insights already cover.
  *
  * `Infinity` is a supported window and means "no lower bound", matching the
- * idiom `PREMIUM_LIMITS` already uses for `maxSavedItems` and
- * `refreshesPerPrayerWindow`. The upper bound is not a tier question: no tier
+ * idiom `PREMIUM_LIMITS` already uses for `refreshesPerPrayerWindow`. The upper bound is not a tier question: no tier
  * can browse past today, because there is no data ahead of it.
  */
 import { formatDateYMD, subtractDays } from './date';
