@@ -739,6 +739,9 @@ of which a typecheck can see.
     two angles went invisible, and the next verifier run died with "unresolved
     angle" rather than a message about quoting. `id`, `contentId` and `mood`
     are the three fields that must stay single-quoted.
+12. The journey has an entry in `AVAILABLE_PATHS`
+    (`src/constants/journeyAvailability.ts`) with the real release date and
+    the right `access` kind.
 
 `staticPaths.ts` is **CRLF** and several `focus`/`title` strings contain escaped
 apostrophes (`Allah\'s`). A `/focus: '[^']*'/` style regex stops at the escape
@@ -747,10 +750,15 @@ prefer anchoring edits to the `id: 'step_<x>'` block, since angle ids like
 `q_angle_94_5_stressed` are shared across journeys and a global replace will hit
 the wrong one.
 
-### 6. Journey availability is data, currently hardcoded in UI
+### 6. Journey availability is data
 
-`AVAILABLE_PATH_IDS` lives in `PathsScreen.tsx` while
-`getPathVisual` in `src/constants/pathVisuals.ts`, by contrast, already
+`AVAILABLE_PATHS` lives in `src/constants/journeyAvailability.ts`: id →
+`{ released, access }`. A new journey defaults to `access: 'early_access'`
+(Pro-only for `EARLY_ACCESS_DAYS` = 30 after `released`, then free — computed
+in `src/utils/journeyAccess.ts`, never hand-dated). Crisis/distress journeys
+must be `'free'`. Set `released` to the day the build reaches users, not the
+day you finish authoring. `scripts/verify-journey-claims.mjs` reads the ids
+from that file. `getPathVisual` in `src/constants/pathVisuals.ts` already
 covers every declared path id including the stubs — unlocking a journey needs
 no edit there.
 
