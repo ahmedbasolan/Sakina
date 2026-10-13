@@ -56,12 +56,11 @@ export class PathsService {
 
   getAllPaths(_isPremium: boolean = false, _unlockedBundleIds: string[] = []): SpiritualPath[] {
     // Free-core model (spec §5): every journey's text is free, distress journeys
-    // included, EXCEPT the paths PathsScreen.tsx's PREMIUM_GATED_PATHS names —
-    // those are real journeys deliberately staged behind Sakina Pro first, with
-    // a dated free-tier unlock. That gate lives screen-side (list + tap handler),
-    // not here — this always returns the full catalog and the params below are
-    // still unused; `_isPremium` / `_unlockedBundleIds` were reserved for
-    // early-access windows (§6) and that is what ended up building this.
+    // included, EXCEPT what src/constants/journeyAvailability.ts gates — Pro
+    // exclusives, and new journeys during their 30-day Pro early-access window.
+    // That gate is applied screen-side through src/utils/journeyAccess.ts (list
+    // + tap handler), not here — this always returns the full catalog and the
+    // params below are still unused.
     return STATIC_SPIRITUAL_PATHS.map((p) => this.resolve(p));
   }
 
