@@ -11,7 +11,7 @@
  * translation printed on the same screen. Each check below turns one of those
  * into a mechanical failure.
  *
- * It runs over EVERY journey in AVAILABLE_PATHS (read from PathsScreen.tsx, so a
+ * It runs over EVERY journey in AVAILABLE_PATHS (read from src/constants/journeyAvailability.ts, so a
  * new journey cannot be forgotten) and needs network + curl, like
  * verify-citations.mjs. Fetched sources are cached in the OS temp directory.
  *
@@ -162,7 +162,7 @@ const read = (f) => (REV ? execFileSync('git', ['show', `${REV}:${f}`], { cwd: R
 const paths = read('src/data/staticPaths.ts');
 const quran = read('src/data/quranData.ts');
 const hadithSrc = read('src/data/hadithData.ts');
-const pathsScreen = fs.readFileSync(path.join(ROOT, 'src/screens/PathsScreen.tsx'), 'utf8');
+const availabilitySrc = fs.readFileSync(path.join(ROOT, 'src/constants/journeyAvailability.ts'), 'utf8');
 
 /** Balanced `{...}` containing `id: '<id>'`, string-literal aware (see verify-journey.mjs). */
 function objectAt(src, id) {
@@ -354,8 +354,8 @@ const tafsirProse = (t) => nz(t); // nz drops (...) asides on purpose — see P2
 
 // ── dataset ──────────────────────────────────────────────────────────────────
 function loadDays() {
-  const ap = pathsScreen.match(/const AVAILABLE_PATHS[^{]*\{([\s\S]*?)\n\};/);
-  if (!ap) throw new Error('Could not find AVAILABLE_PATHS in PathsScreen.tsx');
+  const ap = availabilitySrc.match(/const AVAILABLE_PATHS[^{]*\{([\s\S]*?)\n\};/);
+  if (!ap) throw new Error('Could not find AVAILABLE_PATHS in src/constants/journeyAvailability.ts');
   const ids = [...ap[1].matchAll(/(path_[a-z_]+):/g)].map((m) => m[1]);
   const days = [];
   for (const pid of ids) {

@@ -2,21 +2,18 @@
  * PathsScreen — Sacred Journeys
  *
  * Filter tabs (Explore | Active | Done) partition the catalogue by state.
- * Available paths (real content, in AVAILABLE_PATH_IDS below): Rizq
+ * Available paths (real content, in AVAILABLE_PATH_IDS): Rizq
  * Revolution, Salah Transformation, Study Journaling, Trusting the Results,
  * Prayer Leadership, Hope After Crisis, Marriage Seeker, Tawbah Intensive,
  * Death Awareness, Screen Detox. All other paths are stubs with no
  * `dailySteps` yet and show a generic "Early Access · Premium" locked state.
  *
- * A path can also be *available but staged behind Sakina Pro* — real content,
- * gated for free users — via PREMIUM_GATED_PATHS below. Its label doubles as
- * the gate's terms: "Sakina Pro exclusive" (Marriage Seeker, Death Awareness)
- * makes no free-tier promise. Trusting the Results, Screen Detox and Tawbah
- * Intensive ship free — available, ungated, and deliberately absent from
- * PREMIUM_GATED_PATHS.
- * This reverses pathsService.ts's "Free-core model (spec §5)" comment for the
- * paths listed there; that comment now only describes the paths NOT in
- * PREMIUM_GATED_PATHS.
+ * Availability, release dates and who may start each journey live in
+ * src/constants/journeyAvailability.ts. A path can be *available but staged
+ * behind Sakina Pro* — access: 'pro_exclusive' (Marriage Seeker, Death
+ * Awareness), which makes no free-tier promise. Everything else available
+ * ships free. This reverses pathsService.ts's "Free-core model (spec §5)"
+ * comment for the pro-exclusive paths only.
  */
 import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import * as Haptics from 'expo-haptics';
@@ -42,53 +39,14 @@ import { SubscriptionService } from '../services/subscriptionService';
 import { JourneyMandalaBackdrop } from '../components/JourneyMandalaBackdrop';
 import { TwinklingStar } from '../components/TwinklingStar';
 import { getPathVisual } from '../constants/pathVisuals';
+import { AVAILABLE_PATHS, AVAILABLE_PATH_IDS } from '../constants/journeyAvailability';
 
 // Height reserved for the pinned header (star field + filter/search row). The
 // star positions below are fractions of it, so the two cannot drift apart.
 const HEADER_H = 124;
 
-// ── Paths available for users to start ─────────────────────────
-// id → the date the journey became STARTABLE (not the date its row was
-// declared in staticPaths.ts — 21 of the 23 stubs were created in one drop on
-// 2026-02-03/04 and sat contentless for months, so declaration order says
-// nothing about what is new to a user). The Explore tab sorts on this, newest
-// first, which is what makes freshly shipped journeys surface at the top.
-//
-// Availability and its date are ONE fact, so they live in one structure: a
-// path cannot be listed as available without saying when, and cannot be dated
-// without being available. Add new journeys here with the date they ship.
-const AVAILABLE_PATHS: Record<string, string> = {
-  path_rizq_revolution:      '2026-06-27',
-  path_salah_transformation: '2026-06-27',
-  path_study_journaling:     '2026-07-01',
-  path_trusting_the_results: '2026-07-01',
-  path_prayer_leadership:    '2026-08-01',
-  path_hope_after_crisis:    '2026-08-15',
-  path_marriage_seeker:      '2026-08-18',
-  path_tawbah_intensive:     '2026-08-29',
-  path_death_awareness:      '2026-08-30',
-  path_screen_detox:         '2026-09-09',
-};
-
-const AVAILABLE_PATH_IDS = new Set(Object.keys(AVAILABLE_PATHS));
-
-// ── Paths staged behind Sakina Pro ──────────────────────────────
-// Real, finished journeys (must also be in AVAILABLE_PATH_IDS) that only an
-// active premium subscriber can start right now. Distinct from the stub
-// paths above (those have no content at all yet) — these are shipped, just
-// rolled out to Pro first. Keep the label to 2-3 words; it renders in a
-// small locked-status pill.
-//
-// The label doubles as the gate's timeline. Never write a dated label here
-// ("Free tier · 2 weeks") by hand: Trusting the Results carried exactly that
-// from 2026-07-01 until it was freed on 2026-10-13, because nothing removed
-// the gate when the two weeks ran out. Marriage Seeker and Death Awareness
-// carry no such promise — they are premium-exclusive with no committed free
-// date — so their label says that plainly.
-const PREMIUM_GATED_PATHS: Record<string, string> = {
-  path_marriage_seeker: 'Sakina Pro exclusive',
-  path_death_awareness: 'Sakina Pro exclusive',
-};
+// Journey availability, release dates and Pro gating: see
+// src/constants/journeyAvailability.ts.
 
 // ── Star positions for the header backdrop ──────────────────────
 const STAR_POSITIONS = [
@@ -491,7 +449,7 @@ export default function PathsScreen() {
   const isPathLocked = useCallback(
     (pathId: string) => {
       if (!AVAILABLE_PATH_IDS.has(pathId)) return true;
-      if (!PREMIUM_GATED_PATHS[pathId] || isPremium) return false;
+      if (AVAILABLE_PATHS[pathId]?.access !== 'pro_exclusive' || isPremium) return false;
       const hasExistingProgress = userProgressList.some((p) => p.pathId === pathId);
       return !hasExistingProgress;
     },
@@ -506,7 +464,7 @@ export default function PathsScreen() {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     // A still-unbuilt early-access stub has no upgrade to offer; only route to
     // the paywall when the lock is actually the premium gate.
-    if (AVAILABLE_PATH_IDS.has(pathId) && PREMIUM_GATED_PATHS[pathId]) {
+    if (AVAILABLE_PATHS[pathId]?.access === 'pro_exclusive') {
       navigation.navigate('Support');
     }
   };
@@ -536,8 +494,8 @@ export default function PathsScreen() {
         const aLocked = isPathLocked(a.id);
         const bLocked = isPathLocked(b.id);
         if (aLocked !== bLocked) return aLocked ? 1 : -1;
-        const aDate = AVAILABLE_PATHS[a.id];
-        const bDate = AVAILABLE_PATHS[b.id];
+        const aDate = AVAILABLE_PATHS[a.id]?.released;
+        const bDate = AVAILABLE_PATHS[b.id]?.released;
         if (aDate && bDate && aDate !== bDate) return aDate < bDate ? 1 : -1;
         if (aDate && !bDate) return -1;
         if (!aDate && bDate) return 1;
@@ -722,7 +680,7 @@ export default function PathsScreen() {
               index={index}
               isActive={isActive}
               isLocked={isLocked}
-              lockedLabel={AVAILABLE_PATH_IDS.has(item.id) ? PREMIUM_GATED_PATHS[item.id] : undefined}
+              lockedLabel={AVAILABLE_PATHS[item.id]?.access === 'pro_exclusive' ? 'Sakina Pro exclusive' : undefined}
               userProgress={userProgress}
               onPress={() => onPathSelected(item.id)}
             />
