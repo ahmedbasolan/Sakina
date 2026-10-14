@@ -31,6 +31,7 @@ import { redactPII } from './src/services/errorLoggingService';
 // module scope so headless OS launches (no React tree) can execute it.
 import { registerNotificationTopUpTask } from './src/services/notificationTopUpTask';
 import { navigationRef, setupNotificationRouter } from './src/services/notificationRouter';
+import { linking } from './src/navigation/linking';
 
 // ── Global error handlers ─────────────────────────────────────────────────
 // Capture unhandled JS errors and promise rejections before they silently vanish.
@@ -207,7 +208,9 @@ export default function App() {
     <ThemeProvider>
       <AppProvider>
         <AuthProvider>
-          <NavigationContainer ref={navigationRef}>
+          {/* `linking` only acts on sakina://journeys; Supabase auth links on
+              the same scheme are left to AuthContext — see linking.ts. */}
+          <NavigationContainer ref={navigationRef} linking={linking}>
             <PostHogProvider client={posthog} autocapture={{ captureScreens: false }}>
               <AppContent />
             </PostHogProvider>

@@ -153,11 +153,15 @@ convert worse than the default page. "Journeys" is in the 1.5 subtitle, not the
 keyword field, so it can't be assigned. Revisit if a later version puts a
 journey-intent word (for example `journey`, `program`, `course`) in keywords.
 
-### Deep link: none for now
-The app has no navigation linking config. The `sakina://` scheme is only read
-by AuthContext for auth callbacks, so `sakina://journeys` would open the app on
-Home, not on Journeys. Adding a link means a code change (React Navigation
-`linking` for the Journeys tab) plus a build. It's a follow-up, not a blocker.
+### Deep link: `sakina://journeys`, once a build carrying it is live
+`src/navigation/linking.ts` opens the Journeys tab for `sakina://journeys`
+(added 2026-10-14). Builds older than that open on Home, so add the deep link to
+the page only after a build with that file is approved, then submit the page
+again. A fresh install still goes through onboarding first, and the link is not
+replayed when onboarding finishes. A universal link
+(`https://…/journeys`) would need Associated Domains plus a hosted AASA file.
+It isn't needed: the page accepts a custom URL, and a universal link only helps
+when the same link is also shared on the web.
 
 ### Screenshots: need fresh captures (Ahmed, on device)
 The only journey capture, `real-screenshots/JOURNEYS.jpg`, is stale: Rizq shows
