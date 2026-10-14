@@ -116,6 +116,69 @@ Option B, not chosen: keep `Sakina: Daily Quran Verses` with subtitle
 
 ---
 
+## Custom product page: Journeys (drafted 2026-10-14, not yet created in ASC)
+
+A second App Store page for one audience: people who arrive wanting a guided
+programme, not a verse a day. It has its own URL for social posts, the website and
+Apple Ads. Facts from Apple's help pages (read 2026-10-14):
+
+- A page varies only screenshots, app previews and promo text. Name, subtitle,
+  description and icon always come from the default page.
+- It needs App Review, which can happen without an app update. Submitting is Ahmed's call.
+- Keywords can be assigned, but only from the **latest approved version's**
+  keyword field. That is live 1.4 today, then 1.5 once it's approved. A keyword
+  assigned here sends that search to this page instead of the default one.
+- The optional deep link only works on iOS 18 or later, and must be a universal
+  link or a custom URL.
+
+### Reference name (internal)
+Journeys
+
+### Promotional text  (limit 170) — 158
+Ten guided journeys, 7 to 14 days each: Salah, Tawbah, Rizq, Screen Detox and more. Every day brings a verse, what it means, practical steps and a reflection.
+
+Claims: `AVAILABLE_PATHS` holds 10 journeys, 7 to 14 days each (durations
+counted from `staticPaths.ts`, 2026-10-14). Each journey day renders the verse,
+the angle as the Understand/Matters text, `practiceSteps` and `reflection`
+(PathStepScreen). The text gives no free/Pro count on purpose, because that
+count changes on dates (early access). **Update this text when an 11th journey
+ships**: changing it needs a new page version and another review.
+
+### Keywords: none for now
+None of live 1.4's keywords
+(`verse,day,english,islamic,muslim,dua,dhikr,azkar,hadith,ayah,journal,reminder,audio,surah,namaz,mood`)
+or 1.5's means "a guided programme". Moving `dua` or `dhikr` searches here would
+show people looking for a supplication a screen of journeys, which would likely
+convert worse than the default page. "Journeys" is in the 1.5 subtitle, not the
+keyword field, so it can't be assigned. Revisit if a later version puts a
+journey-intent word (for example `journey`, `program`, `course`) in keywords.
+
+### Deep link: none for now
+The app has no navigation linking config. The `sakina://` scheme is only read
+by AuthContext for auth callbacks, so `sakina://journeys` would open the app on
+Home, not on Journeys. Adding a link means a code change (React Navigation
+`linking` for the Journeys tab) plus a build. It's a follow-up, not a blocker.
+
+### Screenshots: need fresh captures (Ahmed, on device)
+The only journey capture, `real-screenshots/JOURNEYS.jpg`, is stale: Rizq shows
+14 days, and it's 7 now. One Pro account with a few days done in a journey gives
+the best shots. Native 1440-wide captures, same as the default set:
+
+| # | Headline | Line | Capture |
+|---|---|---|---|
+| 1 | CHOOSE | A JOURNEY FOR WHERE YOU ARE | Journeys tab (Explore), scrolled so the first cards are e.g. Salah, Tawbah, Screen Detox |
+| 2 | FOLLOW | ONE DAY AT A TIME | A journey's detail screen (PathDetail) with the day list and some days ticked |
+| 3 | UNDERSTAND | THE VERSE BEHIND EACH DAY | A journey day (PathStep), verse layer |
+| 4 | LEARN | WHAT IT MEANS FOR YOU | Same day, context layer (Understand / Matters) |
+| 5 | PRACTISE | WHAT THE DAY ASKS OF YOU | Same day, practice layer, ideally a step with Arabic du'a |
+| 6 | REFLECT | WRITE WHAT IT MOVED IN YOU | Same day, reflection prompt |
+
+Keep the crisis journey card ("Suicidal Thoughts → Hope") out of frame. It's
+right for the app, not for an advert. Pick a day whose practice step carries a
+real source badge (not "Suggested Wording") for shot 5.
+Composition uses the default set's composer (`_compose-real.js`, `_compose-ipad.js`)
+with a separate screen list, so the default page's files don't change.
+
 # History (1.4 and earlier)
 
 ## Live today (for rollback)
