@@ -1,7 +1,11 @@
 const sharp = require('sharp');
 const path = require('path');
 const { renderDevice } = require('../_device');
-const SCREENS = require('../_screens');
+// SCREEN_SET=journeys composes a custom product page from _screens-journeys.js
+// into app-store/cpp-journeys/ instead of the default page.
+const SET = process.env.SCREEN_SET;
+const SCREENS = require(SET ? `../_screens-${SET}` : '../_screens');
+const OUT = SET ? path.join(__dirname, `cpp-${SET}`) : __dirname;
 
 // iPad 13" Display — one of Apple's accepted pairs for this upload slot
 const CANVAS_W = 2064;
@@ -55,7 +59,7 @@ async function buildBackground(verb, desc) {
 
 (async () => {
   const base = __dirname;
-  const outDir = path.join(base, 'ipad-13-inch-2064x2752');
+  const outDir = path.join(OUT, 'ipad-13-inch-2064x2752');
   require('fs').mkdirSync(outDir, { recursive: true });
   for (const job of SCREENS) {
     const [bg, device] = await Promise.all([

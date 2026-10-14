@@ -116,7 +116,7 @@ Option B, not chosen: keep `Sakina: Daily Quran Verses` with subtitle
 
 ---
 
-## Custom product page: Journeys (drafted 2026-10-14, not yet created in ASC)
+## Custom product page: Journeys (drafted 2026-10-14)
 
 A second App Store page for one audience: people who arrive wanting a guided
 programme, not a verse a day. It has its own URL for social posts, the website and
@@ -163,25 +163,25 @@ Journeys when onboarding finishes. A universal link
 It isn't needed: the page accepts a custom URL, and a universal link only helps
 when the same link is also shared on the web.
 
-### Screenshots: need fresh captures (Ahmed, on device)
-The only journey capture, `real-screenshots/JOURNEYS.jpg`, is stale: Rizq shows
-14 days, and it's 7 now. One Pro account with a few days done in a journey gives
-the best shots. Native 1440-wide captures, same as the default set:
+### Screenshots: composed 2026-10-14
+Captured by Ahmed on Android (1440x3088), all from Salah Transformation (day 5
+for 3 to 6). Composed with `SCREEN_SET=journeys node _compose-real.js` and
+`SCREEN_SET=journeys node _compose-ipad.js` from `store-assets/_screens-journeys.js`
+into `store-assets/app-store/cpp-journeys/`: iPhone 6.9" master, 6.7", 6.5", and
+iPad 13". Regenerating the default set after the composer change left every
+default PNG byte-identical.
 
-| # | Headline | Line | Capture |
+| # | Headline | Line | Screen |
 |---|---|---|---|
-| 1 | CHOOSE | A JOURNEY FOR WHERE YOU ARE | Journeys tab (Explore), scrolled so the first cards are e.g. Salah, Tawbah, Screen Detox |
-| 2 | FOLLOW | ONE DAY AT A TIME | A journey's detail screen (PathDetail) with the day list and some days ticked |
-| 3 | UNDERSTAND | THE VERSE BEHIND EACH DAY | A journey day (PathStep), verse layer |
-| 4 | LEARN | WHAT IT MEANS FOR YOU | Same day, context layer (Understand / Matters) |
-| 5 | PRACTISE | WHAT THE DAY ASKS OF YOU | Same day, practice layer, ideally a step with Arabic du'a |
-| 6 | REFLECT | WRITE WHAT IT MOVED IN YOU | Same day, reflection prompt |
+| 1 | CHOOSE | A GUIDED JOURNEY, 7 TO 14 DAYS | Journeys tab (Active): Salah, Prayer Leadership |
+| 2 | FOLLOW | ONE LESSON EACH DAY | Salah Transformation detail, day 4 of 7 done |
+| 3 | READ | EACH DAY BEGINS WITH A VERSE | Day 5, verse layer: 22:77 |
+| 4 | UNDERSTAND | THE MEANING, FROM THE SCHOLARS | Day 5, context: al-Sa'di's tafsir + Bukhari 793 |
+| 5 | PRACTICE | THE SUNNAH, ONE STEP AT A TIME | Day 5, practice: "Sunnah Action" citing Sahih al-Bukhari 793 |
+| 6 | REFLECT | PRIVATELY, IN YOUR OWN WORDS | Day 5, reflection prompt and "only you can see them" line |
 
-Keep the crisis journey card ("Suicidal Thoughts → Hope") out of frame. It's
-right for the app, not for an advert. Pick a day whose practice step carries a
-real source badge (not "Suggested Wording") for shot 5.
-Composition uses the default set's composer (`_compose-real.js`, `_compose-ipad.js`)
-with a separate screen list, so the default page's files don't change.
+"7 TO 14 DAYS" is true of `AVAILABLE_PATHS` today. Re-check it when a journey
+of another length ships. The crisis journey card is not in frame.
 
 # History (1.4 and earlier)
 
