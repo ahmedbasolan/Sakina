@@ -225,6 +225,17 @@ export default function MainNavigator() {
       // unaffected, and screens re-render on focus.
       screenOptions={{ headerShown: false, freezeOnBlur: true }}
       initialRouteName={!user && !isGuest ? 'Onboarding' : 'Main'}
+      // A deep link (sakina://journeys, see linking.ts) opened on a fresh
+      // install targets `Main`, which isn't defined yet, so Onboarding shows.
+      // 'lastUnhandled' keeps that target and restores it once onboarding's
+      // enterGuestMode swaps these screens in, so the user lands on Journeys
+      // instead of Home. It keeps ANY unhandled NAVIGATE to a missing screen,
+      // and the last one wins — a notification tap during onboarding
+      // (notificationRouter) would be replayed the same way. Onboarding must
+      // keep exiting by changing auth state, not by navigating to 'Main':
+      // that navigate would itself be stored and overwrite the link.
+      // Covered by __tests__/deepLinkAfterOnboarding.test.tsx.
+      UNSTABLE_routeNamesChangeBehavior="lastUnhandled"
     >
       {!user && !isGuest ? (
         <RootStack.Screen name="Onboarding" component={OnboardingScreen} />

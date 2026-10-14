@@ -21,9 +21,10 @@ import type { RootStackParamList } from './types';
  * Gating: a link resolves to Main → Journeys, and MainNavigator only defines
  * `Main` once there is a user or guest. On a fresh install the root stack
  * holds just `Onboarding`, the stack drops the unknown `Main` route when it
- * rehydrates the linked state, and onboarding runs as normal. The link is
- * not replayed after onboarding finishes; the user lands where onboarding
- * sends them.
+ * rehydrates the linked state, and onboarding runs as normal. The root
+ * stack's `UNSTABLE_routeNamesChangeBehavior="lastUnhandled"` (MainNavigator)
+ * then replays the link once onboarding finishes, so the user lands on
+ * Journeys rather than Home.
  *
  * Adding a link: add its path to DEEP_LINK_PATHS *and* to `config`, and to
  * the cases in `__tests__/linking.test.ts`.
