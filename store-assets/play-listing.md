@@ -41,13 +41,13 @@ WHAT'S INSIDE
 
 · Mood-based Quran guidance: Nine moods, each mapped to real verses, with context drawn from the scholarship of Ibn Kathir, As-Sa'di and Ibn al-Qayyim, and a question to reflect on.
 
-· Ten guided journeys: Multi-day Islamic paths on tawakkul, rizq, salah, repentance, hope after crisis, screen detox and more. One verse, one lesson and one practice a day. Eight of them are completely free. More journeys with new updates
+· Ten guided journeys: Multi-day Islamic paths on tawakkul, rizq, salah, repentance, hope after crisis, screen detox and more. One verse, one lesson and one practice a day. Eight of them are completely free. More journeys with new updates.
 
 · Prayer times: Accurate salah times for your location, Hanafi or standard Asr calculation, and prayer time reminders.
 
 · Full Quran library: Read any surah in Uthmani Arabic with transliteration and the Sahih International translation, laid out page by page like a Mushaf, with verse-by-verse audio recitation.
 
-· Reflection journal:  Write after any session, and keep it. Your reflections are stored only on your device and are never uploaded, even when you sign in.
+· Reflection journal: Write after any session, and keep it. Your reflections are stored only on your device and are never uploaded, even when you sign in.
 
 · Mood calendar: Every check-in on one screen, so you can see what the last few months have really looked like.
 
