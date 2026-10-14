@@ -118,6 +118,14 @@ Option B, not chosen: keep `Sakina: Daily Quran Verses` with subtitle
 
 ## Custom product page: Journeys (drafted 2026-10-14)
 
+**Status 2026-10-14: created in ASC as a draft, not submitted.** Reference name
+"Journeys", Product Page ID `16b01fa9-4980-4034-8f96-0e31a1137d28`. After a reload: 6 iPhone
+screenshots (Dynamic Island large slot, 1290x2796) and 6 iPad 13" ones, in order 01 to 06; promo
+text matches below; no keywords; deep link empty. Public URL once approved:
+`https://apps.apple.com/app/id6801511292?ppid=16b01fa9-4980-4034-8f96-0e31a1137d28` (before
+approval it shows the default page). "Add for Review" is Ahmed's call. The optional Header and
+Search Results creative assets are left empty.
+
 A second App Store page for one audience: people who arrive wanting a guided
 programme, not a verse a day. It has its own URL for social posts, the website and
 Apple Ads. Facts from Apple's help pages (read 2026-10-14):
