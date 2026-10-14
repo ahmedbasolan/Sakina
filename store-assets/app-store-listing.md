@@ -62,7 +62,7 @@ Sakina: Quran Verses by Mood
 Daily Ayah, Journeys & Tafsir
 
 ### Keywords  (limit 100) — 100
-day,dua,dhikr,hadith,islamic,muslim,prayer,times,qibla,journal,reflection,reminder,surah,lock,screen
+day,dua,dhikr,hadith,islamic,muslim,prayer,times,salah,journal,reflection,reminder,surah,lock,screen
 
 ### Promotional text  (limit 170 — editable any time, not indexed)
 A verse for how you feel, the meaning behind it, and journeys to live it. 10 guided journeys, 8 of them free.

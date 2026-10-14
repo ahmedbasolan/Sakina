@@ -43,7 +43,7 @@ WHAT'S INSIDE
 
 · Ten guided journeys — multi-day Islamic paths on tawakkul, rizq, salah, repentance, hope after crisis, screen detox and more. One verse, one lesson and one practice a day. Eight of them are completely free.
 
-· Prayer times and qibla — accurate salah times for your location, Hanafi or standard Asr calculation, a live qibla compass, and prayer time reminders.
+· Prayer times — accurate salah times for your location, Hanafi or standard Asr calculation, and prayer time reminders.
 
 · Full Quran library — read any surah in Uthmani Arabic with transliteration and the Sahih International translation, laid out page by page like a Mushaf, with verse-by-verse audio recitation.
 
@@ -94,7 +94,6 @@ drifted claim is visible to Google's policy reviewers as a misrepresentation.
 | every new journey 30 days early for Pro | `getJourneyAccess` in `src/utils/journeyAccess.ts`, `EARLY_ACCESS_DAYS` = 30; applies to `access: 'early_access'`, the documented default (CLAUDE.md §6). Nothing forces a new entry to use it, so check the entry when adding a journey |
 | Ibn Kathir / As-Sa'di / Ibn al-Qayyim | attribution block in `SettingsScreen.tsx` |
 | Hanafi or standard Asr | prayer times settings |
-| qibla compass | `src/components/LocationCompass.tsx` |
 | verse-by-verse audio | `AudioPlayerButton.tsx` → `audioService` (everyayah.com) |
 | Mushaf page layout | `SurahReaderScreen.tsx` |
 | reflections never uploaded | `supabaseDataService.ts:8` — "Reflections are ALWAYS local (privacy-first, never synced)" |
@@ -103,6 +102,11 @@ drifted claim is visible to Google's policy reviewers as a misrepresentation.
 
 ### Deliberately NOT claimed
 
+- **A qibla compass or qibla finder.** Removed 2026-10-14 after Ahmed pointed out the app has no
+  qibla feature. `LocationCompass.tsx` (the location picker) prints a static bearing once it
+  finds the city ("✦ Qibla 245°") and its needle does not follow the device heading, so "a live
+  qibla compass" was false. This table had listed it as checked against that file: a file
+  existing is not a feature existing. "qibla" was also dropped from every locale's keywords.
 - **A du'a or a practice in the mood flow, or a du'a collection.** Every
   earlier version of this copy — the live one included — said a mood session
   ends in a du'a and a practice, and listed a "Du'a and adhkar" collection.
