@@ -31,27 +31,27 @@ A verse for how you feel, what it means, and journeys to live it.
 ## Full description  (limit 4000)
 Not just a verse a day. A verse for how you feel, what it means, and journeys to live it.
 
-Tell Sakina you're overwhelmed, grateful, tired, lonely, angry or carrying guilt. It answers with a complete ayah, the scholarly context behind it, and a question to reflect on, which you can answer in a private journal. Not a generic daily reminder — something chosen for the moment you are in.
+Tell Sakina you're overwhelmed, grateful, tired, lonely, angry or carrying guilt. It answers with a complete ayah, the scholarly context behind it, and a question to reflect on, which you can answer in a private journal. Not a generic daily reminder but something chosen for the moment you are in.
 
-When you want more than a moment, a guided journey takes one theme across days: a verse, a lesson and something to practise each day, from a du'a to recite to a small act to carry out.
+When you want more than a moment, a guided journey takes one theme across days: a verse, a lesson and something to practice each day, from a du'a to recite to a small act to carry out.
 
 WHAT'S INSIDE
 
-· A daily Quran verse — a new ayah every day, complete and referenced, at the top of Home.
+· A daily Quran verse: A new ayah every day, complete and referenced, at the top of Home.
 
-· Mood-based Quran guidance — nine moods, each mapped to real verses, with context drawn from the scholarship of Ibn Kathir, As-Sa'di and Ibn al-Qayyim, and a question to reflect on.
+· Mood-based Quran guidance: Nine moods, each mapped to real verses, with context drawn from the scholarship of Ibn Kathir, As-Sa'di and Ibn al-Qayyim, and a question to reflect on.
 
-· Ten guided journeys — multi-day Islamic paths on tawakkul, rizq, salah, repentance, hope after crisis, screen detox and more. One verse, one lesson and one practice a day. Eight of them are completely free.
+· Ten guided journeys: Multi-day Islamic paths on tawakkul, rizq, salah, repentance, hope after crisis, screen detox and more. One verse, one lesson and one practice a day. Eight of them are completely free. More journeys with new updates
 
-· Prayer times — accurate salah times for your location, Hanafi or standard Asr calculation, and prayer time reminders.
+· Prayer times: Accurate salah times for your location, Hanafi or standard Asr calculation, and prayer time reminders.
 
-· Full Quran library — read any surah in Uthmani Arabic with transliteration and the Sahih International translation, laid out page by page like a Mushaf, with verse-by-verse audio recitation.
+· Full Quran library: Read any surah in Uthmani Arabic with transliteration and the Sahih International translation, laid out page by page like a Mushaf, with verse-by-verse audio recitation.
 
-· Reflection journal — write after any session, and keep it. Your reflections are stored only on your device and are never uploaded, even when you sign in.
+· Reflection journal:  Write after any session, and keep it. Your reflections are stored only on your device and are never uploaded, even when you sign in.
 
-· Mood calendar — every check-in on one screen, so you can see what the last few months have really looked like.
+· Mood calendar: Every check-in on one screen, so you can see what the last few months have really looked like.
 
-· Lock screen verses — a complete ayah waiting for you at tahajjud, morning and evening remembrance. (Sakina Pro)
+· Lock screen verses: A complete ayah waiting for you at tahajjud, morning and evening remembrance. (Sakina Pro)
 
 WHY THE SOURCING MATTERS
 
@@ -63,13 +63,13 @@ FOR THE DAYS THAT ARE HARD
 
 This was built for anxiety, grief, loneliness, burnout and guilt as much as for gratitude. If you want Quran verses that speak to what you are carrying, rather than another streak counter, this is that.
 
-It is for any Muslim who wants dhikr, salah and the Quran woven into an ordinary week — whether you have been praying for thirty years or are finding your way back.
+It is for any Muslim who wants dhikr, salah and the Quran woven into an ordinary week whether you have been praying for thirty years or are finding your way back.
 
 SAKINA PRO
 
 Unlocks unlimited guidance, lock screen verses, background themes, two Pro-only journeys, and every new journey 30 days before it opens to everyone. Monthly, annual, or a one-time lifetime unlock that never renews. Everything not marked Pro above stays free, including eight of the ten journeys.
 
-سَكِينَة — Sakina — is the tranquillity that descends on the heart and settles it. That is the whole idea.
+سَكِينَة — Sakina — is the tranquility that descends on the heart and settles it. That is the whole idea.
 
 Terms of Use: https://ahmedbasolan.github.io/sakina-legal/terms.html
 Privacy Policy: https://ahmedbasolan.github.io/sakina-legal/privacy.html
