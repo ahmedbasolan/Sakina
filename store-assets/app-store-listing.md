@@ -17,6 +17,30 @@ App Review notes on 1.5 corrected: the mood flow ends in a reflection question, 
 a "practical spiritual action"; and the paywall is reached in guest mode, because the
 Pro demo account now opens the supporter screen from Settings.
 
+### Localizations — entered and verified 2026-10-14
+Source of truth: `store-assets/app-store-localizations.json`; run `node store-assets/check-localizations.cjs`
+after any edit (Apple limits + no repeated word per locale). Eight added: English (U.K.),
+Indonesian, Turkish, Urdu, Malay, Arabic, French, French (Canada). All 8 names/subtitles and
+all 32 version fields were read back from App Store Connect after reload and matched the file
+(fields by SHA-1). Screenshots and the header fall back to English (U.S.).
+
+Why these: Apple's storefront table (developer.apple.com/help/app-store-connect/reference/
+app-store-localizations) makes **English (U.K.) the default language** in Indonesia, Türkiye,
+Pakistan, Malaysia, every Gulf state, Morocco, Algeria, Tunisia, Egypt and Senegal, with the
+local language as the additional one; France defaults to French. Before this, all of those
+stores fell back to the US listing. Keywords per locale come from App Store autocomplete in that
+storefront (e.g. Indonesia: al quran, dzikir, tafsir ibnu katsir; Türkiye: kuran, tefsir, dualar,
+"ayetler kilit ekranı"; Saudi: تدبر القرآن, تفسير ابن كثير; France: verset du jour coran, dhikr).
+
+Honesty rule: the app UI is English only, so every localized description carries a LANGUAGE
+section saying so (verses shown in Arabic with an English translation). Do not add keywords that
+imply a local-language translation (e.g. Indonesian "terjemahan", Turkish "meal").
+
+App Store Connect quirk: adding two new localizations before one Save makes the second fail
+with a false "app name already being used" error. Add one language per page load, and click
+Save twice (the first click often does not register).
+Not reviewed by native speakers. Worth a quick read by one per language before release.
+
 ### Screenshots — uploaded to 1.5 on 2026-10-13
 Order on both iPhone (Face ID large, 1284x2778; the required 6.1/6.3" slot scales
 from it) and iPad 13": FIND, UNDERSTAND, EASE, GROW, KEEP, BUILD, SAVE, READ, BEGIN.
