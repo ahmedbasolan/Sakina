@@ -2,7 +2,11 @@ const sharp = require('sharp');
 const path = require('path');
 const fs = require('fs');
 const { renderDevice } = require('../_device');
-const SCREENS = require('../_screens');
+// SCREEN_SET=journeys composes a custom product page from _screens-journeys.js
+// into app-store/cpp-journeys/ instead of the default page.
+const SET = process.env.SCREEN_SET;
+const SCREENS = require(SET ? `../_screens-${SET}` : '../_screens');
+const OUT = SET ? path.join(__dirname, `cpp-${SET}`) : __dirname;
 
 // iPhone 6.9" — the master set. 6.7" and 6.5" are written from it below.
 const CANVAS_W = 1290;
@@ -63,6 +67,7 @@ async function buildBackground(verb, desc) {
   const missing = SCREENS.filter((s) => !fs.existsSync(path.join(base, 'real-screenshots', s.src)));
   if (missing.length) throw new Error(`missing captures: ${missing.map((s) => s.src).join(', ')}`);
 
+  for (const dir of ['', ...DERIVED.map((d) => d[0])]) fs.mkdirSync(path.join(OUT, dir), { recursive: true });
   for (const job of SCREENS) {
     const [bg, device] = await Promise.all([
       buildBackground(job.verb, job.desc),
@@ -74,9 +79,9 @@ async function buildBackground(verb, desc) {
       }),
     ]);
     const master = await sharp(bg).composite([{ input: device }]).png().toBuffer();
-    await sharp(master).toFile(path.join(base, `${job.id}.png`));
+    await sharp(master).toFile(path.join(OUT, `${job.id}.png`));
     for (const [dir, w, h] of DERIVED) {
-      await sharp(master).resize(w, h, { fit: 'fill' }).png().toFile(path.join(base, dir, `${job.id}.png`));
+      await sharp(master).resize(w, h, { fit: 'fill' }).png().toFile(path.join(OUT, dir, `${job.id}.png`));
     }
     console.log('wrote', job.id);
   }
