@@ -157,8 +157,8 @@ journey-intent word (for example `journey`, `program`, `course`) in keywords.
 `src/navigation/linking.ts` opens the Journeys tab for `sakina://journeys`
 (added 2026-10-14). Builds older than that open on Home, so add the deep link to
 the page only after a build with that file is approved, then submit the page
-again. A fresh install still goes through onboarding first, and the link is not
-replayed when onboarding finishes. A universal link
+again. A fresh install still goes through onboarding first, then lands on
+Journeys when onboarding finishes. A universal link
 (`https://…/journeys`) would need Associated Domains plus a hosted AASA file.
 It isn't needed: the page accepts a custom URL, and a universal link only helps
 when the same link is also shared on the web.
