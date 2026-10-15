@@ -18,6 +18,11 @@ a "practical spiritual action"; and the paywall is reached in guest mode, becaus
 Pro demo account now opens the supporter screen from Settings.
 
 ### Localizations — entered and verified 2026-10-14
+
+**Every new localization also needs two URLs, or "Add for Review" refuses the version.**
+They were missed on 2026-10-14 and filled on 2026-10-15: the version page's Support URL
+(`https://ahmedbasolan.github.io/sakina-legal/`) and App Privacy's Privacy Policy URL
+(`https://ahmedbasolan.github.io/sakina-legal/privacy.html`). Both are set per language.
 Source of truth: `store-assets/app-store-localizations.json`; run `node store-assets/check-localizations.cjs`
 after any edit (Apple limits + no repeated word per locale). Eight added: English (U.K.),
 Indonesian, Turkish, Urdu, Malay, Arabic, French, French (Canada). All 8 names/subtitles and
