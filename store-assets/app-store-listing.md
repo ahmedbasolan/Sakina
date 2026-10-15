@@ -123,7 +123,12 @@ Option B, not chosen: keep `Sakina: Daily Quran Verses` with subtitle
 
 ## Custom product page: Journeys (drafted 2026-10-14)
 
-**Status 2026-10-14: created in ASC as a draft, not submitted.** Reference name
+**Status 2026-10-15: SUBMITTED to App Review (1:32 PM), "Waiting for Review".** Before it was
+submitted, all 16 keywords had turned up ticked and saved, and the lantern header asset had
+appeared, neither of them done in this session. Ahmed chose to untick the keywords (verified after reload);
+the header stays.
+
+Created 2026-10-14: Reference name
 "Journeys", Product Page ID `16b01fa9-4980-4034-8f96-0e31a1137d28`. After a reload: 6 iPhone
 screenshots (Dynamic Island large slot, 1290x2796) and 6 iPad 13" ones, in order 01 to 06; promo
 text matches below; no keywords; deep link empty. Public URL once approved:
