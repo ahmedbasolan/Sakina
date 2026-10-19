@@ -54,6 +54,13 @@ an older capture set in a different order (BEGIN first). Known stale, kept by Ah
 FIND shows the old ungrouped grid with Guilty as "Nadam"; GROW shows Rizq as 14 days.
 
 ### Categories — swapped 2026-10-13 (was Lifestyle / Reference)
+
+**China mainland removed from availability on 2026-10-19 (174 of 175 regions).** Apple held 1.5
+under 2.1 (2026-10-18): it says the app has "book or magazine content" and needs a Chinese
+Internet Publishing License (网络出版服务许可证) to be sold in China mainland. 1.4 passed with
+Lifestyle as the primary category, so the switch to Reference is the likely trigger. Ahmed chose
+to drop China rather than undo the category. Hong Kong and Taiwan stay. Restoring China needs
+that licence first.
 Primary **Reference**, secondary **Lifestyle**. Apple's category guide lists
 "religion" under Reference and has no Religion category; Muslim Pro, Quran Majeed,
 Quran Widgets, Daily Quran – Verse a Day, Bible Chat and Hallow are all Reference
@@ -123,7 +130,7 @@ Option B, not chosen: keep `Sakina: Daily Quran Verses` with subtitle
 
 ## Custom product page: Journeys (drafted 2026-10-14)
 
-**Status 2026-10-15: SUBMITTED to App Review (1:32 PM), "Waiting for Review".** Before it was
+**Status: APPROVED (reviewed 2026-10-16, checked 2026-10-19).** Submitted 2026-10-15 1:32 PM. Before it was
 submitted, all 16 keywords had turned up ticked and saved, and the lantern header asset had
 appeared, neither of them done in this session. Ahmed chose to untick the keywords (verified after reload);
 the header stays.
