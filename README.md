@@ -2,6 +2,8 @@
 
 An offline-first React Native app that delivers verified Qur'an, Sunnah, and Prophetic practice based on a user-selected mood, plus multi-day spiritual journeys.
 
+**Live on the App Store:** [Sakina: Quran Verses by Mood](https://apps.apple.com/app/id6801511292)
+
 ## Core Features
 
 - **Offline-First**: Fully functional without internet connection using local SQLite database
