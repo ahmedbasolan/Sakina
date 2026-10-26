@@ -30,7 +30,9 @@ jest.mock('../../services/hapticsService', () => ({ HapticsService: { impactAsyn
 
 function mockStub(name: string) {
   const { Text: RNText } = require('react-native');
-  return () => <RNText>{`screen:${name}`}</RNText>;
+  const Stub = () => <RNText>{`screen:${name}`}</RNText>;
+  Stub.displayName = `MockScreen(${name})`;
+  return Stub;
 }
 jest.mock('../../screens/OnboardingScreen', () => mockStub('Onboarding'));
 jest.mock('../../screens/AuthScreens', () => ({
