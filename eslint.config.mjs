@@ -205,6 +205,16 @@ export default [
     },
   },
   {
+    // CommonJS dev scripts (e.g. store-assets/check-localizations.cjs). The
+    // block above only matches .js/.mjs, so a .cjs script linted with no Node
+    // globals and failed CI on `__dirname`, `console` and `process`.
+    files: ['scripts/**/*.cjs', 'store-assets/**/*.cjs'],
+    languageOptions: {
+      sourceType: 'commonjs',
+      globals: nodeGlobals,
+    },
+  },
+  {
     // Root CommonJS config files (Babel, Metro, Jest).
     files: ['*.config.{js,cjs}', 'babel.config.js', 'metro.config.js', 'react-native.config.js'],
     languageOptions: {
