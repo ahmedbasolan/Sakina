@@ -6,24 +6,46 @@ import * as QueryParams from 'expo-auth-session/build/QueryParams';
 import { supabase } from '../config/supabaseClient';
 import { Session } from '@supabase/supabase-js';
 import { clearAllLocalUserData } from '../database/operations';
-import { LiveActivityService } from './liveActivity/liveActivityService';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { LiveActivityService, LIVE_ACTIVITY_INVITE_KEY } from './liveActivity/liveActivityService';
 import { logServiceError } from './errorLoggingService';
 
 /**
- * The Live Activity's server registration and shared-storage snapshot belong
- * to the account that created them. The service itself never throws, but this
- * runs on the account-deletion and sign-out paths, where nothing it does may
- * block or fail the user's request — so it is also guarded here and given a
- * deadline (the unregister is a network call). On timeout the cleanup keeps
- * running in the service's queue; we just stop waiting for it.
+ * Everything the Live Activity left on the device belongs to the account that
+ * set it up, so account deletion and sign-out clear all of it:
+ *  - the opt-in (`@live_activity_enabled` is written `false`) — the next Pro
+ *    account on a shared device must not get the card without choosing it;
+ *  - the "invitation answered" flag (`@live_activity_invite_seen` is removed),
+ *    so a new account is asked again;
+ *  - the server registration, the snapshot, the mood verse and the saved clock
+ *    format, via the service's own teardown (`setEnabled(false)` writes the
+ *    pref and tears down through the same serialised queue).
+ * The service never throws, but this runs where nothing may block or fail the
+ * user's request, so it is also guarded here and given a deadline (the
+ * unregister is a network call). On timeout the cleanup keeps running in the
+ * service's queue; we just stop waiting for it.
  */
 const LIVE_ACTIVITY_CLEANUP_DEADLINE_MS = 5000;
+
+async function resetLiveActivity(): Promise<void> {
+  // Independent steps, run together: the invitation flag is removed even if
+  // the teardown throws or is still waiting on the network.
+  const results = await Promise.allSettled([
+    LiveActivityService.getInstance().setEnabled(false),
+    AsyncStorage.removeItem(LIVE_ACTIVITY_INVITE_KEY),
+  ]);
+  for (const result of results) {
+    if (result.status === 'rejected') {
+      logServiceError('AuthService', 'resetLiveActivity', result.reason instanceof Error ? result.reason : new Error(String(result.reason)));
+    }
+  }
+}
 
 async function forgetLiveActivity(): Promise<void> {
   let timer: ReturnType<typeof setTimeout> | undefined;
   try {
     await Promise.race([
-      LiveActivityService.getInstance().disableAndForget(),
+      resetLiveActivity(),
       new Promise<void>((resolve) => {
         timer = setTimeout(resolve, LIVE_ACTIVITY_CLEANUP_DEADLINE_MS);
       }),
@@ -302,7 +324,8 @@ export class AuthService {
     // auth listener fires on signOut below and starts tearing the tree down.
     //
     // The Live Activity goes first: clearAllLocalUserData does not touch
-    // AsyncStorage, so this is the only thing that clears its keys. Its
+    // AsyncStorage, so this is the only thing that resets its opt-in and
+    // invitation flag (see resetLiveActivity for exactly what is cleared). Its
     // unregister call is best-effort here (the server delete may already have
     // removed the row). It cannot fail the deletion — the account is already
     // gone server-side.

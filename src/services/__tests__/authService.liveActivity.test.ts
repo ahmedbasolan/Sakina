@@ -30,9 +30,25 @@ jest.mock('../../database/operations', () => ({
   clearAllLocalUserData: (...a: unknown[]) => mockClearAll(...a),
 }));
 
-const mockDisableAndForget = jest.fn();
+const mockStore: Record<string, string> = {};
+jest.mock('@react-native-async-storage/async-storage', () => ({
+  getItem: jest.fn((key: string) => Promise.resolve(mockStore[key] ?? null)),
+  setItem: jest.fn((key: string, val: string) => {
+    mockStore[key] = val;
+    return Promise.resolve();
+  }),
+  removeItem: jest.fn((key: string) => {
+    delete mockStore[key];
+    return Promise.resolve();
+  }),
+}));
+
+// The real service writes the pref then tears down; the mock keeps that contract.
+const mockSetEnabled = jest.fn();
 jest.mock('../liveActivity/liveActivityService', () => ({
-  LiveActivityService: { getInstance: () => ({ disableAndForget: () => mockDisableAndForget() }) },
+  LIVE_ACTIVITY_PREF_KEY: '@live_activity_enabled',
+  LIVE_ACTIVITY_INVITE_KEY: '@live_activity_invite_seen',
+  LiveActivityService: { getInstance: () => ({ setEnabled: (v: boolean) => mockSetEnabled(v) }) },
 }));
 
 jest.mock('../errorLoggingService', () => ({ logServiceError: jest.fn() }));
@@ -53,37 +69,55 @@ beforeEach(() => {
   mockClearAll.mockImplementation(async () => {
     calls.push('clearAllLocalUserData');
   });
-  mockDisableAndForget.mockImplementation(async () => {
-    calls.push('disableAndForget');
+  Object.keys(mockStore).forEach((k) => delete mockStore[k]);
+  mockStore['@live_activity_enabled'] = 'true';
+  mockStore['@live_activity_invite_seen'] = 'true';
+  mockSetEnabled.mockImplementation(async (value: boolean) => {
+    calls.push(`setEnabled(${value})`);
+    mockStore['@live_activity_enabled'] = value ? 'true' : 'false';
   });
 });
+
+/** What a Pro account signing in next on this device would find. */
+function expectOptInReset() {
+  expect(mockStore['@live_activity_enabled']).toBe('false');
+  expect(mockStore['@live_activity_invite_seen']).toBeUndefined();
+}
 
 describe('deleteAccount', () => {
   it('removes the live activity before wiping local data, and before the session is dropped', async () => {
     await auth.deleteAccount();
 
-    expect(calls).toEqual(['disableAndForget', 'clearAllLocalUserData', 'signOut']);
+    expect(calls).toEqual(['setEnabled(false)', 'clearAllLocalUserData', 'signOut']);
   });
 
-  it('is not failed by a throwing live-activity cleanup', async () => {
-    mockDisableAndForget.mockRejectedValue(new Error('native bridge gone'));
+  it('resets the opt-in and the invitation so the next account starts off and unasked', async () => {
+    await auth.deleteAccount();
+
+    expectOptInReset();
+  });
+
+  it('is not failed by a throwing live-activity cleanup, and still drops the invitation flag', async () => {
+    mockSetEnabled.mockRejectedValue(new Error('native bridge gone'));
 
     await expect(auth.deleteAccount()).resolves.toBeUndefined();
 
     expect(mockClearAll).toHaveBeenCalledTimes(1);
     expect(mockSignOut).toHaveBeenCalledTimes(1);
+    expect(mockStore['@live_activity_invite_seen']).toBeUndefined();
   });
 
   it('is not blocked by a live-activity cleanup that never settles', async () => {
     jest.useFakeTimers();
     try {
-      mockDisableAndForget.mockReturnValue(new Promise(() => {}));
+      mockSetEnabled.mockReturnValue(new Promise(() => {}));
 
       const done = auth.deleteAccount();
       await jest.advanceTimersByTimeAsync(10_000);
 
       await expect(done).resolves.toBeUndefined();
       expect(mockClearAll).toHaveBeenCalledTimes(1);
+      expect(mockStore['@live_activity_invite_seen']).toBeUndefined();
     } finally {
       jest.useRealTimers();
     }
@@ -94,7 +128,8 @@ describe('deleteAccount', () => {
 
     await expect(auth.deleteAccount()).rejects.toThrow('Account deletion failed: nope');
 
-    expect(mockDisableAndForget).not.toHaveBeenCalled();
+    expect(mockSetEnabled).not.toHaveBeenCalled();
+    expect(mockStore['@live_activity_enabled']).toBe('true');
     expect(mockClearAll).not.toHaveBeenCalled();
   });
 
@@ -104,7 +139,8 @@ describe('deleteAccount', () => {
 
     await expect(auth.deleteAccount()).rejects.toThrow(ACCOUNT_DELETED_BUT_LOCAL_WIPE_FAILED);
 
-    expect(mockDisableAndForget).toHaveBeenCalledTimes(1);
+    expect(mockSetEnabled).toHaveBeenCalledTimes(1);
+    expectOptInReset();
   });
 });
 
@@ -112,14 +148,21 @@ describe('signOut', () => {
   it('removes the live activity while the session can still authorise the unregister', async () => {
     await auth.signOut();
 
-    expect(calls).toEqual(['disableAndForget', 'signOut']);
+    expect(calls).toEqual(['setEnabled(false)', 'signOut']);
   });
 
-  it('still signs out when the live-activity cleanup throws', async () => {
-    mockDisableAndForget.mockRejectedValue(new Error('boom'));
+  it('resets the opt-in and the invitation so the next account starts off and unasked', async () => {
+    await auth.signOut();
+
+    expectOptInReset();
+  });
+
+  it('still signs out when the live-activity cleanup throws, and still drops the invitation flag', async () => {
+    mockSetEnabled.mockRejectedValue(new Error('boom'));
 
     await expect(auth.signOut()).resolves.toBeUndefined();
 
     expect(mockSignOut).toHaveBeenCalledTimes(1);
+    expect(mockStore['@live_activity_invite_seen']).toBeUndefined();
   });
 });

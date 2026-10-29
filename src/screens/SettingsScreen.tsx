@@ -193,8 +193,12 @@ export default function SettingsScreen() {
   const [autoPlayAudio, setAutoPlayAudio]   = useState(false);
   const [hanafiAsr, setHanafiAsr]           = useState(false);
   const [liveActivityOn, setLiveActivityOn] = useState(false);
-  // Fixed for the life of the process (native module present, iOS 16.2+).
-  const liveActivityAvailable = LiveActivityService.getInstance().isAvailable();
+  // iOS >= 17.2 with the native module, AND the user's Live Activities setting
+  // on (isSupported() reflects it). That setting can change while the app is
+  // backgrounded, so re-read on every focus rather than once.
+  const [liveActivityAvailable, setLiveActivityAvailable] = useState(() =>
+    LiveActivityService.getInstance().isAvailable(),
+  );
   const [restoring, setRestoring]           = useState(false);
   const [deletingAccount, setDeletingAccount] = useState(false);
 
@@ -206,6 +210,7 @@ export default function SettingsScreen() {
       setShowTransliteration(prefs.showTransliteration);
       setAutoPlayAudio(prefs.autoPlayAudio);
       setHanafiAsr(prefs.asrMadhab === 'hanafi');
+      setLiveActivityAvailable(LiveActivityService.getInstance().isAvailable());
       LiveActivityService.getInstance().getEnabled().then(setLiveActivityOn);
     }, []),
   );
@@ -457,7 +462,7 @@ export default function SettingsScreen() {
           {liveActivityAvailable && (
             isPremium ? (
               <SettingRow
-                label="Prayer Countdown"
+                label="Prayer countdown on Dynamic Island"
                 icon="timer-outline"
                 showToggle
                 toggleValue={liveActivityOn}
@@ -465,7 +470,7 @@ export default function SettingsScreen() {
               />
             ) : (
               <SettingRow
-                label="Prayer Countdown"
+                label="Prayer countdown on Dynamic Island"
                 icon="timer-outline"
                 value="✦"
                 onPress={() => navigation.navigate('Support')}
