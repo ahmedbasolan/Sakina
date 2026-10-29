@@ -99,6 +99,22 @@ describe('live activity native parity', () => {
     expect(read(path.join(MODULE_DIR, 'index.ts'))).toContain("'SakinaLiveActivity'");
   });
 
+  it('keeps every card font fixed-size so the 160 pt budget holds at any Dynamic Type size', () => {
+    const swift = swiftFiles(TARGET_DIR);
+    // Font.custom(_:size:) scales relative to .body; only fixedSize: does not.
+    expect(swift).not.toMatch(/Font\.custom\([^)]*\bsize:/);
+    // Text styles (.body, .caption, …) scale too; fixed .system(size:) does not.
+    expect(swift).not.toMatch(
+      /\.font\(\.(largeTitle|title|title2|title3|headline|subheadline|body|callout|footnote|caption|caption2)\b/,
+    );
+    expect(swift).toMatch(/\.dynamicTypeSize\(/);
+  });
+
+  it('never promises a tap target the card does not have', () => {
+    // The whole card opens Prayer Times; there is no verse deep link (ruling R9).
+    expect(read(path.join(TARGET_DIR, 'VerseView.swift'))).not.toMatch(/tap to/i);
+  });
+
   it('asks SwiftUI for the PostScript name of the font the extension bundles', () => {
     const plist = read(path.join(TARGET_DIR, 'Info.plist'));
     const fonts = [...plist.matchAll(/<string>([^<]+\.ttf)<\/string>/g)].map((m) => m[1]);

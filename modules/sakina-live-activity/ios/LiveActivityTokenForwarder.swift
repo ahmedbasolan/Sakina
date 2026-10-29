@@ -11,7 +11,9 @@
 // POST body (ruling R3): { "action": "token", "deviceId": <uuid>,
 //   "pushToStartToken"?: <hex>, "activityToken"?: <hex>,
 //   "activityStartedAt"?: <epoch seconds> } with headers Content-Type,
-//   apikey and Authorization: Bearer <anon key>. Fire-and-forget.
+//   apikey and Authorization: Bearer <anon key>. Each POST holds a
+//   background-task assertion, is retried once, and the token is recorded as
+//   sent only on a 2xx (see `deliver`).
 //
 // Nothing is posted until a device id exists (JS creates it through
 // getDeviceId when the user opts in; clearShared removes it), so a device that
@@ -22,6 +24,7 @@
 
 import ActivityKit
 import Foundation
+import UIKit
 
 @available(iOS 17.2, *)
 @MainActor
@@ -32,6 +35,8 @@ final class LiveActivityTokenForwarder {
   private var observedActivityIds = Set<String>()
   private var lastPushToStartToken: String?
   private var lastActivityTokens: [String: String] = [:]
+  /// Tokens with a request in flight, so a repost cannot double-send them.
+  private var pendingTokens = Set<String>()
 
   private init() {}
 
@@ -160,19 +165,47 @@ final class LiveActivityTokenForwarder {
   }
 
   private func postPushToStartToken(_ token: String) {
-    if token == lastPushToStartToken { return }
-    guard TokenPoster.post(["pushToStartToken": token]) else { return }
-    lastPushToStartToken = token
+    if token == lastPushToStartToken || pendingTokens.contains(token) { return }
+    deliver(["pushToStartToken": token], token: token, onSuccess: .pushToStart(token))
   }
 
   private func postActivityToken(_ token: String, activityId: String) {
-    if lastActivityTokens[activityId] == token { return }
+    if lastActivityTokens[activityId] == token || pendingTokens.contains(token) { return }
     var fields: [String: Any] = ["activityToken": token]
     if let startedAt = SharedStore.localStart(of: activityId) {
       fields["activityStartedAt"] = startedAt
     }
-    guard TokenPoster.post(fields) else { return }
-    lastActivityTokens[activityId] = token
+    deliver(fields, token: token, onSuccess: .activity(id: activityId, token: token))
+  }
+
+  /// What to record once the server has acknowledged a token.
+  private enum DeliveredToken {
+    case pushToStart(String)
+    case activity(id: String, token: String)
+  }
+
+  /// Sends one token, holding a background-task assertion until the request
+  /// (and its one retry) is finished, so a background launch is not suspended
+  /// mid-request. The token counts as sent ONLY on a 2xx; a failed token stays
+  /// unrecorded and goes out again on the next repost (configure, a new
+  /// device id, or the next launch).
+  private func deliver(_ fields: [String: Any], token: String, onSuccess: DeliveredToken) {
+    guard let request = TokenPoster.makeRequest(fields) else { return }
+    pendingTokens.insert(token)
+    let assertion = BackgroundAssertion(name: "sakina.liveActivity.token")
+    Task {
+      let delivered = await TokenPoster.send(request)
+      self.pendingTokens.remove(token)
+      if delivered {
+        switch onSuccess {
+        case .pushToStart(let value):
+          self.lastPushToStartToken = value
+        case .activity(let id, let value):
+          self.lastActivityTokens[id] = value
+        }
+      }
+      assertion.end()
+    }
   }
 }
 
@@ -182,15 +215,13 @@ private func hex(_ data: Data) -> String {
 }
 
 enum TokenPoster {
-  /// Sends one token POST. Returns false (and sends nothing) when the app has
-  /// not been configured or has no device id yet. The request itself is
-  /// fire-and-forget: its outcome is ignored and it can never crash the app.
-  @discardableResult
-  static func post(_ fields: [String: Any]) -> Bool {
+  /// The token POST, or nil (nothing to send) when the app has not been
+  /// configured or has no device id yet.
+  static func makeRequest(_ fields: [String: Any]) -> URLRequest? {
     guard let url = SharedStore.registerUrl(),
           let anonKey = SharedStore.anonKey(),
           let deviceId = SharedStore.existingDeviceId()
-    else { return false }
+    else { return nil }
 
     var body: [String: Any] = ["action": "token", "deviceId": deviceId]
     for (key, value) in fields {
@@ -198,7 +229,7 @@ enum TokenPoster {
     }
     guard JSONSerialization.isValidJSONObject(body),
           let data = try? JSONSerialization.data(withJSONObject: body)
-    else { return false }
+    else { return nil }
 
     var request = URLRequest(url: url)
     request.httpMethod = "POST"
@@ -206,7 +237,44 @@ enum TokenPoster {
     request.setValue(anonKey, forHTTPHeaderField: "apikey")
     request.setValue("Bearer \(anonKey)", forHTTPHeaderField: "Authorization")
     request.httpBody = data
-    URLSession.shared.dataTask(with: request) { _, _, _ in }.resume()
-    return true
+    return request
+  }
+
+  /// True only on a 2xx. One retry, two seconds after a failure (transport
+  /// error or non-2xx). Never throws.
+  static func send(_ request: URLRequest) async -> Bool {
+    if await attempt(request) { return true }
+    try? await Task.sleep(nanoseconds: 2_000_000_000)
+    return await attempt(request)
+  }
+
+  private static func attempt(_ request: URLRequest) async -> Bool {
+    do {
+      let (_, response) = try await URLSession.shared.data(for: request)
+      guard let http = response as? HTTPURLResponse else { return false }
+      return (200...299).contains(http.statusCode)
+    } catch {
+      return false
+    }
+  }
+}
+
+/// Keeps the app running until a token POST finishes. Only ever created and
+/// ended on the main thread — by the @MainActor forwarder, and by iOS, which
+/// calls the expiration handler on the main thread — hence @unchecked Sendable.
+/// Ending twice (expiration, then completion) is a no-op.
+final class BackgroundAssertion: @unchecked Sendable {
+  private var identifier: UIBackgroundTaskIdentifier = .invalid
+
+  init(name: String) {
+    identifier = UIApplication.shared.beginBackgroundTask(withName: name) { [weak self] in
+      self?.end()
+    }
+  }
+
+  func end() {
+    if identifier == .invalid { return }
+    UIApplication.shared.endBackgroundTask(identifier)
+    identifier = .invalid
   }
 }

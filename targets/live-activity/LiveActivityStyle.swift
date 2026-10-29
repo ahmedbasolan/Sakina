@@ -16,17 +16,23 @@ enum Palette {
   static let gold = Color(red: 212.0 / 255.0, green: 175.0 / 255.0, blue: 55.0 / 255.0)
 }
 
+/// Every font on the card is FIXED-SIZE: `Font.custom(_:fixedSize:)` here and
+/// `Font.system(size:)` at the call sites. The card's height budget (160 pt,
+/// see CardLayout in SakinaLiveActivity.swift) is a sum of these sizes; the
+/// scaling `size:` overload of Font.custom, or a text style, would grow
+/// with Dynamic Type and the system would cut the bottom of the card — the end
+/// of the verse. The parity test rejects both forms in this target.
 enum CardFont {
   /// Display / titles (Typography.fonts.serif). Georgia ships with iOS.
   static func title(_ size: CGFloat) -> Font {
-    return Font.custom("Georgia", size: size)
+    return Font.custom("Georgia", fixedSize: size)
   }
 
   /// Quran text. PostScript name of the bundled AmiriQuran-Regular.ttf
   /// (registered in this target's Info.plist UIAppFonts; the parity test
   /// reads the name out of the TTF and checks it matches this literal).
   static func arabic(_ size: CGFloat) -> Font {
-    return Font.custom("AmiriQuran-Regular", size: size)
+    return Font.custom("AmiriQuran-Regular", fixedSize: size)
   }
 }
 

@@ -21,9 +21,16 @@ struct SakinaLiveActivityBundle: WidgetBundle {
 
 private let prayerTimesURL = URL(string: "sakina://prayer-times")
 
+/// INVARIANT: these budgets are sums of fixed point sizes. They hold only
+/// because every font on the card is fixed-size (CardFont uses
+/// `Font.custom(_:fixedSize:)`, everything else `Font.system(size:)`) AND the
+/// card roots clamp `.dynamicTypeSize(...DynamicTypeSize.large)`. At a larger
+/// Dynamic Type size a scaling font would grow the prayer row past the budget
+/// and iOS would truncate the bottom of the card — the end of the verse —
+/// which ViewThatFits cannot see. Keep both, or re-derive these numbers.
 private enum CardLayout {
-  /// Lock screen: 160 total − 28 vertical padding − ~26 prayer row − 8 spacing,
-  /// rounded down for margin.
+  /// Lock screen: 160 total − 28 vertical padding − ~26 prayer row (Georgia
+  /// 18 fixed / lantern 24) − 8 spacing, rounded down for margin.
   static let lockScreenVerseHeight: CGFloat = 92
   /// Expanded island: what is left under the leading/trailing regions.
   static let expandedVerseHeight: CGFloat = 72
@@ -63,6 +70,7 @@ private func makeDynamicIsland(state: SakinaPrayerAttributes.ContentState) -> Dy
             .foregroundColor(Palette.creamSecondary)
         }
       }
+      .dynamicTypeSize(...DynamicTypeSize.large)
     }
     DynamicIslandExpandedRegion(.trailing) {
       Text(timerInterval: PrayerClock.countdownRange(to: prayerDate), countsDown: true)
@@ -71,6 +79,7 @@ private func makeDynamicIsland(state: SakinaPrayerAttributes.ContentState) -> Dy
         .foregroundColor(Palette.gold)
         .multilineTextAlignment(.trailing)
         .frame(width: CardLayout.countdownWidth, alignment: .trailing)
+        .dynamicTypeSize(...DynamicTypeSize.large)
     }
     DynamicIslandExpandedRegion(.bottom) {
       VerseView(verse: verse, height: CardLayout.expandedVerseHeight)
@@ -86,6 +95,7 @@ private func makeDynamicIsland(state: SakinaPrayerAttributes.ContentState) -> Dy
       .foregroundColor(Palette.cream)
       .lineLimit(1)
       .minimumScaleFactor(0.7)
+      .dynamicTypeSize(...DynamicTypeSize.large)
   } minimal: {
     LanternMark(height: 20)
   }
@@ -131,5 +141,7 @@ struct LockScreenCard: View {
         endPoint: .bottom
       )
     )
+    // See the CardLayout invariant: the whole lock-screen card is clamped.
+    .dynamicTypeSize(...DynamicTypeSize.large)
   }
 }

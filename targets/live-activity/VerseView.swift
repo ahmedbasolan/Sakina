@@ -3,7 +3,9 @@
 //
 //   1. Arabic + English + reference
 //   2. English + reference
-//   3. Reference only, as a pointer — no quotation, so no fragment
+//   3. Reference only, as a pointer — no quotation, so no fragment. It
+//      promises no action: the card's only tap target opens Prayer Times
+//      (ruling R9), so the pointer offers no way to read the verse.
 //
 // `ViewThatFits` takes the first tier whose full height fits `height`. Every
 // Text is `.fixedSize(horizontal: false, vertical: true)` so its measured
@@ -34,6 +36,9 @@ struct VerseView: View {
       }
       .frame(height: height, alignment: .topLeading)
       .frame(maxWidth: .infinity, alignment: .leading)
+      // Every font below is fixed-size already; the clamp keeps the budget
+      // provable if one is ever switched to a scaling style.
+      .dynamicTypeSize(...DynamicTypeSize.large)
     }
   }
 
@@ -62,7 +67,7 @@ struct VerseView: View {
   }
 
   private func pointerText(_ ref: String) -> some View {
-    Text(verbatim: "Your verse · \(ref) — tap to read")
+    Text(verbatim: "Your verse · \(ref)")
       .font(.system(size: 12))
       .foregroundColor(Palette.creamSecondary)
       .fixedSize(horizontal: false, vertical: true)
