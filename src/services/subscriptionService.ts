@@ -79,6 +79,15 @@ export class SubscriptionService {
     this.isLoaded = true;
   }
 
+  /**
+   * True once the subscription state has been resolved (from RevenueCat or the
+   * local cache). Before that, `isPremium()` is false for everyone — callers
+   * that act on "not Pro" must check this first.
+   */
+  hasLoaded(): boolean {
+    return this.isLoaded;
+  }
+
   isPremium(): boolean {
     return this.subscriptionState?.tier === 'premium' && !!this.subscriptionState.isActive;
   }

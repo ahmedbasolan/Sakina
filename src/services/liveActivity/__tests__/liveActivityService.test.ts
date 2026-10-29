@@ -28,9 +28,21 @@ jest.mock('../../../config/supabaseClient', () => ({
 }));
 
 const mockIsPremium = jest.fn(() => true);
+const mockHasLoaded = jest.fn(() => true);
 jest.mock('../../subscriptionService', () => ({
-  SubscriptionService: { getInstance: () => ({ isPremium: () => mockIsPremium() }) },
+  SubscriptionService: {
+    getInstance: () => ({
+      isPremium: () => mockIsPremium(),
+      hasLoaded: () => mockHasLoaded(),
+    }),
+  },
 }));
+
+jest.mock('react-native-purchases', () => ({
+  __esModule: true,
+  default: { getAppUserID: () => mockGetAppUserID() },
+}));
+const mockGetAppUserID = jest.fn((): Promise<string> => Promise.resolve('$RCAnonymousID:test-user'));
 
 jest.mock('../../errorLoggingService', () => ({ logServiceError: jest.fn() }));
 
@@ -42,16 +54,19 @@ jest.mock('../../dailyVerseService', () => {
   };
 });
 
+import { getDailyVerse, type DailyVerse } from '../../dailyVerseService';
 import * as native from '../../../../modules/sakina-live-activity';
 import { logServiceError } from '../../errorLoggingService';
 import {
   LiveActivityService,
   LIVE_ACTIVITY_PREF_KEY,
   LIVE_ACTIVITY_MOOD_VERSE_KEY,
+  LIVE_ACTIVITY_REGISTERED_KEY,
 } from '../liveActivityService';
 import type { Content } from '../../../types';
 import type { PrayerTimings } from '../../prayerTimesService';
 
+const actualDaily = jest.requireActual('../../dailyVerseService');
 const n = native as jest.Mocked<typeof native>;
 
 const day: PrayerTimings = {
@@ -85,6 +100,8 @@ describe('LiveActivityService', () => {
     n.getDeviceId.mockReturnValue('device-123');
     n.clearShared.mockImplementation(() => undefined);
     mockIsPremium.mockReturnValue(true);
+    mockHasLoaded.mockReturnValue(true);
+    mockGetAppUserID.mockImplementation(() => Promise.resolve('$RCAnonymousID:test-user'));
     mockInvoke.mockResolvedValue({ data: { ok: true }, error: null });
     jest.useFakeTimers({ doNotFake: ['nextTick', 'setImmediate', 'queueMicrotask'] });
     jest.setSystemTime(new Date('2026-03-10T08:00:00Z'));
@@ -104,17 +121,48 @@ describe('LiveActivityService', () => {
   it('switch off unregisters and ends cards', async () => {
     mockStore[LIVE_ACTIVITY_PREF_KEY] = 'false';
     mockStore[LIVE_ACTIVITY_MOOD_VERSE_KEY] = '{}';
+    mockStore[LIVE_ACTIVITY_REGISTERED_KEY] = 'true';
     await svc().sync(weekly, '24h');
     expect(n.endAll).toHaveBeenCalled();
+    expect(mockInvoke).toHaveBeenCalledTimes(1);
     expect(mockInvoke).toHaveBeenCalledWith('live-activity-register', {
       body: { action: 'unregister', deviceId: 'device-123' },
     });
     expect(n.clearShared).toHaveBeenCalled();
     expect(mockStore[LIVE_ACTIVITY_MOOD_VERSE_KEY]).toBeUndefined();
+    expect(mockStore[LIVE_ACTIVITY_REGISTERED_KEY]).toBeUndefined();
     expect(n.startLocal).not.toHaveBeenCalled();
   });
 
+  it('switch-off user who never registered: no device id minted, no server call', async () => {
+    mockStore[LIVE_ACTIVITY_PREF_KEY] = 'false';
+    await svc().sync(weekly, '24h');
+    expect(n.getDeviceId).not.toHaveBeenCalled();
+    expect(mockInvoke).not.toHaveBeenCalled();
+    // Local cleanup still runs.
+    expect(n.endAll).toHaveBeenCalled();
+    expect(n.clearShared).toHaveBeenCalled();
+  });
+
+  it('a successful register sets the registered flag; a failed one does not', async () => {
+    mockStore[LIVE_ACTIVITY_PREF_KEY] = 'true';
+    mockInvoke.mockResolvedValue({ data: null, error: new Error('500') });
+    await svc().sync(weekly, '24h');
+    expect(mockStore[LIVE_ACTIVITY_REGISTERED_KEY]).toBeUndefined();
+    mockInvoke.mockResolvedValue({ data: { ok: true }, error: null });
+    await svc().sync(weekly, '24h');
+    expect(mockStore[LIVE_ACTIVITY_REGISTERED_KEY]).toBe('true');
+  });
+
+  it('startLocal still runs after a failed register', async () => {
+    mockStore[LIVE_ACTIVITY_PREF_KEY] = 'true';
+    mockInvoke.mockResolvedValue({ data: null, error: new Error('500') });
+    await svc().sync(weekly, '24h');
+    expect(n.startLocal).toHaveBeenCalledTimes(1);
+  });
+
   it('reads the device id before clearing shared storage', async () => {
+    mockStore[LIVE_ACTIVITY_REGISTERED_KEY] = 'true';
     const order: string[] = [];
     n.getDeviceId.mockImplementation(() => {
       order.push('getDeviceId');
@@ -129,13 +177,128 @@ describe('LiveActivityService', () => {
 
   it('non-Pro unregisters even if switch is on', async () => {
     mockStore[LIVE_ACTIVITY_PREF_KEY] = 'true';
+    mockStore[LIVE_ACTIVITY_REGISTERED_KEY] = 'true';
+    mockStore[LIVE_ACTIVITY_MOOD_VERSE_KEY] = '{}';
     mockIsPremium.mockReturnValue(false);
     await svc().sync(weekly, '24h');
     expect(n.endAll).toHaveBeenCalled();
+    expect(mockInvoke).toHaveBeenCalledTimes(1);
     expect(mockInvoke).toHaveBeenCalledWith('live-activity-register', {
       body: { action: 'unregister', deviceId: 'device-123' },
     });
+    expect(mockStore[LIVE_ACTIVITY_MOOD_VERSE_KEY]).toBeUndefined();
     expect(n.writeSnapshot).not.toHaveBeenCalled();
+  });
+
+  it('subscription not loaded yet: sync does nothing at all', async () => {
+    mockStore[LIVE_ACTIVITY_PREF_KEY] = 'true';
+    mockStore[LIVE_ACTIVITY_REGISTERED_KEY] = 'true';
+    mockStore[LIVE_ACTIVITY_MOOD_VERSE_KEY] = '{}';
+    mockHasLoaded.mockReturnValue(false);
+    mockIsPremium.mockReturnValue(false); // what an unloaded service reports
+    await svc().sync(weekly, '24h');
+    expect(n.configure).not.toHaveBeenCalled();
+    expect(n.writeSnapshot).not.toHaveBeenCalled();
+    expect(n.startLocal).not.toHaveBeenCalled();
+    expect(n.endAll).not.toHaveBeenCalled();
+    expect(n.getDeviceId).not.toHaveBeenCalled();
+    expect(n.clearShared).not.toHaveBeenCalled();
+    expect(mockInvoke).not.toHaveBeenCalled();
+    expect(mockStore[LIVE_ACTIVITY_REGISTERED_KEY]).toBe('true');
+    expect(mockStore[LIVE_ACTIVITY_MOOD_VERSE_KEY]).toBe('{}');
+  });
+
+  describe('serialisation', () => {
+    const deferred = <T,>() => {
+      let resolve!: (v: T) => void;
+      const promise = new Promise<T>((r) => {
+        resolve = r;
+      });
+      return { promise, resolve };
+    };
+    const flush = async () => {
+      for (let i = 0; i < 20; i++) await Promise.resolve();
+    };
+
+    it('switch flipped off mid-sync: no register after the unregister', async () => {
+      mockStore[LIVE_ACTIVITY_PREF_KEY] = 'true';
+      const gate = deferred<string>();
+      mockGetAppUserID.mockImplementation(() => gate.promise);
+
+      const syncing = svc().sync(weekly, '24h');
+      await flush(); // sync is now parked awaiting the RC user id
+      const switchingOff = svc().setEnabled(false);
+      await flush();
+      expect(mockInvoke).not.toHaveBeenCalled(); // setEnabled waits its turn
+
+      gate.resolve('$RCAnonymousID:test-user');
+      await Promise.all([syncing, switchingOff]);
+
+      const actions = mockInvoke.mock.calls.map((c) => c[1].body.action);
+      // The in-flight sync finishes first, then the teardown unregisters.
+      expect(actions).toEqual(['register', 'unregister']);
+      expect(mockStore[LIVE_ACTIVITY_REGISTERED_KEY]).toBeUndefined();
+      expect(n.clearShared).toHaveBeenCalled();
+    });
+
+    it('state flipped off during sync (outside the queue): never registers', async () => {
+      mockStore[LIVE_ACTIVITY_PREF_KEY] = 'true';
+      const gate = deferred<string>();
+      mockGetAppUserID.mockImplementation(() => gate.promise);
+
+      const syncing = svc().sync(weekly, '24h');
+      await flush();
+      mockStore[LIVE_ACTIVITY_PREF_KEY] = 'false'; // e.g. written by another path
+      gate.resolve('$RCAnonymousID:test-user');
+      await syncing;
+
+      expect(mockInvoke).not.toHaveBeenCalled();
+      expect(n.startLocal).not.toHaveBeenCalled();
+    });
+
+    it('Pro lost during sync: never registers', async () => {
+      mockStore[LIVE_ACTIVITY_PREF_KEY] = 'true';
+      const gate = deferred<string>();
+      mockGetAppUserID.mockImplementation(() => gate.promise);
+
+      const syncing = svc().sync(weekly, '24h');
+      await flush();
+      mockIsPremium.mockReturnValue(false);
+      gate.resolve('$RCAnonymousID:test-user');
+      await syncing;
+
+      expect(mockInvoke).not.toHaveBeenCalled();
+      expect(n.startLocal).not.toHaveBeenCalled();
+    });
+
+    it('onVerseShown during a sync keeps the mood verse in the final snapshot', async () => {
+      mockStore[LIVE_ACTIVITY_PREF_KEY] = 'true';
+      // Park sync inside its snapshot build, AFTER it has read the mood key:
+      // the window in which an unqueued onVerseShown would be overwritten.
+      const gate = deferred<DailyVerse>();
+      (getDailyVerse as jest.Mock).mockImplementationOnce(() => gate.promise);
+
+      const syncing = svc().sync(weekly, '24h');
+      await flush();
+      const shown = svc().onVerseShown(quran());
+      await flush();
+      gate.resolve(actualDaily.getDailyVerseSync());
+      await Promise.all([syncing, shown]);
+
+      const calls = n.writeSnapshot.mock.calls;
+      const last = JSON.parse(calls[calls.length - 1][0]);
+      expect(last.mood).toEqual(JSON.parse(mockStore[LIVE_ACTIVITY_MOOD_VERSE_KEY]));
+      expect(last.mood.ref).toBe('Quran 93:4');
+    });
+
+    it('onVerseShown queued behind a switch-off writes nothing', async () => {
+      mockStore[LIVE_ACTIVITY_PREF_KEY] = 'true';
+      const switchingOff = svc().setEnabled(false);
+      const shown = svc().onVerseShown(quran());
+      await Promise.all([switchingOff, shown]);
+      expect(mockStore[LIVE_ACTIVITY_MOOD_VERSE_KEY]).toBeUndefined();
+      expect(n.writeSnapshot).not.toHaveBeenCalled();
+    });
   });
 
   it('register payload carries times only', async () => {
@@ -217,6 +380,15 @@ describe('LiveActivityService', () => {
       expect(n.writeSnapshot).not.toHaveBeenCalled();
     });
 
+    it('does nothing while the subscription is not loaded', async () => {
+      mockHasLoaded.mockReturnValue(false);
+      mockIsPremium.mockReturnValue(false);
+      await svc().onVerseShown(quran());
+      expect(mockStore[LIVE_ACTIVITY_MOOD_VERSE_KEY]).toBeUndefined();
+      expect(n.writeSnapshot).not.toHaveBeenCalled();
+      expect(n.endAll).not.toHaveBeenCalled();
+    });
+
     it('does nothing when unsupported', async () => {
       n.isSupported.mockReturnValue(false);
       await svc().onVerseShown(quran());
@@ -237,6 +409,19 @@ describe('LiveActivityService', () => {
       expect(await svc().getEnabled()).toBe(false);
       expect(n.endAll).toHaveBeenCalled();
       expect(n.clearShared).toHaveBeenCalled();
+      // Never registered, so there is nothing for the server to forget.
+      expect(mockInvoke).not.toHaveBeenCalled();
+    });
+
+    it('turning off after a registration unregisters exactly once and clears the flag', async () => {
+      mockStore[LIVE_ACTIVITY_REGISTERED_KEY] = 'true';
+      await svc().setEnabled(false);
+      await svc().setEnabled(false);
+      expect(mockInvoke).toHaveBeenCalledTimes(1);
+      expect(mockInvoke).toHaveBeenCalledWith('live-activity-register', {
+        body: { action: 'unregister', deviceId: 'device-123' },
+      });
+      expect(mockStore[LIVE_ACTIVITY_REGISTERED_KEY]).toBeUndefined();
     });
   });
 
@@ -249,6 +434,7 @@ describe('LiveActivityService', () => {
     });
 
     it('unregister failure is logged, and clearShared still runs', async () => {
+      mockStore[LIVE_ACTIVITY_REGISTERED_KEY] = 'true';
       mockInvoke.mockResolvedValue({ data: null, error: new Error('500') });
       await expect(svc().disableAndForget()).resolves.toBeUndefined();
       expect(logServiceError).toHaveBeenCalled();
@@ -256,6 +442,7 @@ describe('LiveActivityService', () => {
     });
 
     it('swallows a native throw in disableAndForget', async () => {
+      mockStore[LIVE_ACTIVITY_REGISTERED_KEY] = 'true';
       n.getDeviceId.mockImplementation(() => {
         throw new Error('boom');
       });
