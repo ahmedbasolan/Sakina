@@ -3,6 +3,7 @@ import { Platform } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { PrayerTimings } from './prayerTimesService';
 import { logServiceError } from './errorLoggingService';
+import { toWeeklyTimings } from '../utils/weeklyTimings';
 import type { SpiritualWindow } from './dailyVerseService';
 import { buildWindowContent, loadLockscreenPrefs } from './lockscreenVerseService';
 import { getDailyGuidanceContent } from './dailyGuidanceContent';
@@ -218,10 +219,7 @@ class NotificationService {
    * with its last day if short.
    */
   private toWeekly(timings: PrayerTimings | PrayerTimings[]): PrayerTimings[] {
-    if (!Array.isArray(timings)) return Array(7).fill(timings);
-    if (timings.length === 0) return [];
-    if (timings.length >= 7) return timings.slice(0, 7);
-    return [...timings, ...Array(7 - timings.length).fill(timings[timings.length - 1])];
+    return toWeeklyTimings(timings);
   }
 
   // Builds up to 7 one-shot DATE triggers, one per day offset, all in

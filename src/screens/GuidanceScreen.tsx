@@ -40,6 +40,7 @@ import { setCachedGuidance } from '../services/windowGuidanceCache';
 import { fetchWindowGuidance } from '../services/guidanceWindowFetch';
 import PrayerTimesService, { formatPrayerTime } from '../services/prayerTimesService';
 import { getUserLocation } from '../services/locationStorage';
+import { LiveActivityService } from '../services/liveActivity/liveActivityService';
 
 const GuidanceScreen: React.FC = () => {
   const route = useRoute<any>();
@@ -119,6 +120,16 @@ const GuidanceScreen: React.FC = () => {
   useEffect(() => {
     refreshSelectedTheme();
   }, [refreshSelectedTheme]);
+
+  // Hand the shown verse to the Live Activity card (a mood-picked verse
+  // replaces the daily one until that day ends). Fire-and-forget: the service
+  // never throws and itself ignores non-Quran content, non-Pro users and a
+  // switched-off card. Keyed on the content id so a re-render with the same
+  // verse (e.g. setParams after saving) does not write again.
+  const shownContent = experience?.content;
+  useEffect(() => {
+    if (shownContent) LiveActivityService.getInstance().onVerseShown(shownContent);
+  }, [shownContent?.id]);
 
   // Safety net: this screen is meant to always receive `experience` from its
   // caller (Home and MoodSelection both prefetch before navigating). If it

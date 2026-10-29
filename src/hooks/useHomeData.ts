@@ -12,7 +12,7 @@
  *   • Content — active path, daily verse, last-open date, pull-to-refresh
  */
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { AppState } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { formatDateYMD, subtractDays } from '../utils/date';
@@ -25,6 +25,9 @@ import NotificationService from '../services/notificationService';
 import { getDailyVerse, getDailyVerseSync, DailyVerse } from '../services/dailyVerseService';
 import { logServiceError } from '../services/errorLoggingService';
 import { FreemiumService } from '../services/freemiumService';
+import { LiveActivityService } from '../services/liveActivity/liveActivityService';
+import { useSession } from '../context/AppContext';
+import { toWeeklyTimings } from '../utils/weeklyTimings';
 import { loadSeenStreakMilestones, saveSeenStreakMilestones } from '../services/streakMilestoneStore';
 import { STREAK_MILESTONES } from '../constants';
 
@@ -61,6 +64,9 @@ interface UseHomeDataOptions {
 export function useHomeData({ setStreakCount }: UseHomeDataOptions) {
   const prayerService = PrayerTimesService.getInstance();
   const freemiumService = FreemiumService.getInstance();
+  const { timeFormat } = useSession();
+  const timeFormatRef = useRef(timeFormat);
+  timeFormatRef.current = timeFormat;
 
   // ── Prayer state ─────────────────────────────────────────────────────────
   const [prayerTimings, setPrayerTimings] = useState<PrayerTimings | null>(null);
@@ -156,6 +162,16 @@ export function useHomeData({ setStreakCount }: UseHomeDataOptions) {
           'scheduleNotifications',
           error instanceof Error ? error : new Error(String(error)),
         ));
+
+      // Pro Live Activity: same week of timings (city path: one day repeated
+      // ×7 — toWeeklyTimings), fire-and-forget. The service never throws and
+      // no-ops unless the switch is on and the user is Pro. The clock format
+      // is read from a ref at call time so a late hydration of it never
+      // changes loadPrayerData's identity (which would re-run the load).
+      LiveActivityService.getInstance().sync(
+        toWeeklyTimings(schedulingTimings),
+        timeFormatRef.current,
+      );
     } catch (error) {
       logServiceError('useHomeData', 'loadPrayerData', error instanceof Error ? error : new Error(String(error)));
     } finally {

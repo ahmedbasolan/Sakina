@@ -16,6 +16,11 @@ import { getUserLocation, UserLocation } from '../services/locationStorage';
 import PrayerTimesService, { PrayerTimesData, formatPrayerTime, formatCountdown, TimeFormat } from '../services/prayerTimesService';
 import { LocationPickerModal } from '../components/LocationPickerModal';
 import { useSession } from '../context/AppContext';
+import {
+  shouldShowLiveActivityInvite,
+  markLiveActivityInviteSeen,
+  turnOnLiveActivity,
+} from '../services/liveActivity/liveActivitySwitch';
 
 const SERIF = Typography.fonts.serif;
 
@@ -38,6 +43,7 @@ export default function PrayerTimesScreen({ navigation }: { navigation: any }) {
   const [prayerData, setPrayerData] = useState<PrayerTimesData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [showLocationPicker, setShowLocationPicker] = useState(false);
+  const [showLiveInvite, setShowLiveInvite] = useState(false);
   // Ticks every minute so the live countdown / next-prayer highlight stay fresh.
   const [now, setNow] = useState(Date.now());
   // Bumped on every fetchTimings call so a slower, older request (e.g. a
@@ -100,6 +106,27 @@ export default function PrayerTimesScreen({ navigation }: { navigation: any }) {
   const handleLocationSelected = (newLocation: UserLocation) => {
     setLocation(newLocation);
     fetchTimings(newLocation);
+  };
+
+  useEffect(() => {
+    let cancelled = false;
+    shouldShowLiveActivityInvite().then((show) => {
+      if (!cancelled) setShowLiveInvite(show);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const handleInviteTurnOn = () => {
+    setShowLiveInvite(false);
+    markLiveActivityInviteSeen();
+    turnOnLiveActivity(timeFormat);
+  };
+
+  const handleInviteDismiss = () => {
+    setShowLiveInvite(false);
+    markLiveActivityInviteSeen();
   };
 
   // Recomputed each minute (now is a dep) — getNextPrayerInfo reads the clock.
@@ -191,6 +218,34 @@ export default function PrayerTimesScreen({ navigation }: { navigation: any }) {
             </View>
           ) : prayerData ? (
             <>
+              {/* One-time Live Activity invitation: Pro, supported device,
+                  switch off, never answered. Either answer retires it. */}
+              {showLiveInvite && (
+                <View style={styles.inviteCard}>
+                  <Text style={styles.inviteTitle}>Keep the next prayer in view</Text>
+                  <Text style={styles.inviteBody}>
+                    A live countdown on your Lock Screen and in the Dynamic Island.
+                  </Text>
+                  <TouchableOpacity
+                    style={styles.inviteButton}
+                    onPress={handleInviteTurnOn}
+                    accessibilityRole="button"
+                    accessibilityLabel="Turn on the prayer countdown"
+                  >
+                    <Text style={styles.inviteButtonText}>Turn on</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={styles.inviteDismiss}
+                    onPress={handleInviteDismiss}
+                    hitSlop={{ top: 12, right: 12, bottom: 12, left: 12 }}
+                    accessibilityRole="button"
+                    accessibilityLabel="Not now"
+                  >
+                    <Text style={styles.inviteDismissText}>Not now</Text>
+                  </TouchableOpacity>
+                </View>
+              )}
+
               {/* Next-prayer hero */}
               {displayNext && (
                 <LinearGradient
@@ -386,6 +441,48 @@ const styles = StyleSheet.create({
     fontSize: 15,
     color: Colors.text.muted,
     fontStyle: 'italic',
+  },
+
+  // Live Activity invitation — one primary CTA, a lighter text dismiss.
+  inviteCard: {
+    backgroundColor: Colors.glass.light,
+    borderRadius: BorderRadius.xl,
+    padding: Spacing.xl,
+    borderWidth: 1,
+    borderColor: Colors.glass.border,
+    marginBottom: Spacing.xl,
+  },
+  inviteTitle: {
+    fontFamily: SERIF,
+    fontSize: Typography.sizes.h2,
+    color: Colors.text.primary,
+    marginBottom: Spacing.sm,
+  },
+  inviteBody: {
+    fontSize: Typography.sizes.small,
+    lineHeight: Typography.sizes.small * 1.5,
+    color: Colors.text.secondary,
+    marginBottom: Spacing.lg,
+  },
+  inviteButton: {
+    backgroundColor: Colors.accent.primary,
+    paddingVertical: Spacing.md,
+    borderRadius: BorderRadius.md,
+    alignItems: 'center',
+  },
+  inviteButtonText: {
+    color: Colors.background.secondary,
+    fontWeight: '700',
+    fontSize: Typography.sizes.body,
+  },
+  inviteDismiss: {
+    alignSelf: 'center',
+    marginTop: Spacing.md,
+    paddingVertical: Spacing.xs,
+  },
+  inviteDismissText: {
+    fontSize: Typography.sizes.small,
+    color: Colors.text.muted,
   },
 
   // Next-prayer hero

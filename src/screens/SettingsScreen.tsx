@@ -22,6 +22,9 @@ import { logServiceError } from '../services/errorLoggingService';
 import { AuthService, ACCOUNT_DELETED_BUT_LOCAL_WIPE_FAILED } from '../services/authService';
 import Icon from '../components/Icon';
 import { SubscriptionService } from '../services/subscriptionService';
+import { LiveActivityService } from '../services/liveActivity/liveActivityService';
+import { turnOnLiveActivity, markLiveActivityInviteSeen } from '../services/liveActivity/liveActivitySwitch';
+import { useSession } from '../context/AppContext';
 import { SupabaseDataService } from '../services/supabaseDataService';
 import { PreferencesService } from '../services/preferencesService';
 import { Colors, Spacing, Typography, BorderRadius } from '../theme/DesignSystem';
@@ -181,6 +184,7 @@ const ProfileCard = ({ name, email, isGuest, onSignIn }: ProfileCardProps) => {
 export default function SettingsScreen() {
   const navigation = useNavigation<SettingsNavProp>();
   const { user, signOut, isGuest } = useAuth();
+  const { timeFormat } = useSession();
   const insets = useSafeAreaInsets();
 
   const [isPremium, setIsPremium]           = useState(false);
@@ -188,6 +192,9 @@ export default function SettingsScreen() {
   const [showTransliteration, setShowTransliteration] = useState(true);
   const [autoPlayAudio, setAutoPlayAudio]   = useState(false);
   const [hanafiAsr, setHanafiAsr]           = useState(false);
+  const [liveActivityOn, setLiveActivityOn] = useState(false);
+  // Fixed for the life of the process (native module present, iOS 16.2+).
+  const liveActivityAvailable = LiveActivityService.getInstance().isAvailable();
   const [restoring, setRestoring]           = useState(false);
   const [deletingAccount, setDeletingAccount] = useState(false);
 
@@ -199,6 +206,7 @@ export default function SettingsScreen() {
       setShowTransliteration(prefs.showTransliteration);
       setAutoPlayAudio(prefs.autoPlayAudio);
       setHanafiAsr(prefs.asrMadhab === 'hanafi');
+      LiveActivityService.getInstance().getEnabled().then(setLiveActivityOn);
     }, []),
   );
 
@@ -242,6 +250,20 @@ export default function SettingsScreen() {
   const handleToggleAudio = async (val: boolean) => {
     setAutoPlayAudio(val);
     await PreferencesService.getInstance().setAutoPlayAudio(val);
+  };
+
+  const handleToggleLiveActivity = async (val: boolean) => {
+    setLiveActivityOn(val);
+    const service = LiveActivityService.getInstance();
+    if (val) {
+      // Answering here retires the Prayer Times invitation for good.
+      await markLiveActivityInviteSeen();
+      await turnOnLiveActivity(timeFormat);
+    } else {
+      await service.setEnabled(false);
+    }
+    // Show what was actually saved, not what was tapped.
+    setLiveActivityOn(await service.getEnabled());
   };
 
   const handleToggleHanafiAsr = async (val: boolean) => {
@@ -429,6 +451,27 @@ export default function SettingsScreen() {
             value={isPremium ? undefined : '✦'}
             onPress={() => navigation.navigate('LockscreenVerses')}
           />
+          {/* iOS Live Activity (Dynamic Island + Lock Screen). Hidden where it
+              cannot run. Free users see the row with the Pro mark and a tap
+              opens the paywall; the switch itself is Pro-only. */}
+          {liveActivityAvailable && (
+            isPremium ? (
+              <SettingRow
+                label="Prayer Countdown"
+                icon="timer-outline"
+                showToggle
+                toggleValue={liveActivityOn}
+                onToggle={handleToggleLiveActivity}
+              />
+            ) : (
+              <SettingRow
+                label="Prayer Countdown"
+                icon="timer-outline"
+                value="✦"
+                onPress={() => navigation.navigate('Support')}
+              />
+            )
+          )}
           <SettingRow
             label="Show Transliteration"
             icon="text-outline"

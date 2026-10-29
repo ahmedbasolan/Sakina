@@ -32,7 +32,7 @@ import type { RootStackParamList } from './types';
 
 export const DEEP_LINK_PREFIX = 'sakina://';
 
-const DEEP_LINK_PATHS: ReadonlySet<string> = new Set(['journeys']);
+const DEEP_LINK_PATHS: ReadonlySet<string> = new Set(['journeys', 'prayer-times']);
 
 /**
  * The path of a `sakina://` URL with slashes trimmed and any query or
@@ -60,6 +60,10 @@ export const linking: LinkingOptions<RootStackParamList> = {
           Journeys: 'journeys',
         },
       },
+      // `sakina://prayer-times` — what tapping the Live Activity card opens.
+      // PrayerTimes sits on the root stack (not in a tab), so it is a sibling
+      // of Main; like Main it is only defined once there is a user or guest.
+      PrayerTimes: 'prayer-times',
     },
   },
 };

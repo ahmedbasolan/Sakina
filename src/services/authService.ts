@@ -6,6 +6,34 @@ import * as QueryParams from 'expo-auth-session/build/QueryParams';
 import { supabase } from '../config/supabaseClient';
 import { Session } from '@supabase/supabase-js';
 import { clearAllLocalUserData } from '../database/operations';
+import { LiveActivityService } from './liveActivity/liveActivityService';
+import { logServiceError } from './errorLoggingService';
+
+/**
+ * The Live Activity's server registration and shared-storage snapshot belong
+ * to the account that created them. The service itself never throws, but this
+ * runs on the account-deletion and sign-out paths, where nothing it does may
+ * block or fail the user's request — so it is also guarded here and given a
+ * deadline (the unregister is a network call). On timeout the cleanup keeps
+ * running in the service's queue; we just stop waiting for it.
+ */
+const LIVE_ACTIVITY_CLEANUP_DEADLINE_MS = 5000;
+
+async function forgetLiveActivity(): Promise<void> {
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  try {
+    await Promise.race([
+      LiveActivityService.getInstance().disableAndForget(),
+      new Promise<void>((resolve) => {
+        timer = setTimeout(resolve, LIVE_ACTIVITY_CLEANUP_DEADLINE_MS);
+      }),
+    ]);
+  } catch (error) {
+    logServiceError('AuthService', 'forgetLiveActivity', error instanceof Error ? error : new Error(String(error)));
+  } finally {
+    if (timer !== undefined) clearTimeout(timer);
+  }
+}
 
 // Lets the in-app browser dismiss itself and hand the redirect back to the app.
 WebBrowser.maybeCompleteAuthSession();
@@ -63,6 +91,8 @@ export class AuthService {
   }
 
   async signOut() {
+    // Before the session goes: the unregister call is authorised by it.
+    await forgetLiveActivity();
     const { error } = await supabase.auth.signOut();
     if (error) throw error;
   }
@@ -270,6 +300,13 @@ export class AuthService {
     // device re-upload this account's history into someone else's — see
     // clearAllLocalUserData's docstring. Awaited, not fire-and-forget: the
     // auth listener fires on signOut below and starts tearing the tree down.
+    //
+    // The Live Activity goes first: clearAllLocalUserData does not touch
+    // AsyncStorage, so this is the only thing that clears its keys. Its
+    // unregister call is best-effort here (the server delete may already have
+    // removed the row). It cannot fail the deletion — the account is already
+    // gone server-side.
+    await forgetLiveActivity();
     let localWipeFailed = false;
     try {
       await clearAllLocalUserData();

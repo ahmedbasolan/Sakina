@@ -23,6 +23,17 @@ describe('deep linking', () => {
       expect(state?.routes[0].state?.routes[0].name).toBe('Journeys');
     });
 
+    // The Live Activity card (see modules/sakina-live-activity) opens this.
+    // PrayerTimes is a root-stack screen, not a tab, so no `Main` wrapper.
+    it.each(['sakina://prayer-times', 'sakina:///prayer-times', 'sakina://prayer-times/'])(
+      '%s opens the Prayer Times screen',
+      (url) => {
+        const state = stateForUrl(url);
+        expect(state?.routes).toHaveLength(1);
+        expect(state?.routes[0].name).toBe('PrayerTimes');
+      },
+    );
+
     it('a link arriving while the app is open becomes a navigate to Main > Journeys', () => {
       const action = getActionFromState(stateForUrl('sakina://journeys')!, linking.config);
       expect(action).toMatchObject({
@@ -44,6 +55,8 @@ describe('deep linking', () => {
       'sakina://Journeys',
       'sakina://journeys/extra',
       'sakina://journeys-old',
+      'sakina://prayer-times/extra',
+      'sakina://PrayerTimes',
       // Other schemes, including the Expo dev client's own.
       'exp+sakina://expo-development-client/?url=http%3A%2F%2F10.0.0.2%3A8081',
       'https://sakina.app/journeys',
