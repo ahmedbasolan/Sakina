@@ -19,7 +19,11 @@
       "infoPlist": {
         "UIUserInterfaceStyle": "Dark",
         "ITSAppUsesNonExemptEncryption": false,
-        "NSLocationWhenInUseUsageDescription": "Sakina uses your location to calculate accurate prayer times."
+        "NSLocationWhenInUseUsageDescription": "Sakina uses your location to calculate accurate prayer times.",
+        "NSSupportsLiveActivities": true
+      },
+      "entitlements": {
+        "com.apple.security.application-groups": ["group.com.lelahmed.sakina"]
       }
     },
     "android": {
@@ -72,7 +76,8 @@
           "savePhotosPermission": "Sakina saves the verse cards you create to your photo library.",
           "granularPermissions": []
         }
-      ]
+      ],
+      "@bacons/apple-targets"
     ],
     "extra": {
       "eas": {
