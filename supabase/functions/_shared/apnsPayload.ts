@@ -7,7 +7,8 @@
 //   - `apns-push-type: liveactivity`; `apns-topic: <bundleID>.push-type.liveactivity`;
 //     `apns-priority` 5 or 10, and 5 does not count toward the hourly budget.
 //   - `timestamp` in seconds; `event` start / update / end.
-//   - a start "must" include an `alert` plus `attributes-type` and `attributes`.
+//   - a start "must" include an `alert` plus `attributes-type` and `attributes`, and
+//     on iOS 18+ asks for an update token with `input-push-token: 1`.
 //   - "If you end a Live Activity, include the final content state", and content-state
 //     must match the Swift ContentState "to ensure the system can decode the JSON
 //     payload and update or end the Live Activity" — so end carries one too.
@@ -62,6 +63,12 @@ export function buildPush(action: Action, now: number, final?: ScheduledPrayer):
           'content-state': contentState(action.next),
           'attributes-type': ATTRIBUTES_TYPE,
           attributes: { version: ATTRIBUTES_VERSION },
+          // Ruling R20. Apple: "For devices running iOS 18 and later … you can add
+          // `input-push-token: 1` to your payload to start a Live Activity and receive
+          // a new push token." Without it an iOS 18+ push-started card never gives us
+          // the update token the update/end chain needs. Pre-iOS-18 devices receive
+          // the update token on a push start anyway (same article).
+          'input-push-token': 1,
           alert: { title: 'Sakina', body: `Counting down to ${action.next.name}` },
         },
       },

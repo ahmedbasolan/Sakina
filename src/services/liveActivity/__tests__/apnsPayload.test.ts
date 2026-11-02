@@ -115,6 +115,12 @@ describe('buildPush', () => {
     expect(bare['content-state'].prayerEpoch).toBe(NOW);
   });
 
+  it('start asks for an update token (input-push-token: 1)', () => {
+    expect(aps(start)['input-push-token']).toBe(1);
+    expect(aps(update)).not.toHaveProperty('input-push-token');
+    expect(aps(end)).not.toHaveProperty('input-push-token');
+  });
+
   it('only start carries attributes, and only update carries a stale-date', () => {
     expect(aps(update)).not.toHaveProperty('attributes');
     expect(aps(end)).not.toHaveProperty('attributes');

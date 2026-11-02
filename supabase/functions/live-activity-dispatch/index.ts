@@ -21,7 +21,10 @@
  *   RevenueCat outage keeps the last verdict (and skips a never-checked row) — it is
  *   never read as "not Pro", which would delete a paying user's row.
  * - Logs carry counts and APNs/RevenueCat reason codes only: never push tokens,
- *   device ids or RevenueCat ids.
+ *   device ids, RevenueCat ids or the APNs provider JWT.
+ * - The provider JWT is shared across isolates through the single-row
+ *   `live_activity_apns_token` table (migration 007), so a fresh isolate every
+ *   minute does not sign a fresh token every minute.
  *
  * Secrets (supabase secrets set …): APNS_KEY_P8 (the .p8 file's contents),
  * APNS_KEY_ID, APNS_TEAM_ID, REVENUECAT_SECRET_KEY, DISPATCH_SECRET.
@@ -47,9 +50,10 @@ const TABLE = 'live_activity_devices';
 const BATCH_LIMIT = 500;
 const CONCURRENCY = 8;
 const PRO_TTL_S = 6 * 3600;
+const TOKEN_TABLE = 'live_activity_apns_token';
 // Apple: refresh the provider token no more than once every 20 min and no less than
-// once every 60 min.
-const JWT_MAX_AGE_S = 50 * 60;
+// once every 60 min. Reused while under 45 min old (ruling R22).
+const JWT_MAX_AGE_S = 45 * 60;
 // Stop picking up new devices after this, so a run ends before the next minute's
 // run starts and the two never push to the same device. Unstarted rows stay due.
 const RUN_BUDGET_MS = 45_000;
@@ -159,10 +163,22 @@ function base64url(bytes: Uint8Array): string {
 
 const base64urlJson = (o: unknown): string => base64url(new TextEncoder().encode(JSON.stringify(o)));
 
+interface ProviderJwt {
+  iat: number;
+  jwt: string;
+}
+
 let signingKey: Promise<CryptoKey> | null = null;
-// A promise, so concurrent workers share one token rather than each minting its own
-// (Apple rejects a provider that changes tokens too often: TooManyProviderTokenUpdates).
-let cachedJwt: { iat: number; token: Promise<string> } | null = null;
+// Two layers (ruling R22). Apple rejects a provider that changes tokens more often
+// than every 20 min (TooManyProviderTokenUpdates), and each cron minute may run in a
+// fresh isolate, so a module-scope cache alone would sign a new token every minute.
+//   1. module scope: `cachedJwt`, plus `inflight` so concurrent workers share one
+//      lookup instead of each minting their own;
+//   2. the single-row `live_activity_apns_token` table, shared by every isolate.
+// A failed table read or write falls back to signing / the module cache; it never
+// fails the run. The JWT itself is never logged.
+let cachedJwt: ProviderJwt | null = null;
+let inflight: Promise<ProviderJwt> | null = null;
 
 function importSigningKey(): Promise<CryptoKey> {
   const pem = Deno.env.get('APNS_KEY_P8') ?? '';
@@ -192,17 +208,69 @@ async function signJwt(iat: number): Promise<string> {
   return `${input}.${base64url(new Uint8Array(sig))}`;
 }
 
-function providerToken(now: number): Promise<string> {
-  if (!cachedJwt || now - cachedJwt.iat >= JWT_MAX_AGE_S) {
-    const token = signJwt(now);
-    cachedJwt = { iat: now, token };
-    // A failed import/sign must not stay cached.
-    token.catch(() => {
-      if (cachedJwt?.token === token) cachedJwt = null;
-      signingKey = null;
-    });
+const isFresh = (t: ProviderJwt, now: number): boolean =>
+  now - t.iat < JWT_MAX_AGE_S && t.iat <= now + 60; // a future iat is not trusted
+
+async function obtainJwt(admin: SupabaseClient, now: number, counts: Counts): Promise<ProviderJwt> {
+  try {
+    const { data, error } = await admin
+      .from(TOKEN_TABLE)
+      .select('jwt, issued_at')
+      .eq('id', 1)
+      .maybeSingle();
+    if (error) throw error;
+    if (data && typeof data.jwt === 'string' && typeof data.issued_at === 'number') {
+      const stored = { iat: data.issued_at, jwt: data.jwt };
+      if (isFresh(stored, now)) return stored;
+    }
+  } catch {
+    bump(counts, 'jwt_store_read_failed');
   }
-  return cachedJwt.token;
+
+  let jwt: string;
+  try {
+    jwt = await signJwt(now);
+  } catch (err) {
+    signingKey = null; // a failed import must not stay cached
+    throw err;
+  }
+  bump(counts, 'jwt_signed');
+
+  try {
+    const { error } = await admin
+      .from(TOKEN_TABLE)
+      .upsert({ id: 1, jwt, issued_at: now }, { onConflict: 'id' });
+    if (error) throw error;
+  } catch {
+    bump(counts, 'jwt_store_write_failed');
+  }
+  return { iat: now, jwt };
+}
+
+async function providerToken(admin: SupabaseClient, now: number, counts: Counts): Promise<string> {
+  if (cachedJwt && isFresh(cachedJwt, now)) return cachedJwt.jwt;
+  inflight ??= obtainJwt(admin, now, counts)
+    .then((t) => {
+      cachedJwt = t;
+      return t;
+    })
+    .finally(() => {
+      inflight = null;
+    });
+  return (await inflight).jwt;
+}
+
+// APNs refused the provider token itself: drop it from both layers so the next run
+// signs a fresh one (e.g. after APNS_KEY_ID / APNS_KEY_P8 are corrected) instead of
+// reusing the stored one for up to 45 min. Only the row still holding THIS jwt.
+async function discardJwt(admin: SupabaseClient, jwt: string, counts: Counts): Promise<void> {
+  if (cachedJwt?.jwt === jwt) cachedJwt = null;
+  try {
+    const { error } = await admin.from(TOKEN_TABLE).delete().eq('id', 1).eq('jwt', jwt);
+    if (error) throw error;
+  } catch {
+    bump(counts, 'jwt_store_delete_failed');
+  }
 }
 
 // ── APNs send ───────────────────────────────────────────────────────────────
@@ -218,6 +286,7 @@ const safeReason = (r: unknown): string =>
   typeof r === 'string' && /^[A-Za-z]{1,40}$/.test(r) ? r : 'unknown';
 
 async function send(
+  admin: SupabaseClient,
   apnsEnv: DeviceRow['apns_env'],
   deviceToken: string,
   push: ApnsPush,
@@ -227,7 +296,7 @@ async function send(
   const host = apnsEnv === 'sandbox' ? 'api.sandbox.push.apple.com' : 'api.push.apple.com';
   let jwt: string;
   try {
-    jwt = await providerToken(now);
+    jwt = await providerToken(admin, now, counts);
   } catch {
     bump(counts, 'apns_jwt_failed');
     return { kind: 'halt' };
@@ -271,7 +340,7 @@ async function send(
   }
   if (res.status === 429 || res.status >= 500) return { kind: 'retry' };
   if (res.status === 403 && (reason === 'ExpiredProviderToken' || reason === 'InvalidProviderToken')) {
-    cachedJwt = null; // mint a fresh one next run
+    await discardJwt(admin, jwt, counts);
   }
   // 403 (provider token, Forbidden), 400 BadTopic / TopicDisallowed / BadPriority …,
   // 413: our configuration or payload, so every other device would fail the same way.
@@ -354,7 +423,7 @@ async function processDevice(
     if (!target) {
       bump(counts, push.tokenKind === 'pushToStart' ? 'skip_no_push_to_start_token' : 'skip_no_activity_token');
     } else {
-      const result = await send(row.apns_env, target, push, now, counts);
+      const result = await send(admin, row.apns_env, target, push, now, counts);
       if (result.kind === 'halt') {
         run.halted = true;
         retry = true;

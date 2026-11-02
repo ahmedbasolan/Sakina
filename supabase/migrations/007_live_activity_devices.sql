@@ -1,6 +1,7 @@
 -- 007_live_activity_devices.sql
 -- Server state for the Pro-only Dynamic Island prayer countdown: one row per
--- device that opted in, plus the per-minute cron that wakes the dispatcher.
+-- device that opted in, the dispatcher's shared APNs provider token, plus the
+-- per-minute cron that wakes the dispatcher.
 --
 -- Run in: Supabase Dashboard → SQL Editor → New query
 --
@@ -40,6 +41,23 @@ ALTER TABLE public.live_activity_devices ENABLE ROW LEVEL SECURITY;
 -- Deliberately no policies. Belt and braces: take away the API roles' table
 -- privileges too, so a future "enable all policies" slip cannot expose push tokens.
 REVOKE ALL ON public.live_activity_devices FROM anon, authenticated;
+
+-- ── APNs provider token (single row) ─────────────────────────────────────────
+-- The dispatcher's ES256 provider JWT, shared across edge-function isolates. Each
+-- cron minute may run in a fresh isolate; signing a new token every minute would
+-- break Apple's "no more than once every 20 minutes" rule
+-- (TooManyProviderTokenUpdates). The dispatcher reuses this token while it is under
+-- 45 minutes old (Apple rejects one older than 60) and otherwise signs and upserts
+-- a new one. Only the service role touches it: RLS on, no policies, privileges
+-- revoked, exactly like the devices table.
+CREATE TABLE IF NOT EXISTS public.live_activity_apns_token (
+  id         smallint PRIMARY KEY DEFAULT 1 CHECK (id = 1),
+  jwt        text     NOT NULL,
+  issued_at  bigint   NOT NULL -- epoch seconds, the JWT's `iat`
+);
+
+ALTER TABLE public.live_activity_apns_token ENABLE ROW LEVEL SECURITY;
+REVOKE ALL ON public.live_activity_apns_token FROM anon, authenticated;
 
 -- ── Extensions ───────────────────────────────────────────────────────────────
 -- IF NOT EXISTS makes both a no-op when the project already has them enabled from
