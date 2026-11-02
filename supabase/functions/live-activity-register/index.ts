@@ -23,6 +23,8 @@
  * Writes use the service role, because the table has RLS on with no policies.
  *
  * Deploy: supabase functions deploy live-activity-register --no-verify-jwt
+ *   (supabase/config.toml sets verify_jwt = false for it too, so a deploy that
+ *   forgets the flag cannot switch verification back on)
  */
 
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
@@ -104,6 +106,9 @@ Deno.serve(async (req: Request) => {
 
   try {
     // ── unregister: by device id alone, no session needed ──────────────────
+    // An id the table never saw deletes nothing and still answers 200. The app
+    // relies on that: it unregisters any id it holds (a register that may or may
+    // not have landed included) and forgets the id only after a 2xx.
     if (request.action === 'unregister') {
       const { error } = await admin.from(TABLE).delete().eq('device_id', request.deviceId);
       if (error) throw error;

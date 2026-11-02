@@ -8,6 +8,7 @@
 //   sakina.liveActivity.deviceId.v1      String  lowercase UUID, created by getDeviceId
 //   sakina.liveActivity.localStartId.v1  String  id of the activity the app started itself
 //   sakina.liveActivity.localStartAt.v1  Double  its start, epoch seconds
+//   sakina.liveActivity.switchedOff.v1   Bool    switched off, server not told yet
 //
 // No ActivityKit in this file: it compiles for the app's iOS 15.1 floor.
 
@@ -22,6 +23,7 @@ enum SharedStore {
   static let deviceIdKey = "sakina.liveActivity.deviceId.v1"
   static let localStartIdKey = "sakina.liveActivity.localStartId.v1"
   static let localStartAtKey = "sakina.liveActivity.localStartAt.v1"
+  static let switchedOffKey = "sakina.liveActivity.switchedOff.v1"
 
   static var defaults: UserDefaults? {
     return UserDefaults(suiteName: appGroup)
@@ -51,13 +53,24 @@ enum SharedStore {
   }
 
   /// The stored device id, created and persisted on first use. `""` only if
-  /// the App Group itself is unavailable (missing entitlement).
+  /// the App Group itself is unavailable (missing entitlement). Called only
+  /// when JS registers, i.e. the user is opting in, so it also lifts the
+  /// switched-off mark.
   static func deviceId() -> String {
+    defaults?.removeObject(forKey: switchedOffKey)
     if let existing = existingDeviceId() { return existing }
     guard let defaults = defaults else { return "" }
     let created = UUID().uuidString.lowercased()
     defaults.set(created, forKey: deviceIdKey)
     return created
+  }
+
+  /// True only while the user is opted in: a device id exists and no
+  /// switch-off is waiting for the server. The token forwarder posts nothing
+  /// and keeps no card unless this holds.
+  static func isParticipating() -> Bool {
+    guard existingDeviceId() != nil else { return false }
+    return defaults?.bool(forKey: switchedOffKey) != true
   }
 
   static func writeSnapshot(_ json: String) {
@@ -85,11 +98,21 @@ enum SharedStore {
     defaults?.removeObject(forKey: localStartAtKey)
   }
 
-  /// Removes the verse snapshot and the device id (and the local-start
-  /// record). The register URL and anon key are not personal and stay.
+  /// Switched off but the unregister did not reach the server: removes the
+  /// verse snapshot and the local-start record, keeps the device id (JS still
+  /// has to unregister it), and sets the switched-off mark.
+  static func markSwitchedOff() {
+    defaults?.removeObject(forKey: snapshotKey)
+    clearLocalStart()
+    defaults?.set(true, forKey: switchedOffKey)
+  }
+
+  /// Removes the verse snapshot, the device id, the switched-off mark and the
+  /// local-start record. The register URL and anon key are not personal and stay.
   static func clear() {
     defaults?.removeObject(forKey: snapshotKey)
     defaults?.removeObject(forKey: deviceIdKey)
+    defaults?.removeObject(forKey: switchedOffKey)
     clearLocalStart()
   }
 }

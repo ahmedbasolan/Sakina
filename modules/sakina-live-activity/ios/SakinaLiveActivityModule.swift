@@ -32,10 +32,11 @@ public class SakinaLiveActivityModule: Module {
     }
 
     Function("getDeviceId") { () -> String in
-      let hadId = SharedStore.existingDeviceId() != nil
-      let id = SharedStore.deviceId()
-      if !hadId && !id.isEmpty {
-        // Token posts were skipped while there was no id; send them now.
+      let wasParticipating = SharedStore.isParticipating()
+      let id = SharedStore.deviceId() // also lifts a switched-off mark
+      if !wasParticipating && !id.isEmpty {
+        // Token posts were skipped while there was no id (or the device was
+        // marked switched off); send them now.
         if #available(iOS 17.2, *) {
           Task { @MainActor in
             LiveActivityTokenForwarder.shared.repostCurrentTokens()
@@ -43,6 +44,12 @@ public class SakinaLiveActivityModule: Module {
         }
       }
       return id
+    }
+
+    // Never creates an id: teardown must unregister an existing one but never
+    // mint one for a user who never opted in.
+    Function("peekDeviceId") { () -> String in
+      return SharedStore.existingDeviceId() ?? ""
     }
 
     Function("writeSnapshot") { (json: String) -> Void in
@@ -68,6 +75,12 @@ public class SakinaLiveActivityModule: Module {
       if #available(iOS 17.2, *) {
         await LiveActivityTokenForwarder.shared.endAll()
       }
+    }
+
+    // The unregister failed: keep the id for the retry, drop the rest, and
+    // stop the forwarder from keeping or feeding a card meanwhile.
+    Function("markSwitchedOff") {
+      SharedStore.markSwitchedOff()
     }
 
     Function("clearShared") {

@@ -12,28 +12,56 @@ jest.mock('@react-native-async-storage/async-storage', () => ({
   }),
 }));
 
+// The App Group, as the native module keeps it: getDeviceId mints an id (and
+// lifts a switched-off mark), peekDeviceId never does, clearShared deletes it.
+const mockNative = { id: '', switchedOff: false, minted: 0 };
+const MINTED_IDS = ['device-123', 'device-456', 'device-789'];
+const mockMint = (): string => {
+  mockNative.switchedOff = false;
+  if (!mockNative.id) mockNative.id = MINTED_IDS[mockNative.minted++];
+  return mockNative.id;
+};
+const mockPeek = (): string => mockNative.id;
+const mockClearShared = (): void => {
+  mockNative.id = '';
+  mockNative.switchedOff = false;
+};
+const mockMarkSwitchedOff = (): void => {
+  mockNative.switchedOff = true;
+};
+
 jest.mock('../../../../modules/sakina-live-activity', () => ({
   isSupported: jest.fn(() => true),
   configure: jest.fn(),
-  getDeviceId: jest.fn(() => 'device-123'),
+  getDeviceId: jest.fn(() => mockMint()),
+  peekDeviceId: jest.fn(() => mockPeek()),
   writeSnapshot: jest.fn(),
   startLocal: jest.fn(() => Promise.resolve(true)),
   endAll: jest.fn(() => Promise.resolve()),
-  clearShared: jest.fn(),
+  markSwitchedOff: jest.fn(() => mockMarkSwitchedOff()),
+  clearShared: jest.fn(() => mockClearShared()),
 }));
 
 const mockInvoke = jest.fn();
 jest.mock('../../../config/supabaseClient', () => ({
   supabase: { functions: { invoke: (...a: unknown[]) => mockInvoke(...a) } },
+  supabaseUrl: 'https://project.test.supabase.co',
+  supabaseAnonKey: 'anon-key-test',
 }));
 
 const mockIsPremium = jest.fn(() => true);
 const mockHasLoaded = jest.fn(() => true);
+const mockLoadedCallbacks: Array<() => void> = [];
+const mockOnLoaded = jest.fn((cb: () => void) => {
+  if (mockHasLoaded()) cb();
+  else mockLoadedCallbacks.push(cb);
+});
 jest.mock('../../subscriptionService', () => ({
   SubscriptionService: {
     getInstance: () => ({
       isPremium: () => mockIsPremium(),
       hasLoaded: () => mockHasLoaded(),
+      onLoaded: (cb: () => void) => mockOnLoaded(cb),
     }),
   },
 }));
@@ -62,6 +90,7 @@ import {
   LIVE_ACTIVITY_PREF_KEY,
   LIVE_ACTIVITY_MOOD_VERSE_KEY,
   LIVE_ACTIVITY_REGISTERED_KEY,
+  LIVE_ACTIVITY_PENDING_UNREGISTER_KEY,
 } from '../liveActivityService';
 import type { Content } from '../../../types';
 import type { PrayerTimings } from '../../prayerTimesService';
@@ -91,37 +120,70 @@ const quran = (over: Partial<Content> = {}): Content =>
   }) as Content;
 
 const svc = () => LiveActivityService.getInstance();
+const OK = { data: { ok: true }, error: null };
+const FAILED = { data: null, error: new Error('FunctionsFetchError') };
+const actions = () => mockInvoke.mock.calls.map((c) => `${c[1].body.action}:${c[1].body.deviceId}`);
+/** Lets a sync started by a callback (not awaited by the test) run to the end. */
+const settle = () => new Promise<void>((resolve) => setImmediate(resolve));
+
+/** A device that registered earlier: an id in the App Group and the flag set. */
+function registeredDevice(): void {
+  mockNative.id = 'device-123';
+  mockNative.minted = 1;
+  mockStore[LIVE_ACTIVITY_REGISTERED_KEY] = 'true';
+}
 
 describe('LiveActivityService', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     for (const k of Object.keys(mockStore)) delete mockStore[k];
+    mockNative.id = '';
+    mockNative.switchedOff = false;
+    mockNative.minted = 0;
+    mockLoadedCallbacks.length = 0;
+    // A fresh service per test: no queue or deferred sync carried over.
+    (LiveActivityService as unknown as { instance: LiveActivityService | null }).instance = null;
     n.isSupported.mockReturnValue(true);
-    n.getDeviceId.mockReturnValue('device-123');
-    n.clearShared.mockImplementation(() => undefined);
+    n.getDeviceId.mockImplementation(() => mockMint());
+    n.peekDeviceId.mockImplementation(() => mockPeek());
+    n.clearShared.mockImplementation(() => mockClearShared());
+    n.markSwitchedOff.mockImplementation(() => mockMarkSwitchedOff());
     mockIsPremium.mockReturnValue(true);
     mockHasLoaded.mockReturnValue(true);
     mockGetAppUserID.mockImplementation(() => Promise.resolve('$RCAnonymousID:test-user'));
-    mockInvoke.mockResolvedValue({ data: { ok: true }, error: null });
+    mockInvoke.mockResolvedValue(OK);
     jest.useFakeTimers({ doNotFake: ['nextTick', 'setImmediate', 'queueMicrotask'] });
     jest.setSystemTime(new Date('2026-03-10T08:00:00Z'));
   });
   afterEach(() => jest.useRealTimers());
 
-  it('does nothing when unsupported', async () => {
+  it('does nothing when unsupported and never registered', async () => {
     n.isSupported.mockReturnValue(false);
     mockStore[LIVE_ACTIVITY_PREF_KEY] = 'true';
     await svc().sync(weekly, '24h');
     expect(n.configure).not.toHaveBeenCalled();
     expect(n.endAll).not.toHaveBeenCalled();
     expect(n.clearShared).not.toHaveBeenCalled();
+    expect(n.getDeviceId).not.toHaveBeenCalled();
     expect(mockInvoke).not.toHaveBeenCalled();
   });
 
+  it('Live Activities turned off in iOS Settings after registering: tears down', async () => {
+    registeredDevice();
+    mockStore[LIVE_ACTIVITY_PREF_KEY] = 'true';
+    n.isSupported.mockReturnValue(false);
+    await svc().sync(weekly, '24h');
+    expect(n.endAll).toHaveBeenCalled();
+    expect(actions()).toEqual(['unregister:device-123']);
+    expect(mockNative.id).toBe('');
+    expect(mockStore[LIVE_ACTIVITY_REGISTERED_KEY]).toBeUndefined();
+    expect(n.configure).not.toHaveBeenCalled();
+  });
+
   it('switch off unregisters and ends cards', async () => {
+    registeredDevice();
     mockStore[LIVE_ACTIVITY_PREF_KEY] = 'false';
     mockStore[LIVE_ACTIVITY_MOOD_VERSE_KEY] = '{}';
-    mockStore[LIVE_ACTIVITY_REGISTERED_KEY] = 'true';
     await svc().sync(weekly, '24h');
     expect(n.endAll).toHaveBeenCalled();
     expect(mockInvoke).toHaveBeenCalledTimes(1);
@@ -131,17 +193,22 @@ describe('LiveActivityService', () => {
     expect(n.clearShared).toHaveBeenCalled();
     expect(mockStore[LIVE_ACTIVITY_MOOD_VERSE_KEY]).toBeUndefined();
     expect(mockStore[LIVE_ACTIVITY_REGISTERED_KEY]).toBeUndefined();
+    expect(mockStore[LIVE_ACTIVITY_PENDING_UNREGISTER_KEY]).toBeUndefined();
     expect(n.startLocal).not.toHaveBeenCalled();
   });
 
   it('switch-off user who never registered: no device id minted, no server call', async () => {
     mockStore[LIVE_ACTIVITY_PREF_KEY] = 'false';
     await svc().sync(weekly, '24h');
+    await svc().setEnabled(false);
+    await svc().disableAndForget();
     expect(n.getDeviceId).not.toHaveBeenCalled();
+    expect(mockNative.id).toBe('');
     expect(mockInvoke).not.toHaveBeenCalled();
     // Local cleanup still runs.
     expect(n.endAll).toHaveBeenCalled();
     expect(n.clearShared).toHaveBeenCalled();
+    expect(mockStore[LIVE_ACTIVITY_PENDING_UNREGISTER_KEY]).toBeUndefined();
   });
 
   it('a successful register sets the registered flag; a failed one does not', async () => {
@@ -149,9 +216,21 @@ describe('LiveActivityService', () => {
     mockInvoke.mockResolvedValue({ data: null, error: new Error('500') });
     await svc().sync(weekly, '24h');
     expect(mockStore[LIVE_ACTIVITY_REGISTERED_KEY]).toBeUndefined();
-    mockInvoke.mockResolvedValue({ data: { ok: true }, error: null });
+    mockInvoke.mockResolvedValue(OK);
     await svc().sync(weekly, '24h');
     expect(mockStore[LIVE_ACTIVITY_REGISTERED_KEY]).toBe('true');
+  });
+
+  it('a register that throws counts as maybe-registered, so switch-off unregisters it', async () => {
+    mockStore[LIVE_ACTIVITY_PREF_KEY] = 'true';
+    mockInvoke.mockRejectedValueOnce(new Error('socket closed after send'));
+    await svc().sync(weekly, '24h');
+    expect(mockStore[LIVE_ACTIVITY_REGISTERED_KEY]).toBe('true');
+    expect(n.startLocal).not.toHaveBeenCalled();
+
+    await svc().setEnabled(false);
+    expect(actions()).toEqual(['register:device-123', 'unregister:device-123']);
+    expect(mockNative.id).toBe('');
   });
 
   it('configures native again after a successful register, not after a failed one', async () => {
@@ -161,7 +240,7 @@ describe('LiveActivityService', () => {
     expect(n.configure).toHaveBeenCalledTimes(1); // the initial one only
 
     n.configure.mockClear();
-    mockInvoke.mockResolvedValue({ data: { ok: true }, error: null });
+    mockInvoke.mockResolvedValue(OK);
     await svc().sync(weekly, '24h');
     expect(n.configure).toHaveBeenCalledTimes(2);
     expect(n.configure.mock.calls[1][0]).toEqual(n.configure.mock.calls[0][0]);
@@ -170,30 +249,41 @@ describe('LiveActivityService', () => {
     expect(n.configure.mock.invocationCallOrder[1]).toBeGreaterThan(registerOrder);
   });
 
-  it('startLocal still runs after a failed register', async () => {
+  it('configures native with the URL and anon key from supabaseClient (not @env)', async () => {
+    mockStore[LIVE_ACTIVITY_PREF_KEY] = 'true';
+    await svc().sync(weekly, '24h');
+    expect(n.configure).toHaveBeenCalledWith({
+      registerUrl: 'https://project.test.supabase.co/functions/v1/live-activity-register',
+      anonKey: 'anon-key-test',
+    });
+  });
+
+  it('no local card after a failed register', async () => {
     mockStore[LIVE_ACTIVITY_PREF_KEY] = 'true';
     mockInvoke.mockResolvedValue({ data: null, error: new Error('500') });
     await svc().sync(weekly, '24h');
-    expect(n.startLocal).toHaveBeenCalledTimes(1);
+    expect(n.startLocal).not.toHaveBeenCalled();
   });
 
-  it('reads the device id before clearing shared storage', async () => {
-    mockStore[LIVE_ACTIVITY_REGISTERED_KEY] = 'true';
+  it('peeks the device id (never mints) before clearing shared storage', async () => {
+    registeredDevice();
     const order: string[] = [];
-    n.getDeviceId.mockImplementation(() => {
-      order.push('getDeviceId');
-      return 'device-123';
+    n.peekDeviceId.mockImplementation(() => {
+      order.push('peekDeviceId');
+      return mockPeek();
     });
     n.clearShared.mockImplementation(() => {
       order.push('clearShared');
+      mockClearShared();
     });
     await svc().disableAndForget();
-    expect(order).toEqual(['getDeviceId', 'clearShared']);
+    expect(order).toEqual(['peekDeviceId', 'clearShared']);
+    expect(n.getDeviceId).not.toHaveBeenCalled();
   });
 
   it('non-Pro unregisters even if switch is on', async () => {
+    registeredDevice();
     mockStore[LIVE_ACTIVITY_PREF_KEY] = 'true';
-    mockStore[LIVE_ACTIVITY_REGISTERED_KEY] = 'true';
     mockStore[LIVE_ACTIVITY_MOOD_VERSE_KEY] = '{}';
     mockIsPremium.mockReturnValue(false);
     await svc().sync(weekly, '24h');
@@ -207,8 +297,8 @@ describe('LiveActivityService', () => {
   });
 
   it('subscription not loaded yet: sync does nothing at all', async () => {
+    registeredDevice();
     mockStore[LIVE_ACTIVITY_PREF_KEY] = 'true';
-    mockStore[LIVE_ACTIVITY_REGISTERED_KEY] = 'true';
     mockStore[LIVE_ACTIVITY_MOOD_VERSE_KEY] = '{}';
     mockHasLoaded.mockReturnValue(false);
     mockIsPremium.mockReturnValue(false); // what an unloaded service reports
@@ -222,6 +312,161 @@ describe('LiveActivityService', () => {
     expect(mockInvoke).not.toHaveBeenCalled();
     expect(mockStore[LIVE_ACTIVITY_REGISTERED_KEY]).toBe('true');
     expect(mockStore[LIVE_ACTIVITY_MOOD_VERSE_KEY]).toBe('{}');
+  });
+
+  describe('cold start: a sync skipped before the subscription loads runs once it has', () => {
+    it('runs once, with the newest remembered args', async () => {
+      mockStore[LIVE_ACTIVITY_PREF_KEY] = 'true';
+      mockHasLoaded.mockReturnValue(false);
+      await svc().sync(weekly, '24h');
+      await svc().sync(weekly, '12h');
+      expect(mockInvoke).not.toHaveBeenCalled();
+      expect(n.writeSnapshot).not.toHaveBeenCalled();
+      expect(mockOnLoaded).toHaveBeenCalledTimes(1); // one wait, however many skips
+
+      mockHasLoaded.mockReturnValue(true);
+      mockLoadedCallbacks.splice(0).forEach((cb) => cb());
+      await settle();
+
+      expect(actions()).toEqual(['register:device-123']);
+      expect(n.writeSnapshot).toHaveBeenCalledTimes(1);
+      expect(JSON.parse(n.writeSnapshot.mock.calls[0][0]).timeFormat).toBe('12h');
+      expect(n.startLocal).toHaveBeenCalledTimes(1);
+    });
+
+    it('does not run again if a loaded sync already ran in the meantime', async () => {
+      mockStore[LIVE_ACTIVITY_PREF_KEY] = 'true';
+      mockHasLoaded.mockReturnValue(false);
+      await svc().sync(weekly, '24h');
+      mockHasLoaded.mockReturnValue(true);
+      await svc().sync(weekly, '24h'); // e.g. Home's focus sync after load
+      mockLoadedCallbacks.splice(0).forEach((cb) => cb());
+      await settle();
+      expect(actions()).toEqual(['register:device-123']);
+    });
+  });
+
+  describe('switch-off that cannot reach the server', () => {
+    it('keeps the device id, marks the unregister pending, and still clears the device', async () => {
+      registeredDevice();
+      mockStore[LIVE_ACTIVITY_PREF_KEY] = 'true';
+      mockStore[LIVE_ACTIVITY_MOOD_VERSE_KEY] = '{}';
+      mockInvoke.mockResolvedValue(FAILED);
+
+      await svc().setEnabled(false);
+
+      expect(actions()).toEqual(['unregister:device-123']);
+      expect(mockNative.id).toBe('device-123'); // the only handle on the server row
+      expect(n.clearShared).not.toHaveBeenCalled();
+      expect(n.markSwitchedOff).toHaveBeenCalledTimes(1);
+      expect(mockNative.switchedOff).toBe(true);
+      expect(mockStore[LIVE_ACTIVITY_PENDING_UNREGISTER_KEY]).toBe('true');
+      expect(mockStore[LIVE_ACTIVITY_REGISTERED_KEY]).toBe('true');
+      // Local cleanup that is not the id still happens.
+      expect(n.endAll).toHaveBeenCalled();
+      expect(mockStore[LIVE_ACTIVITY_MOOD_VERSE_KEY]).toBeUndefined();
+    });
+
+    it('a thrown unregister (timeout) is treated the same', async () => {
+      registeredDevice();
+      mockInvoke.mockRejectedValue(new Error('timeout'));
+      await expect(svc().disableAndForget()).resolves.toBeUndefined();
+      expect(mockNative.id).toBe('device-123');
+      expect(mockStore[LIVE_ACTIVITY_PENDING_UNREGISTER_KEY]).toBe('true');
+      expect(n.clearShared).not.toHaveBeenCalled();
+    });
+
+    it('an unregistered-but-maybe-known id (register errored) is still unregistered', async () => {
+      // getDeviceId minted the id for a register that answered with an error.
+      mockStore[LIVE_ACTIVITY_PREF_KEY] = 'true';
+      mockInvoke.mockResolvedValueOnce({ data: null, error: new Error('timeout') });
+      await svc().sync(weekly, '24h');
+      expect(mockStore[LIVE_ACTIVITY_REGISTERED_KEY]).toBeUndefined();
+
+      await svc().setEnabled(false);
+      expect(actions()).toEqual(['register:device-123', 'unregister:device-123']);
+      expect(mockNative.id).toBe('');
+    });
+
+    it('the next sync retries the unregister first, whatever the subscription state, and clears on 2xx', async () => {
+      registeredDevice();
+      mockStore[LIVE_ACTIVITY_PENDING_UNREGISTER_KEY] = 'true';
+      mockStore[LIVE_ACTIVITY_PREF_KEY] = 'false';
+      mockHasLoaded.mockReturnValue(false);
+
+      await svc().sync(weekly, '24h');
+
+      expect(actions()[0]).toBe('unregister:device-123');
+      expect(mockNative.id).toBe('');
+      expect(mockStore[LIVE_ACTIVITY_PENDING_UNREGISTER_KEY]).toBeUndefined();
+      expect(mockStore[LIVE_ACTIVITY_REGISTERED_KEY]).toBeUndefined();
+    });
+
+    it('a retry that fails again stops the sync: no register, no card', async () => {
+      registeredDevice();
+      mockStore[LIVE_ACTIVITY_PENDING_UNREGISTER_KEY] = 'true';
+      mockStore[LIVE_ACTIVITY_PREF_KEY] = 'true'; // re-enabled while offline
+      mockInvoke.mockResolvedValue(FAILED);
+
+      await svc().sync(weekly, '24h');
+
+      expect(actions()).toEqual(['unregister:device-123']);
+      expect(n.configure).not.toHaveBeenCalled();
+      expect(n.writeSnapshot).not.toHaveBeenCalled();
+      expect(n.startLocal).not.toHaveBeenCalled();
+      expect(mockNative.id).toBe('device-123');
+      expect(mockStore[LIVE_ACTIVITY_PENDING_UNREGISTER_KEY]).toBe('true');
+    });
+
+    it('re-enabling after a pending unregister removes the old registration before making a new one', async () => {
+      registeredDevice();
+      mockInvoke.mockResolvedValueOnce(FAILED); // switch-off while offline
+      await svc().setEnabled(false);
+      expect(mockStore[LIVE_ACTIVITY_PENDING_UNREGISTER_KEY]).toBe('true');
+
+      await svc().setEnabled(true); // back online, switched on again
+      await svc().sync(weekly, '24h');
+
+      expect(actions()).toEqual([
+        'unregister:device-123', // failed
+        'unregister:device-123', // the retry, before anything else
+        'register:device-456', // a fresh id: the old row is gone
+      ]);
+      expect(mockStore[LIVE_ACTIVITY_PENDING_UNREGISTER_KEY]).toBeUndefined();
+      expect(mockStore[LIVE_ACTIVITY_REGISTERED_KEY]).toBe('true');
+      expect(mockNative.switchedOff).toBe(false);
+      expect(n.startLocal).toHaveBeenCalledTimes(1);
+    });
+
+    it('the next switch-off retries it too', async () => {
+      registeredDevice();
+      mockStore[LIVE_ACTIVITY_PENDING_UNREGISTER_KEY] = 'true';
+      await svc().disableAndForget();
+      expect(actions()).toEqual(['unregister:device-123']);
+      expect(mockNative.id).toBe('');
+      expect(mockStore[LIVE_ACTIVITY_PENDING_UNREGISTER_KEY]).toBeUndefined();
+    });
+
+    it('an unreadable device id is never deleted unseen', async () => {
+      registeredDevice();
+      n.peekDeviceId.mockImplementation(() => {
+        throw new Error('App Group unavailable');
+      });
+      await svc().disableAndForget();
+      expect(mockInvoke).not.toHaveBeenCalled();
+      expect(n.clearShared).not.toHaveBeenCalled();
+      expect(mockNative.id).toBe('device-123');
+      expect(mockStore[LIVE_ACTIVITY_PENDING_UNREGISTER_KEY]).toBe('true');
+    });
+
+    it('no mood verse is stored while an unregister is pending', async () => {
+      registeredDevice();
+      mockStore[LIVE_ACTIVITY_PREF_KEY] = 'true';
+      mockStore[LIVE_ACTIVITY_PENDING_UNREGISTER_KEY] = 'true';
+      await svc().onVerseShown(quran());
+      expect(mockStore[LIVE_ACTIVITY_MOOD_VERSE_KEY]).toBeUndefined();
+      expect(n.writeSnapshot).not.toHaveBeenCalled();
+    });
   });
 
   describe('serialisation', () => {
@@ -250,9 +495,9 @@ describe('LiveActivityService', () => {
       gate.resolve('$RCAnonymousID:test-user');
       await Promise.all([syncing, switchingOff]);
 
-      const actions = mockInvoke.mock.calls.map((c) => c[1].body.action);
+      const acts = mockInvoke.mock.calls.map((c) => c[1].body.action);
       // The in-flight sync finishes first, then the teardown unregisters.
-      expect(actions).toEqual(['register', 'unregister']);
+      expect(acts).toEqual(['register', 'unregister']);
       expect(mockStore[LIVE_ACTIVITY_REGISTERED_KEY]).toBeUndefined();
       expect(n.clearShared).toHaveBeenCalled();
     });
@@ -338,7 +583,7 @@ describe('LiveActivityService', () => {
     expect(JSON.stringify(body)).not.toMatch(/latitude|longitude|city|mood|arabic|english/i);
   });
 
-  it('writes the snapshot and starts a card for the next prayer after now', async () => {
+  it('writes the snapshot and starts a card for the next prayer after a successful register', async () => {
     mockStore[LIVE_ACTIVITY_PREF_KEY] = 'true';
     await svc().sync(weekly, '12h');
     expect(n.writeSnapshot).toHaveBeenCalledTimes(1);
@@ -350,6 +595,7 @@ describe('LiveActivityService', () => {
     const nowS = Date.now() / 1000;
     const next = schedule.find((p) => p.at > nowS)!;
     expect(n.startLocal).toHaveBeenCalledWith(next.name, next.at);
+    expect(n.startLocal.mock.invocationCallOrder[0]).toBeGreaterThan(mockInvoke.mock.invocationCallOrder[0]);
   });
 
   it('skips startLocal when no prayer is left in the schedule', async () => {
@@ -430,7 +676,7 @@ describe('LiveActivityService', () => {
     });
 
     it('turning off after a registration unregisters exactly once and clears the flag', async () => {
-      mockStore[LIVE_ACTIVITY_REGISTERED_KEY] = 'true';
+      registeredDevice();
       await svc().setEnabled(false);
       await svc().setEnabled(false);
       expect(mockInvoke).toHaveBeenCalledTimes(1);
@@ -449,17 +695,19 @@ describe('LiveActivityService', () => {
       expect(logServiceError).toHaveBeenCalled();
     });
 
-    it('unregister failure is logged, and clearShared still runs', async () => {
-      mockStore[LIVE_ACTIVITY_REGISTERED_KEY] = 'true';
+    it('unregister failure is logged and keeps the id for the retry', async () => {
+      registeredDevice();
       mockInvoke.mockResolvedValue({ data: null, error: new Error('500') });
       await expect(svc().disableAndForget()).resolves.toBeUndefined();
       expect(logServiceError).toHaveBeenCalled();
-      expect(n.clearShared).toHaveBeenCalled();
+      expect(n.clearShared).not.toHaveBeenCalled();
+      expect(n.markSwitchedOff).toHaveBeenCalled();
     });
 
     it('swallows a native throw in disableAndForget', async () => {
-      mockStore[LIVE_ACTIVITY_REGISTERED_KEY] = 'true';
-      n.getDeviceId.mockImplementation(() => {
+      registeredDevice();
+      n.endAll.mockRejectedValueOnce(new Error('boom'));
+      n.peekDeviceId.mockImplementation(() => {
         throw new Error('boom');
       });
       await expect(svc().disableAndForget()).resolves.toBeUndefined();

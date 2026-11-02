@@ -17,9 +17,11 @@ interface SakinaLiveActivityNative {
   isSupported(): boolean;
   configure(registerUrl: string, anonKey: string): void;
   getDeviceId(): string;
+  peekDeviceId(): string;
   writeSnapshot(json: string): void;
   startLocal(prayerName: string, prayerEpoch: number): Promise<boolean>;
   endAll(): Promise<void>;
+  markSwitchedOff(): void;
   clearShared(): void;
 }
 
@@ -41,9 +43,23 @@ export function configure(o: { registerUrl: string; anonKey: string }): void {
   native?.configure(o.registerUrl, o.anonKey);
 }
 
-/** A UUID persisted in the App Group; created on first call. `''` when unsupported. */
+/**
+ * A UUID persisted in the App Group; created on first call. `''` when unsupported.
+ * Only for registering: calling it means "this device is opting in", so it also
+ * lifts a `markSwitchedOff`.
+ */
 export function getDeviceId(): string {
   const id = native?.getDeviceId();
+  return typeof id === 'string' ? id : '';
+}
+
+/**
+ * The stored device id, or `''` when there is none (or the module is absent).
+ * Never creates one — for teardown, which must unregister an existing id but
+ * never mint an id for a user who never opted in.
+ */
+export function peekDeviceId(): string {
+  const id = native?.peekDeviceId();
   return typeof id === 'string' ? id : '';
 }
 
@@ -75,7 +91,18 @@ export async function endAll(): Promise<void> {
   }
 }
 
-/** Removes the verse snapshot and the device id from the App Group. */
+/**
+ * Switched off, but the server could not be told yet: removes the verse
+ * snapshot, KEEPS the device id (a server row may still exist under it and must
+ * be unregistered later), and marks the device switched off so the native side
+ * posts no tokens and ends any card that arrives. `clearShared` or
+ * `getDeviceId` lift the mark.
+ */
+export function markSwitchedOff(): void {
+  native?.markSwitchedOff();
+}
+
+/** Removes the verse snapshot, the device id and the switched-off mark from the App Group. */
 export function clearShared(): void {
   native?.clearShared();
 }

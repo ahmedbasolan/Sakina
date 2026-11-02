@@ -15,9 +15,16 @@
 //   background-task assertion, is retried once, and the token is recorded as
 //   sent only on a 2xx (see `deliver`).
 //
-// Nothing is posted until a device id exists (JS creates it through
-// getDeviceId when the user opts in; clearShared removes it), so a device that
-// turned the feature off never re-registers itself.
+// Nothing is posted unless the device is participating (SharedStore
+// .isParticipating: a device id exists — JS creates it through getDeviceId when
+// the user opts in, clearShared removes it — and no switch-off is waiting for
+// the server, markSwitchedOff), so a device that turned the feature off never
+// re-registers itself.
+//
+// Defence in depth for the same state: any activity that exists or arrives
+// while the device is not participating is ended at once. The user has switched
+// off; if the server still holds a row (an unregister that could not reach it)
+// or a start was already queued at APNs, it must not be able to put a card up.
 //
 // Main-actor isolated: ActivityKit calls are cheap and this keeps the
 // bookkeeping (observed ids, last posted tokens) free of data races.
@@ -30,6 +37,8 @@ import UIKit
 @MainActor
 final class LiveActivityTokenForwarder {
   static let shared = LiveActivityTokenForwarder()
+  /// Same as the server's STALE_AFTER_S (supabase/functions/_shared/apnsPayload.ts).
+  static let staleAfter: TimeInterval = 15 * 60
 
   private var started = false
   private var observedActivityIds = Set<String>()
@@ -52,12 +61,28 @@ final class LiveActivityTokenForwarder {
 
     Task {
       for await activity in Activity<SakinaPrayerAttributes>.activityUpdates {
+        if !SharedStore.isParticipating() {
+          // Switched off: the server must not be able to put a card up.
+          await activity.end(nil, dismissalPolicy: .immediate)
+          continue
+        }
         self.observe(activity)
         await self.endAll(except: activity.id)
       }
     }
 
     let existing = Activity<SakinaPrayerAttributes>.activities
+    if !SharedStore.isParticipating() {
+      // e.g. a card the server started while the app was not running.
+      if !existing.isEmpty {
+        Task {
+          await self.endAll()
+        }
+      }
+      // No token posts either: makeRequest refuses while not participating,
+      // and getDeviceId reposts once the user opts in.
+      return
+    }
     for activity in existing {
       observe(activity)
     }
@@ -100,9 +125,13 @@ final class LiveActivityTokenForwarder {
   }
 
   /// Starts a card from the app. False when one is already live, Live
-  /// Activities are turned off, or ActivityKit refuses.
+  /// Activities are turned off, the device is not participating, or
+  /// ActivityKit refuses. The card goes stale 15 minutes after its prayer, as a
+  /// server-sent card does (`stale-date`), so a chain that stops arriving never
+  /// leaves a countdown showing a time long gone as if it were current.
   func startLocal(prayerName: String, prayerEpoch: Double) -> Bool {
     guard ActivityAuthorizationInfo().areActivitiesEnabled else { return false }
+    guard SharedStore.isParticipating() else { return false }
     let live = Activity<SakinaPrayerAttributes>.activities.contains { activity in
       activity.activityState == .active || activity.activityState == .stale
     }
@@ -110,7 +139,8 @@ final class LiveActivityTokenForwarder {
 
     let attributes = SakinaPrayerAttributes(version: 1)
     let state = SakinaPrayerAttributes.ContentState(prayerName: prayerName, prayerEpoch: prayerEpoch)
-    let content = ActivityContent(state: state, staleDate: nil)
+    let staleDate = Date(timeIntervalSince1970: prayerEpoch + LiveActivityTokenForwarder.staleAfter)
+    let content = ActivityContent(state: state, staleDate: staleDate)
     do {
       let activity = try Activity<SakinaPrayerAttributes>.request(
         attributes: attributes,
@@ -216,9 +246,10 @@ private func hex(_ data: Data) -> String {
 
 enum TokenPoster {
   /// The token POST, or nil (nothing to send) when the app has not been
-  /// configured or has no device id yet.
+  /// configured, has no device id yet, or is marked switched off.
   static func makeRequest(_ fields: [String: Any]) -> URLRequest? {
-    guard let url = SharedStore.registerUrl(),
+    guard SharedStore.isParticipating(),
+          let url = SharedStore.registerUrl(),
           let anonKey = SharedStore.anonKey(),
           let deviceId = SharedStore.existingDeviceId()
     else { return nil }
@@ -259,16 +290,22 @@ enum TokenPoster {
   }
 }
 
-/// Keeps the app running until a token POST finishes. Only ever created and
-/// ended on the main thread — by the @MainActor forwarder, and by iOS, which
-/// calls the expiration handler on the main thread — hence @unchecked Sendable.
-/// Ending twice (expiration, then completion) is a no-op.
-final class BackgroundAssertion: @unchecked Sendable {
+/// Keeps the app running until a token POST finishes. Main-actor isolated,
+/// because `UIApplication.shared` is: it is created and ended only by the
+/// @MainActor forwarder (`deliver`, and the Task it starts, which inherits the
+/// main actor). iOS calls the expiration handler on the main thread, which
+/// `MainActor.assumeIsolated` states to the compiler (and checks at run time)
+/// whichever way the SDK annotates that closure. Ending twice (expiration, then
+/// completion) is a no-op.
+@MainActor
+final class BackgroundAssertion {
   private var identifier: UIBackgroundTaskIdentifier = .invalid
 
   init(name: String) {
     identifier = UIApplication.shared.beginBackgroundTask(withName: name) { [weak self] in
-      self?.end()
+      MainActor.assumeIsolated {
+        self?.end()
+      }
     }
   }
 

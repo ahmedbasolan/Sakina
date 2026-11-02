@@ -11,9 +11,11 @@ function makeNative() {
     isSupported: jest.fn(() => true),
     configure: jest.fn(),
     getDeviceId: jest.fn(() => 'device-uuid'),
+    peekDeviceId: jest.fn(() => 'device-uuid'),
     writeSnapshot: jest.fn(),
     startLocal: jest.fn(async () => true),
     endAll: jest.fn(async () => undefined),
+    markSwitchedOff: jest.fn(),
     clearShared: jest.fn(),
   };
 }
@@ -33,9 +35,11 @@ async function expectAllNoOps(w: Wrapper) {
   expect(w.isSupported()).toBe(false);
   expect(() => w.configure({ registerUrl: 'https://x.test/fn', anonKey: 'k' })).not.toThrow();
   expect(w.getDeviceId()).toBe('');
+  expect(w.peekDeviceId()).toBe('');
   expect(() => w.writeSnapshot('{"version":1}')).not.toThrow();
   await expect(w.startLocal('Asr', 1_800_000_000)).resolves.toBe(false);
   await expect(w.endAll()).resolves.toBeUndefined();
+  expect(() => w.markSwitchedOff()).not.toThrow();
   expect(() => w.clearShared()).not.toThrow();
 }
 
@@ -69,6 +73,10 @@ describe('sakina-live-activity JS wrapper', () => {
     wrapper.configure({ registerUrl: 'https://x.test/fn', anonKey: 'anon' });
     expect(native.configure).toHaveBeenCalledWith('https://x.test/fn', 'anon');
     expect(wrapper.getDeviceId()).toBe('device-uuid');
+    expect(wrapper.peekDeviceId()).toBe('device-uuid');
+    expect(native.peekDeviceId).toHaveBeenCalledTimes(1);
+    wrapper.markSwitchedOff();
+    expect(native.markSwitchedOff).toHaveBeenCalledTimes(1);
     wrapper.writeSnapshot('{"version":1}');
     expect(native.writeSnapshot).toHaveBeenCalledWith('{"version":1}');
     await expect(wrapper.startLocal('Asr', 1_800_000_000)).resolves.toBe(true);
@@ -93,9 +101,11 @@ describe('sakina-live-activity JS wrapper', () => {
     const native = makeNative();
     native.isSupported.mockReturnValueOnce(undefined as unknown as boolean);
     native.getDeviceId.mockReturnValueOnce(null as unknown as string);
+    native.peekDeviceId.mockReturnValueOnce(undefined as unknown as string);
     const { wrapper } = load('ios', native);
 
     expect(wrapper.isSupported()).toBe(false);
     expect(wrapper.getDeviceId()).toBe('');
+    expect(wrapper.peekDeviceId()).toBe('');
   });
 });

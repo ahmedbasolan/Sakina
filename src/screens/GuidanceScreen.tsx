@@ -126,10 +126,16 @@ const GuidanceScreen: React.FC = () => {
   // never throws and itself ignores non-Quran content, non-Pro users and a
   // switched-off card. Keyed on the content id so a re-render with the same
   // verse (e.g. setParams after saving) does not write again.
+  //
+  // Mood check-ins only (the spec's "latest mood check-in"): Friday's Surah
+  // Al-Kahf reading arrives with a `kahfQueue` (empty once on its last verse,
+  // and kept on the route when the queue falls through to rotation) and is not
+  // a check-in, so nothing it shows reaches the card.
+  const isMoodCheckIn = kahfQueue === undefined;
   const shownContent = experience?.content;
   useEffect(() => {
-    if (shownContent) LiveActivityService.getInstance().onVerseShown(shownContent);
-  }, [shownContent?.id]);
+    if (isMoodCheckIn && shownContent) LiveActivityService.getInstance().onVerseShown(shownContent);
+  }, [shownContent?.id, isMoodCheckIn]);
 
   // Safety net: this screen is meant to always receive `experience` from its
   // caller (Home and MoodSelection both prefetch before navigating). If it

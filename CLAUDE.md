@@ -794,6 +794,14 @@ uploaded under an account that did not write them. Both shipped broken.
 - Adding a table that holds personal data means adding it to **both**
   `clearAllLocalUserData` and the `PERSONAL` list in `verify-local-wipe.mjs`.
   The verifier's subset check catches an omission from the wipe, not from both.
+- **The Live Activity's local state is AsyncStorage, not `kv_store`** (`@live_activity_*`
+  keys in `liveActivityService.ts`, plus the device id and verse snapshot in the App
+  Group). `clearAllLocalUserData` does not touch it and `verify-local-wipe.mjs` does
+  not see it. It is cleared by `LiveActivityService`'s teardown — on switch-off,
+  account deletion and sign-out (`authService.ts`'s `forgetLiveActivity`) — and that
+  is covered by `liveActivityService.test.ts` and `authService.liveActivity.test.ts`.
+  The device id is deleted only after the server confirms the unregister; until then
+  `@live_activity_pending_unregister` keeps it for the retry.
 
 ## Background Photos — sourcing, spec & adding one
 
