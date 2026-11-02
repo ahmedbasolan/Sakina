@@ -59,6 +59,44 @@ CREATE TABLE IF NOT EXISTS public.live_activity_apns_token (
 ALTER TABLE public.live_activity_apns_token ENABLE ROW LEVEL SECURITY;
 REVOKE ALL ON public.live_activity_apns_token FROM anon, authenticated;
 
+-- ── Claiming due rows (ruling R24) ───────────────────────────────────────────
+-- The dispatcher takes its batch through this function instead of a plain SELECT.
+-- In one statement it locks up to p_limit due rows (skipping any another run holds),
+-- pushes their next_due_at 120 s out (a lease), and returns them. A run that is
+-- still working when the next minute's run starts therefore never shares a device
+-- with it, so a push-to-start cannot go out twice. 120 s is longer than one
+-- device can take (a 45 s run budget plus at most ~30 s for the last device picked
+-- up). The dispatcher sets the real next_due_at when it is done — `now` when it must
+-- retry — and a crashed run's rows come due again when the lease runs out.
+--
+-- RETURNING gives the row as updated, so next_due_at in the result is the lease,
+-- not the value it was claimed at.
+--
+-- SECURITY INVOKER: only the service role (which bypasses RLS and holds the table
+-- privileges) may run it. Postgres grants EXECUTE to PUBLIC by default, and Supabase
+-- to anon/authenticated, so those are revoked explicitly.
+CREATE OR REPLACE FUNCTION public.claim_live_activity_devices(p_now bigint, p_limit int)
+RETURNS SETOF public.live_activity_devices
+LANGUAGE sql
+SECURITY INVOKER
+SET search_path = ''
+AS $$
+  UPDATE public.live_activity_devices AS d
+     SET next_due_at = p_now + 120
+   WHERE d.device_id IN (
+           SELECT due.device_id
+             FROM public.live_activity_devices AS due
+            WHERE due.next_due_at <= p_now
+            ORDER BY due.next_due_at
+            LIMIT p_limit
+              FOR UPDATE SKIP LOCKED
+         )
+  RETURNING d.*;
+$$;
+
+REVOKE ALL ON FUNCTION public.claim_live_activity_devices(bigint, int) FROM PUBLIC, anon, authenticated;
+GRANT EXECUTE ON FUNCTION public.claim_live_activity_devices(bigint, int) TO service_role;
+
 -- ── Extensions ───────────────────────────────────────────────────────────────
 -- IF NOT EXISTS makes both a no-op when the project already has them enabled from
 -- the dashboard (Database → Extensions), and enables them with the schemas

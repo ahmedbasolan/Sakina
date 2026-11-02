@@ -32,8 +32,24 @@ describe('decide', () => {
     // Card started at Fajr: cap = 12:50, Asr 15:40 is past it.
     const state = { startedAt: F.at, lastActedPrayerAt: F.at };
     expect(decide(state, SCHEDULE, D.at, true)).toEqual([
-      { kind: 'end' },
+      { kind: 'end', atPrayer: true },
       { kind: 'start', next: A },
+    ]);
+  });
+
+  it('an end at a prayer too late to restart from is still at a prayer', () => {
+    // Card started 05:30: cap = 13:20. Dhuhr (12:15) arrived 20 min ago — too stale
+    // to anchor a new card — and Asr (15:40) is past the cap.
+    const state = { startedAt: F.at + 30 * 60, lastActedPrayerAt: F.at };
+    expect(decide(state, SCHEDULE, D.at + 20 * 60, true)).toEqual([{ kind: 'end', atPrayer: true }]);
+  });
+
+  it('a cap that falls just after a prayer ends and restarts, at that prayer', () => {
+    const startedAt = M.at + 300 - (MAX_ACTIVE_S - MARGIN_S); // cap = Maghrib + 5 min
+    const state = { startedAt, lastActedPrayerAt: A.at };
+    expect(decide(state, SCHEDULE, M.at + 300, true)).toEqual([
+      { kind: 'end', atPrayer: true },
+      { kind: 'start', next: I },
     ]);
   });
 
@@ -44,7 +60,9 @@ describe('decide', () => {
 
   it('ends at the cap overnight and starts at Fajr', () => {
     const live = { startedAt: I.at, lastActedPrayerAt: I.at };
-    expect(decide(live, SCHEDULE, I.at + 7 * 3600 + 50 * 60, true)).toEqual([{ kind: 'end' }]);
+    expect(decide(live, SCHEDULE, I.at + 7 * 3600 + 50 * 60, true)).toEqual([
+      { kind: 'end', atPrayer: false },
+    ]);
 
     const none = { startedAt: null, lastActedPrayerAt: I.at };
     expect(decide(none, SCHEDULE, NEXT_F.at, true)).toEqual([{ kind: 'start', next: NEXT_D }]);
@@ -62,7 +80,7 @@ describe('decide', () => {
 
   it('pro lapse ends a live card and starts nothing', () => {
     const live = { startedAt: D.at, lastActedPrayerAt: D.at };
-    expect(decide(live, SCHEDULE, A.at, false)).toEqual([{ kind: 'end' }]);
+    expect(decide(live, SCHEDULE, A.at, false)).toEqual([{ kind: 'end', atPrayer: false }]);
 
     const none = { startedAt: null, lastActedPrayerAt: D.at };
     expect(decide(none, SCHEDULE, A.at, false)).toEqual([]);
@@ -70,7 +88,7 @@ describe('decide', () => {
 
   it('schedule exhausted ends the card', () => {
     const live = { startedAt: NEXT_D.at - 3600, lastActedPrayerAt: NEXT_D.at - 3600 };
-    expect(decide(live, SCHEDULE, NEXT_D.at + 60, true)).toEqual([{ kind: 'end' }]);
+    expect(decide(live, SCHEDULE, NEXT_D.at + 60, true)).toEqual([{ kind: 'end', atPrayer: false }]);
 
     const none = { startedAt: null, lastActedPrayerAt: null };
     expect(decide(none, SCHEDULE, NEXT_D.at + 60, true)).toEqual([]);

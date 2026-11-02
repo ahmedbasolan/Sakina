@@ -3,12 +3,21 @@
  *
  * Sends the Dynamic Island prayer countdown's APNs pushes. pg_cron (migration
  * 007) POSTs here every minute. Each run:
- *   1. selects up to 500 `live_activity_devices` rows whose `next_due_at` has passed;
+ *   1. CLAIMS up to 500 due `live_activity_devices` rows through the SQL function
+ *      `claim_live_activity_devices` (migration 007): locked with SKIP LOCKED and
+ *      leased for 120 s, so an overlapping run never processes the same device;
  *   2. refreshes the RevenueCat Pro verdict when it is older than 6 h;
  *   3. asks `decide()` (_shared/liveActivityPlan.ts) what to do;
- *   4. sends each start / update / end push to APNs (_shared/apnsPayload.ts);
- *   5. saves the new card state and `next_due_at = nextDueAt(...)`.
- * One device's failure never stops the others.
+ *   4. sends each start / update / end push to APNs (_shared/apnsPayload.ts). Before
+ *      a start goes out, the post-start state is saved first, so a failed save after
+ *      a successful push cannot make the next run start a second card;
+ *   5. saves what `planWrites()` (_shared/dispatchPlan.ts) says — new card state and
+ *      `next_due_at`, a retry (`next_due_at = now`, claim-time state restored), or a
+ *      delete.
+ * Every write is conditional on the row's `updated_at` being what this run read, so
+ * a register or token post that lands mid-run wins and this run's write is dropped
+ * (the register already recomputed next_due_at). One device's failure never stops
+ * the others.
  *
  * Security model:
  * - Deployed with JWT verification OFF (`--no-verify-jwt`): the cron sends a shared
@@ -34,16 +43,12 @@
 
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 import type { SupabaseClient } from 'https://esm.sh/@supabase/supabase-js@2';
-import {
-  currentPrayer,
-  decide,
-  MARGIN_S,
-  MAX_ACTIVE_S,
-  nextDueAt,
-} from '../_shared/liveActivityPlan.ts';
-import type { CardState, ScheduledPrayer } from '../_shared/liveActivityPlan.ts';
+import { currentPrayer, decide, nextDueAt } from '../_shared/liveActivityPlan.ts';
+import type { ScheduledPrayer } from '../_shared/liveActivityPlan.ts';
 import { buildPush } from '../_shared/apnsPayload.ts';
 import type { ApnsPush } from '../_shared/apnsPayload.ts';
+import { planWrites, startPreWrite } from '../_shared/dispatchPlan.ts';
+import type { SendOutcome } from '../_shared/dispatchPlan.ts';
 import { proFromSubscriber } from '../_shared/revenueCatPro.ts';
 
 const TABLE = 'live_activity_devices';
@@ -54,13 +59,16 @@ const TOKEN_TABLE = 'live_activity_apns_token';
 // Apple: refresh the provider token no more than once every 20 min and no less than
 // once every 60 min. Reused while under 45 min old (ruling R22).
 const JWT_MAX_AGE_S = 45 * 60;
-// Stop picking up new devices after this, so a run ends before the next minute's
-// run starts and the two never push to the same device. Unstarted rows stay due.
+// Stop starting new devices after this. It keeps a run short; it is NOT what keeps
+// two runs apart — a device picked up at 44 s can still be in flight (RevenueCat
+// 10 s + two APNs sends + DB) when the next run starts. The claim's 120 s lease
+// does that. Claimed rows not started are released (next_due_at = now).
 const RUN_BUDGET_MS = 45_000;
 const FETCH_TIMEOUT_MS = 10_000;
 
 interface DeviceRow {
   device_id: string;
+  updated_at: string | null; // the version every write is conditional on
   rc_app_user_id: string;
   apns_env: 'sandbox' | 'production' | null;
   push_to_start_token: string | null;
@@ -71,10 +79,6 @@ interface DeviceRow {
   pro_checked_at: number | null;
   pro_active: boolean | null;
 }
-
-const COLUMNS =
-  'device_id, rc_app_user_id, apns_env, push_to_start_token, activity_token, ' +
-  'activity_started_at, last_acted_prayer_at, schedule, pro_checked_at, pro_active';
 
 type Counts = Record<string, number>;
 
@@ -338,13 +342,55 @@ async function send(
   ) {
     return { kind: 'badToken' };
   }
-  if (res.status === 429 || res.status >= 500) return { kind: 'retry' };
+  // 429 TooManyRequests is about this one device token: retry it next run. 429
+  // TooManyProviderTokenUpdates is about our provider token, so it is provider-wide
+  // and falls through to halt below.
+  if ((res.status === 429 && reason !== 'TooManyProviderTokenUpdates') || res.status >= 500) {
+    return { kind: 'retry' };
+  }
   if (res.status === 403 && (reason === 'ExpiredProviderToken' || reason === 'InvalidProviderToken')) {
     await discardJwt(admin, jwt, counts);
   }
-  // 403 (provider token, Forbidden), 400 BadTopic / TopicDisallowed / BadPriority …,
-  // 413: our configuration or payload, so every other device would fail the same way.
+  // 403 (provider token, Forbidden), 429 TooManyProviderTokenUpdates, 400 BadTopic /
+  // TopicDisallowed / BadPriority …, 413: our configuration, payload or provider token,
+  // so every other device would fail the same way.
   return { kind: 'halt' };
+}
+
+// ── Conditional writes ──────────────────────────────────────────────────────
+
+// Every write to a claimed row is conditional on its `updated_at` still being the
+// version this run last saw. A register or token post bumps `updated_at`; when one
+// lands mid-run its write wins, ours is dropped, and this run writes nothing more to
+// that row (the register already recomputed next_due_at; a token post leaves the
+// row due at the claim's lease, ≤ 2 min away). Each successful write moves the
+// version on to the stamp it wrote.
+interface RowRef {
+  admin: SupabaseClient;
+  deviceId: string;
+  version: string | null;
+}
+
+async function updateIfUnchanged(ref: RowRef, patch: Record<string, unknown>): Promise<boolean> {
+  const stamp = new Date().toISOString();
+  let q = ref.admin
+    .from(TABLE)
+    .update({ ...patch, updated_at: stamp })
+    .eq('device_id', ref.deviceId);
+  q = ref.version === null ? q.is('updated_at', null) : q.eq('updated_at', ref.version);
+  const { data, error } = await q.select('device_id');
+  if (error) throw error;
+  if (!data || data.length !== 1) return false;
+  ref.version = stamp;
+  return true;
+}
+
+async function deleteIfUnchanged(ref: RowRef): Promise<boolean> {
+  let q = ref.admin.from(TABLE).delete().eq('device_id', ref.deviceId);
+  q = ref.version === null ? q.is('updated_at', null) : q.eq('updated_at', ref.version);
+  const { data, error } = await q.select('device_id');
+  if (error) throw error;
+  return !!data && data.length === 1;
 }
 
 // ── One device ──────────────────────────────────────────────────────────────
@@ -355,156 +401,108 @@ async function processDevice(
   run: Run,
 ): Promise<void> {
   const { counts } = run;
+  const ref: RowRef = { admin, deviceId: row.device_id, version: row.updated_at };
+  const now = nowSeconds();
+
+  // Claimed but not worked on: hand it back, due again next run (not at the lease).
+  const release = async (): Promise<void> => {
+    if (!(await updateIfUnchanged(ref, { next_due_at: now }))) bump(counts, 'row_changed');
+  };
+
   if (run.halted || Date.now() > run.deadline) {
     bump(counts, 'deferred');
+    await release();
     return;
   }
-  const now = nowSeconds();
   const schedule: ScheduledPrayer[] = Array.isArray(row.schedule) ? row.schedule : [];
 
   // 1. Pro verdict, cached for 6 h.
-  const patch: Record<string, unknown> = {};
+  const proPatch: Record<string, unknown> = {};
   let isPro: boolean | null = row.pro_active;
   if (row.pro_active === null || row.pro_checked_at === null || now - row.pro_checked_at >= PRO_TTL_S) {
     const verdict = await checkPro(row.rc_app_user_id, now, counts);
     if (verdict !== null) {
       isPro = verdict;
-      patch.pro_active = verdict;
-      patch.pro_checked_at = now;
+      proPatch.pro_active = verdict;
+      proPatch.pro_checked_at = now;
     }
   }
   if (isPro === null) {
-    // Never checked and RevenueCat did not answer: send nothing, change nothing. The
-    // row is still due, so the next run asks again.
+    // Never checked and RevenueCat did not answer: send nothing, change nothing but
+    // the lease, so the next run asks again.
     bump(counts, 'pro_unknown');
+    await release();
     return;
   }
 
   // 2. What to do.
-  const state: CardState = {
-    startedAt: row.activity_started_at,
-    lastActedPrayerAt: row.last_acted_prayer_at,
-  };
-  const actions = decide(state, schedule, now, isPro);
+  const actions = decide(
+    { startedAt: row.activity_started_at, lastActedPrayerAt: row.last_acted_prayer_at },
+    schedule,
+    now,
+    isPro,
+  );
   const cur = currentPrayer(schedule, now);
-
-  // An `end` records the prayer as acted on only when it is the end "at a prayer":
-  // paired with a start, or decide's branch where a prayer arrived and the next one
-  // would pass the cap. Not for the cap-reached, Pro-lapsed or schedule-exhausted ends.
-  const arrived = cur !== undefined && cur.at > (state.lastActedPrayerAt ?? -Infinity);
-  const capReached =
-    state.startedAt !== null && now >= state.startedAt + MAX_ACTIVE_S - MARGIN_S;
-  const hasNext = schedule.some((p) => p.at > now);
-  const endAtPrayer =
-    actions.some((a) => a.kind === 'start') || (isPro && arrived && hasNext && !capReached);
-
   // What the ending card was counting down to — only so the end payload decodes.
   const finalPrayer = schedule.find(
-    (p) => p.at > (state.lastActedPrayerAt ?? state.startedAt ?? -Infinity),
+    (p) => p.at > (row.last_acted_prayer_at ?? row.activity_started_at ?? -Infinity),
   );
 
-  // 3. Send, in order. A retry/halt stops this device's remaining actions: never
-  // start a fresh card while the old one may still be live.
-  let startedAt = state.startedAt;
-  let lastActed = state.lastActedPrayerAt;
-  let activityToken = row.activity_token;
-  let retry = false;
-  let deleteRow = false;
-
+  // 3. Send, in order. A retry/halt stops this device's remaining actions (never start
+  // a fresh card while the old one may still be live); planWrites reads an action
+  // with no result as a retry.
+  const results: SendOutcome[] = [];
   for (const action of actions) {
-    if (run.halted) {
-      retry = true;
-      break;
-    }
+    if (run.halted) break;
     const push = buildPush(action, now, action.kind === 'end' ? finalPrayer : undefined);
-    const target = push.tokenKind === 'pushToStart' ? row.push_to_start_token : activityToken;
-    let sent = false;
-
+    const target = push.tokenKind === 'pushToStart' ? row.push_to_start_token : row.activity_token;
     if (!target) {
       bump(counts, push.tokenKind === 'pushToStart' ? 'skip_no_push_to_start_token' : 'skip_no_activity_token');
-    } else {
-      const result = await send(admin, row.apns_env, target, push, now, counts);
-      if (result.kind === 'halt') {
-        run.halted = true;
-        retry = true;
-        break;
-      }
-      if (result.kind === 'retry') {
-        retry = true;
-        break;
-      }
-      if (result.kind === 'badToken') {
-        if (push.tokenKind === 'pushToStart') {
-          deleteRow = true;
-          break;
-        }
-        activityToken = null;
-      } else {
-        sent = true;
-        bump(counts, `sent_${action.kind}`);
+      results.push('skipped');
+      continue;
+    }
+
+    if (action.kind === 'start') {
+      // Ruling R24: save the post-start state BEFORE the push goes out. If the save
+      // after a successful push failed, the row would still say "no card" and the
+      // next run would start a second one. A retryable failure restores the claim-time
+      // state (planWrites); a success leaves this standing.
+      if (!(await updateIfUnchanged(ref, { ...startPreWrite(cur, now) }))) {
+        bump(counts, 'row_changed');
+        return; // a register / token post landed: do not start off a stale read
       }
     }
 
-    if (action.kind === 'end') {
-      // Sent, skipped (no token) or token gone: either way there is no card to track.
-      startedAt = null;
-      activityToken = null;
-      if (endAtPrayer && cur) lastActed = cur.at;
-    } else if (action.kind === 'update') {
-      if (cur) lastActed = cur.at;
-    } else {
-      if (cur) lastActed = cur.at;
-      if (sent) {
-        startedAt = now;
-        // The new card's token arrives later through the native token post.
-        activityToken = null;
-      }
-    }
+    const result = await send(admin, row.apns_env, target, push, now, counts);
+    results.push(result.kind);
+    if (result.kind === 'ok') bump(counts, `sent_${action.kind}`);
+    if (result.kind === 'halt') run.halted = true;
+    if (result.kind === 'retry' || result.kind === 'halt') break;
+    if (result.kind === 'badToken' && push.tokenKind === 'pushToStart') break;
   }
 
-  // 4. Save.
-  if (deleteRow) {
-    bump(counts, 'deleted_bad_push_to_start_token');
-    const { error } = await admin.from(TABLE).delete().eq('device_id', row.device_id);
-    if (error) throw error;
+  // 4. Save what planWrites says.
+  const plan = planWrites({
+    row: {
+      activity_started_at: row.activity_started_at,
+      last_acted_prayer_at: row.last_acted_prayer_at,
+      activity_token: row.activity_token,
+    },
+    actions,
+    results,
+    isPro,
+    cur,
+    now,
+    nextDue: (s) => nextDueAt(s, schedule, now),
+  });
+
+  if (plan.kind === 'delete') {
+    bump(counts, `deleted_${plan.reason}`);
+    if (!(await deleteIfUnchanged(ref))) bump(counts, 'row_changed');
     return;
   }
-
-  if (!isPro && startedAt === null && !retry) {
-    bump(counts, 'deleted_not_pro');
-    const { error } = await admin.from(TABLE).delete().eq('device_id', row.device_id);
-    if (error) throw error;
-    return;
-  }
-
-  if (retry) {
-    // Keep what already happened (an end that went through), nothing else: leaving
-    // last_acted_prayer_at and next_due_at alone keeps the row due, so the next run
-    // decides again from the same prayer.
-    if (startedAt !== state.startedAt) patch.activity_started_at = startedAt;
-  } else {
-    patch.activity_started_at = startedAt;
-    patch.last_acted_prayer_at = lastActed;
-    patch.next_due_at = nextDueAt({ startedAt, lastActedPrayerAt: lastActed }, schedule, now);
-  }
-
-  if (Object.keys(patch).length > 0) {
-    patch.updated_at = new Date().toISOString();
-    const { error } = await admin.from(TABLE).update(patch).eq('device_id', row.device_id);
-    if (error) throw error;
-  }
-
-  // Clear the activity token only if it is still the one this run read: after a start
-  // the device posts the new card's token within seconds, and an unconditional null
-  // could land after it and erase it.
-  if (activityToken === null && row.activity_token !== null) {
-    const { error } = await admin
-      .from(TABLE)
-      .update({ activity_token: null })
-      .eq('device_id', row.device_id)
-      .eq('activity_token', row.activity_token);
-    if (error) throw error;
-  }
+  if (plan.retry) bump(counts, 'retry');
+  if (!(await updateIfUnchanged(ref, { ...proPatch, ...plan.patch }))) bump(counts, 'row_changed');
 }
 
 // ── Entry ───────────────────────────────────────────────────────────────────
@@ -528,14 +526,14 @@ Deno.serve(async (req: Request) => {
     { auth: { persistSession: false, autoRefreshToken: false } },
   );
 
-  const { data, error } = await admin
-    .from(TABLE)
-    .select(COLUMNS)
-    .lte('next_due_at', nowSeconds())
-    .order('next_due_at', { ascending: true })
-    .limit(BATCH_LIMIT);
+  // Locks, leases (next_due_at = now + 120) and returns up to BATCH_LIMIT due rows,
+  // skipping rows an overlapping run holds. See migration 007.
+  const { data, error } = await admin.rpc('claim_live_activity_devices', {
+    p_now: nowSeconds(),
+    p_limit: BATCH_LIMIT,
+  });
   if (error) {
-    console.error('[live-activity-dispatch] select failed:', error.message);
+    console.error('[live-activity-dispatch] claim failed:', error.message);
     return json(500, { error: 'Internal error' });
   }
 
@@ -544,13 +542,13 @@ Deno.serve(async (req: Request) => {
     try {
       await processDevice(admin, row, run);
     } catch (err) {
-      // Message only — a PostgREST error can quote values, so never the row itself.
+      // Message only — never the row. The claim's lease brings the row back in ≤ 2 min.
       bump(run.counts, 'device_error');
       console.error('[live-activity-dispatch] device failed:', (err as { message?: string })?.message);
     }
   });
 
-  const summary = { due: rows.length, halted: run.halted, ...run.counts };
+  const summary = { claimed: rows.length, halted: run.halted, ...run.counts };
   console.log('[live-activity-dispatch]', JSON.stringify(summary));
   return json(200, { ok: true, ...summary });
 });

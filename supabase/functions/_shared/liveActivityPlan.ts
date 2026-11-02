@@ -17,7 +17,11 @@ export interface CardState {
 export type Action =
   | { kind: 'start'; next: ScheduledPrayer } // via push-to-start token, silent alert
   | { kind: 'update'; next: ScheduledPrayer } // via activity token
-  | { kind: 'end' }; // via activity token, dismissal-date = now
+  // via activity token, dismissal-date = now. `atPrayer`: the end happens because a
+  // prayer arrived (paired with a start, or the next prayer would pass the cap), so
+  // the dispatcher records that prayer as acted on. False for the cap-reached
+  // (without a restart), Pro-lapsed and schedule-exhausted ends.
+  | { kind: 'end'; atPrayer: boolean };
 
 // iOS ends a Live Activity after 8h; MARGIN_S is how early we hand over to a fresh card.
 export const MAX_ACTIVE_S = 8 * 3600;
@@ -54,20 +58,22 @@ export function decide(
   const live = cap !== null;
 
   const next = schedule.find((p) => p.at > now);
-  if (!isPro || !next) return live ? [{ kind: 'end' }] : [];
+  if (!isPro || !next) return live ? [{ kind: 'end', atPrayer: false }] : [];
 
   const cur = currentPrayer(schedule, now);
   // Only a prayer that is still fresh may anchor a new card.
   const canStart = cur !== undefined && cur.at > now - STALE_S;
   const restart: Action[] = canStart ? [{ kind: 'start', next }] : [];
 
-  if (live && now >= cap) return [{ kind: 'end' }, ...restart];
+  if (live && now >= cap) return [{ kind: 'end', atPrayer: canStart }, ...restart];
 
   const arrived = cur !== undefined && cur.at > (state.lastActedPrayerAt ?? -Infinity);
   if (!arrived) return [];
 
   if (live) {
-    return next.at <= cap ? [{ kind: 'update', next }] : [{ kind: 'end' }, ...restart];
+    return next.at <= cap
+      ? [{ kind: 'update', next }]
+      : [{ kind: 'end', atPrayer: true }, ...restart];
   }
   return restart;
 }

@@ -13,7 +13,7 @@ const aps = (p: { body: object }): Aps => (p.body as { aps: Aps }).aps;
 
 const start = buildPush({ kind: 'start', next: MAGHRIB }, NOW);
 const update = buildPush({ kind: 'update', next: MAGHRIB }, NOW);
-const end = buildPush({ kind: 'end' }, NOW, ASR);
+const end = buildPush({ kind: 'end', atPrayer: true }, NOW, ASR);
 
 // The fields Swift decodes, read out of the source file so a rename on either side fails here.
 function swiftVars(structName: string): string[] {
@@ -110,7 +110,7 @@ describe('buildPush', () => {
   });
 
   it('end without a known final prayer still carries a decodable content-state', () => {
-    const bare = aps(buildPush({ kind: 'end' }, NOW));
+    const bare = aps(buildPush({ kind: 'end', atPrayer: false }, NOW));
     expect(typeof bare['content-state'].prayerName).toBe('string');
     expect(bare['content-state'].prayerEpoch).toBe(NOW);
   });
