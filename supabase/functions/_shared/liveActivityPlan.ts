@@ -31,6 +31,19 @@ function capOf(state: CardState): number | null {
   return state.startedAt === null ? null : state.startedAt + MAX_ACTIVE_S - MARGIN_S;
 }
 
+// The latest prayer at or before `now` (the one `decide` acts at), or undefined.
+// Exported so the dispatcher records `last_acted_prayer_at` from the same prayer.
+export function currentPrayer(
+  schedule: ScheduledPrayer[],
+  now: number,
+): ScheduledPrayer | undefined {
+  let cur: ScheduledPrayer | undefined;
+  for (const p of schedule) {
+    if (p.at <= now) cur = p;
+  }
+  return cur;
+}
+
 export function decide(
   state: CardState,
   schedule: ScheduledPrayer[],
@@ -43,10 +56,7 @@ export function decide(
   const next = schedule.find((p) => p.at > now);
   if (!isPro || !next) return live ? [{ kind: 'end' }] : [];
 
-  let cur: ScheduledPrayer | undefined;
-  for (const p of schedule) {
-    if (p.at <= now) cur = p;
-  }
+  const cur = currentPrayer(schedule, now);
   // Only a prayer that is still fresh may anchor a new card.
   const canStart = cur !== undefined && cur.at > now - STALE_S;
   const restart: Action[] = canStart ? [{ kind: 'start', next }] : [];

@@ -1,6 +1,7 @@
 import {
   decide,
   nextDueAt,
+  currentPrayer,
   MAX_ACTIVE_S,
   MARGIN_S,
   ScheduledPrayer,
@@ -98,5 +99,17 @@ describe('nextDueAt', () => {
   it('is null when the schedule is exhausted and no card is live', () => {
     const none = { startedAt: null, lastActedPrayerAt: null };
     expect(nextDueAt(none, SCHEDULE, NEXT_D.at + 60)).toBeNull();
+  });
+});
+
+describe('currentPrayer', () => {
+  it('is the latest prayer at or before now', () => {
+    expect(currentPrayer(SCHEDULE, A.at)).toEqual(A);
+    expect(currentPrayer(SCHEDULE, A.at + 60)).toEqual(A);
+    expect(currentPrayer(SCHEDULE, M.at - 1)).toEqual(A);
+  });
+
+  it('is undefined before the first prayer', () => {
+    expect(currentPrayer(SCHEDULE, F.at - 1)).toBeUndefined();
   });
 });
