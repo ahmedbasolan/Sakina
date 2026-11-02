@@ -1,4 +1,4 @@
-import { planWrites, startPreWrite } from '../../../../supabase/functions/_shared/dispatchPlan';
+import { planWrites, startPreWrite, BACKOFF_S } from '../../../../supabase/functions/_shared/dispatchPlan';
 import type { ClaimedState, SendOutcome } from '../../../../supabase/functions/_shared/dispatchPlan';
 import {
   decide,
@@ -98,6 +98,31 @@ describe('planWrites', () => {
   it('a halt, or an action never attempted, is a retry too', () => {
     expect(plan(LIVE_AT_DHUHR, A.at, true, ['halt'])).toMatchObject({ kind: 'update', retry: true });
     expect(plan(LIVE_AT_FAJR, D.at, true, ['ok'])).toMatchObject({ kind: 'update', retry: true });
+  });
+
+  it('a backoff restores the claim-time state and waits 15 minutes', () => {
+    // A per-row APNs 4xx on the start (after its pre-write): the row neither halts
+    // the run nor comes back every minute.
+    expect(plan(NO_CARD, A.at, true, ['backoff'])).toEqual({
+      kind: 'update',
+      retry: true,
+      patch: {
+        activity_started_at: null,
+        last_acted_prayer_at: D.at,
+        activity_token: null,
+        next_due_at: A.at + BACKOFF_S,
+      },
+    });
+    expect(BACKOFF_S).toBe(15 * 60);
+  });
+
+  it('a backoff after a sent end still restores everything as claimed', () => {
+    const p = plan(LIVE_AT_FAJR, D.at, true, ['ok', 'backoff']);
+    expect(p).toMatchObject({
+      kind: 'update',
+      retry: true,
+      patch: { activity_started_at: F.at, activity_token: TOKEN, next_due_at: D.at + BACKOFF_S },
+    });
   });
 
   it('a skipped start (no push-to-start token) leaves activity_started_at null', () => {

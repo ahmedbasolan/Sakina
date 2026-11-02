@@ -70,8 +70,21 @@ describe('buildPush', () => {
     }
   });
 
-  it('stale-date is the next prayer plus 15 minutes', () => {
+  it('stale-date is the next prayer plus 15 minutes, on starts and updates', () => {
     expect(aps(update)['stale-date']).toBe(MAGHRIB.at + 900);
+    expect(aps(start)['stale-date']).toBe(MAGHRIB.at + 900);
+  });
+
+  it('every push carries an apns-expiration, so APNs never holds one for hours', () => {
+    // A start older than 15 minutes is no longer a start at the prayer.
+    expect(start.headers['apns-expiration']).toBe(String(NOW + 15 * 60));
+    // An update is out of date once the prayer it counts down to arrives.
+    expect(update.headers['apns-expiration']).toBe(String(MAGHRIB.at));
+    // An end may still usefully arrive a little late.
+    expect(end.headers['apns-expiration']).toBe(String(NOW + 60 * 60));
+    for (const p of [start, update, end]) {
+      expect(p.headers['apns-expiration']).toMatch(/^\d{10}$/); // epoch seconds, not ms, never 0
+    }
   });
 
   it('end sets dismissal-date to now', () => {
@@ -92,11 +105,11 @@ describe('buildPush', () => {
     expect(Object.keys(aps(start).attributes).sort()).toEqual(swiftVars('SakinaPrayerAttributes'));
   });
 
-  it('start goes to the push-to-start token at priority 10; update and end to the activity token at 5', () => {
+  it('start goes to the push-to-start token at priority 10; update at 10 and end at 5 to the activity token', () => {
     expect(start.tokenKind).toBe('pushToStart');
     expect(start.headers['apns-priority']).toBe('10');
     expect(update.tokenKind).toBe('activity');
-    expect(update.headers['apns-priority']).toBe('5');
+    expect(update.headers['apns-priority']).toBe('10');
     expect(end.tokenKind).toBe('activity');
     expect(end.headers['apns-priority']).toBe('5');
   });
@@ -121,10 +134,9 @@ describe('buildPush', () => {
     expect(aps(end)).not.toHaveProperty('input-push-token');
   });
 
-  it('only start carries attributes, and only update carries a stale-date', () => {
+  it('only start carries attributes, and end carries no stale-date', () => {
     expect(aps(update)).not.toHaveProperty('attributes');
     expect(aps(end)).not.toHaveProperty('attributes');
-    expect(aps(start)).not.toHaveProperty('stale-date');
     expect(aps(end)).not.toHaveProperty('stale-date');
     expect(aps(start)).not.toHaveProperty('dismissal-date');
     expect(aps(update)).not.toHaveProperty('dismissal-date');

@@ -18,6 +18,9 @@
 //     time with next_due_at = now: the row is due again next run, which decides again
 //     from the same prayer. (An end that already went through is re-sent then; iOS
 //     ignores a push for an activity that has ended.)
+//   - backoff (an APNs error about this row only, see apnsErrors.ts) → the same
+//     restore, but next_due_at = now + BACKOFF_S, so one bad row neither stops the
+//     run nor is re-sent every minute.
 //   - badToken on the push-to-start token → delete the row.
 //   - not Pro and no card left → delete the row.
 //
@@ -31,7 +34,10 @@
 
 import type { Action, CardState, ScheduledPrayer } from './liveActivityPlan.ts';
 
-export type SendOutcome = 'ok' | 'skipped' | 'badToken' | 'retry' | 'halt';
+export type SendOutcome = 'ok' | 'skipped' | 'badToken' | 'retry' | 'halt' | 'backoff';
+
+// How long a row waits after an APNs error about that row alone.
+export const BACKOFF_S = 15 * 60;
 
 // The card columns as read at claim time.
 export interface ClaimedState {
@@ -79,7 +85,7 @@ export function planWrites(input: PlanInput): WritePlan {
     const action = actions[i];
     const result = results[i];
 
-    if (result === undefined || result === 'retry' || result === 'halt') {
+    if (result === undefined || result === 'retry' || result === 'halt' || result === 'backoff') {
       return {
         kind: 'update',
         retry: true,
@@ -87,7 +93,7 @@ export function planWrites(input: PlanInput): WritePlan {
           activity_started_at: row.activity_started_at,
           last_acted_prayer_at: row.last_acted_prayer_at,
           activity_token: row.activity_token,
-          next_due_at: now,
+          next_due_at: result === 'backoff' ? now + BACKOFF_S : now,
         },
       };
     }

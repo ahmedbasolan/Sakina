@@ -14,6 +14,25 @@
 //     payload and update or end the Live Activity" — so end carries one too.
 //   - a `dismissal-date` in the past removes an ended activity at once.
 //
+// `apns-expiration`, from Apple's "Sending notification requests to APNs" (fetched
+// 2026-11-02): "If the value is nonzero, APNs stores the notification and tries to
+// deliver it at least once, repeating the attempt as needed until the specified
+// date", and "If you omit this header, APNs stores the push according to APNs
+// storage policy" — so without one a start to an offline phone can arrive hours late
+// and light the screen off any prayer time. Each push therefore carries one:
+//   start  → now + START_EXPIRY_S (15 min): a start later than that is not a start
+//            at the prayer, and the next prayer's run starts the next card;
+//   update → the prayer it counts down to: after that it is out of date anyway;
+//   end    → now + END_EXPIRY_S (1 h): an end may still usefully arrive late.
+// "APNs uses best efforts to honor the expiry date without any guarantee", which is
+// why a start also carries a `stale-date` (next.at + STALE_AFTER_S) like an update.
+//
+// Priority: start and update at 10, end at 5. Apple: priority 5 does not count
+// toward the hourly Live Activity budget, but may be grouped and delivered late; a
+// countdown that moves to the next prayer late shows the wrong prayer, and a typical
+// day is 2–3 starts plus a few updates, well inside the budget. An end is dismissed
+// at once and can afford to wait.
+//
 // The start alert names the prayer only: the server knows neither the user's 12/24 h
 // preference nor their locale (ruling R1). There is no `sound` key anywhere, so the
 // start is silent; Sakina's own prayer notification is the audible one.
@@ -29,6 +48,9 @@ export const ATTRIBUTES_TYPE = 'SakinaPrayerAttributes';
 export const ATTRIBUTES_VERSION = 1;
 // A card the server has not touched for this long after its prayer is marked stale.
 export const STALE_AFTER_S = 15 * 60;
+// How long APNs may hold a start / an end for an unreachable phone (see above).
+export const START_EXPIRY_S = 15 * 60;
+export const END_EXPIRY_S = 60 * 60;
 
 export interface ApnsPush {
   headers: Record<string, string>;
@@ -40,11 +62,12 @@ function contentState(p: ScheduledPrayer): { prayerName: string; prayerEpoch: nu
   return { prayerName: p.name, prayerEpoch: p.at };
 }
 
-function headers(priority: 5 | 10): Record<string, string> {
+function headers(priority: 5 | 10, expiration: number): Record<string, string> {
   return {
     'apns-push-type': 'liveactivity',
     'apns-topic': APNS_TOPIC,
     'apns-priority': String(priority),
+    'apns-expiration': String(Math.floor(expiration)),
   };
 }
 
@@ -54,13 +77,14 @@ function headers(priority: 5 | 10): Record<string, string> {
 export function buildPush(action: Action, now: number, final?: ScheduledPrayer): ApnsPush {
   if (action.kind === 'start') {
     return {
-      headers: headers(10),
+      headers: headers(10, now + START_EXPIRY_S),
       tokenKind: 'pushToStart',
       body: {
         aps: {
           timestamp: now,
           event: 'start',
           'content-state': contentState(action.next),
+          'stale-date': action.next.at + STALE_AFTER_S,
           'attributes-type': ATTRIBUTES_TYPE,
           attributes: { version: ATTRIBUTES_VERSION },
           // Ruling R20. Apple: "For devices running iOS 18 and later … you can add
@@ -77,7 +101,7 @@ export function buildPush(action: Action, now: number, final?: ScheduledPrayer):
 
   if (action.kind === 'update') {
     return {
-      headers: headers(5),
+      headers: headers(10, action.next.at),
       tokenKind: 'activity',
       body: {
         aps: {
@@ -91,7 +115,7 @@ export function buildPush(action: Action, now: number, final?: ScheduledPrayer):
   }
 
   return {
-    headers: headers(5),
+    headers: headers(5, now + END_EXPIRY_S),
     tokenKind: 'activity',
     body: {
       aps: {

@@ -1,0 +1,23 @@
+# Supabase CLI config — deliberately minimal: it exists so a plain
+# `supabase functions deploy` cannot switch JWT verification back ON for the two
+# Live Activity functions, which would break both of them:
+#   - live-activity-register is called by guests and by a just-signed-out app with
+#     only the anon key, and by the native token forwarder;
+#   - live-activity-dispatch is called by pg_cron with a shared secret, not a JWT.
+# Each still checks its caller itself (see the header of its index.ts).
+#
+# Every other setting is the CLI's built-in default, used only by local
+# `supabase start`. Do NOT run `supabase config push` with this file: it would
+# push those defaults (auth URLs, email settings, …) over the hosted project's
+# real configuration. delete-account is not listed, so it keeps the default
+# (verify_jwt = true), as it is deployed today.
+#
+# Checked against Supabase CLI 2.76.12 (node_modules/supabase): this file parses
+# (`supabase status` gets past config loading), and a misspelt key
+# ("verify_jwtx") or a non-boolean value is rejected at load time.
+
+[functions.live-activity-register]
+verify_jwt = false
+
+[functions.live-activity-dispatch]
+verify_jwt = false

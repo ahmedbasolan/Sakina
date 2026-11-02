@@ -5,6 +5,14 @@
 --
 -- Run in: Supabase Dashboard → SQL Editor → New query
 --
+-- DO NOT apply this with `supabase db push`. Migrations 001–006 were applied by
+-- hand in the SQL Editor, so the project's migration history
+-- (supabase_migrations.schema_migrations) does not list them, and `db push` would
+-- try to replay all six against a database that already has them. Either paste
+-- this file into the SQL Editor like the others, or first mark 001–006 as applied
+-- (`supabase migration repair --status applied 001 002 003 004 005 006`, after
+-- checking `supabase migration list`) and only then push.
+--
 -- Access model: only the service role (the live-activity-register and
 -- live-activity-dispatch edge functions) touches this table. RLS is enabled with
 -- NO policies, so anon/authenticated requests see nothing and can write nothing.
@@ -118,6 +126,15 @@ CREATE EXTENSION IF NOT EXISTS pg_net  WITH SCHEMA extensions;
 --
 -- cron.schedule with an existing job name replaces that job, so re-running this
 -- file is safe.
+--
+-- timeout_milliseconds is how long pg_net waits for the dispatcher's answer. It must
+-- outlast a whole run, or pg_net gives up on a run that is still sending: the run
+-- stops picking up devices after RUN_BUDGET_MS = 45 s (live-activity-dispatch), and
+-- the last device it picked up can take up to ~40 s more (RevenueCat 10 s, two APNs
+-- sends at 10 s each, the database writes). 100 s covers that with ~15 s to spare,
+-- and stays under the Edge Functions limits (Supabase docs, fetched 2026-11-02:
+-- wall clock 150 s on the free plan, 400 s paid; request idle timeout 150 s).
+-- Raise the two together.
 SELECT cron.schedule(
   'live-activity-dispatch',
   '* * * * *',
@@ -134,7 +151,7 @@ SELECT cron.schedule(
         )
       ),
       body := '{}'::jsonb,
-      timeout_milliseconds := 30000
+      timeout_milliseconds := 100000
     );
   $$
 );

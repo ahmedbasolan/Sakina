@@ -12,8 +12,9 @@
  *      a start goes out, the post-start state is saved first, so a failed save after
  *      a successful push cannot make the next run start a second card;
  *   5. saves what `planWrites()` (_shared/dispatchPlan.ts) says — new card state and
- *      `next_due_at`, a retry (`next_due_at = now`, claim-time state restored), or a
- *      delete.
+ *      `next_due_at`, a retry (`next_due_at = now`, claim-time state restored), a
+ *      backoff (the same, due in 15 min, after an APNs error about that row only —
+ *      _shared/apnsErrors.ts), or a delete.
  * Every write is conditional on the row's `updated_at` being what this run read, so
  * a register or token post that lands mid-run wins and this run's write is dropped
  * (the register already recomputed next_due_at). One device's failure never stops
@@ -39,6 +40,8 @@
  * APNS_KEY_ID, APNS_TEAM_ID, REVENUECAT_SECRET_KEY, DISPATCH_SECRET.
  *
  * Deploy: supabase functions deploy live-activity-dispatch --no-verify-jwt
+ *   (supabase/config.toml sets verify_jwt = false for it too, so a deploy that
+ *   forgets the flag cannot switch verification back on)
  */
 
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
@@ -47,6 +50,7 @@ import { currentPrayer, decide, nextDueAt } from '../_shared/liveActivityPlan.ts
 import type { ScheduledPrayer } from '../_shared/liveActivityPlan.ts';
 import { buildPush } from '../_shared/apnsPayload.ts';
 import type { ApnsPush } from '../_shared/apnsPayload.ts';
+import { classifyApnsError } from '../_shared/apnsErrors.ts';
 import { planWrites, startPreWrite } from '../_shared/dispatchPlan.ts';
 import type { SendOutcome } from '../_shared/dispatchPlan.ts';
 import { proFromSubscriber } from '../_shared/revenueCatPro.ts';
@@ -63,6 +67,8 @@ const JWT_MAX_AGE_S = 45 * 60;
 // two runs apart — a device picked up at 44 s can still be in flight (RevenueCat
 // 10 s + two APNs sends + DB) when the next run starts. The claim's 120 s lease
 // does that. Claimed rows not started are released (next_due_at = now).
+// The cron's pg_net timeout (migration 007, 100 s) is set above this budget plus the
+// last device's ~40 s: change them together.
 const RUN_BUDGET_MS = 45_000;
 const FETCH_TIMEOUT_MS = 10_000;
 
@@ -86,7 +92,8 @@ interface Run {
   counts: Counts;
   deadline: number;
   // Set on an APNs error that would hit every device (bad provider token, wrong
-  // topic, …): stop sending for the rest of this run and leave rows due.
+  // topic, …; the list is classifyApnsError's): stop sending for the rest of this
+  // run and leave rows due. Never set by an error about one row.
   halted: boolean;
 }
 
@@ -283,6 +290,7 @@ type SendResult =
   | { kind: 'ok' }
   | { kind: 'badToken' } // 410, or 400 BadDeviceToken / DeviceTokenNotForTopic
   | { kind: 'retry' } // 429, 5xx, network: leave state, try next run
+  | { kind: 'backoff' } // any other 4xx: this row only, try it again in 15 min
   | { kind: 'halt' }; // an error every device would hit: stop sending this run
 
 // Apple's reason strings are short CamelCase words; anything else is not logged as-is.
@@ -336,25 +344,11 @@ async function send(
   }
   bump(counts, `apns_${res.status}_${reason}`);
 
-  if (
-    res.status === 410 ||
-    (res.status === 400 && (reason === 'BadDeviceToken' || reason === 'DeviceTokenNotForTopic'))
-  ) {
-    return { kind: 'badToken' };
-  }
-  // 429 TooManyRequests is about this one device token: retry it next run. 429
-  // TooManyProviderTokenUpdates is about our provider token, so it is provider-wide
-  // and falls through to halt below.
-  if ((res.status === 429 && reason !== 'TooManyProviderTokenUpdates') || res.status >= 500) {
-    return { kind: 'retry' };
-  }
-  if (res.status === 403 && (reason === 'ExpiredProviderToken' || reason === 'InvalidProviderToken')) {
-    await discardJwt(admin, jwt, counts);
-  }
-  // 403 (provider token, Forbidden), 429 TooManyProviderTokenUpdates, 400 BadTopic /
-  // TopicDisallowed / BadPriority …, 413: our configuration, payload or provider token,
-  // so every other device would fail the same way.
-  return { kind: 'halt' };
+  // Only a known provider-wide reason halts the run; any other 4xx backs this one
+  // row off. The table and its gaps are in _shared/apnsErrors.ts.
+  const verdict = classifyApnsError(res.status, reason);
+  if (verdict.discardJwt) await discardJwt(admin, jwt, counts);
+  return { kind: verdict.kind };
 }
 
 // ── Conditional writes ──────────────────────────────────────────────────────
@@ -448,9 +442,9 @@ async function processDevice(
     (p) => p.at > (row.last_acted_prayer_at ?? row.activity_started_at ?? -Infinity),
   );
 
-  // 3. Send, in order. A retry/halt stops this device's remaining actions (never start
-  // a fresh card while the old one may still be live); planWrites reads an action
-  // with no result as a retry.
+  // 3. Send, in order. A retry/backoff/halt stops this device's remaining actions
+  // (never start a fresh card while the old one may still be live); planWrites reads
+  // an action with no result as a retry.
   const results: SendOutcome[] = [];
   for (const action of actions) {
     if (run.halted) break;
@@ -476,8 +470,9 @@ async function processDevice(
     const result = await send(admin, row.apns_env, target, push, now, counts);
     results.push(result.kind);
     if (result.kind === 'ok') bump(counts, `sent_${action.kind}`);
+    if (result.kind === 'backoff') bump(counts, 'backoff');
     if (result.kind === 'halt') run.halted = true;
-    if (result.kind === 'retry' || result.kind === 'halt') break;
+    if (result.kind === 'retry' || result.kind === 'halt' || result.kind === 'backoff') break;
     if (result.kind === 'badToken' && push.tokenKind === 'pushToStart') break;
   }
 
