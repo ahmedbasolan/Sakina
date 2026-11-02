@@ -154,6 +154,22 @@ describe('LiveActivityService', () => {
     expect(mockStore[LIVE_ACTIVITY_REGISTERED_KEY]).toBe('true');
   });
 
+  it('configures native again after a successful register, not after a failed one', async () => {
+    mockStore[LIVE_ACTIVITY_PREF_KEY] = 'true';
+    mockInvoke.mockResolvedValue({ data: null, error: new Error('500') });
+    await svc().sync(weekly, '24h');
+    expect(n.configure).toHaveBeenCalledTimes(1); // the initial one only
+
+    n.configure.mockClear();
+    mockInvoke.mockResolvedValue({ data: { ok: true }, error: null });
+    await svc().sync(weekly, '24h');
+    expect(n.configure).toHaveBeenCalledTimes(2);
+    expect(n.configure.mock.calls[1][0]).toEqual(n.configure.mock.calls[0][0]);
+    // Order matters: the second configure comes after the register call.
+    const registerOrder = mockInvoke.mock.invocationCallOrder[mockInvoke.mock.invocationCallOrder.length - 1];
+    expect(n.configure.mock.invocationCallOrder[1]).toBeGreaterThan(registerOrder);
+  });
+
   it('startLocal still runs after a failed register', async () => {
     mockStore[LIVE_ACTIVITY_PREF_KEY] = 'true';
     mockInvoke.mockResolvedValue({ data: null, error: new Error('500') });

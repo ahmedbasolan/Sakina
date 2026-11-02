@@ -160,9 +160,13 @@ Deno.serve(async (req: Request) => {
     if (readError) throw readError;
 
     // rc_app_user_id and schedule are NOT NULL, so a token cannot create a row.
-    // The app's register always comes first; the forwarder reposts on next launch.
+    // On first opt-in the native token post races the app's register and can land
+    // first. Answer non-2xx: the forwarder records a token as delivered only on a
+    // 2xx and retries once after 2 s (by which time the register has usually
+    // landed), and the app configures native again after a successful register so
+    // it reposts anyway. A 200 here would make the forwarder drop the token.
     if (!existing) {
-      return json(200, { ok: true, ignored: true });
+      return json(409, { error: 'unknown device' });
     }
 
     const schedule = existing.schedule as ScheduledPrayer[];
@@ -175,7 +179,9 @@ Deno.serve(async (req: Request) => {
       lastActedPrayerAt: existing.last_acted_prayer_at ?? null,
     };
     if (request.activityStartedAt !== undefined) {
-      const startedAt = Math.round(request.activityStartedAt);
+      // One floor for both columns, so last_acted_prayer_at is judged against
+      // exactly the second that is stored.
+      const startedAt = Math.floor(request.activityStartedAt);
       state.startedAt = startedAt;
       state.lastActedPrayerAt = latestAtOrBefore(schedule, startedAt);
       update.activity_started_at = state.startedAt;

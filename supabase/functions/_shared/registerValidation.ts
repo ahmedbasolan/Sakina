@@ -42,7 +42,9 @@ const SALAH_NAMES: readonly Salah[] = ['Fajr', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'
 
 const DAY_S = 86400;
 const MAX_SCHEDULE = 40;
-const MAX_TOKEN = 200;
+// Apple documents no fixed APNs token length, so leave headroom; a token over the
+// cap would be refused on every retry.
+const MAX_TOKEN = 512;
 const MAX_RC_ID = 200;
 const MAX_TIME_ZONE = 64;
 const FUTURE_WINDOW_S = 8 * DAY_S;
@@ -120,10 +122,10 @@ export function parseRegister(body: unknown, nowSeconds: number): ParseResult {
 
     const { pushToStartToken, activityToken, activityStartedAt } = body;
     if (pushToStartToken !== undefined && !isHexToken(pushToStartToken)) {
-      return fail('pushToStartToken must be hex, up to 200 characters');
+      return fail('pushToStartToken must be hex, up to 512 characters');
     }
     if (activityToken !== undefined && !isHexToken(activityToken)) {
-      return fail('activityToken must be hex, up to 200 characters');
+      return fail('activityToken must be hex, up to 512 characters');
     }
     if (pushToStartToken === undefined && activityToken === undefined) {
       return fail('a token is required');

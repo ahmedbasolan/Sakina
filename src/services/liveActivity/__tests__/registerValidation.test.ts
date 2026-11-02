@@ -64,6 +64,12 @@ describe('parseRegister', () => {
       }
     });
 
+    it('lower-cases an upper-case deviceId', () => {
+      const result = parseRegister(register({ deviceId: DEVICE.toUpperCase() }), NOW);
+      expect(result.ok).toBe(true);
+      if (result.ok) expect(result.value.deviceId).toBe(DEVICE);
+    });
+
     it('rejects a deviceId that is not a UUID', () => {
       expectError(parseRegister(register({ deviceId: 'not-a-uuid' }), NOW));
       expectError(parseRegister(register({ deviceId: DEVICE + 'x' }), NOW));
@@ -163,10 +169,16 @@ describe('parseRegister', () => {
       expectError(parseRegister({ action: 'token', deviceId: DEVICE, activityToken: 'xyz' }, NOW));
       expectError(parseRegister({ action: 'token', deviceId: DEVICE, activityToken: '' }, NOW));
       expectError(
-        parseRegister({ action: 'token', deviceId: DEVICE, pushToStartToken: 'a'.repeat(201) }, NOW),
+        parseRegister({ action: 'token', deviceId: DEVICE, pushToStartToken: 'a'.repeat(513) }, NOW),
+      );
+      expectError(
+        parseRegister({ action: 'token', deviceId: DEVICE, activityToken: 'a'.repeat(513) }, NOW),
       );
       expect(
-        parseRegister({ action: 'token', deviceId: DEVICE, pushToStartToken: 'a'.repeat(200) }, NOW).ok,
+        parseRegister({ action: 'token', deviceId: DEVICE, pushToStartToken: 'a'.repeat(512) }, NOW).ok,
+      ).toBe(true);
+      expect(
+        parseRegister({ action: 'token', deviceId: DEVICE, activityToken: 'a'.repeat(512) }, NOW).ok,
       ).toBe(true);
     });
 

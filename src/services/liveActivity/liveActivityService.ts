@@ -121,10 +121,11 @@ export class LiveActivityService {
           return;
         }
 
-        native.configure({
+        const nativeConfig = {
           registerUrl: `${SUPABASE_URL || ''}/functions/v1/${REGISTER_FUNCTION}`,
           anonKey: SUPABASE_ANON_KEY || '',
-        });
+        };
+        native.configure(nativeConfig);
 
         await AsyncStorage.setItem(LIVE_ACTIVITY_TIME_FORMAT_KEY, timeFormat);
         await this.writeSnapshot(timeFormat);
@@ -152,6 +153,11 @@ export class LiveActivityService {
           logServiceError(SERVICE, 'sync.register', error as Error);
         } else {
           await AsyncStorage.setItem(LIVE_ACTIVITY_REGISTERED_KEY, 'true');
+          // The server row exists now. Native token posts made before this
+          // (getDeviceId reposts on first call, racing the register above) were
+          // answered 409 or lost, so configure again: it makes the forwarder
+          // repost its current tokens against the new row.
+          native.configure(nativeConfig);
         }
 
         if (!(await this.stillAllowed())) {
