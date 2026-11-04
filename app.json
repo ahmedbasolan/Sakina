@@ -15,6 +15,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.lelahmed.sakina",
+      "appleTeamId": "J5WQ27BNFU",
       "usesAppleSignIn": true,
       "infoPlist": {
         "UIUserInterfaceStyle": "Dark",
