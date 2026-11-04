@@ -3,15 +3,13 @@
 -- device that opted in, the dispatcher's shared APNs provider token, plus the
 -- per-minute cron that wakes the dispatcher.
 --
--- Run in: Supabase Dashboard → SQL Editor → New query
+-- Run in: Supabase Dashboard → SQL Editor → New query, or as a migration.
 --
--- DO NOT apply this with `supabase db push`. Migrations 001–006 were applied by
--- hand in the SQL Editor, so the project's migration history
--- (supabase_migrations.schema_migrations) does not list them, and `db push` would
--- try to replay all six against a database that already has them. Either paste
--- this file into the SQL Editor like the others, or first mark 001–006 as applied
--- (`supabase migration repair --status applied 001 002 003 004 005 006`, after
--- checking `supabase migration list`) and only then push.
+-- The project's migration history does list 001–006 (checked 2026-11-04 with the
+-- Supabase MCP `list_migrations`), so applying this as a migration does not
+-- replay them. An earlier version of this header said the opposite; it was
+-- written without checking. Run `supabase migration list` before any `db push`
+-- anyway, since the versions there are 001–006 rather than timestamps.
 --
 -- Access model: only the service role (the live-activity-register and
 -- live-activity-dispatch edge functions) touches this table. RLS is enabled with
