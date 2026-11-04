@@ -23,10 +23,11 @@
  * Security model:
  * - Deployed with JWT verification OFF (`--no-verify-jwt`): the cron sends a shared
  *   dispatch secret, not a Supabase JWT. The bearer is compared, in constant time, to
- *   the DISPATCH_SECRET env var; anything else is a 401 and nothing is read or sent.
- *   DISPATCH_SECRET must hold the SAME value as the Vault secret
- *   'live_activity_dispatch_secret' that the cron job reads (Task 9 sets both). An
- *   unset DISPATCH_SECRET rejects every caller.
+ *   the Vault secret 'live_activity_dispatch_secret' — the same row the cron job
+ *   sends — read through the service-role-only function from migration 008; anything
+ *   else is a 401 and nothing is read or sent. A missing secret rejects every caller.
+ *   (An earlier version compared against a DISPATCH_SECRET env var that had to be
+ *   pasted to match Vault by hand; that env var is no longer read.)
  * - Nothing is ever sent to a device without a Pro verdict from RevenueCat. An
  *   RevenueCat outage keeps the last verdict (and skips a never-checked row) — it is
  *   never read as "not Pro", which would delete a paying user's row.
@@ -37,7 +38,7 @@
  *   minute does not sign a fresh token every minute.
  *
  * Secrets (supabase secrets set …): APNS_KEY_P8 (the .p8 file's contents),
- * APNS_KEY_ID, APNS_TEAM_ID, REVENUECAT_SECRET_KEY, DISPATCH_SECRET.
+ * APNS_KEY_ID, APNS_TEAM_ID, REVENUECAT_SECRET_KEY. The dispatch secret is in Vault.
  *
  * Deploy: supabase functions deploy live-activity-dispatch --no-verify-jwt
  *   (supabase/config.toml sets verify_jwt = false for it too, so a deploy that
@@ -116,10 +117,26 @@ async function sha256(s: string): Promise<Uint8Array> {
   return new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s)));
 }
 
+// The cron's shared secret, read from Vault through the service-role-only SQL
+// function `live_activity_dispatch_secret()` (migration 008) — the same Vault row
+// the cron job sends — so there is one copy, not a Vault secret plus a hand-pasted
+// env var that must match it. Cached per isolate for a few minutes; a read failure
+// or a missing secret yields '' and rejects every caller.
+const SECRET_TTL_MS = 5 * 60_000;
+let cachedSecret: { value: string; at: number } | null = null;
+
+async function dispatchSecret(admin: SupabaseClient): Promise<string> {
+  if (cachedSecret && Date.now() - cachedSecret.at < SECRET_TTL_MS) return cachedSecret.value;
+  const { data, error } = await admin.rpc('live_activity_dispatch_secret');
+  const value = !error && typeof data === 'string' ? data : '';
+  if (value) cachedSecret = { value, at: Date.now() };
+  return value;
+}
+
 // Constant time in the secret: both sides are hashed to 32 bytes first, so neither
 // the comparison nor its length depends on how much of the secret was guessed.
-async function isDispatcher(req: Request): Promise<boolean> {
-  const expected = Deno.env.get('DISPATCH_SECRET') ?? '';
+async function isDispatcher(req: Request, admin: SupabaseClient): Promise<boolean> {
+  const expected = await dispatchSecret(admin);
   if (!expected) return false;
   const match = /^Bearer\s+(.+)$/i.exec(req.headers.get('Authorization') ?? '');
   const given = match ? match[1].trim() : '';
@@ -512,14 +529,15 @@ async function pool<T>(items: T[], limit: number, fn: (item: T) => Promise<void>
 
 Deno.serve(async (req: Request) => {
   if (req.method !== 'POST') return json(405, { error: 'Method not allowed' });
-  if (!(await isDispatcher(req))) return json(401, { error: 'Unauthorized' });
 
-  const run: Run = { counts: {}, deadline: Date.now() + RUN_BUDGET_MS, halted: false };
   const admin = createClient(
     Deno.env.get('SUPABASE_URL')!,
     Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!,
     { auth: { persistSession: false, autoRefreshToken: false } },
   );
+  if (!(await isDispatcher(req, admin))) return json(401, { error: 'Unauthorized' });
+
+  const run: Run = { counts: {}, deadline: Date.now() + RUN_BUDGET_MS, halted: false };
 
   // Locks, leases (next_due_at = now + 120) and returns up to BATCH_LIMIT due rows,
   // skipping rows an overlapping run holds. See migration 007.

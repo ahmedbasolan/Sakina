@@ -119,8 +119,10 @@ CREATE EXTENSION IF NOT EXISTS pg_net  WITH SCHEMA extensions;
 --   * until it exists the job posts "Bearer " (empty) and the dispatcher answers
 --     401 — harmless noise in net._http_response, nothing is sent to any device.
 -- Create it once, outside version control:
---   select vault.create_secret('<random 32+ byte secret>', 'live_activity_dispatch_secret');
--- and give the live-activity-dispatch function the same value as its secret.
+--   select vault.create_secret(encode(extensions.gen_random_bytes(32), 'hex'),
+--                              'live_activity_dispatch_secret');
+-- The live-activity-dispatch function reads this same Vault row (migration 008),
+-- so there is no second copy to keep in step.
 --
 -- cron.schedule with an existing job name replaces that job, so re-running this
 -- file is safe.
