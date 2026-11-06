@@ -114,15 +114,18 @@ struct MandalaShape: Shape {
     var path = Path()
     let center = CGPoint(x: rect.midX, y: rect.midY)
     let radius = min(rect.width, rect.height) / 2 * 0.96
+    // CGFloat throughout: with a Double angle, `radius * cos(a)` was ambiguous
+    // between the Double and CGFloat overloads (build 12's only compile error).
     for step in [3, 4] {
       for i in 0..<12 {
-        let a1 = Double(i) * .pi * 2 / 12 - .pi / 2
-        let a2 = Double(i + step) * .pi * 2 / 12 - .pi / 2
+        let a1: CGFloat = CGFloat(i) * .pi * 2 / 12 - .pi / 2
+        let a2: CGFloat = CGFloat(i + step) * .pi * 2 / 12 - .pi / 2
         path.move(to: CGPoint(x: center.x + radius * cos(a1), y: center.y + radius * sin(a1)))
         path.addLine(to: CGPoint(x: center.x + radius * cos(a2), y: center.y + radius * sin(a2)))
       }
     }
-    for scale in [1.0, 0.5, 0.18] {
+    let ringScales: [CGFloat] = [1.0, 0.5, 0.18]
+    for scale in ringScales {
       let r = radius * scale
       path.addEllipse(in: CGRect(x: center.x - r, y: center.y - r, width: r * 2, height: r * 2))
     }
