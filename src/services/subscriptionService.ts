@@ -27,6 +27,8 @@ export class SubscriptionService {
   private static instance: SubscriptionService;
   private subscriptionState: SubscriptionState | null = null;
   private isLoaded: boolean = false;
+  /** One-shot callbacks waiting for the first load (see `onLoaded`). */
+  private loadedListeners: Array<() => void> = [];
   private supabaseData = SupabaseDataService.getInstance();
 
   static getInstance(): SubscriptionService {
@@ -62,7 +64,7 @@ export class SubscriptionService {
         willRenew: false,
         unlockedBundleIds: this.subscriptionState?.unlockedBundleIds ?? [],
       };
-      this.isLoaded = true;
+      this.markLoaded();
       return;
     }
 
@@ -76,7 +78,44 @@ export class SubscriptionService {
       await this.loadFromLocalCache();
     }
 
+    this.markLoaded();
+  }
+
+  /** Sets the loaded flag and runs (once) everything waiting on `onLoaded`. */
+  private markLoaded(): void {
     this.isLoaded = true;
+    const listeners = this.loadedListeners;
+    this.loadedListeners = [];
+    for (const listener of listeners) {
+      try {
+        listener();
+      } catch {
+        // A listener's failure is its own; the others still run.
+      }
+    }
+  }
+
+  /**
+   * Runs `callback` once, as soon as the subscription state has loaded — or
+   * right away if it already has. One-shot: it is never called again on a
+   * later resync. For callers that had to skip work while `hasLoaded()` was
+   * false and must not wait for some unrelated later trigger to retry it.
+   */
+  onLoaded(callback: () => void): void {
+    if (this.isLoaded) {
+      callback();
+      return;
+    }
+    this.loadedListeners.push(callback);
+  }
+
+  /**
+   * True once the subscription state has been resolved (from RevenueCat or the
+   * local cache). Before that, `isPremium()` is false for everyone — callers
+   * that act on "not Pro" must check this first.
+   */
+  hasLoaded(): boolean {
+    return this.isLoaded;
   }
 
   isPremium(): boolean {

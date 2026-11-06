@@ -118,6 +118,12 @@ describe('sakina://journeys and onboarding', () => {
     expect(await screen.findByText('screen:Journeys')).toBeTruthy();
   });
 
+  it('a returning guest opening sakina://prayer-times goes straight to Prayer Times', async () => {
+    mockAuth.isGuest = true;
+    renderApp('sakina://prayer-times');
+    expect(await screen.findByText('screen:PrayerTimes')).toBeTruthy();
+  });
+
   it('an auth redirect on the shared scheme does not navigate a returning guest', async () => {
     mockAuth.isGuest = true;
     renderApp('sakina://#access_token=a&refresh_token=b&type=recovery');
