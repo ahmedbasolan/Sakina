@@ -5,8 +5,9 @@ awaiting Ahmed's approval
 
 ## Intent
 
-Put Sakina where a Pro user's eye already goes, all day: a countdown to the next
-prayer in the iPhone Dynamic Island, with the verse from their latest mood
+Put Sakina where a Pro user's eye already goes, all day: the next prayer
+(originally as a countdown; since 2026-11-06 its time and a line that fills
+toward it) in the iPhone Dynamic Island, with the verse from their latest mood
 check-in one long-press away. It should feel like the app's "lantern under a
 starlit sky" carried onto the system surface — calm, glanceable, never noisy.
 
@@ -54,7 +55,8 @@ starlit sky" carried onto the system surface — calm, glanceable, never noisy.
   plus the next 7 days of daily verses (each tagged with its date), into App
   Group shared storage; the extension reads it when it renders. Server pushes
   carry only prayer name + time.
-- **Settings switch** "Prayer countdown on Dynamic Island", **off until the
+- **Settings switch** "Prayer card on Dynamic Island" (renamed from "Prayer
+  countdown…" on 2026-11-06, when the card stopped showing a countdown), **off until the
   user turns it on** (changed from "on by default": because each start lights
   the screen, an existing Pro user updating the app must not be surprised by
   it). Pro users get a one-time invitation to turn it on (Prayer Times screen
@@ -96,40 +98,64 @@ starlit sky" carried onto the system surface — calm, glanceable, never noisy.
    ~52 pt and asks for a 28 pt fit when the island is limited in width, and
    "Maghrib 18:20" would be cut. The name stays in the expanded and lock views.
 2. Minimal island (when another app shares the island): the lantern.
-3. Expanded island: next prayer name, its clock time, and a live countdown
-   (system timer text — it shows seconds on iOS 17, no pushes needed to tick);
-   the current verse below.
+3. Expanded island: next prayer name and its clock time; the current verse
+   below. (A live countdown was here until the 2026-11-06 review, below.)
 4. Lock-screen / notification-banner view (also what pre-14-Pro iPhones see):
    Celestial Night styling, prayer row, verse.
 
-**Visual design D, "Lantern path" (chosen by Ahmed 2026-11-06).** Three
-directions — A countdown hero, B day path, C lantern glow — were previewed in
-`docs/superpowers/previews/live-activity/`; Ahmed picked C, then asked to
-combine B and C, and chose the result, D, which replaces C (a559203). It keeps
-goals 1–4 and changes how they look:
-- Lantern drawn with a soft warm radial glow (no container) in every view.
-- Lock screen: the verse leads (84 pt), then one row — glowing lantern, the
-  day path (`LanternPath`, 34 pt), and a quiet countdown.
-- The day path: the five prayers as stops evenly spaced on one line (evenly,
-  not by clock time, so Maghrib and Isha's labels cannot collide). Prayers
-  already passed are dim gold; the next is ringed in gold with a glow and
-  labelled with its time; the stretch from the previous prayer's stop to the
-  next fills live.
-- Expanded island: glowing lantern (leading), name over time (trailing, beside
-  the camera), then the verse (48 pt) and the path with the countdown.
-  Compact (lantern + time) and minimal (lantern) are unchanged from C.
-- The live stretch is `ProgressView(timerInterval:)`, advanced by iOS with no
-  pushes. A Live Activity cannot run its own animation, so the preview's
-  moving "now" glow was dropped for this. It needs the previous prayer, so
-  `ContentState` gained an optional `startEpoch` (server: the prayer just
-  acted at; app: the schedule entry before the next). No live stretch when it
-  is unknown. Optional, so build 11 still decodes new payloads.
-- Measured over the 52 daily verses: lock screen shows Arabic + English for 16,
-  English for 22, reference only for 14; the expanded island shows English for
-  4 and the "Your verse · ref" pointer for 48 — the path costs the expanded
-  verse its room, and the lock screen carries the text. (C was 16/29/7 and
-  17/35.) The expanded verse budget is conservative and the first thing to
-  tune on a device.
+**Visual design "Light the lantern" (chosen by Ahmed 2026-11-06).** Many
+directions were previewed in `docs/superpowers/previews/live-activity/` (A–H,
+then interactions I1–I4). Ahmed chose C, then a B+C combination (D: a559203,
+0425a22), asked for a review against generic styling, rejected the lantern as a
+path marker, and finally chose **I4 "Light the lantern" on G "Prayer board"**,
+which replaces D. A self-review before building changed three things (marked
+*review* below).
+- **Lock screen:** the verse first (78 pt), set like the app's Verse of the
+  Day (Georgia 13 at ~88% cream; "— Al-Baqarah 2:183" in Georgia italic at 70%;
+  Arabic in Amiri). The app's fading gold line along the top edge; the home
+  screen's mandala (`AnimatedMandala`, two concentric lattices) behind the right
+  half, still. Under the verse the **prayer board** (40 pt): five columns, each
+  prayer's name (11 pt) over its time (13 pt); passed prayers at 55% cream,
+  later ones at 80%, the next one gold with a thin line under it that fills from
+  the previous prayer (`ProgressView(timerInterval:)`, needs `startEpoch`). The
+  last cell (86 pt) is the **lantern** beside one short remembrance.
+- **The tap:** between two prayers the lantern waits, dim gold, beside one
+  phrase — SubhanAllah, Alhamdulillah, La ilaha illallah, Allahu Akbar,
+  Astaghfirullah, by the next prayer's position, in the spellings the app
+  already uses most. Say it, tap once, and the lantern lights (a second tap
+  undoes it). Nothing is counted, saved, scored or sent; no source line is
+  shown, so there is no citation claim. The lit state is `ContentState.lit`,
+  set only on the phone; the server's push at the next prayer carries no `lit`,
+  so the lantern goes dark with the new phrase. Ahmed's intent: a light way to
+  interact with the app that can never make anyone feel judged (an "I prayed"
+  log was parked for exactly that reason; a 33-tap tasbih was rejected as
+  needing too much staring).
+- **Expanded island:** the lantern is the button (leading, 44 pt, mandala
+  behind with thicker lines); name / time / phrase beside the camera; the
+  verse (72 pt) below.
+- **Compact / minimal:** the lantern (always lit — a dim lantern in the island
+  all day would read as broken, and the island takes no taps) and the time.
+- *Review:* **no ticking countdown anywhere.** The expanded trailing region is
+  ~100 pt wide; "3:22 PM · 1:42:10" (~97 pt) and a phrase hint (~170 pt) did
+  not fit, and the line under the next prayer already shows how near it is.
+- *Review:* the lantern's tap area is 48 pt tall (Apple's minimum is 44) by
+  reaching into the card's bottom padding, not by taking verse height.
+- *Review:* the unlit lantern is dim gold, not grey (grey read as broken).
+- **How the tap works:** `LightLanternIntent` is a `LiveActivityIntent`, so iOS
+  runs `perform()` in the app's process. It exists twice, byte-identical
+  (parity test): in the widget target (for `Button(intent:)`) and in the APP
+  target, copied there at prebuild by `plugins/withLanternIntent.js` — an intent
+  compiled into a static library (our pod) is reported as "could not find
+  intent". The plugin also weak-links AppIntents (the app deploys to iOS 15.1).
+  `perform()` calls the pod's `SakinaLantern.toggle`, which updates the card.
+  Only a device build proves the intent is found; others report a ~3 s delay
+  while iOS wakes the app.
+- **The board's five times** come from the App Group: the snapshot now carries
+  the same schedule the server was sent (`prayers`). Missing or misaligned →
+  every column but the next shows a dash, never a guessed time.
+- Measured over the 52 daily verses (lock 343 pt wide, expanded 327): lock
+  screen Arabic + English 5, English 34, reference only 13; expanded island
+  Arabic + English 4, English 32, reference 16.
 5. Card advances at each prayer time with the app closed, every day, for as
    long as the uploaded schedule lasts and Pro is active.
 6. Turning the switch off, losing Pro, or deleting the account stops pushes
@@ -139,7 +165,8 @@ goals 1–4 and changes how they look:
 
 - Android equivalent; Apple Watch-specific design (iOS 18 mirrors Live
   Activities into the Smart Stack automatically — acceptable as-is).
-- Interactive buttons on the card ("I prayed", dhikr counter).
+- Interactive buttons beyond the one lantern (an "I prayed" log, a counting
+  tasbih). The lantern is the single exception, decided 2026-11-06.
 - Server-side prayer calculation. The app's own calculation (method, madhab,
   user adjustments) is the source of truth; the server only replays it.
 - Sending verse text or mood to the server.

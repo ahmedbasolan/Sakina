@@ -1,21 +1,36 @@
 // The prayer Live Activity: Dynamic Island + lock screen / banner.
 //
-// Design D, "Lantern path" (chosen 2026-11-06; previewed with A–C in
-// docs/superpowers/previews/live-activity): design C's glowing lantern and
-// quiet countdown, with B's day path in place of the bar — the verse leads;
-// underneath, the lantern, the five prayers as stops on one line (LanternPath)
-// and the countdown.
+// Design "Light the lantern" (chosen by Ahmed 2026-11-06 from the previews in
+// docs/superpowers/previews/live-activity, design I4 on G "Prayer board"):
 //
-// Calm by design: the compact island is static text (the prayer's time); the
-// only moving things are system views — the countdown text and the path's live
-// stretch (ProgressView(timerInterval:)) — which iOS advances itself, with no
-// pushes and no other animation. The whole card opens Prayer Times.
+//   Lock screen  the verse first, set like the app's Verse of the Day; under it
+//                the prayer board — five columns, each prayer's name over its
+//                time, passed ones dimmed, the next one gold with a thin line
+//                under it that fills until the prayer — and, in the last cell,
+//                the lantern beside one short remembrance. The fading gold line
+//                on top and the home screen's mandala behind, still.
+//   The tap      say the phrase, tap the lantern, and it lights (a second tap
+//                undoes it). LightLanternIntent flips ContentState.lit; the
+//                server's next push at the next prayer carries no `lit`, so the
+//                lantern goes dark with the new phrase. Nothing is counted,
+//                saved or sent.
+//   Expanded     the lantern is the button (leading, mandala behind); name,
+//                time and phrase beside the camera; the verse below.
+//   Compact /    the lit lantern and the next prayer's time. Not interactive:
+//   minimal      Apple allows buttons only on the lock screen and expanded.
+//
+// Calm by design: nothing ticks. The only moving thing is the line under the
+// next prayer (ProgressView(timerInterval:)), which iOS advances itself with no
+// pushes. The ticking countdown was dropped in the 2026-11-06 review: it did
+// not fit beside the camera and the line already shows how near the prayer is.
+// Tapping anywhere but the lantern opens Prayer Times.
 //
 // Height budgets: Apple caps the lock-screen presentation and the expanded
-// island at 160 pt. The verse block gets a fixed share of that (see the
-// constants below) and VerseView picks the richest tier that fits in it.
+// island at 160 pt. The verse block gets a fixed share of that (CardLayout) and
+// VerseView picks the richest tier that fits in it.
 
 import ActivityKit
+import AppIntents
 import SwiftUI
 import WidgetKit
 
@@ -36,46 +51,54 @@ private let prayerTimesURL = URL(string: "sakina://prayer-times")
 /// would truncate its bottom, which ViewThatFits cannot see. Keep both, or
 /// re-derive these numbers.
 private enum CardLayout {
-  /// Lock screen: 160 total − 28 vertical padding − 10 spacing − 34 path row
-  /// (LanternPath.height; taller than the 30 pt lantern beside it) = 88, minus
-  /// 4 for margin.
-  static let lockScreenVerseHeight: CGFloat = 84
-  /// Expanded island: 160 − ~52 for the leading/trailing row beside the camera
-  /// (with the island's top margin) − 10 spacing − 34 path row − ~12 bottom
-  /// margin = ~52; 48 leaves margin, because overflow here would cut the bottom
-  /// of the card, i.e. the path or the end of an ayah. At 48 most verses show
-  /// as the "Your verse · ref" pointer here; the lock screen carries the text.
-  static let expandedVerseHeight: CGFloat = 48
-  /// Fixed width for the quiet countdown so it cannot claim the bar's room.
-  /// "1:42:10" at 13 pt semibold is ~52 pt.
-  static let countdownWidth: CGFloat = 64
+  /// Lock screen: 160 total − 30 vertical padding (16 top for the gold line,
+  /// 14 bottom) − 10 spacing − 40 board = 80, minus 2 for margin.
+  static let lockScreenVerseHeight: CGFloat = 78
+  /// The prayer board row.
+  static let boardHeight: CGFloat = 40
+  /// The lantern cell at the board's end. "La ilaha illallah" at 11 pt
+  /// semibold is ~80 pt wide.
+  static let lanternCellWidth: CGFloat = 86
+  /// Expanded island: 160 − ~58 for the name / time / phrase block beside the
+  /// camera (with the island's top margin) − ~12 bottom margin = ~90; 72 leaves
+  /// margin, because overflow here would cut the end of an ayah.
+  static let expandedVerseHeight: CGFloat = 72
 }
 
 struct SakinaPrayerLiveActivity: Widget {
   var body: some WidgetConfiguration {
     ActivityConfiguration(for: SakinaPrayerAttributes.self) { context in
-      LockScreenCard(state: context.state)
+      LockScreenCard(state: context.state, activityID: context.activityID)
         .activityBackgroundTint(Palette.night)
         .activitySystemActionForegroundColor(Palette.gold)
         .widgetURL(prayerTimesURL)
     } dynamicIsland: { context in
-      makeDynamicIsland(state: context.state)
+      makeDynamicIsland(state: context.state, activityID: context.activityID)
     }
   }
 }
 
-private func makeDynamicIsland(state: SakinaPrayerAttributes.ContentState) -> DynamicIsland {
+private func makeDynamicIsland(state: SakinaPrayerAttributes.ContentState, activityID: String) -> DynamicIsland {
   let prayerDate = PrayerClock.date(state)
   let twelveHour = VerseStore.uses12HourClock()
   let verse = VerseStore.pick(for: Date())
+  let lit = state.lit ?? false
+  let phrase = PrayerBoard.phrase(for: state)
 
   return DynamicIsland {
     DynamicIslandExpandedRegion(.leading) {
-      GlowLantern(size: 36, lanternHeight: 20)
+      LanternButton(activityID: activityID, phrase: phrase, lit: lit) {
+        CardLantern(height: 26, lit: lit)
+          .frame(width: 44, height: 44)
+      }
+      // The home screen's mandala around the lantern, like behind the greeting.
+      // Thicker lines than on the lock screen: a hairline vanishes on black.
+      .background(CardMandala(size: 130, lineWidth: 1.1))
     }
     DynamicIslandExpandedRegion(.trailing) {
-      // Name over time, not "Maghrib · 5:44 PM" on one line: the trailing
-      // region beside the camera is ~100 pt wide.
+      // Three short lines, nothing wider than ~100 pt: the trailing region
+      // beside the camera is about that wide. "3:22 PM · 1:42:10" was ~97 pt,
+      // and "La ilaha illallah · tap the lantern" ~170 pt, so neither is here.
       VStack(alignment: .trailing, spacing: 2) {
         Text(state.prayerName)
           .font(CardFont.title(16))
@@ -84,21 +107,20 @@ private func makeDynamicIsland(state: SakinaPrayerAttributes.ContentState) -> Dy
           .font(.system(size: 13, weight: .semibold))
           .monospacedDigit()
           .foregroundColor(Palette.gold)
+        Text(phrase)
+          .font(.system(size: 12, weight: .medium))
+          .foregroundColor(lit ? Palette.gold : Palette.creamSecondary)
+          .lineLimit(1)
+          .minimumScaleFactor(0.8)
       }
       .dynamicTypeSize(...DynamicTypeSize.large)
     }
     DynamicIslandExpandedRegion(.bottom) {
-      VStack(alignment: .leading, spacing: 10) {
-        VerseView(verse: verse, height: CardLayout.expandedVerseHeight)
-        HStack(spacing: 10) {
-          LanternPath(state: state, twelveHour: twelveHour)
-          QuietCountdown(to: prayerDate)
-        }
-      }
-      .dynamicTypeSize(...DynamicTypeSize.large)
+      VerseView(verse: verse, height: CardLayout.expandedVerseHeight)
+        .dynamicTypeSize(...DynamicTypeSize.large)
     }
   } compactLeading: {
-    GlowLantern(size: 28, lanternHeight: 18)
+    CardLantern(height: 20)
   } compactTrailing: {
     // Static on purpose: the island is in view all day, a ticking counter
     // there fights the calm-motion rule.
@@ -118,7 +140,9 @@ private func makeDynamicIsland(state: SakinaPrayerAttributes.ContentState) -> Dy
       .minimumScaleFactor(0.7)
       .dynamicTypeSize(...DynamicTypeSize.large)
   } minimal: {
-    GlowLantern(size: 30, lanternHeight: 18)
+    // Always lit in the island: a dim lantern there all day would read as
+    // broken, and the island cannot take a tap anyway.
+    CardLantern(height: 20)
   }
   .widgetURL(prayerTimesURL)
   .keylineTint(Palette.gold)
@@ -126,48 +150,153 @@ private func makeDynamicIsland(state: SakinaPrayerAttributes.ContentState) -> Dy
 
 struct LockScreenCard: View {
   let state: SakinaPrayerAttributes.ContentState
+  let activityID: String
 
-  private var prayerDate: Date { PrayerClock.date(state) }
   private var twelveHour: Bool { VerseStore.uses12HourClock() }
   private var verse: CardVerse? { VerseStore.pick(for: Date()) }
 
   var body: some View {
     VStack(alignment: .leading, spacing: 10) {
       VerseView(verse: verse, height: CardLayout.lockScreenVerseHeight)
-      HStack(spacing: 10) {
-        GlowLantern(size: 30, lanternHeight: 18)
-        // The next prayer's name and time are on the path, under its stop.
-        LanternPath(state: state, twelveHour: twelveHour)
-        QuietCountdown(to: prayerDate)
-      }
+      PrayerBoardRow(state: state, activityID: activityID, twelveHour: twelveHour)
     }
-    // 14 pt: Apple's standard Lock Screen margin for Live Activities (HIG), so
-    // the card lines up with notifications.
+    // 14 pt sides: Apple's standard Lock Screen margin for Live Activities
+    // (HIG), so the card lines up with notifications. 16 on top leaves the
+    // gold line room.
     .padding(.horizontal, 14)
-    .padding(.vertical, 14)
+    .padding(.top, 16)
+    .padding(.bottom, 14)
     .frame(maxWidth: .infinity, alignment: .leading)
     .background(
-      LinearGradient(
-        colors: [Palette.night, Palette.dusk],
-        startPoint: .top,
-        endPoint: .bottom
-      )
+      GeometryReader { geo in
+        ZStack {
+          LinearGradient(colors: [Palette.night, Palette.dusk], startPoint: .top, endPoint: .bottom)
+          // Half off the right edge, away from the start of the verse lines.
+          CardMandala(size: 250)
+            .position(x: geo.size.width - 55, y: geo.size.height / 2)
+        }
+        .clipped()
+      }
     )
+    .overlay(alignment: .top) {
+      GoldHairline().padding(.horizontal, 28)
+    }
     // See the CardLayout invariant: the whole lock-screen card is clamped.
     .dynamicTypeSize(...DynamicTypeSize.large)
   }
 }
 
-/// The countdown is quiet (from design C): small, secondary cream, fixed width.
-struct QuietCountdown: View {
-  let to: Date
+/// The masjid-style board: five columns, then the lantern cell.
+struct PrayerBoardRow: View {
+  let state: SakinaPrayerAttributes.ContentState
+  let activityID: String
+  let twelveHour: Bool
 
   var body: some View {
-    Text(timerInterval: PrayerClock.countdownRange(to: to), countsDown: true)
-      .font(.system(size: 13, weight: .semibold))
-      .monospacedDigit()
-      .foregroundColor(Palette.creamSecondary)
-      .multilineTextAlignment(.trailing)
-      .frame(width: CardLayout.countdownWidth, alignment: .trailing)
+    let columns = PrayerBoard.columns(next: state, prayers: VerseStore.prayers())
+    let lit = state.lit ?? false
+    let phrase = PrayerBoard.phrase(for: state)
+
+    HStack(spacing: 0) {
+      ForEach(columns, id: \.name) { column in
+        BoardColumnView(column: column, state: state, twelveHour: twelveHour)
+          .frame(maxWidth: .infinity)
+      }
+      Rectangle()
+        .fill(Palette.divider)
+        .frame(width: 1, height: 32)
+      LanternButton(activityID: activityID, phrase: phrase, lit: lit) {
+        VStack(spacing: 3) {
+          CardLantern(height: 18, lit: lit)
+          Text(phrase)
+            .font(.system(size: 11, weight: .semibold))
+            .foregroundColor(lit ? Palette.gold : Palette.creamSecondary)
+            .lineLimit(1)
+            .minimumScaleFactor(0.8)
+        }
+        // 48 pt tall where the row is 40: Apple's minimum tap area is 44 pt,
+        // so the button reaches into the card's bottom padding instead of
+        // taking height from the verse.
+        .frame(width: CardLayout.lanternCellWidth, height: 48)
+      }
+      .padding(.vertical, -4)
+    }
+    .frame(height: CardLayout.boardHeight)
+  }
+}
+
+struct BoardColumnView: View {
+  let column: BoardColumn
+  let state: SakinaPrayerAttributes.ContentState
+  let twelveHour: Bool
+
+  private var color: Color {
+    switch column.role {
+    case .next: return Palette.gold
+    case .past: return Palette.boardPast
+    case .future: return Palette.boardFuture
+    }
+  }
+
+  var body: some View {
+    VStack(spacing: 1) {
+      // Names and times only — never verse text — so a scale factor is safe:
+      // on a 375-pt iPhone a column is ~48 pt and "Maghrib" ~43 pt.
+      Text(column.name)
+        .font(.system(size: 11, weight: .semibold))
+        .lineLimit(1)
+        .minimumScaleFactor(0.8)
+      Text(column.date.map { PrayerClock.compact($0, twelveHour: twelveHour) } ?? "–")
+        .font(.system(size: 13, weight: .semibold))
+        .monospacedDigit()
+        .lineLimit(1)
+        .minimumScaleFactor(0.8)
+      if column.role == .next {
+        NextPrayerLine(state: state)
+          .frame(width: 30, height: 3)
+          .padding(.top, 2)
+      }
+    }
+    .foregroundColor(color)
+    .accessibilityElement(children: .combine)
+  }
+}
+
+/// The thin line under the next prayer: fills from the previous prayer to this
+/// one, advanced by iOS with no pushes. A plain track when the previous prayer
+/// is unknown — a line starting at an arbitrary moment would claim a progress
+/// it does not know.
+struct NextPrayerLine: View {
+  let state: SakinaPrayerAttributes.ContentState
+
+  var body: some View {
+    if let range = PrayerClock.progressRange(state) {
+      ProgressView(timerInterval: range, countsDown: false) {
+        EmptyView()
+      } currentValueLabel: {
+        EmptyView()
+      }
+      .progressViewStyle(.linear)
+      .tint(Palette.gold)
+    } else {
+      Capsule().fill(Palette.track)
+    }
+  }
+}
+
+/// The one button on the card. Everything else opens Prayer Times.
+struct LanternButton<Label: View>: View {
+  let activityID: String
+  let phrase: String
+  let lit: Bool
+  @ViewBuilder let label: () -> Label
+
+  var body: some View {
+    Button(intent: LightLanternIntent(activityId: activityID)) {
+      label().contentShape(Rectangle())
+    }
+    .buttonStyle(.plain)
+    .accessibilityLabel(Text(verbatim: lit ? "Lantern lit" : "Say \(phrase), then light the lantern"))
+    .accessibilityHint(Text(verbatim: lit ? "Tap to undo" : ""))
   }
 }

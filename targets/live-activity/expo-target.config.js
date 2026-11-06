@@ -15,7 +15,8 @@ module.exports = (config) => ({
   name: 'SakinaLiveActivity',
   displayName: 'Sakina',
   deploymentTarget: '17.2',
-  frameworks: ['SwiftUI', 'WidgetKit', 'ActivityKit'],
+  // AppIntents: the lantern is a Button(intent: LightLanternIntent).
+  frameworks: ['SwiftUI', 'WidgetKit', 'ActivityKit', 'AppIntents'],
   colors: {
     $widgetBackground: '#07111E',
     $accent: '#D4AF37',

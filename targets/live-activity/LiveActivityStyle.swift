@@ -14,13 +14,18 @@ enum Palette {
   static let creamSecondary = Color(red: 245.0 / 255.0, green: 237.0 / 255.0, blue: 227.0 / 255.0, opacity: 0.7)
   /// Colors.accent.primary, #D4AF37.
   static let gold = Color(red: 212.0 / 255.0, green: 175.0 / 255.0, blue: 55.0 / 255.0)
-  /// The warm centre of the lantern's glow, rgba(255, 214, 120, 0.55).
-  static let glowCore = Color(red: 1.0, green: 214.0 / 255.0, blue: 120.0 / 255.0, opacity: 0.55)
-  /// Path labels for prayers other than the next one, rgba(245, 237, 227, 0.38).
-  static let creamFaint = Color(red: 245.0 / 255.0, green: 237.0 / 255.0, blue: 227.0 / 255.0, opacity: 0.38)
-  /// Path track and stops not yet reached.
-  static let trackDim = Color(red: 245.0 / 255.0, green: 237.0 / 255.0, blue: 227.0 / 255.0, opacity: 0.14)
-  static let stopFuture = Color(red: 42.0 / 255.0, green: 52.0 / 255.0, blue: 66.0 / 255.0)
+  /// The lit lantern's glow, rgba(255, 214, 120, 0.65).
+  static let glow = Color(red: 1.0, green: 214.0 / 255.0, blue: 120.0 / 255.0, opacity: 0.65)
+  /// Verse English, like VerseOfTheDay's `${Colors.text.primary}D9` (~85%).
+  static let creamVerse = Color(red: 245.0 / 255.0, green: 237.0 / 255.0, blue: 227.0 / 255.0, opacity: 0.88)
+  /// Board names and times for prayers still to come today.
+  static let boardFuture = Color(red: 245.0 / 255.0, green: 237.0 / 255.0, blue: 227.0 / 255.0, opacity: 0.8)
+  /// Board names and times for prayers already passed (≈4.5:1 on the card).
+  static let boardPast = Color(red: 245.0 / 255.0, green: 237.0 / 255.0, blue: 227.0 / 255.0, opacity: 0.55)
+  /// The track under the next prayer, before it fills.
+  static let track = Color(red: 245.0 / 255.0, green: 237.0 / 255.0, blue: 227.0 / 255.0, opacity: 0.14)
+  /// The hairline between the board and the lantern cell.
+  static let divider = Color(red: 245.0 / 255.0, green: 237.0 / 255.0, blue: 227.0 / 255.0, opacity: 0.12)
 }
 
 /// Every font on the card is FIXED-SIZE: `Font.custom(_:fixedSize:)` here and
@@ -33,6 +38,11 @@ enum CardFont {
   /// Display / titles (Typography.fonts.serif). Georgia ships with iOS.
   static func title(_ size: CGFloat) -> Font {
     return Font.custom("Georgia", fixedSize: size)
+  }
+
+  /// The verse reference, like VerseOfTheDay's serif italic.
+  static func titleItalic(_ size: CGFloat) -> Font {
+    return Font.custom("Georgia-Italic", fixedSize: size)
   }
 
   /// Quran text. PostScript name of the bundled AmiriQuran-Regular.ttf
@@ -58,17 +68,9 @@ enum PrayerClock {
     return format(date, pattern: twelveHour ? "h:mm a" : "HH:mm")
   }
 
-  /// The range for `Text(timerInterval:countsDown:)`. A ClosedRange traps when
-  /// its lower bound passes its upper bound, which is exactly what happens if
-  /// the card renders after the prayer time and before the next push lands.
-  static func countdownRange(to end: Date) -> ClosedRange<Date> {
-    let now = Date()
-    let start = now < end ? now : end
-    return start...end
-  }
-
-  /// Previous prayer ... next prayer, for the progress bar, or nil when the
-  /// previous prayer is unknown or not before the next (a ClosedRange would trap).
+  /// Previous prayer ... next prayer, for the line under the next prayer on
+  /// the board, or nil when the previous prayer is unknown or not before the
+  /// next (a ClosedRange would trap).
   static func progressRange(_ state: SakinaPrayerAttributes.ContentState) -> ClosedRange<Date>? {
     guard let startEpoch = state.startEpoch else { return nil }
     let start = Date(timeIntervalSince1970: startEpoch)
@@ -86,27 +88,83 @@ enum PrayerClock {
   }
 }
 
-/// The lantern with a soft warm glow behind it (design C). The glow is a
-/// radial gradient that fades to nothing, not a container shape — Apple's HIG
-/// asks for a logo mark without a container.
-struct GlowLantern: View {
+/// The lantern, lit or waiting. Lit: the brand mark with a soft glow that
+/// follows its own outline (a shadow, not a container — Apple's HIG asks for a
+/// logo mark without one). Waiting: the same gold mark at 45%, no glow. Dim
+/// gold, not grey: grey read as "switched off" in review.
+struct CardLantern: View {
+  let height: CGFloat
+  var lit: Bool = true
+
+  var body: some View {
+    LanternMark(height: height)
+      .opacity(lit ? 1 : 0.45)
+      .shadow(color: lit ? Palette.glow : .clear, radius: 5)
+  }
+}
+
+/// The home screen's mandala (src/components/AnimatedMandala.tsx, as
+/// HeroHeader draws it with webLayers={2}): a 12-point star built from the
+/// {12/3} and {12/4} star webs, an outer ring, a mid ring and a small core.
+/// Drawn, not an image, so it stays sharp at any size and adds nothing to the
+/// bundle. Still: a Live Activity cannot run its own animation, so unlike the
+/// home screen it does not rotate.
+struct MandalaShape: Shape {
+  func path(in rect: CGRect) -> Path {
+    var path = Path()
+    let center = CGPoint(x: rect.midX, y: rect.midY)
+    let radius = min(rect.width, rect.height) / 2 * 0.96
+    for step in [3, 4] {
+      for i in 0..<12 {
+        let a1 = Double(i) * .pi * 2 / 12 - .pi / 2
+        let a2 = Double(i + step) * .pi * 2 / 12 - .pi / 2
+        path.move(to: CGPoint(x: center.x + radius * cos(a1), y: center.y + radius * sin(a1)))
+        path.addLine(to: CGPoint(x: center.x + radius * cos(a2), y: center.y + radius * sin(a2)))
+      }
+    }
+    for scale in [1.0, 0.5, 0.18] {
+      let r = radius * scale
+      path.addEllipse(in: CGRect(x: center.x - r, y: center.y - r, width: r * 2, height: r * 2))
+    }
+    return path
+  }
+}
+
+/// Outer + inner mandala like HeroHeader (inner 220/300 of the outer, turned
+/// half a point so the two lattices interleave), faint gold hairlines. Purely
+/// decorative: hidden from VoiceOver and never hit-tested.
+struct CardMandala: View {
   let size: CGFloat
-  let lanternHeight: CGFloat
+  /// Line width in points: hairline on the lock screen, thicker on the black
+  /// island where a hairline vanishes (AnimatedMandala's strokeScale).
+  var lineWidth: CGFloat = 0.5
 
   var body: some View {
     ZStack {
-      Circle()
-        .fill(
-          RadialGradient(
-            colors: [Palette.glowCore, Palette.gold.opacity(0.32), Palette.gold.opacity(0)],
-            center: .center,
-            startRadius: 0,
-            endRadius: size / 2
-          )
-        )
-      LanternMark(height: lanternHeight)
+      MandalaShape()
+        .stroke(Palette.gold.opacity(0.35 * 0.32), lineWidth: lineWidth)
+        .frame(width: size, height: size)
+      MandalaShape()
+        .stroke(Palette.gold.opacity(0.25 * 0.32), lineWidth: lineWidth)
+        .frame(width: size * 220 / 300, height: size * 220 / 300)
+        .rotationEffect(.degrees(15))
     }
     .frame(width: size, height: size)
+    .allowsHitTesting(false)
+    .accessibilityHidden(true)
+  }
+}
+
+/// The app's fading gold line (VerseOfTheDay's top border): transparent, gold,
+/// transparent.
+struct GoldHairline: View {
+  var body: some View {
+    LinearGradient(
+      colors: [Palette.gold.opacity(0), Palette.gold, Palette.gold.opacity(0)],
+      startPoint: .leading,
+      endPoint: .trailing
+    )
+    .frame(height: 1)
     .accessibilityHidden(true)
   }
 }

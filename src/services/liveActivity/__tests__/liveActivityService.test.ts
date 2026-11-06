@@ -91,6 +91,7 @@ import {
   LIVE_ACTIVITY_MOOD_VERSE_KEY,
   LIVE_ACTIVITY_REGISTERED_KEY,
   LIVE_ACTIVITY_PENDING_UNREGISTER_KEY,
+  LIVE_ACTIVITY_SCHEDULE_KEY,
 } from '../liveActivityService';
 import type { Content } from '../../../types';
 import type { PrayerTimings } from '../../prayerTimesService';
@@ -600,6 +601,33 @@ describe('LiveActivityService', () => {
     const prev = i > 0 ? schedule[i - 1].at : null;
     expect(n.startLocal).toHaveBeenCalledWith(next.name, next.at, prev);
     expect(n.startLocal.mock.invocationCallOrder[0]).toBeGreaterThan(mockInvoke.mock.invocationCallOrder[0]);
+    // The card's prayer board reads the very schedule the server was sent.
+    expect(snap.prayers).toEqual(schedule);
+  });
+
+  it('a verse shown after a sync rewrites the snapshot without dropping the schedule', async () => {
+    mockStore[LIVE_ACTIVITY_PREF_KEY] = 'true';
+    await svc().sync(weekly, '24h');
+    const schedule = mockInvoke.mock.calls[0][1].body.schedule;
+    // Test fixture only: toCardVerse needs non-empty fields, the text is not checked.
+    await svc().onVerseShown({
+      id: 'quran_fixture',
+      type: 'Quran',
+      arabicText: 'fixture arabic',
+      englishTranslation: 'fixture english',
+      source: 'Fixture 0:0',
+    } as unknown as Content);
+    const last = JSON.parse(n.writeSnapshot.mock.calls[n.writeSnapshot.mock.calls.length - 1][0]);
+    expect(last.mood).not.toBeNull();
+    expect(last.prayers).toEqual(schedule);
+  });
+
+  it('switch-off removes the stored schedule with the other keys', async () => {
+    registeredDevice();
+    mockStore[LIVE_ACTIVITY_PREF_KEY] = 'false';
+    mockStore[LIVE_ACTIVITY_SCHEDULE_KEY] = '[]';
+    await svc().sync(weekly, '24h');
+    expect(mockStore[LIVE_ACTIVITY_SCHEDULE_KEY]).toBeUndefined();
   });
 
   it('skips startLocal when no prayer is left in the schedule', async () => {

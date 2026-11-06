@@ -35,6 +35,7 @@ import { logServiceError } from '../errorLoggingService';
 import type { PrayerTimings } from '../prayerTimesService';
 import { SubscriptionService } from '../subscriptionService';
 import { buildSchedule } from './prayerSchedule';
+import type { ScheduledPrayer } from '../../../supabase/functions/_shared/liveActivityPlan';
 import { buildVerseSnapshot, toCardVerse, type CardVerse } from './verseSnapshot';
 
 export const LIVE_ACTIVITY_PREF_KEY = '@live_activity_enabled';
@@ -55,6 +56,12 @@ export const LIVE_ACTIVITY_REGISTERED_KEY = '@live_activity_registered';
 export const LIVE_ACTIVITY_PENDING_UNREGISTER_KEY = '@live_activity_pending_unregister';
 /** Last clock format `sync` saw, so `onVerseShown` can rewrite the snapshot. */
 const LIVE_ACTIVITY_TIME_FORMAT_KEY = '@live_activity_time_format';
+/**
+ * Last schedule `sync` built (the one the server got), so `onVerseShown` can
+ * rewrite the snapshot without dropping the card's prayer board. Cleared by
+ * teardown with the other keys.
+ */
+export const LIVE_ACTIVITY_SCHEDULE_KEY = '@live_activity_schedule';
 
 const REGISTER_FUNCTION = 'live-activity-register';
 const SERVICE = 'LiveActivityService';
@@ -181,12 +188,14 @@ export class LiveActivityService {
         };
         native.configure(nativeConfig);
 
-        await AsyncStorage.setItem(LIVE_ACTIVITY_TIME_FORMAT_KEY, timeFormat);
-        await this.writeSnapshot(timeFormat);
-
         const now = new Date();
         const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
         const schedule = buildSchedule(weekly, now, timeZone);
+
+        await AsyncStorage.setItem(LIVE_ACTIVITY_TIME_FORMAT_KEY, timeFormat);
+        await AsyncStorage.setItem(LIVE_ACTIVITY_SCHEDULE_KEY, JSON.stringify(schedule));
+        await this.writeSnapshot(timeFormat);
+
         const rcAppUserId = await Purchases.getAppUserID();
 
         // The awaits above are a window in which the switch or the
@@ -365,6 +374,7 @@ export class LiveActivityService {
     try {
       await AsyncStorage.removeItem(LIVE_ACTIVITY_MOOD_VERSE_KEY);
       await AsyncStorage.removeItem(LIVE_ACTIVITY_TIME_FORMAT_KEY);
+      await AsyncStorage.removeItem(LIVE_ACTIVITY_SCHEDULE_KEY);
     } catch (error) {
       logServiceError(SERVICE, 'teardown.clearKeys', error as Error);
     }
@@ -413,11 +423,22 @@ export class LiveActivityService {
     }
   }
 
+  private async readSchedule(): Promise<ScheduledPrayer[] | null> {
+    try {
+      const raw = await AsyncStorage.getItem(LIVE_ACTIVITY_SCHEDULE_KEY);
+      const parsed: unknown = raw ? JSON.parse(raw) : null;
+      return Array.isArray(parsed) ? (parsed as ScheduledPrayer[]) : null;
+    } catch {
+      return null;
+    }
+  }
+
   private async writeSnapshot(timeFormat: TimeFormat): Promise<void> {
     const snapshot = buildVerseSnapshot({
       mood: await this.readMoodVerse(),
       today: await getDailyVerse(),
       timeFormat,
+      prayers: await this.readSchedule(),
     });
     native.writeSnapshot(JSON.stringify(snapshot));
   }

@@ -9,6 +9,7 @@
  * ayah; fitting it into the slot is the renderer's job, not this file's.
  */
 import type { Content } from '../../types';
+import type { ScheduledPrayer } from '../../../supabase/functions/_shared/liveActivityPlan';
 import {
   formatDateKey,
   getDailyVerseForDateSync,
@@ -29,6 +30,13 @@ export interface VerseSnapshot {
   /** Today plus the next six calendar days: the fallback for any day. */
   daily: CardVerse[];
   timeFormat: '12h' | '24h';
+  /**
+   * The same schedule the server was sent (five salah a day, epoch seconds,
+   * strictly increasing), so the card's prayer board can show every time of
+   * the next prayer's day. Absent before the first sync; the card then shows
+   * only the next prayer's time. Optional, so an older reader ignores it.
+   */
+  prayers?: ScheduledPrayer[];
 }
 
 /** Days of daily verses carried in the snapshot (today + 6). */
@@ -68,12 +76,15 @@ export function buildVerseSnapshot(args: {
   mood: CardVerse | null;
   today: DailyVerse;
   timeFormat: '12h' | '24h';
+  prayers?: ScheduledPrayer[] | null;
 }): VerseSnapshot {
   const daily: CardVerse[] = [dailyToCardVerse(args.today)];
   for (let i = 1; i < DAILY_DAYS; i++) {
     daily.push(dailyToCardVerse(getDailyVerseForDateSync(addDays(args.today.dateKey, i))));
   }
-  return { version: 1, mood: args.mood, daily, timeFormat: args.timeFormat };
+  const snapshot: VerseSnapshot = { version: 1, mood: args.mood, daily, timeFormat: args.timeFormat };
+  if (args.prayers && args.prayers.length > 0) snapshot.prayers = args.prayers;
+  return snapshot;
 }
 
 /**

@@ -224,13 +224,14 @@ export default function PrayerTimesScreen({ navigation }: { navigation: any }) {
                 <View style={styles.inviteCard}>
                   <Text style={styles.inviteTitle}>Keep the next prayer in view</Text>
                   <Text style={styles.inviteBody}>
-                    A live countdown on your Lock Screen and in the Dynamic Island.
+                    Your prayer times and verse on the Lock Screen and in the Dynamic Island.
+                    Say the phrase on the card, tap the lantern, and it lights.
                   </Text>
                   <TouchableOpacity
                     style={styles.inviteButton}
                     onPress={handleInviteTurnOn}
                     accessibilityRole="button"
-                    accessibilityLabel="Turn on the prayer countdown"
+                    accessibilityLabel="Turn on the prayer card"
                   >
                     <Text style={styles.inviteButtonText}>Turn on</Text>
                   </TouchableOpacity>

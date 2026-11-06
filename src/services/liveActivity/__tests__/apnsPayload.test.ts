@@ -105,11 +105,15 @@ describe('buildPush', () => {
     expect(aps(end)['dismissal-date']).toBe(NOW);
   });
 
-  it('content-state keys exactly match the Swift ContentState', () => {
+  it('content-state keys exactly match the Swift ContentState, minus the phone-only `lit`', () => {
     const swift = swiftVars('ContentState');
-    expect(swift).toEqual(['prayerEpoch', 'prayerName', 'startEpoch']);
+    expect(swift).toEqual(['lit', 'prayerEpoch', 'prayerName', 'startEpoch']);
+    // `lit` is set only by the lantern tap on the phone. The server must never
+    // send it: every push at a prayer time arrives without it, and that is what
+    // turns the lantern dark again for the next phrase.
+    const fromServer = swift.filter((k) => k !== 'lit');
     for (const p of [start, update, end]) {
-      expect(Object.keys(aps(p)['content-state']).sort()).toEqual(swift);
+      expect(Object.keys(aps(p)['content-state']).sort()).toEqual(fromServer);
     }
   });
 

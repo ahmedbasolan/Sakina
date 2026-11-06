@@ -69,8 +69,45 @@ describe('live activity native parity', () => {
     expect(src).toMatch(/var prayerName: String/);
     expect(src).toMatch(/var prayerEpoch: Double/);
     expect(src).toMatch(/var version: Int/);
+    // Set only on the phone by the lantern tap; optional so server pushes,
+    // which never carry it, still decode (and leave the lantern unlit).
+    expect(src).toMatch(/var lit: Bool\?/);
+    expect(src).toMatch(/var startEpoch: Double\?/);
     // The main app deploys to iOS 15.1, so the type must be availability-gated.
     expect(src).toMatch(/@available\(iOS 17\.2, \*\)\s*struct SakinaPrayerAttributes/);
+  });
+
+  it('keeps the lantern intent identical in the widget and the app target, and wires the app copy in', () => {
+    const inTarget = fs.readFileSync(path.join(TARGET_DIR, 'LightLanternIntent.swift'));
+    const forApp = fs.readFileSync(path.join(MODULE_DIR, 'app-target/LightLanternIntent.swift'));
+    // The system matches the widget's Button(intent:) to the app's intent by
+    // type name; the two must be the same type.
+    expect(forApp.equals(inTarget)).toBe(true);
+
+    const src = inTarget.toString('utf8');
+    // Public, a LiveActivityIntent (so perform() runs in the app's process),
+    // and reaching the pod only where the pod can be imported.
+    expect(src).toMatch(/public struct LightLanternIntent: LiveActivityIntent/);
+    expect(src).toMatch(/#if canImport\(SakinaLiveActivityBridge\)\s*import SakinaLiveActivityBridge/);
+    expect(src).toContain('SakinaLantern.toggle(activityId: activityId)');
+    expect(read(path.join(MODULE_DIR, 'ios/LanternSwitch.swift'))).toMatch(/public enum SakinaLantern/);
+
+    // The pod must NOT compile the app copy (it would be a static-library
+    // intent the system cannot find), so it sits outside ios/.
+    expect(fs.existsSync(path.join(MODULE_DIR, 'ios/LightLanternIntent.swift'))).toBe(false);
+
+    // The config plugin that copies it into the app target is registered and
+    // points at that file.
+    const app = JSON.parse(read(path.join(ROOT, 'app.json'))).expo;
+    expect(app.plugins).toContain('./plugins/withLanternIntent');
+    const plugin = read(path.join(ROOT, 'plugins/withLanternIntent.js'));
+    expect(plugin).toContain("'app-target'");
+    expect(plugin).toContain("'LightLanternIntent.swift'");
+    expect(plugin).toContain('-weak_framework AppIntents');
+
+    // The widget uses it, and links AppIntents.
+    expect(read(path.join(TARGET_DIR, 'SakinaLiveActivity.swift'))).toContain('Button(intent: LightLanternIntent(activityId:');
+    expect(read(path.join(TARGET_DIR, 'expo-target.config.js'))).toContain("'AppIntents'");
   });
 
   it('uses one App Group id and one snapshot key everywhere', () => {

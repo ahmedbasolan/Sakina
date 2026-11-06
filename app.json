@@ -78,7 +78,8 @@
           "granularPermissions": []
         }
       ],
-      "@bacons/apple-targets"
+      "@bacons/apple-targets",
+      "./plugins/withLanternIntent"
     ],
     "extra": {
       "eas": {

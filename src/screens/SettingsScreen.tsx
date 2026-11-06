@@ -462,16 +462,16 @@ export default function SettingsScreen() {
           {liveActivityAvailable && (
             isPremium ? (
               <SettingRow
-                label="Prayer countdown on Dynamic Island"
-                icon="timer-outline"
+                label="Prayer card on Dynamic Island"
+                icon="time-outline"
                 showToggle
                 toggleValue={liveActivityOn}
                 onToggle={handleToggleLiveActivity}
               />
             ) : (
               <SettingRow
-                label="Prayer countdown on Dynamic Island"
-                icon="timer-outline"
+                label="Prayer card on Dynamic Island"
+                icon="time-outline"
                 value="✦"
                 onPress={() => navigation.navigate('Support')}
               />

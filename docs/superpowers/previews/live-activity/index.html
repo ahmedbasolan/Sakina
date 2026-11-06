@@ -33,6 +33,7 @@
   .phone::before, .phone::after { content: ""; position: absolute; width: 4px; background: #2b2e33; border-radius: 2px; }
   .phone::before { left: -3px; top: 180px; height: 64px; box-shadow: 0 84px 0 #2b2e33; }
   .phone::after { right: -3px; top: 230px; height: 100px; }
+  .camctl { position: absolute; right: -3px; top: 520px; width: 4px; height: 70px; border-radius: 2px; background: #3d4148; }
   .screen { position: relative; width: calc(var(--w) * 1px); height: calc(var(--h) * 1px); border-radius: 56px; overflow: hidden; background: #000; }
   .wallpaper { position: absolute; inset: 0; transition: filter .4s;
     background: radial-gradient(1px 1px at 20% 30%, #fff8 50%, transparent 51%), radial-gradient(1px 1px at 70% 12%, #fff9 50%, transparent 51%),
@@ -57,6 +58,7 @@
   .island.expanded { width: 371px; margin-left: -185.5px; height: var(--exp-h, 160px); border-radius: 44px; }
   .island > .layer { position: absolute; inset: 0; opacity: 0; transition: opacity .25s; pointer-events: none; }
   .island.compact:not(.other) > #islandCompact, .island.expanded > #islandExpanded { opacity: 1; }
+  .island.expanded > #islandExpanded { pointer-events: auto; }
   .other-activity { display: none; position: absolute; inset: 0; align-items: center; justify-content: space-between; padding: 0 14px; color: #fff; font: 600 13px var(--sys); }
   .island.other > .other-activity { display: flex; }
   .minimal-dot { position: absolute; top: 11px; z-index: 10; width: 37px; height: 37px; border-radius: 50%; background: #000;
@@ -67,6 +69,7 @@
   /* Shared island piece layouts */
   .c-row { display: flex; align-items: center; justify-content: space-between; height: 100%; padding: 0 14px 0 12px; }
   .lantern { display: block; width: auto; }
+  .lantern.js-lamp { transition: filter .6s ease, opacity .6s ease; }
 
   /* ── Lock Screen Live Activity ─────────────────────────────────── */
   .banner { position: absolute; left: 11px; right: 11px; bottom: 112px; z-index: 4; border-radius: 22px; color: var(--cream);
@@ -152,6 +155,89 @@
   .dpath .lbl { position: absolute; top: 20px; transform: translateX(-50%); white-space: nowrap; font: 600 9px var(--sys); color: var(--cream-3); }
   .dpath .lbl.next { color: var(--gold); font-size: 10px; }
 
+  /* ── Design E: D after the design review, "Lantern string" ─────── */
+  /* The lantern is the marker: it hangs lit at the next prayer on a thin
+     string, the other four prayers are small unlit lanterns. One glow (the
+     lit lantern's own shape), gold only on that lantern and its label. */
+  .glow { filter: drop-shadow(0 0 5px rgba(255,214,120,.65)); }
+  .e-lock { position: relative; padding: 16px 14px 14px; display: flex; flex-direction: column; gap: 10px; }
+  .e-lock::before { content: ""; position: absolute; top: 0; left: 28px; right: 28px; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent); }
+  .e-row { display: flex; align-items: flex-end; gap: 10px; }
+  .e-row .cdsm { font: 600 13px/14px var(--sys); color: var(--cream-2); width: 64px; text-align: right; }
+  .gar { position: relative; flex: 1; height: 36px; min-width: 0; }
+  .gar .rope { position: absolute; left: 0; right: 0; top: 3px; height: 1px; background: rgba(245,237,227,.2); }
+  .gar .fill { position: absolute; left: 0; top: 2.5px; height: 2px; border-radius: 1px; background: rgba(212,175,55,.6); }
+  .gar .lamp { position: absolute; top: 3px; width: 6px; height: 11px; transform: translateX(-50%);
+    -webkit-mask: var(--lantern) center / contain no-repeat; mask: var(--lantern) center / contain no-repeat;
+    background: rgba(245,237,227,.3); }
+  .gar .lamp.past { background: rgba(212,175,55,.5); }
+  .gar .lit { position: absolute; top: 3px; height: 18px; transform: translateX(-50%); }
+  .gar .lbl { position: absolute; top: 23px; white-space: nowrap; font: 600 11px/13px var(--sys); color: var(--gold); transform: translateX(-50%); }
+  .gar .lbl.first { transform: translateX(-3px); } .gar .lbl.last { transform: translateX(calc(-100% + 3px)); }
+  .verse.e .en { font: 13px/1.3 var(--serif); color: rgba(245,237,227,.88); }
+  .verse.e .ref { font: italic 12px var(--serif); color: var(--cream-2); }
+  .verse.e .ptr { font: italic 13px var(--serif); color: var(--cream-2); }
+
+  /* ── The home screen's mandala, behind the card's content ── */
+  .mandala { position: absolute; pointer-events: none; }
+  .m-lock { right: -70px; top: 50%; margin-top: -125px; }
+  .m-exp { left: -24px; top: -26px; }
+  .e-lock { overflow: hidden; border-radius: inherit; }
+  .e-lock > :not(.mandala), .c-exp > :not(.mandala) { position: relative; }
+
+  /* ── F · Day segments ── */
+  .f-row { display: flex; align-items: center; gap: 10px; }
+  .f-row .cdsm, .h-row .cdsm { font: 600 13px var(--sys); color: var(--cream-2); width: 64px; text-align: right; flex: none; }
+  .f-segs { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 6px; }
+  .seg5 { display: grid; grid-template-columns: repeat(5, 1fr); gap: 3px; }
+  .seg5 .s { position: relative; height: 4px; border-radius: 2px; background: rgba(245,237,227,.14); overflow: hidden; }
+  .seg5 .s.past { background: rgba(212,175,55,.45); }
+  .seg5 .s i { position: absolute; left: 0; top: 0; bottom: 0; background: var(--gold); border-radius: 2px; }
+  .seg5l .l { white-space: nowrap; font: 600 11px/13px var(--sys); color: var(--gold); }
+  .seg5l .l.end { justify-self: end; }
+  .bar.thin { height: 3px; }
+
+  /* ── G · Prayer board ── */
+  .board { display: flex; align-items: stretch; height: 40px; }
+  .board .col { flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: center; }
+  .board .col b { font: 600 11px/13px var(--sys); color: rgba(245,237,227,.8); }
+  .board .col span { font: 600 13px/16px var(--sys); color: rgba(245,237,227,.8); }
+  .board .col.past b, .board .col.past span { color: rgba(245,237,227,.55); }
+  .board .col.next b, .board .col.next span { color: var(--gold); }
+  .board .ul { width: 60%; height: 2px; margin-top: 4px; border-radius: 1px; background: rgba(245,237,227,.14); overflow: hidden; }
+  .board .ul i { display: block; height: 100%; background: var(--gold); }
+  .board .side { flex: none; width: 64px; border-left: 1px solid rgba(245,237,227,.12); display: flex; flex-direction: column;
+    align-items: center; justify-content: center; gap: 4px; }
+  .board .side span { font: 600 12px var(--sys); color: var(--cream-2); }
+
+  /* ── I1–I3 · interactions ── */
+  .ia-btn { position: absolute; width: 30px; height: 30px; border: 0; padding: 0; background: none; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; }
+  .e-lock > .ia-btn, .c-exp > .ia-btn { position: absolute; }  /* beats the content-above-mandala rule */
+  .ia-lock { top: 10px; right: 8px; }
+  .ia-exp { top: 66px; right: 14px; }
+  .board button.side { border: 0; border-left: 1px solid rgba(245,237,227,.12); background: none; cursor: pointer; padding: 0; width: 76px; }
+  .tas-n { font: 600 14px/16px var(--sys); color: var(--gold); }
+  .tas-n small { font-size: 11px; color: var(--cream-2); font-weight: 500; }
+  .tas-p { font: 600 11px/13px var(--sys); color: var(--cream-2); white-space: nowrap; }
+  .tas-p.gold { color: var(--gold); }
+  .tas-x { font: 600 12px/14px var(--sys); color: var(--gold); }
+  .tas-pips { display: flex; gap: 4px; margin-top: 2px; }
+  .tas-pips i { width: 4px; height: 4px; border-radius: 50%; background: rgba(245,237,227,.25); }
+  .tas-pips i.on { background: var(--gold); }
+  /* Unlit = dim gold, no glow: "waiting", not "switched off" (grey read as broken). */
+  .lantern.unlit { filter: none; opacity: .45; }
+  .ia-ring { position: relative; border: 0; padding: 0; background: none; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+
+  /* ── H · Lantern ring ── */
+  .h-row { display: flex; align-items: center; gap: 10px; }
+  .h-text { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 5px; }
+  .pips { display: flex; gap: 5px; }
+  .pips i { width: 5px; height: 5px; border-radius: 50%; background: rgba(245,237,227,.25); }
+  .pips i.past { background: rgba(212,175,55,.5); }
+  .pips i.next { background: var(--gold); }
+
   /* ── Gallery ───────────────────────────────────────────────────── */
   .gallery { width: 100%; display: none; flex-direction: column; gap: 28px; padding: 8px 0 40px; }
   .gallery.on { display: flex; }
@@ -195,7 +281,7 @@
     <p class="sub" id="deviceLabel"></p>
   </div>
   <div class="scaler" id="scaler">
-    <div class="phone" id="phone">
+    <div class="phone" id="phone"><i class="camctl"></i>
       <div class="screen" id="screen">
         <div class="wallpaper" id="wallpaper"></div>
         <div class="home-apps" id="homeApps"></div>
@@ -221,7 +307,14 @@
   <div class="group">
     <div class="label">Design</div>
     <div class="seg" id="designSeg">
-      <button data-d="d" class="on">D · Lantern path (B + C)</button>
+      <button data-d="i4" class="on">I4 · Light the lantern (chosen)</button>
+      <button data-d="f">F · Day segments</button>
+      <button data-d="g">G · Prayer board</button>
+      <button data-d="h">H · Lantern ring</button>
+      <button data-d="i1">I1 · Save the verse</button>
+      <button data-d="i2">I2 · Another verse</button>
+      <button data-d="i3">I3 · Tasbih in 3 taps</button>
+      <button data-d="d">D · Lantern path (in the app code)</button>
       <button data-d="c">C · Lantern glow (in the app code)</button>
       <button data-d="current">Build 11 (before)</button>
       <button data-d="a">A · Countdown hero</button>
@@ -246,6 +339,7 @@
       <button class="btn primary" id="aArrive">Prayer arrives</button>
       <button class="btn primary" id="aStart">Server start (silent alert)</button>
       <button class="btn primary" id="aVerse">New mood verse</button>
+      <button class="btn primary" id="aLight">Tap the lantern (I4)</button>
     </div>
     <div class="label" style="margin-top:12px">Clock speed</div>
     <div class="seg" id="speedSeg">
@@ -274,8 +368,9 @@
   <div class="group">
     <div class="label">Device &amp; display</div>
     <div class="seg" id="sizeSeg">
-      <button data-size="393x852" class="on">6.3″ · 393×852 pt</button><button data-size="430x932">6.9″ · 430×932 pt</button>
+      <button data-size="402x874" class="on">6.3″ Pro · 402×874 pt</button><button data-size="440x956">6.9″ Pro Max · 440×956 pt</button>
     </div>
+    <label class="check"><input type="checkbox" id="mandalaToggle" checked> Home screen mandala (F, G, H)</label>
     <label class="check"><input type="checkbox" id="aod"> Always-On (dimmed)</label>
     <label class="check"><input type="checkbox" id="lightWall"> Light wallpaper</label>
     <label class="check"><input type="checkbox" id="oldCompact"> Current: compare build 11 compact text</label>
@@ -292,10 +387,11 @@ const PRAYERS = [
 const $ = (id) => document.getElementById(id);
 const pad = (n) => String(n).padStart(2, '0');
 const esc = (t) => String(t).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+document.documentElement.style.setProperty('--lantern', `url("${LANTERN}")`);
 const lantern = (h) => `<img class="lantern" alt="" src="${LANTERN}" style="height:${h}px">`;
 
-const state = { design: 'd', view: 'lock', size: [393, 852], prayer: 2, fmt: '24h', speed: 1,
-  verse: 0, verseNone: false, simNow: null, target: null, reduce: false, gallery: false };
+const state = { design: 'i4', view: 'lock', size: [402, 874], prayer: 2, fmt: '24h', speed: 1,
+  verse: 0, verseNone: false, mandala: true, saved: false, tasbih: { phase: 0 }, lit: false, simNow: null, target: null, reduce: false, gallery: false };
 let verses = [];
 
 /* ── Time model ────────────────────────────────────────────────── */
@@ -375,31 +471,251 @@ function lanternPath(m) {
   }).join('');
   return `<div class="dpath"><div class="track"></div><div class="done js-dpdone"></div>${stops}</div>`;
 }
-const verseBox = (w, h, big) => `<div class="verse js-verse ${big ? 'big' : ''} fade js-swapv" data-w="${w}" data-h="${h}"></div>`;
+// E's string: the five prayers evenly spaced; the next is the lit lantern,
+// labelled with its time; passed prayers are dim gold, later ones unlit.
+function lanternString(m) {
+  const lamps = PRAYERS.map((p, i) => i === m.idx
+    ? `<img class="lit glow" alt="" src="${LANTERN}" style="left:${STOP_PCT[i]}%">`
+    : `<i class="lamp ${i < m.idx ? 'past' : ''}" style="left:${STOP_PCT[i]}%"></i>`).join('');
+  const edge = m.idx === 0 ? 'first' : m.idx === 4 ? 'last' : '';
+  return `<div class="gar"><div class="rope"></div><div class="fill js-dpdone"></div>${lamps}
+    <div class="lbl ${edge}" style="left:${STOP_PCT[m.idx]}%">${esc(m.name)} <span class="num">${esc(m.short)}</span></div></div>`;
+}
+// The home screen's mandala, drawn the same way (AnimatedMandala.tsx).
+function mandalaSVG(size, opacity, k = 1) {  // k = strokeScale, as AnimatedMandala uses at small sizes
+  const C = 50, R = 48;
+  const web = (step) => {
+    let d = '';
+    for (let i = 0; i < 12; i++) {
+      const a1 = (i * Math.PI * 2) / 12 - Math.PI / 2, a2 = ((i + step) * Math.PI * 2) / 12 - Math.PI / 2;
+      d += `M ${C + R * Math.cos(a1)},${C + R * Math.sin(a1)} L ${C + R * Math.cos(a2)},${C + R * Math.sin(a2)} `;
+    }
+    return d;
+  };
+  return `<svg width="${size}" height="${size}" viewBox="0 0 100 100" style="opacity:${opacity};display:block">
+    <g fill="none" stroke="#D4AF37" stroke-linejoin="round" stroke-linecap="round">
+      <circle cx="50" cy="50" r="${R}" stroke-width="${0.3 * k}" opacity="0.5"/>
+      <path d="${web(3)}" stroke-width="${0.16 * k}" opacity="0.24"/>
+      <path d="${web(4)}" stroke-width="${0.16 * k}" opacity="0.34"/>
+      <circle cx="50" cy="50" r="${R * 0.5}" stroke-width="${0.14 * k}" opacity="0.2"/>
+      <circle cx="50" cy="50" r="${R * 0.18}" stroke-width="${0.3 * k}" opacity="0.5"/>
+    </g></svg>`;
+}
+// Outer + inner (220/300 of it, turned half a point so the two lattices interleave).
+function mandala(cls, size, k = 1) {
+  if (!state.mandala) return '';
+  const inner = Math.round(size * 220 / 300), off = (size - inner) / 2;
+  return `<div class="mandala ${cls}" style="width:${size}px;height:${size}px">${mandalaSVG(size, 0.35, k)}
+    <div style="position:absolute;left:${off}px;top:${off}px;transform:rotate(15deg)">${mandalaSVG(inner, 0.25, k)}</div></div>`;
+}
+// Expanded island's top: glowing lantern (leading), name / time / countdown (trailing).
+const topBlock = (m) => `<div style="display:flex;justify-content:space-between;align-items:flex-start;height:50px">
+    <img class="lantern glow" alt="" src="${LANTERN}" style="height:26px;margin:8px 0 0 6px">
+    <div class="fade js-swap" style="text-align:right;line-height:1.15"><div class="name" style="font-size:16px">${esc(m.name)}</div>
+      <div class="num" style="font:600 13px/16px var(--sys);color:var(--gold)">${esc(m.full)}</div>
+      <div class="num js-cd" style="font:500 12px/15px var(--sys);color:var(--cream-2)"></div></div></div>`;
+// F: five segments, one per stretch before each prayer; the current one fills live.
+function segments(m, label) {
+  const segs = PRAYERS.map((p, i) => `<div class="s ${i < m.idx ? 'past' : ''}">${i === m.idx ? '<i class="js-bar"></i>' : ''}</div>`).join('');
+  const lbl = label ? `<div class="seg5 seg5l"><div class="l ${m.idx === 4 ? 'end' : ''}" style="grid-column:${m.idx + 1}">${esc(m.name)} <span class="num">${esc(m.short)}</span></div></div>` : '';
+  return `<div class="f-segs"><div class="seg5">${segs}</div>${lbl}</div>`;
+}
+// G: the masjid board, five columns plus the lantern and countdown.
+function board(m, side) {
+  const cols = PRAYERS.map((p, i) => {
+    const d = new Date(state.target); d.setHours(p.h, p.m);
+    const cls = i === m.idx ? 'next' : i < m.idx ? 'past' : '';
+    return `<div class="col ${cls}"><b>${esc(p.name)}</b><span class="num">${esc(fmtClock(d, false))}</span>${i === m.idx ? '<div class="ul"><i class="js-bar"></i></div>' : ''}</div>`;
+  }).join('');
+  return `<div class="board">${cols}${side || `<div class="side"><img class="lantern glow" alt="" src="${LANTERN}" style="height:16px"><span class="num js-cd"></span></div>`}</div>`;
+}
+/* ── Interactions (I1–I3): buttons a Live Activity can carry ─────────
+   On the phone each is a SwiftUI Button(intent:) running a LiveActivityIntent
+   in the app's process, which then updates the card. They work on the Lock
+   Screen and in the expanded island only; compact and minimal just open the
+   app. Here they are clickable so they can be tried. */
+const ICON_SAVE = (on) => `<svg width="17" height="17" viewBox="0 0 24 24" fill="${on ? '#D4AF37' : 'none'}" stroke="${on ? '#D4AF37' : 'rgba(245,237,227,.75)'}" stroke-width="1.8" stroke-linejoin="round"><path d="M6.5 3.5h11v17l-5.5-3.8-5.5 3.8z"/></svg>`;
+const ICON_NEXT = `<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="rgba(245,237,227,.75)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19.5 12a7.5 7.5 0 1 1-2.2-5.3"/><path d="M19.5 4.5v4.2h-4.2"/></svg>`;
+function iaButton(kind, cls) {
+  if (kind === 'save') return `<button class="ia-btn ${cls}" onclick="iaSave()" aria-label="${state.saved ? 'Saved to Library' : 'Save this verse'}">${ICON_SAVE(state.saved)}</button>`;
+  return `<button class="ia-btn ${cls}" onclick="iaNext()" aria-label="Another verse">${ICON_NEXT}</button>`;
+}
+function iaSave() { state.saved = !state.saved; render(); }
+function iaNext() { state.saved = false; newMoodVerse(); }
+// I3 Tasbih in three taps: you count on your fingers, the card only keeps
+// your place. One tap per phrase, then "Done"; a tap after Done starts again.
+const TASBIH = ['SubhanAllah', 'Alhamdulillah', 'Allahu Akbar'];
+function iaTasbih() {
+  const t = state.tasbih;
+  t.phase = t.phase >= 3 ? 0 : t.phase + 1;
+  render();
+}
+const tasPips = (phase) => `<span class="tas-pips">${[0, 1, 2].map((i) => `<i class="${i < phase ? 'on' : ''}"></i>`).join('')}</span>`;
+function tasbihCell() {
+  const t = state.tasbih, done = t.phase >= 3;
+  return `<button class="side tas" onclick="iaTasbih()" aria-label="${done ? 'Tasbih done, tap to start again' : `Said ${TASBIH[t.phase]} 33 times`}">
+    <span class="tas-p ${done ? 'gold' : ''}">${done ? 'Done ✓' : TASBIH[t.phase]}</span>
+    <span class="tas-x num">${done ? '' : '×33'}</span>${tasPips(t.phase)}</button>`;
+}
+function tasbihRing(d) {   // the expanded island's lantern, ringed in thirds
+  const t = state.tasbih, frac = Math.min(1, t.phase / 3), r = (d - 3) / 2, c = 2 * Math.PI * r;
+  return `<button class="ia-ring" onclick="iaTasbih()" aria-label="Tap to count" style="width:${d}px;height:${d}px">
+    <svg width="${d}" height="${d}" style="position:absolute;inset:0;transform:rotate(-90deg)">
+      <circle cx="${d / 2}" cy="${d / 2}" r="${r}" fill="none" stroke="rgba(245,237,227,.14)" stroke-width="3"/>
+      <circle cx="${d / 2}" cy="${d / 2}" r="${r}" fill="none" stroke="#D4AF37" stroke-width="3" stroke-linecap="round"
+        stroke-dasharray="${c}" stroke-dashoffset="${c * (1 - frac)}"/></svg>
+    <img class="lantern glow" alt="" src="${LANTERN}" style="height:20px;position:relative"></button>`;
+}
+const tasbihLine = () => { const t = state.tasbih; return t.phase >= 3 ? 'Tasbih done ✓' : `${TASBIH[t.phase]} ×33 · ${t.phase + 1} of 3`; };
+
+// I4 Light the lantern: one remembrance for each stretch between prayers.
+// The lantern waits unlit; say the words, tap once, and it lights. The next
+// prayer brings a new phrase and an unlit lantern. Undo with a second tap.
+const DHIKR = ['SubhanAllah', 'Alhamdulillah', 'La ilaha illallah', 'Allahu Akbar', 'Astaghfirullah'];
+function iaLight() {
+  const was = state.lit;
+  state.lit = !state.lit; render();
+  if (state.reduce) return;
+  // Start the fresh lanterns in the old state, then let them ease to the new one.
+  const lamps = document.querySelectorAll('.js-lamp');
+  lamps.forEach((el) => { el.classList.toggle('glow', was); el.classList.toggle('unlit', !was); });
+  void document.body.offsetWidth;
+  lamps.forEach((el) => { el.classList.toggle('glow', state.lit); el.classList.toggle('unlit', !state.lit); });
+}
+function lightCell(m) {
+  // 86 wide: "La ilaha illallah" at 11 pt is ~80 pt.
+  return `<button class="side tas" style="width:86px" onclick="iaLight()" aria-label="${state.lit ? 'Lantern lit' : `Say ${DHIKR[m.idx]}, then tap`}">
+    <img class="lantern js-lamp ${state.lit ? 'glow' : 'unlit'}" alt="" src="${LANTERN}" style="height:18px">
+    <span class="tas-p ${state.lit ? 'gold' : ''}">${DHIKR[m.idx]}</span></button>`;
+}
+function lightLantern(h) {
+  return `<button class="ia-ring" onclick="iaLight()" aria-label="${state.lit ? 'Lantern lit' : 'Tap after saying it'}" style="width:44px;height:44px">
+    <img class="lantern js-lamp ${state.lit ? 'glow' : 'unlit'}" alt="" src="${LANTERN}" style="height:${h}px"></button>`;
+}
+
+// H: five pips for the day.
+const pips = (m) => `<div class="pips">${PRAYERS.map((p, i) => `<i class="${i === m.idx ? 'next' : i < m.idx ? 'past' : ''}"></i>`).join('')}</div>`;
+const verseBox = (w, h, big, style) => `<div class="verse js-verse ${big ? 'big' : ''} ${style || ''} fade js-swapv" data-w="${w}" data-h="${h}" style="max-width:${w}px"></div>`;
 
 /* ── Designs ───────────────────────────────────────────────────── */
 // Each returns HTML for minimal, compact, expanded and lock. Verse budgets keep
 // every card at or under Apple's 160 pt and never clip an ayah (ViewThatFits).
 const DESIGNS = {
-  current: {
-    title: 'Before C (what build 11 ships)',
-    note: 'Lantern + time in the island; name, time, live countdown and the verse when expanded. Calm: nothing moves but the countdown.',
+  f: {
+    title: 'F · Day segments',
+    note: 'The day as five segments, one for the stretch before each prayer (B\'s whole-day view, without dots or a marker). Passed stretches are dim gold, the current one fills live like C\'s bar, the rest are faint; only the next prayer is named, under its own segment. Verse first in the app\'s Verse of the Day type, glowing lantern, quiet countdown (C).',
     expH: 160,
-    minimal: () => lantern(20),
-    compact: (m) => {
-      const old = $('oldCompact').checked;
-      return `<div class="c-row">${lantern(20)}<span class="compact-time num fade js-swap ${old ? 'old' : ''}">${esc(old ? m.name + ' ' + m.short : m.short)}</span></div>`;
-    },
-    expanded: (m) => `<div class="cur-exp"><div class="cur-top"><div class="cur-lead">${lantern(28)}
-        <div class="fade js-swap"><div class="name">${esc(m.name)}</div><div class="clock num">${esc(m.full)}</div></div></div>
-        <div class="cd num fade js-swap js-cd"></div></div>${verseBox(327, 72)}</div>`,
-    lock: (m, w) => `<div class="cur-lock"><div class="row">${lantern(24)}<span class="name fade js-swap">${esc(m.name)}</span>
-        <span class="clock num fade js-swap" style="font-size:15px">${esc(m.full)}</span>
-        <span class="cd num fade js-swap js-cd" style="font-size:17px;margin-left:auto"></span></div>${verseBox(w - 28, 92)}</div>`,
+    minimal: () => `<img class="lantern glow" alt="" src="${LANTERN}" style="height:20px">`,
+    compact: (m) => `<div class="c-row"><img class="lantern glow" alt="" src="${LANTERN}" style="height:20px">
+        <span class="compact-time num fade js-swap">${esc(m.short)}</span></div>`,
+    // The day row stays on the Lock Screen; here it would cost the verse its
+    // room (62 pt: English for 17 verses, 35 reference only). 72 pt: 4/32/16.
+    // 160 >= 10 padding + 50 top block + 8 + 72 verse + 12.
+    expanded: (m) => `<div class="c-exp" style="padding:10px 22px 12px;gap:8px;position:relative">${mandala('m-exp', 130, 2.5)}${topBlock(m)}
+        ${verseBox(327, 72, false, 'e')}</div>`,
+    // 160 >= 30 padding + 90 verse + 10 + 24 row.
+    lock: (m, w) => `<div class="e-lock">${mandala('m-lock', 250)}${verseBox(w - 28, 90, false, 'e')}
+        <div class="f-row fade js-swap"><img class="lantern glow" alt="" src="${LANTERN}" style="height:22px">
+          ${segments(m, true)}<span class="cdsm num js-cd"></span></div></div>`,
+  },
+
+  g: {
+    title: 'G · Prayer board',
+    note: 'Like the five-column board in a masjid: every prayer\'s name over its time, the passed ones dimmed, the next one in gold with a thin bar under it that fills live (C\'s bar, B\'s whole day). The lantern and the quiet countdown sit in their own cell at the end. The expanded island leaves the board out so the verse has room.',
+    expH: 160,
+    minimal: () => `<img class="lantern glow" alt="" src="${LANTERN}" style="height:20px">`,
+    compact: (m) => `<div class="c-row"><img class="lantern glow" alt="" src="${LANTERN}" style="height:20px">
+        <span class="compact-time num fade js-swap">${esc(m.short)}</span></div>`,
+    // As F: the board stays on the Lock Screen so the verse keeps 72 pt here.
+    expanded: (m) => `<div class="c-exp" style="padding:10px 22px 12px;gap:8px;position:relative">${mandala('m-exp', 130, 2.5)}${topBlock(m)}
+        ${verseBox(327, 72, false, 'e')}</div>`,
+    // 160 >= 30 padding + 78 verse + 10 + 40 board.
+    lock: (m, w) => `<div class="e-lock">${mandala('m-lock', 250)}${verseBox(w - 28, 78, false, 'e')}<div class="fade js-swap">${board(m)}</div></div>`,
+  },
+
+  h: {
+    title: 'H · Lantern ring',
+    note: 'C\'s glowing lantern inside a thin gold ring that fills from the last prayer to the next (a system view, no pushes). Beside it the next prayer, and five small pips for the day (B) so you see where you are without a path. Verse first, quiet countdown. The circular style of the live ring must be confirmed on a device before choosing this.',
+    expH: 160,
+    minimal: () => ring(28, 2.5, `<img class="lantern" alt="" src="${LANTERN}" style="height:15px">`),
+    compact: (m) => `<div class="c-row">${ring(24, 2, `<img class="lantern" alt="" src="${LANTERN}" style="height:13px">`)}
+        <span class="compact-time num fade js-swap">${esc(m.short)}</span></div>`,
+    // 160 >= 10 padding + 50 top block + 8 + 72 verse + 12.
+    expanded: (m) => `<div class="c-exp" style="padding:10px 22px 12px;gap:8px;position:relative">${mandala('m-exp', 130, 2.5)}
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;height:50px">
+          <div style="margin:4px 0 0 4px">${ring(40, 3, `<img class="lantern glow" alt="" src="${LANTERN}" style="height:20px">`)}</div>
+          <div class="fade js-swap" style="text-align:right;line-height:1.15"><div class="name" style="font-size:16px">${esc(m.name)}</div>
+            <div class="num" style="font:600 13px/16px var(--sys);color:var(--gold)">${esc(m.full)}</div>
+            <div class="num js-cd" style="font:500 12px/15px var(--sys);color:var(--cream-2)"></div></div></div>
+        ${verseBox(327, 72, false, 'e')}</div>`,
+    // 160 >= 30 padding + 84 verse + 10 + 34 row.
+    lock: (m, w) => `<div class="e-lock">${mandala('m-lock', 250)}${verseBox(w - 28, 84, false, 'e')}
+        <div class="h-row fade js-swap">${ring(34, 2.5, `<img class="lantern glow" alt="" src="${LANTERN}" style="height:18px">`)}
+          <div class="h-text"><div><span class="name" style="font-size:15px">${esc(m.name)}</span>
+            <span class="num" style="font:600 13px var(--sys);color:var(--gold);margin-left:4px">${esc(m.full)}</span></div>${pips(m)}</div>
+          <span class="cdsm num js-cd"></span></div></div>`,
+  },
+
+  i1: {
+    title: 'I1 · Save the verse',
+    note: 'G with one quiet button: a bookmark beside the verse. Tap it and the verse goes into the Library\'s saved verses (the same list the Surah Reader saves to); the icon fills gold. Tap again to remove. Nothing else changes.',
+    expH: 160,
+    minimal: () => `<img class="lantern glow" alt="" src="${LANTERN}" style="height:20px">`,
+    compact: (m) => `<div class="c-row"><img class="lantern glow" alt="" src="${LANTERN}" style="height:20px">
+        <span class="compact-time num fade js-swap">${esc(m.short)}</span></div>`,
+    expanded: (m) => `<div class="c-exp" style="padding:10px 22px 12px;gap:8px;position:relative">${mandala('m-exp', 130, 2.5)}${topBlock(m)}
+        ${verseBox(297, 72, false, 'e')}${iaButton('save', 'ia-exp')}</div>`,
+    lock: (m, w) => `<div class="e-lock">${mandala('m-lock', 250)}${verseBox(w - 58, 78, false, 'e')}${iaButton('save', 'ia-lock')}<div class="fade js-swap">${board(m)}</div></div>`,
+  },
+
+  i2: {
+    title: 'I2 · Another verse',
+    note: 'G with a "another verse" button beside the verse. Tap it and the card shows the next verse for the mood you chose, so a verse that does not speak to you right now can be swapped without opening the app. Shuffles within the app\'s own pool, nothing new is fetched.',
+    expH: 160,
+    minimal: () => `<img class="lantern glow" alt="" src="${LANTERN}" style="height:20px">`,
+    compact: (m) => `<div class="c-row"><img class="lantern glow" alt="" src="${LANTERN}" style="height:20px">
+        <span class="compact-time num fade js-swap">${esc(m.short)}</span></div>`,
+    expanded: (m) => `<div class="c-exp" style="padding:10px 22px 12px;gap:8px;position:relative">${mandala('m-exp', 130, 2.5)}${topBlock(m)}
+        ${verseBox(297, 72, false, 'e')}${iaButton('next', 'ia-exp')}</div>`,
+    lock: (m, w) => `<div class="e-lock">${mandala('m-lock', 250)}${verseBox(w - 58, 78, false, 'e')}${iaButton('next', 'ia-lock')}<div class="fade js-swap">${board(m)}</div></div>`,
+  },
+
+  i3: {
+    title: 'I3 · Tasbih in 3 taps',
+    note: 'You count on your fingers; the card only keeps your place. It shows the phrase to say (SubhanAllah ×33); tap once when you have said it, and it moves to Alhamdulillah, then Allahu Akbar, then "Done ✓". Three taps, no staring. On the Lock Screen it takes the board\'s end cell (the countdown moves to the island); in the expanded island you tap the lantern and its ring fills in thirds. Nothing is saved or scored. The phrases, the counts and any source line must be fetched and checked before this ships.',
+    expH: 160,
+    minimal: () => `<img class="lantern glow" alt="" src="${LANTERN}" style="height:20px">`,
+    compact: (m) => `<div class="c-row"><img class="lantern glow" alt="" src="${LANTERN}" style="height:20px">
+        <span class="compact-time num fade js-swap">${esc(m.short)}</span></div>`,
+    expanded: (m) => `<div class="c-exp" style="padding:10px 22px 12px;gap:8px;position:relative">${mandala('m-exp', 130, 2.5)}
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;height:50px">
+          <div style="margin:4px 0 0 2px">${tasbihRing(44)}</div>
+          <div style="text-align:right;line-height:1.15"><div class="name fade js-swap" style="font-size:16px">${esc(m.name)}</div>
+            <div class="num fade js-swap" style="font:600 13px/16px var(--sys);color:var(--gold)">${esc(m.full)} · <span class="js-cd" style="color:var(--cream-2);font-weight:500"></span></div>
+            <div style="font:500 12px/15px var(--sys);color:var(--cream-2)">${esc(tasbihLine())}</div></div></div>
+        ${verseBox(327, 72, false, 'e')}</div>`,
+    lock: (m, w) => `<div class="e-lock">${mandala('m-lock', 250)}${verseBox(w - 28, 78, false, 'e')}<div class="fade js-swap">${board(m, tasbihCell())}</div></div>`,
+  },
+
+  i4: {
+    title: 'I4 · Light the lantern (1 tap)',
+    note: 'One remembrance for each stretch between prayers. The lantern waits unlit beside a phrase; say it, tap once, and the lantern lights. The next prayer brings a new phrase and an unlit lantern. One tap, a moment of attention, nothing counted or kept. A second tap undoes a mistaken tap. After the review: no ticking countdown anywhere (the gold line under the next prayer shows how near it is); the expanded island\'s right side holds name, time and phrase only, within the ~100 pt beside the camera; the unlit lantern is dim gold, not grey.',
+    expH: 160,
+    minimal: () => `<img class="lantern glow" alt="" src="${LANTERN}" style="height:20px">`,
+    compact: (m) => `<div class="c-row"><img class="lantern glow" alt="" src="${LANTERN}" style="height:20px">
+        <span class="compact-time num fade js-swap">${esc(m.short)}</span></div>`,
+    expanded: (m) => `<div class="c-exp" style="padding:10px 22px 12px;gap:8px;position:relative">${mandala('m-exp', 130, 2.5)}
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;height:50px">
+          <div style="margin:2px 0 0 0">${lightLantern(26)}</div>
+          <div style="text-align:right;line-height:1.15;max-width:100px"><div class="name fade js-swap" style="font-size:16px">${esc(m.name)}</div>
+            <div class="num fade js-swap" style="font:600 13px/16px var(--sys);color:var(--gold)">${esc(m.full)}</div>
+            <div style="font:500 12px/15px var(--sys);white-space:nowrap;color:${state.lit ? 'var(--gold)' : 'var(--cream-2)'}">${esc(DHIKR[m.idx])}</div></div></div>
+        ${verseBox(327, 72, false, 'e')}</div>`,
+    lock: (m, w) => `<div class="e-lock">${mandala('m-lock', 250)}${verseBox(w - 28, 78, false, 'e')}<div class="fade js-swap">${board(m, lightCell(m))}</div></div>`,
   },
 
   d: {
-    title: 'D · Lantern path (B + C)',
+    title: 'D · Lantern path (in the app code)',
     note: 'C\'s verse-first card and glowing lantern, with B\'s day path in place of the single bar: the five prayers as dots on one line, the ones already prayed lit dim gold, the line filling toward the next prayer, which is ringed and named in gold with its time. Costs the verse a few points against C.',
     expH: 160,
     minimal: () => `<div class="orb" style="width:30px;height:30px">${lantern(18)}</div>`,
@@ -478,16 +794,17 @@ const DESIGNS = {
 };
 
 /* ── Verse fitting (mirrors VerseView's ViewThatFits) ─────────── */
-function tierHTML(v, tier) {
-  if (tier === 1) return `<div class="tier"><div class="ar">${esc(v.arabic)}</div><div class="en">${esc(v.english)}</div><div class="ref">${esc(v.ref)}</div></div>`;
-  if (tier === 2) return `<div class="tier"><div class="en">${esc(v.english)}</div><div class="ref">${esc(v.ref)}</div></div>`;
+function tierHTML(v, tier, e) {
+  const ref = (e ? '— ' : '') + v.ref;
+  if (tier === 1) return `<div class="tier"><div class="ar">${esc(v.arabic)}</div><div class="en">${esc(v.english)}</div><div class="ref">${esc(ref)}</div></div>`;
+  if (tier === 2) return `<div class="tier"><div class="en">${esc(v.english)}</div><div class="ref">${esc(ref)}</div></div>`;
   return `<div class="tier"><div class="ptr">Your verse · ${esc(v.ref)}</div></div>`;
 }
 const TIER_NAMES = { 1: 'Arabic + English', 2: 'English only', 3: 'reference only' };
-function pickTier(v, width, budget, big) {
-  const m = $('measure'); m.className = 'verse' + (big ? ' big' : '');
+function pickTier(v, width, budget, big, e) {
+  const m = $('measure'); m.className = 'verse' + (big ? ' big' : '') + (e ? ' e' : '');
   for (const tier of [1, 2, 3]) {
-    m.style.width = width + 'px'; m.innerHTML = tierHTML(v, tier);
+    m.style.width = width + 'px'; m.innerHTML = tierHTML(v, tier, e);
     const h = m.firstElementChild.getBoundingClientRect().height;
     if (h <= budget || tier === 3) return { tier, h: Math.ceil(h) };
   }
@@ -497,8 +814,9 @@ function fillVerses(root) {
   root.querySelectorAll('.js-verse').forEach((el) => {
     const w = Number(el.dataset.w), h = Number(el.dataset.h);
     if (!v) { el.innerHTML = ''; el.style.height = '0'; return; }
-    const { tier, h: used } = pickTier(v, w, h, el.classList.contains('big'));
-    el.innerHTML = tierHTML(v, tier); el.style.height = h + 'px'; el.style.overflow = 'visible';
+    const e = el.classList.contains('e');
+    const { tier, h: used } = pickTier(v, w, h, el.classList.contains('big'), e);
+    el.innerHTML = tierHTML(v, tier, e); el.style.height = h + 'px'; el.style.overflow = 'visible';
     out.push({ tier, used, h });
   });
   return out;
@@ -595,7 +913,7 @@ async function prayerArrives() {
   const next = (state.prayer + 1) % PRAYERS.length;
   await fadeSwap(() => {
     state.target = occurrenceAfter(next, state.target);
-    state.prayer = next; $('prayerSel').value = String(next); render();
+    state.prayer = next; state.lit = false; $('prayerSel').value = String(next); render();
   });
   arriving = false;
 }
@@ -638,7 +956,7 @@ function fitScale() {
 function applySize() {
   const [w, h] = state.size;
   for (const id of ['phone', 'screen']) { $(id).style.setProperty('--w', w); $(id).style.setProperty('--h', h); }
-  $('deviceLabel').textContent = `Dynamic Island iPhone, ${w} × ${h} pt (Apple's Live Activity spec size). The phone frame is a drawing; card sizes, fonts and colours follow the Swift code.`;
+  $('deviceLabel').textContent = `iPhone Pro, ${w} × ${h} pt. The frame is a drawing of a current Pro (side buttons, Camera Control); the island is drawn at today's size, since Apple has not published the iPhone 18 island's size. Card sizes, fonts and colours follow the Swift code.`;
   fitScale(); render();
 }
 function seg(id, attr, on) {
@@ -675,6 +993,8 @@ async function init() {
     state.target = occurrenceAfter(state.prayer, state.simNow); setMinutes(mins);
   };
   $('fmtSel').onchange = (e) => { state.fmt = e.target.value; render(); };
+  $('aLight').onclick = () => { if (state.view === 'compact' || state.view === 'minimal') setView('expanded'); iaLight(); };
+  $('mandalaToggle').onchange = (e) => { state.mandala = e.target.checked; render(); };
   $('minsRange').oninput = (e) => setMinutes(Number(e.target.value));
   $('aPress').onclick = touchAndHold; $('island').onclick = touchAndHold;
   $('aArrive').onclick = () => setMinutes(0.05);

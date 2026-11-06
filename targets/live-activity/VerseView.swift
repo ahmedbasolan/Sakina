@@ -57,24 +57,29 @@ struct VerseView: View {
       .frame(maxWidth: .infinity, alignment: .trailing)
   }
 
+  // Set like the app's Verse of the Day (src/components/home/VerseOfTheDay.tsx):
+  // the English in the serif at ~85% cream, the reference "— Al-Baqarah 2:183"
+  // in serif italic at 70% cream. Not the iPhone's system font: that made the
+  // card read as a notification rather than as Sakina (design review 2026-11-06).
+
   private func englishText(_ text: String) -> some View {
     Text(text)
-      .font(.system(size: 13))
-      .foregroundColor(Palette.cream)
+      .font(CardFont.title(13))
+      .foregroundColor(Palette.creamVerse)
       .multilineTextAlignment(.leading)
       .fixedSize(horizontal: false, vertical: true)
   }
 
   private func refText(_ ref: String) -> some View {
-    Text(ref)
-      .font(.system(size: 11, weight: .medium))
-      .foregroundColor(Palette.gold)
+    Text(verbatim: "— \(ref)")
+      .font(CardFont.titleItalic(12))
+      .foregroundColor(Palette.creamSecondary)
       .fixedSize(horizontal: false, vertical: true)
   }
 
   private func pointerText(_ ref: String) -> some View {
     Text(verbatim: "Your verse · \(ref)")
-      .font(.system(size: 12))
+      .font(CardFont.titleItalic(13))
       .foregroundColor(Palette.creamSecondary)
       .fixedSize(horizontal: false, vertical: true)
   }

@@ -63,6 +63,18 @@ describe('toCardVerse', () => {
 });
 
 describe('buildVerseSnapshot', () => {
+  it('carries the prayer schedule when given, and omits the key when not', () => {
+    const today = getDailyVerseSync();
+    const prayers = [
+      { name: 'Fajr' as const, at: 1_800_000_000 },
+      { name: 'Dhuhr' as const, at: 1_800_025_000 },
+    ];
+    expect(buildVerseSnapshot({ mood: null, today, timeFormat: '24h', prayers }).prayers).toEqual(prayers);
+    expect('prayers' in buildVerseSnapshot({ mood: null, today, timeFormat: '24h' })).toBe(false);
+    expect('prayers' in buildVerseSnapshot({ mood: null, today, timeFormat: '24h', prayers: [] })).toBe(false);
+    expect('prayers' in buildVerseSnapshot({ mood: null, today, timeFormat: '24h', prayers: null })).toBe(false);
+  });
+
   it('daily[0] is exactly the verse Home shows today', () => {
     const today = getDailyVerseSync();
     const snap = buildVerseSnapshot({ mood: null, today, timeFormat: '24h' });
