@@ -39,7 +39,8 @@
 //
 // Times are epoch SECONDS. `content-state` keys must match
 // targets/live-activity/SakinaPrayerAttributes.swift (`prayerName: String`,
-// `prayerEpoch: Double`); the Jest suite reads that file to enforce it.
+// `prayerEpoch: Double`, `startEpoch: Double?`); the Jest suite reads that file
+// to enforce it. A build that predates `startEpoch` ignores the extra key.
 
 import type { Action, ScheduledPrayer } from './liveActivityPlan.ts';
 
@@ -58,8 +59,14 @@ export interface ApnsPush {
   tokenKind: 'pushToStart' | 'activity';
 }
 
-function contentState(p: ScheduledPrayer): { prayerName: string; prayerEpoch: number } {
-  return { prayerName: p.name, prayerEpoch: p.at };
+// `startEpoch` is the previous prayer: where the card's progress bar starts
+// (design C, ProgressView(timerInterval:) on the device, so the bar fills with
+// no further pushes). Always present — null when unknown — so the key set always
+// matches Swift's ContentState, where it is an optional Double.
+type ContentState = { prayerName: string; prayerEpoch: number; startEpoch: number | null };
+
+function contentState(p: ScheduledPrayer, startAt?: number): ContentState {
+  return { prayerName: p.name, prayerEpoch: p.at, startEpoch: startAt ?? null };
 }
 
 function headers(priority: 5 | 10, expiration: number): Record<string, string> {
@@ -74,7 +81,14 @@ function headers(priority: 5 | 10, expiration: number): Record<string, string> {
 // `final` (end only) is the prayer the ending card was counting down to. It is
 // dismissed at once, so the value is never really shown — it is there so the
 // payload decodes. Without one, an empty name at `now` keeps it decodable.
-export function buildPush(action: Action, now: number, final?: ScheduledPrayer): ApnsPush {
+// `startAt` (start / update) is the previous prayer, epoch seconds — the start
+// of the progress bar; omit it when unknown.
+export function buildPush(
+  action: Action,
+  now: number,
+  final?: ScheduledPrayer,
+  startAt?: number,
+): ApnsPush {
   if (action.kind === 'start') {
     return {
       headers: headers(10, now + START_EXPIRY_S),
@@ -83,7 +97,7 @@ export function buildPush(action: Action, now: number, final?: ScheduledPrayer):
         aps: {
           timestamp: now,
           event: 'start',
-          'content-state': contentState(action.next),
+          'content-state': contentState(action.next, startAt),
           'stale-date': action.next.at + STALE_AFTER_S,
           'attributes-type': ATTRIBUTES_TYPE,
           attributes: { version: ATTRIBUTES_VERSION },
@@ -107,7 +121,7 @@ export function buildPush(action: Action, now: number, final?: ScheduledPrayer):
         aps: {
           timestamp: now,
           event: 'update',
-          'content-state': contentState(action.next),
+          'content-state': contentState(action.next, startAt),
           'stale-date': action.next.at + STALE_AFTER_S,
         },
       },
@@ -121,7 +135,7 @@ export function buildPush(action: Action, now: number, final?: ScheduledPrayer):
       aps: {
         timestamp: now,
         event: 'end',
-        'content-state': final ? contentState(final) : { prayerName: '', prayerEpoch: now },
+        'content-state': final ? contentState(final) : { prayerName: '', prayerEpoch: now, startEpoch: null },
         'dismissal-date': now,
       },
     },

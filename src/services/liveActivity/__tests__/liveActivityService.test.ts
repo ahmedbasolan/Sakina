@@ -593,8 +593,12 @@ describe('LiveActivityService', () => {
     expect(snap.mood).toBeNull();
     const schedule = mockInvoke.mock.calls[0][1].body.schedule as { name: string; at: number }[];
     const nowS = Date.now() / 1000;
-    const next = schedule.find((p) => p.at > nowS)!;
-    expect(n.startLocal).toHaveBeenCalledWith(next.name, next.at);
+    const i = schedule.findIndex((p) => p.at > nowS);
+    const next = schedule[i];
+    // The previous prayer is where the card's progress bar starts; before the
+    // first scheduled prayer there is none, and the card shows no bar.
+    const prev = i > 0 ? schedule[i - 1].at : null;
+    expect(n.startLocal).toHaveBeenCalledWith(next.name, next.at, prev);
     expect(n.startLocal.mock.invocationCallOrder[0]).toBeGreaterThan(mockInvoke.mock.invocationCallOrder[0]);
   });
 

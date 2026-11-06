@@ -238,8 +238,13 @@ export class LiveActivityService {
         if (!registered) return;
 
         const nowS = now.getTime() / 1000;
-        const next = schedule.find((p) => p.at > nowS);
-        if (next) await native.startLocal(next.name, next.at);
+        const i = schedule.findIndex((p) => p.at > nowS);
+        if (i >= 0) {
+          // The previous prayer is where the card's progress bar starts; before
+          // the first scheduled prayer there is none and the card shows no bar.
+          const prev = i > 0 ? schedule[i - 1].at : null;
+          await native.startLocal(schedule[i].name, schedule[i].at, prev);
+        }
       } catch (error) {
         logServiceError(SERVICE, 'sync', error as Error);
       }

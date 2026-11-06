@@ -7,7 +7,9 @@
 //
 // APNs push-to-start names this type in `attributes-type`, so never rename it.
 // The server pushes `content-state` as { "prayerName": String, "prayerEpoch":
-// Double } (epoch seconds) and `attributes` as { "version": Int }.
+// Double, "startEpoch": Double or null } (epoch seconds) and `attributes` as
+// { "version": Int }. `startEpoch` is the previous prayer, where the progress
+// bar starts; it is optional so a payload without it still decodes.
 //
 // The main app deploys to iOS 15.1, hence the availability gate; the
 // extension deploys to 17.2, where it is a no-op.
@@ -20,6 +22,7 @@ struct SakinaPrayerAttributes: ActivityAttributes {
   struct ContentState: Codable, Hashable {
     var prayerName: String
     var prayerEpoch: Double
+    var startEpoch: Double?
   }
 
   var version: Int

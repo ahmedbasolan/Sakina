@@ -14,6 +14,8 @@ enum Palette {
   static let creamSecondary = Color(red: 245.0 / 255.0, green: 237.0 / 255.0, blue: 227.0 / 255.0, opacity: 0.7)
   /// Colors.accent.primary, #D4AF37.
   static let gold = Color(red: 212.0 / 255.0, green: 175.0 / 255.0, blue: 55.0 / 255.0)
+  /// The warm centre of the lantern's glow (design C), rgba(255, 214, 120, 0.55).
+  static let glowCore = Color(red: 1.0, green: 214.0 / 255.0, blue: 120.0 / 255.0, opacity: 0.55)
 }
 
 /// Every font on the card is FIXED-SIZE: `Font.custom(_:fixedSize:)` here and
@@ -60,12 +62,47 @@ enum PrayerClock {
     return start...end
   }
 
+  /// Previous prayer ... next prayer, for the progress bar, or nil when the
+  /// previous prayer is unknown or not before the next (a ClosedRange would trap).
+  static func progressRange(_ state: SakinaPrayerAttributes.ContentState) -> ClosedRange<Date>? {
+    guard let startEpoch = state.startEpoch else { return nil }
+    let start = Date(timeIntervalSince1970: startEpoch)
+    let end = date(state)
+    guard start < end else { return nil }
+    return start...end
+  }
+
   private static func format(_ date: Date, pattern: String) -> String {
     let formatter = DateFormatter()
     formatter.locale = Locale(identifier: "en_US_POSIX")
     formatter.timeZone = TimeZone.current
     formatter.dateFormat = pattern
     return formatter.string(from: date)
+  }
+}
+
+/// The lantern with a soft warm glow behind it (design C). The glow is a
+/// radial gradient that fades to nothing, not a container shape — Apple's HIG
+/// asks for a logo mark without a container.
+struct GlowLantern: View {
+  let size: CGFloat
+  let lanternHeight: CGFloat
+
+  var body: some View {
+    ZStack {
+      Circle()
+        .fill(
+          RadialGradient(
+            colors: [Palette.glowCore, Palette.gold.opacity(0.32), Palette.gold.opacity(0)],
+            center: .center,
+            startRadius: 0,
+            endRadius: size / 2
+          )
+        )
+      LanternMark(height: lanternHeight)
+    }
+    .frame(width: size, height: size)
+    .accessibilityHidden(true)
   }
 }
 

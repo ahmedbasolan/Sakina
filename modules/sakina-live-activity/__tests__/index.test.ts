@@ -80,7 +80,9 @@ describe('sakina-live-activity JS wrapper', () => {
     wrapper.writeSnapshot('{"version":1}');
     expect(native.writeSnapshot).toHaveBeenCalledWith('{"version":1}');
     await expect(wrapper.startLocal('Asr', 1_800_000_000)).resolves.toBe(true);
-    expect(native.startLocal).toHaveBeenCalledWith('Asr', 1_800_000_000);
+    expect(native.startLocal).toHaveBeenCalledWith('Asr', 1_800_000_000, null);
+    await wrapper.startLocal('Asr', 1_800_000_000, 1_799_990_000);
+    expect(native.startLocal).toHaveBeenLastCalledWith('Asr', 1_800_000_000, 1_799_990_000);
     await wrapper.endAll();
     expect(native.endAll).toHaveBeenCalledTimes(1);
     wrapper.clearShared();

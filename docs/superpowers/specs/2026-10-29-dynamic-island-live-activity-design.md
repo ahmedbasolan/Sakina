@@ -101,6 +101,26 @@ starlit sky" carried onto the system surface — calm, glanceable, never noisy.
    the current verse below.
 4. Lock-screen / notification-banner view (also what pre-14-Pro iPhones see):
    Celestial Night styling, prayer row, verse.
+
+**Visual design C, "Lantern glow" (chosen by Ahmed 2026-11-06** from three
+directions — A countdown hero, B day path, C lantern glow — previewed in
+`docs/superpowers/previews/live-activity/`). It keeps goals 1–4 and changes how
+they look:
+- Lantern drawn with a soft warm radial glow (no container) in every view.
+- Lock screen: the verse leads (88 pt), then one row — glowing lantern,
+  "Asr · 15:22" in gold, a slim gold progress bar from the previous prayer to
+  the next, and a quiet countdown.
+- Expanded island: glowing lantern (leading), name over time (trailing, beside
+  the camera), then the verse (56 pt) and the bar with the countdown.
+- The bar is `ProgressView(timerInterval:)`, advanced by iOS with no pushes. It
+  needs the previous prayer, so `ContentState` gained an optional `startEpoch`
+  (server: the prayer just acted at; app: the schedule entry before the next).
+  No bar when it is unknown. Optional, so build 11 still decodes new payloads.
+- Measured over the 52 daily verses: lock screen shows Arabic + English for 16,
+  English for 29, reference only for 7 (the best of the four layouts); the
+  expanded island, with the camera row above it, English for 17, reference
+  for 35. The expanded verse budget is conservative and the first thing to tune
+  on a device.
 5. Card advances at each prayer time with the app closed, every day, for as
    long as the uploaded schedule lasts and Pro is active.
 6. Turning the switch off, losing Pro, or deleting the account stops pushes

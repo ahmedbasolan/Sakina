@@ -465,7 +465,9 @@ async function processDevice(
   const results: SendOutcome[] = [];
   for (const action of actions) {
     if (run.halted) break;
-    const push = buildPush(action, now, action.kind === 'end' ? finalPrayer : undefined);
+    // A start or update counts down from the prayer that just arrived (`cur`),
+    // which is where the card's progress bar starts.
+    const push = buildPush(action, now, action.kind === 'end' ? finalPrayer : undefined, cur?.at);
     const target = push.tokenKind === 'pushToStart' ? row.push_to_start_token : row.activity_token;
     if (!target) {
       bump(counts, push.tokenKind === 'pushToStart' ? 'skip_no_push_to_start_token' : 'skip_no_activity_token');

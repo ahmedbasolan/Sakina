@@ -11,8 +11,9 @@ const ASR: ScheduledPrayer = { name: 'Asr', at: NOW };
 type Aps = Record<string, any>;
 const aps = (p: { body: object }): Aps => (p.body as { aps: Aps }).aps;
 
-const start = buildPush({ kind: 'start', next: MAGHRIB }, NOW);
-const update = buildPush({ kind: 'update', next: MAGHRIB }, NOW);
+// Asr has just arrived, so it is where the card's progress bar starts.
+const start = buildPush({ kind: 'start', next: MAGHRIB }, NOW, undefined, ASR.at);
+const update = buildPush({ kind: 'update', next: MAGHRIB }, NOW, undefined, ASR.at);
 const end = buildPush({ kind: 'end', atPrayer: true }, NOW, ASR);
 
 // The fields Swift decodes, read out of the source file so a rename on either side fails here.
@@ -60,7 +61,20 @@ describe('buildPush', () => {
     expect(epoch).toBe(MAGHRIB.at);
     expect(Number.isInteger(epoch)).toBe(true);
     expect(epoch).toBeLessThan(1e11); // milliseconds would be ~1.8e12
-    expect(aps(update)['content-state']).toEqual({ prayerName: 'Maghrib', prayerEpoch: MAGHRIB.at });
+    expect(aps(update)['content-state']).toEqual({
+      prayerName: 'Maghrib',
+      prayerEpoch: MAGHRIB.at,
+      startEpoch: ASR.at,
+    });
+  });
+
+  it('start and update carry the previous prayer as startEpoch, null when unknown', () => {
+    // Where the card's progress bar starts (ProgressView(timerInterval:)).
+    expect(aps(start)['content-state'].startEpoch).toBe(ASR.at);
+    expect(aps(update)['content-state'].startEpoch).toBe(ASR.at);
+    const noPrev = aps(buildPush({ kind: 'start', next: MAGHRIB }, NOW));
+    // null, not absent: the key set must always match Swift's ContentState.
+    expect(noPrev['content-state']).toHaveProperty('startEpoch', null);
   });
 
   it('topic is the bundle id push-type topic', () => {
@@ -93,7 +107,7 @@ describe('buildPush', () => {
 
   it('content-state keys exactly match the Swift ContentState', () => {
     const swift = swiftVars('ContentState');
-    expect(swift).toEqual(['prayerEpoch', 'prayerName']);
+    expect(swift).toEqual(['prayerEpoch', 'prayerName', 'startEpoch']);
     for (const p of [start, update, end]) {
       expect(Object.keys(aps(p)['content-state']).sort()).toEqual(swift);
     }
@@ -119,7 +133,7 @@ describe('buildPush', () => {
   });
 
   it('end carries the final content-state so the system can decode it', () => {
-    expect(aps(end)['content-state']).toEqual({ prayerName: 'Asr', prayerEpoch: ASR.at });
+    expect(aps(end)['content-state']).toEqual({ prayerName: 'Asr', prayerEpoch: ASR.at, startEpoch: null });
   });
 
   it('end without a known final prayer still carries a decodable content-state', () => {

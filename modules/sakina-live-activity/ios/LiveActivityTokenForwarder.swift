@@ -129,7 +129,7 @@ final class LiveActivityTokenForwarder {
   /// ActivityKit refuses. The card goes stale 15 minutes after its prayer, as a
   /// server-sent card does (`stale-date`), so a chain that stops arriving never
   /// leaves a countdown showing a time long gone as if it were current.
-  func startLocal(prayerName: String, prayerEpoch: Double) -> Bool {
+  func startLocal(prayerName: String, prayerEpoch: Double, startEpoch: Double?) -> Bool {
     guard ActivityAuthorizationInfo().areActivitiesEnabled else { return false }
     guard SharedStore.isParticipating() else { return false }
     let live = Activity<SakinaPrayerAttributes>.activities.contains { activity in
@@ -138,7 +138,11 @@ final class LiveActivityTokenForwarder {
     if live { return false }
 
     let attributes = SakinaPrayerAttributes(version: 1)
-    let state = SakinaPrayerAttributes.ContentState(prayerName: prayerName, prayerEpoch: prayerEpoch)
+    let state = SakinaPrayerAttributes.ContentState(
+      prayerName: prayerName,
+      prayerEpoch: prayerEpoch,
+      startEpoch: startEpoch
+    )
     let staleDate = Date(timeIntervalSince1970: prayerEpoch + LiveActivityTokenForwarder.staleAfter)
     let content = ActivityContent(state: state, staleDate: staleDate)
     do {

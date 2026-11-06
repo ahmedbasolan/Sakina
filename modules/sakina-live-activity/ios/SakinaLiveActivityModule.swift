@@ -61,11 +61,14 @@ public class SakinaLiveActivityModule: Module {
       }
     }
 
-    AsyncFunction("startLocal") { (prayerName: String, prayerEpoch: Double) async -> Bool in
+    // startEpoch: the previous prayer (epoch seconds), where the progress bar
+    // starts; nil when unknown, and the card then shows no bar.
+    AsyncFunction("startLocal") { (prayerName: String, prayerEpoch: Double, startEpoch: Double?) async -> Bool in
       if #available(iOS 17.2, *) {
         return await LiveActivityTokenForwarder.shared.startLocal(
           prayerName: prayerName,
-          prayerEpoch: prayerEpoch
+          prayerEpoch: prayerEpoch,
+          startEpoch: startEpoch
         )
       }
       return false

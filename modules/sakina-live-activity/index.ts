@@ -19,7 +19,7 @@ interface SakinaLiveActivityNative {
   getDeviceId(): string;
   peekDeviceId(): string;
   writeSnapshot(json: string): void;
-  startLocal(prayerName: string, prayerEpoch: number): Promise<boolean>;
+  startLocal(prayerName: string, prayerEpoch: number, startEpoch: number | null): Promise<boolean>;
   endAll(): Promise<void>;
   markSwitchedOff(): void;
   clearShared(): void;
@@ -70,12 +70,18 @@ export function writeSnapshot(json: string): void {
 
 /**
  * Starts a card from the app (no alert). Resolves `false` if a card is already
- * live, Live Activities are off, or anything native fails.
+ * live, Live Activities are off, or anything native fails. `startEpoch` is the
+ * previous prayer (epoch seconds), where the card's progress bar starts; `null`
+ * when unknown, and the card then shows no bar.
  */
-export async function startLocal(prayerName: string, prayerEpoch: number): Promise<boolean> {
+export async function startLocal(
+  prayerName: string,
+  prayerEpoch: number,
+  startEpoch: number | null = null,
+): Promise<boolean> {
   if (!native) return false;
   try {
-    return (await native.startLocal(prayerName, prayerEpoch)) === true;
+    return (await native.startLocal(prayerName, prayerEpoch, startEpoch)) === true;
   } catch {
     return false;
   }
