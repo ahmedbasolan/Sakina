@@ -1,14 +1,15 @@
 // The prayer Live Activity: Dynamic Island + lock screen / banner.
 //
-// Design C, "Lantern glow" (chosen 2026-11-06 from three directions previewed in
-// docs/superpowers/previews/live-activity): the verse leads; underneath, a
-// glowing lantern, the next prayer and a slim bar that fills from the last
-// prayer to the next, with a quiet countdown.
+// Design D, "Lantern path" (chosen 2026-11-06; previewed with A–C in
+// docs/superpowers/previews/live-activity): design C's glowing lantern and
+// quiet countdown, with B's day path in place of the bar — the verse leads;
+// underneath, the lantern, the five prayers as stops on one line (LanternPath)
+// and the countdown.
 //
 // Calm by design: the compact island is static text (the prayer's time); the
-// only moving things are system views — the countdown text and the progress bar
-// (ProgressView(timerInterval:)) — which iOS advances itself, with no pushes and
-// no other animation. The whole card opens Prayer Times.
+// only moving things are system views — the countdown text and the path's live
+// stretch (ProgressView(timerInterval:)) — which iOS advances itself, with no
+// pushes and no other animation. The whole card opens Prayer Times.
 //
 // Height budgets: Apple caps the lock-screen presentation and the expanded
 // island at 160 pt. The verse block gets a fixed share of that (see the
@@ -35,14 +36,16 @@ private let prayerTimesURL = URL(string: "sakina://prayer-times")
 /// would truncate its bottom, which ViewThatFits cannot see. Keep both, or
 /// re-derive these numbers.
 private enum CardLayout {
-  /// Lock screen: 160 total − 28 vertical padding − 10 spacing − 30 progress
-  /// row (the 30 pt glowing lantern), minus 4 for margin.
-  static let lockScreenVerseHeight: CGFloat = 88
+  /// Lock screen: 160 total − 28 vertical padding − 10 spacing − 34 path row
+  /// (LanternPath.height; taller than the 30 pt lantern beside it) = 88, minus
+  /// 4 for margin.
+  static let lockScreenVerseHeight: CGFloat = 84
   /// Expanded island: 160 − ~52 for the leading/trailing row beside the camera
-  /// (with the island's top margin) − 10 spacing − ~16 progress row − ~12
-  /// bottom margin = ~70; 56 leaves margin, because overflow here would cut
-  /// the bottom of the card, i.e. the progress row or the end of an ayah.
-  static let expandedVerseHeight: CGFloat = 56
+  /// (with the island's top margin) − 10 spacing − 34 path row − ~12 bottom
+  /// margin = ~52; 48 leaves margin, because overflow here would cut the bottom
+  /// of the card, i.e. the path or the end of an ayah. At 48 most verses show
+  /// as the "Your verse · ref" pointer here; the lock screen carries the text.
+  static let expandedVerseHeight: CGFloat = 48
   /// Fixed width for the quiet countdown so it cannot claim the bar's room.
   /// "1:42:10" at 13 pt semibold is ~52 pt.
   static let countdownWidth: CGFloat = 64
@@ -88,7 +91,7 @@ private func makeDynamicIsland(state: SakinaPrayerAttributes.ContentState) -> Dy
       VStack(alignment: .leading, spacing: 10) {
         VerseView(verse: verse, height: CardLayout.expandedVerseHeight)
         HStack(spacing: 10) {
-          PrayerProgressBar(state: state)
+          LanternPath(state: state, twelveHour: twelveHour)
           QuietCountdown(to: prayerDate)
         }
       }
@@ -133,13 +136,8 @@ struct LockScreenCard: View {
       VerseView(verse: verse, height: CardLayout.lockScreenVerseHeight)
       HStack(spacing: 10) {
         GlowLantern(size: 30, lanternHeight: 18)
-        Text(state.prayerName + " · " + PrayerClock.full(prayerDate, twelveHour: twelveHour))
-          .font(.system(size: 13, weight: .semibold))
-          .monospacedDigit()
-          .foregroundColor(Palette.gold)
-          // The label keeps its full width; the bar takes what is left.
-          .fixedSize()
-        PrayerProgressBar(state: state)
+        // The next prayer's name and time are on the path, under its stop.
+        LanternPath(state: state, twelveHour: twelveHour)
         QuietCountdown(to: prayerDate)
       }
     }
@@ -160,29 +158,7 @@ struct LockScreenCard: View {
   }
 }
 
-/// The slim bar that fills from the previous prayer to the next. iOS advances
-/// it itself (ProgressView(timerInterval:)), so it moves with no pushes. Absent
-/// when the previous prayer is unknown (`startEpoch` nil) — a bar that starts
-/// at an arbitrary moment would claim a progress it does not know.
-struct PrayerProgressBar: View {
-  let state: SakinaPrayerAttributes.ContentState
-
-  var body: some View {
-    if let range = PrayerClock.progressRange(state) {
-      ProgressView(timerInterval: range, countsDown: false) {
-        EmptyView()
-      } currentValueLabel: {
-        EmptyView()
-      }
-      .progressViewStyle(.linear)
-      .tint(Palette.gold)
-    } else {
-      Spacer(minLength: 0)
-    }
-  }
-}
-
-/// The countdown in design C is quiet: small, secondary cream, fixed width.
+/// The countdown is quiet (from design C): small, secondary cream, fixed width.
 struct QuietCountdown: View {
   let to: Date
 

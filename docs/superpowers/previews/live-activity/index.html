@@ -1,0 +1,697 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sakina Live Activity Preview</title>
+<style>
+  /* Card values from targets/live-activity/*.swift (Current) and the three
+     design directions. Colours are the app's Celestial Night tokens. */
+  :root {
+    --night: #07111E; --dusk: #0F1F30; --cream: #F5EDE3; --cream-2: rgba(245,237,227,.7);
+    --cream-3: rgba(245,237,227,.38); --gold: #D4AF37; --gold-dim: rgba(212,175,55,.28);
+    --inset: rgba(245,237,227,.07);
+    --ui-bg: #0b0f15; --ui-panel: #141a22; --ui-line: #263040; --ui-text: #e6e9ee; --ui-dim: #93a0b3;
+    --sys: -apple-system, "SF Pro Text", "SF Pro", "Segoe UI", system-ui, sans-serif;
+    --serif: Georgia, "Times New Roman", serif;
+  }
+  @font-face { font-family: "AmiriQuranCard"; src: url("../../../../targets/live-activity/AmiriQuran-Regular.ttf") format("truetype"); }
+  * { box-sizing: border-box; }
+  body { margin: 0; min-height: 100vh; background: var(--ui-bg); color: var(--ui-text); font: 14px/1.45 var(--sys);
+    display: grid; grid-template-columns: minmax(420px, 1fr) 380px; gap: 24px; padding: 24px; }
+  @media (max-width: 900px) { body { grid-template-columns: 1fr; } }
+  h1 { font-size: 18px; margin: 0 0 4px; } h2 { font-size: 15px; margin: 0 0 4px; }
+  .sub { color: var(--ui-dim); font-size: 12px; margin: 0 0 16px; }
+  .num { font-variant-numeric: tabular-nums; }
+
+  /* ── Phone ─────────────────────────────────────────────────────── */
+  .stage { display: flex; flex-direction: column; align-items: center; gap: 12px; min-width: 0; }
+  .scaler { transform-origin: top center; }
+  .phone { position: relative; width: calc(var(--w) * 1px + 24px); height: calc(var(--h) * 1px + 24px);
+    border-radius: 68px; padding: 12px; background: linear-gradient(145deg, #3a3d42, #1c1e21 40%, #2b2e33);
+    box-shadow: 0 0 0 2px #50545b inset, 0 30px 80px rgba(0,0,0,.6); }
+  .phone::before, .phone::after { content: ""; position: absolute; width: 4px; background: #2b2e33; border-radius: 2px; }
+  .phone::before { left: -3px; top: 180px; height: 64px; box-shadow: 0 84px 0 #2b2e33; }
+  .phone::after { right: -3px; top: 230px; height: 100px; }
+  .screen { position: relative; width: calc(var(--w) * 1px); height: calc(var(--h) * 1px); border-radius: 56px; overflow: hidden; background: #000; }
+  .wallpaper { position: absolute; inset: 0; transition: filter .4s;
+    background: radial-gradient(1px 1px at 20% 30%, #fff8 50%, transparent 51%), radial-gradient(1px 1px at 70% 12%, #fff9 50%, transparent 51%),
+      radial-gradient(1.5px 1.5px at 85% 40%, #fffa 50%, transparent 51%), radial-gradient(1px 1px at 35% 62%, #fff7 50%, transparent 51%),
+      radial-gradient(ellipse at 50% 120%, #1d3a5f 0%, #0b1626 55%, #04070c 100%); }
+  .wallpaper.light { background: radial-gradient(ellipse at 50% 0%, #f6e7c9 0%, #c9d8e8 55%, #8fa9c4 100%); }
+  .home-apps { position: absolute; inset: 70px 20px 120px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 22px 18px; align-content: start; }
+  .home-apps i { aspect-ratio: 1; border-radius: 14px; background: #ffffff1f; }
+  .status { position: absolute; top: 16px; left: 0; right: 0; display: flex; justify-content: space-between; padding: 0 34px; font: 600 16px var(--sys); color: #fff; z-index: 5; }
+  .lock-clock { position: absolute; top: 92px; left: 0; right: 0; text-align: center; color: #fff; }
+  .lock-clock .date { font: 600 19px var(--sys); opacity: .9; }
+  .lock-clock .time { font: 700 92px/1 var(--sys); letter-spacing: -2px; margin-top: 2px; }
+  .lock-bottom { position: absolute; bottom: 30px; left: 46px; right: 46px; display: flex; justify-content: space-between; }
+  .lock-bottom i { width: 50px; height: 50px; border-radius: 50%; background: #ffffff26; }
+  .home-bar { position: absolute; bottom: 8px; left: 50%; width: 140px; height: 5px; margin-left: -70px; border-radius: 3px; background: #fffd; z-index: 6; }
+
+  /* ── Dynamic Island ───────────────────────────────────────────── */
+  .island { position: absolute; top: 11px; left: 50%; z-index: 10; width: 126px; height: 37px; margin-left: -63px; border-radius: 19px;
+    background: #000; overflow: hidden; box-shadow: 0 0 0 1px rgba(212,175,55,.5);
+    transition: width .5s cubic-bezier(.2,.9,.25,1.12), height .5s cubic-bezier(.2,.9,.25,1.12), margin-left .5s cubic-bezier(.2,.9,.25,1.12), border-radius .5s cubic-bezier(.2,.9,.25,1.12); }
+  .island.compact { width: 250px; margin-left: -125px; }
+  .island.expanded { width: 371px; margin-left: -185.5px; height: var(--exp-h, 160px); border-radius: 44px; }
+  .island > .layer { position: absolute; inset: 0; opacity: 0; transition: opacity .25s; pointer-events: none; }
+  .island.compact:not(.other) > #islandCompact, .island.expanded > #islandExpanded { opacity: 1; }
+  .other-activity { display: none; position: absolute; inset: 0; align-items: center; justify-content: space-between; padding: 0 14px; color: #fff; font: 600 13px var(--sys); }
+  .island.other > .other-activity { display: flex; }
+  .minimal-dot { position: absolute; top: 11px; z-index: 10; width: 37px; height: 37px; border-radius: 50%; background: #000;
+    display: none; align-items: center; justify-content: center; left: calc(50% + 74px); box-shadow: 0 0 0 1px rgba(212,175,55,.5); }
+  .minimal-dot.on { display: flex; }
+  .reduce .island, .reduce .fade, .reduce .banner { transition: none !important; }
+
+  /* Shared island piece layouts */
+  .c-row { display: flex; align-items: center; justify-content: space-between; height: 100%; padding: 0 14px 0 12px; }
+  .lantern { display: block; width: auto; }
+
+  /* ── Lock Screen Live Activity ─────────────────────────────────── */
+  .banner { position: absolute; left: 11px; right: 11px; bottom: 112px; z-index: 4; border-radius: 22px; color: var(--cream);
+    background: linear-gradient(var(--night), var(--dusk)); transition: transform .45s cubic-bezier(.2,.9,.25,1.05), opacity .35s; }
+  .banner.hidden { transform: translateY(40px); opacity: 0; }
+  .banner .close { position: absolute; top: -9px; left: -9px; width: 22px; height: 22px; border-radius: 50%; background: #3a3f47;
+    color: var(--gold); font: 700 12px/22px var(--sys); text-align: center; z-index: 2; }
+
+  /* ── Verse tiers (VerseView.swift) ─────────────────────────────── */
+  .verse .tier { display: flex; flex-direction: column; gap: 4px; }
+  .ar { font-family: "AmiriQuranCard", serif; font-size: 16px; color: var(--cream); direction: rtl; text-align: right; line-height: 1.55; }
+  .en { font: 13px/1.3 var(--sys); color: var(--cream); }
+  .ref { font: 500 11px var(--sys); color: var(--gold); }
+  .ptr { font: 12px var(--sys); color: var(--cream-2); }
+  .verse.big .ar { font-size: 17px; } .verse.big .en { font: 500 14px/1.32 var(--sys); }
+  .show-budget .verse { outline: 1px dashed rgba(212,175,55,.6); outline-offset: 2px; }
+
+  .fade { transition: opacity .3s ease; } .fade.out { opacity: 0; }
+  .aod .wallpaper { filter: brightness(.35); } .aod .banner, .aod .island { filter: brightness(.7); }
+
+  /* ── Design: Current ───────────────────────────────────────────── */
+  .cur-exp { padding: 22px 22px 14px; display: flex; flex-direction: column; gap: 10px; height: 100%; }
+  .cur-top { display: flex; justify-content: space-between; align-items: center; }
+  .cur-lead { display: flex; align-items: center; gap: 8px; }
+  .name { font-family: var(--serif); font-size: 18px; color: var(--cream); line-height: 1.15; }
+  .clock { font: 500 13px var(--sys); color: var(--cream-2); }
+  .cd { font: 600 20px var(--sys); color: var(--gold); width: 84px; text-align: right; }
+  .cur-lock { padding: 14px; display: flex; flex-direction: column; gap: 8px; }
+  .cur-lock .row { display: flex; align-items: center; gap: 8px; }
+  .compact-time { font: 600 14px var(--sys); color: var(--gold); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 52px; text-align: right; }
+  .compact-time.old { color: var(--cream); font-size: 13px; }
+
+  /* ── Design A: Countdown hero (ride timer / tennis score) ─────── */
+  .a-exp { padding: 20px 22px 14px; display: flex; flex-direction: column; gap: 10px; height: 100%; }
+  .a-top { display: flex; align-items: center; justify-content: space-between; }
+  .a-label { font: 600 12px var(--sys); color: var(--gold); letter-spacing: .02em; display: flex; align-items: center; gap: 6px; }
+  .a-hero { font: 600 34px/1 var(--sys); color: var(--cream); letter-spacing: -.5px; margin-top: 4px; }
+  .a-inset { background: var(--inset); border-radius: 16px; padding: 8px 12px; }
+  .a-lock { padding: 14px; display: flex; flex-direction: column; gap: 10px; }
+
+  /* ── Design B: Day path (UV hours / transit list) ─────────────── */
+  .b-exp { padding: 20px 22px 14px; display: flex; flex-direction: column; gap: 10px; height: 100%; }
+  .b-top { display: flex; align-items: center; gap: 8px; }
+  .b-top .cd { margin-left: auto; font-size: 18px; }
+  .path { position: relative; height: 46px; }
+  .path .track { position: absolute; left: 6px; right: 6px; top: 8px; height: 4px; border-radius: 2px; background: rgba(245,237,227,.14); }
+  .path .done { position: absolute; left: 6px; top: 8px; height: 4px; border-radius: 2px; background: linear-gradient(90deg, var(--gold-dim), var(--gold)); }
+  .path .stop { position: absolute; top: 4px; width: 12px; height: 12px; margin-left: -6px; border-radius: 50%; background: #2a3442; border: 2px solid #000; }
+  .path .stop.past { background: var(--gold-dim); }
+  .path .stop.next { background: #000; border: 2px solid var(--gold); box-shadow: 0 0 10px rgba(212,175,55,.8); }
+  .path .now { position: absolute; top: 2px; width: 16px; height: 16px; margin-left: -8px; border-radius: 50%;
+    background: radial-gradient(circle, #fff6d8 0%, var(--gold) 45%, rgba(212,175,55,0) 72%); }
+  .path .lbl { position: absolute; top: 22px; transform: translateX(-50%); text-align: center; white-space: nowrap; }
+  .path .lbl b { display: block; font: 600 10px var(--sys); color: var(--cream-2); }
+  .path .lbl span { display: block; font: 500 10px var(--sys); color: var(--cream-3); }
+  .path .lbl.next b { color: var(--gold); } .path .lbl.next span { color: var(--cream-2); }
+  .b-lock { padding: 14px; display: flex; flex-direction: column; gap: 10px; }
+  .dots5 { display: flex; gap: 5px; align-items: center; }
+  .dots5 i { width: 6px; height: 6px; border-radius: 50%; background: rgba(245,237,227,.18); }
+  .dots5 i.past { background: var(--gold-dim); }
+  .dots5 i.next { background: var(--gold); box-shadow: 0 0 6px var(--gold); width: 8px; height: 8px; }
+
+  /* ── Design C: Lantern glow (prayer orb / book progress) ───────── */
+  .c-exp { padding: 18px 22px 14px; display: flex; flex-direction: column; gap: 10px; height: 100%; }
+  .c-main { display: flex; gap: 12px; align-items: flex-start; }
+  .orb { flex: none; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    background: radial-gradient(circle, rgba(255,214,120,.55) 0%, rgba(212,175,55,.32) 38%, rgba(212,175,55,0) 70%); }
+  .c-bar { display: flex; align-items: center; gap: 10px; }
+  .c-bar .pname { font: 600 13px var(--sys); color: var(--gold); min-width: 0; white-space: nowrap; }
+  .bar { flex: 1; height: 5px; border-radius: 3px; background: rgba(245,237,227,.14); overflow: hidden; }
+  .bar i { display: block; height: 100%; border-radius: 3px; background: linear-gradient(90deg, rgba(212,175,55,.5), var(--gold)); }
+  .c-bar .cdsm { font: 600 13px var(--sys); color: var(--cream-2); }
+  .c-lock { padding: 14px; display: flex; flex-direction: column; gap: 10px; }
+
+  /* ── Design D: B + C, "Lantern path" ───────────────────────────── */
+  .d-row { display: flex; align-items: center; gap: 10px; }
+  .dpath { position: relative; flex: 1; height: 34px; min-width: 0; }
+  .dpath .track { position: absolute; left: 0; right: 0; top: 9px; height: 3px; border-radius: 2px; background: rgba(245,237,227,.14); }
+  .dpath .done { position: absolute; left: 0; top: 9px; height: 3px; border-radius: 2px; background: linear-gradient(90deg, rgba(212,175,55,.35), var(--gold)); }
+  .dpath .stop { position: absolute; top: 6px; width: 9px; height: 9px; margin-left: -4.5px; border-radius: 50%; background: #2a3442; border: 1.5px solid #000; }
+  .dpath .stop.past { background: rgba(212,175,55,.45); }
+  .dpath .stop.next { background: #000; border: 2px solid var(--gold); box-shadow: 0 0 8px rgba(212,175,55,.85); }
+  .dpath .lbl { position: absolute; top: 20px; transform: translateX(-50%); white-space: nowrap; font: 600 9px var(--sys); color: var(--cream-3); }
+  .dpath .lbl.next { color: var(--gold); font-size: 10px; }
+
+  /* ── Gallery ───────────────────────────────────────────────────── */
+  .gallery { width: 100%; display: none; flex-direction: column; gap: 28px; padding: 8px 0 40px; }
+  .gallery.on { display: flex; }
+  .gal-design { background: #05070a; border: 1px solid var(--ui-line); border-radius: 18px; padding: 18px; }
+  .gal-design p { color: var(--ui-dim); font-size: 12px; margin: 0 0 14px; }
+  .gal-row { display: flex; flex-wrap: wrap; gap: 22px; align-items: flex-start; }
+  .gal-item { display: flex; flex-direction: column; gap: 8px; align-items: center; }
+  .gal-item small { color: var(--ui-dim); font-size: 11px; text-transform: uppercase; letter-spacing: .06em; }
+  .g-island { position: relative; background: #000; overflow: hidden; box-shadow: 0 0 0 1px rgba(212,175,55,.5); }
+  .g-min { width: 37px; height: 37px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+  .g-cmp { width: 250px; height: 37px; border-radius: 19px; }
+  .g-exp { width: 371px; border-radius: 44px; }
+  .g-lock { width: 371px; border-radius: 22px; background: linear-gradient(var(--night), var(--dusk)); color: var(--cream); position: relative; }
+
+  /* ── Control panel ─────────────────────────────────────────────── */
+  .panel { background: var(--ui-panel); border: 1px solid var(--ui-line); border-radius: 14px; padding: 18px; align-self: start; position: sticky; top: 24px; }
+  .group { border-top: 1px solid var(--ui-line); padding-top: 14px; margin-top: 14px; }
+  .group:first-of-type { border-top: 0; margin-top: 0; padding-top: 0; }
+  .label { font-size: 11px; text-transform: uppercase; letter-spacing: .08em; color: var(--ui-dim); margin-bottom: 8px; }
+  .seg { display: flex; flex-wrap: wrap; gap: 6px; }
+  .seg button, .btn { background: #1d2531; color: var(--ui-text); border: 1px solid var(--ui-line); border-radius: 8px; padding: 7px 10px; font: 500 13px var(--sys); cursor: pointer; }
+  .seg button.on { background: var(--gold); color: #111; border-color: var(--gold); }
+  .btn.primary { background: #2a3a52; border-color: #3b5272; }
+  .btn:hover, .seg button:hover { filter: brightness(1.15); }
+  select, input[type=range] { width: 100%; }
+  select { background: #1d2531; color: var(--ui-text); border: 1px solid var(--ui-line); border-radius: 8px; padding: 7px; font: 13px var(--sys); }
+  .row2 { display: flex; gap: 8px; align-items: center; }
+  .note { color: var(--ui-dim); font-size: 12px; margin-top: 6px; }
+  .check { display: flex; align-items: center; gap: 8px; margin: 6px 0; cursor: pointer; }
+  .tierinfo { font-size: 12px; background: #0f141b; border-radius: 8px; padding: 8px 10px; margin-top: 8px; }
+  .tierinfo b { color: var(--gold); }
+  .designnote { font-size: 12px; color: var(--ui-dim); background: #0f141b; border-radius: 8px; padding: 8px 10px; margin-top: 8px; }
+  .caption { color: var(--ui-dim); font-size: 12px; text-align: center; max-width: 520px; }
+  #measure { position: absolute; left: -9999px; top: 0; visibility: hidden; }
+</style>
+</head>
+<body>
+<section class="stage">
+  <div style="align-self:stretch">
+    <h1>Sakina — Dynamic Island preview</h1>
+    <p class="sub" id="deviceLabel"></p>
+  </div>
+  <div class="scaler" id="scaler">
+    <div class="phone" id="phone">
+      <div class="screen" id="screen">
+        <div class="wallpaper" id="wallpaper"></div>
+        <div class="home-apps" id="homeApps"></div>
+        <div class="status"><span id="statusTime">9:41</span><span>●●●● ▮</span></div>
+        <div class="island" id="island">
+          <div class="layer" id="islandCompact"></div>
+          <div class="layer" id="islandExpanded"></div>
+          <div class="other-activity"><span>🎵</span><span>Now Playing</span><span>2:41</span></div>
+        </div>
+        <div class="minimal-dot" id="minimalDot"></div>
+        <div class="lock-clock" id="lockClock"><div class="date" id="lockDate"></div><div class="time num" id="lockTime"></div></div>
+        <div class="banner" id="banner"><span class="close">✕</span><div id="bannerBody"></div></div>
+        <div class="lock-bottom" id="lockBottom"><i></i><i></i></div>
+        <div class="home-bar"></div>
+      </div>
+    </div>
+  </div>
+  <p class="caption" id="caption"></p>
+  <div class="gallery" id="gallery"></div>
+</section>
+
+<aside class="panel">
+  <div class="group">
+    <div class="label">Design</div>
+    <div class="seg" id="designSeg">
+      <button data-d="d" class="on">D · Lantern path (B + C)</button>
+      <button data-d="c">C · Lantern glow (in the app code)</button>
+      <button data-d="current">Build 11 (before)</button>
+      <button data-d="a">A · Countdown hero</button>
+      <button data-d="b">B · Day path</button>
+    </div>
+    <div class="designnote" id="designNote"></div>
+    <label class="check"><input type="checkbox" id="galleryToggle"> Show all designs side by side</label>
+  </div>
+  <div class="group">
+    <div class="label">Where it appears</div>
+    <div class="seg" id="viewSeg">
+      <button data-v="lock" class="on">Lock Screen</button>
+      <button data-v="compact">Island · compact</button>
+      <button data-v="expanded">Island · expanded</button>
+      <button data-v="minimal">Island · minimal</button>
+    </div>
+  </div>
+  <div class="group">
+    <div class="label">Animations</div>
+    <div class="seg">
+      <button class="btn primary" id="aPress">Touch &amp; hold (expand)</button>
+      <button class="btn primary" id="aArrive">Prayer arrives</button>
+      <button class="btn primary" id="aStart">Server start (silent alert)</button>
+      <button class="btn primary" id="aVerse">New mood verse</button>
+    </div>
+    <div class="label" style="margin-top:12px">Clock speed</div>
+    <div class="seg" id="speedSeg">
+      <button data-s="1" class="on">1×</button><button data-s="60">60×</button><button data-s="600">600×</button><button data-s="0">Paused</button>
+    </div>
+    <label class="check"><input type="checkbox" id="reduceMotion"> Reduce Motion (no morph or fades)</label>
+  </div>
+  <div class="group">
+    <div class="label">Prayer</div>
+    <div class="row2"><select id="prayerSel"></select>
+      <select id="fmtSel"><option value="24h">24-hour</option><option value="12h">12-hour</option></select></div>
+    <div class="label" style="margin-top:10px">Time until it <span id="minsLabel"></span></div>
+    <input type="range" id="minsRange" min="0" max="480" value="102">
+    <p class="note">Sample times (Dubai-style). Countdowns tick like iOS timer text.</p>
+  </div>
+  <div class="group">
+    <div class="label">Verse (real entries from the app's daily pool)</div>
+    <select id="verseSel"></select>
+    <div class="seg" style="margin-top:8px">
+      <button class="btn" data-q="short">Shortest</button><button class="btn" data-q="mid">Typical</button>
+      <button class="btn" data-q="long">Longest</button><button class="btn" data-q="none">No verse</button>
+    </div>
+    <div class="tierinfo" id="tierInfo"></div>
+    <label class="check"><input type="checkbox" id="showBudget"> Show the verse height budget</label>
+  </div>
+  <div class="group">
+    <div class="label">Device &amp; display</div>
+    <div class="seg" id="sizeSeg">
+      <button data-size="393x852" class="on">6.3″ · 393×852 pt</button><button data-size="430x932">6.9″ · 430×932 pt</button>
+    </div>
+    <label class="check"><input type="checkbox" id="aod"> Always-On (dimmed)</label>
+    <label class="check"><input type="checkbox" id="lightWall"> Light wallpaper</label>
+    <label class="check"><input type="checkbox" id="oldCompact"> Current: compare build 11 compact text</label>
+  </div>
+</aside>
+<div id="measure"></div>
+
+<script>
+const LANTERN = '../../../../src/assets/brand/lantern.png';
+const PRAYERS = [
+  { name: 'Fajr', h: 5, m: 1 }, { name: 'Dhuhr', h: 12, m: 8 }, { name: 'Asr', h: 15, m: 22 },
+  { name: 'Maghrib', h: 17, m: 44 }, { name: 'Isha', h: 19, m: 1 },
+];
+const $ = (id) => document.getElementById(id);
+const pad = (n) => String(n).padStart(2, '0');
+const esc = (t) => String(t).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const lantern = (h) => `<img class="lantern" alt="" src="${LANTERN}" style="height:${h}px">`;
+
+const state = { design: 'd', view: 'lock', size: [393, 852], prayer: 2, fmt: '24h', speed: 1,
+  verse: 0, verseNone: false, simNow: null, target: null, reduce: false, gallery: false };
+let verses = [];
+
+/* ── Time model ────────────────────────────────────────────────── */
+function occurrenceAfter(i, after) {
+  const d = new Date(after); d.setHours(PRAYERS[i].h, PRAYERS[i].m, 0, 0);
+  if (d <= after) d.setDate(d.getDate() + 1);
+  return d;
+}
+function previousPrayerDate() {
+  const i = (state.prayer + 4) % 5; const d = new Date(state.target);
+  d.setHours(PRAYERS[i].h, PRAYERS[i].m, 0, 0);
+  if (d >= state.target) d.setDate(d.getDate() - 1);
+  return d;
+}
+function fmtClock(d, full) {
+  let h = d.getHours(); const m = pad(d.getMinutes());
+  if (state.fmt === '24h') return `${pad(h)}:${m}`;
+  const ap = h >= 12 ? 'PM' : 'AM'; h = h % 12 || 12;
+  return full ? `${h}:${m} ${ap}` : `${h}:${m}`;
+}
+function fmtCountdown(ms) {   // Text(timerInterval:countsDown:)
+  const s = Math.max(0, Math.round(ms / 1000));
+  const h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), sec = s % 60;
+  return h > 0 ? `${h}:${pad(m)}:${pad(sec)}` : `${m}:${pad(sec)}`;
+}
+// Day path: the five prayers evenly spaced (time-proportional spacing crowds
+// Maghrib and Isha into each other). "Now" moves from the last prayer to the next.
+const STOP_PCT = [8, 29, 50, 71, 92];
+function model() {
+  const t = state.target, prev = previousPrayerDate(), now = state.simNow;
+  const p = PRAYERS[state.prayer];
+  const progress = Math.min(1, Math.max(0, (now - prev) / (t - prev)));
+  // Before Fajr the path starts empty and fills toward Fajr's stop.
+  const from = state.prayer === 0 ? 0 : STOP_PCT[state.prayer - 1];
+  return {
+    name: p.name, idx: state.prayer, full: fmtClock(t, true), short: fmtClock(t, false),
+    cd: fmtCountdown(t - now), left: t - now, progress,
+    nowPct: from + (STOP_PCT[state.prayer] - from) * progress,
+  };
+}
+
+/* ── Pieces ────────────────────────────────────────────────────── */
+// A ring the system can draw live: ProgressView(timerInterval:) with a
+// circular style (verify the circular style renders in a Live Activity).
+function ring(d, stroke, inner) {
+  const r = (d - stroke) / 2, c = 2 * Math.PI * r;
+  return `<div style="position:relative;width:${d}px;height:${d}px;flex:none">
+    <svg width="${d}" height="${d}" style="position:absolute;inset:0;transform:rotate(-90deg)">
+      <circle cx="${d / 2}" cy="${d / 2}" r="${r}" fill="none" stroke="rgba(245,237,227,.14)" stroke-width="${stroke}"/>
+      <circle class="js-ring" data-c="${c}" cx="${d / 2}" cy="${d / 2}" r="${r}" fill="none" stroke="#D4AF37" stroke-width="${stroke}"
+        stroke-linecap="round" stroke-dasharray="${c}" stroke-dashoffset="${c}"/>
+    </svg>
+    <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center">${inner || ''}</div></div>`;
+}
+function dayPath(m) {
+  const stops = PRAYERS.map((p, i) => {
+    const pct = STOP_PCT[i];
+    const cls = i === m.idx ? 'next' : i < m.idx ? 'past' : '';
+    const time = state.fmt === '24h' ? `${pad(p.h)}:${pad(p.m)}` : `${p.h % 12 || 12}:${pad(p.m)}`;
+    return `<i class="stop ${cls}" style="left:calc(6px + (100% - 12px) * ${pct / 100})"></i>
+      <div class="lbl ${i === m.idx ? 'next' : ''}" style="left:calc(6px + (100% - 12px) * ${pct / 100})"><b>${p.name}</b><span class="num">${time}</span></div>`;
+  }).join('');
+  return `<div class="path"><div class="track"></div><div class="done js-daydone"></div>${stops}<div class="now js-now"></div></div>`;
+}
+function dots5(m) {
+  return `<div class="dots5">${PRAYERS.map((p, i) => `<i class="${i === m.idx ? 'next' : i < m.idx ? 'past' : ''}"></i>`).join('')}</div>`;
+}
+// D's path: the five prayers evenly spaced on one line, past ones lit dim gold,
+// the next one ringed and named with its time. No moving glow dot: a Live
+// Activity cannot run its own animation, so on the phone only the line itself
+// fills (ProgressView(timerInterval:), advanced by iOS). This matches that.
+function lanternPath(m) {
+  const stops = PRAYERS.map((p, i) => {
+    const cls = i === m.idx ? 'next' : i < m.idx ? 'past' : '';
+    const label = i === m.idx ? `${esc(p.name)} <span class="num">${esc(m.short)}</span>` : esc(p.name);
+    return `<i class="stop ${cls}" style="left:${STOP_PCT[i]}%"></i><div class="lbl ${i === m.idx ? 'next' : ''}" style="left:${STOP_PCT[i]}%">${label}</div>`;
+  }).join('');
+  return `<div class="dpath"><div class="track"></div><div class="done js-dpdone"></div>${stops}</div>`;
+}
+const verseBox = (w, h, big) => `<div class="verse js-verse ${big ? 'big' : ''} fade js-swapv" data-w="${w}" data-h="${h}"></div>`;
+
+/* ── Designs ───────────────────────────────────────────────────── */
+// Each returns HTML for minimal, compact, expanded and lock. Verse budgets keep
+// every card at or under Apple's 160 pt and never clip an ayah (ViewThatFits).
+const DESIGNS = {
+  current: {
+    title: 'Before C (what build 11 ships)',
+    note: 'Lantern + time in the island; name, time, live countdown and the verse when expanded. Calm: nothing moves but the countdown.',
+    expH: 160,
+    minimal: () => lantern(20),
+    compact: (m) => {
+      const old = $('oldCompact').checked;
+      return `<div class="c-row">${lantern(20)}<span class="compact-time num fade js-swap ${old ? 'old' : ''}">${esc(old ? m.name + ' ' + m.short : m.short)}</span></div>`;
+    },
+    expanded: (m) => `<div class="cur-exp"><div class="cur-top"><div class="cur-lead">${lantern(28)}
+        <div class="fade js-swap"><div class="name">${esc(m.name)}</div><div class="clock num">${esc(m.full)}</div></div></div>
+        <div class="cd num fade js-swap js-cd"></div></div>${verseBox(327, 72)}</div>`,
+    lock: (m, w) => `<div class="cur-lock"><div class="row">${lantern(24)}<span class="name fade js-swap">${esc(m.name)}</span>
+        <span class="clock num fade js-swap" style="font-size:15px">${esc(m.full)}</span>
+        <span class="cd num fade js-swap js-cd" style="font-size:17px;margin-left:auto"></span></div>${verseBox(w - 28, 92)}</div>`,
+  },
+
+  d: {
+    title: 'D · Lantern path (B + C)',
+    note: 'C\'s verse-first card and glowing lantern, with B\'s day path in place of the single bar: the five prayers as dots on one line, the ones already prayed lit dim gold, the line filling toward the next prayer, which is ringed and named in gold with its time. Costs the verse a few points against C.',
+    expH: 160,
+    minimal: () => `<div class="orb" style="width:30px;height:30px">${lantern(18)}</div>`,
+    compact: (m) => `<div class="c-row"><div class="orb" style="width:28px;height:28px;margin-left:-4px">${lantern(18)}</div>
+        <span class="compact-time num fade js-swap">${esc(m.short)}</span></div>`,
+    // 160 ≥ 22 padding + 40 top row + 8 + 48 verse + 8 + 34 path row.
+    expanded: (m) => `<div class="c-exp" style="padding:10px 22px 12px;gap:8px">
+        <div style="display:flex;justify-content:space-between;align-items:center;height:40px">
+          <div class="orb" style="width:36px;height:36px">${lantern(20)}</div>
+          <div class="fade js-swap" style="text-align:right"><div class="name" style="font-size:16px">${esc(m.name)}</div>
+            <div class="num" style="font:600 13px var(--sys);color:var(--gold)">${esc(m.full)}</div></div></div>
+        ${verseBox(327, 48)}
+        <div class="d-row fade js-swap">${lanternPath(m)}<span class="cdsm num js-cd" style="width:64px;text-align:right"></span></div></div>`,
+    // 160 ≥ 28 padding + 84 verse + 10 + 34 path row.
+    lock: (m, w) => `<div class="c-lock">${verseBox(w - 28, 84)}
+        <div class="d-row fade js-swap"><div class="orb" style="width:30px;height:30px">${lantern(18)}</div>
+        ${lanternPath(m)}<span class="cdsm num js-cd" style="width:64px;text-align:right"></span></div></div>`,
+  },
+
+  a: {
+    title: 'A · Countdown hero',
+    note: 'From the ride timer and tennis score: the countdown is the big number, a gold ring fills from the last prayer to the next, the verse sits in an inset box. Ring and number are live system views (no pushes to move).',
+    expH: 160,
+    minimal: () => ring(30, 3, lantern(14)),
+    compact: (m) => `<div class="c-row">${ring(24, 2.5, lantern(12))}<span class="compact-time num fade js-swap">${esc(m.short)}</span></div>`,
+    // 160 = 34 padding + 52 hero block + 10 gap + 16 inset padding + 48 verse.
+    expanded: (m) => `<div class="a-exp"><div class="a-top"><div class="fade js-swap">
+          <div class="a-label">UNTIL ${esc(m.name.toUpperCase())} · <span class="num">${esc(m.full)}</span></div>
+          <div class="a-hero num js-cd"></div></div>
+          ${ring(52, 5, lantern(22))}</div>
+        <div class="a-inset">${verseBox(303, 48)}</div></div>`,
+    // 160 = 28 padding + 52 hero block + 10 gap + 16 inset padding + 54 verse.
+    lock: (m, w) => `<div class="a-lock"><div class="a-top"><div class="fade js-swap">
+          <div class="a-label">${lantern(14)} UNTIL ${esc(m.name.toUpperCase())} · <span class="num">${esc(m.full)}</span></div>
+          <div class="a-hero num js-cd"></div></div>
+          ${ring(50, 5)}</div>
+        <div class="a-inset">${verseBox(w - 52, 52)}</div></div>`,
+  },
+
+  b: {
+    title: 'B · Day path',
+    note: 'From the UV hours and transit list: the five prayers on one line across the day, a glowing "now" moving along it and the next prayer lit. Compact uses five dots instead of words, so it never truncates. Shows the whole day at a glance; least room for the verse.',
+    expH: 160,
+    minimal: (m) => `<span class="num" style="font:600 11px var(--sys);color:var(--gold)">${esc(m.short)}</span>`,
+    compact: (m) => `<div class="c-row">${lantern(20)}${dots5(m)}</div>`,
+    expanded: (m) => `<div class="b-exp"><div class="b-top fade js-swap">${lantern(22)}<span class="name">${esc(m.name)}</span>
+        <span class="clock num">${esc(m.full)}</span><span class="cd num js-cd"></span></div>${dayPath(m)}${verseBox(327, 30)}</div>`,
+    lock: (m, w) => `<div class="b-lock"><div class="b-top fade js-swap">${lantern(22)}<span class="name">${esc(m.name)}</span>
+        <span class="clock num">${esc(m.full)}</span><span class="cd num js-cd"></span></div>${dayPath(m)}${verseBox(w - 28, 36)}</div>`,
+  },
+
+  c: {
+    title: 'C · Lantern glow (chosen, now in the app code)',
+    note: 'From "Vishnu\'s prayer" and the book progress card: the verse leads across the full width; underneath, a glowing lantern and a slim bar that fills toward the next prayer, like reading progress. The calmest of the three and the most room for the ayah — the time is quieter.',
+    expH: 160,
+    minimal: () => `<div class="orb" style="width:30px;height:30px">${lantern(18)}</div>`,
+    compact: (m) => `<div class="c-row"><div class="orb" style="width:28px;height:28px;margin-left:-4px">${lantern(18)}</div>
+        <span class="compact-time num fade js-swap">${esc(m.short)}</span></div>`,
+    // Mirrors targets/live-activity/SakinaLiveActivity.swift (built 2026-11-06):
+    // leading = glowing lantern, trailing = name over time (beside the camera),
+    // bottom = verse (56 pt) + progress bar + quiet countdown.
+    // 160 ≥ 22 padding + 40 top row + 8 + 56 verse + 8 + 18 bar row.
+    expanded: (m) => `<div class="c-exp" style="padding:10px 22px 12px;gap:8px">
+        <div style="display:flex;justify-content:space-between;align-items:center;height:40px">
+          <div class="orb" style="width:36px;height:36px">${lantern(20)}</div>
+          <div class="fade js-swap" style="text-align:right"><div class="name" style="font-size:16px">${esc(m.name)}</div>
+            <div class="num" style="font:600 13px var(--sys);color:var(--gold)">${esc(m.full)}</div></div></div>
+        ${verseBox(327, 56)}
+        <div class="c-bar"><div class="bar"><i class="js-bar"></i></div><span class="cdsm num js-cd" style="width:64px;text-align:right"></span></div></div>`,
+    // 160 ≥ 28 padding + 88 verse + 10 gap + 30 bar row.
+    lock: (m, w) => `<div class="c-lock">${verseBox(w - 28, 88)}
+        <div class="c-bar fade js-swap"><div class="orb" style="width:30px;height:30px">${lantern(18)}</div>
+        <span class="pname">${esc(m.name)} · <span class="num">${esc(m.full)}</span></span>
+        <div class="bar"><i class="js-bar"></i></div><span class="cdsm num js-cd" style="width:64px;text-align:right"></span></div></div>`,
+  },
+};
+
+/* ── Verse fitting (mirrors VerseView's ViewThatFits) ─────────── */
+function tierHTML(v, tier) {
+  if (tier === 1) return `<div class="tier"><div class="ar">${esc(v.arabic)}</div><div class="en">${esc(v.english)}</div><div class="ref">${esc(v.ref)}</div></div>`;
+  if (tier === 2) return `<div class="tier"><div class="en">${esc(v.english)}</div><div class="ref">${esc(v.ref)}</div></div>`;
+  return `<div class="tier"><div class="ptr">Your verse · ${esc(v.ref)}</div></div>`;
+}
+const TIER_NAMES = { 1: 'Arabic + English', 2: 'English only', 3: 'reference only' };
+function pickTier(v, width, budget, big) {
+  const m = $('measure'); m.className = 'verse' + (big ? ' big' : '');
+  for (const tier of [1, 2, 3]) {
+    m.style.width = width + 'px'; m.innerHTML = tierHTML(v, tier);
+    const h = m.firstElementChild.getBoundingClientRect().height;
+    if (h <= budget || tier === 3) return { tier, h: Math.ceil(h) };
+  }
+}
+function fillVerses(root) {
+  const v = state.verseNone ? null : verses[state.verse]; const out = [];
+  root.querySelectorAll('.js-verse').forEach((el) => {
+    const w = Number(el.dataset.w), h = Number(el.dataset.h);
+    if (!v) { el.innerHTML = ''; el.style.height = '0'; return; }
+    const { tier, h: used } = pickTier(v, w, h, el.classList.contains('big'));
+    el.innerHTML = tierHTML(v, tier); el.style.height = h + 'px'; el.style.overflow = 'visible';
+    out.push({ tier, used, h });
+  });
+  return out;
+}
+
+/* ── Render ────────────────────────────────────────────────────── */
+function lockWidth() { return state.size[0] - 22; }
+function render() {
+  const d = DESIGNS[state.design], m = model();
+  $('islandCompact').innerHTML = d.compact(m);
+  $('islandExpanded').innerHTML = d.expanded(m);
+  $('minimalDot').innerHTML = d.minimal(m);
+  $('bannerBody').innerHTML = d.lock(m, lockWidth());
+  $('island').style.setProperty('--exp-h', d.expH + 'px');
+  $('designNote').textContent = d.note;
+  const fits = fillVerses(document.querySelector('.screen'));
+  const v = state.verseNone ? null : verses[state.verse];
+  const lockFit = fits[fits.length - 1], expFit = fits[0];
+  $('tierInfo').innerHTML = v
+    ? `${esc(v.ref)}<br>Lock Screen shows <b>${TIER_NAMES[lockFit.tier]}</b> (${lockFit.used} of ${lockFit.h} pt)<br>Expanded island shows <b>${TIER_NAMES[expFit.tier]}</b> (${expFit.used} of ${expFit.h} pt)`
+    : 'No verse shown';
+  if (state.gallery) renderGallery();
+  tick();
+}
+function renderGallery() {
+  const m = model();
+  $('gallery').innerHTML = Object.entries(DESIGNS).map(([key, d]) => `
+    <div class="gal-design"><h2>${esc(d.title)}</h2><p>${esc(d.note)}</p>
+      <div class="gal-row">
+        <div class="gal-item"><div class="g-island g-min">${d.minimal(m)}</div><small>Minimal</small></div>
+        <div class="gal-item"><div class="g-island g-cmp">${d.compact(m)}</div><small>Compact</small></div>
+        <div class="gal-item"><div class="g-island g-exp" style="height:${d.expH}px">${d.expanded(m)}</div><small>Expanded</small></div>
+        <div class="gal-item"><div class="g-lock">${d.lock(m, 371)}</div><small>Lock Screen</small></div>
+      </div></div>`).join('');
+  fillVerses($('gallery'));
+}
+
+function tick() {
+  const m = model();
+  document.querySelectorAll('.js-cd').forEach((el) => { el.textContent = m.cd; });
+  document.querySelectorAll('.js-ring').forEach((el) => { const c = Number(el.dataset.c); el.setAttribute('stroke-dashoffset', String(c * (1 - m.progress))); });
+  document.querySelectorAll('.js-bar').forEach((el) => { el.style.width = (m.progress * 100).toFixed(2) + '%'; });
+  document.querySelectorAll('.js-now').forEach((el) => { el.style.left = `calc(6px + (100% - 12px) * ${m.nowPct / 100})`; });
+  document.querySelectorAll('.js-daydone').forEach((el) => { el.style.width = `calc((100% - 12px) * ${m.nowPct / 100})`; });
+  document.querySelectorAll('.js-dpdone').forEach((el) => { el.style.width = m.nowPct + '%'; });
+  const n = state.simNow;
+  const clock = state.fmt === '24h' ? `${pad(n.getHours())}:${pad(n.getMinutes())}` : `${n.getHours() % 12 || 12}:${pad(n.getMinutes())}`;
+  $('statusTime').textContent = clock; $('lockTime').textContent = clock;
+  $('lockDate').textContent = n.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' });
+  const mins = Math.max(0, Math.round(m.left / 60000));
+  $('minsLabel').textContent = `(${Math.floor(mins / 60)}h ${mins % 60}m)`;
+  $('minsRange').value = Math.min(480, mins);
+  if (m.left <= 0 && !arriving) prayerArrives();
+}
+
+/* ── Views ─────────────────────────────────────────────────────── */
+const CAPTIONS = {
+  lock: 'Lock Screen: every iPhone shows this, and older iPhones without the island show only this. Tap opens Prayer Times.',
+  compact: 'Compact: the island while you use other apps.',
+  expanded: 'Expanded: touch and hold the island.',
+  minimal: 'Minimal: another app (music here) also has a Live Activity, so Sakina shrinks to the detached circle.',
+};
+function applyView() {
+  const v = state.view, island = $('island'), onLock = v === 'lock';
+  island.classList.toggle('compact', v === 'compact' || v === 'minimal');
+  island.classList.toggle('expanded', v === 'expanded');
+  island.classList.toggle('other', v === 'minimal');
+  $('minimalDot').classList.toggle('on', v === 'minimal');
+  $('banner').classList.toggle('hidden', !onLock);
+  $('lockClock').style.display = onLock ? '' : 'none';
+  $('lockBottom').style.display = onLock ? '' : 'none';
+  $('homeApps').style.display = onLock ? 'none' : '';
+  document.querySelectorAll('#viewSeg button').forEach((b) => b.classList.toggle('on', b.dataset.v === v));
+  $('caption').textContent = CAPTIONS[v];
+}
+function setView(v) { state.view = v; applyView(); }
+
+/* ── Animations ────────────────────────────────────────────────── */
+function fadeSwap(change) {
+  if (state.reduce) { change(); return Promise.resolve(); }
+  document.querySelectorAll('.js-swap').forEach((e) => e.classList.add('out'));
+  return new Promise((r) => setTimeout(() => {
+    change();
+    // render() rebuilt the pieces; start them faded and fade them in.
+    const fresh = document.querySelectorAll('.js-swap');
+    fresh.forEach((e) => e.classList.add('out'));
+    requestAnimationFrame(() => requestAnimationFrame(() => fresh.forEach((e) => e.classList.remove('out'))));
+    setTimeout(r, 320);
+  }, 300));
+}
+let arriving = false;
+async function prayerArrives() {
+  arriving = true;
+  const next = (state.prayer + 1) % PRAYERS.length;
+  await fadeSwap(() => {
+    state.target = occurrenceAfter(next, state.target);
+    state.prayer = next; $('prayerSel').value = String(next); render();
+  });
+  arriving = false;
+}
+let pressTimer = null;
+function touchAndHold() {
+  const back = state.view === 'lock' || state.view === 'expanded' ? 'compact' : state.view;
+  setView('expanded'); clearTimeout(pressTimer);
+  pressTimer = setTimeout(() => setView(back), 3500);
+}
+function serverStart() {
+  if (state.view === 'lock') { $('banner').classList.add('hidden'); setTimeout(() => $('banner').classList.remove('hidden'), 350); return; }
+  $('island').classList.remove('compact', 'expanded', 'other'); $('minimalDot').classList.remove('on');
+  clearTimeout(pressTimer);
+  setTimeout(() => setView('expanded'), 250);
+  pressTimer = setTimeout(() => setView('compact'), 3200);
+}
+function newMoodVerse() {
+  const swap = () => { state.verseNone = false; state.verse = (state.verse + 7) % verses.length; $('verseSel').value = String(state.verse); render(); };
+  if (state.reduce) return swap();
+  document.querySelectorAll('.js-swapv').forEach((e) => e.classList.add('out'));
+  setTimeout(() => {
+    swap();
+    const fresh = document.querySelectorAll('.js-swapv'); fresh.forEach((e) => e.classList.add('out'));
+    requestAnimationFrame(() => requestAnimationFrame(() => fresh.forEach((e) => e.classList.remove('out'))));
+  }, 300);
+}
+
+/* ── Loop & wiring ─────────────────────────────────────────────── */
+let last = performance.now();
+function loop(now) {
+  const dt = now - last; last = now;
+  if (state.speed > 0) { state.simNow = new Date(state.simNow.getTime() + dt * state.speed); tick(); }
+  requestAnimationFrame(loop);
+}
+function setMinutes(mins) { state.simNow = new Date(state.target.getTime() - mins * 60000); render(); }
+function fitScale() {
+  const [, h] = state.size; const s = Math.min(1, (window.innerHeight - 140) / (h + 24));
+  $('scaler').style.transform = `scale(${s})`; $('scaler').style.height = (h + 24) * s + 'px';
+}
+function applySize() {
+  const [w, h] = state.size;
+  for (const id of ['phone', 'screen']) { $(id).style.setProperty('--w', w); $(id).style.setProperty('--h', h); }
+  $('deviceLabel').textContent = `Dynamic Island iPhone, ${w} × ${h} pt (Apple's Live Activity spec size). The phone frame is a drawing; card sizes, fonts and colours follow the Swift code.`;
+  fitScale(); render();
+}
+function seg(id, attr, on) {
+  document.querySelectorAll(`#${id} button`).forEach((b) => b.onclick = () => {
+    document.querySelectorAll(`#${id} button`).forEach((x) => x.classList.toggle('on', x === b));
+    on(b.dataset[attr]);
+  });
+}
+
+async function init() {
+  verses = await (await fetch('verses.json', { cache: 'no-store' })).json();
+  const order = verses.map((v, i) => [i, v.arabic.length + v.english.length]).sort((a, b) => a[1] - b[1]);
+  const quick = { short: order[0][0], mid: order[Math.floor(order.length / 2)][0], long: order[order.length - 1][0] };
+  $('verseSel').innerHTML = verses.map((v, i) => `<option value="${i}">${esc(v.ref)}</option>`).join('');
+  state.verse = quick.mid; $('verseSel').value = String(state.verse);
+  $('prayerSel').innerHTML = PRAYERS.map((p, i) => `<option value="${i}">Next: ${p.name} (${pad(p.h)}:${pad(p.m)})</option>`).join('');
+  $('prayerSel').value = String(state.prayer);
+  $('homeApps').innerHTML = '<i></i>'.repeat(20);
+  const t0 = new Date(); t0.setHours(PRAYERS[state.prayer].h, PRAYERS[state.prayer].m, 0, 0);
+  state.target = t0; state.simNow = new Date(t0.getTime() - 102 * 60000 - 10000);
+
+  seg('designSeg', 'd', (d) => { state.design = d; render(); });
+  seg('viewSeg', 'v', (v) => { clearTimeout(pressTimer); setView(v); });
+  seg('speedSeg', 's', (s) => { state.speed = Number(s); });
+  seg('sizeSeg', 'size', (s) => { state.size = s.split('x').map(Number); applySize(); });
+  document.querySelectorAll('[data-q]').forEach((b) => b.onclick = () => {
+    if (b.dataset.q === 'none') state.verseNone = true;
+    else { state.verseNone = false; state.verse = quick[b.dataset.q]; $('verseSel').value = String(state.verse); }
+    render();
+  });
+  $('verseSel').onchange = (e) => { state.verseNone = false; state.verse = Number(e.target.value); render(); };
+  $('prayerSel').onchange = (e) => {
+    const mins = Number($('minsRange').value); state.prayer = Number(e.target.value);
+    state.target = occurrenceAfter(state.prayer, state.simNow); setMinutes(mins);
+  };
+  $('fmtSel').onchange = (e) => { state.fmt = e.target.value; render(); };
+  $('minsRange').oninput = (e) => setMinutes(Number(e.target.value));
+  $('aPress').onclick = touchAndHold; $('island').onclick = touchAndHold;
+  $('aArrive').onclick = () => setMinutes(0.05);
+  $('aStart').onclick = serverStart; $('aVerse').onclick = newMoodVerse;
+  $('reduceMotion').onchange = (e) => { state.reduce = e.target.checked; document.body.classList.toggle('reduce', state.reduce); };
+  $('aod').onchange = (e) => $('screen').classList.toggle('aod', e.target.checked);
+  $('lightWall').onchange = (e) => $('wallpaper').classList.toggle('light', e.target.checked);
+  $('oldCompact').onchange = render;
+  $('showBudget').onchange = (e) => { $('screen').classList.toggle('show-budget', e.target.checked); $('gallery').classList.toggle('show-budget', e.target.checked); };
+  $('galleryToggle').onchange = (e) => { state.gallery = e.target.checked; $('gallery').classList.toggle('on', state.gallery); render(); };
+  window.onresize = fitScale;
+
+  await document.fonts.load('16px AmiriQuranCard');
+  applySize(); applyView();
+  requestAnimationFrame(loop);
+}
+init();
+</script>
+</body>
+</html>

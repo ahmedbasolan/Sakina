@@ -102,25 +102,34 @@ starlit sky" carried onto the system surface — calm, glanceable, never noisy.
 4. Lock-screen / notification-banner view (also what pre-14-Pro iPhones see):
    Celestial Night styling, prayer row, verse.
 
-**Visual design C, "Lantern glow" (chosen by Ahmed 2026-11-06** from three
-directions — A countdown hero, B day path, C lantern glow — previewed in
-`docs/superpowers/previews/live-activity/`). It keeps goals 1–4 and changes how
-they look:
+**Visual design D, "Lantern path" (chosen by Ahmed 2026-11-06).** Three
+directions — A countdown hero, B day path, C lantern glow — were previewed in
+`docs/superpowers/previews/live-activity/`; Ahmed picked C, then asked to
+combine B and C, and chose the result, D, which replaces C (a559203). It keeps
+goals 1–4 and changes how they look:
 - Lantern drawn with a soft warm radial glow (no container) in every view.
-- Lock screen: the verse leads (88 pt), then one row — glowing lantern,
-  "Asr · 15:22" in gold, a slim gold progress bar from the previous prayer to
-  the next, and a quiet countdown.
+- Lock screen: the verse leads (84 pt), then one row — glowing lantern, the
+  day path (`LanternPath`, 34 pt), and a quiet countdown.
+- The day path: the five prayers as stops evenly spaced on one line (evenly,
+  not by clock time, so Maghrib and Isha's labels cannot collide). Prayers
+  already passed are dim gold; the next is ringed in gold with a glow and
+  labelled with its time; the stretch from the previous prayer's stop to the
+  next fills live.
 - Expanded island: glowing lantern (leading), name over time (trailing, beside
-  the camera), then the verse (56 pt) and the bar with the countdown.
-- The bar is `ProgressView(timerInterval:)`, advanced by iOS with no pushes. It
-  needs the previous prayer, so `ContentState` gained an optional `startEpoch`
-  (server: the prayer just acted at; app: the schedule entry before the next).
-  No bar when it is unknown. Optional, so build 11 still decodes new payloads.
+  the camera), then the verse (48 pt) and the path with the countdown.
+  Compact (lantern + time) and minimal (lantern) are unchanged from C.
+- The live stretch is `ProgressView(timerInterval:)`, advanced by iOS with no
+  pushes. A Live Activity cannot run its own animation, so the preview's
+  moving "now" glow was dropped for this. It needs the previous prayer, so
+  `ContentState` gained an optional `startEpoch` (server: the prayer just
+  acted at; app: the schedule entry before the next). No live stretch when it
+  is unknown. Optional, so build 11 still decodes new payloads.
 - Measured over the 52 daily verses: lock screen shows Arabic + English for 16,
-  English for 29, reference only for 7 (the best of the four layouts); the
-  expanded island, with the camera row above it, English for 17, reference
-  for 35. The expanded verse budget is conservative and the first thing to tune
-  on a device.
+  English for 22, reference only for 14; the expanded island shows English for
+  4 and the "Your verse · ref" pointer for 48 — the path costs the expanded
+  verse its room, and the lock screen carries the text. (C was 16/29/7 and
+  17/35.) The expanded verse budget is conservative and the first thing to
+  tune on a device.
 5. Card advances at each prayer time with the app closed, every day, for as
    long as the uploaded schedule lasts and Pro is active.
 6. Turning the switch off, losing Pro, or deleting the account stops pushes

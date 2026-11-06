@@ -14,8 +14,13 @@ enum Palette {
   static let creamSecondary = Color(red: 245.0 / 255.0, green: 237.0 / 255.0, blue: 227.0 / 255.0, opacity: 0.7)
   /// Colors.accent.primary, #D4AF37.
   static let gold = Color(red: 212.0 / 255.0, green: 175.0 / 255.0, blue: 55.0 / 255.0)
-  /// The warm centre of the lantern's glow (design C), rgba(255, 214, 120, 0.55).
+  /// The warm centre of the lantern's glow, rgba(255, 214, 120, 0.55).
   static let glowCore = Color(red: 1.0, green: 214.0 / 255.0, blue: 120.0 / 255.0, opacity: 0.55)
+  /// Path labels for prayers other than the next one, rgba(245, 237, 227, 0.38).
+  static let creamFaint = Color(red: 245.0 / 255.0, green: 237.0 / 255.0, blue: 227.0 / 255.0, opacity: 0.38)
+  /// Path track and stops not yet reached.
+  static let trackDim = Color(red: 245.0 / 255.0, green: 237.0 / 255.0, blue: 227.0 / 255.0, opacity: 0.14)
+  static let stopFuture = Color(red: 42.0 / 255.0, green: 52.0 / 255.0, blue: 66.0 / 255.0)
 }
 
 /// Every font on the card is FIXED-SIZE: `Font.custom(_:fixedSize:)` here and
