@@ -88,10 +88,13 @@ starlit sky" carried onto the system surface — calm, glanceable, never noisy.
 
 ## Goals
 
-1. Compact island: gold lantern (leading) + next prayer and its **clock time**
-   ("Asr 3:42", in the user's 12h/24h format) trailing. Still, not ticking —
+1. Compact island: gold lantern (leading) + the next prayer's **clock time**
+   ("3:42", in the user's 12h/24h format) trailing. Still, not ticking —
    the island is in view all day and a running seconds counter there fights
    the calm-motion rule. *(Builder's call; Ahmed may prefer a countdown.)*
+   Changed 2026-11-06 from "Asr 3:42": Apple's HIG gives each compact element
+   ~52 pt and asks for a 28 pt fit when the island is limited in width, and
+   "Maghrib 18:20" would be cut. The name stays in the expanded and lock views.
 2. Minimal island (when another app shares the island): the lantern.
 3. Expanded island: next prayer name, its clock time, and a live countdown
    (system timer text — it shows seconds on iOS 17, no pushes needed to tick);

@@ -1,6 +1,6 @@
 // The prayer Live Activity: Dynamic Island + lock screen / banner.
 //
-// Calm by design: the compact island is static text ("Asr 3:42"); the only
+// Calm by design: the compact island is static text (the prayer's time); the only
 // moving thing anywhere is the system timer text in the expanded island and on
 // the lock screen. No other animation. The whole card opens Prayer Times.
 //
@@ -88,11 +88,19 @@ private func makeDynamicIsland(state: SakinaPrayerAttributes.ContentState) -> Dy
     LanternMark(height: 20)
   } compactTrailing: {
     // Static on purpose: the island is in view all day, a ticking counter
-    // there fights the calm-motion rule. Prayer label, not verse text.
-    Text(state.prayerName + " " + PrayerClock.compact(prayerDate, twelveHour: twelveHour))
-      .font(.system(size: 13, weight: .semibold))
+    // there fights the calm-motion rule.
+    //
+    // The clock time only, no prayer name. Apple's HIG (Live Activities,
+    // read 2026-11-06) gives each compact element ~52 pt on a 393-pt iPhone and
+    // asks for "shortened units" so leading and trailing stay balanced; it also
+    // asks compact views to fit a 28 pt circle where the island is limited in
+    // width (landscape). "Maghrib 18:20" would be cut to "Maghr…". "18:20" fits
+    // both, with the scale factor below. The name is in the expanded and
+    // lock-screen views. Gold, to read as one piece with the lantern.
+    Text(PrayerClock.compact(prayerDate, twelveHour: twelveHour))
+      .font(.system(size: 14, weight: .semibold))
       .monospacedDigit()
-      .foregroundColor(Palette.cream)
+      .foregroundColor(Palette.gold)
       .lineLimit(1)
       .minimumScaleFactor(0.7)
       .dynamicTypeSize(...DynamicTypeSize.large)
@@ -131,7 +139,9 @@ struct LockScreenCard: View {
       }
       VerseView(verse: verse, height: CardLayout.lockScreenVerseHeight)
     }
-    .padding(.horizontal, 16)
+    // 14 pt: Apple's standard Lock Screen margin for Live Activities (HIG), so
+    // the card lines up with notifications.
+    .padding(.horizontal, 14)
     .padding(.vertical, 14)
     .frame(maxWidth: .infinity, alignment: .leading)
     .background(

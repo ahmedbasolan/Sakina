@@ -12,6 +12,12 @@
 // height is the height of ALL its lines, and there is no `lineLimit` anywhere:
 // a tier that does not fit is skipped, never clipped. The container is a
 // fixed height because `ViewThatFits` only chooses against a bounded proposal.
+//
+// Apple's HIG suggests a Lock Screen Live Activity shrink to the height its
+// content needs. Deliberately not followed here: a `maxHeight`-only frame can
+// hand ViewThatFits an unspecified height, and then it takes tier 1 whatever its
+// size — the system would cut the card at 160 pt, i.e. the end of the ayah. A
+// short verse leaving some empty space is the price of never clipping one.
 
 import SwiftUI
 
