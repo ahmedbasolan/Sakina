@@ -31,6 +31,8 @@ import { useGuidanceLogic } from '../hooks/useGuidanceLogic';
 import { Colors, Spacing, Typography, MoodColors } from '../theme/DesignSystem';
 import { extractVerseKey } from '../utils';
 import { logServiceError } from '../services/errorLoggingService';
+import { maybeAskForReviewAfterReflection } from '../services/reviewPromptService';
+import { REVIEW_ASK_DELAY_MS } from '../constants';
 
 import { useRoute, useNavigation, useFocusEffect } from '@react-navigation/native';
 import { useAppContext } from '../context/AppContext';
@@ -89,6 +91,16 @@ const GuidanceScreen: React.FC = () => {
         mood,
         reflection,
       );
+      // A reflection the user chose to write and save is the mood flow's
+      // earned moment, so it is where this flow asks for a rating. Deferred
+      // and never awaited: the save has already succeeded, and neither the
+      // history read nor the ask may hold up or fail it.
+      setTimeout(() => {
+        void import('../services/moodHistoryService')
+          .then(({ moodHistoryService }) => moodHistoryService.getStats())
+          .then((stats) => maybeAskForReviewAfterReflection(stats.totalDaysTracked))
+          .catch(() => undefined);
+      }, REVIEW_ASK_DELAY_MS);
       return true;
     } catch (error) {
       logServiceError(

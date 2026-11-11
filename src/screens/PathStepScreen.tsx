@@ -88,9 +88,18 @@ export const PathStepScreen: React.FC = () => {
     // sheet doesn't fight the animation, and skipped whenever this completion
     // already carried an upgrade ask — two modals at one peak is a nag, not a
     // celebration.
+    //
+    // The floor counts days across every journey. getAllProgress returns []
+    // when its read fails, so this journey's own count is kept as the lower
+    // bound rather than letting a failed read look like zero days.
     if (!offerUpgrade) {
-      const dayCount = updatedProgress.completedDays.length;
-      setTimeout(() => void maybeAskForReview(dayCount), REVIEW_ASK_DELAY_MS);
+      const thisJourneyDays = updatedProgress.completedDays.length;
+      setTimeout(() => {
+        void pathsService.getAllProgress().then((all) => {
+          const totalDays = all.reduce((sum, p) => sum + p.completedDays.length, 0);
+          return maybeAskForReview(Math.max(thisJourneyDays, totalDays));
+        });
+      }, REVIEW_ASK_DELAY_MS);
     }
 
     if (toNext && !updatedProgress.isCompleted) {
