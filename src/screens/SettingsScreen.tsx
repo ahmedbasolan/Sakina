@@ -28,14 +28,11 @@ import { Colors, Spacing, Typography, BorderRadius } from '../theme/DesignSystem
 import { getAnalyticsConsent, setAnalyticsConsent } from '../config/posthog';
 import { LEGAL_URLS } from '../constants';
 
-// Fill in your Apple App Store numeric ID after the first submission is
-// accepted. Format: https://apps.apple.com/app/id<YOUR_ID>?action=write-review
-//
-// Leave it empty until you have the ID — the "Rate Sakina" row is hidden while
-// this is blank rather than shown with a placeholder behind it. A row that
-// answers a tap with "this will be available after launch" is an App Review
-// 2.1 (App Completeness) rejection, and a reviewer will tap it.
-const APP_STORE_REVIEW_URL = '';
+// The live App Store listing (Apple ID 6801511292), opened straight on the
+// write-a-review sheet. This sat empty for months after launch, which hid the
+// "Rate Sakina" row on iOS: the row only renders when its URL is non-empty,
+// so a blank here never shows a dead link, it shows nothing.
+const APP_STORE_REVIEW_URL = 'https://apps.apple.com/app/id6801511292?action=write-review';
 
 // Android needs no store ID — the Play listing is keyed by the package name
 // from app.json, so this one works today. Deliberately the https:// form, not
