@@ -16,7 +16,22 @@ jest.mock('../widgetService', () => ({
   WidgetService: { getInstance: () => mockWidget },
 }));
 
-import { resolveWidgetLink } from '../widgetLinks';
+import { StackRouter } from '@react-navigation/routers';
+import { resolveWidgetLink, widgetLinkAction, type WidgetLinkDestination } from '../widgetLinks';
+
+/** Runs `action` through the real stack router from a stack of `names`. */
+function stackAfter(names: string[], destination: WidgetLinkDestination) {
+  const routeNames = ['Main', 'WidgetLink', 'Guidance', 'PathDetail', 'MoodSelection'];
+  const options = {
+    routeNames,
+    routeParamList: Object.fromEntries(routeNames.map((n) => [n, undefined])),
+    routeGetIdList: {},
+  };
+  const router = StackRouter({});
+  const start = router.getRehydratedState({ routes: names.map((name) => ({ name })) } as any, options);
+  const next = router.getStateForAction(start, widgetLinkAction(destination, names) as any, options);
+  return (next as any).routes.map((r: { name: string; params?: object }) => ({ name: r.name, params: r.params }));
+}
 
 const experience = { content: { id: 'quran_93_4' }, angle: { id: 'q_angle_93_4_sad' } } as unknown as GuidanceExperience;
 const progress: UserPathProgress = {
@@ -66,6 +81,29 @@ describe('resolveWidgetLink', () => {
 
   it.each(['anything', '', 'Journey', '../journey'])('an unknown target %j resolves to Main', async (target) => {
     await expect(resolveWidgetLink(target)).resolves.toEqual({ name: 'Main' });
+  });
+
+  describe('the navigation that follows', () => {
+    it('a stale tap on a running app returns to the existing Home, never a second one', () => {
+      expect(stackAfter(['Main', 'WidgetLink'], { name: 'Main' })).toEqual([{ name: 'Main', params: undefined }]);
+    });
+
+    it('"no Journey running" returns to the existing Home on its Journeys tab', () => {
+      const stack = stackAfter(['Main', 'WidgetLink'], { name: 'Main', params: { screen: 'Journeys' } });
+      expect(stack).toEqual([{ name: 'Main', params: { screen: 'Journeys' } }]);
+    });
+
+    it('with no Home in the stack at all, Home becomes the only screen', () => {
+      expect(stackAfter(['WidgetLink'], { name: 'Main' }).map((r: { name: string }) => r.name)).toEqual(['Main']);
+    });
+
+    it('a real destination replaces the in-between screen and keeps Home underneath', () => {
+      const dest: WidgetLinkDestination = { name: 'PathDetail', params: { pathId: 'p', openToday: true } };
+      expect(stackAfter(['Main', 'WidgetLink'], dest)).toEqual([
+        { name: 'Main', params: undefined },
+        { name: 'PathDetail', params: { pathId: 'p', openToday: true } },
+      ]);
+    });
   });
 
   it('a lookup that rejects resolves to Main', async () => {

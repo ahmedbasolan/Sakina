@@ -25,13 +25,14 @@ describe('deep linking', () => {
     });
 
     // The Live Activity card (see modules/sakina-live-activity) opens this.
-    // PrayerTimes is a root-stack screen, not a tab, so no `Main` wrapper.
+    // PrayerTimes is a root-stack screen, not a tab. `Main` sits underneath
+    // (linking.config.initialRouteName), so a cold start opened by the link
+    // still has somewhere for Back to go.
     it.each(['sakina://prayer-times', 'sakina:///prayer-times', 'sakina://prayer-times/'])(
-      '%s opens the Prayer Times screen',
+      '%s opens the Prayer Times screen over Main',
       (url) => {
         const state = stateForUrl(url);
-        expect(state?.routes).toHaveLength(1);
-        expect(state?.routes[0].name).toBe('PrayerTimes');
+        expect(state?.routes.map((r) => r.name)).toEqual(['Main', 'PrayerTimes']);
       },
     );
 
@@ -87,10 +88,9 @@ describe('deep linking', () => {
       ['sakina:///check-in', 'MoodSelection'],
       ['sakina://pro', 'Support'],
       ['sakina://pro/', 'Support'],
-    ])('%s opens %s on the root stack', (url, screen) => {
+    ])('%s opens %s over Main, so Back reaches Home after a cold start', (url, screen) => {
       const state = stateForUrl(url);
-      expect(state?.routes).toHaveLength(1);
-      expect(state?.routes[0].name).toBe(screen);
+      expect(state?.routes.map((r) => r.name)).toEqual(['Main', screen]);
     });
 
     it.each([
@@ -98,11 +98,10 @@ describe('deep linking', () => {
       ['sakina://widget/reflect', 'reflect'],
       ['sakina://widget/verse', 'verse'],
       ['sakina://widget/verse/', 'verse'],
-    ])('%s opens the in-between screen with target %s', (url, target) => {
+    ])('%s opens the in-between screen with target %s, over Main', (url, target) => {
       const state = stateForUrl(url);
-      expect(state?.routes).toHaveLength(1);
-      expect(state?.routes[0].name).toBe('WidgetLink');
-      expect(state?.routes[0].params).toEqual({ target });
+      expect(state?.routes.map((r) => r.name)).toEqual(['Main', 'WidgetLink']);
+      expect(state?.routes[1].params).toEqual({ target });
     });
 
     it.each([

@@ -65,6 +65,10 @@ export const linking: LinkingOptions<RootStackParamList> = {
   prefixes: [DEEP_LINK_PREFIX],
   filter: isNavigationDeepLink,
   config: {
+    // A root-stack link (prayer-times, check-in, pro, widget/…) lands ON TOP of
+    // Main, so a cold start opened by the link still has Home underneath: without
+    // it the stack was just [PrayerTimes] and every Back button did nothing.
+    initialRouteName: 'Main',
     screens: {
       Main: {
         screens: {

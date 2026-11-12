@@ -13,7 +13,7 @@
 import 'react-native-gesture-handler/jestSetup';
 import React from 'react';
 import { act, render, screen } from '@testing-library/react-native';
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer, createNavigationContainerRef } from '@react-navigation/native';
 import { linking } from '../linking';
 
 const mockAuth = {
@@ -135,6 +135,20 @@ describe('sakina://journeys and onboarding', () => {
     mockAuth.isGuest = true;
     renderApp(url);
     expect(await screen.findByText(`screen:${name}`)).toBeTruthy();
+  });
+
+  it('a widget tap that cold-starts the app leaves Home underneath, so Back works', async () => {
+    mockAuth.isGuest = true;
+    const ref = createNavigationContainerRef<any>();
+    render(
+      <NavigationContainer ref={ref} linking={{ ...linking, getInitialURL: () => 'sakina://check-in' }}>
+        <MainNavigator />
+      </NavigationContainer>,
+    );
+    await screen.findByText('screen:MoodSelection');
+    expect(ref.getRootState().routes.map((r) => r.name)).toEqual(['Main', 'MoodSelection']);
+    act(() => ref.goBack());
+    expect(await screen.findByText('screen:Home')).toBeTruthy();
   });
 
   it('a widget tap on a fresh install sees Onboarding first, then lands where it pointed', async () => {

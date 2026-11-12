@@ -11,7 +11,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation, useRoute, type RouteProp } from '@react-navigation/native';
 import type { StackNavigationProp } from '@react-navigation/stack';
 import type { RootStackParamList } from '../navigation/types';
-import { resolveWidgetLink } from '../services/widget/widgetLinks';
+import { resolveWidgetLink, widgetLinkAction } from '../services/widget/widgetLinks';
 import { Colors } from '../theme/DesignSystem';
 
 export default function WidgetLinkScreen() {
@@ -23,9 +23,8 @@ export default function WidgetLinkScreen() {
     let active = true;
     resolveWidgetLink(target).then((destination) => {
       if (!active) return;
-      // Each member of the union matches its own route's params (widgetLinks.ts);
-      // the cast is only because TypeScript cannot pair a union's name and params.
-      (navigation.replace as (name: string, params?: object) => void)(destination.name, destination.params);
+      const names = navigation.getState()?.routes.map((r) => r.name) ?? [];
+      navigation.dispatch(widgetLinkAction(destination, names));
     });
     return () => {
       active = false;
