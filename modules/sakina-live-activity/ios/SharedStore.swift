@@ -9,6 +9,12 @@
 //   sakina.liveActivity.localStartId.v1  String  id of the activity the app started itself
 //   sakina.liveActivity.localStartAt.v1  Double  its start, epoch seconds
 //   sakina.liveActivity.switchedOff.v1   Bool    switched off, server not told yet
+//   sakina.widget.snapshot.v1            String  Home Screen widget's WidgetSnapshot JSON
+//                                                (src/services/widget/widgetTimeline.ts;
+//                                                read by targets/live-activity/WidgetSnapshotStore.swift)
+//
+// The widget key is NOT touched by `clear()` or `markSwitchedOff()`: those run
+// when the prayer card is switched off, and the widget outlives the card.
 //
 // No ActivityKit in this file: it compiles for the app's iOS 15.1 floor.
 
@@ -24,6 +30,7 @@ enum SharedStore {
   static let localStartIdKey = "sakina.liveActivity.localStartId.v1"
   static let localStartAtKey = "sakina.liveActivity.localStartAt.v1"
   static let switchedOffKey = "sakina.liveActivity.switchedOff.v1"
+  static let widgetSnapshotKey = "sakina.widget.snapshot.v1"
 
   static var defaults: UserDefaults? {
     return UserDefaults(suiteName: appGroup)
@@ -75,6 +82,14 @@ enum SharedStore {
 
   static func writeSnapshot(_ json: String) {
     defaults?.set(json, forKey: snapshotKey)
+  }
+
+  static func writeWidgetSnapshot(_ json: String) {
+    defaults?.set(json, forKey: widgetSnapshotKey)
+  }
+
+  static func clearWidgetSnapshot() {
+    defaults?.removeObject(forKey: widgetSnapshotKey)
   }
 
   static func recordLocalStart(activityId: String, at epoch: Double) {

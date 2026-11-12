@@ -23,6 +23,8 @@ interface SakinaLiveActivityNative {
   endAll(): Promise<void>;
   markSwitchedOff(): void;
   clearShared(): void;
+  writeWidgetSnapshot(json: string): void;
+  clearWidgetSnapshot(): void;
 }
 
 const native: SakinaLiveActivityNative | null =
@@ -111,4 +113,19 @@ export function markSwitchedOff(): void {
 /** Removes the verse snapshot, the device id and the switched-off mark from the App Group. */
 export function clearShared(): void {
   native?.clearShared();
+}
+
+/**
+ * Writes the Home Screen widget's `WidgetSnapshot` JSON (see
+ * src/services/widget/widgetTimeline.ts) and asks iOS to redraw the widget.
+ * Separate from `writeSnapshot`: the widget outlives the prayer card, so
+ * `clearShared` and `markSwitchedOff` never touch it.
+ */
+export function writeWidgetSnapshot(json: string): void {
+  native?.writeWidgetSnapshot(json);
+}
+
+/** Removes the widget's snapshot (sign-out, account deletion); the widget then shows its locked state. */
+export function clearWidgetSnapshot(): void {
+  native?.clearWidgetSnapshot();
 }

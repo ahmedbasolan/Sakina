@@ -17,6 +17,8 @@ function makeNative() {
     endAll: jest.fn(async () => undefined),
     markSwitchedOff: jest.fn(),
     clearShared: jest.fn(),
+    writeWidgetSnapshot: jest.fn(),
+    clearWidgetSnapshot: jest.fn(),
   };
 }
 
@@ -41,6 +43,8 @@ async function expectAllNoOps(w: Wrapper) {
   await expect(w.endAll()).resolves.toBeUndefined();
   expect(() => w.markSwitchedOff()).not.toThrow();
   expect(() => w.clearShared()).not.toThrow();
+  expect(() => w.writeWidgetSnapshot('{"version":1,"entries":[]}')).not.toThrow();
+  expect(() => w.clearWidgetSnapshot()).not.toThrow();
 }
 
 afterEach(() => {
@@ -87,6 +91,26 @@ describe('sakina-live-activity JS wrapper', () => {
     expect(native.endAll).toHaveBeenCalledTimes(1);
     wrapper.clearShared();
     expect(native.clearShared).toHaveBeenCalledTimes(1);
+  });
+
+  // The Home Screen widget's snapshot is separate from the card's: switching
+  // the card off (markSwitchedOff / clearShared) must not reach it.
+  it('forwards the widget snapshot calls, and only those, to their own functions', () => {
+    const native = makeNative();
+    const { wrapper } = load('ios', native);
+
+    wrapper.writeWidgetSnapshot('{"version":1,"entries":[]}');
+    expect(native.writeWidgetSnapshot).toHaveBeenCalledTimes(1);
+    expect(native.writeWidgetSnapshot).toHaveBeenCalledWith('{"version":1,"entries":[]}');
+    expect(native.writeSnapshot).not.toHaveBeenCalled();
+
+    wrapper.clearWidgetSnapshot();
+    expect(native.clearWidgetSnapshot).toHaveBeenCalledTimes(1);
+    expect(native.clearShared).not.toHaveBeenCalled();
+
+    wrapper.clearShared();
+    wrapper.markSwitchedOff();
+    expect(native.clearWidgetSnapshot).toHaveBeenCalledTimes(1);
   });
 
   it('turns a native rejection into the unsupported answer', async () => {

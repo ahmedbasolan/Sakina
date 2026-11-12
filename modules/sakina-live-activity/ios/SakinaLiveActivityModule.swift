@@ -6,6 +6,10 @@
 import ActivityKit
 import ExpoModulesCore
 import UIKit
+import WidgetKit
+
+/// Must match `StaticConfiguration(kind:)` in targets/live-activity/SakinaPathWidget.swift.
+private let pathWidgetKind = "SakinaPathWidget"
 
 public class SakinaLiveActivityModule: Module {
   public func definition() -> ModuleDefinition {
@@ -88,6 +92,19 @@ public class SakinaLiveActivityModule: Module {
 
     Function("clearShared") {
       SharedStore.clear()
+    }
+
+    // The Home Screen widget. WidgetKit ships in iOS 14, below the app's 15.1
+    // floor, so no availability check is needed. Independent of the card:
+    // these run whether or not a Live Activity exists.
+    Function("writeWidgetSnapshot") { (json: String) -> Void in
+      SharedStore.writeWidgetSnapshot(json)
+      WidgetCenter.shared.reloadTimelines(ofKind: pathWidgetKind)
+    }
+
+    Function("clearWidgetSnapshot") {
+      SharedStore.clearWidgetSnapshot()
+      WidgetCenter.shared.reloadTimelines(ofKind: pathWidgetKind)
     }
   }
 }
