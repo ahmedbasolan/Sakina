@@ -802,6 +802,17 @@ uploaded under an account that did not write them. Both shipped broken.
   is covered by `liveActivityService.test.ts` and `authService.liveActivity.test.ts`.
   The device id is deleted only after the server confirms the unregister; until then
   `@live_activity_pending_unregister` keeps it for the retry.
+- **The Home Screen widget's local state is AsyncStorage plus one App Group key**:
+  `@widget_checkin` (today's check-in, including the mood and the whole experience),
+  `@widget_journey_done` and `@widget_timings` in `widgetService.ts`, and the finished
+  timeline under `sakina.widget.snapshot.v1`. `clearAllLocalUserData` and
+  `verify-local-wipe.mjs` see none of it. It is cleared by `WidgetService.forget()`,
+  called from `authService.ts`'s `resetLiveActivity` on sign-out and account deletion,
+  covered by `widgetService.test.ts` and `authService.liveActivity.test.ts`. Switching
+  the prayer card off must **not** clear it — `SharedStore.clear()` and
+  `markSwitchedOff()` leave the widget key alone on purpose. The mood never goes into
+  the App Group; only finished text does, and a sensitive Journey's names never do
+  (`src/constants/journeyPrivacy.ts`, default sensitive).
 
 ## Background Photos — sourcing, spec & adding one
 

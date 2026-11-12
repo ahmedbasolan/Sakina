@@ -1,7 +1,8 @@
 # Square Home Screen Widget ("Your path") — Design
 
-Date: 2026-11-11 · Status: self-checked as the builder (no independent
-reviewer), awaiting Ahmed's approval
+Date: 2026-11-11 · Status: approved by Ahmed ("Build widget now", 2026-11-12);
+built on `feat/live-activity` per `docs/superpowers/plans/2026-11-12-square-widget.md`.
+Not yet compiled for iOS or seen on a device.
 
 Mockups (open with `node docs/superpowers/previews/live-activity/serve.mjs`,
 then `http://localhost:5179/docs/superpowers/previews/live-activity/together.html`):
