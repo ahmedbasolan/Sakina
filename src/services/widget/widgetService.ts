@@ -43,6 +43,14 @@ export const WIDGET_CHECKIN_KEY = '@widget_checkin';
 export const WIDGET_JOURNEY_DONE_KEY = '@widget_journey_done';
 /** `{ firstDay, weekly }`: the week of prayer timings the app last computed. */
 export const WIDGET_TIMINGS_KEY = '@widget_timings';
+/**
+ * 'true' from sign-out / account deletion until a new session starts. While it
+ * is set the widget is locked whatever else is true: Journey progress survives
+ * sign-out in SQLite and an offline sign-out can leave the cached subscription
+ * saying Pro, so without it the next refresh would rebuild the departed
+ * account's day onto the Home Screen.
+ */
+export const WIDGET_FORGOTTEN_KEY = '@widget_forgotten';
 
 const SERVICE = 'WidgetService';
 
@@ -116,6 +124,10 @@ export class WidgetService {
   /** A mood check-in showed `experience`: keep it for today, then rewrite. */
   onCheckIn(experience: GuidanceExperience, mood: Mood): Promise<void> {
     return this.enqueue('onCheckIn', async () => {
+      if (await this.isForgotten()) {
+        native.writeWidgetSnapshot(JSON.stringify(lockedSnapshot()));
+        return;
+      }
       const stored: StoredCheckIn = { dateKey: today(), mood, experience };
       await AsyncStorage.setItem(WIDGET_CHECKIN_KEY, JSON.stringify(stored));
       await this.write();
@@ -139,10 +151,14 @@ export class WidgetService {
     });
   }
 
-  /** Sign-out / account deletion: remove everything kept here and clear the widget. */
+  /**
+   * Sign-out / account deletion: remove everything kept here, clear the
+   * widget, and keep it locked until `resume()`.
+   */
   forget(): Promise<void> {
     return this.enqueue('forget', async () => {
       const results = await Promise.allSettled([
+        AsyncStorage.setItem(WIDGET_FORGOTTEN_KEY, 'true'),
         AsyncStorage.removeItem(WIDGET_CHECKIN_KEY),
         AsyncStorage.removeItem(WIDGET_JOURNEY_DONE_KEY),
         AsyncStorage.removeItem(WIDGET_TIMINGS_KEY),
@@ -153,6 +169,27 @@ export class WidgetService {
         if (result.status === 'rejected') logServiceError(SERVICE, 'forget', asError(result.reason));
       }
     });
+  }
+
+  /**
+   * A new session started (sign-in, once the app has cleared any other
+   * account's local data; or a guest start): lift the `forget()` latch and
+   * draw the day again.
+   */
+  resume(): Promise<void> {
+    return this.enqueue('resume', async () => {
+      await AsyncStorage.removeItem(WIDGET_FORGOTTEN_KEY);
+      await this.write();
+    });
+  }
+
+  private async isForgotten(): Promise<boolean> {
+    try {
+      return (await AsyncStorage.getItem(WIDGET_FORGOTTEN_KEY)) === 'true';
+    } catch (error) {
+      logServiceError(SERVICE, 'isForgotten', asError(error));
+      return false;
+    }
   }
 
   /** Today's check-in, or null (none, another day's, or unreadable). */
@@ -208,7 +245,7 @@ export class WidgetService {
       }
       return;
     }
-    if (!sub.isPremium()) {
+    if (!sub.isPremium() || (await this.isForgotten())) {
       native.writeWidgetSnapshot(JSON.stringify(lockedSnapshot()));
       return;
     }

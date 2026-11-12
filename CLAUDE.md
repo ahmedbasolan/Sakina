@@ -805,7 +805,11 @@ uploaded under an account that did not write them. Both shipped broken.
 - **The Home Screen widget's local state is AsyncStorage plus one App Group key**:
   `@widget_checkin` (today's check-in, including the mood and the whole experience),
   `@widget_journey_done` and `@widget_timings` in `widgetService.ts`, and the finished
-  timeline under `sakina.widget.snapshot.v1`. `clearAllLocalUserData` and
+  timeline under `sakina.widget.snapshot.v1`. `forget()` also sets `@widget_forgotten`,
+  which keeps the widget locked until `resume()` (AuthContext: after the sign-in
+  local-data claim, or a guest start) — Journey progress survives sign-out in SQLite
+  and an offline sign-out can leave the cached subscription saying Pro, so without the
+  latch the next refresh drew the departed account's day. `clearAllLocalUserData` and
   `verify-local-wipe.mjs` see none of it. It is cleared by `WidgetService.forget()`,
   called from `authService.ts`'s `resetLiveActivity` on sign-out and account deletion,
   covered by `widgetService.test.ts` and `authService.liveActivity.test.ts`. Switching

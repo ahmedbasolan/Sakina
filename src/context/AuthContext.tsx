@@ -6,6 +6,7 @@ import { AuthService } from '../services/authService';
 import { SupabaseDataService } from '../services/supabaseDataService';
 import { revenueCat } from '../services/revenueCatService';
 import { SubscriptionService } from '../services/subscriptionService';
+import { WidgetService } from '../services/widget/widgetService';
 import { STORAGE_KEYS } from '../constants';
 
 interface AuthContextType {
@@ -155,7 +156,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 console.log(`[Auth] Migrated ${migratedCount} guest history entries to Supabase`);
               }
             })
-            .catch((err) => console.error('[Auth] Local data claim error:', err));
+            .catch((err) => console.error('[Auth] Local data claim error:', err))
+            // Only after the claim: another account's leftovers are gone, so
+            // lifting the widget's sign-out lock cannot draw them.
+            .finally(() => {
+              WidgetService.getInstance().resume();
+            });
+        } else {
+          WidgetService.getInstance().resume();
         }
       } else {
         // SIGNED_OUT — token expiry, account deletion, or explicit sign-out.
@@ -243,6 +251,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       writes.push(AsyncStorage.setItem(STORAGE_KEYS.onboarding, 'true').catch(() => {}));
     }
     await Promise.all(writes);
+    // A guest session is a new session: lift the widget's sign-out lock.
+    WidgetService.getInstance().resume();
   };
 
   return (

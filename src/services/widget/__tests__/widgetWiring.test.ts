@@ -26,6 +26,8 @@ describe('the app keeps the widget current', () => {
     ['src/hooks/useHomeData.ts', 'WidgetService.getInstance().refresh()'],
     ['src/services/notificationTopUpTask.ts', 'WidgetService.getInstance().setTimings('],
     ['src/services/authService.ts', 'WidgetService.getInstance().forget()'],
+    // A new session (sign-in after the local-data claim, or a guest start) lifts the latch.
+    ['src/context/AuthContext.tsx', 'WidgetService.getInstance().resume()'],
     ['src/services/widget/widgetService.ts', '.onPremiumChange('],
   ])('%s calls %s', (file, call) => {
     expect(read(file)).toContain(call);

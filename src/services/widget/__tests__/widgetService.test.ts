@@ -96,6 +96,7 @@ import { formatDateKey } from '../../dailyVerseService';
 import { dateKeyOf, localMidnight, lockedSnapshot, type WidgetSnapshot } from '../widgetTimeline';
 import {
   WIDGET_CHECKIN_KEY,
+  WIDGET_FORGOTTEN_KEY,
   WIDGET_JOURNEY_DONE_KEY,
   WIDGET_TIMINGS_KEY,
   WidgetService,
@@ -384,8 +385,47 @@ describe('WidgetService', () => {
       [WIDGET_CHECKIN_KEY, WIDGET_JOURNEY_DONE_KEY, WIDGET_TIMINGS_KEY].sort(),
     );
     await service.forget();
-    expect(Object.keys(mockStore)).toEqual([]);
+    // Only the latch is left: no check-in, Journey or timings.
+    expect(Object.keys(mockStore)).toEqual([WIDGET_FORGOTTEN_KEY]);
     expect(mockNative.clearWidgetSnapshot).toHaveBeenCalledTimes(1);
+  });
+
+  describe('after sign-out or account deletion', () => {
+    // Journey progress lives in SQLite and survives sign-out, and an offline
+    // sign-out can leave the cached subscription saying Pro. Without a latch
+    // the next refresh (background top-up, cold start) rebuilt the departed
+    // account's Journey onto the widget.
+    beforeEach(() => {
+      mockPaths.lastOpened = 'path_trusting_the_results';
+      mockPaths.progress = { path_trusting_the_results: progress('path_trusting_the_results') };
+    });
+
+    it('a refresh while Pro is still cached writes only the locked state', async () => {
+      await service.forget();
+      await service.refresh();
+      await service.setTimings([]);
+      expect(written()).toEqual(lockedSnapshot());
+    });
+
+    it('a check-in before a new session starts is not kept either', async () => {
+      await service.forget();
+      await service.onCheckIn(experience(), 'Sad');
+      expect(written()).toEqual(lockedSnapshot());
+      expect(mockStore[WIDGET_CHECKIN_KEY]).toBeUndefined();
+    });
+
+    it('the latch survives an app restart', async () => {
+      await service.forget();
+      const afterRestart = new (WidgetService as unknown as { new (): WidgetService })();
+      await afterRestart.refresh();
+      expect(written()).toEqual(lockedSnapshot());
+    });
+
+    it('a new session lifts it and the widget shows the day again', async () => {
+      await service.forget();
+      await service.resume();
+      expect(stateAt(TODAY, 13)).toMatchObject({ kind: 'journey' });
+    });
   });
 
   it('nothing throws', async () => {
@@ -398,6 +438,7 @@ describe('WidgetService', () => {
     await expect(service.onJourneyDayCompleted('path_trusting_the_results')).resolves.toBeUndefined();
     await expect(service.setTimings([])).resolves.toBeUndefined();
     await expect(service.forget()).resolves.toBeUndefined();
+    await expect(service.resume()).resolves.toBeUndefined();
     await expect(service.getTodaysCheckIn()).resolves.toBeNull();
     await expect(service.getRunningJourney()).resolves.toBeNull();
   });
