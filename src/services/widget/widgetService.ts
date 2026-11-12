@@ -80,7 +80,19 @@ export class WidgetService {
     return WidgetService.instance;
   }
 
-  private constructor() {}
+  private constructor() {
+    // Pro gained or lost after the first load (purchase, restore, an account
+    // change): switch between the locked state and the user's day. Guarded
+    // because getInstance() is reached from fire-and-forget call sites and
+    // must never throw there.
+    try {
+      SubscriptionService.getInstance().onPremiumChange(() => {
+        void this.refresh();
+      });
+    } catch (error) {
+      logServiceError(SERVICE, 'subscribe', asError(error));
+    }
+  }
 
   /** Runs `task` after every previously queued task has settled. Never rejects. */
   private enqueue(step: string, task: () => Promise<void>): Promise<void> {

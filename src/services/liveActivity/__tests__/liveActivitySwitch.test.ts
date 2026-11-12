@@ -33,6 +33,13 @@ jest.mock('../../subscriptionService', () => ({
   SubscriptionService: { getInstance: () => ({ isPremium: () => mockIsPremium() }) },
 }));
 
+const mockWidgetRefresh = jest.fn(async () => {
+  order.push('widget');
+});
+jest.mock('../../widget/widgetService', () => ({
+  WidgetService: { getInstance: () => ({ refresh: () => mockWidgetRefresh() }) },
+}));
+
 const mockLoadTimings = jest.fn();
 jest.mock('../../schedulingTimings', () => ({
   loadSchedulingTimings: (...a: unknown[]) => mockLoadTimings(...a),
@@ -65,7 +72,8 @@ describe('turnOnLiveActivity', () => {
   it('saves the switch first, then syncs a full week in the given clock format', async () => {
     await turnOnLiveActivity('12h');
 
-    expect(order).toEqual(['setEnabled', 'sync']);
+    // The widget is refreshed last, so it sees the card switched on.
+    expect(order).toEqual(['setEnabled', 'sync', 'widget']);
     expect(mockService.setEnabled).toHaveBeenCalledWith(true);
     const [weekly, format] = mockService.sync.mock.calls[0] as unknown as [unknown[], string];
     expect(weekly).toHaveLength(7);
@@ -80,6 +88,8 @@ describe('turnOnLiveActivity', () => {
     expect(mockService.setEnabled).toHaveBeenCalledWith(true);
     expect(mockService.sync).not.toHaveBeenCalled();
     expect(mockLog).toHaveBeenCalled();
+    // The switch is still on, so the widget must still hand the verse to the island.
+    expect(mockWidgetRefresh).toHaveBeenCalledTimes(1);
   });
 });
 

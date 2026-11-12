@@ -10,6 +10,7 @@ import { loadSchedulingTimings } from '../schedulingTimings';
 import { SubscriptionService } from '../subscriptionService';
 import { toWeeklyTimings } from '../../utils/weeklyTimings';
 import { LIVE_ACTIVITY_INVITE_KEY, LiveActivityService } from './liveActivityService';
+import { WidgetService } from '../widget/widgetService';
 
 const SERVICE = 'liveActivitySwitch';
 
@@ -30,6 +31,8 @@ export async function turnOnLiveActivity(timeFormat: '12h' | '24h'): Promise<voi
   } catch (error) {
     logServiceError(SERVICE, 'turnOn', error instanceof Error ? error : new Error(String(error)));
   }
+  // With the card on, the verse moves from the widget to the island.
+  await WidgetService.getInstance().refresh();
 }
 
 /** Pro, supported device, switch off, and the user has not answered before. */

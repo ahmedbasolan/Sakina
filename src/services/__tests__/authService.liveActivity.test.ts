@@ -51,6 +51,13 @@ jest.mock('../liveActivity/liveActivityService', () => ({
   LiveActivityService: { getInstance: () => ({ setEnabled: (v: boolean) => mockSetEnabled(v) }) },
 }));
 
+// The Home Screen widget holds the account's check-in and Journey (App Group +
+// AsyncStorage); it must be cleared with the card.
+const mockWidgetForget = jest.fn();
+jest.mock('../widget/widgetService', () => ({
+  WidgetService: { getInstance: () => ({ forget: () => mockWidgetForget() }) },
+}));
+
 jest.mock('../errorLoggingService', () => ({ logServiceError: jest.fn() }));
 
 import { AuthService, ACCOUNT_DELETED_BUT_LOCAL_WIPE_FAILED } from '../authService';
@@ -75,6 +82,33 @@ beforeEach(() => {
   mockSetEnabled.mockImplementation(async (value: boolean) => {
     calls.push(`setEnabled(${value})`);
     mockStore['@live_activity_enabled'] = value ? 'true' : 'false';
+  });
+  mockWidgetForget.mockResolvedValue(undefined);
+});
+
+describe('the Home Screen widget', () => {
+  it('is cleared on sign-out', async () => {
+    await auth.signOut();
+    expect(mockWidgetForget).toHaveBeenCalledTimes(1);
+  });
+
+  it('is cleared on account deletion', async () => {
+    await auth.deleteAccount();
+    expect(mockWidgetForget).toHaveBeenCalledTimes(1);
+  });
+
+  it('a widget cleanup that rejects does not stop the sign-out or the card cleanup', async () => {
+    mockWidgetForget.mockRejectedValue(new Error('app group gone'));
+    await expect(auth.signOut()).resolves.toBeUndefined();
+    expect(mockSignOut).toHaveBeenCalledTimes(1);
+    expect(mockSetEnabled).toHaveBeenCalledWith(false);
+    expectOptInReset();
+  });
+
+  it('is not cleared when the server delete failed', async () => {
+    mockInvoke.mockResolvedValue({ error: { message: 'nope' } });
+    await expect(auth.deleteAccount()).rejects.toThrow();
+    expect(mockWidgetForget).not.toHaveBeenCalled();
   });
 });
 

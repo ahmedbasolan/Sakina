@@ -24,6 +24,7 @@ import Icon from '../components/Icon';
 import { SubscriptionService } from '../services/subscriptionService';
 import { LiveActivityService } from '../services/liveActivity/liveActivityService';
 import { turnOnLiveActivity, markLiveActivityInviteSeen } from '../services/liveActivity/liveActivitySwitch';
+import { WidgetService } from '../services/widget/widgetService';
 import { useSession } from '../context/AppContext';
 import { SupabaseDataService } from '../services/supabaseDataService';
 import { PreferencesService } from '../services/preferencesService';
@@ -266,6 +267,8 @@ export default function SettingsScreen() {
       await turnOnLiveActivity(timeFormat);
     } else {
       await service.setEnabled(false);
+      // With the card off, the widget takes the verse back.
+      void WidgetService.getInstance().refresh();
     }
     // Show what was actually saved, not what was tapped.
     setLiveActivityOn(await service.getEnabled());

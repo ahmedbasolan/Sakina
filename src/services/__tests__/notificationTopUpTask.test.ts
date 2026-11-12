@@ -59,6 +59,11 @@ jest.mock('../liveActivity/liveActivityService', () => {
   };
 });
 
+jest.mock('../widget/widgetService', () => {
+  const instance = { setTimings: jest.fn().mockResolvedValue(undefined) };
+  return { __esModule: true, WidgetService: { getInstance: () => instance }, __instance: instance };
+});
+
 import * as TaskManager from 'expo-task-manager';
 import * as BackgroundTask from 'expo-background-task';
 import * as Notifications from 'expo-notifications';
@@ -77,6 +82,7 @@ const mockNotificationInstance = (jest.requireMock('../notificationService') as 
 const mockPrayerInstance = (jest.requireMock('../prayerTimesService') as any).__instance;
 const mockLiveActivityInstance = (jest.requireMock('../liveActivity/liveActivityService') as any)
   .__instance;
+const mockWidgetInstance = (jest.requireMock('../widget/widgetService') as any).__instance;
 
 // defineTask ran once, at import time — capture before beforeEach clears calls.
 const defineTaskCall = mockDefineTask.mock.calls[0];
@@ -216,6 +222,20 @@ describe('live activity top-up', () => {
     mockGetPermissions.mockResolvedValue({ status: 'denied' });
     await topUpScheduledNotifications();
     expect(mockLiveActivityInstance.sync).not.toHaveBeenCalled();
+    expect(mockWidgetInstance.setTimings).not.toHaveBeenCalled();
+  });
+});
+
+describe('home screen widget top-up', () => {
+  it('hands the widget the same week the card got', async () => {
+    mockGetUserLocation.mockResolvedValue({
+      city: 'Dubai', country: 'AE', latitude: 25.2, longitude: 55.3,
+    });
+
+    await topUpScheduledNotifications();
+
+    expect(mockWidgetInstance.setTimings).toHaveBeenCalledTimes(1);
+    expect(mockWidgetInstance.setTimings).toHaveBeenCalledWith(WEEKLY_TIMINGS);
   });
 });
 

@@ -44,6 +44,11 @@ const mockSub = {
   onLoaded: jest.fn((cb: () => void) => {
     mockSub.loaded.push(cb);
   }),
+  premium: [] as Array<(isPremium: boolean) => void>,
+  onPremiumChange: jest.fn((cb: (isPremium: boolean) => void) => {
+    mockSub.premium.push(cb);
+    return () => {};
+  }),
 };
 jest.mock('../../subscriptionService', () => ({
   SubscriptionService: { getInstance: () => mockSub },
@@ -155,6 +160,7 @@ beforeEach(() => {
   mockSub.isPremium.mockReturnValue(true);
   mockSub.loaded = [];
   mockSub.onLoaded.mockClear();
+  mockSub.premium = [];
   mockCard.isAvailable.mockReturnValue(true);
   mockCard.getEnabled.mockResolvedValue(true);
   mockPaths.lastOpened = null;
@@ -185,6 +191,19 @@ describe('WidgetService', () => {
     mockSub.loaded.forEach((cb) => cb());
     await flush();
     expect(mockNative.writeWidgetSnapshot).toHaveBeenCalledTimes(1);
+  });
+
+  it('rewrites when Pro is gained or lost', async () => {
+    expect(mockSub.premium).toHaveLength(1);
+    mockSub.isPremium.mockReturnValue(false);
+    mockSub.premium[0](false);
+    await flush();
+    expect(written()).toEqual(lockedSnapshot());
+
+    mockSub.isPremium.mockReturnValue(true);
+    mockSub.premium[0](true);
+    await flush();
+    expect(stateAt(TODAY, 9).kind).toBe('checkin');
   });
 
   it('not Pro writes the locked snapshot', async () => {

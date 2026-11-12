@@ -29,6 +29,10 @@ export class SubscriptionService {
   private isLoaded: boolean = false;
   /** One-shot callbacks waiting for the first load (see `onLoaded`). */
   private loadedListeners: Array<() => void> = [];
+  /** Standing callbacks for Pro gained or lost (see `onPremiumChange`). */
+  private premiumListeners: Array<(isPremium: boolean) => void> = [];
+  /** `isPremium()` as last reported to them; null until the first load. */
+  private lastReportedPremium: boolean | null = null;
   private supabaseData = SupabaseDataService.getInstance();
 
   static getInstance(): SubscriptionService {
@@ -93,6 +97,40 @@ export class SubscriptionService {
         // A listener's failure is its own; the others still run.
       }
     }
+    this.notifyIfPremiumChanged();
+  }
+
+  /**
+   * Calls the `onPremiumChange` listeners when `isPremium()` differs from what
+   * they were last told. The first load only records the baseline: whoever
+   * needs the initial value uses `onLoaded`.
+   */
+  private notifyIfPremiumChanged(): void {
+    if (!this.isLoaded) return;
+    const now = this.isPremium();
+    const before = this.lastReportedPremium;
+    this.lastReportedPremium = now;
+    if (before === null || before === now) return;
+    for (const listener of [...this.premiumListeners]) {
+      try {
+        listener(now);
+      } catch {
+        // A listener's failure is its own; the others still run.
+      }
+    }
+  }
+
+  /**
+   * Calls `listener(isPremium)` every time Pro is gained or lost after the
+   * first load (purchase, restore, resync on an account change, reset). Not
+   * called for the first load itself, nor when a resync leaves Pro as it was.
+   * Returns an unsubscribe.
+   */
+  onPremiumChange(listener: (isPremium: boolean) => void): () => void {
+    this.premiumListeners.push(listener);
+    return () => {
+      this.premiumListeners = this.premiumListeners.filter((l) => l !== listener);
+    };
   }
 
   /**
@@ -193,6 +231,7 @@ export class SubscriptionService {
     } catch (error) {
       console.error('Error resetting to free tier:', error);
     }
+    this.notifyIfPremiumChanged();
   }
 
   // ─── Private helpers ──────────────────────────────────────────────────────
@@ -283,6 +322,9 @@ export class SubscriptionService {
         );
       }
     }).catch(() => {});
+
+    // Purchase and restore land here without passing through markLoaded.
+    this.notifyIfPremiumChanged();
 
     // Subscription state is intentionally NOT synced to Supabase here.
     // RevenueCat is the authoritative source; the Supabase trigger correctly

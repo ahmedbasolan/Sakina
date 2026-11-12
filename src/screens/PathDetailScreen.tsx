@@ -16,6 +16,7 @@ import { Colors, Typography, Spacing } from '../theme/DesignSystem';
 
 import { UserPathProgress, PathStep } from '../types';
 import { PathsService } from '../services/pathsService';
+import { WidgetService } from '../services/widget/widgetService';
 import { LeaderChoiceSheet } from '../components/LeaderChoiceSheet';
 import { LeaderChoice } from '../utils/leaderChoice';
 import { logServiceError } from '../services/errorLoggingService';
@@ -168,6 +169,8 @@ export const PathDetailScreen: React.FC = () => {
     // happened to be started most recently. Awaited before navigating so the
     // card is already correct if they immediately back out to Home.
     await pathsService.setLastOpenedPath(path.id);
+    // The Home Screen widget follows the Journey the user is working through.
+    void WidgetService.getInstance().refresh();
 
     const [experience, hadithContent] = await Promise.all([
       rotationEngine.getGuidanceForStep(step.contentId, step.angleId),

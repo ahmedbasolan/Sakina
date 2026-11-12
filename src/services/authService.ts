@@ -8,6 +8,7 @@ import { Session } from '@supabase/supabase-js';
 import { clearAllLocalUserData } from '../database/operations';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { LiveActivityService, LIVE_ACTIVITY_INVITE_KEY } from './liveActivity/liveActivityService';
+import { WidgetService } from './widget/widgetService';
 import { logServiceError } from './errorLoggingService';
 
 /**
@@ -33,6 +34,8 @@ async function resetLiveActivity(): Promise<void> {
   const results = await Promise.allSettled([
     LiveActivityService.getInstance().setEnabled(false),
     AsyncStorage.removeItem(LIVE_ACTIVITY_INVITE_KEY),
+    // The Home Screen widget holds this account's check-in and Journey.
+    WidgetService.getInstance().forget(),
   ]);
   for (const result of results) {
     if (result.status === 'rejected') {

@@ -41,6 +41,7 @@ import { fetchWindowGuidance } from '../services/guidanceWindowFetch';
 import PrayerTimesService, { formatPrayerTime } from '../services/prayerTimesService';
 import { getUserLocation } from '../services/locationStorage';
 import { LiveActivityService } from '../services/liveActivity/liveActivityService';
+import { WidgetService } from '../services/widget/widgetService';
 
 const GuidanceScreen: React.FC = () => {
   const route = useRoute<any>();
@@ -135,6 +136,9 @@ const GuidanceScreen: React.FC = () => {
   const shownContent = experience?.content;
   useEffect(() => {
     if (isMoodCheckIn && shownContent) LiveActivityService.getInstance().onVerseShown(shownContent);
+    // The Home Screen widget keeps the whole experience (on the device only),
+    // so its evening question and a tap can bring back this same guidance.
+    if (isMoodCheckIn && shownContent && experience) WidgetService.getInstance().onCheckIn(experience, mood);
   }, [shownContent?.id, isMoodCheckIn]);
 
   // Safety net: this screen is meant to always receive `experience` from its

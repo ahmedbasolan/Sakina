@@ -28,6 +28,7 @@ import { FreemiumService } from '../services/freemiumService';
 import { LiveActivityService } from '../services/liveActivity/liveActivityService';
 import { useSession } from '../context/AppContext';
 import { toWeeklyTimings } from '../utils/weeklyTimings';
+import { WidgetService } from '../services/widget/widgetService';
 import { loadSeenStreakMilestones, saveSeenStreakMilestones } from '../services/streakMilestoneStore';
 import { STREAK_MILESTONES } from '../constants';
 
@@ -172,6 +173,8 @@ export function useHomeData({ setStreakCount }: UseHomeDataOptions) {
         toWeeklyTimings(schedulingTimings),
         timeFormatRef.current,
       );
+      // The Home Screen widget switches at the same prayer times. Never throws.
+      void WidgetService.getInstance().setTimings(toWeeklyTimings(schedulingTimings));
     } catch (error) {
       logServiceError('useHomeData', 'loadPrayerData', error instanceof Error ? error : new Error(String(error)));
     } finally {
@@ -374,6 +377,8 @@ export function useHomeData({ setStreakCount }: UseHomeDataOptions) {
       loadActivePath();
       checkTodayMood();
       getDailyVerse().then(setDailyVerse).catch(() => {});
+      // Rebuild the widget's timeline from today (a new day, a lapsed check-in).
+      void WidgetService.getInstance().refresh();
     });
     const tick = setInterval(() => { if (mounted) setNow(Date.now()); }, 60_000);
     return () => {

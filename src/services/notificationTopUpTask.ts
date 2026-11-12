@@ -22,6 +22,7 @@ import NotificationService from './notificationService';
 import { logServiceError } from './errorLoggingService';
 import { loadSchedulingTimings, readTimeFormat } from './schedulingTimings';
 import { LiveActivityService } from './liveActivity/liveActivityService';
+import { WidgetService } from './widget/widgetService';
 import { toWeeklyTimings } from '../utils/weeklyTimings';
 
 export const NOTIFICATION_TOPUP_TASK = 'sakina-notification-topup';
@@ -68,6 +69,9 @@ export async function topUpScheduledNotifications(): Promise<boolean> {
   // so the clock format comes from storage. The service never throws and
   // no-ops unless the switch is on and the user is Pro.
   await LiveActivityService.getInstance().sync(toWeeklyTimings(timings), await readTimeFormat());
+  // The Home Screen widget's timeline runs 30 days, but only its first 7 use
+  // real prayer times; refresh them for users who have not opened the app.
+  await WidgetService.getInstance().setTimings(toWeeklyTimings(timings));
   return true;
 }
 
