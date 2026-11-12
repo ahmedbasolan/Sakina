@@ -196,7 +196,9 @@ sensitive.**
 
 Sensitive: `path_hope_after_crisis`, `path_tawbah_intensive`,
 `path_marriage_seeker`, `path_death_awareness`, and (not yet released)
-`path_addiction_recovery`, `path_parent_healing`, `path_wrong_marriage`,
+`path_addiction_recovery`, `path_breaking_free_90` (found while building: the
+list Ahmed accepted had 22 Journeys and missed this 23rd, a pornography
+recovery protocol), `path_parent_healing`, `path_wrong_marriage`,
 `path_forced_marriage`, `path_haram_relationships_exit`,
 `path_leaving_haram_job`, `path_depression_iman`, `path_grief_loss`.
 
