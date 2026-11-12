@@ -102,7 +102,7 @@ public class SakinaLiveActivityModule: Module {
       WidgetCenter.shared.reloadTimelines(ofKind: pathWidgetKind)
     }
 
-    Function("clearWidgetSnapshot") {
+    Function("clearWidgetSnapshot") { () -> Void in
       SharedStore.clearWidgetSnapshot()
       WidgetCenter.shared.reloadTimelines(ofKind: pathWidgetKind)
     }

@@ -34,6 +34,14 @@ describe('home screen widget native parity', () => {
     expect(read(path.join(MODULE_DIR, 'ios/SakinaLiveActivityModule.swift'))).toContain('"SakinaPathWidget"');
   });
 
+  // Swift infers a multi-statement closure's type poorly; every other
+  // multi-statement Function in this module declares its signature, and the
+  // Swift is never compiled until an EAS build.
+  it.each(['writeWidgetSnapshot', 'clearWidgetSnapshot'])('declares the closure signature of Function("%s")', (name) => {
+    const module = read(path.join(MODULE_DIR, 'ios/SakinaLiveActivityModule.swift'));
+    expect(module).toMatch(new RegExp(`Function\\("${name}"\\) \\{ \\([^)]*\\) -> Void in`));
+  });
+
   it('is part of the extension bundle', () => {
     expect(read(path.join(TARGET_DIR, 'SakinaLiveActivity.swift'))).toMatch(/SakinaPathWidget\(\)/);
   });
