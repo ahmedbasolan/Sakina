@@ -38,6 +38,8 @@ import WidgetKit
 struct SakinaLiveActivityBundle: WidgetBundle {
   var body: some Widget {
     SakinaPrayerLiveActivity()
+    // The square Home Screen widget (SakinaPathWidget.swift).
+    SakinaPathWidget()
   }
 }
 
