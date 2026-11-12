@@ -53,7 +53,7 @@ const GuidanceScreen: React.FC = () => {
   }, []));
   const freemium = FreemiumService.getInstance();
 
-  const { experience, mood, islamicTerm, kahfQueue } = route.params;
+  const { experience, mood, islamicTerm, kahfQueue, startLayer } = route.params;
   const hasKahfQueue = !!(kahfQueue && kahfQueue.length > 0);
 
   // Returns whether a new experience was actually delivered, so the caller
@@ -207,10 +207,16 @@ const GuidanceScreen: React.FC = () => {
     disabledRef: isReflectionInputFocusedRef,
   });
 
-  // Reset to verse layer whenever a new experience loads
+  // Reset to verse layer whenever a new experience loads — except once, when a
+  // Home Screen widget tap asked for the reflection (`startLayer: 'context'`).
+  // The context layer, when there is one, always sits right after the verse.
+  // The param is cleared so "next verse" starts on the verse again.
   useEffect(() => {
-    setCurrentLayer(0);
+    const wantsContext =
+      startLayer === 'context' && !!(experience?.content?.whyThis || experience?.angle?.angle);
+    setCurrentLayer(wantsContext ? 1 : 0);
     scrollY.setValue(0);
+    if (startLayer) navigation.setParams({ startLayer: undefined });
   }, [experience?.content?.id]);
 
   const hasContext = !!(experience?.content?.whyThis || experience?.angle?.angle);

@@ -32,7 +32,18 @@ import type { RootStackParamList } from './types';
 
 export const DEEP_LINK_PREFIX = 'sakina://';
 
-const DEEP_LINK_PATHS: ReadonlySet<string> = new Set(['journeys', 'prayer-times']);
+const DEEP_LINK_PATHS: ReadonlySet<string> = new Set([
+  'journeys',
+  'prayer-times',
+  // The square Home Screen widget's taps (src/services/widget/widgetState.ts
+  // WIDGET_URLS). The three `widget/…` paths open WidgetLinkScreen, which
+  // looks up what a URL cannot carry and replaces itself with the real screen.
+  'check-in',
+  'pro',
+  'widget/journey',
+  'widget/reflect',
+  'widget/verse',
+]);
 
 /**
  * The path of a `sakina://` URL with slashes trimmed and any query or
@@ -64,6 +75,10 @@ export const linking: LinkingOptions<RootStackParamList> = {
       // PrayerTimes sits on the root stack (not in a tab), so it is a sibling
       // of Main; like Main it is only defined once there is a user or guest.
       PrayerTimes: 'prayer-times',
+      // The Home Screen widget. Root-stack screens, like PrayerTimes.
+      MoodSelection: 'check-in',
+      Support: 'pro',
+      WidgetLink: 'widget/:target',
     },
   },
 };

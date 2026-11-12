@@ -56,6 +56,7 @@ jest.mock('../../screens/MoodSelectionScreen', () => mockStub('MoodSelection'));
 jest.mock('../../screens/LibraryScreen', () => mockStub('Library'));
 jest.mock('../../screens/SurahReaderScreen', () => mockStub('SurahReader'));
 jest.mock('../../screens/SupportSakinaScreen', () => mockStub('Support'));
+jest.mock('../../screens/WidgetLinkScreen', () => mockStub('WidgetLink'));
 
 // Imported after the mocks so it binds to the stubs.
 import MainNavigator from '../MainNavigator';
@@ -122,6 +123,26 @@ describe('sakina://journeys and onboarding', () => {
     mockAuth.isGuest = true;
     renderApp('sakina://prayer-times');
     expect(await screen.findByText('screen:PrayerTimes')).toBeTruthy();
+  });
+
+  // The Home Screen widget's taps.
+  it.each([
+    ['sakina://check-in', 'MoodSelection'],
+    ['sakina://pro', 'Support'],
+    ['sakina://widget/journey', 'WidgetLink'],
+    ['sakina://widget/reflect', 'WidgetLink'],
+  ])('a returning guest opening %s goes straight to %s', async (url, name) => {
+    mockAuth.isGuest = true;
+    renderApp(url);
+    expect(await screen.findByText(`screen:${name}`)).toBeTruthy();
+  });
+
+  it('a widget tap on a fresh install sees Onboarding first, then lands where it pointed', async () => {
+    const view = renderApp('sakina://widget/journey');
+    await screen.findByText('screen:Onboarding');
+    expect(screen.queryByText('screen:WidgetLink')).toBeNull();
+    finishOnboarding(() => view.rerender(app('sakina://widget/journey')));
+    expect(await screen.findByText('screen:WidgetLink')).toBeTruthy();
   });
 
   it('an auth redirect on the shared scheme does not navigate a returning guest', async () => {
