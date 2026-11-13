@@ -40,6 +40,8 @@ import { setCachedGuidance } from '../services/windowGuidanceCache';
 import { fetchWindowGuidance } from '../services/guidanceWindowFetch';
 import PrayerTimesService, { formatPrayerTime } from '../services/prayerTimesService';
 import { getUserLocation } from '../services/locationStorage';
+import { LiveActivityService } from '../services/liveActivity/liveActivityService';
+import { WidgetService } from '../services/widget/widgetService';
 
 const GuidanceScreen: React.FC = () => {
   const route = useRoute<any>();
@@ -51,7 +53,7 @@ const GuidanceScreen: React.FC = () => {
   }, []));
   const freemium = FreemiumService.getInstance();
 
-  const { experience, mood, islamicTerm, kahfQueue } = route.params;
+  const { experience, mood, islamicTerm, kahfQueue, startLayer } = route.params;
   const hasKahfQueue = !!(kahfQueue && kahfQueue.length > 0);
 
   // Returns whether a new experience was actually delivered, so the caller
@@ -120,6 +122,25 @@ const GuidanceScreen: React.FC = () => {
     refreshSelectedTheme();
   }, [refreshSelectedTheme]);
 
+  // Hand the shown verse to the Live Activity card (a mood-picked verse
+  // replaces the daily one until that day ends). Fire-and-forget: the service
+  // never throws and itself ignores non-Quran content, non-Pro users and a
+  // switched-off card. Keyed on the content id so a re-render with the same
+  // verse (e.g. setParams after saving) does not write again.
+  //
+  // Mood check-ins only (the spec's "latest mood check-in"): Friday's Surah
+  // Al-Kahf reading arrives with a `kahfQueue` (empty once on its last verse,
+  // and kept on the route when the queue falls through to rotation) and is not
+  // a check-in, so nothing it shows reaches the card.
+  const isMoodCheckIn = kahfQueue === undefined;
+  const shownContent = experience?.content;
+  useEffect(() => {
+    if (isMoodCheckIn && shownContent) LiveActivityService.getInstance().onVerseShown(shownContent);
+    // The Home Screen widget keeps the whole experience (on the device only),
+    // so its evening question and a tap can bring back this same guidance.
+    if (isMoodCheckIn && shownContent && experience) WidgetService.getInstance().onCheckIn(experience, mood);
+  }, [shownContent?.id, isMoodCheckIn]);
+
   // Safety net: this screen is meant to always receive `experience` from its
   // caller (Home and MoodSelection both prefetch before navigating). If it
   // ever doesn't — a failed prefetch, or a future caller that forgets to —
@@ -186,10 +207,16 @@ const GuidanceScreen: React.FC = () => {
     disabledRef: isReflectionInputFocusedRef,
   });
 
-  // Reset to verse layer whenever a new experience loads
+  // Reset to verse layer whenever a new experience loads — except once, when a
+  // Home Screen widget tap asked for the reflection (`startLayer: 'context'`).
+  // The context layer, when there is one, always sits right after the verse.
+  // The param is cleared so "next verse" starts on the verse again.
   useEffect(() => {
-    setCurrentLayer(0);
+    const wantsContext =
+      startLayer === 'context' && !!(experience?.content?.whyThis || experience?.angle?.angle);
+    setCurrentLayer(wantsContext ? 1 : 0);
     scrollY.setValue(0);
+    if (startLayer) navigation.setParams({ startLayer: undefined });
   }, [experience?.content?.id]);
 
   const hasContext = !!(experience?.content?.whyThis || experience?.angle?.angle);

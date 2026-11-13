@@ -396,10 +396,17 @@ function dateHash(dateKey: string): number {
  * Get today's date key in YYYY-MM-DD format (local timezone).
  */
 function todayKey(): string {
-  const now = new Date();
-  const y = now.getFullYear();
-  const m = String(now.getMonth() + 1).padStart(2, '0');
-  const d = String(now.getDate()).padStart(2, '0');
+  return formatDateKey(new Date());
+}
+
+/**
+ * Format a Date as YYYY-MM-DD in local time — the one date-key format every
+ * verse surface (and the Live Activity snapshot) shares.
+ */
+export function formatDateKey(date: Date): string {
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, '0');
+  const d = String(date.getDate()).padStart(2, '0');
   return `${y}-${m}-${d}`;
 }
 
@@ -520,9 +527,17 @@ export async function getDailyVerse(): Promise<DailyVerse> {
  * Uses only the date hash (no history check).
  */
 export function getDailyVerseSync(): DailyVerse {
-  const today = todayKey();
-  const index = dateHash(today) % POOL_SIZE;
-  return { ...VERSE_POOL[index], dateKey: today };
+  return getDailyVerseForDateSync(todayKey());
+}
+
+/**
+ * The date-hash verse for any day (no history check) — what getDailyVerseSync
+ * returns when `dateKey` is today. Lets the Live Activity snapshot pre-compute
+ * the coming week with the same selection Home uses.
+ */
+export function getDailyVerseForDateSync(dateKey: string): DailyVerse {
+  const index = dateHash(dateKey) % POOL_SIZE;
+  return { ...VERSE_POOL[index], dateKey };
 }
 
 /**

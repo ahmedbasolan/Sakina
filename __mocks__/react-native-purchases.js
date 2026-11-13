@@ -18,6 +18,7 @@ const Purchases = {
     entitlements: { active: {} },
   })),
   logIn: jest.fn(() => Promise.resolve({ customerInfo: {}, created: false })),
+  getAppUserID: jest.fn(() => Promise.resolve('$RCAnonymousID:test-user')),
   logOut: jest.fn(() => Promise.resolve({ entitlements: { active: {} } })),
   checkTrialOrIntroductoryPriceEligibility: jest.fn(() => Promise.resolve({})),
 };

@@ -1,0 +1,86 @@
+// The verse on the card. The complete ayah or no ayah text at all
+// (CLAUDE.md "Quoting Quran Text", spec "Verse rendering rule"):
+//
+//   1. Arabic + English + reference
+//   2. English + reference
+//   3. Reference only, as a pointer — no quotation, so no fragment. It
+//      promises no action: the card's only tap target opens Prayer Times
+//      (ruling R9), so the pointer offers no way to read the verse.
+//
+// `ViewThatFits` takes the first tier whose full height fits `height`. Every
+// Text is `.fixedSize(horizontal: false, vertical: true)` so its measured
+// height is the height of ALL its lines, and there is no `lineLimit` anywhere:
+// a tier that does not fit is skipped, never clipped. The container is a
+// fixed height because `ViewThatFits` only chooses against a bounded proposal.
+//
+// Apple's HIG suggests a Lock Screen Live Activity shrink to the height its
+// content needs. Deliberately not followed here: a `maxHeight`-only frame can
+// hand ViewThatFits an unspecified height, and then it takes tier 1 whatever its
+// size — the system would cut the card at 160 pt, i.e. the end of the ayah. A
+// short verse leaving some empty space is the price of never clipping one.
+
+import SwiftUI
+
+struct VerseView: View {
+  let verse: CardVerse?
+  /// Vertical budget for the verse block, in points.
+  let height: CGFloat
+
+  var body: some View {
+    if let verse = verse {
+      ViewThatFits(in: .vertical) {
+        VStack(alignment: .leading, spacing: 4) {
+          arabicText(verse.arabic)
+          englishText(verse.english)
+          refText(verse.ref)
+        }
+        VStack(alignment: .leading, spacing: 4) {
+          englishText(verse.english)
+          refText(verse.ref)
+        }
+        pointerText(verse.ref)
+      }
+      .frame(height: height, alignment: .topLeading)
+      .frame(maxWidth: .infinity, alignment: .leading)
+      // Every font below is fixed-size already; the clamp keeps the budget
+      // provable if one is ever switched to a scaling style.
+      .dynamicTypeSize(...DynamicTypeSize.large)
+    }
+  }
+
+  private func arabicText(_ text: String) -> some View {
+    Text(text)
+      .font(CardFont.arabic(16))
+      .foregroundColor(Palette.cream)
+      .multilineTextAlignment(.trailing)
+      .fixedSize(horizontal: false, vertical: true)
+      .frame(maxWidth: .infinity, alignment: .trailing)
+  }
+
+  // Set like the app's Verse of the Day (src/components/home/VerseOfTheDay.tsx):
+  // the English in the serif at ~85% cream, the reference "— Al-Baqarah 2:183"
+  // in serif italic at 70% cream. Not the iPhone's system font: that made the
+  // card read as a notification rather than as Sakina (design review 2026-11-06).
+
+  private func englishText(_ text: String) -> some View {
+    Text(text)
+      .font(CardFont.title(13))
+      .foregroundColor(Palette.creamVerse)
+      .multilineTextAlignment(.leading)
+      .fixedSize(horizontal: false, vertical: true)
+  }
+
+  private func refText(_ ref: String) -> some View {
+    Text(verbatim: "— \(ref)")
+      .font(CardFont.titleItalic(12))
+      .foregroundColor(Palette.creamSecondary)
+      .fixedSize(horizontal: false, vertical: true)
+  }
+
+  private func pointerText(_ ref: String) -> some View {
+    Text(verbatim: "Your verse · \(ref)")
+      .font(CardFont.titleItalic(13))
+      .foregroundColor(Palette.creamSecondary)
+      .fixedSize(horizontal: false, vertical: true)
+  }
+}

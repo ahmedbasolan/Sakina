@@ -18,8 +18,9 @@ import { PreferencesService } from '../services/preferencesService';
 import { prefetchAllSurahs } from '../services/quranService';
 import { Mood, GuidanceExperience } from '../types';
 import { TimeFormat } from '../services/prayerTimesService';
+import { STORAGE_KEYS } from '../constants';
 
-const TIME_FORMAT_KEY = '@prayer_time_format';
+const TIME_FORMAT_KEY = STORAGE_KEYS.timeFormat;
 
 /* ─── Services Context (stable — never causes re-renders on mood change) ── */
 
