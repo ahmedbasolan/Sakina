@@ -27,7 +27,6 @@ struct PathWidgetState: Codable, Hashable {
   let arabic: String?
   let english: String?
   let ref: String?
-  let question: String?
   let fallback: String?
   let url: String?
 
@@ -43,7 +42,6 @@ struct PathWidgetState: Codable, Hashable {
     arabic: String? = nil,
     english: String? = nil,
     ref: String? = nil,
-    question: String? = nil,
     fallback: String? = nil,
     url: String? = nil
   ) {
@@ -58,7 +56,6 @@ struct PathWidgetState: Codable, Hashable {
     self.arabic = arabic
     self.english = english
     self.ref = ref
-    self.question = question
     self.fallback = fallback
     self.url = url
   }

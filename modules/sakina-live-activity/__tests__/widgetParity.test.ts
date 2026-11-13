@@ -21,7 +21,7 @@ const read = (p: string) => fs.readFileSync(p, 'utf8');
 
 const NEW_FILES = ['WidgetSnapshotStore.swift', 'SakinaPathWidget.swift', 'PathWidgetView.swift'];
 const KINDS = ['locked', 'checkin', 'gentle', 'journey', 'verse', 'reflection'];
-const FIELDS = ['kind', 'kicker', 'text', 'sub', 'dayLabel', 'title', 'day', 'of', 'arabic', 'english', 'ref', 'question', 'fallback', 'url'];
+const FIELDS = ['kind', 'kicker', 'text', 'sub', 'dayLabel', 'title', 'day', 'of', 'arabic', 'english', 'ref', 'fallback', 'url'];
 
 describe('home screen widget native parity', () => {
   it('reads the snapshot under the key the app writes', () => {
@@ -52,6 +52,13 @@ describe('home screen widget native parity', () => {
 
   it.each(FIELDS)('decodes field %s', (field) => {
     expect(read(path.join(TARGET_DIR, 'WidgetSnapshotStore.swift'))).toMatch(new RegExp(`\\blet ${field}: `));
+  });
+
+  // The app never writes the reflection question (it can name the mood); the
+  // widget must not grow a place to draw one.
+  it('has no question field to draw', () => {
+    expect(read(path.join(TARGET_DIR, 'WidgetSnapshotStore.swift'))).not.toMatch(/\blet question\b/);
+    expect(read(path.join(TARGET_DIR, 'PathWidgetView.swift'))).not.toMatch(/state\.question/);
   });
 
   it('falls back to exactly the locked state the app writes', () => {

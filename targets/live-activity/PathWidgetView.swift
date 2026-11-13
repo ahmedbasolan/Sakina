@@ -4,9 +4,9 @@
 // Never clipped, never shortened. Each layout is a ViewThatFits over complete
 // versions of itself, in a frame of the widget's exact content height (a
 // bounded proposal, as VerseView needs): the first version whose full height
-// fits is drawn. The last version of a verse or a question is the app's
-// `fallback` line, which always fits, so a long ayah or question is replaced
-// by an invitation to open it, never cut. Every Text is
+// fits is drawn. The last version of a verse is the app's `fallback` line,
+// which always fits, so a long ayah is replaced by an invitation to open it,
+// never cut. Every Text is
 // `.fixedSize(horizontal: false, vertical: true)` so its measured height is
 // the height of all its lines.
 //
@@ -147,20 +147,13 @@ struct PathWidgetView: View {
     }
   }
 
+  // Always the invitation: the app never sends the question itself, because
+  // many questions name the user's mood and a Home Screen is seen by others.
   private var reflectionLayout: some View {
-    ViewThatFits(in: .vertical) {
-      reflectionVersion { questionText(size: 14) }
-      reflectionVersion { questionText(size: 13) }
-      reflectionVersion { questionText(size: 12) }
-      reflectionVersion { headline(state.fallback ?? "", size: 17) }
-    }
-  }
-
-  private func reflectionVersion<Inner: View>(@ViewBuilder _ inner: () -> Inner) -> some View {
     VStack(alignment: .leading, spacing: 0) {
       kickerText(state.kicker ?? "")
       Spacer(minLength: 6)
-      inner()
+      headline(state.text ?? "", size: 17)
       Spacer(minLength: 6)
       refText(state.ref ?? "")
     }
@@ -180,14 +173,6 @@ struct PathWidgetView: View {
       .font(CardFont.title(size))
       .foregroundColor(Palette.cream)
       .fixedSize(horizontal: false, vertical: true)
-  }
-
-  private func questionText(size: CGFloat) -> some View {
-    Text(verbatim: state.question ?? "")
-      .font(CardFont.title(size))
-      .foregroundColor(Palette.cream)
-      .fixedSize(horizontal: false, vertical: true)
-      .privacySensitive()
   }
 
   private func arabicText(_ text: String) -> some View {

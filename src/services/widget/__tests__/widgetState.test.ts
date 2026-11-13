@@ -86,13 +86,15 @@ describe('widgetStateFor', () => {
     expect(stateFor(off, 'night')).toEqual({ kind: 'gentle', text: 'A quiet moment with Allah before you sleep.' });
   });
 
-  it('reflection carries the question, its source line and the fallback', () => {
+  // Many reflection questions name the mood ("the sadness you are carrying"),
+  // and a Home Screen is seen by others even while unlocked. Ahmed's decision
+  // (2026-11-13): the widget always shows the invitation, never the question.
+  it('reflection is an invitation with its source line, never the question itself', () => {
     expect(stateFor({}, 'evening')).toEqual({
       kind: 'reflection',
       kicker: 'To reflect on tonight',
-      question: 'QUESTION?',
+      text: 'A question is waiting for you.',
       ref: '— on Ad-Duha 93:4',
-      fallback: 'A question is waiting for you.',
       url: 'sakina://widget/reflect',
     });
     expect(stateFor({ journey: null }, 'morning')).toMatchObject({
@@ -181,8 +183,16 @@ describe('widgetStateFor', () => {
     const v = stateFor({ cardOn: false, mood: { ...verse, arabic: long, english: long } }, 'morning');
     expect(v.kind === 'verse' && v.arabic).toBe(long);
     expect(v.kind === 'verse' && v.english).toBe(long);
-    const r = stateFor({ checkIn: { ...checkIn, question: long } }, 'evening');
-    expect(r.kind === 'reflection' && r.question).toBe(long);
+  });
+
+  it('the question itself is never in any state, at any moment', () => {
+    const secret = 'Does the sadness you are carrying know that yet?';
+    for (const cardOn of [true, false]) {
+      for (const moment of MOMENTS) {
+        const s = stateFor({ cardOn, journey: null, checkIn: { ...checkIn, question: secret } }, moment);
+        expect(JSON.stringify(s)).not.toContain('sadness');
+      }
+    }
   });
 
   it('every fixed string is from the copy table and none of them judges', () => {

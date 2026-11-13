@@ -10,10 +10,11 @@
  *
  * Three things here are not style choices:
  *
- * - Verse and question text passes through UNCHANGED. Nothing in this file
- *   trims, slices or normalises it (CLAUDE.md, "Quoting Quran Text"). Whether
- *   it fits the square is the widget's job, and when it does not fit the
- *   widget shows `fallback` instead of a shortened text.
+ * - Verse text passes through UNCHANGED. Nothing in this file trims, slices
+ *   or normalises it (CLAUDE.md, "Quoting Quran Text"). Whether it fits the
+ *   square is the widget's job, and when it does not fit the widget shows
+ *   `fallback` instead of a shortened text. The reflection question never
+ *   reaches the widget at all: it can name the user's mood.
  * - Nothing asks anything of the user after Dhuhr. The check-in question is a
  *   morning state only; an unanswered question left up all day turns into a
  *   reminder that they did not do it.
@@ -64,7 +65,12 @@ export type WidgetState =
   | { kind: 'gentle'; text: string }
   | { kind: 'journey'; kicker: string; dayLabel: string; title: string; day: number; of: number; url: string }
   | { kind: 'verse'; kicker: string; arabic: string; english: string; ref: string; fallback: string; url: string }
-  | { kind: 'reflection'; kicker: string; question: string; ref: string; fallback: string; url: string };
+  /**
+   * Always the invitation, never the question itself: many questions name the
+   * mood ("the sadness you are carrying"), and a Home Screen is seen by others
+   * even while unlocked (Ahmed, 2026-11-13). The question opens with the tap.
+   */
+  | { kind: 'reflection'; kicker: string; text: string; ref: string; url: string };
 
 export interface WidgetInputs {
   pro: boolean;
@@ -137,9 +143,8 @@ function reflectionState(inputs: WidgetInputs, dateKey: string, moment: Moment):
   return {
     kind: 'reflection',
     kicker: night ? WIDGET_COPY.reflectNight : WIDGET_COPY.reflectDay,
-    question: checkIn.question,
+    text: WIDGET_COPY.questionFallback,
     ref: `— on ${checkIn.source}`,
-    fallback: WIDGET_COPY.questionFallback,
     url: WIDGET_URLS.reflect,
   };
 }

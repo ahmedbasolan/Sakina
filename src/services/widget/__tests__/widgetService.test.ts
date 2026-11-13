@@ -224,15 +224,16 @@ describe('WidgetService', () => {
     expect(JSON.parse(mockStore[WIDGET_CHECKIN_KEY])).toEqual({ dateKey: TODAY, mood: 'Sad', experience: exp });
     expect(stateAt(TODAY, 9)).toMatchObject({
       kind: 'reflection',
-      question: 'QUESTION?',
+      text: 'A question is waiting for you.',
       ref: '— on Surah Ad-Duha 93:4',
     });
   });
 
-  it('the mood and the stored experience never reach the App Group', async () => {
-    await service.onCheckIn(experience(), 'Sad');
+  it('the mood, the stored experience and the question never reach the App Group', async () => {
+    await service.onCheckIn(experience({}, { reflection: 'Does the sadness you are carrying know that yet?' }), 'Sad');
     const json = mockNative.writeWidgetSnapshot.mock.calls.at(-1)![0] as string;
-    expect(json).not.toMatch(/"mood"|"experience"|"angle"|q_angle_93_4_sad/);
+    expect(json).not.toMatch(/"mood"|"experience"|"angle"|q_angle_93_4_sad|sadness/);
+    expect(json).toContain('A question is waiting for you.');
   });
 
   it('card off shows the verse, text unchanged', async () => {

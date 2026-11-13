@@ -44,8 +44,16 @@ one product without ever repeating each other.
 - **Never judge, never guilt.** Nothing on the widget may say or imply that the
   user missed, skipped or failed something. (Standing rule since the parked
   "I prayed" idea, 2026-11-06.)
-- **Complete text or none.** A verse or a question is shown whole or replaced
-  by an invitation to open it. Never cut, never ellipsised.
+- **Complete text or none.** A verse is shown whole or replaced by an
+  invitation to open it. Never cut, never ellipsised.
+- **The reflection question never appears on the widget** (2026-11-13). Many
+  questions name the mood ("Does the sadness you are carrying know that
+  yet?"), and `.privacySensitive()` hides text only while the phone is locked;
+  on an unlocked Home Screen anyone nearby reads it. The Reflection state is
+  always "A question is waiting for you." with its reference, and the app
+  never writes the question into the App Group. The question opens with the
+  tap. This supersedes the question fitting tiers in "Fitting text" and the
+  question shown in the mockups, which predate it.
 
 ## Builder's calls (mine, not Ahmed's — he may override)
 
@@ -161,7 +169,7 @@ No lantern image anywhere on the widget.
 | Journey | kicker: Journey title italic 11.5 `creamSecondary` · "Day 3 of 7" 12 semibold gold · day title 19 cream · a row of N thin marks (done = gold 55%, today = gold, later = `track`) |
 | Journey, sensitive | kicker "Your Journey" · "Day 3 of 7" · "Today's step is ready." 19 · the same marks |
 | Verse | kicker "Your verse today" · the ayah (see fitting) · "— Ad-Duha 93:4" italic 11 |
-| Reflection | kicker · the question (see fitting) · "— on Ad-Duha 93:4" italic 11 |
+| Reflection | kicker · "A question is waiting for you." 17 cream · "— on Ad-Duha 93:4" italic 11 (never the question itself) |
 
 The marks row is omitted for a Journey longer than 14 days (the marks get too
 thin to read); "Day 9 of 30" carries it alone.
@@ -173,9 +181,8 @@ Use `ViewThatFits(in: .vertical)` with every tier at `lineLimit(nil)` and
 
 - **Verse:** (1) Arabic 15 + English 12, (2) English 13 alone, (3) the line
   "Your verse is waiting for you." 17 with the reference under it.
-- **Question:** 14, then 13, then 12; if it still does not fit, the line
-  "A question is waiting for you." 17 with the reference under it. 12 is the
-  floor.
+- **Question:** not drawn (decided 2026-11-13, see "Decided by Ahmed"). The
+  measurements below are kept for the record.
 - **Journey day title:** 19, then 17, then 15. The longest of the 87 titles in
   the available Journeys (40 characters, "The First Takbir That Changes
   Everything") fits at 19 in the mockup.
@@ -245,8 +252,8 @@ type WidgetState =
       day: number; of: number; url: string }
   | { kind: 'verse'; kicker: string; arabic: string; english: string;
       ref: string; fallback: string; url: string }
-  | { kind: 'reflection'; kicker: string; question: string; ref: string;
-      fallback: string; url: string };
+  | { kind: 'reflection'; kicker: string; text: string; ref: string;
+      url: string };   // text is always the invitation, never the question
 ```
 
 - **Entries.** One per boundary (00:00, Fajr, Dhuhr, Maghrib) per day. The
@@ -261,9 +268,9 @@ type WidgetState =
 - **A day without usable prayer times** (none stored, or Fajr < Dhuhr <
   Maghrib does not hold) uses 05:00, 12:00 and 18:00.
 - **Text is copied unchanged** from its source: the verse as
-  `verseSnapshot.ts` requires, the question exactly as `angle.reflection`.
-  `fallback` is the line shown when the text does not fit; the widget never
-  shortens anything itself.
+  `verseSnapshot.ts` requires. `fallback` is the line shown when the verse
+  does not fit; the widget never shortens anything itself. The reflection
+  question is never written at all, only whether there is one.
 - **The mood is never written to the App Group.** What a tap needs in order to
   reopen the check-in (the shown content, its angle and the mood) stays in the
   app's own AsyncStorage.
