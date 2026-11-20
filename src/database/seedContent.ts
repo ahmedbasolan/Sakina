@@ -491,7 +491,10 @@ import type { Content, ContentAngle } from '../types';
 //      against completing the Qur'an (Jibril reviewed all of it yearly, Bukhari 4998); Career d1 no
 //      longer reads as denying a worker's wage; Career d3 names the mukatab precisely; the Career d5
 //      istikharah card transliteration is complete.
-const SEED_VERSION = 69;
+// v70: quran_2_186 and quran_9_105 whyThis (the mood flow's scholarly section) rewritten to what Ibn
+//      Kathir's entries say. 2:186's credited him with a 'no qul, Allah answers directly' point his entry
+//      never makes; 9:105's gave an unsourced reason for revelation where he records Mujahid's warning.
+const SEED_VERSION = 70;
 // Separate keys per content type — Quran and Hadith data change independently,
 // and each seeder used to write the SAME key at the end of its run. Since
 // initializeDatabase() awaits seedQuranContent() before seedHadithContent(),

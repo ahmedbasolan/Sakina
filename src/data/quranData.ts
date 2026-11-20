@@ -1015,7 +1015,7 @@ const quranContentData: Content[] = [
       'And say, "Do, for Allah will see your deed, and His Messenger, and the believers. And you will be brought back to the Knower of the unseen and the seen, and He will inform you of what you used to do."',
     source: 'Surah At-Tawbah 9:105',
     audioKey: '9:105',
-    whyThis: 'This verse was revealed to motivate believers to act rather than wait passively. Allah, His Messenger ﷺ, and the believers are all witnesses to your deeds — then you return to Allah who knows the unseen and the visible. Your efforts are not going unnoticed; they are being witnessed at multiple levels.',
+    whyThis: "[Tafsir Ibn Kathir on 9:105] Ibn Kathir records from Mujahid that this ayah carries a warning to those who defy Allah's orders: their deeds will be shown to Allah, His Messenger and the believers, and on the Day of Resurrection nothing will stay hidden. He adds that Allah may also make some deeds known to people in this life, and records ʿAishah's advice that when someone's good deeds impress you, you should recite this ayah: do deeds, and Allah will see them. Your work is not done in an empty room. Whatever you put into it, done well or done carelessly, is already before the One who will tell you what you did.",
     moods: ['Hopeful'],
   },
   {
@@ -1770,7 +1770,7 @@ const quranContentData: Content[] = [
       'And when My servants ask you concerning Me, indeed I am near. I respond to the invocation of the supplicant when he calls upon Me. So let them respond to Me and believe in Me, that they may be rightly guided.',
     source: 'Surah Al-Baqarah 2:186',
     audioKey: '2:186',
-    whyThis: 'This verse was placed by Allah immediately within the verses about Ramadan — a deliberate signal that du\'a and closeness to Allah are at the heart of worship. "Fa-inni qarib" (Indeed I am near) uses no intermediary: Allah speaks in the first person, directly, without "say." Ibn Kathir notes this was to emphasize the immediacy and personal nature of Allah\'s closeness to every servant who calls. [Tafsir Ibn Kathir, Surah Al-Baqarah]',
+    whyThis: "[Tafsir Ibn Kathir on 2:186] This ayah sits among the verses on fasting. Ibn Kathir opens it with the Prophet ﷺ telling companions who were raising their voices in remembrance that they were not calling one who is deaf or absent, but One who is All-Hearing and All-Seeing, closer to each of them than the neck of his own mount. He then gathers the narrations on how du'a is answered: provided it asks for nothing sinful and does not cut the ties of kinship, Allah either grants it soon, stores it for the Hereafter, or turns away an equal harm. Your call does not have to be loud to reach Him, and an answer you cannot see yet is not the same as no answer.",
     moods: ['Overwhelmed', 'Sad', 'Lonely'],
   },
 
