@@ -4,6 +4,7 @@ import {
   REVIEW_ASK_COOLDOWN_MS,
   REVIEW_ASK_MAX_LIFETIME,
   REVIEW_ASK_MIN_COMPLETED_DAYS,
+  REVIEW_ASK_MIN_DAYS_TRACKED,
   STORAGE_KEYS,
 } from '../constants';
 import { logServiceError } from './errorLoggingService';
@@ -32,7 +33,9 @@ const loadState = async (): Promise<ReviewAskState> => {
 };
 
 /**
- * Ask for a store rating after a journey day is banked.
+ * The gates every trigger shares: lifetime cap, cooldown, platform support.
+ * One record backs them all, so the journey and mood triggers draw on a single
+ * allowance and can never ask twice inside one cooldown between them.
  *
  * The OS owns whether a prompt actually appears, and it will not tell us which
  * way it went — `requestReview()` resolves identically whether iOS presented
@@ -40,12 +43,12 @@ const loadState = async (): Promise<ReviewAskState> => {
  * therefore exists to avoid *spending* an invisible allowance on a weak
  * moment.
  *
- * Never throws, so a storage or StoreKit failure cannot block the completion
- * flow the user has already earned.
+ * Never throws, so a storage or StoreKit failure cannot block the flow the
+ * user has already earned.
  */
-export const maybeAskForReview = async (completedDayCount: number): Promise<void> => {
+const askIfAllowed = async (operation: string, earned: boolean): Promise<void> => {
   try {
-    if (completedDayCount < REVIEW_ASK_MIN_COMPLETED_DAYS) return;
+    if (!earned) return;
 
     const state = await loadState();
     if (state.askCount >= REVIEW_ASK_MAX_LIFETIME) return;
@@ -66,8 +69,28 @@ export const maybeAskForReview = async (completedDayCount: number): Promise<void
   } catch (error) {
     logServiceError(
       'ReviewPromptService',
-      'maybeAskForReview',
+      operation,
       error instanceof Error ? error : new Error(String(error)),
     );
   }
 };
+
+/**
+ * Ask for a store rating after a journey day is banked.
+ *
+ * `completedDayCount` is the caller's total across every journey, not the
+ * count inside the one just completed: two days in each of three journeys is
+ * six days of intent, and the per-journey count never saw it.
+ */
+export const maybeAskForReview = (completedDayCount: number): Promise<void> =>
+  askIfAllowed('maybeAskForReview', completedDayCount >= REVIEW_ASK_MIN_COMPLETED_DAYS);
+
+/**
+ * Ask for a store rating after a mood-flow reflection is saved.
+ *
+ * `daysTracked` is the number of separate days the user has checked in on.
+ * Call it only after the save succeeded: the reflection is what makes this an
+ * earned moment rather than just another session.
+ */
+export const maybeAskForReviewAfterReflection = (daysTracked: number): Promise<void> =>
+  askIfAllowed('maybeAskForReviewAfterReflection', daysTracked >= REVIEW_ASK_MIN_DAYS_TRACKED);

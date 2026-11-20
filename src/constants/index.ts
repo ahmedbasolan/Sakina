@@ -71,6 +71,11 @@ export const UPGRADE_ASK_COOLDOWN_MS = 3 * 24 * 60 * 60 * 1000; // 3 days
 // one has not. The lifetime cap matches Apple's own quota so we never burn a
 // trigger the OS was going to swallow anyway.
 export const REVIEW_ASK_MIN_COMPLETED_DAYS = 3;
+// The mood flow's equivalent floor. Journeys were the only place that asked,
+// so someone who used mood verses every day and never opened a journey was
+// never asked at all. Five separate days of check-ins, plus a reflection they
+// chose to write and save, is the same kind of shown intent.
+export const REVIEW_ASK_MIN_DAYS_TRACKED = 5;
 export const REVIEW_ASK_COOLDOWN_MS = 90 * 24 * 60 * 60 * 1000; // 90 days
 export const REVIEW_ASK_MAX_LIFETIME = 3;
 // Let the completion modal finish dismissing and the navigation transition

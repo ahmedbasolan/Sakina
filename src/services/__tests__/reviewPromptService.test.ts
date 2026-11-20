@@ -1,8 +1,9 @@
-import { maybeAskForReview } from '../reviewPromptService';
+import { maybeAskForReview, maybeAskForReviewAfterReflection } from '../reviewPromptService';
 import {
   REVIEW_ASK_COOLDOWN_MS,
   REVIEW_ASK_MAX_LIFETIME,
   REVIEW_ASK_MIN_COMPLETED_DAYS,
+  REVIEW_ASK_MIN_DAYS_TRACKED,
   STORAGE_KEYS,
 } from '../../constants';
 
@@ -89,5 +90,38 @@ describe('maybeAskForReview', () => {
     mockStore[STORAGE_KEYS.reviewAsk] = '{not json';
     await expect(maybeAskForReview(10)).resolves.toBeUndefined();
     expect(mockRequestReview).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe('maybeAskForReviewAfterReflection', () => {
+  beforeEach(() => {
+    for (const key of Object.keys(mockStore)) delete mockStore[key];
+    mockHasAction.mockReset().mockResolvedValue(true);
+    mockRequestReview.mockReset().mockResolvedValue(undefined);
+  });
+
+  it('asks once the user has checked in on enough separate days', async () => {
+    await maybeAskForReviewAfterReflection(REVIEW_ASK_MIN_DAYS_TRACKED);
+    expect(mockRequestReview).toHaveBeenCalledTimes(1);
+    expect(persisted()).toEqual({ lastAskAt: expect.any(Number), askCount: 1 });
+  });
+
+  it('stays silent before the days-tracked floor', async () => {
+    await maybeAskForReviewAfterReflection(REVIEW_ASK_MIN_DAYS_TRACKED - 1);
+    expect(mockRequestReview).not.toHaveBeenCalled();
+    expect(persisted()).toBeNull();
+  });
+
+  it('shares one allowance with the journey trigger, so the two never ask back to back', async () => {
+    await maybeAskForReview(REVIEW_ASK_MIN_COMPLETED_DAYS);
+    await maybeAskForReviewAfterReflection(100);
+    expect(mockRequestReview).toHaveBeenCalledTimes(1);
+    expect(persisted().askCount).toBe(1);
+  });
+
+  it('respects the lifetime cap the journey trigger already spent', async () => {
+    seed({ lastAskAt: 0, askCount: REVIEW_ASK_MAX_LIFETIME });
+    await maybeAskForReviewAfterReflection(100);
+    expect(mockRequestReview).not.toHaveBeenCalled();
   });
 });
