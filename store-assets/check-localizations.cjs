@@ -4,7 +4,10 @@
 // It does NOT check translation quality or that claims match the app.
 const fs = require('fs');
 const path = require('path');
-const all = JSON.parse(fs.readFileSync(path.join(__dirname, 'app-store-localizations.json'), 'utf8'));
+// Optional argument: another listing file in this folder, e.g. app-store-localizations-1.6.json.
+const file = process.argv[2] || 'app-store-localizations.json';
+console.log(`checking ${file}`);
+const all = JSON.parse(fs.readFileSync(path.join(__dirname, path.basename(file)), 'utf8'));
 const resolve = (loc) => (typeof all[loc] === 'string' ? all[all[loc].slice(1)] : all[loc]);
 const LIMITS = { name: 30, subtitle: 30, keywords: 100, promotionalText: 170, description: 4000, whatsNew: 4000 };
 let bad = 0;
