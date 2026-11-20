@@ -30,7 +30,7 @@ import { redactVariantId } from '../utils/leaderChoice';
  *
  * A new journey only needs its prefix added here.
  */
-export const JOURNEY_ANGLE_PREFIXES = ['rizq', 'salah', 'results', 'study', 'imam', 'crisis', 'marriage', 'tawbah', 'death', 'screen'];
+export const JOURNEY_ANGLE_PREFIXES = ['rizq', 'salah', 'results', 'study', 'imam', 'crisis', 'marriage', 'tawbah', 'death', 'screen', 'ramadan', 'career'];
 
 const JOURNEY_ID_GLOBS = JOURNEY_ANGLE_PREFIXES.map((p) => `q_angle_${p}_*`);
 

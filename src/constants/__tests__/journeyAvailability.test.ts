@@ -34,7 +34,7 @@ describe('journeyAvailability', () => {
       .filter(([, r]) => r.access === 'pro_exclusive')
       .map(([id]) => id)
       .sort();
-    expect(exclusives).toEqual(['path_death_awareness', 'path_marriage_seeker']);
+    expect(exclusives).toEqual(['path_career_choice', 'path_ramadan_reset']);
     expect(AVAILABLE_PATHS.path_hope_after_crisis.access).toBe('free');
   });
 

@@ -476,7 +476,25 @@ import type { Content, ContentAngle } from '../types';
 //      no longer badges tafsir as quran_dua; both Bukhari 1901 quotations now use the published English.
 // v66: quran_2_257 englishTranslation rendered Taghut as "the evil ones", a vaguer term than the
 //      source's (CLAUDE.md Quran rule 2); now "Taghut", as Sahih International has it.
-const SEED_VERSION = 66;
+// v67: new content — Ramadan Reset (path_ramadan_reset) and Career Choice (path_career_choice), 7 days
+//      each, both Sakina Pro exclusive. Adds q_angle_ramadan_day1-7, q_angle_career_day1-7,
+//      hadith_ramadan_1-7, hadith_career_1-7 and ten Content verses (quran_2_183, quran_50_18,
+//      quran_38_29, quran_97_3, quran_15_99, quran_62_10, quran_42_38, quran_23_51, quran_4_32,
+//      quran_6_162). Ramadan days 3 and 5 and Career days 3 and 4 reuse 2:186, 2:261, 2:216, 9:105.
+// v68: scholarly-review fixes to the two v67 journeys, before release. Career Choice days 3 and 5
+//      swapped so the halal question precedes istikharah; istikharah now says two voluntary rak'ahs
+//      (Bukhari 1166); the 4:32 step asks of His bounty rather than for another's share; a parents
+//      step on day 2 (17:23). Ramadan Reset reads correctly inside the month, keeps users who are not
+//      fasting or praying in, notes the qada-before-Shawwal difference, adds night prayer (Bukhari 37).
+// v69: review pass on the v67 journeys, before release. Ramadan d3 states the condition on the
+//      three outcomes of du'a (no sin, no cutting of kinship); Ramadan d4 no longer sets reflection
+//      against completing the Qur'an (Jibril reviewed all of it yearly, Bukhari 4998); Career d1 no
+//      longer reads as denying a worker's wage; Career d3 names the mukatab precisely; the Career d5
+//      istikharah card transliteration is complete.
+// v70: quran_2_186 and quran_9_105 whyThis (the mood flow's scholarly section) rewritten to what Ibn
+//      Kathir's entries say. 2:186's credited him with a 'no qul, Allah answers directly' point his entry
+//      never makes; 9:105's gave an unsourced reason for revelation where he records Mujahid's warning.
+const SEED_VERSION = 70;
 // Separate keys per content type — Quran and Hadith data change independently,
 // and each seeder used to write the SAME key at the end of its run. Since
 // initializeDatabase() awaits seedQuranContent() before seedHadithContent(),

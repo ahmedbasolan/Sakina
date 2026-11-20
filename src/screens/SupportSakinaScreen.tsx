@@ -95,7 +95,7 @@ const FEATURES: {
     title: 'Pro-exclusive journeys',
     // Must match the access: 'pro_exclusive' entries in
     // src/constants/journeyAvailability.ts.
-    description: 'Marriage Seeker and Death Awareness, two complete journeys only Pro can start',
+    description: 'Ramadan Reset and Career Choice, two complete journeys only Pro can start',
   },
   {
     icon: 'sparkles-outline',
