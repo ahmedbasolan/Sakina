@@ -5,13 +5,14 @@
  * Available paths (real content, in AVAILABLE_PATH_IDS): Rizq
  * Revolution, Salah Transformation, Study Journaling, Trusting the Results,
  * Prayer Leadership, Hope After Crisis, Marriage Seeker, Tawbah Intensive,
- * Death Awareness, Screen Detox. All other paths are stubs with no
- * `dailySteps` yet and show a "Coming soon" locked state.
+ * Death Awareness, Screen Detox, Ramadan Reset, Career Choice. All other
+ * paths are stubs with no `dailySteps` yet and show a "Coming soon" locked
+ * state.
  *
  * Availability, release dates and who may start each journey live in
  * src/constants/journeyAvailability.ts. A path can be *available but staged
- * behind Sakina Pro* — access: 'pro_exclusive' (Marriage Seeker, Death
- * Awareness), which makes no free-tier promise. Everything else available
+ * behind Sakina Pro* — access: 'pro_exclusive' (Ramadan Reset, Career
+ * Choice), which makes no free-tier promise. Everything else available
  * ships free. This reverses pathsService.ts's "Free-core model (spec §5)"
  * comment for the pro-exclusive paths only.
  */

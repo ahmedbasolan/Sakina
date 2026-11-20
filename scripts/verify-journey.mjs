@@ -50,6 +50,8 @@ const JOURNEYS = [
   ['path_tawbah_intensive', 'q_angle_tawbah_', 'Guilty', true],
   ['path_death_awareness', 'q_angle_death_', 'Hopeful', true],
   ['path_screen_detox', 'q_angle_screen_', 'Overwhelmed', true],
+  ['path_ramadan_reset', 'q_angle_ramadan_', 'Hopeful', true],
+  ['path_career_choice', 'q_angle_career_', 'Overwhelmed', true],
 ];
 
 const contentIds = new Set([...quran.matchAll(/id: '(quran_[a-z0-9_]+)'/g)].map((m) => m[1]));

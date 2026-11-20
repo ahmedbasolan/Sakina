@@ -40,10 +40,16 @@ export const AVAILABLE_PATHS: Record<string, JourneyRelease> = {
   path_trusting_the_results: { released: '2026-07-01', access: 'early_access' },
   path_prayer_leadership:    { released: '2026-08-01', access: 'early_access' },
   path_hope_after_crisis:    { released: '2026-08-15', access: 'free' },
-  path_marriage_seeker:      { released: '2026-08-18', access: 'pro_exclusive' },
+  // Marriage Seeker and Death Awareness were 'pro_exclusive' until Ramadan
+  // Reset and Career Choice took over that slot (owner decision, 2026-11-20).
+  path_marriage_seeker:      { released: '2026-08-18', access: 'free' },
   path_tawbah_intensive:     { released: '2026-08-29', access: 'early_access' },
-  path_death_awareness:      { released: '2026-08-30', access: 'pro_exclusive' },
+  path_death_awareness:      { released: '2026-08-30', access: 'free' },
   path_screen_detox:         { released: '2026-09-09', access: 'early_access' },
+  // `released` is a placeholder: set it to the day the build carrying these
+  // reaches users (it orders the Explore tab and the supporter view).
+  path_ramadan_reset:        { released: '2026-11-20', access: 'pro_exclusive' },
+  path_career_choice:        { released: '2026-11-20', access: 'pro_exclusive' },
 };
 
 export const AVAILABLE_PATH_IDS = new Set(Object.keys(AVAILABLE_PATHS));

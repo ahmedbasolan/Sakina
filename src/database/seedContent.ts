@@ -476,7 +476,12 @@ import type { Content, ContentAngle } from '../types';
 //      no longer badges tafsir as quran_dua; both Bukhari 1901 quotations now use the published English.
 // v66: quran_2_257 englishTranslation rendered Taghut as "the evil ones", a vaguer term than the
 //      source's (CLAUDE.md Quran rule 2); now "Taghut", as Sahih International has it.
-const SEED_VERSION = 66;
+// v67: new content — Ramadan Reset (path_ramadan_reset) and Career Choice (path_career_choice), 7 days
+//      each, both Sakina Pro exclusive. Adds q_angle_ramadan_day1-7, q_angle_career_day1-7,
+//      hadith_ramadan_1-7, hadith_career_1-7 and ten Content verses (quran_2_183, quran_50_18,
+//      quran_38_29, quran_97_3, quran_15_99, quran_62_10, quran_42_38, quran_23_51, quran_4_32,
+//      quran_6_162). Ramadan days 3 and 5 and Career days 3 and 4 reuse 2:186, 2:261, 2:216, 9:105.
+const SEED_VERSION = 67;
 // Separate keys per content type — Quran and Hadith data change independently,
 // and each seeder used to write the SAME key at the end of its run. Since
 // initializeDatabase() awaits seedQuranContent() before seedHadithContent(),
