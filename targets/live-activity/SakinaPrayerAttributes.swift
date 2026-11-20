@@ -1,0 +1,35 @@
+// SakinaPrayerAttributes — the Live Activity's data model.
+//
+// This file exists TWICE and the copies must stay byte-identical:
+//   targets/live-activity/SakinaPrayerAttributes.swift        (widget extension)
+//   modules/sakina-live-activity/ios/SakinaPrayerAttributes.swift (main app)
+// modules/sakina-live-activity/__tests__/attributesParity.test.ts enforces it.
+//
+// APNs push-to-start names this type in `attributes-type`, so never rename it.
+// The server pushes `content-state` as { "prayerName": String, "prayerEpoch":
+// Double, "startEpoch": Double or null } (epoch seconds) and `attributes` as
+// { "version": Int }. `startEpoch` is the previous prayer, where the line under
+// the next prayer starts filling; it is optional so a payload without it still
+// decodes.
+//
+// `lit` is set only on the phone, by the lantern tap (LightLanternIntent ->
+// SakinaLantern.toggle). The server never sends it, so every push at a prayer
+// time arrives without it and the lantern goes dark for the new phrase.
+//
+// The main app deploys to iOS 15.1, hence the availability gate; the
+// extension deploys to 17.2, where it is a no-op.
+
+import ActivityKit
+import Foundation
+
+@available(iOS 17.2, *)
+struct SakinaPrayerAttributes: ActivityAttributes {
+  struct ContentState: Codable, Hashable {
+    var prayerName: String
+    var prayerEpoch: Double
+    var startEpoch: Double?
+    var lit: Bool?
+  }
+
+  var version: Int
+}

@@ -15,8 +15,13 @@ if (__DEV__) {
   }
 }
 
-const supabaseUrl = SUPABASE_URL || '';
-const supabaseAnonKey = SUPABASE_ANON_KEY || '';
+// Exported so other modules read the project URL and anon key from here
+// rather than importing '@env' themselves: react-native-dotenv does not inline
+// an '@env' import in every file under Jest's istanbul coverage instrumentation
+// (liveActivityService.ts was left referencing a bare SUPABASE_URL), and one
+// reader keeps the value in one place.
+export const supabaseUrl = SUPABASE_URL || '';
+export const supabaseAnonKey = SUPABASE_ANON_KEY || '';
 
 // expo-secure-store is capped at 2 KB per key (iOS Keychain limit).
 // Supabase sessions exceed that, so we chunk large values across numbered keys.

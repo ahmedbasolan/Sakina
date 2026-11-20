@@ -1,6 +1,7 @@
 import { getActionFromState, getStateFromPath } from '@react-navigation/native';
 import { StackRouter } from '@react-navigation/routers';
 import { deepLinkPath, isNavigationDeepLink, linking } from '../linking';
+import { WIDGET_URLS } from '../../services/widget/widgetState';
 
 /** What NavigationContainer does with a URL: filter, strip the prefix, parse. */
 function stateForUrl(url: string) {
@@ -23,6 +24,18 @@ describe('deep linking', () => {
       expect(state?.routes[0].state?.routes[0].name).toBe('Journeys');
     });
 
+    // The Live Activity card (see modules/sakina-live-activity) opens this.
+    // PrayerTimes is a root-stack screen, not a tab. `Main` sits underneath
+    // (linking.config.initialRouteName), so a cold start opened by the link
+    // still has somewhere for Back to go.
+    it.each(['sakina://prayer-times', 'sakina:///prayer-times', 'sakina://prayer-times/'])(
+      '%s opens the Prayer Times screen over Main',
+      (url) => {
+        const state = stateForUrl(url);
+        expect(state?.routes.map((r) => r.name)).toEqual(['Main', 'PrayerTimes']);
+      },
+    );
+
     it('a link arriving while the app is open becomes a navigate to Main > Journeys', () => {
       const action = getActionFromState(stateForUrl('sakina://journeys')!, linking.config);
       expect(action).toMatchObject({
@@ -44,6 +57,8 @@ describe('deep linking', () => {
       'sakina://Journeys',
       'sakina://journeys/extra',
       'sakina://journeys-old',
+      'sakina://prayer-times/extra',
+      'sakina://PrayerTimes',
       // Other schemes, including the Expo dev client's own.
       'exp+sakina://expo-development-client/?url=http%3A%2F%2F10.0.0.2%3A8081',
       'https://sakina.app/journeys',
@@ -63,6 +78,47 @@ describe('deep linking', () => {
       // Negative control: proves the two assertions above are not vacuous.
       const unconfigured = getStateFromPath('#access_token=a&type=recovery');
       expect(unconfigured?.routes[0].name).toBe('#access_token=a&type=recovery');
+    });
+  });
+
+  // The square Home Screen widget's taps (src/services/widget/widgetState.ts).
+  describe('home screen widget links', () => {
+    it.each([
+      ['sakina://check-in', 'MoodSelection'],
+      ['sakina:///check-in', 'MoodSelection'],
+      ['sakina://pro', 'Support'],
+      ['sakina://pro/', 'Support'],
+    ])('%s opens %s over Main, so Back reaches Home after a cold start', (url, screen) => {
+      const state = stateForUrl(url);
+      expect(state?.routes.map((r) => r.name)).toEqual(['Main', screen]);
+    });
+
+    it.each([
+      ['sakina://widget/journey', 'journey'],
+      ['sakina://widget/reflect', 'reflect'],
+      ['sakina://widget/verse', 'verse'],
+      ['sakina://widget/verse/', 'verse'],
+    ])('%s opens the in-between screen with target %s, over Main', (url, target) => {
+      const state = stateForUrl(url);
+      expect(state?.routes.map((r) => r.name)).toEqual(['Main', 'WidgetLink']);
+      expect(state?.routes[1].params).toEqual({ target });
+    });
+
+    it.each([
+      'sakina://widget',
+      'sakina://widget/',
+      'sakina://widget/anything',
+      'sakina://widget/journey/extra',
+      'sakina://WidgetLink',
+      'sakina://check-in/extra',
+      'sakina://Support',
+    ])('%s is filtered out', (url) => {
+      expect(isNavigationDeepLink(url)).toBe(false);
+      expect(stateForUrl(url)).toBeUndefined();
+    });
+
+    it('every URL the widget can open is allowlisted', () => {
+      for (const url of Object.values(WIDGET_URLS)) expect([url, isNavigationDeepLink(url)]).toEqual([url, true]);
     });
   });
 

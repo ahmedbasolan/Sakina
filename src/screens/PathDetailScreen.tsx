@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect, useRef } from 'react';
 import {
   View,
   Text,
@@ -16,6 +16,7 @@ import { Colors, Typography, Spacing } from '../theme/DesignSystem';
 
 import { UserPathProgress, PathStep } from '../types';
 import { PathsService } from '../services/pathsService';
+import { WidgetService } from '../services/widget/widgetService';
 import { LeaderChoiceSheet } from '../components/LeaderChoiceSheet';
 import { LeaderChoice } from '../utils/leaderChoice';
 import { logServiceError } from '../services/errorLoggingService';
@@ -121,6 +122,22 @@ export const PathDetailScreen: React.FC = () => {
     }, [pathId]),
   );
 
+  // A Home Screen widget tap (`openToday`) opens today's day once the progress
+  // has loaded, through the same openDay a tap on the day uses — so the
+  // leader-choice sheet and the error alert behave exactly as they do here.
+  // The param is cleared so returning to this screen does not open it again.
+  const openTodayRequested = route.params?.openToday === true;
+  const openedTodayRef = useRef(false);
+  const openDayRef = useRef<((step: PathStep) => Promise<void>) | null>(null);
+  useEffect(() => {
+    if (!openTodayRequested || openedTodayRef.current || !path || !userProgress || !openDayRef.current) return;
+    const today = path.dailySteps.find((s) => s.day === Math.min(userProgress.currentDay, path.duration));
+    if (!today) return;
+    openedTodayRef.current = true;
+    navigation.setParams({ openToday: undefined });
+    void openDayRef.current(today);
+  }, [openTodayRequested, userProgress]);
+
   if (!path) return null;
 
   const visual = getVisual(path.id);
@@ -168,6 +185,8 @@ export const PathDetailScreen: React.FC = () => {
     // happened to be started most recently. Awaited before navigating so the
     // card is already correct if they immediately back out to Home.
     await pathsService.setLastOpenedPath(path.id);
+    // The Home Screen widget follows the Journey the user is working through.
+    void WidgetService.getInstance().refresh();
 
     const [experience, hadithContent] = await Promise.all([
       rotationEngine.getGuidanceForStep(step.contentId, step.angleId),
@@ -203,6 +222,7 @@ export const PathDetailScreen: React.FC = () => {
       hadithContent: hadithContent ?? undefined,
     });
   };
+  openDayRef.current = openDay;
 
   const chooseLeader = async (choice: LeaderChoice) => {
     try {

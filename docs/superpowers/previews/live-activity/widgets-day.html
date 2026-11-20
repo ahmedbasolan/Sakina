@@ -1,0 +1,267 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sakina Widget Day</title>
+<style>
+  /* The square widget across one day: it changes at the user's own prayer
+     times. Same Celestial Night tokens and pieces as the Live Activity card. */
+  :root {
+    --night: #07111E; --dusk: #0F1F30; --cream: #F5EDE3; --cream-2: rgba(245,237,227,.7);
+    --verse: rgba(245,237,227,.88); --track: rgba(245,237,227,.14); --gold: #D4AF37;
+    --ui-bg: #0b0f15; --ui-panel: #141a22; --ui-line: #263040; --ui-text: #e6e9ee; --ui-dim: #93a0b3;
+    --sys: -apple-system, "SF Pro Text", "SF Pro", "Segoe UI", system-ui, sans-serif;
+    --serif: Georgia, "Times New Roman", serif;
+    --wsize: 162px;
+  }
+  @font-face { font-family: "AmiriQuranCard"; src: url("../../../../targets/live-activity/AmiriQuran-Regular.ttf") format("truetype"); }
+  * { box-sizing: border-box; }
+  body { margin: 0; min-height: 100vh; background: var(--ui-bg); color: var(--ui-text); font: 14px/1.45 var(--sys);
+    display: grid; grid-template-columns: minmax(420px, 1fr) 380px; gap: 24px; padding: 24px; }
+  @media (max-width: 900px) { body { grid-template-columns: 1fr; } }
+  h1 { font-size: 18px; margin: 0 0 4px; }
+  .sub { color: var(--ui-dim); font-size: 12px; margin: 0 0 16px; }
+  .num { font-variant-numeric: tabular-nums; }
+
+  /* ── Phone ── */
+  .stage { display: flex; flex-direction: column; align-items: center; gap: 12px; min-width: 0; }
+  .scaler { transform-origin: top center; }
+  .phone { position: relative; width: calc(var(--w) * 1px + 24px); height: calc(var(--h) * 1px + 24px);
+    border-radius: 68px; padding: 12px; background: linear-gradient(145deg, #3a3d42, #1c1e21 40%, #2b2e33);
+    box-shadow: 0 0 0 2px #50545b inset, 0 30px 80px rgba(0,0,0,.6); }
+  .phone::before, .phone::after { content: ""; position: absolute; width: 4px; background: #2b2e33; border-radius: 2px; }
+  .phone::before { left: -3px; top: 180px; height: 64px; box-shadow: 0 84px 0 #2b2e33; }
+  .phone::after { right: -3px; top: 230px; height: 100px; }
+  .screen { position: relative; width: calc(var(--w) * 1px); height: calc(var(--h) * 1px); border-radius: 56px; overflow: hidden; background: #000; }
+  .wallpaper { position: absolute; inset: 0;
+    background: radial-gradient(1px 1px at 20% 30%, #fff8 50%, transparent 51%), radial-gradient(1px 1px at 70% 12%, #fff9 50%, transparent 51%),
+      radial-gradient(1.5px 1.5px at 85% 40%, #fffa 50%, transparent 51%), radial-gradient(1px 1px at 35% 62%, #fff7 50%, transparent 51%),
+      radial-gradient(ellipse at 50% 120%, #1d3a5f 0%, #0b1626 55%, #04070c 100%); }
+  .wallpaper.light { background: radial-gradient(ellipse at 50% 0%, #f6e7c9 0%, #c9d8e8 55%, #8fa9c4 100%); }
+  .status { position: absolute; top: 16px; left: 0; right: 0; display: flex; justify-content: space-between; padding: 0 34px; font: 600 16px var(--sys); color: #fff; z-index: 5; }
+  .island { position: absolute; top: 11px; left: 50%; width: 126px; height: 37px; margin-left: -63px; border-radius: 19px; background: #000; z-index: 6; }
+  .home { position: absolute; top: 72px; left: 26px; right: 26px; display: grid; grid-template-columns: repeat(4, 1fr); column-gap: 26px; row-gap: 14px; }
+  .slot { grid-column: span 2; grid-row: span 2; display: flex; flex-direction: column; align-items: center; gap: 5px; }
+  .slot small, .app small { font: 500 11px var(--sys); color: #fff; text-shadow: 0 1px 2px #0008; }
+  .light-wall .slot small, .light-wall .app small { color: #1c2633; text-shadow: none; }
+  .app { display: flex; flex-direction: column; align-items: center; gap: 5px; }
+  .app i { width: 62px; height: 62px; border-radius: 15px; background: #ffffff26; }
+  .light-wall .app i { background: #ffffff8c; }
+  .app.sakina i { background: url("../../../../assets/icon.png") center / cover; }
+  .dock { position: absolute; left: 12px; right: 12px; bottom: 12px; height: 92px; border-radius: 34px; background: #ffffff1f;
+    display: flex; justify-content: space-around; align-items: center; padding: 0 12px; }
+  .dock i { width: 62px; height: 62px; border-radius: 15px; background: #ffffff2e; }
+  .home-bar { position: absolute; bottom: 6px; left: 50%; width: 140px; height: 5px; margin-left: -70px; border-radius: 3px; background: #fffd; z-index: 6; }
+
+  /* ── The widget ── */
+  .w { position: relative; width: var(--wsize); height: var(--wsize); border-radius: 24px; overflow: hidden; color: var(--cream);
+    background: linear-gradient(var(--night), var(--dusk)); padding: 14px; box-shadow: 0 6px 18px rgba(0,0,0,.35);
+    display: flex; flex-direction: column; }
+  .w > :not(.mandala) { position: relative; }
+  .w .hair { position: absolute; top: 0; left: 26px; right: 26px; height: 1px; background: linear-gradient(90deg, transparent, var(--gold), transparent); }
+  .mandala { position: absolute; pointer-events: none; }
+  .lantern { display: block; width: auto; align-self: flex-start; }
+  .glow { filter: drop-shadow(0 0 5px rgba(255,214,120,.65)); }
+  .fadein { animation: fadein .5s ease; }
+  @keyframes fadein { from { opacity: 0; } to { opacity: 1; } }
+  .tinted .w { background: rgba(30,30,30,.55); backdrop-filter: blur(16px); }
+  .tinted .w > * { filter: grayscale(1) sepia(.5) hue-rotate(5deg) brightness(1.15); }
+
+  .kicker { font: italic 11.5px/1.25 var(--serif); color: var(--cream-2); }
+  .kicker b { font-weight: normal; color: var(--gold); }
+  .big { font: 19px/1.22 var(--serif); color: var(--cream); }
+  .ar { font-family: "AmiriQuranCard", serif; font-size: 15px; line-height: 1.6; direction: rtl; text-align: right; color: var(--cream); }
+  .en { font: 12px/1.32 var(--serif); color: var(--verse); }
+  .en.solo { font-size: 13px; }
+  .ref { font: italic 11px var(--serif); color: var(--cream-2); }
+  .prompt { font: 14px/1.3 var(--serif); color: var(--cream); }
+  .pips { display: flex; gap: 5px; }
+  .pips i { flex: 1; height: 3px; border-radius: 2px; background: var(--track); }
+  .pips i.done { background: rgba(212,175,55,.55); }
+  .pips i.today { background: var(--gold); }
+
+  /* ── Panel ── */
+  .panel { background: var(--ui-panel); border: 1px solid var(--ui-line); border-radius: 14px; padding: 18px; align-self: start; position: sticky; top: 24px; }
+  .group { border-top: 1px solid var(--ui-line); padding-top: 14px; margin-top: 14px; }
+  .group:first-of-type { border-top: 0; margin-top: 0; padding-top: 0; }
+  .label { font-size: 11px; text-transform: uppercase; letter-spacing: .08em; color: var(--ui-dim); margin-bottom: 8px; }
+  .seg { display: flex; flex-direction: column; gap: 6px; }
+  .seg button { text-align: left; background: #1d2531; color: var(--ui-text); border: 1px solid var(--ui-line); border-radius: 8px; padding: 8px 10px; font: 500 13px var(--sys); cursor: pointer; }
+  .seg button small { display: block; color: var(--ui-dim); font-size: 11.5px; font-weight: 400; margin-top: 2px; }
+  .seg button.on { background: var(--gold); color: #111; border-color: var(--gold); }
+  .seg button.on small { color: #3a2f10; }
+  .seg.row { flex-direction: row; flex-wrap: wrap; }
+  .check { display: flex; align-items: center; gap: 8px; margin: 6px 0; cursor: pointer; }
+  .note { color: var(--ui-dim); font-size: 12px; margin-top: 6px; }
+  .timeline { display: flex; flex-wrap: wrap; gap: 22px; justify-content: center; padding: 18px; background: #05070a; border: 1px solid var(--ui-line); border-radius: 18px; }
+  .timeline .item { display: flex; flex-direction: column; align-items: center; gap: 8px; max-width: 243px; }
+  .timeline .item small { color: var(--ui-dim); font-size: 11px; text-align: center; }
+  .timeline .item > b { color: var(--gold); font-size: 11px; text-transform: uppercase; letter-spacing: .06em; }
+  #measure { position: absolute; left: -9999px; top: 0; visibility: hidden; }
+</style>
+</head>
+<body>
+<section class="stage">
+  <div style="align-self:stretch">
+    <h1>Sakina — one square widget, through the day</h1>
+    <p class="sub">The widget changes on its own at the user's prayer times: the mood check-in after Fajr, the Journey from Dhuhr, a reflection from Maghrib. Pick a moment on the right; every moment is laid out below the phone.</p>
+  </div>
+  <div class="scaler" id="scaler">
+    <div class="phone" id="phone">
+      <div class="screen" id="screen">
+        <div class="wallpaper" id="wallpaper"></div>
+        <div class="status"><span id="clock">7:10</span><span>●●●● ▮</span></div>
+        <div class="island"></div>
+        <div class="home" id="home"></div>
+        <div class="dock"><i></i><i></i><i></i><i></i></div>
+        <div class="home-bar"></div>
+      </div>
+    </div>
+  </div>
+  <div class="timeline" id="timeline"></div>
+</section>
+
+<aside class="panel">
+  <div class="group">
+    <div class="label">Moment of the day</div>
+    <div class="seg" id="momentSeg"></div>
+  </div>
+  <div class="group">
+    <div class="label">This user</div>
+    <label class="check"><input type="checkbox" id="checkedIn" checked> Checked in this morning (felt Sad)</label>
+    <label class="check"><input type="checkbox" id="onJourney" checked> On a Journey (Trusting the Results, day 3)</label>
+    <p class="note">Untick these to see what someone gets who skipped the check-in or has no Journey running. Nothing ever says they missed something.</p>
+  </div>
+  <div class="group">
+    <div class="label">Home screen</div>
+    <label class="check"><input type="checkbox" id="lightWall"> Light wallpaper</label>
+    <label class="check"><input type="checkbox" id="tinted"> Tinted home screen (iOS 18, rough look)</label>
+    <label class="check"><input type="checkbox" id="mandalaToggle" checked> Mandala behind the widget</label>
+  </div>
+</aside>
+<div id="measure"></div>
+
+<script>
+const LANTERN = '../../../../src/assets/brand/lantern.png';
+const $ = (id) => document.getElementById(id);
+const esc = (t) => String(t).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+// Real app content: Ad-Duha 93:4 as the app shows it, its Sad angle's
+// reflection prompt (q_angle_93_4_sad), and Trusting the Results day 3.
+const VERSE = { arabic: '', english: '', ref: 'Ad-Duha 93:4' };
+const MOOD = 'Sad';
+const REFLECTION = 'What are you treating as the final total, that this ayah calls the first part?';
+const JOURNEY = { title: 'Trusting the Results', day: 3, of: 7, dayTitle: 'Name the Fear' };
+
+const MOMENTS = [
+  { id: 'fajr', label: 'After Fajr', when: 'Fajr until Dhuhr', clock: '7:10' },
+  { id: 'dhuhr', label: 'After Dhuhr', when: 'Dhuhr until Maghrib', clock: '13:40' },
+  { id: 'maghrib', label: 'After Maghrib', when: 'Maghrib until Fajr', clock: '20:15' },
+];
+const state = { moment: 'fajr', checkedIn: true, onJourney: true, mandala: true };
+
+const lantern = (h) => `<img class="lantern glow" alt="" src="${LANTERN}" style="height:${h}px">`;
+function mandalaSVG(size, opacity) {
+  const C = 50, R = 48;
+  const web = (step) => { let d = ''; for (let i = 0; i < 12; i++) {
+    const a1 = (i * Math.PI * 2) / 12 - Math.PI / 2, a2 = ((i + step) * Math.PI * 2) / 12 - Math.PI / 2;
+    d += `M ${C + R * Math.cos(a1)},${C + R * Math.sin(a1)} L ${C + R * Math.cos(a2)},${C + R * Math.sin(a2)} `; } return d; };
+  return `<svg width="${size}" height="${size}" viewBox="0 0 100 100" style="opacity:${opacity};display:block">
+    <g fill="none" stroke="#D4AF37"><circle cx="50" cy="50" r="${R}" stroke-width="0.3" opacity="0.5"/>
+      <path d="${web(3)}" stroke-width="0.16" opacity="0.24"/><path d="${web(4)}" stroke-width="0.16" opacity="0.34"/>
+      <circle cx="50" cy="50" r="${R * 0.5}" stroke-width="0.14" opacity="0.2"/><circle cx="50" cy="50" r="${R * 0.18}" stroke-width="0.3" opacity="0.5"/></g></svg>`;
+}
+function mandala(size, style) {
+  if (!state.mandala) return '';
+  const inner = Math.round(size * 220 / 300), off = (size - inner) / 2;
+  return `<div class="mandala" style="width:${size}px;height:${size}px;${style}">${mandalaSVG(size, 0.35)}
+    <div style="position:absolute;left:${off}px;top:${off}px;transform:rotate(15deg)">${mandalaSVG(inner, 0.25)}</div></div>`;
+}
+const shell = (inner, m) => `<div class="w">${m}<div class="hair"></div>${inner}</div>`;
+
+// The complete ayah or none of it: Arabic + English if both fit, else English only.
+function verseBlock(kicker) {
+  const box = $('measure');
+  const tries = [
+    `<div class="ar">${esc(VERSE.arabic)}</div><div class="en">${esc(VERSE.english)}</div>`,
+    `<div class="en solo">${esc(VERSE.english)}</div>`,
+  ];
+  for (const t of tries) {
+    const html = `<div class="kicker">${kicker}</div><div style="flex:1;display:flex;flex-direction:column;justify-content:center;gap:5px">${t}<div class="ref">— ${esc(VERSE.ref)}</div></div>`;
+    box.innerHTML = `<div class="w">${html}</div>`;
+    const w = box.firstChild;
+    if (w.scrollHeight <= w.clientHeight + 0.5) return html;
+  }
+  return `<div class="kicker">${kicker}</div><div style="flex:1;display:flex;align-items:center" class="prompt">Your verse is waiting for you.</div><div class="ref">— ${esc(VERSE.ref)}</div>`;
+}
+
+/* ── One widget per moment ── */
+function morning() {
+  if (!state.checkedIn) {
+    return shell(`${lantern(26)}
+      <div style="flex:1;display:flex;align-items:flex-end"><div class="big">How is your heart today?</div></div>
+      <div class="kicker" style="margin-top:6px">A verse for how you feel.</div>`, mandala(170, 'right:-62px;top:-62px'));
+  }
+  return shell(verseBlock(`For when you feel <b>${esc(MOOD)}</b>`), mandala(150, 'left:-60px;bottom:-60px'));
+}
+function midday() {
+  if (!state.onJourney) return state.checkedIn
+    ? shell(verseBlock('Your verse from this morning'), mandala(150, 'left:-60px;bottom:-60px'))
+    : morning();
+  const pips = Array.from({ length: JOURNEY.of }, (_, i) =>
+    `<i class="${i + 1 < JOURNEY.day ? 'done' : i + 1 === JOURNEY.day ? 'today' : ''}"></i>`).join('');
+  return shell(`<div class="kicker">${esc(JOURNEY.title)}</div>
+    <div style="flex:1;display:flex;flex-direction:column;justify-content:center;gap:3px">
+      <div style="font:600 12px var(--sys);color:var(--gold);letter-spacing:.02em">Day ${JOURNEY.day} of ${JOURNEY.of}</div>
+      <div class="big">${esc(JOURNEY.dayTitle)}</div></div>
+    <div class="pips">${pips}</div>`, mandala(170, 'right:-70px;top:-70px'));
+}
+function evening() {
+  if (!state.checkedIn) {
+    return shell(`${lantern(26)}
+      <div style="flex:1;display:flex;align-items:flex-end"><div class="big" style="font-size:17px">A quiet moment with Allah before you sleep.</div></div>`,
+      mandala(170, 'right:-62px;top:-62px'));
+  }
+  return shell(`<div class="kicker">To reflect on tonight</div>
+    <div style="flex:1;display:flex;align-items:center"><div class="prompt">${esc(REFLECTION)}</div></div>
+    <div class="ref">— on ${esc(VERSE.ref)}</div>`, mandala(150, 'right:-60px;bottom:-60px'));
+}
+const RENDER = { fajr: morning, dhuhr: midday, maghrib: evening };
+
+function render() {
+  const m = MOMENTS.find((x) => x.id === state.moment);
+  $('clock').textContent = m.clock;
+  const apps = ['Sakina', 'Photos', 'Maps', 'Notes'];
+  $('home').innerHTML = `<div class="slot fadein">${RENDER[state.moment]()}<small>Sakina</small></div>`
+    + ['Weather', 'Clock', 'Mail', 'Calendar'].map((n) => `<div class="app"><i></i><small>${n}</small></div>`).join('')
+    + apps.map((n, i) => `<div class="app ${i === 0 ? 'sakina' : ''}"><i></i><small>${n}</small></div>`).join('');
+  $('timeline').innerHTML = MOMENTS.map((x) => `<div class="item"><b>${x.label}</b>
+    <div style="width:243px;height:243px"><div style="transform:scale(1.5);transform-origin:top left">${RENDER[x.id]()}</div></div>
+    <small>${x.when}. Tap opens ${{ fajr: state.checkedIn ? 'the verse' : 'the mood check-in', dhuhr: state.onJourney ? "today's Journey lesson" : state.checkedIn ? 'the verse' : 'the mood check-in', maghrib: state.checkedIn ? 'the reflection journal' : 'Sakina' }[x.id]}.</small></div>`).join('');
+  $('momentSeg').innerHTML = MOMENTS.map((x) => `<button data-id="${x.id}" class="${x.id === state.moment ? 'on' : ''}">${x.label}<small>${x.when}</small></button>`).join('');
+  document.querySelectorAll('#momentSeg button').forEach((b) => b.onclick = () => { state.moment = b.dataset.id; render(); });
+}
+function fitScale() {
+  const ph = 874 + 24, s = Math.min(1, (window.innerHeight - 120) / ph);
+  $('scaler').style.transform = `scale(${s})`; $('scaler').style.height = `${ph * s}px`;
+}
+async function init() {
+  try {
+    const verses = await (await fetch('verses.json')).json();
+    Object.assign(VERSE, verses.find((v) => v.ref === VERSE.ref) || {});
+  } catch {}
+  $('phone').style.setProperty('--w', 402); $('phone').style.setProperty('--h', 874);
+  $('checkedIn').onchange = (e) => { state.checkedIn = e.target.checked; render(); };
+  $('onJourney').onchange = (e) => { state.onJourney = e.target.checked; render(); };
+  $('lightWall').onchange = (e) => { $('wallpaper').classList.toggle('light', e.target.checked); $('screen').classList.toggle('light-wall', e.target.checked); };
+  $('tinted').onchange = (e) => $('screen').classList.toggle('tinted', e.target.checked);
+  $('mandalaToggle').onchange = (e) => { state.mandala = e.target.checked; render(); };
+  window.addEventListener('resize', fitScale);
+  await document.fonts.load('15px AmiriQuranCard').catch(() => {});
+  fitScale(); render();
+}
+init();
+</script>
+</body>
+</html>

@@ -20,6 +20,7 @@ import { SubscriptionService } from '../services/subscriptionService';
 import { FreemiumService } from '../services/freemiumService';
 import { logServiceError } from '../services/errorLoggingService';
 import { maybeAskForReview } from '../services/reviewPromptService';
+import { WidgetService } from '../services/widget/widgetService';
 import { REVIEW_ASK_DELAY_MS } from '../constants';
 import { useAppContext } from '../context/AppContext';
 
@@ -82,6 +83,8 @@ export const PathStepScreen: React.FC = () => {
       completedAt: day >= path.duration ? Date.now() : undefined,
     };
     await pathsService.saveProgress(updatedProgress);
+    // The Home Screen widget moves on from today's Journey day. Fire-and-forget.
+    void WidgetService.getInstance().onJourneyDayCompleted(path.id);
 
     // A banked journey day is the app's most earned moment, so it's where we
     // ask for a rating. Deferred past the navigation transition so the system

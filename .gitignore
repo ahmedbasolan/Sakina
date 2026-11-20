@@ -79,3 +79,6 @@ supabase/.temp/
 # personal captures, not meant to live in the repo. Re-supply locally
 # when regenerating store-assets/app-store/_compose-real.js output.
 store-assets/app-store/real-screenshots/
+
+# Subagent-driven-development scratch (ledgers, briefs, review packages)
+.superpowers/

@@ -794,6 +794,29 @@ uploaded under an account that did not write them. Both shipped broken.
 - Adding a table that holds personal data means adding it to **both**
   `clearAllLocalUserData` and the `PERSONAL` list in `verify-local-wipe.mjs`.
   The verifier's subset check catches an omission from the wipe, not from both.
+- **The Live Activity's local state is AsyncStorage, not `kv_store`** (`@live_activity_*`
+  keys in `liveActivityService.ts`, plus the device id and verse snapshot in the App
+  Group). `clearAllLocalUserData` does not touch it and `verify-local-wipe.mjs` does
+  not see it. It is cleared by `LiveActivityService`'s teardown — on switch-off,
+  account deletion and sign-out (`authService.ts`'s `forgetLiveActivity`) — and that
+  is covered by `liveActivityService.test.ts` and `authService.liveActivity.test.ts`.
+  The device id is deleted only after the server confirms the unregister; until then
+  `@live_activity_pending_unregister` keeps it for the retry.
+- **The Home Screen widget's local state is AsyncStorage plus one App Group key**:
+  `@widget_checkin` (today's check-in, including the mood and the whole experience),
+  `@widget_journey_done` and `@widget_timings` in `widgetService.ts`, and the finished
+  timeline under `sakina.widget.snapshot.v1`. `forget()` also sets `@widget_forgotten`,
+  which keeps the widget locked until `resume()` (AuthContext: after the sign-in
+  local-data claim, or a guest start) — Journey progress survives sign-out in SQLite
+  and an offline sign-out can leave the cached subscription saying Pro, so without the
+  latch the next refresh drew the departed account's day. `clearAllLocalUserData` and
+  `verify-local-wipe.mjs` see none of it. It is cleared by `WidgetService.forget()`,
+  called from `authService.ts`'s `resetLiveActivity` on sign-out and account deletion,
+  covered by `widgetService.test.ts` and `authService.liveActivity.test.ts`. Switching
+  the prayer card off must **not** clear it — `SharedStore.clear()` and
+  `markSwitchedOff()` leave the widget key alone on purpose. The mood never goes into
+  the App Group; only finished text does, and a sensitive Journey's names never do
+  (`src/constants/journeyPrivacy.ts`, default sensitive).
 
 ## Background Photos — sourcing, spec & adding one
 

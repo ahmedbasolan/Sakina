@@ -1,0 +1,427 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Island And Widget</title>
+<style>
+  /* The Dynamic Island (the lantern card, I4) and the square widget on one
+     phone, each with its own job. Celestial Night tokens throughout. */
+  :root {
+    --night: #07111E; --dusk: #0F1F30; --cream: #F5EDE3; --cream-2: rgba(245,237,227,.7);
+    --verse: rgba(245,237,227,.88); --track: rgba(245,237,227,.14); --gold: #D4AF37;
+    --ui-bg: #0b0f15; --ui-panel: #141a22; --ui-line: #263040; --ui-text: #e6e9ee; --ui-dim: #93a0b3;
+    --sys: -apple-system, "SF Pro Text", "SF Pro", "Segoe UI", system-ui, sans-serif;
+    --serif: Georgia, "Times New Roman", serif;
+  }
+  @font-face { font-family: "AmiriQuranCard"; src: url("../../../../targets/live-activity/AmiriQuran-Regular.ttf") format("truetype"); }
+  * { box-sizing: border-box; }
+  body { margin: 0; min-height: 100vh; background: var(--ui-bg); color: var(--ui-text); font: 14px/1.45 var(--sys);
+    display: grid; grid-template-columns: minmax(420px, 1fr) 400px; gap: 24px; padding: 24px; }
+  @media (max-width: 900px) { body { grid-template-columns: 1fr; } }
+  h1 { font-size: 18px; margin: 0 0 4px; }
+  .sub { color: var(--ui-dim); font-size: 12px; margin: 0 0 16px; }
+  .num { font-variant-numeric: tabular-nums; }
+
+  /* ── Phone ── */
+  .stage { display: flex; flex-direction: column; align-items: center; gap: 12px; min-width: 0; }
+  .scaler { transform-origin: top center; }
+  .phone { position: relative; width: 426px; height: 898px; border-radius: 68px; padding: 12px;
+    background: linear-gradient(145deg, #3a3d42, #1c1e21 40%, #2b2e33); box-shadow: 0 0 0 2px #50545b inset, 0 30px 80px rgba(0,0,0,.6); }
+  .screen { position: relative; width: 402px; height: 874px; border-radius: 56px; overflow: hidden; background: #000; }
+  .wallpaper { position: absolute; inset: 0; transition: filter .4s;
+    background: radial-gradient(1px 1px at 20% 30%, #fff8 50%, transparent 51%), radial-gradient(1px 1px at 70% 12%, #fff9 50%, transparent 51%),
+      radial-gradient(1.5px 1.5px at 85% 40%, #fffa 50%, transparent 51%), radial-gradient(1px 1px at 35% 62%, #fff7 50%, transparent 51%),
+      radial-gradient(ellipse at 50% 120%, #1d3a5f 0%, #0b1626 55%, #04070c 100%); }
+  .held .wallpaper, .held .home, .held .dock { filter: blur(6px) brightness(.6); }
+  .status { position: absolute; top: 16px; left: 0; right: 0; display: flex; justify-content: space-between; padding: 0 24px; font: 600 15px var(--sys); color: #fff; z-index: 5; }
+  .home { position: absolute; top: 72px; left: 26px; right: 26px; display: grid; grid-template-columns: repeat(4, 1fr); column-gap: 26px; row-gap: 14px; transition: filter .3s; }
+  .slot { grid-column: span 2; grid-row: span 2; display: flex; flex-direction: column; align-items: center; gap: 5px; }
+  .slot small, .app small { font: 500 11px var(--sys); color: #fff; text-shadow: 0 1px 2px #0008; }
+  .app { display: flex; flex-direction: column; align-items: center; gap: 5px; }
+  .app i { width: 62px; height: 62px; border-radius: 15px; background: #ffffff26; }
+  .app.sakina i { background: url("../../../../assets/icon.png") center / cover; }
+  .dock { position: absolute; left: 12px; right: 12px; bottom: 12px; height: 92px; border-radius: 34px; background: #ffffff1f;
+    display: flex; justify-content: space-around; align-items: center; padding: 0 12px; transition: filter .3s; }
+  .dock i { width: 62px; height: 62px; border-radius: 15px; background: #ffffff2e; }
+  .home-bar { position: absolute; bottom: 6px; left: 50%; width: 140px; height: 5px; margin-left: -70px; border-radius: 3px; background: #fffd; z-index: 6; }
+  .lock-clock { position: absolute; top: 92px; left: 0; right: 0; text-align: center; color: #fff; }
+  .lock-clock .date { font: 600 19px var(--sys); opacity: .9; }
+  .lock-clock .time { font: 700 92px/1 var(--sys); letter-spacing: -2px; margin-top: 2px; }
+  .lock-bottom { position: absolute; bottom: 30px; left: 46px; right: 46px; display: flex; justify-content: space-between; }
+  .lock-bottom i { width: 50px; height: 50px; border-radius: 50%; background: #ffffff26; }
+  .view-lock .home, .view-lock .dock { display: none; }
+  .view-home .lock-clock, .view-home .lock-bottom, .view-home .banner { display: none; }
+
+  /* ── Dynamic Island ── */
+  .island { position: absolute; top: 11px; left: 50%; z-index: 10; width: 250px; height: 37px; margin-left: -125px; border-radius: 19px;
+    background: #000; overflow: hidden; box-shadow: 0 0 0 1px rgba(212,175,55,.5);
+    transition: width .5s cubic-bezier(.2,.9,.25,1.12), height .5s cubic-bezier(.2,.9,.25,1.12), margin-left .5s cubic-bezier(.2,.9,.25,1.12), border-radius .5s; }
+  .island.expanded { width: 371px; margin-left: -185.5px; height: 160px; border-radius: 44px; }
+  .view-lock .island { width: 126px; margin-left: -63px; box-shadow: none; }
+  .island > .layer { position: absolute; inset: 0; opacity: 0; transition: opacity .25s; }
+  .island:not(.expanded) > .cmp, .island.expanded > .exp { opacity: 1; }
+  .view-lock .island > .layer, .no-times .island > .layer { opacity: 0 !important; }
+  .no-times .island { width: 126px; margin-left: -63px; box-shadow: none; }
+  .no-times .banner { display: none; }
+  .c-row { display: flex; align-items: center; justify-content: space-between; height: 100%; padding: 0 14px 0 12px; }
+  .compact-time { font: 600 14px var(--sys); color: var(--gold); }
+  .c-exp { position: relative; padding: 10px 22px 12px; display: flex; flex-direction: column; gap: 8px; height: 100%; color: var(--cream); }
+  .name { font-family: var(--serif); color: var(--cream); line-height: 1.15; }
+
+  /* ── Lock screen card ── */
+  .banner { position: absolute; left: 11px; right: 11px; bottom: 112px; z-index: 4; border-radius: 22px; color: var(--cream);
+    background: linear-gradient(var(--night), var(--dusk)); }
+  .e-lock { position: relative; padding: 16px 14px 14px; display: flex; flex-direction: column; gap: 10px; overflow: hidden; border-radius: inherit; }
+  .e-lock::before { content: ""; position: absolute; top: 0; left: 28px; right: 28px; height: 1px; background: linear-gradient(90deg, transparent, var(--gold), transparent); }
+  .e-lock > :not(.mandala), .c-exp > :not(.mandala) { position: relative; }
+  .board { display: flex; align-items: stretch; height: 40px; }
+  .board .col { flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: center; }
+  .board .col b { font: 600 11px/13px var(--sys); color: rgba(245,237,227,.8); }
+  .board .col span { font: 600 13px/16px var(--sys); color: rgba(245,237,227,.8); }
+  .board .col.past b, .board .col.past span { color: rgba(245,237,227,.55); }
+  .board .col.next b, .board .col.next span { color: var(--gold); }
+  .board .ul { width: 60%; height: 2px; margin-top: 4px; border-radius: 1px; background: var(--track); overflow: hidden; }
+  .board .ul i { display: block; height: 100%; width: 45%; background: var(--gold); }
+  .board button.side { flex: none; width: 86px; border: 0; border-left: 1px solid rgba(245,237,227,.12); background: none; cursor: pointer; padding: 0;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; }
+  .tas-p { font: 600 11px/13px var(--sys); color: var(--cream-2); white-space: nowrap; }
+  .tas-p.gold { color: var(--gold); }
+  .ia-ring { border: 0; padding: 0; background: none; cursor: pointer; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; }
+
+  /* ── Verse (VerseView, Light the lantern type) ── */
+  .verse .tier { display: flex; flex-direction: column; gap: 4px; }
+  .verse .ar { font-family: "AmiriQuranCard", serif; font-size: 16px; color: var(--cream); direction: rtl; text-align: right; line-height: 1.55; }
+  .verse .en { font: 13px/1.3 var(--serif); color: var(--verse); }
+  .verse .ref { font: italic 12px var(--serif); color: var(--cream-2); }
+  .verse .ptr { font: italic 13px var(--serif); color: var(--cream-2); }
+
+  /* ── Pieces ── */
+  .mandala { position: absolute; pointer-events: none; }
+  .lantern { display: block; width: auto; align-self: flex-start; transition: filter .6s ease, opacity .6s ease; }
+  .side .lantern, .ia-ring .lantern { align-self: center; }
+  .glow { filter: drop-shadow(0 0 5px rgba(255,214,120,.65)); }
+  .unlit { opacity: .45; filter: none; }
+
+  /* ── Square widget ── */
+  .w { position: relative; width: 162px; height: 162px; border-radius: 24px; overflow: hidden; color: var(--cream);
+    background: linear-gradient(var(--night), var(--dusk)); padding: 14px; box-shadow: 0 6px 18px rgba(0,0,0,.35);
+    display: flex; flex-direction: column; }
+  .w > :not(.mandala) { position: relative; }
+  .w .hair { position: absolute; top: 0; left: 26px; right: 26px; height: 1px; background: linear-gradient(90deg, transparent, var(--gold), transparent); }
+  .kicker { font: italic 11.5px/1.25 var(--serif); color: var(--cream-2); }
+  .big { font: 19px/1.22 var(--serif); color: var(--cream); }
+  .prompt { font: 14px/1.3 var(--serif); color: var(--cream); }
+  .pips { display: flex; gap: 5px; }
+  .pips i { flex: 1; height: 3px; border-radius: 2px; background: var(--track); }
+  .pips i.done { background: rgba(212,175,55,.55); }
+  .pips i.today { background: var(--gold); }
+  .wref { font: italic 11px var(--serif); color: var(--cream-2); }
+
+  /* ── Panel ── */
+  .panel { background: var(--ui-panel); border: 1px solid var(--ui-line); border-radius: 14px; padding: 18px; align-self: start; position: sticky; top: 24px; }
+  .group { border-top: 1px solid var(--ui-line); padding-top: 14px; margin-top: 14px; }
+  .group:first-of-type { border-top: 0; margin-top: 0; padding-top: 0; }
+  .label { font-size: 11px; text-transform: uppercase; letter-spacing: .08em; color: var(--ui-dim); margin-bottom: 8px; }
+  .seg { display: flex; flex-wrap: wrap; gap: 6px; }
+  .seg button { background: #1d2531; color: var(--ui-text); border: 1px solid var(--ui-line); border-radius: 8px; padding: 7px 10px; font: 500 13px var(--sys); cursor: pointer; }
+  .seg button.on { background: var(--gold); color: #111; border-color: var(--gold); }
+  .check { display: flex; align-items: center; gap: 8px; margin: 6px 0; cursor: pointer; }
+  .note { color: var(--ui-dim); font-size: 12px; margin-top: 6px; }
+  .split { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .split div { background: #0f141b; border-radius: 10px; padding: 10px 12px; font-size: 12.5px; color: var(--ui-dim); }
+  .split h3 { margin: 0 0 6px; font-size: 13px; color: var(--gold); }
+  .split ul { margin: 0; padding-left: 16px; }
+  .split li { margin: 2px 0; }
+  .split .never { margin-top: 8px; color: #b98a8a; }
+  #measure { position: absolute; left: -9999px; top: 0; visibility: hidden; }
+</style>
+</head>
+<body>
+<section class="stage">
+  <div style="align-self:stretch">
+    <h1>Sakina — the island and the widget together</h1>
+    <p class="sub">Island: what's happening now, at prayer times. Widget: the path you're on, through mood, Journey and reflection. They link up but never repeat each other. Hold the island, or switch to the Lock Screen, from the panel.</p>
+  </div>
+  <div class="scaler" id="scaler">
+    <div class="phone">
+      <div class="screen view-home" id="screen">
+        <div class="wallpaper"></div>
+        <div class="status"><span id="statusTime"></span><span>●●●● ▮</span></div>
+        <div class="island" id="island"><div class="layer cmp" id="cmp"></div><div class="layer exp" id="exp"></div></div>
+        <div class="home" id="home"></div>
+        <div class="dock"><i></i><i></i><i></i><i></i></div>
+        <div class="lock-clock"><div class="date" id="lockDate"></div><div class="time num" id="lockTime"></div></div>
+        <div class="banner" id="banner"></div>
+        <div class="lock-bottom"><i></i><i></i></div>
+        <div class="home-bar"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<aside class="panel">
+  <div class="group">
+    <div class="label">Who does what</div>
+    <div class="split">
+      <div><h3>Dynamic Island</h3>"Now"<ul><li>Next prayer and today's board</li><li>The lantern and its phrase</li><li>The verse you chose</li></ul>
+        <div class="never">Never: Journeys, reflection, check-in</div></div>
+      <div><h3>Square widget</h3>"Your path"<ul><li>How is your heart?</li><li>Your Journey's day</li><li>The question to reflect on</li></ul>
+        <div class="never">Never: prayer times, the lantern. The verse only when the prayer card is off.</div></div>
+    </div>
+    <p class="note">How they link: you check in on the widget, the island carries the verse you got, and the widget then gives you the question about that same verse.</p>
+  </div>
+  <div class="group">
+    <div class="label">View</div>
+    <div class="seg" id="viewSeg">
+      <button data-v="home" class="on">Home screen</button><button data-v="held">Hold the island</button><button data-v="lock">Lock Screen</button>
+    </div>
+  </div>
+  <div class="group">
+    <div class="label">Time of day</div>
+    <div class="seg" id="momentSeg"></div>
+  </div>
+  <div class="group">
+    <div class="label">This user</div>
+    <label class="check"><input type="checkbox" id="isPro" checked> Has Sakina Pro</label>
+    <label class="check"><input type="checkbox" id="cardOn" checked> Prayer card switched on</label>
+    <label class="check"><input type="checkbox" id="checkedIn" checked> Checked in today</label>
+    <div class="label" style="margin-top:10px">Their question tonight (the verse they got)</div>
+    <select id="promptSel"></select>
+    <p class="note" id="fitNote"></p>
+    <div class="label" style="margin-top:10px">Journey</div>
+    <select id="journeySel"></select>
+    <label class="check"><input type="checkbox" id="dayDone"> Already finished today's Journey day</label>
+    <label class="check"><input type="checkbox" id="noTimes"> No prayer times (location turned off)</label>
+    <p class="note">Tap the lantern on the Lock Screen or in the held island to light it.</p>
+  </div>
+  <div class="group">
+    <div class="label">Tapping the widget opens</div>
+    <p class="note" id="tapNote" style="color:var(--ui-text)"></p>
+  </div>
+</aside>
+<div id="measure" class="verse"></div>
+
+<script>
+const LANTERN = '../../../../src/assets/brand/lantern.png';
+const $ = (id) => document.getElementById(id);
+const pad = (n) => String(n).padStart(2, '0');
+const esc = (t) => String(t).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const PRAYERS = [
+  { name: 'Fajr', h: 5, m: 1 }, { name: 'Dhuhr', h: 12, m: 8 }, { name: 'Asr', h: 15, m: 22 },
+  { name: 'Maghrib', h: 17, m: 44 }, { name: 'Isha', h: 19, m: 1 },
+];
+const DHIKR = ['SubhanAllah', 'Alhamdulillah', 'La ilaha illallah', 'Allahu Akbar', 'Astaghfirullah'];
+// Real app content. The island's verse is Ad-Duha 93:4 as the app shows it.
+// Reflection prompts are real mood-angle prompts: a typical one, a long one,
+// and the longest of the 346 the mood flow can show (155 characters).
+const VERSE = { arabic: '', english: '', ref: 'Ad-Duha 93:4' };
+const PROMPTS = [
+  { label: 'Typical · Ad-Duha 93:4 (Sad)', ref: 'Ad-Duha 93:4', text: 'What are you treating as the final total, that this ayah calls the first part?' },
+  { label: 'Long · Al-Qasas 28:24 (Tired)', ref: 'Al-Qasas 28:24', text: 'Say the honest version of where you are right now in one sentence, the way he did. What did you leave out to make it sound better?' },
+  { label: 'Longest · Ash-Shu\'ara 26:62 (Lonely)', ref: "Ash-Shu'ara 26:62", text: 'Who was standing next to Musa when he said this? Being in a room with people is not the same as not being alone — which one do you actually need right now?' },
+];
+// sensitive: the Journey's name and day titles never reach the home screen.
+const JOURNEYS = [
+  { label: 'No Journey running' },
+  { label: 'Trusting the Results', title: 'Trusting the Results', day: 3, of: 7, dayTitle: 'Name the Fear', sensitive: false },
+  { label: 'Suicidal Thoughts → Hope (sensitive)', title: 'Suicidal Thoughts → Hope', day: 3, of: 7, sensitive: true },
+];
+const MOMENTS = [
+  { id: 'morning', label: 'Morning · 7:10', clock: '7:10', next: 1 },
+  { id: 'afternoon', label: 'Afternoon · 13:40', clock: '13:40', next: 2 },
+  { id: 'evening', label: 'Evening · 18:10', clock: '18:10', next: 4 },
+];
+let moodVerses = [];
+const state = { view: 'home', moment: 'morning', checkedIn: true, prompt: 0, journey: 1, dayDone: false, noTimes: false, lit: false, pro: true, cardOn: true };
+// The prayer card (island + Lock Screen) needs Pro, its switch, and prayer times.
+const cardRunning = () => state.pro && state.cardOn && !state.noTimes;
+
+/* ── Pieces ── */
+function mandalaSVG(size, opacity, k = 1) {
+  const C = 50, R = 48;
+  const web = (step) => { let d = ''; for (let i = 0; i < 12; i++) {
+    const a1 = (i * Math.PI * 2) / 12 - Math.PI / 2, a2 = ((i + step) * Math.PI * 2) / 12 - Math.PI / 2;
+    d += `M ${C + R * Math.cos(a1)},${C + R * Math.sin(a1)} L ${C + R * Math.cos(a2)},${C + R * Math.sin(a2)} `; } return d; };
+  return `<svg width="${size}" height="${size}" viewBox="0 0 100 100" style="opacity:${opacity};display:block">
+    <g fill="none" stroke="#D4AF37"><circle cx="50" cy="50" r="${R}" stroke-width="${0.3 * k}" opacity="0.5"/>
+      <path d="${web(3)}" stroke-width="${0.16 * k}" opacity="0.24"/><path d="${web(4)}" stroke-width="${0.16 * k}" opacity="0.34"/>
+      <circle cx="50" cy="50" r="${R * 0.5}" stroke-width="${0.14 * k}" opacity="0.2"/><circle cx="50" cy="50" r="${R * 0.18}" stroke-width="${0.3 * k}" opacity="0.5"/></g></svg>`;
+}
+function mandala(size, style, k = 1) {
+  const inner = Math.round(size * 220 / 300), off = (size - inner) / 2;
+  return `<div class="mandala" style="width:${size}px;height:${size}px;${style}">${mandalaSVG(size, 0.35, k)}
+    <div style="position:absolute;left:${off}px;top:${off}px;transform:rotate(15deg)">${mandalaSVG(inner, 0.25, k)}</div></div>`;
+}
+const lamp = (h, lit = true) => `<img class="lantern ${lit ? 'glow' : 'unlit'}" alt="" src="${LANTERN}" style="height:${h}px">`;
+const clock = (p) => `${pad(p.h)}:${pad(p.m)}`;
+const moment = () => MOMENTS.find((m) => m.id === state.moment);
+
+// The complete ayah or none of it (VerseView's ViewThatFits).
+function verse(width, budget) {
+  const tiers = [
+    `<div class="tier"><div class="ar">${esc(VERSE.arabic)}</div><div class="en">${esc(VERSE.english)}</div><div class="ref">— ${esc(VERSE.ref)}</div></div>`,
+    `<div class="tier"><div class="en">${esc(VERSE.english)}</div><div class="ref">— ${esc(VERSE.ref)}</div></div>`,
+    `<div class="tier"><div class="ptr">Your verse · ${esc(VERSE.ref)}</div></div>`,
+  ];
+  const m = $('measure'); m.style.width = width + 'px';
+  for (const t of tiers) { m.innerHTML = t; if (m.firstElementChild.getBoundingClientRect().height <= budget) return `<div class="verse" style="height:${budget}px">${t}</div>`; }
+  return `<div class="verse" style="height:${budget}px">${tiers[2]}</div>`;
+}
+
+/* ── Dynamic Island + Lock Screen card: "now" ── */
+function islandCompact(next) {
+  return `<div class="c-row">${lamp(20)}<span class="compact-time num">${clock(PRAYERS[next])}</span></div>`;
+}
+function islandExpanded(next) {
+  const p = PRAYERS[next];
+  return `<div class="c-exp">${mandala(130, 'left:-24px;top:-26px', 2.5)}
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;height:50px">
+      <button class="ia-ring js-light" aria-label="Light the lantern">${lamp(26, state.lit)}</button>
+      <div style="text-align:right;line-height:1.15"><div class="name" style="font-size:16px">${esc(p.name)}</div>
+        <div class="num" style="font:600 13px/16px var(--sys);color:var(--gold)">${clock(p)}</div>
+        <div style="font:500 12px/15px var(--sys);white-space:nowrap;color:${state.lit ? 'var(--gold)' : 'var(--cream-2)'}">${esc(DHIKR[next])}</div></div></div>
+    ${verse(327, 72)}</div>`;
+}
+function lockCard(next) {
+  const cols = PRAYERS.map((p, i) => `<div class="col ${i === next ? 'next' : i < next ? 'past' : ''}"><b>${p.name}</b><span class="num">${clock(p)}</span>${i === next ? '<div class="ul"><i></i></div>' : ''}</div>`).join('');
+  return `<div class="e-lock">${mandala(250, 'right:-70px;top:50%;margin-top:-125px')}${verse(352, 78)}
+    <div class="board">${cols}<button class="side js-light">${lamp(18, state.lit)}<span class="tas-p ${state.lit ? 'gold' : ''}">${DHIKR[next]}</span></button></div></div>`;
+}
+
+/* ── Square widget: "your path" ── */
+const shell = (inner, m) => `<div class="w">${m}<div class="hair"></div>${inner}</div>`;
+// Which state the widget is in. Evening = after Maghrib, or 18:00 with no prayer times.
+function widgetState() {
+  const evening = state.moment === 'evening', morning = state.moment === 'morning';
+  const j = JOURNEYS[state.journey];
+  const journeyNow = j.title && !evening && !state.dayDone;
+  if (!state.pro) return { kind: 'locked' };
+  if (!state.checkedIn) {
+    // The question is only asked until Dhuhr; after that nothing asks anything.
+    if (morning) return { kind: 'checkin' };
+    return journeyNow ? { kind: 'journey', j } : { kind: 'gentle', evening };
+  }
+  if (evening) return { kind: 'reflect', evening };
+  // With the prayer card off, nothing else shows the verse, so the widget does
+  // until Dhuhr (and all afternoon when there is no Journey to show).
+  if (!cardRunning() && (morning || !journeyNow)) return { kind: 'verse' };
+  return journeyNow ? { kind: 'journey', j } : { kind: 'reflect', evening };
+}
+// The complete ayah or none of it: Arabic + English, else English only, else an invitation.
+function fitVerse() {
+  const ref = `<div class="wref">— ${esc(VERSE.ref)}</div>`, kicker = `<div class="kicker">Your verse today</div>`;
+  const tries = [
+    `<div class="verse" style="margin:auto 0"><div class="tier"><div class="ar" style="font-size:15px">${esc(VERSE.arabic)}</div><div class="en" style="font-size:12px">${esc(VERSE.english)}</div></div></div>`,
+    `<div class="verse" style="margin:auto 0"><div class="tier"><div class="en">${esc(VERSE.english)}</div></div></div>`,
+  ];
+  const m = $('measure');
+  for (const t of tries) {
+    m.innerHTML = `<div class="w">${kicker}${t}${ref}</div>`;
+    const used = [...m.firstChild.children].reduce((s, c) => s + c.getBoundingClientRect().height, 0) + 28;
+    if (used <= 162) return `${kicker}${t}${ref}`;
+  }
+  return `${kicker}<div style="flex:1;display:flex;align-items:center"><div class="big" style="font-size:17px">Your verse is waiting for you.</div></div>${ref}`;
+}
+// The whole question or none of it: 14 → 13 → 12 pt, then a short invitation.
+// 12 pt Georgia is the floor; smaller is not comfortably readable on a home screen.
+function fitPrompt(p, kicker) {
+  const ref = `<div class="wref">— on ${esc(p.ref)}</div>`;
+  const m = $('measure');
+  for (const size of [14, 13, 12]) {
+    m.innerHTML = `<div class="w"><div class="kicker">${kicker}</div><div class="prompt" style="font-size:${size}px;margin:auto 0">${esc(p.text)}</div>${ref}</div>`;
+    const w = m.firstChild;
+    const used = [...w.children].reduce((s, c) => s + c.getBoundingClientRect().height, 0) + 28;
+    if (used <= 162) return { size, html: `<div class="kicker">${kicker}</div><div style="flex:1;display:flex;align-items:center"><div class="prompt" style="font-size:${size}px">${esc(p.text)}</div></div>${ref}` };
+  }
+  return { size: 0, html: `<div class="kicker">${kicker}</div><div style="flex:1;display:flex;align-items:center"><div class="big" style="font-size:17px">A question is waiting for you.</div></div>${ref}` };
+}
+function widget() {
+  const s = widgetState();
+  const p = PROMPTS[state.prompt];
+  $('fitNote').textContent = '';
+  if (s.kind === 'locked') {
+    return shell(`<div class="kicker" style="color:var(--gold)">Sakina Pro</div>
+      <div style="flex:1;display:flex;align-items:center"><div class="big" style="font-size:17px">Your day with Sakina, on your Home Screen.</div></div>`, mandala(170, 'right:-62px;top:-62px'));
+  }
+  if (s.kind === 'checkin') {
+    // No lantern here: the lantern belongs to the island.
+    return shell(`<div style="flex:1;display:flex;align-items:flex-end"><div class="big">How is your heart today?</div></div>
+      <div class="kicker" style="margin-top:6px">A verse for how you feel.</div>`, mandala(170, 'right:-62px;top:-62px'));
+  }
+  if (s.kind === 'gentle') {
+    return shell(`<div style="flex:1;display:flex;align-items:flex-end"><div class="big" style="font-size:17px">${s.evening ? 'A quiet moment with Allah before you sleep.' : 'Whenever you are ready, Sakina is here.'}</div></div>`,
+      mandala(170, 'right:-62px;top:-62px'));
+  }
+  if (s.kind === 'verse') return shell(fitVerse(), mandala(150, 'left:-60px;bottom:-60px'));
+  if (s.kind === 'journey') {
+    const j = s.j;
+    const pips = Array.from({ length: j.of }, (_, i) => `<i class="${i + 1 < j.day ? 'done' : i + 1 === j.day ? 'today' : ''}"></i>`).join('');
+    return shell(`<div class="kicker">${j.sensitive ? 'Your Journey' : esc(j.title)}</div>
+      <div style="flex:1;display:flex;flex-direction:column;justify-content:center;gap:3px">
+        <div style="font:600 12px var(--sys);color:var(--gold)">Day ${j.day} of ${j.of}</div>
+        <div class="big">${j.sensitive ? "Today's step is ready." : esc(j.dayTitle)}</div></div><div class="pips">${pips}</div>`, mandala(170, 'right:-70px;top:-70px'));
+  }
+  const fit = fitPrompt(p, s.evening ? 'To reflect on tonight' : 'To carry with you today');
+  $('fitNote').textContent = fit.size ? `${p.text.length} characters: fits at ${fit.size} pt.` : `${p.text.length} characters: too long even at 12 pt, so the widget invites them in instead of cutting it.`;
+  return shell(fit.html, mandala(150, 'right:-60px;bottom:-60px'));
+}
+function widgetTap() {
+  const s = widgetState();
+  if (s.kind === 'locked') return 'The Sakina Pro page. The widget shows nothing personal without Pro.';
+  if (s.kind === 'gentle') return "Sakina's home screen. Nothing is asked of them.";
+  if (s.kind === 'verse') return `${VERSE.ref} in Sakina, in full.`;
+  if (s.kind === 'checkin') return 'The mood check-in.';
+  if (s.kind === 'journey') return "Today's Journey lesson.";
+  return `${PROMPTS[state.prompt].ref} with this question, ready to write an answer (where reflections are written today), not the journal list.`;
+}
+
+/* ── Render ── */
+function render() {
+  const m = moment();
+  $('statusTime').textContent = m.clock;
+  $('lockTime').textContent = m.clock;
+  $('lockDate').textContent = 'Friday 6 November';
+  $('cmp').innerHTML = islandCompact(m.next);
+  $('exp').innerHTML = islandExpanded(m.next);
+  $('banner').innerHTML = lockCard(m.next);
+  $('home').innerHTML = `<div class="slot">${widget()}<small>Sakina</small></div>`
+    + ['Weather', 'Clock', 'Mail', 'Calendar', 'Sakina', 'Photos', 'Maps', 'Notes']
+      .map((n, i) => `<div class="app ${i === 4 ? 'sakina' : ''}"><i></i><small>${n}</small></div>`).join('');
+  $('tapNote').textContent = widgetTap();
+  $('island').classList.toggle('expanded', state.view === 'held' && cardRunning());
+  // No prayer card (no Pro, switched off, or no prayer times): no island, no Lock Screen card.
+  $('screen').className = `screen view-${state.view === 'lock' ? 'lock' : 'home'} ${state.view === 'held' && cardRunning() ? 'held' : ''} ${cardRunning() ? '' : 'no-times'}`;
+  const label = (x) => !state.noTimes ? x.label : { morning: 'Morning · 7:10', afternoon: 'Afternoon · from 12:00', evening: 'Evening · from 18:00' }[x.id];
+  $('momentSeg').innerHTML = MOMENTS.map((x) => `<button data-id="${x.id}" class="${x.id === state.moment ? 'on' : ''}">${label(x)}</button>`).join('');
+  document.querySelectorAll('#momentSeg button').forEach((b) => b.onclick = () => { state.moment = b.dataset.id; state.lit = false; render(); });
+  document.querySelectorAll('.js-light').forEach((b) => b.onclick = () => { state.lit = !state.lit; render(); });
+  document.querySelectorAll('#viewSeg button').forEach((b) => b.classList.toggle('on', b.dataset.v === state.view));
+}
+function fitScale() {
+  const s = Math.min(1, (window.innerHeight - 120) / 898);
+  $('scaler').style.transform = `scale(${s})`; $('scaler').style.height = `${898 * s}px`;
+}
+async function init() {
+  // The island carries the verse the check-in gave; the widget's question is that verse's.
+  try { moodVerses = await (await fetch('mood-verses.json')).json(); } catch {}
+  const pickVerse = () => Object.assign(VERSE, moodVerses.find((v) => v.ref === PROMPTS[state.prompt].ref) || {});
+  pickVerse();
+  document.querySelectorAll('#viewSeg button').forEach((b) => b.onclick = () => { state.view = b.dataset.v; render(); });
+  $('checkedIn').onchange = (e) => { state.checkedIn = e.target.checked; render(); };
+  $('isPro').onchange = (e) => { state.pro = e.target.checked; render(); };
+  $('cardOn').onchange = (e) => { state.cardOn = e.target.checked; render(); };
+  $('promptSel').innerHTML = PROMPTS.map((p, i) => `<option value="${i}">${esc(p.label)}</option>`).join('');
+  $('journeySel').innerHTML = JOURNEYS.map((j, i) => `<option value="${i}" ${i === state.journey ? 'selected' : ''}>${esc(j.label)}</option>`).join('');
+  $('promptSel').onchange = (e) => { state.prompt = +e.target.value; pickVerse(); render(); };
+  $('journeySel').onchange = (e) => { state.journey = +e.target.value; render(); };
+  $('dayDone').onchange = (e) => { state.dayDone = e.target.checked; render(); };
+  $('noTimes').onchange = (e) => { state.noTimes = e.target.checked; render(); };
+  window.addEventListener('resize', fitScale);
+  await document.fonts.load('16px AmiriQuranCard').catch(() => {});
+  fitScale(); render();
+}
+init();
+</script>
+</body>
+</html>

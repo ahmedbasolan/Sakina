@@ -32,6 +32,7 @@ import MoodSelectionScreen from '../screens/MoodSelectionScreen';
 import LibraryScreen from '../screens/LibraryScreen';
 import SurahReaderScreen from '../screens/SurahReaderScreen';
 import SupportSakinaScreen from '../screens/SupportSakinaScreen';
+import WidgetLinkScreen from '../screens/WidgetLinkScreen';
 
 // Services
 import { HapticsService } from '../services/hapticsService';
@@ -247,6 +248,8 @@ export default function MainNavigator() {
           <RootStack.Screen name="PathDetail" component={PathDetailScreen} />
           <RootStack.Screen name="PathStep" component={PathStepScreen} />
           <RootStack.Screen name="PrayerTimes" component={PrayerTimesScreen} />
+          {/* Home Screen widget taps (sakina://widget/…): resolves, then replaces itself. */}
+          <RootStack.Screen name="WidgetLink" component={WidgetLinkScreen} options={{ animation: 'none' }} />
           <RootStack.Screen name="QuranLibrary" component={QuranLibraryScreen} />
           <RootStack.Screen name="MoodHistory" component={MoodHistoryCalendarScreen} />
           <RootStack.Screen name="DailyReminders" component={DailyRemindersScreen} />

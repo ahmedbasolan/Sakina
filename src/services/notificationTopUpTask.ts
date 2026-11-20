@@ -19,9 +19,11 @@ import * as TaskManager from 'expo-task-manager';
 import * as BackgroundTask from 'expo-background-task';
 import * as Notifications from 'expo-notifications';
 import NotificationService from './notificationService';
-import PrayerTimesService from './prayerTimesService';
-import { getUserLocation } from './locationStorage';
 import { logServiceError } from './errorLoggingService';
+import { loadSchedulingTimings, readTimeFormat } from './schedulingTimings';
+import { LiveActivityService } from './liveActivity/liveActivityService';
+import { WidgetService } from './widget/widgetService';
+import { toWeeklyTimings } from '../utils/weeklyTimings';
 
 export const NOTIFICATION_TOPUP_TASK = 'sakina-notification-topup';
 
@@ -50,30 +52,26 @@ export async function topUpScheduledNotifications(): Promise<boolean> {
   ]);
   if (!prayerEnabled && !spiritualEnabled && !moodCheckinEnabled) return false;
 
-  const prayerService = PrayerTimesService.getInstance();
-  const savedLocation = await getUserLocation();
-  const city = savedLocation?.city || 'Dubai';
-  const country = savedLocation?.country || 'UAE';
-
   // GPS path: per-day timings for the whole week, computed on-device — no
-  // network at all in the background task, and each of the 7 scheduled days
-  // fires at its own day's times. City path (no coordinates on file): one
-  // day's timings from the (cached, retried) API repeated across the week.
-  // `!== undefined`, not truthiness — a coordinate of exactly 0 is valid.
-  const timings =
-    savedLocation?.latitude !== undefined && savedLocation?.longitude !== undefined
-      ? prayerService.getWeeklyLocalTimings(
-          savedLocation.latitude,
-          savedLocation.longitude,
-          country,
-        )
-      : (await prayerService.getTimingsByCity(city, country)).timings;
+  // network at all in the background task. City path (no coordinates on
+  // file): one day's timings from the (cached, retried) API, repeated across
+  // the week. See loadSchedulingTimings.
+  const timings = await loadSchedulingTimings();
 
   // Sequential like useHomeData — each call cancels-then-reschedules only
   // its own category, so one failing never wipes the other.
   await notifications.scheduleSpiritualReminders(timings);
   await notifications.schedulePrayerNotifications(timings);
   await notifications.scheduleMoodCheckinNotifications(timings);
+
+  // Pro Live Activity: refresh the server's 7-day schedule too, or it runs dry
+  // for exactly the users who have not opened the app. No React context here,
+  // so the clock format comes from storage. The service never throws and
+  // no-ops unless the switch is on and the user is Pro.
+  await LiveActivityService.getInstance().sync(toWeeklyTimings(timings), await readTimeFormat());
+  // The Home Screen widget's timeline runs 30 days, but only its first 7 use
+  // real prayer times; refresh them for users who have not opened the app.
+  await WidgetService.getInstance().setTimings(toWeeklyTimings(timings));
   return true;
 }
 

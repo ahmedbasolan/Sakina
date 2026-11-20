@@ -13,7 +13,7 @@
 import 'react-native-gesture-handler/jestSetup';
 import React from 'react';
 import { act, render, screen } from '@testing-library/react-native';
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer, createNavigationContainerRef } from '@react-navigation/native';
 import { linking } from '../linking';
 
 const mockAuth = {
@@ -56,6 +56,7 @@ jest.mock('../../screens/MoodSelectionScreen', () => mockStub('MoodSelection'));
 jest.mock('../../screens/LibraryScreen', () => mockStub('Library'));
 jest.mock('../../screens/SurahReaderScreen', () => mockStub('SurahReader'));
 jest.mock('../../screens/SupportSakinaScreen', () => mockStub('Support'));
+jest.mock('../../screens/WidgetLinkScreen', () => mockStub('WidgetLink'));
 
 // Imported after the mocks so it binds to the stubs.
 import MainNavigator from '../MainNavigator';
@@ -116,6 +117,46 @@ describe('sakina://journeys and onboarding', () => {
     mockAuth.isGuest = true;
     renderApp('sakina://journeys');
     expect(await screen.findByText('screen:Journeys')).toBeTruthy();
+  });
+
+  it('a returning guest opening sakina://prayer-times goes straight to Prayer Times', async () => {
+    mockAuth.isGuest = true;
+    renderApp('sakina://prayer-times');
+    expect(await screen.findByText('screen:PrayerTimes')).toBeTruthy();
+  });
+
+  // The Home Screen widget's taps.
+  it.each([
+    ['sakina://check-in', 'MoodSelection'],
+    ['sakina://pro', 'Support'],
+    ['sakina://widget/journey', 'WidgetLink'],
+    ['sakina://widget/reflect', 'WidgetLink'],
+  ])('a returning guest opening %s goes straight to %s', async (url, name) => {
+    mockAuth.isGuest = true;
+    renderApp(url);
+    expect(await screen.findByText(`screen:${name}`)).toBeTruthy();
+  });
+
+  it('a widget tap that cold-starts the app leaves Home underneath, so Back works', async () => {
+    mockAuth.isGuest = true;
+    const ref = createNavigationContainerRef<any>();
+    render(
+      <NavigationContainer ref={ref} linking={{ ...linking, getInitialURL: () => 'sakina://check-in' }}>
+        <MainNavigator />
+      </NavigationContainer>,
+    );
+    await screen.findByText('screen:MoodSelection');
+    expect(ref.getRootState().routes.map((r) => r.name)).toEqual(['Main', 'MoodSelection']);
+    act(() => ref.goBack());
+    expect(await screen.findByText('screen:Home')).toBeTruthy();
+  });
+
+  it('a widget tap on a fresh install sees Onboarding first, then lands where it pointed', async () => {
+    const view = renderApp('sakina://widget/journey');
+    await screen.findByText('screen:Onboarding');
+    expect(screen.queryByText('screen:WidgetLink')).toBeNull();
+    finishOnboarding(() => view.rerender(app('sakina://widget/journey')));
+    expect(await screen.findByText('screen:WidgetLink')).toBeTruthy();
   });
 
   it('an auth redirect on the shared scheme does not navigate a returning guest', async () => {

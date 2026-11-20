@@ -29,6 +29,9 @@ export const STORAGE_KEYS = {
   // User preferences & location
   preferences: '@guidance_preferences',
   location: '@guidance_location',
+  // Clock format for prayer times ("12h" | "24h"). Owned by AppContext, and
+  // read by the headless notification top-up task, which has no React context.
+  timeFormat: '@prayer_time_format',
 
   // Onboarding
   onboarding: '@onboarding_complete',
