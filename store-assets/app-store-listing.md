@@ -1,11 +1,52 @@
 # App Store — version metadata (en-US)
 
-> **Ship gate.** Section "1.5" applies to the first iOS build cut from `main`
-> at or after `01b8928` (2026-10-13). Name, subtitle, keywords and description
-> change only with a new version. The promotional text and description count
-> **eight** free journeys and Pro early access, which is **false** on the live
-> 1.4 build (seven free, no early access). So never paste the 1.5 promo text
-> into the live 1.4 version, even though promo text can be edited there.
+> **Ship gate.** 1.5 is live (released 2026-10-20) and its text says **10
+> journeys, 8 free**, which is true of the 1.5 build. Section "1.6" below
+> applies to the first iOS build cut from `main` at or after `ac4cce6`
+> (2026-11-20), and says **12 journeys, 10 free**, which is **false** on 1.5.
+> So never paste the 1.6 promo text into the live 1.5 version, even though
+> promo text can be edited there, and do not submit the Journeys page's new
+> promo text until 1.6 is live. Name, subtitle, keywords and description
+> change only with a new version.
+
+## 1.6 — drafted 2026-11-20, NOT entered in App Store Connect
+
+Carries Ramadan Reset and Career Choice (the new Pro-only journeys) and frees
+Marriage Seeker and Death Awareness. Name, subtitle and keywords unchanged from
+1.5. Nothing below has been entered in App Store Connect.
+
+### Promotional text  (limit 170 — editable any time, not indexed) — 110
+A verse for how you feel, the meaning behind it, and journeys to live it. 12 guided journeys, 10 of them free.
+
+### Description
+The "Full description" in `play-listing.md`, verbatim (updated 2026-11-20:
+twelve journeys, ten free; topics now include Ramadan and career decisions).
+
+### What's New
+• Two new journeys for Sakina Pro: Ramadan Reset, seven days to ready your heart for Ramadan, and Career Choice, seven days for a decision about your work.
+• Marriage Seeker and Death Awareness are now free for everyone. That makes 10 of the 12 journeys free.
+
+Add any other change in this release only after checking it against the
+1.5 build's commit, as the rule under "Release-note claims, checked" says.
+
+### Localizations — drafted 2026-11-20, not entered
+`store-assets/app-store-localizations-1.6.json`, built from the live-1.5 record
+(`app-store-localizations.json`, left unchanged). Only the journey counts change
+(12, 10 free), plus Ramadan and career decisions in each topic list and a new
+What's New per language. Names, subtitles and keywords are identical to 1.5.
+Grammar around the numbers is adjusted per language (Arabic `12 رحلة`, Turkish
+`10'u`). Not reviewed by native speakers: have one read each language before
+entry. Check with `node store-assets/check-localizations.cjs app-store-localizations-1.6.json`.
+Once 1.6 is live, make the 1.6 file the record and retire the 1.5 one.
+
+### Claims in 1.6's What's New, checked
+
+| Claim | Evidence |
+|---|---|
+| Ramadan Reset and Career Choice are new, 7 days each, Pro-only | 0209df4, authored 2026-11-20, after 1.5's release on 2026-10-20; `staticPaths.ts` `duration: 7`; `access: 'pro_exclusive'` in `journeyAvailability.ts` |
+| "ready your heart for Ramadan" | the path's own `description` |
+| Marriage Seeker and Death Awareness now free | 0209df4: both moved from `pro_exclusive` to `free` |
+| 10 of the 12 journeys free | `AVAILABLE_PATHS` on `main` (ac4cce6): 12 entries, 2 `pro_exclusive`, 3 `free`, 7 `early_access` all past their 30-day window |
 
 ## 1.5 — chosen 2026-10-13 (Option A)
 
@@ -168,6 +209,16 @@ the angle as the Understand/Matters text, `practiceSteps` and `reflection`
 (PathStepScreen). The text gives no free/Pro count on purpose, because that
 count changes on dates (early access). **Update this text when an 11th journey
 ships**: changing it needs a new page version and another review.
+
+#### Next page version — drafted 2026-11-20, submit only once 1.6 is live  (limit 170) — 155
+Twelve guided journeys, 7 to 14 days each: Salah, Tawbah, Rizq, Ramadan and more. Every day brings a verse, what it means, practical steps and a reflection.
+
+Claims: `AVAILABLE_PATHS` on `main` (ac4cce6) holds 12 journeys, all 7 to 14
+days (recounted from `staticPaths.ts` 2026-11-20: ten of 7, Tawbah 10, Prayer
+Leadership and Marriage Seeker 14). Ramadan replaces Screen Detox in the named
+examples because it is the stronger search word; Ramadan Reset is Pro-only,
+and the text names topics, not free journeys. Still no free/Pro count, for the
+same reason as above. The screenshots do not change.
 
 ### Keywords: none for now
 None of live 1.4's keywords
