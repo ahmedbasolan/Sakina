@@ -1,11 +1,13 @@
 # Google Play — Default store listing (en-US)
 
 > **Ship gate.** Play listing text goes live the moment it is saved, with no
-> build attached. The description counts ten journeys, **eight** free, and
-> Pro early access: true on `main` from `01b8928` (2026-10-13, Trusting the
-> Results freed), **false** on any build before it (seven free, no early
-> access). Apply it only once an Android build cut from that `main` is live.
-> The App Store description is this same text, so the same gate applies there.
+> build attached. The description counts **twelve** journeys, **ten** free,
+> two Pro-only: true on `main` from `ac4cce6` (2026-11-20, Ramadan Reset and
+> Career Choice added as the Pro exclusives, Marriage Seeker and Death
+> Awareness freed), **false** on any build before it (ten journeys, eight
+> free). NOT yet pasted into Play Console — apply it only once an Android
+> build cut from that `main` is live. The App Store description is this same
+> text, so the same gate applies there.
 
 > ASO note (2026-09-21): the title targets "daily Quran verses" because App
 > Store autocomplete shows real demand there — "quran verse" alone suggests
@@ -41,7 +43,7 @@ WHAT'S INSIDE
 
 · Mood-based Quran guidance: Nine moods, each mapped to real verses, with context drawn from the scholarship of Ibn Kathir, As-Sa'di and Ibn al-Qayyim, and a question to reflect on.
 
-· Ten guided journeys: Multi-day Islamic paths on tawakkul, rizq, salah, repentance, hope after crisis, screen detox and more. One verse, one lesson and one practice a day. Eight of them are completely free. More journeys with new updates.
+· Twelve guided journeys: Multi-day Islamic paths on tawakkul, rizq, salah, repentance, hope after crisis, screen detox, Ramadan, career decisions and more. One verse, one lesson and one practice a day. Ten of them are completely free. More journeys with new updates.
 
 · Prayer times: Accurate salah times for your location, Hanafi or standard Asr calculation, and prayer time reminders.
 
@@ -67,7 +69,7 @@ It is for any Muslim who wants dhikr, salah and the Quran woven into an ordinary
 
 SAKINA PRO
 
-Unlocks unlimited guidance, lock screen verses, background themes, two Pro-only journeys, and every new journey 30 days before it opens to everyone. Monthly, annual, or a one-time lifetime unlock that never renews. Everything not marked Pro above stays free, including eight of the ten journeys.
+Unlocks unlimited guidance, lock screen verses, background themes, two Pro-only journeys, and every new journey 30 days before it opens to everyone. Monthly, annual, or a one-time lifetime unlock that never renews. Everything not marked Pro above stays free, including ten of the twelve journeys.
 
 سَكِينَة — Sakina — is the tranquility that descends on the heart and settles it. That is the whole idea.
 
@@ -88,9 +90,9 @@ drifted claim is visible to Google's policy reviewers as a misrepresentation.
 | that question can be answered in a private journal | `GuidanceScreen.tsx:85` calls `saveReflection` |
 | du'a and practice live in journeys | `PracticeLayer` is mounted only by `PathStepScreen` |
 | nine moods | `MOOD_LABELS` in `src/constants/index.ts` — the list says "overwhelmed", not "anxious": there is no Anxious mood |
-| ten journeys, eight free | `AVAILABLE_PATHS` in `src/constants/journeyAvailability.ts`: 10 entries, 2 `pro_exclusive`, none inside its early-access window on 2026-10-13 (newest, Screen Detox, released 09-09, free from 10-09). Re-count when a journey is added: a new one is Pro-only for its first 30 days |
-| topics: tawakkul, rizq, salah, repentance, hope after crisis, screen detox | Trusting the Results, Rizq Revolution, Salah Transformation, Tawbah Intensive, Hope After Crisis, Screen Detox. An earlier draft said "grief" — no journey is about grief, and it was never checked |
-| two Pro-only journeys | `access: 'pro_exclusive'` — Marriage Seeker, Death Awareness. Trusting the Results became free on 2026-10-13 (3a92a39) |
+| twelve journeys, ten free | Re-counted 2026-11-20 on `main` (`ac4cce6`): `AVAILABLE_PATHS` in `src/constants/journeyAvailability.ts` has 12 entries — 2 `pro_exclusive`, 3 `free`, 7 `early_access`, and none of the 7 inside its early-access window (newest, Screen Detox, released 09-09, free from 10-09). Re-count when a journey is added: a new `early_access` one is Pro-only for its first 30 days |
+| topics: tawakkul, rizq, salah, repentance, hope after crisis, screen detox, Ramadan, career decisions | Trusting the Results, Rizq Revolution, Salah Transformation, Tawbah Intensive, Hope After Crisis, Screen Detox, Ramadan Reset, Career Choice. Ramadan and career are Pro-only journeys; the line lists topics, not free ones. An earlier draft said "grief" — no journey is about grief, and it was never checked |
+| two Pro-only journeys | `access: 'pro_exclusive'` — Ramadan Reset, Career Choice (since `ac4cce6`, 2026-11-20). Before that Marriage Seeker and Death Awareness, now `free`. Trusting the Results became free on 2026-10-13 (3a92a39) |
 | every new journey 30 days early for Pro | `getJourneyAccess` in `src/utils/journeyAccess.ts`, `EARLY_ACCESS_DAYS` = 30; applies to `access: 'early_access'`, the documented default (CLAUDE.md §6). Nothing forces a new entry to use it, so check the entry when adding a journey |
 | Ibn Kathir / As-Sa'di / Ibn al-Qayyim | attribution block in `SettingsScreen.tsx` |
 | Hanafi or standard Asr | prayer times settings |
