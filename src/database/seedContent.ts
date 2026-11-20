@@ -481,7 +481,12 @@ import type { Content, ContentAngle } from '../types';
 //      hadith_ramadan_1-7, hadith_career_1-7 and ten Content verses (quran_2_183, quran_50_18,
 //      quran_38_29, quran_97_3, quran_15_99, quran_62_10, quran_42_38, quran_23_51, quran_4_32,
 //      quran_6_162). Ramadan days 3 and 5 and Career days 3 and 4 reuse 2:186, 2:261, 2:216, 9:105.
-const SEED_VERSION = 67;
+// v68: scholarly-review fixes to the two v67 journeys, before release. Career Choice days 3 and 5
+//      swapped so the halal question precedes istikharah; istikharah now says two voluntary rak'ahs
+//      (Bukhari 1166); the 4:32 step asks of His bounty rather than for another's share; a parents
+//      step on day 2 (17:23). Ramadan Reset reads correctly inside the month, keeps users who are not
+//      fasting or praying in, notes the qada-before-Shawwal difference, adds night prayer (Bukhari 37).
+const SEED_VERSION = 68;
 // Separate keys per content type — Quran and Hadith data change independently,
 // and each seeder used to write the SAME key at the end of its run. Since
 // initializeDatabase() awaits seedQuranContent() before seedHadithContent(),

@@ -1334,7 +1334,7 @@ export const hadithContent: Content[] = [
     moods: [],
   },
   {
-    id: 'hadith_career_3',
+    id: 'hadith_career_5',
     type: 'Hadith',
     primaryText: "The Prophet ﷺ used to teach us istikharah in all matters as he taught us a surah of the Qur'an: \"When one of you intends a matter, let him pray two rakʿahs, then say: O Allah, I seek Your guidance through Your knowledge, I seek ability through Your power, and I ask You of Your great bounty. You are able and I am not; You know and I do not, and You are the Knower of the unseen. O Allah, if You know that this matter is good for me in my religion, my livelihood and the outcome of my affairs — or he said: my affairs now and later — then decree it for me; and if You know that this matter is bad for me in my religion, my livelihood and the outcome of my affairs — or he said: my affairs now and later — then turn it away from me and turn me away from it, and decree for me the good wherever it is, then make me content with it. And let him name his need.\"",
     arabicText: "كَانَ النَّبِيُّ صلى الله عليه وسلم يُعَلِّمُنَا الاِسْتِخَارَةَ فِي الأُمُورِ كُلِّهَا كَالسُّورَةِ مِنَ الْقُرْآنِ إِذَا هَمَّ بِالأَمْرِ فَلْيَرْكَعْ رَكْعَتَيْنِ، ثُمَّ يَقُولُ اللَّهُمَّ إِنِّي أَسْتَخِيرُكَ بِعِلْمِكَ، وَأَسْتَقْدِرُكَ بِقُدْرَتِكَ، وَأَسْأَلُكَ مِنْ فَضْلِكَ الْعَظِيمِ، فَإِنَّكَ تَقْدِرُ وَلاَ أَقْدِرُ، وَتَعْلَمُ وَلاَ أَعْلَمُ، وَأَنْتَ عَلاَّمُ الْغُيُوبِ، اللَّهُمَّ إِنْ كُنْتَ تَعْلَمُ أَنَّ هَذَا الأَمْرَ خَيْرٌ لِي فِي دِينِي وَمَعَاشِي وَعَاقِبَةِ أَمْرِي ـ أَوْ قَالَ عَاجِلِ أَمْرِي وَآجِلِهِ ـ فَاقْدُرْهُ لِي، وَإِنْ كُنْتَ تَعْلَمُ أَنَّ هَذَا الأَمْرَ شَرٌّ لِي فِي دِينِي وَمَعَاشِي وَعَاقِبَةِ أَمْرِي ـ أَوْ قَالَ فِي عَاجِلِ أَمْرِي وَآجِلِهِ ـ فَاصْرِفْهُ عَنِّي وَاصْرِفْنِي عَنْهُ، وَاقْدُرْ لِيَ الْخَيْرَ حَيْثُ كَانَ، ثُمَّ رَضِّنِي بِهِ. وَيُسَمِّي حَاجَتَهُ",
@@ -1368,7 +1368,7 @@ export const hadithContent: Content[] = [
     moods: [],
   },
   {
-    id: 'hadith_career_5',
+    id: 'hadith_career_3',
     type: 'Hadith',
     primaryText: "O people, Allah is Good and accepts only what is good. Allah has commanded the believers with what He commanded the messengers, saying: O messengers, eat of the good things and do righteous deeds; indeed, I know what you do. And He said: O you who believe, eat of the good things We have provided you. Then he mentioned a man who travels far, dishevelled and dusty, stretching his hands to the sky — O Lord, O Lord — while his food is unlawful, his drink is unlawful, his clothing is unlawful, and he has been nourished on the unlawful. How then can he be answered?",
     arabicText: "أَيُّهَا النَّاسُ إِنَّ اللَّهَ طَيِّبٌ لاَ يَقْبَلُ إِلاَّ طَيِّبًا وَإِنَّ اللَّهَ أَمَرَ الْمُؤْمِنِينَ بِمَا أَمَرَ بِهِ الْمُرْسَلِينَ فَقَالَ ﴿يَا أَيُّهَا الرُّسُلُ كُلُوا مِنَ الطَّيِّبَاتِ وَاعْمَلُوا صَالِحًا إِنِّي بِمَا تَعْمَلُونَ عَلِيمٌ﴾ وَقَالَ ﴿يَا أَيُّهَا الَّذِينَ آمَنُوا كُلُوا مِنْ طَيِّبَاتِ مَا رَزَقْنَاكُمْ﴾. ثُمَّ ذَكَرَ الرَّجُلَ يُطِيلُ السَّفَرَ أَشْعَثَ أَغْبَرَ يَمُدُّ يَدَيْهِ إِلَى السَّمَاءِ يَا رَبِّ يَا رَبِّ وَمَطْعَمُهُ حَرَامٌ وَمَشْرَبُهُ حَرَامٌ وَمَلْبَسُهُ حَرَامٌ وَغُذِيَ بِالْحَرَامِ فَأَنَّى يُسْتَجَابُ لِذَلِكَ",
