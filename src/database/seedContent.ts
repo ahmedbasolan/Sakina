@@ -486,7 +486,12 @@ import type { Content, ContentAngle } from '../types';
 //      (Bukhari 1166); the 4:32 step asks of His bounty rather than for another's share; a parents
 //      step on day 2 (17:23). Ramadan Reset reads correctly inside the month, keeps users who are not
 //      fasting or praying in, notes the qada-before-Shawwal difference, adds night prayer (Bukhari 37).
-const SEED_VERSION = 68;
+// v69: review pass on the v67 journeys, before release. Ramadan d3 states the condition on the
+//      three outcomes of du'a (no sin, no cutting of kinship); Ramadan d4 no longer sets reflection
+//      against completing the Qur'an (Jibril reviewed all of it yearly, Bukhari 4998); Career d1 no
+//      longer reads as denying a worker's wage; Career d3 names the mukatab precisely; the Career d5
+//      istikharah card transliteration is complete.
+const SEED_VERSION = 69;
 // Separate keys per content type — Quran and Hadith data change independently,
 // and each seeder used to write the SAME key at the end of its run. Since
 // initializeDatabase() awaits seedQuranContent() before seedHadithContent(),

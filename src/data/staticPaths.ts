@@ -1260,7 +1260,7 @@ export const STATIC_SPIRITUAL_PATHS: SpiritualPath[] = [
         day: 4,
         title: "A Book to Reflect On",
         focus:
-          "The ayah gives the Qur'an a purpose: reflection, not a finish line. Jibril came every night of Ramadan to study it — a portion you can keep beats a pace you will abandon.",
+          "The ayah gives the Qur'an a purpose: reflection. Jibril came every night of Ramadan to study it with the Prophet ﷺ — a portion you can keep and reflect on beats a pace you will abandon.",
         contentId: 'quran_38_29',
         angleId: 'q_angle_ramadan_day4',
         hadithContentId: 'hadith_ramadan_4',
